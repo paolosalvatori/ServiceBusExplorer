@@ -1129,9 +1129,6 @@
 </ul>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>C#</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
-<span class="hidden">csharp</span>
 <pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public interface IBrokeredMessageGenerator
@@ -1262,9 +1259,6 @@ Properties:&nbsp;
 </ul>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>C#</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
-<span class="hidden">csharp</span>
 <pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public interface IBrokeredMessageInspector
@@ -1358,9 +1352,6 @@ Properties:&nbsp;
 <p>&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>C#</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
-<span class="hidden">csharp</span>
 <pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public interface IEventDataGenerator
@@ -1490,9 +1481,6 @@ Properties:&nbsp;
 <p>&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>C#</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
-<span class="hidden">csharp</span>
 <pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public interface IEventDataInspector
