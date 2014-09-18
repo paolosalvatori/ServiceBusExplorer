@@ -811,8 +811,6 @@
 <p><strong>BrokeredMessage Json Template</strong>:</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">{
   "messageId": "1",
@@ -905,8 +903,6 @@
 <p><strong>EventData Json Template</strong>:</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">{
   "partitionKey": "1",
@@ -1221,8 +1217,6 @@
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":0}
@@ -1257,8 +1251,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":97}
@@ -1466,8 +1458,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":0}
@@ -1502,8 +1492,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>JavaScript</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":97}
