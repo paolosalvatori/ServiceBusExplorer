@@ -722,10 +722,6 @@
 <ul>
 <li>You can specify a default value of the entities that you want to manage in the <strong>selectedEntities</strong> appSettings in the configuration file: </li>
 </ul>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;appSettings&gt;
     ...
@@ -975,10 +971,6 @@
 </ul>
 <p><strong>BrokeredMessage Xml Template</strong>:</p>
 <p>&nbsp;</p>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="us-ascii"?&gt;
 &lt;brokeredMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -1055,10 +1047,6 @@
 </div>
 </div>
 <p><strong>EventData Xml Template</strong>:</p>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="us-ascii"?&gt;
 
@@ -1172,10 +1160,6 @@
 <li>&nbsp;The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>brokeredMessageGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
 </div>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
@@ -1313,10 +1297,6 @@ Properties:&nbsp;
 <ul>
 <li>The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>brokeredMessageGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
@@ -1410,10 +1390,6 @@ Properties:&nbsp;
 <ul>
 <li>The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>eventDataGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
@@ -1554,10 +1530,6 @@ Properties:&nbsp;
 </div>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<div class="scriptcode">
-<div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<div class="title"><span>XML</span></div>
-<div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
