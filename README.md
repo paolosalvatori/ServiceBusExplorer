@@ -722,7 +722,6 @@
 <ul>
 <li>You can specify a default value of the entities that you want to manage in the <strong>selectedEntities</strong> appSettings in the configuration file: </li>
 </ul>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;appSettings&gt;
     ...
    &lt;add key="selectedEntities" value="Queues,Topics,Relay Services,Event Hubs,Notification Hubs" /&gt;
@@ -971,7 +970,6 @@
 </ul>
 <p><strong>BrokeredMessage Xml Template</strong>:</p>
 <p>&nbsp;</p>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="us-ascii"?&gt;
 &lt;brokeredMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
@@ -1047,7 +1045,6 @@
 </div>
 </div>
 <p><strong>EventData Xml Template</strong>:</p>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="us-ascii"?&gt;
 
 &lt;eventData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -1160,7 +1157,6 @@
 <li>&nbsp;The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>brokeredMessageGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
 </div>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
   ...
@@ -1297,7 +1293,6 @@ Properties:&nbsp;
 <ul>
 <li>The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>brokeredMessageGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
   ...
@@ -1390,7 +1385,6 @@ Properties:&nbsp;
 <ul>
 <li>The dll containing these components needs to be copied in the directory containing the tool. Finally, you need to specify the fully qualified name of the class in the <strong>eventDataGenerators</strong> section of the configuration file as shown below: </li>
 </ul>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
   ...
@@ -1530,7 +1524,6 @@ Properties:&nbsp;
 </div>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<span class="hidden">xml</span>
 <pre class="hidden">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
   ...
