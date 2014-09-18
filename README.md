@@ -811,7 +811,6 @@
 <p><strong>BrokeredMessage Json Template</strong>:</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">{
   "messageId": "1",
   "sessionId": "",
@@ -903,7 +902,6 @@
 <p><strong>EventData Json Template</strong>:</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">{
   "partitionKey": "1",
   "message": "{\"deviceId\":\"1\", \"value\":\"25\"}",
@@ -1217,7 +1215,6 @@
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":0}
 Properties:
@@ -1251,7 +1248,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":97}
 Properties:
@@ -1458,7 +1454,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":0}
 Properties:
@@ -1492,7 +1487,6 @@ Properties:&nbsp;
 <p style="padding-left: 90px;">&nbsp;</p>
 <div class="scriptcode">
 <div class="pluginEditHolder" pluginCommand="mceScriptCode">
-<span class="hidden">js</span>
 <pre class="hidden">Payload:
 {"deviceid":93,"value":97}
 Properties:
