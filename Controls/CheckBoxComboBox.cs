@@ -1,27 +1,32 @@
-﻿using System;
+﻿#region Copyright
+//=======================================================================================
+// Martin Lottering : 2007-10-27
+// --------------------------------
+// This is a usefull control in Filters. Allows you to save space and can replace a Grouped Box of CheckBoxes.
+// Currently used on the TasksFilter for TaskStatusses, which means the user can select which Statusses to include
+// in the "Search".
+// This control does not implement a CheckBoxListBox, instead it adds a wrapper for the normal ComboBox and Items. 
+// See the CheckBoxItems property.
+// ----------------
+// ALSO IMPORTANT: In Data Binding when setting the DataSource. The ValueMember must be a bool type property, because it will 
+// be binded to the Checked property of the displayed CheckBox. Also see the DisplayMemberSingleItem for more information.
+// ----------------
+// Extends the CodeProject PopupComboBox "Simple pop-up control" "http://www.codeproject.com/cs/miscctrl/simplepopup.asp"
+// by Lukasz Swiatkowski.
+//=======================================================================================
+#endregion
+
+#region Using Directives
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Reflection;
+using System.Reflection; 
+#endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    /// <summary>
-    /// Martin Lottering : 2007-10-27
-    /// --------------------------------
-    /// This is a usefull control in Filters. Allows you to save space and can replace a Grouped Box of CheckBoxes.
-    /// Currently used on the TasksFilter for TaskStatusses, which means the user can select which Statusses to include
-    /// in the "Search".
-    /// This control does not implement a CheckBoxListBox, instead it adds a wrapper for the normal ComboBox and Items. 
-    /// See the CheckBoxItems property.
-    /// ----------------
-    /// ALSO IMPORTANT: In Data Binding when setting the DataSource. The ValueMember must be a bool type property, because it will 
-    /// be binded to the Checked property of the displayed CheckBox. Also see the DisplayMemberSingleItem for more information.
-    /// ----------------
-    /// Extends the CodeProject PopupComboBox "Simple pop-up control" "http://www.codeproject.com/cs/miscctrl/simplepopup.asp"
-    /// by Lukasz Swiatkowski.
-    /// </summary>
     public partial class CheckBoxComboBox : PopupComboBox
     {
         #region CONSTRUCTOR
