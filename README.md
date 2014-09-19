@@ -59,7 +59,7 @@
 </ul>
 <div>That&rsquo;s why in June, I created a tool called <a href="http://windowsazurecat.com/2011/07/exploring-topics-and-queues-by-building-a-service-bus-explorer-toolpart-1/"> Service Bus Explorer</a> that allows a user to create, delete and test queues, topics, subscriptions, and rules. My tool was able to manage entities in the <a href="https://portal.appfabriclabs.com/Default.aspx">Labs Beta environment</a>. However, the new version of the <a href="http://msdn.microsoft.com/en-us/library/hh394905.aspx">Service Bus API</a> introduced some breaking changes, as you can read <a href="http://rickgaribay.net/archive/2011/09/14/azure-appfabric-service-bus-brokered-messaging-ga-amp-rude-ctp.aspx"> here</a>, so I built a new version of the Service Bus Explorer tool that introduces a significant amount of new features.</div>
 <h1>Service Bus Explorer</h1>
-<div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio</a> and requires the installation of the .NET Framework 4.0 and Microsoft Azure SDK for .NET. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test the Brokered Messaging topics, queues and subscriptions, Relay Messaging services, Notification Hubs and Events Hubs defined in a given Service Bus namespace.</div>
+<div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio</a> and requires the installation of the .NET Framework 4.5 and Microsoft Azure SDK for .NET. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test the Brokered Messaging topics, queues and subscriptions, Relay Messaging services, Notification Hubs and Events Hubs defined in a given Service Bus namespace.</div>
 <div style="text-align: center;">&nbsp;</div>
 <div><img style="display: block; margin-left: auto; margin-right: auto;" src="http://code.msdn.microsoft.com/site/view/file/45426/1/ServiceBusExplorer.jpg" alt="" width="403" height="388" /><p></div>
 <div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
@@ -1614,3 +1614,18 @@ Properties:&nbsp;
 <li>Updated Microsoft.ServiceBus.dll to version 2.4.1.1. </li>
 <li>Minor UI changes. </li>
 </ul>
+<p><strong>Update</strong>: 22 July 2014</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>Changed logging: now when you stop a queue, subscription, consumer group or partition listener, the log stops immediately. </li>
+<li>Updated Microsoft.ServiceBus.dll to version 2.4.1.1. </li>
+<li>Minor UI changes. </li>
+</ul>
+<p><strong>Update</strong>: 19 September 2014</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>The code of the Service Bus Explorer is now avalable on GitHub as a public project! </li>
+<li>Updated Microsoft.ServiceBus.dll to version 2.4.3.0. </li>
+<li>Added controls to specify the <strong>epoch</strong> and <strong>offsetInclusive </strong>parameters for the <strong>CreateReceiverAsync </strong>method of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubconsumergroup.aspx"> EventHubConsumerGroup </a>class. </li>
+</ul>
+<p><img id="125681" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125681/1/partitionlistenercontrol2.png" alt="" width="660" /></p>
