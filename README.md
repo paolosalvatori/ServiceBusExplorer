@@ -59,7 +59,7 @@
 </ul>
 <div>That&rsquo;s why in June, I created a tool called <a href="http://windowsazurecat.com/2011/07/exploring-topics-and-queues-by-building-a-service-bus-explorer-toolpart-1/"> Service Bus Explorer</a> that allows a user to create, delete and test queues, topics, subscriptions, and rules. My tool was able to manage entities in the <a href="https://portal.appfabriclabs.com/Default.aspx">Labs Beta environment</a>. However, the new version of the <a href="http://msdn.microsoft.com/en-us/library/hh394905.aspx">Service Bus API</a> introduced some breaking changes, as you can read <a href="http://rickgaribay.net/archive/2011/09/14/azure-appfabric-service-bus-brokered-messaging-ga-amp-rude-ctp.aspx"> here</a>, so I built a new version of the Service Bus Explorer tool that introduces a significant amount of new features.</div>
 <h1>Service Bus Explorer</h1>
-<div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio 2010</a> and requires the installation of the .<a href="http://www.microsoft.com/download/en/details.aspx?id=17718">NET Framework 4.0</a> and <a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=27421"> </a><a title="Windows Azure SDK for .NET" href="http://www.microsoft.com/download/en/details.aspx?id=28045">Windows Azure SDK for .NET</a>. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test  the Brokered and Relay messaging services defined in a given Service Bus namespace.</div>
+<div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio</a> and requires the installation of the .NET Framework 4.5 and Microsoft Azure SDK for .NET. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test the Brokered Messaging topics, queues and subscriptions, Relay Messaging services, Notification Hubs and Events Hubs defined in a given Service Bus namespace.</div>
 <div style="text-align: center;">&nbsp;</div>
 <div><img style="display: block; margin-left: auto; margin-right: auto;" src="http://code.msdn.microsoft.com/site/view/file/45426/1/ServiceBusExplorer.jpg" alt="" width="403" height="388" /><p></div>
 <div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
@@ -377,7 +377,7 @@
 <li>Implemented copy &amp; paste of messages from the <strong>Log </strong>listbox (Ctrl + C). </li>
 <li>Added a context menu to the <strong>Log </strong>listbox. </li>
 </ul>
-<p><img id="97217" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97217/1/log.png" alt="" width="660" /></p>
+<p><img id="97217" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97217/1/log.png" alt="" width="880" /></p>
 <ul>
 <li>The context menu allows the user to select the perform actions: &nbsp; 
 <ul>
@@ -393,11 +393,11 @@
 <ul>
 <li>The <strong>Service Bus Explorer 2.1</strong> supports&nbsp;for <strong>Service Bus for Windows Server 1.1</strong>. In particular, this version introduces the possibility to visualize the information comtained in the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagecountdetails.aspx"> MessageCountDetails </a>property of a <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.queuedescription_properties.aspx"> QueueDescription</a>, <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.topicdescription.aspx"> TopicDescription</a>, <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.subscriptiondescription.aspx"> SubscriptionDescription</a> object. </li>
 </ul>
-<p style="text-align: center;"><img id="97218" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97218/1/messagecountdetails.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="97218" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97218/1/messagecountdetails.png" alt="" width="880" /></p>
 <ul>
 <li>This functionality allows to clone and send the selected messages to a the same or alternative queue or topic in the <strong>Service Bus </strong>namespace. If you want to edit the payload, system properties or user-defined properties, you have to select, edit and send messages one at a time. In order to do so, double click a message in the DataGridView or right click the  message and click <strong>Repair and Resubmit Selected Message</strong> from the context menu. This opens up the following dialog that allows to modify and resubmit the message or to save the payload to a text file. </li>
 </ul>
-<p style="padding-left: 30px;"><img id="97221" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97221/1/repairsinglemessage.png" alt="" width="660" /></p>
+<p style="padding-left: 30px;"><img id="97221" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97221/1/repairsinglemessage.png" alt="" width="880" /></p>
 <p style="padding-left: 30px;"><strong>Important Note</strong>: the Service Bus does not allow to receive and delete a peeked <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.brokeredmessage.aspx"> BrokeredMessage</a> by <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.brokeredmessage.sequencenumber.aspx"> SequenceNumber</a>. Only deferred messages can by received by <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.brokeredmessage.sequencenumber.aspx"> SequenceNumber</a>.&nbsp;As a consequence, when editing and resubmitting a peeked message, there's no way to receive and delete the original copy.</p>
 <ul>
 <li>The <strong>Service Bus Explorer 2.1</strong> introduces support for <a href="http://www.windowsazure.com/en-us/documentation/services/notification-hubs/"> Notification Hubs</a>. See the following resources for more information on this topic: 
@@ -425,15 +425,15 @@
 </li>
 <li>The&nbsp;<strong>Create Notification Hub </strong>allows to define the path, credentials, and metadata for a new notification hub: </li>
 </ul>
-<p style="text-align: center;"><img id="97223" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97223/1/newhub.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="97223" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97223/1/newhub.png" alt="" width="880" /></p>
 <ul>
 <li>If you click an existing notification hub, you can view and edit credentials and metadata: </li>
 </ul>
-<p><img id="97224" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97224/1/notificationhub01.png" alt="" width="660" /></p>
+<p><img id="97224" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97224/1/notificationhub01.png" alt="" width="880" /></p>
 <ul>
 <li>The <strong>Authorization Rules</strong> tab allows to review or edit the<strong> Shared Access Policies</strong> for the selected notification hub. </li>
 </ul>
-<p><img id="97225" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97225/1/authorizationrules.png" alt="" width="660" /></p>
+<p><img id="97225" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97225/1/authorizationrules.png" alt="" width="880" /></p>
 <ul>
 <li>The <strong>Registrations </strong>buttons opens a a dialof that allows the registrations to query: </li>
 </ul>
@@ -448,7 +448,7 @@
 </li>
 <li>The <strong>Registrations </strong>tab allows to select one or multiple registrations from the <strong>DataGridView</strong>. </li>
 </ul>
-<p><img id="97227" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97227/1/registrations.png" alt="" width="660" /></p>
+<p><img id="97227" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97227/1/registrations.png" alt="" width="880" /></p>
 <ul>
 <li>The navigation control in the bottom of the registrations control allows to navigate through pages. </li>
 <li>The <strong>DataGridView&nbsp;</strong>context menu provides access to the following actions: 
@@ -471,7 +471,7 @@
 </ul>
 </li>
 </ul>
-<p><img id="97230" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97230/1/template.png" alt="" width="660" /></p>
+<p><img id="97230" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97230/1/template.png" alt="" width="880" /></p>
 <ul>
 <li>The&nbsp;<strong>Windows Phone&nbsp;</strong>tab allows to send native notifications to <strong>Windows Phone 8</strong> devices. 
 <ul>
@@ -490,8 +490,8 @@
 </ul>
 </li>
 </ul>
-<p><img id="97231" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97231/1/windowsphone.png" alt="" width="660" /></p>
-<p><img id="97232" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97232/1/windowsphonetile.png" alt="" width="660" /></p>
+<p><img id="97231" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97231/1/windowsphone.png" alt="" width="880" /></p>
+<p><img id="97232" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97232/1/windowsphonetile.png" alt="" width="880" /></p>
 <ul>
 <li>The&nbsp;<strong>Windows </strong>tab allows to send native notifications to&nbsp;<strong>Windows Store Apps</strong>&nbsp;running on<strong> Windows 8</strong> and <strong>Windows 8.1</strong>. 
 <ul>
@@ -509,8 +509,8 @@
 </ul>
 </li>
 </ul>
-<p><img id="97238" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97238/1/windows2.png" alt="" width="660" /></p>
-<p><img id="97233" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97233/1/windows.png" alt="" width="660" /></p>
+<p><img id="97238" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97238/1/windows2.png" alt="" width="880" /></p>
+<p><img id="97233" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97233/1/windows.png" alt="" width="880" /></p>
 <ul>
 <li>The&nbsp;<strong>Apple&nbsp;</strong>and&nbsp;<strong>Google&nbsp;</strong>tabs provides the ability to send, respectively,&nbsp;<strong>Apple&nbsp;</strong>and&nbsp;<strong>Gcm&nbsp;</strong>native notifications. For brevity, I omit the description of  the <strong>Apple </strong>tab as it works the same way as the <strong>Google</strong> one. 
 <ul>
@@ -520,11 +520,11 @@
 </ul>
 </li>
 </ul>
-<p><img id="97239" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97239/1/gcm.png" alt="" width="660" /></p>
+<p><img id="97239" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97239/1/gcm.png" alt="" width="880" /></p>
 <ul>
 <li>Added the possibility to select and resubmit multiple messages in a batch mode from the <strong>Messages</strong> and <strong>Deadletter</strong> tabs of queues and subscriptions. It's sufficient to select messages in the <strong>DataGridView</strong> as shown in the following picture, right click to show the context menu and choose <strong>Resubmit Selected Messages in Batch Mode</strong>. </li>
 </ul>
-<p><img id="97219" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97219/1/resubmitmultiplemessages.png" alt="" width="660" /></p>
+<p><img id="97219" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/97219/1/resubmitmultiplemessages.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Minor changes</strong> 
 <ul>
@@ -563,19 +563,19 @@
 <li>Fixed an error that added columns to message and deadletter datagridview every time the Update button was pressed.Fixed a error on CellDoubleClick for messages and deadletter datagridview that happened when double clicking a header cell.Improved the visualization  of sessions and added the possibility to sort sessions by column. </li>
 <li>Added sorting capability to messages and deadletter messages datagridview for queues and subscriptions.&nbsp;Click the column header to sort rows by the corresponfing property value in ASC or DESC order. </li>
 </ul>
-<p><img id="103826" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103826/1/messages.png" alt="" width="660" /></p>
+<p><img id="103826" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103826/1/messages.png" alt="" width="880" /></p>
 <ul>
 <li>Added sorting capability to sessions datagridview for queues and subscriptions.&nbsp;Click the column header to sort rows by the corresponfing property value in ASC or DESC order. </li>
 </ul>
-<p><img id="103828" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103828/1/sessions.png" alt="" width="660" /></p>
+<p><img id="103828" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103828/1/sessions.png" alt="" width="880" /></p>
 <ul>
 <li>Added sorting capability to registrations datagridview for notification hubs.&nbsp;Click the column header to sort rows by the corresponfing property value in ASC or DESC order. </li>
 </ul>
-<p><img id="103830" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103830/1/registrations3.png" alt="" width="660" /></p>
+<p><img id="103830" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103830/1/registrations3.png" alt="" width="880" /></p>
 <ul>
 <li>Introduced the possibility to define filter expression for peeked/received messages/deadletter messages. Click the button highlighted in the picture below to open a dialog and define a filtter expression using a SQL Expression (e.g. sys.Size &gt; 300 and  sys.Label='Service Bus Explorer' and City='Pisa'). For more information, see&nbsp;<a href="http://msdn.microsoft.com/en-us/library/windowsazure/microsoft.servicebus.messaging.sqlfilter.sqlexpression.aspx">SqlFilter.SqlExpression Property</a>. </li>
 </ul>
-<p><img id="103827" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103827/1/messages2.png" alt="" width="660" /></p>
+<p><img id="103827" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103827/1/messages2.png" alt="" width="880" /></p>
 <ul>
 <li>Introduced the possibility to define filter expression for peeked/received messages/deadletter messages. Click the button highlighted in the picture below to open a dialog and define a filtter expression using a SQL Expression on public and n on public  properties of RegistrationDescription class (e.g.&nbsp;PlatformType contains 'windows' and ExpirationTime &gt; '2014-2-5' and TagsString contains 'productservice'). The filter engine supports the following predicates: 
 <ul>
@@ -591,21 +591,21 @@
 </ul>
 </li>
 </ul>
-<p><img id="103831" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103831/1/registrations4.png" alt="" width="660" /></p>
+<p><img id="103831" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103831/1/registrations4.png" alt="" width="880" /></p>
 <ul>
 </ul>
 <ul>
 <li>Introduced support for TagExpressions introduced by Service Bus 2.2. When sending a notification, you can select the Tag Expression or Notification Tags to define, respectively, a tag expression (e.g. productservice &amp;&amp; (Italy || UK)) or a list of  tags. This feature is available only in the Service Bus Explorer 2.2. </li>
 </ul>
-<p><img id="103832" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103832/1/tagexpression.png" alt="" width="660" /></p>
+<p><img id="103832" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103832/1/tagexpression.png" alt="" width="880" /></p>
 <ul>
 <li>Introduced support for partitioned queues. For more information on partitioned entities, read<a href="http://blogs.msdn.com/b/windowsazure/archive/2013/10/29/partitioned-service-bus-queues-and-topics.aspx">Partitioned Service Bus Queues and Topics</a>.&nbsp;This  feature is available only in the Service Bus Explorer 2.2. </li>
 </ul>
-<p><img id="103833" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103833/1/partitionedqueue.png" alt="" width="660" /></p>
+<p><img id="103833" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103833/1/partitionedqueue.png" alt="" width="880" /></p>
 <ul>
 <li>Introduced support for partitioned topics. For more information on partitioned entities, read <a href="http://blogs.msdn.com/b/windowsazure/archive/2013/10/29/partitioned-service-bus-queues-and-topics.aspx"> Partitioned Service Bus Queues and Topics</a>.&nbsp;This feature is available only in the Service Bus Explorer 2.2. </li>
 </ul>
-<p><img id="103834" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103834/1/partitionedtopic.png" alt="" width="660" /></p>
+<p><img id="103834" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/103834/1/partitionedtopic.png" alt="" width="880" /></p>
 <p><strong>Update</strong>: 2 December 2013</p>
 <p>This version introduces the following updates:</p>
 <ul>
@@ -617,7 +617,7 @@
 <ul>
 <li>Introduced a new command to start one or more listeners for a given queue or subscription. Right click the queue or subscription and select, respectively, <strong>Create Queue Listerner</strong> or <strong>Create Subscription Listener</strong> from the context menu as shown in the following picture. </li>
 </ul>
-<p><img id="104717" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104717/1/listener04.png" alt="" width="660" /></p>
+<p><img id="104717" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104717/1/listener04.png" alt="" width="880" /></p>
 <ul>
 <li>In the listener dialog you can set the following properties: <ol>
 <li><a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.onmessageoptions.maxconcurrentcalls.aspx">MaxConcurrentCalls</a>: gets or sets the maximum number of concurrent calls to the callback the message pump should initiate. </li>
@@ -629,12 +629,12 @@
 <li>Verbose: enable or disable verbose mode when logging is enabled. </li>
 </ol> </li>
 </ul>
-<p><img id="104719" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104719/1/listener05.png" alt="" width="660" /></p>
-<p style="text-align: center;"><img id="104718" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104718/1/listener01.png" alt="" width="660" height="0" /></p>
+<p><img id="104719" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104719/1/listener05.png" alt="" width="880" /></p>
+<p style="text-align: center;"><img id="104718" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104718/1/listener01.png" alt="" width="880" height="0" /></p>
 <ul>
 <li>Press the <strong>Start </strong>button to start the listener.&nbsp; </li>
 </ul>
-<p><img id="104720" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104720/1/listener01.png" alt="" width="660" /></p>
+<p><img id="104720" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104720/1/listener01.png" alt="" width="880" /></p>
 <ul>
 <li>The <strong>Start </strong>button turns into the <strong>Stop </strong>button.&nbsp; </li>
 <li>Press the <strong>Stop </strong>button to stop the listener.&nbsp; </li>
@@ -643,15 +643,15 @@
 <li>Press the <strong>Messages</strong> tab to access messages.&nbsp; </li>
 <li>You can click s message row to access its payload, custom and system properties. </li>
 </ul>
-<p><img id="104722" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104722/1/listener02.png" alt="" width="660" /></p>
+<p><img id="104722" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104722/1/listener02.png" alt="" width="880" /></p>
 <ul>
 <li>Click the the magnifying glass button&nbsp;to define a filter expression for received messages using a SQL Expression (e.g. sys.Size &gt; 300 and sys.Label='Service Bus Explorer' and City='Pisa'). For more information, see&nbsp;<a href="http://msdn.microsoft.com/en-us/library/windowsazure/microsoft.servicebus.messaging.sqlfilter.sqlexpression.aspx">SqlFilter.SqlExpression  Property</a>. </li>
 </ul>
-<p><img id="104723" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104723/1/listener06.png" alt="" width="660" /></p>
+<p><img id="104723" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/104723/1/listener06.png" alt="" width="880" /></p>
 <ul>
 <li style="text-align: justify;">Double click a row or click <strong>Repair and Resubmit Message</strong> from the context menu to open a message in the a separate dialog. This functionality allows to clone and send the selected messages to a the same or alternative  queue or topic in the&nbsp;<strong>Service Bus&nbsp;</strong>namespace. If you want to edit the payload, system properties or user-defined properties, you have to select, edit and send messages one at a time. </li>
 </ul>
-<p><img id="105723" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/105723/1/listener03.png" alt="" width="660" /></p>
+<p><img id="105723" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/105723/1/listener03.png" alt="" width="880" /></p>
 <ul>
 <li>Minor changes: 
 <ul>
@@ -682,15 +682,15 @@
 <li>Fixed a bug in the <strong>SelectEntityForm</strong>: replaced <strong>TreeView.TopNode</strong> with <strong>TreeView.Nodes[0]</strong> </li>
 <li>Implemented support for the new&nbsp;<a href="http://msdn.microsoft.com/en-us/library/azure/microsoft.servicebus.messaging.queuedescription.forwarddeadletteredmessagesto.aspx">ForwardDeadLetteredMessagesTo</a> property of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.queuedescription.aspx"> QueueDescription</a> and&nbsp;<a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.subscriptiondescription.aspx">SubscriptionDescription</a>&nbsp;classes. </li>
 </ul>
-<p><img id="114913" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114913/1/forwarddeadlettermessages.png" alt="" width="660" /></p>
+<p><img id="114913" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114913/1/forwarddeadlettermessages.png" alt="" width="880" /></p>
 <ul>
 <li>Implemented batching support in the listener for queues and subscriptions. You can now specify a value for the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagereceiver.prefetchcount.aspx"> PrefetchCount</a> property used by the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagereceiver.aspx"> MessageReceiver</a> object used by the listener to prefetch multiple messages from a queue or subscription. This greatly improves the overall performance of the listener. Now you can also specify the value for the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagereceiver.mode.aspx"> Mode</a>&nbsp;property of the the&nbsp;<a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagereceiver.aspx">MessageReceiver</a>&nbsp;object used by the listener. </li>
 </ul>
-<p><img id="114914" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114914/1/listener.png" alt="" width="660" /></p>
+<p><img id="114914" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114914/1/listener.png" alt="" width="880" /></p>
 <ul>
 <li>Added the possibility to create a listener for <strong>session-aware queues</strong> and <strong>subscriptions </strong>(<a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.queuedescription.requiressession.aspx">RequiresSession</a> = true). The tool uses the&nbsp;<a href="http://msdn.microsoft.com/en-us/library/dn642578.aspx">RegisterSessionHandlerFactoryAsync</a>&nbsp;method  of a <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.queueclient.aspx"> QueueClient</a> or <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.subscriptionclient.aspx"> SubscriptionClient</a> object to register an asynchronous Session Handler Factory. For more information, see&nbsp;<a href="http://msdn.microsoft.com/en-us/library/dn632585.aspx">What's New in the Azure SDK 2.3 Release (April 2014)</a>. </li>
 </ul>
-<p><img id="114915" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114915/1/listenerrequiressession.png" alt="" width="660" /></p>
+<p><img id="114915" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/114915/1/listenerrequiressession.png" alt="" width="880" /></p>
 <ul>
 <li>Added the possibility to visualize the number of active and deadletter messages directly in the main treeview (see 1 and 2 in the figure below). The first number displays the valut of the&nbsp;<a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagecountdetails.activemessagecount.aspx">MessageCountDetails.ActiveMessageCount</a>&nbsp;property,  while the second number displays the value of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.messagecountdetails.deadlettermessagecount.aspx"> MessageCountDetails.DeadletterMessageCount</a> property.&nbsp; </li>
 </ul>
@@ -717,8 +717,8 @@
 <ul>
 <li>Connect Form now allows to select the type of entities that you want to load and manage in the selected namespace: </li>
 </ul>
-<p><img id="120275" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120275/1/connectform01.png" alt="" width="660" /></p>
-<p style="text-align: center;">&nbsp;<img id="120276" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120276/1/connectform02.png" alt="" width="660" /></p>
+<p><img id="120275" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120275/1/connectform01.png" alt="" width="880" /></p>
+<p style="text-align: center;">&nbsp;<img id="120276" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120276/1/connectform02.png" alt="" width="880" /></p>
 <ul>
 <li>You can specify a default value of the entities that you want to manage in the <strong>selectedEntities</strong> appSettings in the configuration file: </li>
 </ul>
@@ -743,7 +743,7 @@
 <ul>
 <li><strong>Event Hubs</strong>: this version of the tool introduces the support for a new entity called <strong>Event Hub</strong>&nbsp;and related entities, <strong>Consumer Groups</strong> and <strong>Partitions</strong>. </li>
 </ul>
-<p><img id="120279" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120279/1/eventhubs01.png" alt="" width="660" /></p>
+<p><img id="120279" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120279/1/eventhubs01.png" alt="" width="880" /></p>
 <ul>
 <li>The tool allows to perform the following actions on an <strong>Event Hub</strong>: 
 <ul>
@@ -759,7 +759,7 @@
 </ul>
 </li>
 </ul>
-<p><img id="120280" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120280/1/eventhubs02.png" alt="" width="660" /></p>
+<p><img id="120280" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120280/1/eventhubs02.png" alt="" width="880" /></p>
 <ul>
 <li>The tool allows to manage the <strong>Consumer Groups</strong> of a given <strong> Event Hub</strong>: </li>
 <li>Create Consumer Group 
@@ -774,7 +774,7 @@
 </ul>
 </li>
 </ul>
-<p style="text-align: center;"><img id="120281" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120281/1/consumergroups01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120281" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120281/1/consumergroups01.png" alt="" width="880" /></p>
 <ul>
 <li>The tool allows to manage the <strong>Partitions </strong>of a given <strong> Event Hub</strong>. Note: <strong>Partitions </strong>are located under <strong>Consumer Groups</strong> in the hierarchy of the entity TreeView: 
 <ul>
@@ -785,18 +785,18 @@
 </ul>
 </li>
 </ul>
-<p style="text-align: center;"><img id="120282" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120282/1/partitions01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120282" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120282/1/partitions01.png" alt="" width="880" /></p>
 <ul>
 <li>Added support for <strong>Notification Hubs</strong> and <strong>Event Hubs</strong> to entity <strong>Import &nbsp;&amp; Export</strong> functionalities. You can now import / export the definition of Notification Hubs and Event Hubs from / to XML file. </li>
 <li>The JSON serializer helper class is now based on <strong>Newtonsoft Json.Net</strong> library. </li>
 <li><span style="font-size: 10px;">Added support for the new </span><strong style="font-size: 10px;">BrokeredMessage.ForcePersistence</strong><span style="font-size: 10px;"> property to the testing UI of queues and &nbsp;topics.</span> </li>
 </ul>
-<p style="text-align: center;"><img id="120283" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120283/1/forcepersistence01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120283" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120283/1/forcepersistence01.png" alt="" width="880" /></p>
 <ul>
 <li><strong>File Templates</strong>: This version introduces the possibility to send binary files or messages based on JSON or XML Templates. This feature is available for queues, topics and event hubs. </li>
 <li>For example, when you select <strong>Send Messages </strong>menu item from the context menu of a queue and you select the <strong>Files</strong> tab, now you have 4 options available: </li>
 </ul>
-<p><img id="120284" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120284/1/filetemplates01.png" alt="" width="660" /></p>
+<p><img id="120284" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120284/1/filetemplates01.png" alt="" width="880" /></p>
 <p><strong>Options</strong>:</p>
 <ul>
 <li><strong>Text File</strong>: this option allows to select one or more text files. These files specify the payload of the outgoing messages (BrokeredMessage for queues and topics, EventData for event hubs), while the custom properties are defined in the grid  under the Message Properties control group. </li>
@@ -1249,7 +1249,7 @@ Properties:&nbsp;
 <ul>
 <li>BrokeredMessage generators can be selected in the <strong>Send Messages</strong> dialog or in the <strong>Test queue / topic in SDI / MDI</strong> control as selecting the <strong> Generator</strong> tab as shown in the figure below: </li>
 </ul>
-<p style="text-align: center;"><img id="120288" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120288/1/sendmessagestoeventhub.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120288" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120288/1/sendmessagestoeventhub.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Note</strong>: when this option is selected, the properties defined in the grid under the Message Properties control group are ignored. </li>
 </ul>
@@ -1323,15 +1323,15 @@ Properties:&nbsp;
 <ul>
 <li>In the <strong>Sender</strong> tab<strong> </strong>of the <strong>Send Messages</strong> dialog </li>
 </ul>
-<p><img id="120290" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120290/1/brokeredmessageinspector01.png" alt="" width="660" /></p>
+<p><img id="120290" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120290/1/brokeredmessageinspector01.png" alt="" width="880" /></p>
 <ul>
 <li>Under the <strong>Sender</strong> and <strong>Receiver</strong> tab in the <strong> Test queue / topic in SDI / MDI</strong> dialog: </li>
 </ul>
-<p style="text-align: center;"><img id="120291" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120291/1/brokeredmessageinspector02.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120291" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120291/1/brokeredmessageinspector02.png" alt="" width="880" /></p>
 <ul>
 <li>In the <strong>Listener</strong> dialog for a queue or subscription. </li>
 </ul>
-<p style="text-align: center;"><img id="120292" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120292/1/brokeredmessageinspector03.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120292" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120292/1/brokeredmessageinspector03.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Note</strong>: when resubmitting multiple messages, it's not possible to select a brokered message inspector </li>
 <li><strong>Listener Dialog for Queues and Subscriptions</strong>: the following features have been added to the Listener dialog for queues and subscriptions: 
@@ -1344,7 +1344,7 @@ Properties:&nbsp;
 </ul>
 </li>
 </ul>
-<p style="text-align: center;"><img id="120294" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120294/1/listener01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120294" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120294/1/listener01.png" alt="" width="880" /></p>
 <ul>
 <li><span style="font-size: 10px;"><strong>EventData Generators</strong>:&nbsp;this release introduces the possibility to extend the tool with extension components. In particular, EventData generators are components that allows to create a configurable amount  of EventData objects to send to an event hub.</span> </li>
 <li>These components needs to implement the <strong>IEventDataGenerator</strong> interface defined by the tool: </li>
@@ -1472,7 +1472,7 @@ Properties:&nbsp;
 <ul>
 <li>EventData generators can be selected in the <strong>Send Messages</strong> dialog or in the <strong>Test queue / topic in SDI / MDI</strong> control as selecting the <strong> Generator</strong> tab as shown in the figure below: </li>
 </ul>
-<p style="text-align: center;"><img id="120299" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120299/1/sendmessagestoeventhub.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120299" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120299/1/sendmessagestoeventhub.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Note</strong>: when this option is selected, the properties defined in the grid under the Message Properties control group are ignored. </li>
 <li><strong>EventData Inspectors</strong>:&nbsp;this release of the tool now allows to create an EventData inspector that can be used to intercept and eventually modify any outgoing or upcoming EventData sent to an event hub or received from an event hub partition. </li>
@@ -1551,11 +1551,11 @@ Properties:&nbsp;
 <ul>
 <li>In the <strong>Sender</strong> tab<strong> </strong>of the <strong>Send Messages</strong> dialog </li>
 </ul>
-<p style="text-align: center;"><img id="120300" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120300/1/eventdatainspector01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120300" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120300/1/eventdatainspector01.png" alt="" width="880" /></p>
 <ul>
 <li>In the <strong>Listener</strong> dialog for a queue or subscription. </li>
 </ul>
-<p style="text-align: center;"><img id="120301" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120301/1/eventdatainspector02.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120301" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120301/1/eventdatainspector02.png" alt="" width="880" /></p>
 <p>&nbsp;</p>
 <ul>
 <li><strong>Listener Dialog for Consumer Groups or individual Partitions</strong>:&nbsp;this release of the tool allows to create a listener to receive even data messages from all the partitions of an event hub or just from an single partition: 
@@ -1590,15 +1590,15 @@ Properties:&nbsp;
 </ul>
 </li>
 </ul>
-<p style="text-align: center;"><img id="120302" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120302/1/partitionlisterner01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120302" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120302/1/partitionlisterner01.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Message Payload Visualization</strong>:&nbsp;The font used to show the payload of messages has been hanged from <strong>Microsoft Sans Serif</strong> to <strong>Consolas</strong>. </li>
 </ul>
-<p style="text-align: center;"><img id="120303" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120303/1/consolas.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120303" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120303/1/consolas.png" alt="" width="880" /></p>
 <ul>
 <li><strong>Binary Messages support</strong>:&nbsp;The tool now supports the possibility to send binary files (more on this below in the file template section). Likewise, the tool adds support to display binary files in hexadecimal format. The empiric rule  to establish if the payload of a BrokeredMessage or EventData object is binay is the presence of control characters other than line feed, carriage return and horizontal tab. </li>
 </ul>
-<p style="text-align: center;"><img id="120304" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120304/1/binaryfiles01.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="120304" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/120304/1/binaryfiles01.png" alt="" width="880" /></p>
 <ul>
 <li>Other improvements 
 <ul>
@@ -1614,3 +1614,18 @@ Properties:&nbsp;
 <li>Updated Microsoft.ServiceBus.dll to version 2.4.1.1. </li>
 <li>Minor UI changes. </li>
 </ul>
+<p><strong>Update</strong>: 22 July 2014</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>Changed logging: now when you stop a queue, subscription, consumer group or partition listener, the log stops immediately. </li>
+<li>Updated Microsoft.ServiceBus.dll to version 2.4.1.1. </li>
+<li>Minor UI changes. </li>
+</ul>
+<p><strong>Update</strong>: 19 September 2014</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>The code of the Service Bus Explorer is now avalable on GitHub as a public project! </li>
+<li>Updated Microsoft.ServiceBus.dll to version 2.4.3.0. </li>
+<li>Added controls to specify the <strong>epoch</strong> and <strong>offsetInclusive </strong>parameters for the <strong>CreateReceiverAsync </strong>method of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubconsumergroup.aspx"> EventHubConsumerGroup </a>class. </li>
+</ul>
+<p><img id="125681" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125681/1/partitionlistenercontrol2.png" alt="" width="880" /></p>
