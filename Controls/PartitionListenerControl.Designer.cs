@@ -48,6 +48,9 @@
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.grouperOptions = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.checkBoxOffsetInclusive = new System.Windows.Forms.CheckBox();
+            this.txtEpoch = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
+            this.lblEpoch = new System.Windows.Forms.Label();
             this.txtCheckpointCount = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
             this.lblCheckpointCount = new System.Windows.Forms.Label();
             this.checkBoxCheckpoint = new System.Windows.Forms.CheckBox();
@@ -513,6 +516,9 @@
             this.grouperOptions.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
             this.grouperOptions.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperOptions.BorderThickness = 1F;
+            this.grouperOptions.Controls.Add(this.checkBoxOffsetInclusive);
+            this.grouperOptions.Controls.Add(this.txtEpoch);
+            this.grouperOptions.Controls.Add(this.lblEpoch);
             this.grouperOptions.Controls.Add(this.txtCheckpointCount);
             this.grouperOptions.Controls.Add(this.lblCheckpointCount);
             this.grouperOptions.Controls.Add(this.checkBoxCheckpoint);
@@ -546,14 +552,46 @@
             this.grouperOptions.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperOptions_CustomPaint);
             this.grouperOptions.Resize += new System.EventHandler(this.grouperOptions_Resize);
             // 
+            // checkBoxOffsetInclusive
+            // 
+            this.checkBoxOffsetInclusive.AutoSize = true;
+            this.checkBoxOffsetInclusive.Checked = true;
+            this.checkBoxOffsetInclusive.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxOffsetInclusive.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxOffsetInclusive.Location = new System.Drawing.Point(400, 80);
+            this.checkBoxOffsetInclusive.Name = "checkBoxOffsetInclusive";
+            this.checkBoxOffsetInclusive.Size = new System.Drawing.Size(99, 17);
+            this.checkBoxOffsetInclusive.TabIndex = 10;
+            this.checkBoxOffsetInclusive.Text = "Offset Inclusive";
+            this.checkBoxOffsetInclusive.UseVisualStyleBackColor = true;
+            // 
+            // txtEpoch
+            // 
+            this.txtEpoch.AllowSpace = false;
+            this.txtEpoch.Location = new System.Drawing.Point(400, 48);
+            this.txtEpoch.Name = "txtEpoch";
+            this.txtEpoch.Size = new System.Drawing.Size(88, 20);
+            this.txtEpoch.TabIndex = 4;
+            this.txtEpoch.Text = "0";
+            // 
+            // lblEpoch
+            // 
+            this.lblEpoch.AutoSize = true;
+            this.lblEpoch.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEpoch.Location = new System.Drawing.Point(400, 32);
+            this.lblEpoch.Name = "lblEpoch";
+            this.lblEpoch.Size = new System.Drawing.Size(41, 13);
+            this.lblEpoch.TabIndex = 147;
+            this.lblEpoch.Text = "Epoch:";
+            // 
             // txtCheckpointCount
             // 
             this.txtCheckpointCount.AllowSpace = false;
             this.txtCheckpointCount.Enabled = false;
-            this.txtCheckpointCount.Location = new System.Drawing.Point(472, 48);
+            this.txtCheckpointCount.Location = new System.Drawing.Point(496, 48);
             this.txtCheckpointCount.Name = "txtCheckpointCount";
-            this.txtCheckpointCount.Size = new System.Drawing.Size(96, 20);
-            this.txtCheckpointCount.TabIndex = 146;
+            this.txtCheckpointCount.Size = new System.Drawing.Size(88, 20);
+            this.txtCheckpointCount.TabIndex = 5;
             this.txtCheckpointCount.Text = "10";
             this.txtCheckpointCount.TextChanged += new System.EventHandler(this.txtCheckpointCount_TextChanged);
             // 
@@ -561,7 +599,7 @@
             // 
             this.lblCheckpointCount.AutoSize = true;
             this.lblCheckpointCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCheckpointCount.Location = new System.Drawing.Point(472, 32);
+            this.lblCheckpointCount.Location = new System.Drawing.Point(496, 32);
             this.lblCheckpointCount.Name = "lblCheckpointCount";
             this.lblCheckpointCount.Size = new System.Drawing.Size(95, 13);
             this.lblCheckpointCount.TabIndex = 145;
@@ -572,10 +610,10 @@
             this.checkBoxCheckpoint.AutoSize = true;
             this.checkBoxCheckpoint.Enabled = false;
             this.checkBoxCheckpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxCheckpoint.Location = new System.Drawing.Point(472, 80);
+            this.checkBoxCheckpoint.Location = new System.Drawing.Point(504, 80);
             this.checkBoxCheckpoint.Name = "checkBoxCheckpoint";
             this.checkBoxCheckpoint.Size = new System.Drawing.Size(80, 17);
-            this.checkBoxCheckpoint.TabIndex = 144;
+            this.checkBoxCheckpoint.TabIndex = 11;
             this.checkBoxCheckpoint.Text = "Checkpoint";
             this.checkBoxCheckpoint.UseVisualStyleBackColor = true;
             this.checkBoxCheckpoint.CheckedChanged += new System.EventHandler(this.checkBoxCheckpoint_CheckedChanged);
@@ -584,7 +622,7 @@
             // 
             this.lblPrefetchCount.AutoSize = true;
             this.lblPrefetchCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblPrefetchCount.Location = new System.Drawing.Point(248, 32);
+            this.lblPrefetchCount.Location = new System.Drawing.Point(208, 32);
             this.lblPrefetchCount.Name = "lblPrefetchCount";
             this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
             this.lblPrefetchCount.TabIndex = 138;
@@ -593,48 +631,48 @@
             // txtReceiveTimeout
             // 
             this.txtReceiveTimeout.AllowSpace = false;
-            this.txtReceiveTimeout.Location = new System.Drawing.Point(136, 48);
+            this.txtReceiveTimeout.Location = new System.Drawing.Point(112, 48);
             this.txtReceiveTimeout.Name = "txtReceiveTimeout";
-            this.txtReceiveTimeout.Size = new System.Drawing.Size(96, 20);
-            this.txtReceiveTimeout.TabIndex = 143;
+            this.txtReceiveTimeout.Size = new System.Drawing.Size(88, 20);
+            this.txtReceiveTimeout.TabIndex = 1;
             this.txtReceiveTimeout.Text = "30";
             // 
             // lblReceiveTimeout
             // 
             this.lblReceiveTimeout.AutoSize = true;
             this.lblReceiveTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiveTimeout.Location = new System.Drawing.Point(136, 32);
+            this.lblReceiveTimeout.Location = new System.Drawing.Point(112, 32);
             this.lblReceiveTimeout.Name = "lblReceiveTimeout";
-            this.lblReceiveTimeout.Size = new System.Drawing.Size(117, 13);
+            this.lblReceiveTimeout.Size = new System.Drawing.Size(85, 13);
             this.lblReceiveTimeout.TabIndex = 142;
-            this.lblReceiveTimeout.Text = "Receive Timeout (sec):";
+            this.lblReceiveTimeout.Text = "Rcv Timeout (s):";
             // 
             // txtOffset
             // 
             this.txtOffset.AllowSpace = false;
-            this.txtOffset.Location = new System.Drawing.Point(360, 48);
+            this.txtOffset.Location = new System.Drawing.Point(304, 48);
             this.txtOffset.Name = "txtOffset";
-            this.txtOffset.Size = new System.Drawing.Size(96, 20);
-            this.txtOffset.TabIndex = 141;
+            this.txtOffset.Size = new System.Drawing.Size(88, 20);
+            this.txtOffset.TabIndex = 3;
             this.txtOffset.Text = "-1";
             // 
             // lblOffset
             // 
             this.lblOffset.AutoSize = true;
             this.lblOffset.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblOffset.Location = new System.Drawing.Point(360, 32);
+            this.lblOffset.Location = new System.Drawing.Point(304, 32);
             this.lblOffset.Name = "lblOffset";
-            this.lblOffset.Size = new System.Drawing.Size(38, 13);
+            this.lblOffset.Size = new System.Drawing.Size(77, 13);
             this.lblOffset.TabIndex = 140;
-            this.lblOffset.Text = "Offset:";
+            this.lblOffset.Text = "Starting Offset:";
             // 
             // txtPrefetchCount
             // 
             this.txtPrefetchCount.AllowSpace = false;
-            this.txtPrefetchCount.Location = new System.Drawing.Point(248, 48);
+            this.txtPrefetchCount.Location = new System.Drawing.Point(208, 48);
             this.txtPrefetchCount.Name = "txtPrefetchCount";
-            this.txtPrefetchCount.Size = new System.Drawing.Size(96, 20);
-            this.txtPrefetchCount.TabIndex = 139;
+            this.txtPrefetchCount.Size = new System.Drawing.Size(88, 20);
+            this.txtPrefetchCount.TabIndex = 2;
             this.txtPrefetchCount.Text = "100";
             // 
             // checkBoxGraph
@@ -643,10 +681,10 @@
             this.checkBoxGraph.Checked = true;
             this.checkBoxGraph.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxGraph.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxGraph.Location = new System.Drawing.Point(360, 80);
+            this.checkBoxGraph.Location = new System.Drawing.Point(304, 80);
             this.checkBoxGraph.Name = "checkBoxGraph";
             this.checkBoxGraph.Size = new System.Drawing.Size(55, 17);
-            this.checkBoxGraph.TabIndex = 30;
+            this.checkBoxGraph.TabIndex = 9;
             this.checkBoxGraph.Text = "Graph";
             this.checkBoxGraph.UseVisualStyleBackColor = true;
             this.checkBoxGraph.CheckedChanged += new System.EventHandler(this.checkBoxGraph_CheckedChanged);
@@ -657,10 +695,10 @@
             this.checkBoxLogging.Checked = true;
             this.checkBoxLogging.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxLogging.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxLogging.Location = new System.Drawing.Point(24, 80);
+            this.checkBoxLogging.Location = new System.Drawing.Point(16, 80);
             this.checkBoxLogging.Name = "checkBoxLogging";
             this.checkBoxLogging.Size = new System.Drawing.Size(64, 17);
-            this.checkBoxLogging.TabIndex = 27;
+            this.checkBoxLogging.TabIndex = 6;
             this.checkBoxLogging.Text = "Logging";
             this.checkBoxLogging.UseVisualStyleBackColor = true;
             this.checkBoxLogging.CheckedChanged += new System.EventHandler(this.checkBoxLogging_CheckedChanged);
@@ -671,10 +709,10 @@
             this.checkBoxTrackMessages.Checked = true;
             this.checkBoxTrackMessages.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxTrackMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxTrackMessages.Location = new System.Drawing.Point(248, 80);
+            this.checkBoxTrackMessages.Location = new System.Drawing.Point(208, 80);
             this.checkBoxTrackMessages.Name = "checkBoxTrackMessages";
             this.checkBoxTrackMessages.Size = new System.Drawing.Size(68, 17);
-            this.checkBoxTrackMessages.TabIndex = 29;
+            this.checkBoxTrackMessages.TabIndex = 8;
             this.checkBoxTrackMessages.Text = "Tracking";
             this.checkBoxTrackMessages.UseVisualStyleBackColor = true;
             this.checkBoxTrackMessages.CheckedChanged += new System.EventHandler(this.checkBoxTrackMessages_CheckedChanged);
@@ -683,10 +721,10 @@
             // 
             this.checkBoxVerbose.AutoSize = true;
             this.checkBoxVerbose.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxVerbose.Location = new System.Drawing.Point(136, 80);
+            this.checkBoxVerbose.Location = new System.Drawing.Point(112, 80);
             this.checkBoxVerbose.Name = "checkBoxVerbose";
             this.checkBoxVerbose.Size = new System.Drawing.Size(65, 17);
-            this.checkBoxVerbose.TabIndex = 28;
+            this.checkBoxVerbose.TabIndex = 7;
             this.checkBoxVerbose.Text = "Verbose";
             this.checkBoxVerbose.UseVisualStyleBackColor = true;
             this.checkBoxVerbose.CheckedChanged += new System.EventHandler(this.checkBoxVerbose_CheckedChanged);
@@ -694,10 +732,10 @@
             // txtRefreshInformation
             // 
             this.txtRefreshInformation.AllowSpace = false;
-            this.txtRefreshInformation.Location = new System.Drawing.Point(24, 48);
+            this.txtRefreshInformation.Location = new System.Drawing.Point(16, 48);
             this.txtRefreshInformation.Name = "txtRefreshInformation";
-            this.txtRefreshInformation.Size = new System.Drawing.Size(96, 20);
-            this.txtRefreshInformation.TabIndex = 26;
+            this.txtRefreshInformation.Size = new System.Drawing.Size(88, 20);
+            this.txtRefreshInformation.TabIndex = 0;
             this.txtRefreshInformation.Text = "30";
             this.txtRefreshInformation.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
@@ -705,11 +743,11 @@
             // 
             this.lblRefreshInformation.AutoSize = true;
             this.lblRefreshInformation.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRefreshInformation.Location = new System.Drawing.Point(24, 32);
+            this.lblRefreshInformation.Location = new System.Drawing.Point(16, 32);
             this.lblRefreshInformation.Name = "lblRefreshInformation";
-            this.lblRefreshInformation.Size = new System.Drawing.Size(111, 13);
+            this.lblRefreshInformation.Size = new System.Drawing.Size(99, 13);
             this.lblRefreshInformation.TabIndex = 25;
-            this.lblRefreshInformation.Text = "Refresh Interval (sec):";
+            this.lblRefreshInformation.Text = "Refresh Interval (s):";
             // 
             // tabPageEventData
             // 
@@ -1163,5 +1201,8 @@
         private System.Windows.Forms.Label lblReceiverInspector;
         private System.Windows.Forms.ContextMenuStrip partitionInformationContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem copyPartitionInformationToClipboardMenuItem;
+        private NumericTextBox txtEpoch;
+        private System.Windows.Forms.Label lblEpoch;
+        private System.Windows.Forms.CheckBox checkBoxOffsetInclusive;
     }
 }

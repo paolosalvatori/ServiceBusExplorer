@@ -101,6 +101,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string AverageDurationTooltip = "The average duration of receive operation in seconds.";
         private const string KbPerSecTooltip = "The average number of KB received per second.";
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
+        private const string EpochTooltip = "The epoch value. The service uses this value to enforce partition/lease ownership.";
+        private const string OffsetInclusiveTooltip = "if set to true, the Starting Offset is treated as an inclusive offset meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.";
 
         //***************************
         // Constants
@@ -119,7 +121,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly int partitionCount;
         private bool sorting;
         private readonly SortableBindingList<EventData> eventDataBindingList = new SortableBindingList<EventData> { AllowNew = false, AllowEdit = false, AllowRemove = false };
-        private readonly EventHubDescription eventHubDescription;
         private readonly ConsumerGroupDescription consumerGroupDescription;
         private readonly IList<PartitionDescription> partitionDescriptions;
         private readonly BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
@@ -146,6 +147,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private bool graph;
         private bool checkpoint;
         private IEventDataInspector receiverEventDataInspector;
+        private EventHubDescription eventHubDescription ;
         #endregion
 
         #region Private Static Fields
@@ -164,6 +166,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Constructors
         public PartitionListenerControl()
         {
+            eventHubDescription = null;
         }
 
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
@@ -220,10 +223,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             // Add data to scale combobox
             object[] scaleValues = { (double)1000, (double)100, (double)10, (double)1, 0.1, 0.01, 0.001 };
-            cboAverageDuration.Items.AddRange(scaleValues);
+            object[] scaleValues2 = { (double)10000, (double)1000, (double)100, (double)10, (double)1, 0.1, 0.01, 0.001 };
+            cboAverageDuration.Items.AddRange(scaleValues2);
             cboEventDataPerSecond.Items.AddRange(scaleValues);
             cboMessageSizePerSecond.Items.AddRange(scaleValues);
-            cboAverageDuration.SelectedIndex = 3;
+            cboAverageDuration.SelectedIndex = 4;
             cboEventDataPerSecond.SelectedIndex = 3;
             cboMessageSizePerSecond.SelectedIndex = 3;
             
@@ -310,6 +314,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(txtReceiveTimeout, ReceiveTimeoutTooltip);
             toolTip.SetToolTip(txtPrefetchCount, PrefetchCountTooltip);
             toolTip.SetToolTip(txtOffset, OffsetTooltip);
+            toolTip.SetToolTip(txtEpoch, EpochTooltip);
             toolTip.SetToolTip(txtCheckpointCount, CheckpointCountTooltip);
             
             toolTip.SetToolTip(checkBoxLogging, LoggingTooltip);
@@ -317,6 +322,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(checkBoxTrackMessages, TrackingTooltip);
             toolTip.SetToolTip(checkBoxGraph, GraphTooltip);
             toolTip.SetToolTip(checkBoxCheckpoint, CheckpointAtReceiveTimeoutTooltip);
+            toolTip.SetToolTip(checkBoxOffsetInclusive, OffsetInclusiveTooltip);
 
             toolTip.SetToolTip(txtEventDataTotal, EventsTotalTooltip);
             toolTip.SetToolTip(txtEventDataPerSecond, EventsPerSecondTooltip);
@@ -326,6 +332,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(cboEventDataPerSecond, ScaleTooltip);
             toolTip.SetToolTip(cboAverageDuration, ScaleTooltip);
             toolTip.SetToolTip(cboMessageSizePerSecond, ScaleTooltip);
+            
 
             propertyListView.ContextMenuStrip = partitionInformationContextMenuStrip;
 
@@ -756,7 +763,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                    StringComparison.InvariantCultureIgnoreCase) == 0
                                                                    ? eventHubClient.GetDefaultConsumerGroup()
                                                                    : eventHubClient.GetConsumerGroup(consumerGroupDescription.Name);
-                                var eventHubReceiver = await consumerGroup.CreateReceiverAsync(description.PartitionId, txtOffset.IntegerValue);
+                                var epoch = txtEpoch.IntegerValue;
+                                var eventHubReceiver = epoch == 0 ? 
+                                                        await consumerGroup.CreateReceiverAsync(description.PartitionId, txtOffset.Text, checkBoxOffsetInclusive.Checked) :
+                                                        await consumerGroup.CreateReceiverAsync(description.PartitionId, txtOffset.Text, checkBoxOffsetInclusive.Checked, epoch);
                                 eventHubReceiver.PrefetchCount = txtPrefetchCount.IntegerValue;
                                 var received = 0;
                                 EventData previousEventData = null;
@@ -968,26 +978,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void grouperOptions_Resize(object sender, EventArgs e)
         {
-            var width = (grouperOptions.Size.Width - 96) / 5; 
+            var width = (grouperOptions.Size.Width - 72) / 6; 
 
             txtRefreshInformation.Size = new Size(width, txtRefreshInformation.Size.Height);
             txtReceiveTimeout.Size = new Size(width, txtReceiveTimeout.Size.Height);
             txtPrefetchCount.Size = new Size(width, txtPrefetchCount.Size.Height);
             txtOffset.Size = new Size(width, txtOffset.Size.Height);
+            txtEpoch.Size = new Size(width, txtOffset.Size.Height);
+            txtCheckpointCount.Size = new Size(width, txtPrefetchCount.Size.Height);
 
-            txtReceiveTimeout.Location = new Point(width + 32, txtReceiveTimeout.Location.Y);
-            lblReceiveTimeout.Location = new Point(width + 32, lblReceiveTimeout.Location.Y);
-            txtPrefetchCount.Location = new Point(2 * width + 48, txtPrefetchCount.Location.Y);
-            lblPrefetchCount.Location = new Point(2 * width + 48, lblPrefetchCount.Location.Y);
-            txtOffset.Location = new Point(3 * width + 64, txtOffset.Location.Y);
-            lblOffset.Location = new Point(3 * width + 64, lblOffset.Location.Y);
-            txtCheckpointCount.Location = new Point(4 * width + 80, txtCheckpointCount.Location.Y);
-            lblCheckpointCount.Location = new Point(4 * width + 80, lblCheckpointCount.Location.Y);
-
-            checkBoxVerbose.Location = new Point(width + 32, checkBoxVerbose.Location.Y);
-            checkBoxTrackMessages.Location = new Point(2 * width + 48, checkBoxTrackMessages.Location.Y);
-            checkBoxGraph.Location = new Point(3 * width + 64, checkBoxGraph.Location.Y);
-            checkBoxCheckpoint.Location = new Point(4 * width + 80, checkBoxCheckpoint.Location.Y);
+            txtReceiveTimeout.Location = new Point(width + 24, txtReceiveTimeout.Location.Y);
+            lblReceiveTimeout.Location = new Point(width + 24, lblReceiveTimeout.Location.Y);
+            txtPrefetchCount.Location = new Point(2 * width + 32, txtPrefetchCount.Location.Y);
+            lblPrefetchCount.Location = new Point(2 * width + 32, lblPrefetchCount.Location.Y);
+            txtOffset.Location = new Point(3 * width + 40, txtOffset.Location.Y);
+            lblOffset.Location = new Point(3 * width + 40, lblOffset.Location.Y);
+            txtEpoch.Location = new Point(4 * width + 48, txtEpoch.Location.Y);
+            lblEpoch.Location = new Point(4 * width + 48, lblEpoch.Location.Y);
+            txtCheckpointCount.Location = new Point(5 * width + 56, txtCheckpointCount.Location.Y);
+            lblCheckpointCount.Location = new Point(5 * width + 56, lblCheckpointCount.Location.Y);
+           
+            checkBoxVerbose.Location = new Point(width + 24, checkBoxVerbose.Location.Y);
+            checkBoxTrackMessages.Location = new Point(2 * width + 32, checkBoxTrackMessages.Location.Y);
+            checkBoxGraph.Location = new Point(3 * width + 40, checkBoxGraph.Location.Y);
+            checkBoxOffsetInclusive.Location = new Point(4 * width + 48, checkBoxGraph.Location.Y);
+            checkBoxCheckpoint.Location = new Point(5 * width + 56, checkBoxCheckpoint.Location.Y);
         }
 
         private static void textBox_GotFocus(object sender, EventArgs e)
