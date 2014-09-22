@@ -1637,5 +1637,5 @@ Properties:&nbsp;
 <li>Changed the labels under the&nbsp;he&nbsp;<strong>Events&nbsp;</strong>tab of the&nbsp;<strong>PartitionListenerControl</strong>. </li>
 <li>Changed the default value of the <strong>Epoch </strong>textbox from 0 to -1. </li>
 </ul>
-<p style="text-align: center;"><img id="125822" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125822/1/sequencenumber.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="125822" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125822/1/sequencenumber.png" alt="" width="880" /></p>
 <p>&nbsp;</p>
