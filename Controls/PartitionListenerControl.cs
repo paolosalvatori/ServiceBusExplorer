@@ -59,6 +59,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Texts
         //***************************
         private const string PartitionKey = "PartitionKey";
+        private const string SequenceNumber = "SequenceNumber";
         private const string Offset = "Offset";
         private const string EnqueuedTimeUtc = "EnqueuedTimeUtc";
         private const string Start = "Start";
@@ -260,7 +261,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             };
             eventDataDataGridView.Columns.Add(textBoxColumn);
 
-            // Create the Size column
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumber,
+                Name = SequenceNumber,
+                Width = 52
+            };
+            eventDataDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Offset column
             textBoxColumn = new DataGridViewTextBoxColumn
             {
                 DataPropertyName = Offset,
@@ -585,10 +595,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     width -= verticalScrollbar.Width;
                 }
-                var columnWidth = width / 3;
+                var columnWidth = width / 4;
                 dataGridView.Columns[0].Width = columnWidth;
                 dataGridView.Columns[1].Width = columnWidth;
-                dataGridView.Columns[2].Width = columnWidth + (width - (columnWidth * 3));
+                dataGridView.Columns[2].Width = columnWidth;
+                dataGridView.Columns[3].Width = columnWidth + (width - (columnWidth * 4));
             }
             finally
             {

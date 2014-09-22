@@ -572,7 +572,7 @@
             this.txtEpoch.Name = "txtEpoch";
             this.txtEpoch.Size = new System.Drawing.Size(88, 20);
             this.txtEpoch.TabIndex = 4;
-            this.txtEpoch.Text = "0";
+            this.txtEpoch.Text = "-1";
             // 
             // lblEpoch
             // 
@@ -891,7 +891,7 @@
             this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageText.ForeColor = System.Drawing.Color.White;
             this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Events Text";
+            this.grouperMessageText.GroupTitle = "Event Text";
             this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageText.Name = "grouperMessageText";
             this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
@@ -931,7 +931,7 @@
             this.grouperEventDataCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperEventDataCustomProperties.ForeColor = System.Drawing.Color.White;
             this.grouperEventDataCustomProperties.GroupImage = null;
-            this.grouperEventDataCustomProperties.GroupTitle = "Events Custom Properties";
+            this.grouperEventDataCustomProperties.GroupTitle = "Event Custom Properties";
             this.grouperEventDataCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperEventDataCustomProperties.Name = "grouperEventDataCustomProperties";
             this.grouperEventDataCustomProperties.Padding = new System.Windows.Forms.Padding(20);
@@ -987,7 +987,7 @@
             this.grouperMessageProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageProperties.ForeColor = System.Drawing.Color.White;
             this.grouperMessageProperties.GroupImage = null;
-            this.grouperMessageProperties.GroupTitle = "Events Properties";
+            this.grouperMessageProperties.GroupTitle = "Event Properties";
             this.grouperMessageProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageProperties.Name = "grouperMessageProperties";
             this.grouperMessageProperties.Padding = new System.Windows.Forms.Padding(20);
