@@ -70,7 +70,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Messages
         //***************************
         private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
-        private const string EventDataSuccessfullyReceived = "Event received. PartitionKey=[{0}] Offset=[{1}] EnqueuedTimeUtc=[{2}]";
+        private const string EventDataSuccessfullyReceived = "Event received. PartitionKey=[{0}] SequenceNumber=[{1}] Offset=[{2}] EnqueuedTimeUtc=[{3}]";
         private const string CheckPointExecuted = "Checkpoint. PartitionId=[{0}]";
         private const string ConnectionStringCannotBeNull = "The namespace connection string cannot be null.";
         private const string SelectEventDataInspector = "Select an EventData inspector...";
@@ -811,8 +811,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                         string.IsNullOrWhiteSpace(eventData.PartitionKey)
                                                                             ? NullValue
                                                                             : eventData.PartitionKey,
-                                                                        eventData.Offset,
-                                                                        eventData.EnqueuedTimeUtc));
+                                                                            eventData.SequenceNumber,
+                                                                            eventData.Offset,
+                                                                            eventData.EnqueuedTimeUtc));
                                         if (verbose)
                                         {
                                             serviceBusHelper.GetMessageAndProperties(builder, eventData);
