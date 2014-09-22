@@ -1629,3 +1629,13 @@ Properties:&nbsp;
 <li>Added controls to specify the <strong>epoch</strong> and <strong>offsetInclusive </strong>parameters for the <strong>CreateReceiverAsync </strong>method of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubconsumergroup.aspx"> EventHubConsumerGroup </a>class. </li>
 </ul>
 <p><img id="125681" style="display: block; margin-left: auto; margin-right: auto;" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125681/1/partitionlistenercontrol2.png" alt="" width="880" /></p>
+<p><strong>Update</strong>: 22 September 2014</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>Added <strong>SequenceNumber </strong>column to the data grid under the <strong> Events </strong>tab of the <strong>PartitionListenerControl</strong>. </li>
+<li>Added <strong>SequenceNumber</strong> to the log control &nbsp;of the <strong> PartitionListenerControl</strong>. </li>
+<li>Changed the labels under the&nbsp;he&nbsp;<strong>Events&nbsp;</strong>tab of the&nbsp;<strong>PartitionListenerControl</strong>. </li>
+<li>Changed the default value of the <strong>Epoch </strong>textbox from 0 to -1. </li>
+</ul>
+<p style="text-align: center;"><img id="125822" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125822/1/sequencenumber.png" alt="" width="660" /></p>
+<p>&nbsp;</p>
