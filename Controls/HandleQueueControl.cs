@@ -1863,6 +1863,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     if (serviceBusHelper.IsCloudNamespace)
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
+                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     }
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
@@ -1968,6 +1969,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (e.Index == EnablePartitioningIndex)
             {
                 e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == EnableExpressIndex)
+            {
+                e.NewValue = queueDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == RequiresSessionIndex)
             {
