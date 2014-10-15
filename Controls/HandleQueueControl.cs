@@ -58,10 +58,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const int EnableBatchedOperationsIndex = 0;
         private const int EnableDeadLetteringOnMessageExpirationIndex = 1;
         private const int EnablePartitioningIndex = 2;
-        private const int RequiresDuplicateDetectionIndex = 3;
-        private const int RequiresSessionIndex = 4;
-        private const int SupportOrderingIndex = 5;
-        private const int IsAnonymousAccessibleIndex = 6;
+        private const int EnableExpressIndex = 3;
+        private const int RequiresDuplicateDetectionIndex = 4;
+        private const int RequiresSessionIndex = 5;
+        private const int SupportOrderingIndex = 6;
+        private const int IsAnonymousAccessibleIndex = 7;
 
         //***************************
         // Texts
@@ -1158,6 +1159,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 checkedListBox.SetItemChecked(EnablePartitioningIndex,
                     queueDescription.EnablePartitioning);
+
+                checkedListBox.SetItemChecked(EnableExpressIndex,
+                    queueDescription.EnableExpress);
             }
 
             // RequiresDuplicateDetection
@@ -1859,6 +1863,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     if (serviceBusHelper.IsCloudNamespace)
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
+                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     }
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
@@ -1964,6 +1969,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (e.Index == EnablePartitioningIndex)
             {
                 e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == EnableExpressIndex)
+            {
+                e.NewValue = queueDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == RequiresSessionIndex)
             {
