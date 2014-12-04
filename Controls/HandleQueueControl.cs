@@ -59,10 +59,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const int EnableDeadLetteringOnMessageExpirationIndex = 1;
         private const int EnablePartitioningIndex = 2;
         private const int EnableExpressIndex = 3;
-        private const int RequiresDuplicateDetectionIndex = 4;
-        private const int RequiresSessionIndex = 5;
-        private const int SupportOrderingIndex = 6;
-        private const int IsAnonymousAccessibleIndex = 7;
+        private const int EnableLargeMessagesIndex = 4;
+        private const int RequiresDuplicateDetectionIndex = 5;
+        private const int RequiresSessionIndex = 6;
+        private const int SupportOrderingIndex = 7;
+        private const int IsAnonymousAccessibleIndex = 8;
 
         //***************************
         // Texts
@@ -135,6 +136,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string FilterExpressionNotValidMessage = "The filter expression [{0}] is not valid: {1}";
         private const string FilterExpressionAppliedMessage = "The filter expression [{0}] has been successfully applied. [{1}] messages retrieved.";
         private const string FilterExpressionRemovedMessage = "The filter expression has been removed.";
+        private const string NoMessageReceivedFromTheQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the queue [{1}].";
+        private const string NoMessageReceivedFromTheDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the queue [{1}].";
 
         //***************************
         // Tooltips
@@ -170,6 +173,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Constants
         //***************************
         private const long SeviceBusForWindowsServerMaxQueueSize = 8796093022207;
+        private const int GrouperMessagePropertiesWith = 312;
+        private const string SaveAsTitle = "Save File As";
+        private const string JsonExtension = "json";
+        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
 
         //***************************
         // Pages
@@ -200,11 +208,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string NameProperty = "Name";
         private const string MetricsQueueEntity = "Queue";
         private const string Unknown = "Unkown";
-
         #endregion
 
         #region Private Fields
-
         private QueueDescription queueDescription;
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
@@ -212,11 +218,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private BrokeredMessage brokeredMessage;
         private BrokeredMessage deadletterMessage;
-        private int messagesSplitContainerSplitterDistance;
-        private int sessionsSplitContainerSplitterDistance;
-        private int deadletterSplitContainerSplitterDistance;
-        private int grouperMessageCustomPropertiesWidth;
-        private int grouperDeadletterCustomPropertiesWidth;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private int tabIndex;
@@ -228,7 +229,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
-
         #endregion
 
         #region Private Static Fields
@@ -289,7 +289,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                            serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
                                            Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
                                            null;
-                    GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    if (queueDescription.EnablePartitioning)
+                    {
+                        ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    }
+                    else
+                    {
+                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    }
                 }
             }
         }
@@ -307,7 +314,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                            serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
                                            Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
                                            null;
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    if (queueDescription.EnablePartitioning)
+                    {
+                        ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    }
+                    else
+                    {
+                        GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    }
                 }
             }
         }
@@ -357,7 +371,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 writeToLog(string.Format(SessionsGotFromTheQueue, sessionBindingList.Count, queueDescription.Path));
                 sessionsBindingSource.DataSource = sessionBindingList;
                 sessionsDataGridView.DataSource = sessionsBindingSource;
-                sessionsSplitContainer.SplitterDistance = sessionsSplitContainerSplitterDistance;
+
+                sessionsSplitContainer.SplitterDistance = sessionsSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          sessionsSplitContainer.SplitterWidth;
+                sessionListTextPropertiesSplitContainer.SplitterDistance = sessionListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+
                 if (mainTabControl.TabPages[SessionsTabPage] != null)
                 {
                     mainTabControl.SelectTab(SessionsTabPage);
@@ -868,12 +887,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                messagesSplitContainerSplitterDistance = messagesSplitContainer.SplitterDistance;
-                sessionsSplitContainerSplitterDistance = sessionsSplitContainer.SplitterDistance;
-                deadletterSplitContainerSplitterDistance = deadletterSplitContainer.SplitterDistance;
-                grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Size.Width;
-                grouperDeadletterCustomPropertiesWidth = grouperDeadletterCustomProperties.Size.Width;
-
                 checkedListBox.ItemCheck += checkedListBox_ItemCheck;
 
                 toolTip.SetToolTip(txtPath, PathTooltip);
@@ -1095,7 +1108,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             // MaxQueueSizeInBytes
             trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
-                ? (int) queueDescription.MaxSizeInMegabytes/1024
+                ? (int)(queueDescription.EnablePartitioning ? queueDescription.MaxSizeInMegabytes / 16384 : queueDescription.MaxSizeInMegabytes / 1024)
                 : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
                     ? 11
                     : (int) queueDescription.MaxSizeInMegabytes/1024;
@@ -1154,14 +1167,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationIndex,
                 queueDescription.EnableDeadLetteringOnMessageExpiration);
 
-            // EnablePartitioning
+            
             if (serviceBusHelper.IsCloudNamespace)
             {
-                checkedListBox.SetItemChecked(EnablePartitioningIndex,
-                    queueDescription.EnablePartitioning);
+                // EnablePartitioning
+                checkedListBox.SetItemChecked(EnablePartitioningIndex, queueDescription.EnablePartitioning);
 
-                checkedListBox.SetItemChecked(EnableExpressIndex,
-                    queueDescription.EnableExpress);
+                // EnableExpress
+                checkedListBox.SetItemChecked(EnableExpressIndex, queueDescription.EnableExpress);
+
+                // EnableLargeMessages
+                checkedListBox.SetItemChecked(EnableLargeMessagesIndex, queueDescription.EnableLargeMessages);
             }
 
             // RequiresDuplicateDetection
@@ -1220,7 +1236,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             ReceiveMode.ReceiveAndDelete);
                         messageReceiver =
                             queueClient.AcceptMessageSession(
-                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout));
+                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                     }
                     else
                     {
@@ -1235,7 +1251,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var messages = messageReceiver.ReceiveBatch(all
                             ? MainForm.SingletonMainForm.TopCount
                             : count - totalRetrieved,
-                            TimeSpan.FromSeconds(1));
+                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Count();
                         if (retrieved == 0)
@@ -1255,7 +1271,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 };
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
-                messagesSplitContainer.SplitterDistance = messagesSplitContainerSplitterDistance;
+
+                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          messagesSplitContainer.SplitterWidth;
+                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width/2 -8;
+
                 if (!peek)
                 {
                     if (OnRefresh != null)
@@ -1271,6 +1293,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     mainTabControl.SelectTab(MessagesTabPage);
                 }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheQueue,
+                                         MainForm.SingletonMainForm.ReceiveTimeout,
+                                         queueDescription.Path));
             }
             catch (NotSupportedException)
             {
@@ -1322,7 +1350,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             ReceiveMode.ReceiveAndDelete);
                         messageReceiver =
                             queueClient.AcceptMessageSession(
-                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout));
+                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                     }
                     else
                     {
@@ -1334,7 +1362,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     int retrieved;
                     do
                     {
-                        var message = messageReceiver.Receive();
+                        var message = messageReceiver.Receive(MainForm.SingletonMainForm.ReceiveTimeout);
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
@@ -1353,7 +1381,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 };
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
-                messagesSplitContainer.SplitterDistance = messagesSplitContainerSplitterDistance;
+                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          messagesSplitContainer.SplitterWidth;
+                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
                 if (!peek)
                 {
                     if (OnRefresh != null)
@@ -1369,6 +1401,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     mainTabControl.SelectTab(MessagesTabPage);
                 }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheQueue,
+                                         MainForm.SingletonMainForm.ReceiveTimeout,
+                                         queueDescription.Path));
             }
             catch (Exception e)
             {
@@ -1417,7 +1455,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var messages = queueClient.ReceiveBatch(all
                             ? MainForm.SingletonMainForm.TopCount
                             : count - totalRetrieved,
-                            TimeSpan.FromSeconds(1));
+                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Count();
                         if (retrieved == 0)
@@ -1453,7 +1491,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
-                deadletterSplitContainer.SplitterDistance = deadletterSplitContainerSplitterDistance;
+
+                deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          deadletterSplitContainer.SplitterWidth;
+                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+
                 if (!peek)
                 {
                     if (OnRefresh != null)
@@ -1469,6 +1513,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     mainTabControl.SelectTab(DeadletterTabPage);
                 }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
+                                         MainForm.SingletonMainForm.ReceiveTimeout,
+                                         queueDescription.Path));
             }
             catch (NotSupportedException)
             {
@@ -1525,8 +1575,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     int retrieved;
                     do
                     {
-                        var message =
-                            queueClient.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        var message = queueClient.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
@@ -1546,7 +1595,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 };
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
-                deadletterSplitContainer.SplitterDistance = deadletterSplitContainerSplitterDistance;
+
+                deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          deadletterSplitContainer.SplitterWidth;
+                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+
                 if (!peek)
                 {
                     if (OnRefresh != null)
@@ -1562,6 +1617,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     mainTabControl.SelectTab(DeadletterTabPage);
                 }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
+                                         MainForm.SingletonMainForm.ReceiveTimeout,
+                                         queueDescription.Path));
             }
             catch (Exception e)
             {
@@ -1864,6 +1925,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
                         description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
+                        description.EnableLargeMessages = checkedListBox.GetItemChecked(EnableLargeMessagesIndex);
                     }
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
@@ -1974,6 +2036,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 e.NewValue = queueDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
             }
+            if (e.Index == EnableLargeMessagesIndex)
+            {
+                e.NewValue = queueDescription.EnableLargeMessages ? CheckState.Checked : CheckState.Unchecked;
+            }
             if (e.Index == RequiresSessionIndex)
             {
                 e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
@@ -2016,8 +2082,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
 
                     queueDescription.UserMetadata = txtUserMetadata.Text;
-                    queueDescription.ForwardTo = txtForwardTo.Text;
-                    queueDescription.ForwardDeadLetteredMessagesTo = txtForwardDeadLetteredMessagesTo.Text;
+                    queueDescription.ForwardTo = string.IsNullOrWhiteSpace(txtForwardTo.Text) ? null : txtForwardTo.Text;
+                    queueDescription.ForwardDeadLetteredMessagesTo = string.IsNullOrWhiteSpace(txtForwardDeadLetteredMessagesTo.Text) ? null : txtForwardDeadLetteredMessagesTo.Text;
 
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
@@ -2262,10 +2328,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                     }
 
-                    queueDescription.EnableBatchedOperations =
-                        checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    queueDescription.EnableDeadLetteringOnMessageExpiration =
-                        checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
+                    queueDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
+                    queueDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
                     queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
 
                     if (!serviceBusHelper.IsCloudNamespace)
@@ -2677,6 +2741,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             try
             {
+                if (dataGridView.ColumnCount == 0)
+                {
+                    return;
+                }
                 dataGridView.SuspendDrawing();
                 dataGridView.SuspendLayout();
                 if (dataGridView.Columns.Count == 2)
@@ -2773,27 +2841,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void tabPageMessages_Resize(object sender, EventArgs e)
         {
-            try
-            {
-                messagesSplitContainer.SuspendDrawing();
-                messagesSplitContainer.SuspendLayout();
-                grouperMessageCustomProperties.Size = new Size(grouperMessageCustomProperties.Size.Width,
-                    messageListTextPropertiesSplitContainer.Panel2.Size.Height);
-                messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - 32,
-                    messagePropertyGrid.Size.Height);
-                messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - 32,
-                    messagePropertyListView.Size.Height);
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Width -
-                                                                          grouperMessageCustomPropertiesWidth -
-                                                                          messagesCustomPropertiesSplitContainer
-                                                                              .SplitterWidth;
-                grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Width;
-            }
-            finally
-            {
-                messagesSplitContainer.ResumeDrawing();
-                messagesSplitContainer.ResumeLayout();
-            }
         }
 
         private void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -2867,33 +2914,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void tabPageSessions_Resize(object sender, EventArgs e)
         {
-            sessionPropertyGrid.Size = new Size(grouperSessionProperties.Size.Width - 32,
-                sessionPropertyGrid.Size.Height);
+            sessionPropertyGrid.Size = new Size(grouperSessionProperties.Size.Width - 32, sessionPropertyGrid.Size.Height);
         }
 
         private void deadletterTabPage_Resize(object sender, EventArgs e)
         {
-            try
-            {
-                deadletterSplitContainer.SuspendDrawing();
-                deadletterSplitContainer.SuspendLayout();
-                grouperDeadletterCustomProperties.Size = new Size(grouperDeadletterCustomProperties.Size.Width,
-                    deadletterListTextPropertiesSplitContainer.Panel2.Size.Height);
-                deadletterPropertyGrid.Size = new Size(grouperDeadletterProperties.Size.Width - 32,
-                    deadletterPropertyGrid.Size.Height);
-                deadletterPropertyListView.Size = new Size(grouperDeadletterCustomProperties.Size.Width - 32,
-                    deadletterPropertyListView.Size.Height);
-                deadletterCustomPropertiesSplitContainer.SplitterDistance =
-                    deadletterCustomPropertiesSplitContainer.Width -
-                    grouperDeadletterCustomPropertiesWidth -
-                    deadletterCustomPropertiesSplitContainer.SplitterWidth;
-                grouperDeadletterCustomPropertiesWidth = grouperDeadletterCustomProperties.Width;
-            }
-            finally
-            {
-                deadletterSplitContainer.ResumeDrawing();
-                deadletterSplitContainer.ResumeLayout();
-            }
+            
         }
 
         private void btnDeadletter_Click(object sender, EventArgs e)
@@ -3248,17 +3274,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size =
-                new Size(grouperMessageCustomProperties.Size.Width - (messagePropertyListView.Location.X*2),
-                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
-                    messagePropertyListView.Location.X);
+            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - (messagePropertyListView.Location.X*2),
+                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y - messagePropertyListView.Location.X);
         }
 
         private void grouperMessageProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyGrid.Size = new Size(
-                grouperMessageProperties.Size.Width - (messagePropertyGrid.Location.X*2),
-                grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
+            messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - (messagePropertyGrid.Location.X*2),
+                                                grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
         }
 
         private void grouperDeadletterText_CustomPaint(PaintEventArgs obj)
@@ -3305,7 +3328,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -3394,7 +3419,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             deadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -3679,6 +3706,175 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             catch
             {
             }
+        }
+
+        private void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (messagesDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    BodyType bodyType;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentDeadletterMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentDeadletterMessageRowIndex], txtDeadletterText.Text));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (deadletterDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    BodyType bodyType;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private string CreateFileName()
+        {
+            return string.Format(MessageFileFormat,
+                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
         #endregion
     }

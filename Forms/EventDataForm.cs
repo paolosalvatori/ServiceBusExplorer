@@ -53,14 +53,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Constants
         //***************************
         private const string SaveAsTitle = "Save File As";
-        private const string XmlExtension = "xml";
-        private const string XmlFilter = "XML Files|*.xml|Text Documents|*.txt";
+        private const string JsonExtension = "json";
+        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string MessageFileFormat = "EventData_{0}_{1}.json";
         #endregion
 
         #region Private Instance Fields
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         private readonly BindingSource bindingSource = new BindingSource();
+        private readonly EventData eventData;
         #endregion
 
         #region Private Static Fields
@@ -70,6 +72,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Constructor
         public EventDataForm(EventData eventData, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
         {
+            this.eventData = eventData;
             this.serviceBusHelper = serviceBusHelper;
             this.writeToLog = writeToLog;
             InitializeComponent();
@@ -234,8 +237,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return;
                 }
                 saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = XmlExtension;
-                saveFileDialog.Filter = XmlFilter;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
                 saveFileDialog.FileName = CreateFileName();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -248,7 +251,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    writer.Write(txtMessageText.Text);
+                    writer.Write(MessageSerializationHelper.Serialize(eventData, txtMessageText.Text));
                 }
             }
             catch (Exception ex)
@@ -259,7 +262,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private string CreateFileName()
         {
-            return string.Format("EventData_{0}_{1}.xml",
+            return string.Format(MessageFileFormat,
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }

@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Threading;
@@ -93,7 +94,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly MainForm mainForm;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly Action stopAndRestartLog;
+        private readonly Func<Task> stopLog;
+        private readonly Action startLog;
         private readonly SubscriptionWrapper subscriptionWrapper;
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
@@ -120,13 +122,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Constructors
         public TestSubscriptionControl(MainForm mainForm,
                                        WriteToLogDelegate writeToLog,
-                                       Action stopAndRestartLog,
+                                       Func<Task> stopLog,
+                                       Action startLog,
                                        ServiceBusHelper serviceBusHelper, 
                                        SubscriptionWrapper subscriptionWrapper)
         {
             this.mainForm = mainForm;
             this.writeToLog = writeToLog;
-            this.stopAndRestartLog = stopAndRestartLog;
+            this.stopLog = stopLog;
+            this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
@@ -262,21 +266,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return true;
         }
 
-        private void btnCreateDelete_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
             try
             {
-                if (btnCreateDelete.Text == StopCaption)
+                if (btnStart.Text == StopCaption)
                 {
-                    CancelActions();
-                    btnCreateDelete.Text = StartCaption;
+                    await CancelActions();
+                    btnStart.Text = StartCaption;
                     return;
                 }
 
                 if (serviceBusHelper != null &&
                     ValidateParameters())
                 {
-                    btnCreateDelete.Enabled = false;
+                    if (startLog != null)
+                    {
+                        startLog();
+                    }
+                    btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
                     //                                   Retrieve Messaging Factory
@@ -313,7 +321,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnCreateDelete.Text = StartCaption; });
+                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
                         }
                     };
 
@@ -547,7 +555,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         graphCancellationTokenSource = new CancellationTokenSource();
                         updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
                         Interlocked.Increment(ref actionCount);
-                        btnCreateDelete.Text = StopCaption;
+                        btnStart.Text = StopCaption;
                     }
                 }
             }
@@ -557,7 +565,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             finally
             {
-                btnCreateDelete.Enabled = true;
+                btnStart.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -674,11 +682,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal void CancelActions()
+        internal async Task CancelActions()
         {
-            if (stopAndRestartLog != null)
+            if (stopLog != null)
             {
-                stopAndRestartLog();
+                await stopLog();
             }
             if (managerCancellationTokenSource != null)
             {
@@ -694,9 +702,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal void btnCancel_Click(object sender, EventArgs e)
+        internal async void btnCancel_Click(object sender, EventArgs e)
         {
-            CancelActions();
+            await CancelActions();
             OnCancel();
         }
 

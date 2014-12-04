@@ -93,7 +93,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(81, 13);
             this.label3.TabIndex = 42;
-            this.label3.Text = "Version: 2.4.3.0";
+            this.label3.Text = "Version: 2.5.2.0";
             // 
             // label2
             // 
@@ -200,7 +200,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " About Service Bus Explorer 2.4.3.0";
+            this.Text = " About Service Bus Explorer 2.5.2.0";
             this.ResumeLayout(false);
             this.PerformLayout();
 

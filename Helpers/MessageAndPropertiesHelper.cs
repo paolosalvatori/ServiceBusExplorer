@@ -173,7 +173,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// Reads a message from an XML file in the current directory.
         /// </summary>
         /// <returns>The message read from the XML file.</returns>
-        public static  List<MessagePropertyInfo> ReadProperties()
+        public static List<MessagePropertyInfo> ReadProperties()
         {
             try
             {

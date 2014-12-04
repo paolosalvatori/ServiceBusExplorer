@@ -54,9 +54,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const int EnableBatchedOperationsIndex = 0;
         private const int EnableFilteringMessagesBeforePublishingIndex = 1;
         private const int EnablePartitioningIndex = 2;
-        private const int RequiresDuplicateDetectionIndex = 3;
-        private const int SupportOrderingIndex = 4;
-        private const int IsAnonymousAccessibleIndex = 5;
+        private const int EnableExpressIndex = 3;
+        private const int EnableLargeMessagesIndex = 4;
+        private const int RequiresDuplicateDetectionIndex = 5;
+        private const int SupportOrderingIndex = 6;
+        private const int IsAnonymousAccessibleIndex = 7;
 
         //***************************
         // Texts
@@ -532,7 +534,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             // MaxQueueSizeInBytes
             trackBarMaxTopicSize.Value = serviceBusHelper.IsCloudNamespace
-                                             ? (int)topicDescription.MaxSizeInMegabytes / 1024
+                                             ? (int)(topicDescription.EnablePartitioning ? topicDescription.MaxSizeInMegabytes / 16384 : topicDescription.MaxSizeInMegabytes / 1024)
                                              : topicDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxTopicSize
                                                    ? 11
                                                    : (int)topicDescription.MaxSizeInMegabytes / 1024;
@@ -564,11 +566,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // EnableFilteringMessagesBeforePublishing
             checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingIndex,
                                           topicDescription.EnableFilteringMessagesBeforePublishing);
-            // EnablePartitioning
+            
             if (serviceBusHelper.IsCloudNamespace)
             {
-                checkedListBox.SetItemChecked(EnablePartitioningIndex,
-                                              topicDescription.EnablePartitioning);
+                // EnablePartitioning
+                checkedListBox.SetItemChecked(EnablePartitioningIndex, topicDescription.EnablePartitioning);
+
+                // EnableExpress
+                checkedListBox.SetItemChecked(EnableExpressIndex, topicDescription.EnableExpress);
+
+                // EnableLargeMessages
+                checkedListBox.SetItemChecked(EnableLargeMessagesIndex, topicDescription.EnableLargeMessages);
             }
 
             // RequiresDuplicateDetection
@@ -597,6 +605,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (e.Index == EnablePartitioningIndex)
             {
                 e.NewValue = topicDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == EnableExpressIndex)
+            {
+                e.NewValue = topicDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == EnableLargeMessagesIndex)
+            {
+                e.NewValue = topicDescription.EnableLargeMessages ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == RequiresDuplicateDetectionIndex)
             {
@@ -813,6 +829,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     if (serviceBusHelper.IsCloudNamespace)
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
+                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
+                        description.EnableLargeMessages = checkedListBox.GetItemChecked(EnableLargeMessagesIndex);
                     }
                     description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
                     description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
@@ -1734,7 +1752,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     components.Dispose();
                 }
-                
+
                 for (var i = 0; i < Controls.Count; i++)
                 {
                     Controls[i].Dispose();

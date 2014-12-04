@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Channels;
 using System.Text;
@@ -51,7 +52,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
+        private const string LabelFormat = "{0:0.0000}";
 
         //***************************
         // Texts
@@ -110,12 +111,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string AverageDurationTooltip = "The average duration of receive operation in seconds.";
         private const string KbPerSecTooltip = "The average number of KB received per second.";
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
+
+        //***************************
+        // Constants
+        //***************************
+        private const string SaveAsTitle = "Save File As";
+        private const string JsonExtension = "json";
+        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
         #endregion
 
         #region Private Fields
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly Action stopAndRestartLog;
+        private readonly Func<Task> stopLog;
+        private readonly Action startLog;
         private BrokeredMessage brokeredMessage;
         private int grouperMessageCustomPropertiesWidth;
         private int currentMessageRowIndex;
@@ -160,7 +170,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         public ListenerControl(WriteToLogDelegate writeToLog,
-                               Action stopAndRestartLog,
+                               Func<Task> stopLog,
+                               Action startLog,
                                ServiceBusHelper serviceBusHelper, 
                                EntityDescription entityDescription)
         {
@@ -172,26 +183,27 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
             });
             this.writeToLog = writeToLog;
-            this.stopAndRestartLog = stopAndRestartLog;
+            this.stopLog = stopLog;
+            this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
             this.entityDescription = entityDescription;
-            if (entityDescription is SubscriptionDescription)
-            {
-                grouperEntityInformation.GroupTitle = "Subscription Information";
-            }
             var element = new BinaryMessageEncodingBindingElement();
             var encoderFactory = element.CreateMessageEncoderFactory();
             encoder = encoderFactory.Encoder;
             InitializeComponent();
             InitializeControls();
             Disposed += ListenerControl_Disposed;
+            if (entityDescription is SubscriptionDescription)
+            {
+                grouperEntityInformation.GroupTitle = "Subscription Information";
+            }
         }
         #endregion
 
         #region Private Methods
         void ListenerControl_Disposed(object sender, EventArgs e)
         {
-            StopListener();
+            StopListener().Wait();
         }
 
         private bool RequiresSession()
@@ -699,7 +711,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -883,12 +897,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     Enabled = true,
                     Interval = 1000 * txtRefreshInformation.IntegerValue
                 };
+                if (startLog != null && checkBoxLogging.Checked)
+                {
+                    startLog();
+                }
                 timer.Elapsed += timer_Elapsed;
                 autoComplete = checkBoxAutoComplete.Checked;
                 logging = checkBoxLogging.Checked;
                 verbose = checkBoxVerbose.Checked;
                 tracking = checkBoxTrackMessages.Checked;
-                graph = checkBoxGraph.Checked;
                 try
                 {
                     receiveMode = cboReceivedMode.SelectedIndex == 1 ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete;
@@ -905,7 +922,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     {
                                         Logging = logging,
                                         Tracking = tracking,
-                                        Graph = graph,
                                         AutoComplete = autoComplete,
                                         MessageEncoder = encoder,
                                         ReceiveMode = receiveMode,
@@ -939,7 +955,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     {
                                         Logging = logging,
                                         Tracking = tracking,
-                                        Graph = graph,
                                         AutoComplete = autoComplete,
                                         MessageEncoder = encoder,
                                         ReceiveMode = receiveMode,
@@ -965,7 +980,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                    StopListener();
+                    StopListener().Wait();
                     btnStart.Text = Start;
                 }
             }
@@ -973,7 +988,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 try
                 {
-                    StopListener();
+                    await StopListener();
                     btnStart.Text = Start;
                 }
                 catch (Exception ex)
@@ -1036,11 +1051,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private async void btnClose_Click(object sender, EventArgs e)
         {
             try
             {
-                StopListener();
+                await StopListener();
                 if (parentForm != null)
                 {
                     ((Form)parentForm).Close();
@@ -1193,10 +1208,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Invoke(new Action(() => messageBindingList.Add(message.Clone())));
                 }
-                if (graph)
-                {
-                    UpdateStatistics(1, GetElapsedTime(), message.Size);
-                }
+                UpdateStatistics(1, GetElapsedTime(), message.Size);
                 if (receiveMode == ReceiveMode.PeekLock && !autoComplete)
                 {
                     await message.CompleteAsync();
@@ -1305,15 +1317,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void StopListener()
+        private async Task StopListener()
         {
             lock (this)
             {
                 stopping = true;
             }
-            if (stopAndRestartLog != null)
+            if (stopLog != null)
             {
-                stopAndRestartLog();
+                await stopLog();
             }
             if (timer != null)
             {
@@ -1347,6 +1359,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 long max = 10;
+                graph = checkBoxGraph.Checked;
                 while (!cancellationTokenSource.IsCancellationRequested)
                 {
                     long receiveMessageNumber = 0;
@@ -1375,16 +1388,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var receiveTuple = new Tuple<long, long, long>(receiveMessageNumber, receiveTotalTime, sizeTotal);
                         if (InvokeRequired)
                         {
-                            Invoke(new Action<long, long, long>(InternalUpdateStatistics),
+                            Invoke(new Action<long, long, long, bool>(InternalUpdateStatistics),
                                    new object[] { receiveTuple.Item1, 
                                                   receiveTuple.Item2, 
-                                                  receiveTuple.Item3 });
+                                                  receiveTuple.Item3,
+                                                  graph});
                         }
                         else
                         {
                             InternalUpdateStatistics(receiveTuple.Item1,
                                                      receiveTuple.Item2,
-                                                     receiveTuple.Item3);
+                                                     receiveTuple.Item3,
+                                                     graph);
                         }
                     }
                 }
@@ -1412,7 +1427,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="messageNumber">Elapsed time.</param>
         /// <param name="elapsedMilliseconds">Elapsed time.</param>
         /// <param name="size">Message size.</param>
-        private void InternalUpdateStatistics(long messageNumber, long elapsedMilliseconds, long size)
+        /// <param name="chartEnabled">True if the chart is enabled, false otherwise.</param>
+        private void InternalUpdateStatistics(long messageNumber, long elapsedMilliseconds, long size, bool chartEnabled)
         {
             lock (this)
             {
@@ -1442,6 +1458,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 txtMessageSizePerSecond.Text = string.Format(LabelFormat, receiverMessageSizePerSecond);
                 txtAverageDuration.Refresh();
 
+                if (!chartEnabled)
+                {
+                    return;
+                }
                 chart.Series["ReceiverLatency"].Points.AddXY(receiverMessageNumber, elapsedSeconds * averageTimeScale);
                 chart.Series["ReceiverThroughput"].Points.AddXY(receiverMessageNumber, receiverMessagesPerSecond * eventDataPerSecondScale);
                 chart.Series["MessageSizePerSecond"].Points.AddXY(receiverMessageNumber, receiverMessageSizePerSecond * messageSizePerSecondScale);
@@ -1498,9 +1518,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             autoComplete = checkBoxAutoComplete.Checked;
         }
 
-        private void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
+        private async void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
         {
             logging = checkBoxLogging.Checked;
+            if (checkBoxLogging.Checked)
+            {
+                if (startLog != null)
+                {
+                    startLog();
+                }
+            }
+            else
+            {
+                if (stopLog != null)
+                {
+                    await stopLog();
+                }
+            }
         }
 
         private void checkBoxVerbose_CheckedChanged(object sender, EventArgs e)
@@ -1640,104 +1674,40 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 HandleException(ex);
             }
         }
-        #endregion
-    }
 
-    public class CustomMessageSessionAsyncHandler : IMessageSessionAsyncHandler
-    {
-        #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-
-        //***************************
-        // Texts
-        //***************************
-        private const string NullValue = "NULL";
-        
-        //***************************
-        // Messages
-        //***************************
-        private const string MessageSuccessfullyReceived = "Message received. MessageId=[{0}] SessionId=[{1}] Label=[{2}] Size=[{3}]";
-        private const string SessionClosed = "Session[{0}] closed. Message Count=[{1}]";
-        #endregion
-
-        #region Private Fields
-        private readonly CustomMessageSessionAsyncHandlerConfiguration configuration;
-        #endregion
-
-        #region Public Static Fields
-        public static readonly Dictionary<string, int> SessionDictionary = new Dictionary<string, int>();
-        #endregion
-
-        #region Public Constructors
-        public CustomMessageSessionAsyncHandler(CustomMessageSessionAsyncHandlerConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
-        #endregion
-
-        #region IMessageSessionAsyncHandler Methods
-        public async Task OnMessageAsync(MessageSession session, BrokeredMessage message)
+        private void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                if (message == null)
+                if (currentMessageRowIndex < 0)
                 {
                     return;
                 }
-                if (session == null)
+                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
                 {
                     return;
                 }
-                if (configuration == null)
+                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
                 {
                     return;
                 }
-                if (configuration.MessageInspector != null)
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
                 {
-                    message = configuration.MessageInspector.AfterReceiveMessage(message);
+                    return;
                 }
-                if (configuration.Logging)
+                if (File.Exists(saveFileDialog.FileName))
                 {
-                    var builder = new StringBuilder(string.Format(MessageSuccessfullyReceived,
-                                                    string.IsNullOrWhiteSpace(message.MessageId)
-                                                        ? NullValue
-                                                        : message.MessageId,
-                                                    string.IsNullOrWhiteSpace(message.SessionId)
-                                                        ? NullValue
-                                                        : message.SessionId,
-                                                    string.IsNullOrWhiteSpace(message.Label)
-                                                        ? NullValue
-                                                        : message.Label,
-                                                    message.Size));
-                    if (configuration.Verbose)
-                    {
-                        configuration.ServiceBusHelper.GetMessageAndProperties(builder, message, configuration.MessageEncoder);
-                    }
-                    configuration.WriteToLog(builder.ToString(), false);
+                    File.Delete(saveFileDialog.FileName);
                 }
-                if (configuration.Tracking)
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    configuration.TrackMessage(message.Clone());
-                }
-                if (configuration.Graph)
-                {
-                    configuration.UpdateStatistics(1, configuration.GetElapsedTime(), message.Size);
-                }
-                if (configuration.ReceiveMode == ReceiveMode.PeekLock && !configuration.AutoComplete)
-                {
-                    await message.CompleteAsync();
-                }
-                if (!SessionDictionary.ContainsKey(message.SessionId))
-                {
-                    SessionDictionary.Add(message.SessionId, 1);
-                }
-                else
-                {
-                    SessionDictionary[message.SessionId]++;
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
                 }
             }
             catch (Exception ex)
@@ -1746,85 +1716,52 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        public Task OnCloseSessionAsync(MessageSession session)
+        private void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (session == null)
+            try
             {
-                return Task.FromResult(0);
+                if (messagesDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    BodyType bodyType;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                }
             }
-            if (configuration == null)
+            catch (Exception ex)
             {
-                return Task.FromResult(0);
+                HandleException(ex);
             }
-            configuration.WriteToLog(string.Format(SessionClosed, session.SessionId, SessionDictionary[session.SessionId]));
-            return Task.FromResult(0);
         }
 
-        public Task OnSessionLostAsync(Exception exception)
+        private string CreateFileName()
         {
-            if (exception == null)
-            {
-                return Task.FromResult(0);
-            }
-            HandleException(exception);
-            return Task.FromResult(0);
+            return string.Format(MessageFileFormat,
+                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
         #endregion
-
-        #region Private Methods
-        private void HandleException(Exception ex)
-        {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
-            {
-                return;
-            }
-            if (configuration == null)
-            {
-                return;
-            }
-            configuration.WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
-            {
-                configuration.WriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
-            }
-        }
-        #endregion
-    }
-
-    public class CustomMessageSessionAsyncHandlerConfiguration
-    {
-        public bool Logging { get; set; }
-        public bool Tracking { get; set; }
-        public bool Verbose { get; set; }
-        public bool Graph { get; set; }
-        public bool AutoComplete { get; set; }
-        public MessageEncoder MessageEncoder { get; set; }
-        public ReceiveMode ReceiveMode { get; set; }
-        public Func<BrokeredMessage, object> TrackMessage { get; set; }
-        public Func<long> GetElapsedTime { get; set; }
-        public Action<long, long, long> UpdateStatistics { get; set; }
-        public IBrokeredMessageInspector MessageInspector { get; set; }
-        public WriteToLogDelegate WriteToLog { get; set; }
-        public ServiceBusHelper ServiceBusHelper { get; set; } 
-    }
-
-    public class CustomMessageSessionAsyncHandlerFactory : IMessageSessionAsyncHandlerFactory
-    {
-        public CustomMessageSessionAsyncHandlerConfiguration Configuration { get; set; }
-
-        public CustomMessageSessionAsyncHandlerFactory(CustomMessageSessionAsyncHandlerConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IMessageSessionAsyncHandler CreateInstance(MessageSession session, BrokeredMessage message)
-        {
-            return new CustomMessageSessionAsyncHandler(Configuration);
-        }
-
-        public void DisposeInstance(IMessageSessionAsyncHandler handler)
-        {
-            // no cleanup necessary in this sample.
-        }
     }
 }

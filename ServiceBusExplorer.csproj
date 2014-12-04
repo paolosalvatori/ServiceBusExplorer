@@ -50,16 +50,16 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Microsoft.ServiceBus, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.ServiceBus, Version=2.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WindowsAzure.ServiceBus.2.4.6.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>packages\WindowsAzure.ServiceBus.2.5.2.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -336,6 +336,11 @@
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
+    <Compile Include="Helpers\EventProcessorCheckpointHelper.cs" />
+    <Compile Include="Helpers\EventProcessorCheckpointInfo.cs" />
+    <Compile Include="Helpers\CustomMessageSessionAsyncHandler.cs" />
+    <Compile Include="Helpers\CustomMessageSessionAsyncHandlerConfiguration.cs" />
+    <Compile Include="Helpers\CustomMessageSessionAsyncHandlerFactory.cs" />
     <Compile Include="Helpers\EventDataExtensions.cs" />
     <Compile Include="Helpers\BrokeredMessageExtensions.cs" />
     <Compile Include="Helpers\CategorySorter.cs" />
@@ -354,6 +359,10 @@
     <Compile Include="Helpers\CustomTextEditor.cs" />
     <Compile Include="Helpers\BrokeredMessageTemplate.cs" />
     <Compile Include="Helpers\EventDataTemplate.cs" />
+    <Compile Include="Helpers\EventProcessor.cs" />
+    <Compile Include="Helpers\EventProcessorCheckpointManager.cs" />
+    <Compile Include="Helpers\EventProcessorFactory.cs" />
+    <Compile Include="Helpers\EventProcessorFactoryConfiguration.cs" />
     <Compile Include="Helpers\ExpressionBuilder.cs" />
     <Compile Include="Helpers\GenericCopier.cs" />
     <Compile Include="Helpers\IBrokeredMessageGenerator.cs" />
@@ -361,6 +370,7 @@
     <Compile Include="Helpers\IEventDataInspector.cs" />
     <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
     <Compile Include="Helpers\LogBrokeredMessageInspector.cs" />
+    <Compile Include="Helpers\MessageSerializationHelper.cs" />
     <Compile Include="Helpers\OnOffDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\PropertyComparer.cs" />
     <Compile Include="Helpers\ReadOnlyEditor.cs" />

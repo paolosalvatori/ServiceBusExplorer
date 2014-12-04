@@ -5,7 +5,7 @@
 // This is a usefull control in Filters. Allows you to save space and can replace a Grouped Box of CheckBoxes.
 // Currently used on the TasksFilter for TaskStatusses, which means the user can select which Statusses to include
 // in the "Search".
-// This control does not implement a CheckBoxListBox, instead it adds a wrapper for the normal ComboBox and Items. 
+// This control does not implement a CheckBoxListBox, instead it adds a wrapper for the normal ComboBox and items. 
 // See the CheckBoxItems property.
 // ----------------
 // ALSO IMPORTANT: In Data Binding when setting the DataSource. The ValueMember must be a bool type property, because it will 
@@ -60,7 +60,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region PRIVATE FIELDS
 
         /// <summary>
-        /// The checkbox list control. The public CheckBoxItems property provides a direct reference to its Items.
+        /// The checkbox list control. The public CheckBoxItems property provides a direct reference to its items.
         /// </summary>
         internal CheckBoxComboBoxListControl _CheckBoxComboBoxListControl;
         /// <summary>
@@ -102,11 +102,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region PUBLIC PROPERTIES
 
         /// <summary>
-        /// A direct reference to the Items of CheckBoxComboBoxListControl.
+        /// A direct reference to the items of CheckBoxComboBoxListControl.
         /// You can use it to Get or Set the Checked status of items manually if you want.
         /// But do not manipulate the List itself directly, e.g. Adding and Removing, 
-        /// since the list is synchronised when shown with the ComboBox.Items. So for changing 
-        /// the list contents, use Items instead.
+        /// since the list is synchronised when shown with the ComboBox.items. So for changing 
+        /// the list contents, use items instead.
         /// </summary>
         [Browsable(false)]
         public CheckBoxComboBoxItemList CheckBoxItems
@@ -518,7 +518,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// 
         /// </summary>
         /// <param name="owner">A reference to the CheckBoxComboBox.</param>
-        /// <param name="comboBoxItem">A reference to the item in the ComboBox.Items that this object is extending.</param>
+        /// <param name="comboBoxItem">A reference to the item in the ComboBox.items that this object is extending.</param>
         public CheckBoxComboBoxItem(CheckBoxComboBox owner, object comboBoxItem)
             : base()
         {
@@ -539,7 +539,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         private CheckBoxComboBox _CheckBoxComboBox;
         /// <summary>
-        /// A reference to the Item in ComboBox.Items that this object is extending.
+        /// A reference to the Item in ComboBox.items that this object is extending.
         /// </summary>
         private object _ComboBoxItem;
 
@@ -548,7 +548,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region PUBLIC PROPERTIES
 
         /// <summary>
-        /// A reference to the Item in ComboBox.Items that this object is extending.
+        /// A reference to the Item in ComboBox.items that this object is extending.
         /// </summary>
         public object ComboBoxItem
         {
@@ -662,10 +662,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
     /// <summary>
     /// A Typed List of the CheckBox items.
-    /// Simply a wrapper for the CheckBoxComboBox.Items. A list of CheckBoxComboBoxItem objects.
-    /// This List is automatically synchronised with the Items of the ComboBox and extended to
+    /// Simply a wrapper for the CheckBoxComboBox.items. A list of CheckBoxComboBoxItem objects.
+    /// This List is automatically synchronised with the items of the ComboBox and extended to
     /// handle the additional boolean value. That said, do not Add or Remove using this List, 
-    /// it will be lost or regenerated from the ComboBox.Items.
+    /// it will be lost or regenerated from the ComboBox.items.
     /// </summary>
     [ToolboxItem(false)]
     public class CheckBoxComboBoxItemList : List<CheckBoxComboBoxItem>

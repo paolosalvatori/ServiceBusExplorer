@@ -55,7 +55,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         private const string SendMessagesFormat = "Send messages to {0}";
-        private const string SendEventsFormat = "Send events to {0}";
+        private const string SendEventsToEventHubFormat = "Send events to {0}";
+        private const string SendEventsToEventHubPartitionFormat = "Send events to partition {0} of {1}";
         private const string TestQueueFormat = "Test queue {0} in MDI mode";
         private const string TestTopicFormat = "Test topic {0} in MDI mode";
         private const string TestSubscriptionFormat = "Test subscription {0} in MDI mode";
@@ -63,6 +64,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string HeaderTextTestTopicFormat = "Test Topic: {0}";
         private const string HeaderTextTestSubscriptionFormat = "Test Subscription: {0}";
         private const string HeaderTextTestEventHubFormat = "Test Event Hub: {0}";
+        private const string HeaderTextTestEventHubPartitionFormat = "Test Partition: {0} of Event Hub: {1}";
         private const string LogFileNameFormat = "ServiceBusExplorer {0}.txt";
         private const string QueueListenerFormat = "Listener for queue {0}";
         private const string SubscriptionListenerFormat = "Listener for subscription {0}";
@@ -99,6 +101,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly int mainSplitterDistance;
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private Task logTask;
         #endregion
 
         #region Public Constructors
@@ -107,7 +110,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+                logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
                     {
@@ -164,7 +167,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
+                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
                         Size = new Size(panelMain.Size.Width - 3, queueDescription.RequiresSession ? 544 : 520),
@@ -179,7 +182,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 else
                 {
-                    testQueueControl = new TestQueueControl(mainForm, WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
+                    testQueueControl = new TestQueueControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
                                            {
                                                Location = new Point(1, panelMain.HeaderHeight + 1),
                                                Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -244,7 +247,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testTopicControl = new TestTopicControl(mainForm, WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
+                testTopicControl = new TestTopicControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
                                        {
                                            Location = new Point(1, panelMain.HeaderHeight + 1),
                                            Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -310,7 +313,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
+                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
                         Size = new Size(panelMain.Size.Width - 3, subscriptionWrapper.SubscriptionDescription.RequiresSession ? 544 : 520),
@@ -325,7 +328,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 else
                 {
-                    testSubscriptionControl = new TestSubscriptionControl(mainForm, WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper)
+                    testSubscriptionControl = new TestSubscriptionControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
                         Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -350,7 +353,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null)
         {
             try
             {
@@ -369,22 +372,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testEventHubControl = new TestEventHubControl(mainForm, WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), eventHubDescription)
+                testEventHubControl = new TestEventHubControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), eventHubDescription, partitionDescription)
                 {
                     Location = new Point(1, panelMain.HeaderHeight + 1),
                     Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
                     Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                 };
 
-
-                Text = string.Format(SendEventsFormat, eventHubDescription.Path);
+                Text = partitionDescription == null
+                    ? string.Format(SendEventsToEventHubFormat, eventHubDescription.Path)
+                    : string.Format(SendEventsToEventHubPartitionFormat,
+                        partitionDescription.PartitionId,
+                        eventHubDescription.Path);
 
                 testEventHubControl.btnCancel.Text = CloseLabel;
                 testEventHubControl.btnCancel.Click -= testEventHubControl.btnCancel_Click;
                 testEventHubControl.btnCancel.Click += BtnCancelOnClick;
                 testEventHubControl.Focus();
 
-                panelMain.HeaderText = string.Format(HeaderTextTestEventHubFormat, eventHubDescription.Path);
+                panelMain.HeaderText = partitionDescription == null ?
+                                       string.Format(HeaderTextTestEventHubFormat, eventHubDescription.Path) :
+                                       string.Format(HeaderTextTestEventHubPartitionFormat, 
+                                                     partitionDescription.PartitionId, 
+                                                     eventHubDescription.Path);
+
                 panelMain.Controls.Add(testEventHubControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
@@ -419,7 +430,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopAndRestartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions)
+                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions)
                 {
                     Location = new Point(1, panelMain.HeaderHeight + 1),
                     Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -457,23 +468,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Methods
-        private void BtnCancelOnClick(object sender, EventArgs eventArgs)
+        private async void BtnCancelOnClick(object sender, EventArgs eventArgs)
         {
             if (testQueueControl != null)
             {
-                testQueueControl.CancelActions();
+                await testQueueControl.CancelActions();
             }
             if (testTopicControl != null)
             {
-                testTopicControl.CancelActions();
+                await testTopicControl.CancelActions();
             }
             if (testSubscriptionControl != null)
             {
-                testSubscriptionControl.CancelActions();
+                await testSubscriptionControl.CancelActions();
             }
             if (testEventHubControl != null)
             {
-                testEventHubControl.CancelActions();
+                await testEventHubControl.CancelActions();
             }
             Close();
         }
@@ -543,16 +554,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void StopAndRestartLog()
+        private Task StopLog()
         {
             cancellationTokenSource.Cancel();
-            cancellationTokenSource = new CancellationTokenSource();
+            return Task.FromResult(true);
+        }
+
+        private void StartLog()
+        {
             if (logCollection != null)
             {
                 logCollection.Dispose();
-                logCollection = new BlockingCollection<string>();
             }
-            Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+            logCollection = new BlockingCollection<string>();
+            cancellationTokenSource = new CancellationTokenSource();
+            logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
                 {

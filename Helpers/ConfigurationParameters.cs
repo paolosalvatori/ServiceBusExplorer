@@ -31,6 +31,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public const string ShowMessageCountParameter = "showMessageCount";
         public const string SaveMessageToFileParameter = "saveMessageToFile";
         public const string SavePropertiesToFileParameter = "savePropertiesToFile";
+        public const string SaveCheckpointsToFileParameter = "saveCheckpointsToFile";
         public const string SchemeParameter = "scheme";
         public const string MessageParameter = "message";
         public const string FileParameter = "file";

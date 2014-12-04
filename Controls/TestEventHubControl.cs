@@ -27,6 +27,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -54,7 +55,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string PropertyType = "Type";
         private const string PropertyValue = "Value";
         private const string DefaultMessageCount = "1";
-        //private const string DefaulSendBatchSize = "10";
+        private const string DefaulSendBatchSize = "10";
         private const string DefaultSenderTaskCount = "1";
         private const string StartCaption = "Start";
         private const string StopCaption = "Stop";
@@ -66,7 +67,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
-        //private const string SenderBatchSizeMustBeANumber = "The Sender Batch Size field must be an integer number greater than zero.";
+        private const string SenderBatchSizeMustBeANumber = "The Sender Batch Size field must be an integer number greater than zero.";
         private const string SenderThinkTimeMustBeANumber = "The Sender Think Time field must be an integer number greater than zero.";
         private const string NoMessageSelected = "No message to send has been selected.";
         private const string SelectEventDataGenerator = "Select an EventData generator...";
@@ -103,10 +104,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Private Instance Fields
         private readonly EventHubDescription eventHubDescription;
+        private readonly PartitionDescription partitionDescription;
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly MainForm mainForm;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly Action stopAndRestartLog;
+        private readonly Func<Task> stopLog;
+        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private List<EventHubClient> eventHubClientCollection = new List<EventHubClient>();
         private CancellationTokenSource senderCancellationTokenSource;
@@ -129,6 +132,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IEventDataGenerator senderEventDataGenerator;
         private IEventDataInspector senderEventDataInspector;
+        
         #endregion
 
         #region Private Static Fields
@@ -138,15 +142,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Constructors
         public TestEventHubControl(MainForm mainForm,
                                    WriteToLogDelegate writeToLog,
-                                   Action stopAndRestartLog,
+                                   Func<Task> stopLog,
+                                   Action startLog,
                                    ServiceBusHelper serviceBusHelper,
-                                   EventHubDescription eventHubDescription)
+                                   EventHubDescription eventHubDescription,
+                                   PartitionDescription partitionDescription)
         {
             this.mainForm = mainForm;
             this.writeToLog = writeToLog;
-            this.stopAndRestartLog = stopAndRestartLog;
+            this.stopLog = stopLog;
+            this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
             this.eventHubDescription = eventHubDescription;
+            this.partitionDescription = partitionDescription;
             InitializeComponent();
             InitializeControls();
         }
@@ -276,8 +284,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 txtPartitionKey.Text = Guid.NewGuid().ToString();
                 txtMessageCount.Text = DefaultMessageCount;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
-                //txtSendBatchSize.Text = DefaulSendBatchSize;
-                //txtSendBatchSize.Enabled = false;
+                txtSendBatchSize.Text = DefaulSendBatchSize;
+                txtSendBatchSize.Enabled = false;
 
                 // Create Tooltips for controls
                 toolTip.SetToolTip(txtMessageText, MessageTextTooltip);
@@ -293,6 +301,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 splitContainer.SplitterWidth = 16;
                 splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth)/2;
                 propertiesDataGridView.Size = txtMessageText.Size;
+
+                // Send to Partition
+                if (partitionDescription == null)
+                {
+                    return;
+                }
+                checkBoxUpdatePartitionKey.Visible = false;
+                checkBoxNoPartitionKey.Visible = false;
+                lblSenderInspector.Location = new Point(lblSenderInspector.Location.X, lblSenderInspector.Location.Y - 32);
+                cboSenderInspector.Location = new Point(cboSenderInspector.Location.X, cboSenderInspector.Location.Y - 32);
+                grouperPartitionKey.Visible = false;
+                grouperMessageText.Size = new Size(tabMessagePage.Size.Width - 32, tabMessagePage.Size.Height - 32);
             }
             catch (Exception ex)
             {
@@ -316,12 +336,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return false;
                 }
                 eventDataCount = temp;
-                //if (!int.TryParse(txtSendBatchSize.Text, out temp) || temp <= 0)
-                //{
-                //    writeToLog(SenderBatchSizeMustBeANumber);
-                //    return false;
-                //}
-                //senderBatchSize = temp;
+                if (!int.TryParse(txtSendBatchSize.Text, out temp) || temp <= 0)
+                {
+                    writeToLog(SenderBatchSizeMustBeANumber);
+                    return false;
+                }
+                senderBatchSize = temp;
                 if (!int.TryParse(txtSenderThinkTime.Text, out temp) || temp <= 0)
                 {
                     writeToLog(SenderThinkTimeMustBeANumber);
@@ -343,13 +363,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return true;
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
             try
             {
                 if (btnStart.Text == StopCaption)
                 {
-                    CancelActions();
+                    await CancelActions();
                     btnStart.Text = StartCaption;
                     return;
                 }
@@ -357,6 +377,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusHelper != null &&
                     ValidateParameters())
                 {
+                    if (startLog != null)
+                    {
+                        startLog();
+                    }
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
 
@@ -491,6 +515,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         // Create outbound message template list
                         var eventDataTemplateList = new List<EventData>();
                         var updatePartitionKey = checkBoxUpdatePartitionKey.Checked;
+                        var noPartitionKey = checkBoxNoPartitionKey.Checked;
                         if (messageTabControl.SelectedIndex == MessageTabPage)
                         {
                             eventDataTemplateList.Add(serviceBusHelper.CreateEventDataTemplate(txtMessageText.Text,
@@ -618,17 +643,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                             eventDataCount,
                                                                                             taskId,
                                                                                             updatePartitionKey,
+                                                                                            noPartitionKey,
                                                                                             checkBoxAddMessageNumber.Checked,
                                                                                             checkBoxEnableSenderLogging.Checked,
                                                                                             checkBoxSenderVerboseLogging.Checked,
                                                                                             checkBoxSenderEnableStatistics.Checked,
-                                                                                            false, //checkBoxSendBatch.Checked,
+                                                                                            checkBoxSendBatch.Checked,
                                                                                             senderBatchSize,
                                                                                             checkBoxSenderThinkTime.Checked,
                                                                                             senderThinkTime,
                                                                                             senderEventDataInspector,
                                                                                             UpdateStatistics,
-                                                                                            senderCancellationTokenSource).Result;
+                                                                                            senderCancellationTokenSource,
+                                                                                            partitionDescription != null ?
+                                                                                            partitionDescription.PartitionId :
+                                                                                            null).Result;
                                         if (!string.IsNullOrWhiteSpace(traceMessage))
                                         {
                                             writeToLog(traceMessage.Substring(0, traceMessage.Length - 1));
@@ -824,11 +853,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal void CancelActions()
+        internal async Task CancelActions()
         {
-            if (stopAndRestartLog != null)
+            if (stopLog != null)
             {
-                stopAndRestartLog();
+                await stopLog();
             }
             if (managerCancellationTokenSource != null)
             {
@@ -844,9 +873,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal void btnCancel_Click(object sender, EventArgs e)
+        internal async void btnCancel_Click(object sender, EventArgs e)
         {
-            CancelActions();
+            await CancelActions();
             OnCancel();
         }
 
@@ -1315,6 +1344,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             catch
             {
             }
+        }
+
+        private void partitionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == checkBoxUpdatePartitionKey && checkBoxUpdatePartitionKey.Checked)
+            {
+                checkBoxNoPartitionKey.Checked = false;
+            }
+            if (sender == checkBoxNoPartitionKey && checkBoxNoPartitionKey.Checked)
+            {
+                checkBoxUpdatePartitionKey.Checked = false;
+            }
+        }
+
+        private void checkBoxSendBatch_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSendBatchSize.Enabled = checkBoxSendBatch.Checked;
         }
         #endregion
     }

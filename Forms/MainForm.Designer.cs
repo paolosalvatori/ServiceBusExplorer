@@ -268,6 +268,8 @@
             this.copyPartitionUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator54 = new System.Windows.Forms.ToolStripSeparator();
             this.createPartitionListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator60 = new System.Windows.Forms.ToolStripSeparator();
+            this.sendMessagesEventHubPartitionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.partitionsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshPartitionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator57 = new System.Windows.Forms.ToolStripSeparator();
@@ -2249,9 +2251,11 @@
             this.toolStripSeparator58,
             this.copyPartitionUrlMenuItem,
             this.toolStripSeparator54,
-            this.createPartitionListenerMenuItem});
+            this.createPartitionListenerMenuItem,
+            this.toolStripSeparator60,
+            this.sendMessagesEventHubPartitionMenuItem});
             this.partitionContextMenuStrip.Name = "ruleContextMenuStrip";
-            this.partitionContextMenuStrip.Size = new System.Drawing.Size(201, 82);
+            this.partitionContextMenuStrip.Size = new System.Drawing.Size(201, 132);
             // 
             // refreshPartitionMenuItem
             // 
@@ -2286,6 +2290,19 @@
             this.createPartitionListenerMenuItem.Text = "Create Partition Listener";
             this.createPartitionListenerMenuItem.ToolTipText = "Create a partition listener.";
             this.createPartitionListenerMenuItem.Click += new System.EventHandler(this.createEntityListenerMenuItem_Click);
+            // 
+            // toolStripSeparator60
+            // 
+            this.toolStripSeparator60.Name = "toolStripSeparator60";
+            this.toolStripSeparator60.Size = new System.Drawing.Size(197, 6);
+            // 
+            // sendMessagesEventHubPartitionMenuItem
+            // 
+            this.sendMessagesEventHubPartitionMenuItem.Name = "sendMessagesEventHubPartitionMenuItem";
+            this.sendMessagesEventHubPartitionMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.sendMessagesEventHubPartitionMenuItem.Text = "Send Events";
+            this.sendMessagesEventHubPartitionMenuItem.ToolTipText = "Send test events to the current event hub partition.";
+            this.sendMessagesEventHubPartitionMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
             // 
             // partitionsContextMenuStrip
             // 
@@ -2433,7 +2450,7 @@
             this.KeyPreview = true;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Service Bus Explorer 2.4.3.0";
+            this.Text = "Service Bus Explorer 2.5.2.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
@@ -2736,6 +2753,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator54;
         private System.Windows.Forms.ToolStripMenuItem createPartitionListenerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createConsumerGroupListenerMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator60;
+        private System.Windows.Forms.ToolStripMenuItem sendMessagesEventHubPartitionMenuItem;
     }
 }
 

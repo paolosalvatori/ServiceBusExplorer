@@ -416,6 +416,8 @@
             "Enable Batched Operations",
             "Enable Filtering Messages Before Publishing",
             "Enable Partitioning",
+            "Enable Express",
+            "Enable Large Messages",
             "Requires Duplicate Detection",
             "Enforce Message Ordering",
             "Is Anonymous Accessible"});

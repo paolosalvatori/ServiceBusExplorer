@@ -146,10 +146,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ReceiverStatitiscsLine3 = " - Average Complete Time (ms)=[{0}] Minimum Complete Time (ms)=[{1}] Maximum Complete Time (ms)=[{2}] ";
         private const string ExceptionOccurred = " - Exception occurred: {0}";
         private const string UnableToReadMessageBody = "Unable to read the message body.";
+        private const string EventHubClientCannotBeNull = "The EventHubClient parameter cannot be null.";
+        private const string EventHubSenderCannotBeNull = "The EventHubSender parameter cannot be null.";
         private const string MessageSenderCannotBeNull = "The MessageSender parameter cannot be null.";
         private const string MessageReceiverCannotBeNull = "The MessageReceiver parameter cannot be null.";
         private const string BrokeredMessageCannotBeNull = "The BrokeredMessage parameter cannot be null.";
-        private const string EventHubClientCannotBeNull = "The eventHubClient parameter cannot be null.";
+        private const string EventDataCannotBeNull = "The EventData parameter cannot be null.";
         private const string EventDataTemplateEnumerableCannotBeNull = "The eventDataTemplateEnumerable parameter cannot be null.";
         private const string CancellationTokenSourceCannotBeNull = "The CancellationTokenSource parameter cannot be null.";
         private const string MessageIsNotXmlOrJson = "The message is not in XML or JSON format.";
@@ -645,7 +647,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the encodingType of sent messages
         /// </summary>
-        public static EncodingType EncodingTypeType
+        public static EncodingType EncodingType
         {
             get
             {
@@ -2604,6 +2606,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="messageCount">The total number of messages to send.</param>
         /// <param name="taskId">The sender task id.</param>
         /// <param name="updatePartitionKey">Indicates whether to use a unique template key for each message.</param>
+        /// <param name="noPartitionKey">Indiactes to specify a null value for the PartitionKey property. Messages will be written in a round robin fashion to event hub partitions.</param>
         /// <param name="addMessageNumber">Indicates whether to add a message number property.</param>
         /// <param name="logging">Indicates whether to enable logging of message content and properties.</param>
         /// <param name="verbose">Indicates whether to enable verbose logging.</param>
@@ -2615,6 +2618,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="thinkTime">Indicates the value of the sender think time.</param>
         /// <param name="batchSize">Indicates the batch size.</param>
         /// <param name="cancellationTokenSource">The cancellation token.</param>
+        /// <param name="partitionId">PartitionId (optional: used only when sending messages to a specific partition.</param>
         /// <returns>Trace message.</returns>
         public async Task<string> SendEventData(EventHubClient eventHubClient,
                                                 IEnumerable<EventData> eventDataTemplateEnumerable,
@@ -2622,6 +2626,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                 long messageCount,
                                                 int taskId,
                                                 bool updatePartitionKey,
+                                                bool noPartitionKey,
                                                 bool addMessageNumber,
                                                 bool logging,
                                                 bool verbose,
@@ -2632,7 +2637,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                 int thinkTime,
                                                 IEventDataInspector eventDataInspector,
                                                 UpdateStatisticsDelegate updateStatistics,
-                                                CancellationTokenSource cancellationTokenSource)
+                                                CancellationTokenSource cancellationTokenSource,
+                                                string partitionId = null)
         {
             if (eventHubClient == null)
             {
@@ -2658,77 +2664,109 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             string exceptionMessage = null;
             try
             {
+                long messageNumber;
+                string partitionKey = null;
+                EventHubSender eventHubSender = null;
+                var partitionIdIsNull = string.IsNullOrWhiteSpace(partitionId);
+                if (!partitionIdIsNull)
+                {
+                    eventHubSender = await eventHubClient.CreatePartitionedSenderAsync(partitionId);
+                }
                 if (sendBatch && batchSize > 1)
                 {
-                    //var more = true;
-                    //while (!cancellationTokenSource.Token.IsCancellationRequested && more)
-                    //{
-                    //    var eventDataList = new List<EventData>();
-                    //    var messageNumberList = new List<long>();
-                    //    while (!cancellationTokenSource.Token.IsCancellationRequested &&
-                    //           messageNumberList.Count < batchSize && more)
-                    //    {
-                    //        messageNumber = getMessageNumber();
-                    //        if (messageNumber < messageCount)
-                    //        {
-                    //            messageNumberList.Add(messageNumber);
-                    //        }
-                    //        else
-                    //        {
-                    //            more = false;
-                    //        }
-                    //    }
-                    //    if (messageNumberList.Count > 0)
-                    //    {
-                    //        long elapsedMilliseconds = 0;
-                    //        await RetryHelper.RetryActionAsync(async () =>
-                    //        {
-                    //            for (var i = 0; i < messageNumberList.Count; i++)
-                    //            {
-                    //                eventDataList.Add(eventDataInspector != null?
-                    //                                  eventDataInspector.BeforeSendMessage(eventDataCircularList.Next.Clone()) :
-                    //                                  eventDataCircularList.Next.Clone());
-                    //                if (addMessageNumber)
-                    //                {
-                    //                    eventDataList[i].Properties[MessageNumber] = messageNumberList[i];
-                    //                }
-                    //            }
-                    //            if (messageNumberList.Count > 0)
-                    //            {
-                    //                elapsedMilliseconds = await SendEventDataBatch(eventHubClient,
-                    //                                                               eventDataList,
-                    //                                                               messageNumberList,
-                    //                                                               taskId,
-                    //                                                               logging,
-                    //                                                               verbose);
-                    //            }
-                    //        },
-                    //        writeToLog);
-                    //        messagesSent += eventDataList.Count;
-                    //        if (elapsedMilliseconds > maximumSendTime)
-                    //        {
-                    //            maximumSendTime = elapsedMilliseconds;
-                    //        }
-                    //        if (elapsedMilliseconds < minimumSendTime)
-                    //        {
-                    //            minimumSendTime = elapsedMilliseconds;
-                    //        }
-                    //        totalElapsedTime += elapsedMilliseconds;
-                    //        if (statistics)
-                    //        {
-                    //            updateStatistics(eventDataList.Count, elapsedMilliseconds, DirectionType.Send);
-                    //        }
-                    //    }
-                    //    if (senderThinkTime)
-                    //    {
-                    //        WriteToLog(string.Format(SleepingFor, thinkTime));
-                    //        Thread.Sleep(thinkTime);
-                    //    }
-                    //}
+                    var more = true;
+                    while (!cancellationTokenSource.Token.IsCancellationRequested && more)
+                    {
+                        var eventDataList = new List<EventData>();
+                        var messageNumberList = new List<long>();
+                        while (!cancellationTokenSource.Token.IsCancellationRequested &&
+                               messageNumberList.Count < batchSize && more)
+                        {
+                            messageNumber = getMessageNumber();
+                            if (messageNumber < messageCount)
+                            {
+                                messageNumberList.Add(messageNumber);
+                            }
+                            else
+                            {
+                                more = false;
+                            }
+                        }
+                        if (messageNumberList.Count > 0)
+                        {
+                            long elapsedMilliseconds = 0;
+                            // ReSharper disable once ImplicitlyCapturedClosure
+                            await RetryHelper.RetryActionAsync(async () =>
+                            {
+                                for (var i = 0; i < messageNumberList.Count; i++)
+                                {
+                                    eventDataList.Add(eventDataInspector != null ?
+                                                      eventDataInspector.BeforeSendMessage(eventDataCircularList.Next.Clone()) :
+                                                      eventDataCircularList.Next.Clone());
+                                    if ((i % batchSize) == 0)
+                                    {
+                                        partitionKey = Guid.NewGuid().ToString();
+                                    }
+                                    if (addMessageNumber)
+                                    {
+                                        eventDataList[i].Properties[MessageNumber] = messageNumberList[i];
+                                    }
+                                    if (updatePartitionKey)
+                                    {
+                                        eventDataList[i].PartitionKey = partitionKey; 
+                                    }
+                                    if (noPartitionKey || !partitionIdIsNull)
+                                    {
+                                        eventDataList[i].PartitionKey = null;
+                                    }
+                                }
+                                if (messageNumberList.Count > 0)
+                                {
+                                    if (partitionIdIsNull)
+                                    {
+                                        elapsedMilliseconds = await SendEventDataBatch(eventHubClient,
+                                                                                       eventDataList,
+                                                                                       messageNumberList,
+                                                                                       taskId,
+                                                                                       logging,
+                                                                                       verbose);
+                                    }
+                                    else
+                                    {
+                                        elapsedMilliseconds = await SendEventDataBatch(eventHubSender,
+                                                                                       eventDataList,
+                                                                                       messageNumberList,
+                                                                                       taskId,
+                                                                                       logging,
+                                                                                       verbose);
+                                    }
+                                }
+                            },
+                            writeToLog);
+                            messagesSent += eventDataList.Count;
+                            if (elapsedMilliseconds > maximumSendTime)
+                            {
+                                maximumSendTime = elapsedMilliseconds;
+                            }
+                            if (elapsedMilliseconds < minimumSendTime)
+                            {
+                                minimumSendTime = elapsedMilliseconds;
+                            }
+                            totalElapsedTime += elapsedMilliseconds;
+                            if (statistics)
+                            {
+                                updateStatistics(eventDataList.Count, elapsedMilliseconds, DirectionType.Send);
+                            }
+                        }
+                        if (senderThinkTime)
+                        {
+                            WriteToLog(string.Format(SleepingFor, thinkTime));
+                            Thread.Sleep(thinkTime);
+                        }
+                    }
                 }
                 else
                 {
-                    long messageNumber;
                     while ((messageNumber = getMessageNumber()) < messageCount &&
                        !cancellationTokenSource.Token.IsCancellationRequested)
                     {
@@ -2745,13 +2783,32 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 eventData.Properties[MessageNumber] = number;
                                 // ReSharper restore AccessToModifiedClosure
                             }
-
-                            elapsedMilliseconds = await SendEventData(eventHubClient,
-                                                                      eventData,
-                                                                      number,
-                                                                      taskId,
-                                                                      logging,
-                                                                      verbose);
+                            if (updatePartitionKey)
+                            {
+                                eventData.PartitionKey = Guid.NewGuid().ToString();
+                            }
+                            if (noPartitionKey || !partitionIdIsNull)
+                            {
+                                eventData.PartitionKey = null;
+                            }
+                            if (partitionIdIsNull)
+                            {
+                                elapsedMilliseconds = await SendEventData(eventHubClient,
+                                                                          eventData,
+                                                                          number,
+                                                                          taskId,
+                                                                          logging,
+                                                                          verbose);
+                            }
+                            else
+                            {
+                                elapsedMilliseconds = await SendEventData(eventHubSender,
+                                                                          eventData,
+                                                                          number,
+                                                                          taskId,
+                                                                          logging,
+                                                                          verbose);
+                            }
                         },
                         writeToLog);
                         messagesSent++;
@@ -2847,82 +2904,164 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         ///// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
         ///// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         ///// <returns>Elapsed milliseconds.</returns>
-        //public async Task<long> SendEventDataBatch(EventHubClient eventHubClient,
-        //                                           List<EventData> eventDataList,
-        //                                           List<long> messageNumberList,
-        //                                           int taskId,
-        //                                           bool logging,
-        //                                           bool verbose)
-        //{
-        //    long elapsedMilliseconds = 0;
+        public async Task<long> SendEventDataBatch(EventHubClient eventHubClient,
+                                                   List<EventData> eventDataList,
+                                                   List<long> messageNumberList,
+                                                   int taskId,
+                                                   bool logging,
+                                                   bool verbose)
+        {
+            long elapsedMilliseconds = 0;
 
-        //    if (eventHubClient == null)
-        //    {
-        //        throw new ArgumentNullException(EventHubClientCannotBeNull);
-        //    }
+            if (eventHubClient == null)
+            {
+                throw new ArgumentNullException(EventHubClientCannotBeNull);
+            }
 
-        //    if (eventDataList == null || eventDataList.Count == 0)
-        //    {
-        //        return elapsedMilliseconds;
-        //    }
-        //    List<Stream> eventDataPayloadList = null;
-        //    var stopwatch = new Stopwatch();
-        //    var builder = new StringBuilder();
-        //    try
-        //    {
-        //        stopwatch.Start();
-        //        if (logging && verbose)
-        //        {
-        //            eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
-        //        }
-        //        //await eventHubClient.SendBatchAsync(eventDataList);
-        //    }
-        //    finally
-        //    {
-        //        stopwatch.Stop();
-        //    }
-        //    elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-        //    if (logging)
-        //    {
-        //        for (var i = 0; i < eventDataList.Count; i++)
-        //        {
-        //            try
-        //            {
-        //                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, 
-        //                                                 EventDataSuccessfullySent,
-        //                                                 taskId,
-        //                                                 messageNumberList[i],
-        //                                                 string.IsNullOrWhiteSpace(eventDataList[i].PartitionKey)
-        //                                                        ? NullValue
-        //                                                        : eventDataList[i].PartitionKey));
-        //                if (verbose)
-        //                {
-        //                    builder.AppendLine(SentMessagePayloadHeader);
-        //                    builder.AppendLine(string.Format(MessageTextFormat, GetMessageText(eventDataPayloadList[i])));
-        //                    builder.AppendLine(SentMessagePropertiesHeader);
-        //                    foreach (var p in eventDataList[i].Properties)
-        //                    {
-        //                        builder.AppendLine(string.Format(MessagePropertyFormat,
-        //                                                         p.Key,
-        //                                                         p.Value));
-        //                    }
-        //                }
-        //            }
-        //            finally
-        //            {
-        //                eventDataList[i].Dispose();
-        //            }
-        //        }
-        //        var traceMessage = builder.ToString();
-        //        WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
-        //    }
-        //    return elapsedMilliseconds;
-        //}
+            if (eventDataList == null || eventDataList.Count == 0)
+            {
+                return elapsedMilliseconds;
+            }
+            List<Stream> eventDataPayloadList = null;
+            var stopwatch = new Stopwatch();
+            var builder = new StringBuilder();
+            try
+            {
+                stopwatch.Start();
+                if (logging && verbose)
+                {
+                    eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
+                }
+                await eventHubClient.SendBatchAsync(eventDataList);
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+            elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+            if (logging)
+            {
+                for (var i = 0; i < eventDataList.Count; i++)
+                {
+                    try
+                    {
+                        builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
+                                                         EventDataSuccessfullySent,
+                                                         taskId,
+                                                         messageNumberList[i],
+                                                         string.IsNullOrWhiteSpace(eventDataList[i].PartitionKey)
+                                                                ? NullValue
+                                                                : eventDataList[i].PartitionKey));
+                        if (verbose)
+                        {
+                            builder.AppendLine(SentMessagePayloadHeader);
+                            builder.AppendLine(string.Format(MessageTextFormat, GetMessageText(eventDataPayloadList[i])));
+                            builder.AppendLine(SentMessagePropertiesHeader);
+                            foreach (var p in eventDataList[i].Properties)
+                            {
+                                builder.AppendLine(string.Format(MessagePropertyFormat,
+                                                                 p.Key,
+                                                                 p.Value));
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        eventDataList[i].Dispose();
+                    }
+                }
+                var traceMessage = builder.ToString();
+                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+            }
+            return elapsedMilliseconds;
+        }
+
+        ///// <summary>
+        ///// This method can be used to send an event data to an event hub.
+        ///// </summary>
+        ///// <param name="eventHubClient">A EventHubSender object used to send messages.</param>
+        ///// <param name="eventDataList">The list of messages to send.</param>
+        ///// <param name="messageNumberList">The list of message numbers.</param>
+        ///// <param name="taskId">The sender task id.</param>
+        ///// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
+        ///// <param name="verbose">Indicates whether verbose logging is enabled.</param>
+        ///// <returns>Elapsed milliseconds.</returns>
+        public async Task<long> SendEventDataBatch(EventHubSender eventHubSender,
+                                                   List<EventData> eventDataList,
+                                                   List<long> messageNumberList,
+                                                   int taskId,
+                                                   bool logging,
+                                                   bool verbose)
+        {
+            long elapsedMilliseconds = 0;
+
+            if (eventHubSender == null)
+            {
+                throw new ArgumentNullException(EventHubSenderCannotBeNull);
+            }
+
+            if (eventDataList == null || eventDataList.Count == 0)
+            {
+                return elapsedMilliseconds;
+            }
+            List<Stream> eventDataPayloadList = null;
+            var stopwatch = new Stopwatch();
+            var builder = new StringBuilder();
+            try
+            {
+                stopwatch.Start();
+                if (logging && verbose)
+                {
+                    eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
+                }
+                await eventHubSender.SendBatchAsync(eventDataList);
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+            elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+            if (logging)
+            {
+                for (var i = 0; i < eventDataList.Count; i++)
+                {
+                    try
+                    {
+                        builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
+                                                         EventDataSuccessfullySent,
+                                                         taskId,
+                                                         messageNumberList[i],
+                                                         string.IsNullOrWhiteSpace(eventDataList[i].PartitionKey)
+                                                                ? NullValue
+                                                                : eventDataList[i].PartitionKey));
+                        if (verbose)
+                        {
+                            builder.AppendLine(SentMessagePayloadHeader);
+                            builder.AppendLine(string.Format(MessageTextFormat, GetMessageText(eventDataPayloadList[i])));
+                            builder.AppendLine(SentMessagePropertiesHeader);
+                            foreach (var p in eventDataList[i].Properties)
+                            {
+                                builder.AppendLine(string.Format(MessagePropertyFormat,
+                                                                 p.Key,
+                                                                 p.Value));
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        eventDataList[i].Dispose();
+                    }
+                }
+                var traceMessage = builder.ToString();
+                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+            }
+            return elapsedMilliseconds;
+        }
 
         /// <summary>
         /// This method can be used to send an event data to an event hub.
         /// </summary>
-        /// <param name="eventHubClient">A MessageSender object used to send event datas.</param>
+        /// <param name="eventHubClient">An EventHubClient object used to send event data.</param>
         /// <param name="eventData">The event data to send.</param>
         /// <param name="messageNumber">The message number.</param>
         /// <param name="taskId">The sender task id.</param>
@@ -2939,12 +3078,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             long elapsedMilliseconds;
             if (eventHubClient == null)
             {
-                throw new ArgumentNullException(MessageSenderCannotBeNull);
+                throw new ArgumentNullException(EventHubClientCannotBeNull);
             }
 
             if (eventData == null)
             {
-                throw new ArgumentNullException(BrokeredMessageCannotBeNull);
+                throw new ArgumentNullException(EventDataCannotBeNull);
             }
 
             var stopwatch = new Stopwatch();
@@ -2969,6 +3108,86 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (logging)
                 {
                     builder.AppendLine(string.Format(CultureInfo.CurrentCulture, 
+                                                     EventDataSuccessfullySent,
+                                                     taskId,
+                                                     messageNumber,
+                                                     string.IsNullOrWhiteSpace(eventData.PartitionKey) ? NullValue : eventData.PartitionKey));
+                    if (verbose)
+                    {
+                        builder.AppendLine(SentMessagePayloadHeader);
+                        builder.AppendLine(string.Format(MessageTextFormat, GetMessageText(bodyStream)));
+                        if (eventData.Properties.Any())
+                        {
+                            builder.AppendLine(SentMessagePropertiesHeader);
+                            foreach (var p in eventData.Properties)
+                            {
+                                builder.AppendLine(string.Format(MessagePropertyFormat,
+                                                                    p.Key,
+                                                                    p.Value));
+                            }
+                        }
+                    }
+                    var traceMessage = builder.ToString();
+                    WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                }
+            }
+            finally
+            {
+                eventData.Dispose();
+            }
+            return elapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// This method can be used to send an event data to an event hub.
+        /// </summary>
+        /// <param name="eventHubSender">A EventHubSender object used to send event data.</param>
+        /// <param name="eventData">The event data to send.</param>
+        /// <param name="messageNumber">The message number.</param>
+        /// <param name="taskId">The sender task id.</param>
+        /// <param name="logging">Indicates whether logging of event data content and properties is enabled.</param>
+        /// <param name="verbose">Indicates whether verbose logging is enabled.</param>
+        /// <returns>Elapsed milliseconds.</returns>
+        public async Task<long> SendEventData(EventHubSender eventHubSender,
+                                              EventData eventData,
+                                              long messageNumber,
+                                              int taskId,
+                                              bool logging,
+                                              bool verbose)
+        {
+            long elapsedMilliseconds;
+            if (eventHubSender == null)
+            {
+                throw new ArgumentNullException(EventHubSenderCannotBeNull);
+            }
+
+            if (eventData == null)
+            {
+                throw new ArgumentNullException(EventDataCannotBeNull);
+            }
+
+            var stopwatch = new Stopwatch();
+            Stream bodyStream = null;
+            try
+            {
+                var builder = new StringBuilder();
+                try
+                {
+                    if (logging && verbose)
+                    {
+                        bodyStream = eventData.Clone().GetBodyStream();
+                    }
+                    stopwatch.Start();
+                    await eventHubSender.SendAsync(eventData);
+                }
+                finally
+                {
+                    stopwatch.Stop();
+                }
+                elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                if (logging)
+                {
+                    builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
                                                      EventDataSuccessfullySent,
                                                      taskId,
                                                      messageNumber,

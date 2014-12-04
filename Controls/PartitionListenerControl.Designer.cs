@@ -16,12 +16,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btnClose = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
@@ -49,17 +49,11 @@
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.grouperOptions = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
             this.checkBoxOffsetInclusive = new System.Windows.Forms.CheckBox();
-            this.txtEpoch = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
-            this.lblEpoch = new System.Windows.Forms.Label();
-            this.txtCheckpointCount = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
-            this.lblCheckpointCount = new System.Windows.Forms.Label();
+            this.txtMaxBatchSize = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
+            this.lblMaxBatchSize = new System.Windows.Forms.Label();
             this.checkBoxCheckpoint = new System.Windows.Forms.CheckBox();
-            this.lblPrefetchCount = new System.Windows.Forms.Label();
             this.txtReceiveTimeout = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
             this.lblReceiveTimeout = new System.Windows.Forms.Label();
-            this.txtOffset = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
-            this.lblOffset = new System.Windows.Forms.Label();
-            this.txtPrefetchCount = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
             this.checkBoxGraph = new System.Windows.Forms.CheckBox();
             this.checkBoxLogging = new System.Windows.Forms.CheckBox();
             this.checkBoxTrackMessages = new System.Windows.Forms.CheckBox();
@@ -82,12 +76,16 @@
             this.eventDataPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.eventDataContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.viewAndSaveEventDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.saveSelectedEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedEventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eventDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.btnClear = new System.Windows.Forms.Button();
             this.cboReceiverInspector = new System.Windows.Forms.ComboBox();
             this.lblReceiverInspector = new System.Windows.Forms.Label();
             this.partitionInformationContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyPartitionInformationToClipboardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.mainTabControl.SuspendLayout();
             this.tabPageListener.SuspendLayout();
             this.grouperStatistics.SuspendLayout();
@@ -341,78 +339,78 @@
             this.chart.BorderSkin.BorderWidth = 0;
             this.chart.BorderSkin.PageColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.chart.BorderSkin.SkinStyle = System.Windows.Forms.DataVisualization.Charting.BorderSkinStyle.FrameTitle1;
-            chartArea1.Area3DStyle.Inclination = 15;
-            chartArea1.Area3DStyle.IsClustered = true;
-            chartArea1.Area3DStyle.IsRightAngleAxes = false;
-            chartArea1.Area3DStyle.Perspective = 10;
-            chartArea1.Area3DStyle.Rotation = 10;
-            chartArea1.Area3DStyle.WallWidth = 0;
-            chartArea1.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont) 
+            chartArea2.Area3DStyle.Inclination = 15;
+            chartArea2.Area3DStyle.IsClustered = true;
+            chartArea2.Area3DStyle.IsRightAngleAxes = false;
+            chartArea2.Area3DStyle.Perspective = 10;
+            chartArea2.Area3DStyle.Rotation = 10;
+            chartArea2.Area3DStyle.WallWidth = 0;
+            chartArea2.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.WordWrap)));
-            chartArea1.AxisX.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
-            chartArea1.AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            chartArea1.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea1.AxisX.ScrollBar.Size = 10D;
-            chartArea1.AxisX.Title = "Events";
-            chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            chartArea1.AxisY.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
-            chartArea1.AxisY.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            chartArea1.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea1.AxisY.ScrollBar.Size = 10D;
-            chartArea1.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            chartArea1.AxisY2.Title = "Messages/Sec";
-            chartArea1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            chartArea1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.TopBottom;
-            chartArea1.BackSecondaryColor = System.Drawing.Color.White;
-            chartArea1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            chartArea1.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea1.CursorX.IsUserEnabled = true;
-            chartArea1.CursorX.IsUserSelectionEnabled = true;
-            chartArea1.CursorY.IsUserEnabled = true;
-            chartArea1.CursorY.IsUserSelectionEnabled = true;
-            chartArea1.Name = "Default";
-            chartArea1.ShadowColor = System.Drawing.Color.White;
-            this.chart.ChartAreas.Add(chartArea1);
-            legend1.Alignment = System.Drawing.StringAlignment.Center;
-            legend1.BackColor = System.Drawing.Color.Transparent;
-            legend1.Font = new System.Drawing.Font("Trebuchet MS", 8.25F);
-            legend1.IsTextAutoFit = false;
-            legend1.MaximumAutoSize = 18F;
-            legend1.Name = "Default";
-            this.chart.Legends.Add(legend1);
+            chartArea2.AxisX.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
+            chartArea2.AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            chartArea2.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            chartArea2.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea2.AxisX.ScrollBar.Size = 10D;
+            chartArea2.AxisX.Title = "Events";
+            chartArea2.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            chartArea2.AxisY.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
+            chartArea2.AxisY.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            chartArea2.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            chartArea2.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea2.AxisY.ScrollBar.Size = 10D;
+            chartArea2.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            chartArea2.AxisY2.Title = "Messages/Sec";
+            chartArea2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            chartArea2.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.TopBottom;
+            chartArea2.BackSecondaryColor = System.Drawing.Color.White;
+            chartArea2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            chartArea2.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+            chartArea2.CursorX.IsUserEnabled = true;
+            chartArea2.CursorX.IsUserSelectionEnabled = true;
+            chartArea2.CursorY.IsUserEnabled = true;
+            chartArea2.CursorY.IsUserSelectionEnabled = true;
+            chartArea2.Name = "Default";
+            chartArea2.ShadowColor = System.Drawing.Color.White;
+            this.chart.ChartAreas.Add(chartArea2);
+            legend2.Alignment = System.Drawing.StringAlignment.Center;
+            legend2.BackColor = System.Drawing.Color.Transparent;
+            legend2.Font = new System.Drawing.Font("Trebuchet MS", 8.25F);
+            legend2.IsTextAutoFit = false;
+            legend2.MaximumAutoSize = 18F;
+            legend2.Name = "Default";
+            this.chart.Legends.Add(legend2);
             this.chart.Location = new System.Drawing.Point(16, 16);
             this.chart.Name = "chart";
-            series1.BorderColor = System.Drawing.Color.Red;
-            series1.BorderWidth = 2;
-            series1.ChartArea = "Default";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series1.Legend = "Default";
-            series1.LegendText = "Latency";
-            series1.Name = "ReceiverLatency";
-            series2.BorderWidth = 2;
-            series2.ChartArea = "Default";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series2.Legend = "Default";
-            series2.LegendText = "Throughput";
-            series2.Name = "ReceiverThroughput";
-            series3.ChartArea = "Default";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series3.Legend = "Default";
-            series3.LegendText = "KB/Sec";
-            series3.Name = "MessageSizePerSecond";
-            this.chart.Series.Add(series1);
-            this.chart.Series.Add(series2);
-            this.chart.Series.Add(series3);
+            series4.BorderColor = System.Drawing.Color.Red;
+            series4.BorderWidth = 2;
+            series4.ChartArea = "Default";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series4.Legend = "Default";
+            series4.LegendText = "Latency";
+            series4.Name = "ReceiverLatency";
+            series5.BorderWidth = 2;
+            series5.ChartArea = "Default";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series5.Legend = "Default";
+            series5.LegendText = "Throughput";
+            series5.Name = "ReceiverThroughput";
+            series6.ChartArea = "Default";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series6.Legend = "Default";
+            series6.LegendText = "KB/Sec";
+            series6.Name = "MessageSizePerSecond";
+            this.chart.Series.Add(series4);
+            this.chart.Series.Add(series5);
+            this.chart.Series.Add(series6);
             this.chart.Size = new System.Drawing.Size(616, 312);
             this.chart.TabIndex = 128;
-            title1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title1.Name = "Title";
-            title1.ShadowColor = System.Drawing.Color.Transparent;
-            title1.ShadowOffset = 1;
-            title1.Text = "Listener Performance Counters";
-            this.chart.Titles.Add(title1);
+            title2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title2.Name = "Title";
+            title2.ShadowColor = System.Drawing.Color.Transparent;
+            title2.ShadowOffset = 1;
+            title2.Text = "Listener Performance Counters";
+            this.chart.Titles.Add(title2);
             // 
             // grouperPartitionInformation
             // 
@@ -517,17 +515,11 @@
             this.grouperOptions.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperOptions.BorderThickness = 1F;
             this.grouperOptions.Controls.Add(this.checkBoxOffsetInclusive);
-            this.grouperOptions.Controls.Add(this.txtEpoch);
-            this.grouperOptions.Controls.Add(this.lblEpoch);
-            this.grouperOptions.Controls.Add(this.txtCheckpointCount);
-            this.grouperOptions.Controls.Add(this.lblCheckpointCount);
+            this.grouperOptions.Controls.Add(this.txtMaxBatchSize);
+            this.grouperOptions.Controls.Add(this.lblMaxBatchSize);
             this.grouperOptions.Controls.Add(this.checkBoxCheckpoint);
-            this.grouperOptions.Controls.Add(this.lblPrefetchCount);
             this.grouperOptions.Controls.Add(this.txtReceiveTimeout);
             this.grouperOptions.Controls.Add(this.lblReceiveTimeout);
-            this.grouperOptions.Controls.Add(this.txtOffset);
-            this.grouperOptions.Controls.Add(this.lblOffset);
-            this.grouperOptions.Controls.Add(this.txtPrefetchCount);
             this.grouperOptions.Controls.Add(this.checkBoxGraph);
             this.grouperOptions.Controls.Add(this.checkBoxLogging);
             this.grouperOptions.Controls.Add(this.checkBoxTrackMessages);
@@ -560,55 +552,33 @@
             this.checkBoxOffsetInclusive.ForeColor = System.Drawing.SystemColors.ControlText;
             this.checkBoxOffsetInclusive.Location = new System.Drawing.Point(400, 80);
             this.checkBoxOffsetInclusive.Name = "checkBoxOffsetInclusive";
-            this.checkBoxOffsetInclusive.Size = new System.Drawing.Size(99, 17);
+            this.checkBoxOffsetInclusive.Size = new System.Drawing.Size(75, 17);
             this.checkBoxOffsetInclusive.TabIndex = 10;
-            this.checkBoxOffsetInclusive.Text = "Offset Inclusive";
+            this.checkBoxOffsetInclusive.Text = "Offset Inc.";
             this.checkBoxOffsetInclusive.UseVisualStyleBackColor = true;
             // 
-            // txtEpoch
+            // txtMaxBatchSize
             // 
-            this.txtEpoch.AllowSpace = false;
-            this.txtEpoch.Location = new System.Drawing.Point(400, 48);
-            this.txtEpoch.Name = "txtEpoch";
-            this.txtEpoch.Size = new System.Drawing.Size(88, 20);
-            this.txtEpoch.TabIndex = 4;
-            this.txtEpoch.Text = "-1";
+            this.txtMaxBatchSize.AllowSpace = false;
+            this.txtMaxBatchSize.Location = new System.Drawing.Point(400, 48);
+            this.txtMaxBatchSize.Name = "txtMaxBatchSize";
+            this.txtMaxBatchSize.Size = new System.Drawing.Size(184, 20);
+            this.txtMaxBatchSize.TabIndex = 4;
+            this.txtMaxBatchSize.Text = "100";
             // 
-            // lblEpoch
+            // lblMaxBatchSize
             // 
-            this.lblEpoch.AutoSize = true;
-            this.lblEpoch.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEpoch.Location = new System.Drawing.Point(400, 32);
-            this.lblEpoch.Name = "lblEpoch";
-            this.lblEpoch.Size = new System.Drawing.Size(41, 13);
-            this.lblEpoch.TabIndex = 147;
-            this.lblEpoch.Text = "Epoch:";
-            // 
-            // txtCheckpointCount
-            // 
-            this.txtCheckpointCount.AllowSpace = false;
-            this.txtCheckpointCount.Enabled = false;
-            this.txtCheckpointCount.Location = new System.Drawing.Point(496, 48);
-            this.txtCheckpointCount.Name = "txtCheckpointCount";
-            this.txtCheckpointCount.Size = new System.Drawing.Size(88, 20);
-            this.txtCheckpointCount.TabIndex = 5;
-            this.txtCheckpointCount.Text = "10";
-            this.txtCheckpointCount.TextChanged += new System.EventHandler(this.txtCheckpointCount_TextChanged);
-            // 
-            // lblCheckpointCount
-            // 
-            this.lblCheckpointCount.AutoSize = true;
-            this.lblCheckpointCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCheckpointCount.Location = new System.Drawing.Point(496, 32);
-            this.lblCheckpointCount.Name = "lblCheckpointCount";
-            this.lblCheckpointCount.Size = new System.Drawing.Size(95, 13);
-            this.lblCheckpointCount.TabIndex = 145;
-            this.lblCheckpointCount.Text = "Checkpoint Count:";
+            this.lblMaxBatchSize.AutoSize = true;
+            this.lblMaxBatchSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblMaxBatchSize.Location = new System.Drawing.Point(400, 32);
+            this.lblMaxBatchSize.Name = "lblMaxBatchSize";
+            this.lblMaxBatchSize.Size = new System.Drawing.Size(84, 13);
+            this.lblMaxBatchSize.TabIndex = 147;
+            this.lblMaxBatchSize.Text = "Max Batch Size:";
             // 
             // checkBoxCheckpoint
             // 
             this.checkBoxCheckpoint.AutoSize = true;
-            this.checkBoxCheckpoint.Enabled = false;
             this.checkBoxCheckpoint.ForeColor = System.Drawing.SystemColors.ControlText;
             this.checkBoxCheckpoint.Location = new System.Drawing.Point(504, 80);
             this.checkBoxCheckpoint.Name = "checkBoxCheckpoint";
@@ -616,24 +586,13 @@
             this.checkBoxCheckpoint.TabIndex = 11;
             this.checkBoxCheckpoint.Text = "Checkpoint";
             this.checkBoxCheckpoint.UseVisualStyleBackColor = true;
-            this.checkBoxCheckpoint.CheckedChanged += new System.EventHandler(this.checkBoxCheckpoint_CheckedChanged);
-            // 
-            // lblPrefetchCount
-            // 
-            this.lblPrefetchCount.AutoSize = true;
-            this.lblPrefetchCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblPrefetchCount.Location = new System.Drawing.Point(208, 32);
-            this.lblPrefetchCount.Name = "lblPrefetchCount";
-            this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
-            this.lblPrefetchCount.TabIndex = 138;
-            this.lblPrefetchCount.Text = "Prefetch Count:";
             // 
             // txtReceiveTimeout
             // 
             this.txtReceiveTimeout.AllowSpace = false;
-            this.txtReceiveTimeout.Location = new System.Drawing.Point(112, 48);
+            this.txtReceiveTimeout.Location = new System.Drawing.Point(208, 48);
             this.txtReceiveTimeout.Name = "txtReceiveTimeout";
-            this.txtReceiveTimeout.Size = new System.Drawing.Size(88, 20);
+            this.txtReceiveTimeout.Size = new System.Drawing.Size(176, 20);
             this.txtReceiveTimeout.TabIndex = 1;
             this.txtReceiveTimeout.Text = "30";
             // 
@@ -641,39 +600,11 @@
             // 
             this.lblReceiveTimeout.AutoSize = true;
             this.lblReceiveTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiveTimeout.Location = new System.Drawing.Point(112, 32);
+            this.lblReceiveTimeout.Location = new System.Drawing.Point(208, 32);
             this.lblReceiveTimeout.Name = "lblReceiveTimeout";
-            this.lblReceiveTimeout.Size = new System.Drawing.Size(85, 13);
+            this.lblReceiveTimeout.Size = new System.Drawing.Size(117, 13);
             this.lblReceiveTimeout.TabIndex = 142;
-            this.lblReceiveTimeout.Text = "Rcv Timeout (s):";
-            // 
-            // txtOffset
-            // 
-            this.txtOffset.AllowSpace = false;
-            this.txtOffset.Location = new System.Drawing.Point(304, 48);
-            this.txtOffset.Name = "txtOffset";
-            this.txtOffset.Size = new System.Drawing.Size(88, 20);
-            this.txtOffset.TabIndex = 3;
-            this.txtOffset.Text = "-1";
-            // 
-            // lblOffset
-            // 
-            this.lblOffset.AutoSize = true;
-            this.lblOffset.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblOffset.Location = new System.Drawing.Point(304, 32);
-            this.lblOffset.Name = "lblOffset";
-            this.lblOffset.Size = new System.Drawing.Size(77, 13);
-            this.lblOffset.TabIndex = 140;
-            this.lblOffset.Text = "Starting Offset:";
-            // 
-            // txtPrefetchCount
-            // 
-            this.txtPrefetchCount.AllowSpace = false;
-            this.txtPrefetchCount.Location = new System.Drawing.Point(208, 48);
-            this.txtPrefetchCount.Name = "txtPrefetchCount";
-            this.txtPrefetchCount.Size = new System.Drawing.Size(88, 20);
-            this.txtPrefetchCount.TabIndex = 2;
-            this.txtPrefetchCount.Text = "100";
+            this.lblReceiveTimeout.Text = "Receive Timeout (sec):";
             // 
             // checkBoxGraph
             // 
@@ -715,7 +646,6 @@
             this.checkBoxTrackMessages.TabIndex = 8;
             this.checkBoxTrackMessages.Text = "Tracking";
             this.checkBoxTrackMessages.UseVisualStyleBackColor = true;
-            this.checkBoxTrackMessages.CheckedChanged += new System.EventHandler(this.checkBoxTrackMessages_CheckedChanged);
             // 
             // checkBoxVerbose
             // 
@@ -727,14 +657,13 @@
             this.checkBoxVerbose.TabIndex = 7;
             this.checkBoxVerbose.Text = "Verbose";
             this.checkBoxVerbose.UseVisualStyleBackColor = true;
-            this.checkBoxVerbose.CheckedChanged += new System.EventHandler(this.checkBoxVerbose_CheckedChanged);
             // 
             // txtRefreshInformation
             // 
             this.txtRefreshInformation.AllowSpace = false;
             this.txtRefreshInformation.Location = new System.Drawing.Point(16, 48);
             this.txtRefreshInformation.Name = "txtRefreshInformation";
-            this.txtRefreshInformation.Size = new System.Drawing.Size(88, 20);
+            this.txtRefreshInformation.Size = new System.Drawing.Size(176, 20);
             this.txtRefreshInformation.TabIndex = 0;
             this.txtRefreshInformation.Text = "30";
             this.txtRefreshInformation.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
@@ -745,9 +674,9 @@
             this.lblRefreshInformation.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblRefreshInformation.Location = new System.Drawing.Point(16, 32);
             this.lblRefreshInformation.Name = "lblRefreshInformation";
-            this.lblRefreshInformation.Size = new System.Drawing.Size(99, 13);
+            this.lblRefreshInformation.Size = new System.Drawing.Size(111, 13);
             this.lblRefreshInformation.TabIndex = 25;
-            this.lblRefreshInformation.Text = "Refresh Interval (s):";
+            this.lblRefreshInformation.Text = "Refresh Interval (sec):";
             // 
             // tabPageEventData
             // 
@@ -854,7 +783,7 @@
             this.eventDataDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.eventDataDataGridView_CellMouseDown);
             this.eventDataDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.eventDataDataGridView_DataError);
             this.eventDataDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            this.eventDataDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_RowEnter);
+            this.eventDataDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.eventDataDataGridView_RowEnter);
             this.eventDataDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
             this.eventDataDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
             this.eventDataDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
@@ -1017,9 +946,12 @@
             // eventDataContextMenuStrip
             // 
             this.eventDataContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.viewAndSaveEventDataToolStripMenuItem});
+            this.viewAndSaveEventDataToolStripMenuItem,
+            this.toolStripSeparator,
+            this.saveSelectedEventToolStripMenuItem,
+            this.saveSelectedEventsToolStripMenuItem});
             this.eventDataContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.eventDataContextMenuStrip.Size = new System.Drawing.Size(209, 26);
+            this.eventDataContextMenuStrip.Size = new System.Drawing.Size(209, 98);
             // 
             // viewAndSaveEventDataToolStripMenuItem
             // 
@@ -1027,6 +959,25 @@
             this.viewAndSaveEventDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.viewAndSaveEventDataToolStripMenuItem.Text = "View and Save Event Data";
             this.viewAndSaveEventDataToolStripMenuItem.Click += new System.EventHandler(this.viewAndSaveEventDataToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new System.Drawing.Size(205, 6);
+            // 
+            // saveSelectedEventToolStripMenuItem
+            // 
+            this.saveSelectedEventToolStripMenuItem.Name = "saveSelectedEventToolStripMenuItem";
+            this.saveSelectedEventToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveSelectedEventToolStripMenuItem.Text = "Save Selected Event";
+            this.saveSelectedEventToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedEventToolStripMenuItem_Click);
+            // 
+            // saveSelectedEventsToolStripMenuItem
+            // 
+            this.saveSelectedEventsToolStripMenuItem.Name = "saveSelectedEventsToolStripMenuItem";
+            this.saveSelectedEventsToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveSelectedEventsToolStripMenuItem.Text = "Save Selected Events";
+            this.saveSelectedEventsToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedEventsToolStripMenuItem_Click);
             // 
             // btnClear
             // 
@@ -1178,17 +1129,11 @@
         private System.Windows.Forms.CheckBox checkBoxTrackMessages;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.CheckBox checkBoxGraph;
-        private NumericTextBox txtPrefetchCount;
-        private System.Windows.Forms.Label lblPrefetchCount;
         private NumericTextBox txtReceiveTimeout;
         private System.Windows.Forms.Label lblReceiveTimeout;
-        private NumericTextBox txtOffset;
-        private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.Label lblPartitionInformation;
         private System.Windows.Forms.Label lblPartition;
         private System.Windows.Forms.ComboBox cboPartition;
-        private NumericTextBox txtCheckpointCount;
-        private System.Windows.Forms.Label lblCheckpointCount;
         private System.Windows.Forms.CheckBox checkBoxCheckpoint;
         private NumericTextBox txtAverageDuration;
         private System.Windows.Forms.Label lblAverageTime;
@@ -1201,8 +1146,12 @@
         private System.Windows.Forms.Label lblReceiverInspector;
         private System.Windows.Forms.ContextMenuStrip partitionInformationContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem copyPartitionInformationToClipboardMenuItem;
-        private NumericTextBox txtEpoch;
-        private System.Windows.Forms.Label lblEpoch;
+        private NumericTextBox txtMaxBatchSize;
+        private System.Windows.Forms.Label lblMaxBatchSize;
         private System.Windows.Forms.CheckBox checkBoxOffsetInclusive;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedEventToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedEventsToolStripMenuItem;
     }
 }

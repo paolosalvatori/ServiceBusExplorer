@@ -272,6 +272,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private bool showMessageCount = true;
         private bool saveMessageToFile = true;
         private bool savePropertiesToFile = true;
+        private bool saveCheckpointsToFile = true;
         private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         private readonly string argumentName;
         private readonly string argumentValue;
@@ -279,6 +280,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly List<string> entities = new List<string> { QueueEntities, TopicEntities, EventHubEntities, NotificationHubEntities, RelayServiceEntities };
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private Task logTask;
         #endregion
 
         #region Private Static Fields
@@ -292,7 +294,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public MainForm()
         {
             InitializeComponent();
-            Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+            logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
                 {
@@ -317,6 +319,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             GetBrokeredMessageGeneratorsFromConfiguration();
             GetEventDataGeneratorsFromConfiguration();
             GetServiceBusNamespaceSettingsFromConfiguration();
+            ReadEventHubPartitionCheckpointFile();
         }
 
         /// <summary>
@@ -359,6 +362,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                    showMessageCount,
                                                    saveMessageToFile,
                                                    savePropertiesToFile,
+                                                   saveCheckpointsToFile,
                                                    entities,
                                                    selectedEntites))
             {
@@ -390,6 +394,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 saveMessageToFile = optionForm.SaveMessageToFile;
                 savePropertiesToFile = optionForm.SavePropertiesToFile;
+                saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
                 selectedEntites = optionForm.SelectedEntities;
             }
         }
@@ -944,8 +949,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                          wrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount,                        
                                                                                          wrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount) :
                                                                            wrapper.SubscriptionDescription.Name,
-                                                                           SubscriptionIconIndex, 
-                                                                           SubscriptionIconIndex);
+                                                                           wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                           wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                         subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                         subscriptionNode.Tag = new SubscriptionWrapper(wrapper.SubscriptionDescription, wrapper.TopicDescription);
                         subscriptionsNode.Expand();
@@ -1721,8 +1726,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                                  subscription.MessageCountDetails.ActiveMessageCount,
                                                                                                  subscription.MessageCountDetails.DeadLetterMessageCount) :
                                                                                    subscription.Name, 
-                                                                                   SubscriptionIconIndex, 
-                                                                                   SubscriptionIconIndex);
+                                                                                   subscription.Status == EntityStatus.Active? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                                   subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                                 subscriptionNode.Tag = new SubscriptionWrapper(subscription, wrapper.TopicDescription);
                                 WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscription.Name, wrapper.TopicDescription.Path), false);
@@ -2596,16 +2601,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Methods
-        private void StopAndRestartLog()
+        private Task StopLog()
         {
             cancellationTokenSource.Cancel();
-            cancellationTokenSource = new CancellationTokenSource();
+            return logTask;
+        }
+
+        private void StartLog()
+        {
             if (logCollection != null)
             {
                 logCollection.Dispose();
-                logCollection = new BlockingCollection<string>();
             }
-            Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+            logCollection = new BlockingCollection<string>();
+            cancellationTokenSource = new CancellationTokenSource();
+            logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
                 {
@@ -3502,7 +3512,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 EncodingType encodingType;
                 if (Enum.TryParse(parameter, true, out encodingType))
                 {
-                    ServiceBusHelper.EncodingTypeType = encodingType;
+                    ServiceBusHelper.EncodingType = encodingType;
                 }
             }
             parameter = ConfigurationManager.AppSettings[ConfigurationParameters.ShowMessageCountParameter];
@@ -3519,6 +3529,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (!string.IsNullOrWhiteSpace(parameter))
             {
                 bool.TryParse(parameter, out savePropertiesToFile);
+            }
+            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SaveCheckpointsToFileParameter];
+            if (!string.IsNullOrWhiteSpace(parameter))
+            {
+                bool.TryParse(parameter, out saveCheckpointsToFile);
             }
             var scheme = ConfigurationManager.AppSettings[ConfigurationParameters.SchemeParameter];
             if (!string.IsNullOrWhiteSpace(scheme))
@@ -3665,6 +3680,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             else
             {
                 GetDefaultSelectedEntities();
+            }
+        }
+
+        private void ReadEventHubPartitionCheckpointFile()
+        {
+            if (saveCheckpointsToFile)
+            {
+                EventProcessorCheckpointHelper.ReadCheckpoints();
             }
         }
 
@@ -4787,7 +4810,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
                     queueControl = new TestQueueControl(this,
                                                         WriteToLog,
-                                                        StopAndRestartLog,
+                                                        StopLog,
+                                                        StartLog,
                                                         serviceBusHelper,
                                                         queueDescription);
                     queueControl.SuspendDrawing();
@@ -4833,7 +4857,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
                     topicControl = new TestTopicControl(this,
                                                         WriteToLog,
-                                                        StopAndRestartLog,
+                                                        StopLog,
+                                                        StartLog,
                                                         serviceBusHelper,
                                                         topicDescription,
                                                         subscriptionList);
@@ -4880,7 +4905,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
                     subscriptionControl = new TestSubscriptionControl(this, 
                                                                       WriteToLog, 
-                                                                      StopAndRestartLog, 
+                                                                      StopLog,
+                                                                      StartLog,
                                                                       serviceBusHelper, 
                                                                       subscriptionWrapper);
                     subscriptionControl.SuspendDrawing();
@@ -4926,7 +4952,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
                     relayServiceControl = new TestRelayServiceControl(this, 
                                                                       WriteToLog,
-                                                                      StopAndRestartLog,
+                                                                      StopLog,
+                                                                      StartLog,
                                                                       relayServiceWrapper, 
                                                                       serviceBusHelper);
                     relayServiceControl.SuspendDrawing();
@@ -5663,6 +5690,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         form = new ContainerForm(serviceBusHelper, this, eventHubDescription);
                     }
 
+                    // Event Hub Partition
+                    if (serviceBusTreeView.SelectedNode.Tag is PartitionDescription)
+                    {
+                        var partitionDescription = serviceBusTreeView.SelectedNode.Tag as PartitionDescription;
+                        try
+                        {
+                            var eventHubNode = serviceBusTreeView.SelectedNode.Parent.Parent.Parent.Parent;
+                            if (eventHubNode != null && eventHubNode.Tag is EventHubDescription)
+                            {
+                                var eventHubDescription = eventHubNode.Tag as EventHubDescription;
+                                form = new ContainerForm(serviceBusHelper, this, eventHubDescription, partitionDescription);
+                            }
+                        }
+                        // ReSharper disable once EmptyGeneralCatchClause
+                        catch (Exception)
+                        {
+                        }
+                    }
+
                     if (form != null)
                     {
                         form.Show();
@@ -5685,6 +5731,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (savePropertiesToFile)
             {
                 MessageAndPropertiesHelper.WriteProperties();
+            }
+            if (saveCheckpointsToFile)
+            {
+                EventProcessorCheckpointHelper.WriteCheckpoints();
             }
         }
 

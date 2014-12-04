@@ -23,11 +23,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -53,7 +52,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
+        private const string LabelFormat = "{0:0.0000}";
 
         //***************************
         // Texts
@@ -64,14 +63,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string EnqueuedTimeUtc = "EnqueuedTimeUtc";
         private const string Start = "Start";
         private const string Stop = "Stop";
-        private const string NullValue = "NULL";
 
         //***************************
         // Messages
         //***************************
         private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
-        private const string EventDataSuccessfullyReceived = "Event received. PartitionKey=[{0}] SequenceNumber=[{1}] Offset=[{2}] EnqueuedTimeUtc=[{3}]";
-        private const string CheckPointExecuted = "Checkpoint. PartitionId=[{0}]";
         private const string ConnectionStringCannotBeNull = "The namespace connection string cannot be null.";
         private const string SelectEventDataInspector = "Select an EventData inspector...";
 
@@ -89,9 +85,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const string RefreshTimeoutTooltip = "Gets or sets the refresh timeout for the information shown in the Partition Information panel.";
         private const string ReceiveTimeoutTooltip = "Gets or sets the receive timeout used by the listener to receive events from a partition.";
-        private const string PrefetchCountTooltip = "Gets or sets the prefetch count for used by the listener to receive events from a partition.";
-        private const string OffsetTooltip = "Gets or sets the offset from which the listener starts to receive events from a partition.";
-        private const string CheckpointCountTooltip = "Gets or sets the number of events after which the listener performs a checkpoint on the partition.";
         private const string LoggingTooltip = "Enable or disable logging. You can change this setting before or after the listener is started.";
         private const string VerboseTooltip = "Enable or disable verbose logging. You can change this setting before or after the listener is started.";
         private const string TrackingTooltip = "Enable or disable message tracking. You can change this setting before or after the listener is started.";
@@ -102,27 +95,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string AverageDurationTooltip = "The average duration of receive operation in seconds.";
         private const string KbPerSecTooltip = "The average number of KB received per second.";
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
-        private const string EpochTooltip = "The epoch value. The service uses this value to enforce partition/lease ownership.";
+        private const string MaxCountTooltip = "The maximum amount of event data the user is willing to accept in one call.";
         private const string OffsetInclusiveTooltip = "if set to true, the Starting Offset is treated as an inclusive offset meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.";
 
         //***************************
         // Constants
         //***************************
         private const string DefaultConsumerGroupName = "$Default";
+        private const string SaveAsTitle = "Save File As";
+        private const string JsonExtension = "json";
+        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string MessageFileFormat = "EventData_{0}_{1}.json";
         #endregion
 
         #region Private Fields
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly Action stopAndRestartLog;
+        private readonly Func<Task> stopLog;
+        private readonly Action startLog;
         private EventData currentEventData;
         private int grouperEventDataCustomPropertiesWidth;
         private int currentMessageRowIndex;
-        private int checkpointCount;
         private readonly int partitionCount;
         private bool sorting;
         private readonly SortableBindingList<EventData> eventDataBindingList = new SortableBindingList<EventData> { AllowNew = false, AllowEdit = false, AllowRemove = false };
-        private readonly ConsumerGroupDescription consumerGroupDescription;
         private readonly IList<PartitionDescription> partitionDescriptions;
         private readonly BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
         private System.Timers.Timer timer;
@@ -142,26 +138,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private Control parentForm;
         private ContainerForm containerForm;
         private bool stopping;
-        private bool logging;
-        private bool verbose;
-        private bool tracking;
         private bool graph;
-        private bool checkpoint;
         private IEventDataInspector receiverEventDataInspector;
-        private EventHubDescription eventHubDescription ;
-        #endregion
-
-        #region Private Static Fields
-        private static readonly MethodInfo checkpointMethodInfo;
-        #endregion
-
-        #region Static Constructor
-        static PartitionListenerControl()
-        {
-            var type = typeof (EventHubReceiver);
-            checkpointMethodInfo = type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                .FirstOrDefault(p => string.Compare("Checkpoint", p.Name, StringComparison.OrdinalIgnoreCase) == 0);
-        }
+        // ReSharper disable once NotAccessedField.Local
+        private readonly EventHubDescription eventHubDescription;
+        private DateTime dateTime = DateTime.MinValue;
+        private readonly EventHubConsumerGroup consumerGroup;
+        private Dictionary<string, bool> registeredDictionary = new Dictionary<string, bool>();
         #endregion
 
         #region Public Constructors
@@ -171,7 +154,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
-                                        Action stopAndRestartLog,
+                                        Func<Task> stopLog,
+                                        Action startLog,
                                         ServiceBusHelper serviceBusHelper, 
                                         ConsumerGroupDescription consumerGroupDescription,
                                         IEnumerable<PartitionDescription> partitionDescriptions)
@@ -184,24 +168,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
             });
             this.writeToLog = writeToLog;
-            this.stopAndRestartLog = stopAndRestartLog;
+            this.stopLog = stopLog;
+            this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
-            this.consumerGroupDescription = consumerGroupDescription;
             var descriptions = partitionDescriptions as IList<PartitionDescription> ?? partitionDescriptions.ToList();
             this.partitionDescriptions = descriptions;
             partitionCount = partitionDescriptions == null || descriptions.Count == 0? 0 : descriptions.Count;
-            eventHubDescription = serviceBusHelper.NamespaceManager.GetEventHub(consumerGroupDescription.EventHubPath);    
+            eventHubDescription = serviceBusHelper.NamespaceManager.GetEventHub(consumerGroupDescription.EventHubPath);
+            var eventHubClient = EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(serviceBusHelper.ConnectionString),
+                                                                                               consumerGroupDescription.EventHubPath);
+            consumerGroup = string.Compare(consumerGroupDescription.Name,
+                                           DefaultConsumerGroupName,
+                                           StringComparison.InvariantCultureIgnoreCase) == 0
+                                           ? eventHubClient.GetDefaultConsumerGroup()
+                                           : eventHubClient.GetConsumerGroup(consumerGroupDescription.Name);
             InitializeComponent();
             InitializeControls();
-            checkBoxCheckpoint_CheckedChanged(null, null);
             Disposed += ListenerControl_Disposed;
         }
         #endregion
 
         #region Private Methods
-        void ListenerControl_Disposed(object sender, EventArgs e)
+        private async void ListenerControl_Disposed(object sender, EventArgs e)
         {
-            StopListener();
+            await StopListenerAsync();
         }
 
         private void InitializeControls()
@@ -231,10 +221,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             cboAverageDuration.SelectedIndex = 4;
             cboEventDataPerSecond.SelectedIndex = 3;
             cboMessageSizePerSecond.SelectedIndex = 3;
-            
-
-            // Set checkpointCount value
-            checkpointCount = txtCheckpointCount.IntegerValue;
 
             // Hide caret
             txtEventDataPerSecond.GotFocus += textBox_GotFocus;
@@ -322,10 +308,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // Set Tooltips
             toolTip.SetToolTip(txtRefreshInformation, RefreshTimeoutTooltip);
             toolTip.SetToolTip(txtReceiveTimeout, ReceiveTimeoutTooltip);
-            toolTip.SetToolTip(txtPrefetchCount, PrefetchCountTooltip);
-            toolTip.SetToolTip(txtOffset, OffsetTooltip);
-            toolTip.SetToolTip(txtEpoch, EpochTooltip);
-            toolTip.SetToolTip(txtCheckpointCount, CheckpointCountTooltip);
+            toolTip.SetToolTip(txtMaxBatchSize, MaxCountTooltip);
             
             toolTip.SetToolTip(checkBoxLogging, LoggingTooltip);
             toolTip.SetToolTip(checkBoxVerbose, VerboseTooltip);
@@ -608,7 +591,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void eventDataDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
             currentMessageRowIndex = e.RowIndex;
@@ -665,6 +648,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
 
         }
+
         private void eventDataDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -715,6 +699,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             eventDataDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = eventDataDataGridView.SelectedRows.Count > 1;
             viewAndSaveEventDataToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedEventToolStripMenuItem.Visible = !multipleSelectedRows;
+            toolStripSeparator.Visible = !multipleSelectedRows;
+            saveSelectedEventsToolStripMenuItem.Visible = multipleSelectedRows;
             eventDataContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -736,10 +723,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             sorting = false;
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
             if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
             {
+                if (startLog != null && checkBoxLogging.Checked)
+                {
+                    startLog();
+                }
                 receiverEventDataInspector = cboReceiverInspector.SelectedIndex > 0
                                            ? Activator.CreateInstance(serviceBusHelper.EventDataInspectors[cboReceiverInspector.Text]) as IEventDataInspector
                                            : null;
@@ -754,104 +745,54 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     Interval = 1000 * txtRefreshInformation.IntegerValue
                 };
                 timer.Elapsed += timer_Elapsed;
-                logging = checkBoxLogging.Checked;
-                verbose = checkBoxVerbose.Checked;
-                tracking = checkBoxTrackMessages.Checked;
-                graph = checkBoxGraph.Checked;
+                var ns = serviceBusHelper.Namespace;
+                var eventHub = eventHubDescription.Path;
+                var maxBatchSize = txtMaxBatchSize.IntegerValue > 0 ? txtMaxBatchSize.IntegerValue : 1;
+                var receiveTimeout = TimeSpan.FromSeconds(txtReceiveTimeout.IntegerValue);
                 try
                 {
+                    registeredDictionary = new Dictionary<string, bool>(partitionDescriptions.Count);
+                    var eventProcessorOptions = new EventProcessorOptions
+                    {
+                        InitialOffsetProvider = partitionId =>
+                        {
+                            var lease = EventProcessorCheckpointHelper.GetLease(ns,
+                                                                                eventHub,
+                                                                                partitionId);
+                            return lease != null ? lease.Offset : "-1";
+                        },
+                        MaxBatchSize = maxBatchSize,
+                        ReceiveTimeOut = receiveTimeout
+                    };
+                    eventProcessorOptions.ExceptionReceived += (s, ex) => HandleException(ex.Exception);
+                    var checkpointManager = new EventProcessorCheckpointManager
+                    {
+                        Namespace = serviceBusHelper.Namespace,
+                        EventHub = eventHubDescription.Path
+                    };
+                    var eventProcessorFactoryConfiguration = new EventProcessorFactoryConfiguration(checkBoxLogging,
+                                                                                                    checkBoxTrackMessages,
+                                                                                                    checkBoxVerbose,
+                                                                                                    checkBoxOffsetInclusive,
+                                                                                                    checkBoxCheckpoint)
+                    {
+                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(m)), ev),
+                        GetElapsedTime = GetElapsedTime,
+                        UpdateStatistics = UpdateStatistics,
+                        WriteToLog = writeToLog,
+                        MessageInspector = receiverEventDataInspector,
+                        ServiceBusHelper = serviceBusHelper
+                    };
                     foreach (var partitionDescription in partitionDescriptions)
                     {
-                        var description = partitionDescription;
-                        Task.Run(async () =>
-                        {
-                            try
-                            {
-                                var eventHubClient = EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(serviceBusHelper.ConnectionString),
-                                                                                               consumerGroupDescription.EventHubPath);
-                                var consumerGroup = string.Compare(consumerGroupDescription.Name,
-                                                                   DefaultConsumerGroupName,
-                                                                   StringComparison.InvariantCultureIgnoreCase) == 0
-                                                                   ? eventHubClient.GetDefaultConsumerGroup()
-                                                                   : eventHubClient.GetConsumerGroup(consumerGroupDescription.Name);
-                                var epoch = txtEpoch.IntegerValue;
-                                var eventHubReceiver = epoch == 0 ? 
-                                                        await consumerGroup.CreateReceiverAsync(description.PartitionId, txtOffset.Text, checkBoxOffsetInclusive.Checked) :
-                                                        await consumerGroup.CreateReceiverAsync(description.PartitionId, txtOffset.Text, checkBoxOffsetInclusive.Checked, epoch);
-                                eventHubReceiver.PrefetchCount = txtPrefetchCount.IntegerValue;
-                                var received = 0;
-                                EventData previousEventData = null;
-                                while (!cancellationTokenSource.Token.IsCancellationRequested)
-                                {
-                                    var stopwatch = Stopwatch.StartNew();
-                                    var eventData = await eventHubReceiver.ReceiveAsync(TimeSpan.FromSeconds(txtReceiveTimeout.IntegerValue));
-                                    stopwatch.Stop();
-                                    if (eventData == null)
-                                    {
-                                        if (previousEventData != null && checkpoint)
-                                        {
-                                            checkpointMethodInfo.Invoke(eventHubReceiver, new object[] { previousEventData });
-                                            previousEventData = null;
-                                            if (logging)
-                                            {
-                                                writeToLog(string.Format(CheckPointExecuted, description.PartitionId));
-                                            }
-                                        }
-                                        continue;
-                                    }
-                                    previousEventData = eventData;
-                                    if (receiverEventDataInspector != null)
-                                    {
-                                        eventData = receiverEventDataInspector.AfterReceiveMessage(eventData);
-                                    }
-                                    received++;
-                                    if (logging)
-                                    {
-                                        var builder = new StringBuilder(string.Format(EventDataSuccessfullyReceived,
-                                                                        string.IsNullOrWhiteSpace(eventData.PartitionKey)
-                                                                            ? NullValue
-                                                                            : eventData.PartitionKey,
-                                                                            eventData.SequenceNumber,
-                                                                            eventData.Offset,
-                                                                            eventData.EnqueuedTimeUtc));
-                                        if (verbose)
-                                        {
-                                            serviceBusHelper.GetMessageAndProperties(builder, eventData);
-                                        }
-                                        writeToLog(builder.ToString());
-                                    }
-                                    if (tracking)
-                                    {
-                                        eventDataCollection.Add(eventData);
-                                    }
-                                    if (graph)
-                                    {
-                                        var bodySize = (long)0;
-                                        var bodyStream = eventData.GetBodyStream();
-                                        if (bodyStream != null && bodyStream.CanSeek)
-                                        {
-                                            bodySize = bodyStream.Length;
-                                        }
-                                        UpdateStatistics(1, stopwatch.ElapsedMilliseconds, bodySize);
-                                    }
-                                    if (received == checkpointCount && checkpoint)
-                                    {
-                                        checkpointMethodInfo.Invoke(eventHubReceiver, new object[] { eventData });
-                                        received = 0;
-                                        if (logging)
-                                        {
-                                            writeToLog(string.Format(CheckPointExecuted, description.PartitionId));
-                                        }
-                                    }
-                                }
-                            }
-                            catch (TimeoutException)
-                            { }
-                            catch (Exception ex)
-                            {
-                                HandleException(ex);
-                            }
-                        });
+                        #pragma warning disable 4014
+                        consumerGroup.RegisterProcessorFactoryAsync(
+                        #pragma warning restore 4014
+                                EventProcessorCheckpointHelper.GetLease(ns, eventHub, partitionDescription.PartitionId),
+                                checkpointManager,
+                                new EventProcessorFactory<EventProcessor>(eventProcessorFactoryConfiguration),
+                                eventProcessorOptions);
+                        registeredDictionary.Add(partitionDescription.PartitionId, true);
                     }
                     #pragma warning disable 4014
                     Task.Run(new Action(RefreshGraph));
@@ -860,7 +801,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                    StopListener();
+                    StopListenerAsync().Wait();
                     btnStart.Text = Start;
                 }
             }
@@ -868,13 +809,29 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 try
                 {
-                    StopListener();
+                    await StopListenerAsync();
                     btnStart.Text = Start;
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
                 }
+            }
+        }
+
+        private long GetElapsedTime()
+        {
+            lock (this)
+            {
+                if (dateTime == DateTime.MinValue)
+                {
+                    dateTime = DateTime.Now;
+                    return 0;
+                }
+                var now = DateTime.Now;
+                var elapsed = now - dateTime;
+                dateTime = now;
+                return elapsed.Milliseconds;
             }
         }
 
@@ -928,11 +885,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private async void btnClose_Click(object sender, EventArgs e)
         {
             try
             {
-                StopListener();
+                await StopListenerAsync();
                 if (parentForm != null)
                 {
                     ((Form)parentForm).Close();
@@ -990,31 +947,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void grouperOptions_Resize(object sender, EventArgs e)
         {
-            var width = (grouperOptions.Size.Width - 72) / 6; 
+            var textboxWidth = (grouperOptions.Size.Width - 64) / 3;
+            var width = textboxWidth / 2;
 
-            txtRefreshInformation.Size = new Size(width, txtRefreshInformation.Size.Height);
-            txtReceiveTimeout.Size = new Size(width, txtReceiveTimeout.Size.Height);
-            txtPrefetchCount.Size = new Size(width, txtPrefetchCount.Size.Height);
-            txtOffset.Size = new Size(width, txtOffset.Size.Height);
-            txtEpoch.Size = new Size(width, txtOffset.Size.Height);
-            txtCheckpointCount.Size = new Size(width, txtPrefetchCount.Size.Height);
+            txtRefreshInformation.Size = new Size(textboxWidth, txtRefreshInformation.Size.Height);
+            txtReceiveTimeout.Size = new Size(textboxWidth, txtReceiveTimeout.Size.Height);
+            txtMaxBatchSize.Size = new Size(textboxWidth, txtMaxBatchSize.Size.Height);
 
-            txtReceiveTimeout.Location = new Point(width + 24, txtReceiveTimeout.Location.Y);
-            lblReceiveTimeout.Location = new Point(width + 24, lblReceiveTimeout.Location.Y);
-            txtPrefetchCount.Location = new Point(2 * width + 32, txtPrefetchCount.Location.Y);
-            lblPrefetchCount.Location = new Point(2 * width + 32, lblPrefetchCount.Location.Y);
-            txtOffset.Location = new Point(3 * width + 40, txtOffset.Location.Y);
-            lblOffset.Location = new Point(3 * width + 40, lblOffset.Location.Y);
-            txtEpoch.Location = new Point(4 * width + 48, txtEpoch.Location.Y);
-            lblEpoch.Location = new Point(4 * width + 48, lblEpoch.Location.Y);
-            txtCheckpointCount.Location = new Point(5 * width + 56, txtCheckpointCount.Location.Y);
-            lblCheckpointCount.Location = new Point(5 * width + 56, lblCheckpointCount.Location.Y);
-           
-            checkBoxVerbose.Location = new Point(width + 24, checkBoxVerbose.Location.Y);
+            txtReceiveTimeout.Location = new Point(textboxWidth + 32, txtReceiveTimeout.Location.Y);
+            lblReceiveTimeout.Location = new Point(textboxWidth + 32, lblReceiveTimeout.Location.Y);
+            txtMaxBatchSize.Location = new Point(2 * textboxWidth + 48, txtMaxBatchSize.Location.Y);
+            lblMaxBatchSize.Location = new Point(2 * textboxWidth + 48, lblMaxBatchSize.Location.Y);
+
+            checkBoxVerbose.Location = new Point(width + 16, checkBoxVerbose.Location.Y);
             checkBoxTrackMessages.Location = new Point(2 * width + 32, checkBoxTrackMessages.Location.Y);
-            checkBoxGraph.Location = new Point(3 * width + 40, checkBoxGraph.Location.Y);
+            checkBoxGraph.Location = new Point(3 * width + 32, checkBoxGraph.Location.Y);
             checkBoxOffsetInclusive.Location = new Point(4 * width + 48, checkBoxGraph.Location.Y);
-            checkBoxCheckpoint.Location = new Point(5 * width + 56, checkBoxCheckpoint.Location.Y);
+            checkBoxCheckpoint.Location = new Point(5 * width + 48, checkBoxCheckpoint.Location.Y);
         }
 
         private static void textBox_GotFocus(object sender, EventArgs e)
@@ -1031,21 +980,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             GetPartitionDescription();
         }
 
-        private void StopListener()
+        private async Task StopListenerAsync()
         {
             lock (this)
             {
                 stopping = true;
             }
-            if (stopAndRestartLog != null)
+            if (stopLog != null)
             {
-                stopAndRestartLog();
+                await stopLog();
             }
             if (timer != null)
             {
                 timer.Stop();
                 timer.Dispose();
                 timer = null;
+            }
+            foreach (var partitionDescription in partitionDescriptions)
+            {
+                if (registeredDictionary.ContainsKey(partitionDescription.PartitionId) &&
+                    registeredDictionary[partitionDescription.PartitionId])
+                {
+                    await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId }, 
+                                                                 ServiceBus.Messaging.CloseReason.Shutdown);
+                }
             }
             if (cancellationTokenSource != null)
             {
@@ -1062,6 +1020,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 long max = 10;
+                graph = checkBoxGraph.Checked;
                 while (!cancellationTokenSource.IsCancellationRequested)
                 {
                     long receiveMessageNumber = 0;
@@ -1090,16 +1049,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var receiveTuple = new Tuple<long, long, long>(receiveMessageNumber, receiveTotalTime, sizeTotal);
                         if (InvokeRequired)
                         {
-                            Invoke(new Action<long, long, long>(InternalUpdateStatistics),
+                            Invoke(new Action<long, long, long, bool>(InternalUpdateStatistics),
                                    new object[] { receiveTuple.Item1, 
                                                   receiveTuple.Item2, 
-                                                  receiveTuple.Item3 });
+                                                  receiveTuple.Item3,
+                                                  graph});
                         }
                         else
                         {
                             InternalUpdateStatistics(receiveTuple.Item1,
                                                      receiveTuple.Item2,
-                                                     receiveTuple.Item3);
+                                                     receiveTuple.Item3,
+                                                     graph);
                         }
                     }
                 }
@@ -1127,7 +1088,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="messageNumber">Elapsed time.</param>
         /// <param name="elapsedMilliseconds">Elapsed time.</param>
         /// <param name="size">Message size.</param>
-        private void InternalUpdateStatistics(long messageNumber, long elapsedMilliseconds, long size)
+        /// <param name="chartEnabled">True if the chart is enabled, false otherwise.</param>
+        private void InternalUpdateStatistics(long messageNumber, long elapsedMilliseconds, long size, bool chartEnabled)
         {
             lock (this)
             {
@@ -1156,6 +1118,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 txtMessageSizePerSecond.Text = string.Format(LabelFormat, receiverMessageSizePerSecond);
                 txtAverageDuration.Refresh();
 
+                if (!chartEnabled)
+                {
+                    return;
+                }
                 chart.Series["ReceiverLatency"].Points.AddXY(receiverMessageNumber, elapsedSeconds * averageTimeScale);
                 chart.Series["ReceiverThroughput"].Points.AddXY(receiverMessageNumber, receiverMessagesPerSecond * eventDataPerSecondScale);
                 chart.Series["MessageSizePerSecond"].Points.AddXY(receiverMessageNumber, receiverMessageSizePerSecond * messageSizePerSecondScale);
@@ -1180,35 +1146,27 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
         }
 
-        private void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
+        private async void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
         {
-            logging = checkBoxLogging.Checked;
-        }
-
-        private void checkBoxVerbose_CheckedChanged(object sender, EventArgs e)
-        {
-            verbose = checkBoxVerbose.Checked;
-        }
-
-        private void checkBoxTrackMessages_CheckedChanged(object sender, EventArgs e)
-        {
-            tracking = checkBoxTrackMessages.Checked;
+            if (checkBoxLogging.Checked)
+            {
+                if (startLog != null)
+                {
+                    startLog();
+                }
+            }
+            else
+            {
+                if (stopLog != null)
+                {
+                    await stopLog();
+                }
+            }
         }
 
         private void checkBoxGraph_CheckedChanged(object sender, EventArgs e)
         {
             graph = checkBoxGraph.Checked;
-        }
-
-        private void checkBoxCheckpoint_CheckedChanged(object sender, EventArgs e)
-        {
-            checkpoint = checkBoxCheckpoint.Checked && checkBoxCheckpoint.Enabled;
-            txtCheckpointCount.Enabled = checkpoint;
-        }
-
-        private void txtCheckpointCount_TextChanged(object sender, EventArgs e)
-        {
-            checkpointCount = txtCheckpointCount.IntegerValue;
         }
 
         private static string GetAmqpConnectionString(string connectionString)
@@ -1252,10 +1210,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             //                          new[]{BeginSequenceNumber, partition.BeginSequenceNumber.ToString("N0")},
             //                          new[]{EndSequenceNumber, partition.EndSequenceNumber.ToString("N0")}});
 
-            //    propertyListView.Items.Clear();
+            //    propertyListView.items.Clear();
             //    foreach (var array in propertyList)
             //    {
-            //        propertyListView.Items.Add(new ListViewItem(array));
+            //        propertyListView.items.Add(new ListViewItem(array));
             //    }
             //}
             //catch (Exception ex)
@@ -1447,6 +1405,94 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 HandleException(ex);
             }
+        }
+
+        private void saveSelectedEventToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedEventsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (eventDataDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventData);
+                IEnumerable<EventData> brokeredMessages = messages as EventData[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    BodyType bodyType;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private string CreateFileName()
+        {
+            return string.Format(MessageFileFormat,
+                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
         #endregion
     }
