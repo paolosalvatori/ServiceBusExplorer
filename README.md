@@ -1639,3 +1639,460 @@ Properties:&nbsp;
 </ul>
 <p style="text-align: center;"><img id="125822" src="http://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/125822/1/sequencenumber.png" alt="" width="880" /></p>
 <p>&nbsp;</p>
+<p><strong>Update</strong>: 4 December 2014</p>
+<p>This version introduces the following updates:</p>
+
+<ul>
+  <li>Updated <strong>Microsoft.ServiceBus.dll to version 2.5.2.0</strong>. </li>
+
+  <li>Added support for the <strong>EnableExpress </strong>and <strong>EnableLargeMessages </strong>properties of queues and topics: </li>
+</ul>
+
+<p style="text-align: center;"><img id="130735" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130735/1/enableexpress.png" width="880" /></p>
+
+<ul>
+  <li>The following bug has been fixed: 
+    <ol>
+      <li>Go to a topic with two or more enabled subscriptions. All the subscription icons show enabled state. </li>
+
+      <li>Right click one subscription and click 'Disable Subscription', icon shows disabled state. </li>
+
+      <li>Go to parent 'Subscriptions' node and 'Refresh': the disabled subscription shows an *enabled* icon even though it is disabled. </li>
+    </ol>
+  </li>
+
+  <li>The logging mechanism in the <strong>PartitionListernerControl </strong>has been highly improved. Now logging stops as soon as the user clicks the <strong>Stop </strong>or <strong>Close </strong>button in the <strong>Consumer Group </strong>and <strong>Partition Listener </strong>dialog. </li>
+</ul>
+
+<p style="text-align: center;"><img id="130736" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130736/1/logging.png" width="880" /></p>
+
+<ul>
+  <li>The code of the <strong>Consumer Group </strong>and<strong> Partition Listener</strong> has been dramatically improved: </li>
+
+  <li>The tool now uses the <strong>EventProcessorFactory</strong>&lt;T&gt; : <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.ieventprocessorfactory.aspx">IEventProcessorFactory</a> class for creating instances of the <strong>EventProcessor </strong>: <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.ieventprocessor.aspx">IEventProcessor</a> class that are used to process events from event hub partitions. </li>
+
+  <li>The tool provides a custom checkpoint manager class: EventProcessorCheckpointManager : <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.icheckpointmanager.aspx">ICheckpointManager</a>. In order to use the client-side checkpoint mechanism introduced by the tool, make sure to check the <strong>Checkpoint</strong> control in the <strong>Consumer Group </strong>and <strong>Partition Listener </strong>dialog as shown in the picture below. </li>
+</ul>
+
+<p style="text-align: center;"><img id="130739" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130739/1/checkpoint.png" width="880" /></p>
+
+<ul>
+  <li>The application uses the checkpoint manager to perform checkpoints in the in-process memory and persists checkpoints to a JSON file at the exit. At the start, the application reads checkpoints from the <strong>EventHubPartitionCheckpoints.json</strong> file located in the same directory of the tool. To remove all checkpoints, it's sufficient to delete the file. You can also open the file and selectively delete checkpoints for specific event hub partitions. </li>
+</ul>
+
+<div class="scriptcode">
+  <div class="pluginEditHolder" plugincommand="mceScriptCode">
+    <div id="scid:57F11A72-B0E5-49c7-9094-E3A15BD5B5E6:d0b98770-7def-41e0-93f4-9c211321bab2" class="wlWriterEditableSmartContent" style="margin: 0px; padding: 0px; float: none; display: inline;"><pre style="background-color:#FFFFFF;white-space:-moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;overflow: auto;"><span style="color: #000000;">[ 
+  { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">namespace</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">eventhubs</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">eventHub</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">basicsampleeventhub</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">leases</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">0</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">244712</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1699</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">1</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">1</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">127416</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">885</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">7</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">7</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">335176</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">2327</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">2</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">86152</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">599</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">4</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">4</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">238264</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1654</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">3</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">3</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">-1</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">5</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">5</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">-1</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;"> 
+      }, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">6</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">6</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Owner</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">ServiceBusExplorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Token</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Epoch</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">-1</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+        </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;"> 
+      } 
+    } 
+  } 
+]</span></pre><!-- Code inserted with Steve Dunn's Windows Live Writer Code Formatter Plugin.  http://dunnhq.com --></div>
+  </div>
+</div>
+
+<ul>
+  <li>This version of the tool introduces the possibility to send events directly to a specific event hub partition using the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubsender.aspx">EventHubSender</a> class.&#160; </li>
+
+  <li>A bug affecting the dimension of the controls in the <strong>Messages </strong> and <strong>Deadletter Messages </strong>dialogs for queues and subscriptions has been fixed. To send messages to a specific event hub partition, right click a partition and choose <strong>Send Events</strong> as shown in the picture below. </li>
+</ul>
+
+<p><img id="130740" style="margin-right: auto; margin-left: auto; display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130740/1/sendtopartition.png" width="600" /></p>
+
+<ul>
+  <li>When you send messages to a specific partition, the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventdata.partitionkey.aspx">EventData.PartitionKey</a> property is ignored. For this reason, the <strong>Update PartitionKey</strong> and <strong>No PartitionKey</strong> checkboxes are not available when sending messages to a given event hub partition. </li>
+</ul>
+
+<p><img id="130741" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130741/1/nonopartitionkey.png" width="880" /></p>
+
+<ul>
+  <li>When a queue or subscription is partitioned, now the tool invokes the <a href="http://msdn.microsoft.com/en-us/library/jj908731.aspx">MessageReceiver.Peek</a> and <a href="http://msdn.microsoft.com/en-us/library/hh181919.aspx">MessageReceiver.Receive</a> methods respectively, to peek and read messages one by one from the current queue, subscription or deadletter queue, instead of using the <a href="http://msdn.microsoft.com/en-us/library/jj908766.aspx">MessageReceiver.PeekBatch</a> or <a href="http://msdn.microsoft.com/en-us/library/jj673067.aspx">MessageReceiver.ReceiveBatch</a> methods. In fact, when the entity is partitioned, the batch methods read messages only from a single partition, hence they don't return all the messages from the 16 partitions or fragments that form the entity. </li>
+
+  <li>Fxed the value shown by the <strong>Max Size in Gigabytes</strong> slider when the queue or topic is partitioned. In fact, when the queue or subscription is partitioned, the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.queuedescription.maxsizeinmegabytes.aspx">QueueDescription.MaxSizeInMegabytes</a> and <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.topicdescription.maxsizeinmegabytes.aspx">TopicDescription.MaxSizeInMegabytes</a> property contains the size you specified when you created the entity (1024;2048;3072;4096;5120) multiplied by 16, that is, the number of fragments that compose the partitioned entity. </li>
+
+  <li>Fixed a problem that happened when updating the value of the ForwardTo and ForwardDeadLetteredMessagesTo properties of a subscription. </li>
+
+  <li>This version of the <strong>Service Bus Explorer </strong>introduces the possibility to save individual or multiple messages to a file in <strong>JSON</strong> format. See below for details. </li>
+
+  <li>In the <strong>Messages </strong>or <strong>Deadletter </strong>tab of a queue or subscription you can save a single message to a JSON file: right click the message to open the context menu and click <strong>Save Selected Message </strong>as shown in the picture below.
+
+    <br /><img id="130744" style="margin-right: auto; margin-left: auto; display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130744/1/saveselectedmessage.png" width="880" />
+
+    <br />&#160; This opens the <strong>Save File As</strong> dialog as shown in the picture below.
+
+    <br /><img id="130745" style="margin-right: auto; margin-left: auto; display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130745/1/savedialogmessage.png" width="880" />
+
+    <br /> The JSON file contains the body and properties of the selected <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.brokeredmessage.aspx">BrokeredMessage</a> object. Properties are in camel case.
+
+    <br />
+
+    <div class="scriptcode">
+      <div class="pluginEditHolder" plugincommand="mceScriptCode">
+        <div id="scid:57F11A72-B0E5-49c7-9094-E3A15BD5B5E6:2fac9e72-60b2-4d32-8b8f-2a7dbd102d79" class="wlWriterEditableSmartContent" style="margin: 0px; padding: 0px; float: none; display: inline;"><pre style="background-color:#FFFFFF;white-space:-moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;overflow: auto;"><span style="color: #000000;">{</span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">84</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">68</span><span style="color: #000000;">}, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">contentType</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">correlationId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">deliveryCount</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedSequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-12-03T16:39:48.4958476Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">expiresAtUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">9999-12-31T23:59:59.9999999</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">forcePersistence</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">isBodyConsumed</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">isLargeMessage</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">label</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Service Bus Explorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">lockedUntilUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">lockToken</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">messageId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">5cbc08aa-dca5-434b-bc27-afc8ba98307f</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">18</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">84</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">68</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">time</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">635532215878943345</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">city</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">country</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Italy</span><span style="color: #000000;">"</span><span style="color: #000000;">}, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">replyTo</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">replyToSessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">scheduledEnqueueTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0001-01-01T00:00:00</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">281474976710657</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">sessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">size</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">229</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">state</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">timeToLive</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">10675199.02:48:05.4775807</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">to</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">viaPartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;"> 
+}</span></pre><!-- Code inserted with Steve Dunn's Windows Live Writer Code Formatter Plugin.  http://dunnhq.com --></div>
+      </div>
+    </div>
+  </li>
+
+  <li>As an alternative, you can double click a message in the <strong>Messages </strong> or <strong>Deadletter </strong>tab for queue or subscription to open the <strong> Repair and Resubmit Message</strong> dialog and then click the <strong>Save </strong> button as shown in the picture below. </li>
+</ul>
+
+<p><img id="130746" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130746/1/repairandresubmitmessage.png" width="880" /></p>
+
+<ul>
+  <li>In the <strong>Messages </strong>or <strong>Deadletter </strong>tab of a queue or subscription you can save multiple messages to a JSON file: select multiple messages and right click one of them to open the context menu and then click <strong>Save Selected Messages </strong>as shown in the picture below. 
+
+    <br /><img id="130748" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130748/1/saveselectedmessages.png" width="880" />
+
+    <br />&#160; This opens the <strong>Save File As</strong> dialog as shown in the picture below.
+
+    <br /><img id="130745" style="margin-right: auto; margin-left: auto; display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130745/1/savedialogmessage.png" width="880" />
+
+    <br /> The JSON file contains an array of items. Each item contains the body and properties of one of the selected <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.brokeredmessage.aspx">BrokeredMessage</a> objects. Properties are in camel case. 
+
+    <br />
+
+    <div class="scriptcode">
+      <div class="pluginEditHolder" plugincommand="mceScriptCode">
+        <div id="scid:57F11A72-B0E5-49c7-9094-E3A15BD5B5E6:c6c17a99-8169-42d3-806c-8139ce4e1455" class="wlWriterEditableSmartContent" style="margin: 0px; padding: 0px; float: none; display: inline;"><pre style="background-color:#FFFFFF;white-space:-moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;overflow: auto;"><span style="color: #000000;">[ 
+  {</span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">36</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">93</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">contentType</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">correlationId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">deliveryCount</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedSequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-12-03T16:39:48.7794889Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">expiresAtUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">9999-12-31T23:59:59.9999999</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">forcePersistence</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isBodyConsumed</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isLargeMessage</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">label</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Service Bus Explorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockedUntilUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockToken</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">messageId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">197c5f6b-635c-437e-b419-5b346b626c35</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">36</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">93</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">time</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">635532215878943345</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">city</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">country</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Italy</span><span style="color: #000000;">"</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyTo</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyToSessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">scheduledEnqueueTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0001-01-01T00:00:00</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">4785074604081153</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">size</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">228</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">state</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">timeToLive</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">10675199.02:48:05.4775807</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">to</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">viaPartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;"> 
+  }, 
+  {</span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">85</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">29</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">contentType</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">correlationId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">deliveryCount</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedSequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">2</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-12-03T16:39:56.5925297Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">expiresAtUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">9999-12-31T23:59:59.9999999</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">forcePersistence</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isBodyConsumed</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isLargeMessage</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">label</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Service Bus Explorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockedUntilUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockToken</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">messageId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">fa9482b5-6dff-4268-9a5c-3d9b08bb358c</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">942</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">85</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">29</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">time</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">635532215962583503</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">city</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">country</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Italy</span><span style="color: #000000;">"</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyTo</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyToSessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">scheduledEnqueueTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0001-01-01T00:00:00</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">562949953421314</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">size</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">230</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">state</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">timeToLive</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">10675199.02:48:05.4775807</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">to</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">viaPartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;"> 
+  }, 
+  {</span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">84</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">68</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">contentType</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">correlationId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">deliveryCount</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedSequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-12-03T16:39:48.4958476Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">expiresAtUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">9999-12-31T23:59:59.9999999</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">forcePersistence</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isBodyConsumed</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">isLargeMessage</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">false</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">label</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Service Bus Explorer</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockedUntilUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">lockToken</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">messageId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">5cbc08aa-dca5-434b-bc27-afc8ba98307f</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">18</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: {</span><span style="color: #000000;">"</span><span style="color: #000000;">deviceId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">84</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">68</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">time</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">635532215878943345</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">city</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">country</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Italy</span><span style="color: #000000;">"</span><span style="color: #000000;">}, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyTo</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">replyToSessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">scheduledEnqueueTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">0001-01-01T00:00:00</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">281474976710657</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sessionId</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">size</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">229</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">state</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">0</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">timeToLive</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">10675199.02:48:05.4775807</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">to</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">viaPartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #0000FF;">null</span><span style="color: #000000;"> 
+  } 
+]</span></pre><!-- Code inserted with Steve Dunn's Windows Live Writer Code Formatter Plugin.  http://dunnhq.com --></div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<ul>
+  <li>In the <strong>Consumer Group or Partition Listener</strong> dialog you can save a single event to a JSON file: right click the event under the <strong>Events</strong> tab to open the context menu and click <strong>Save Selected Event </strong>as shown in the picture below.
+
+    <br /><img id="130753" style="display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130753/1/saveselectedevent.png" width="880" />
+
+    <br />&#160; This opens the <strong>Save File As</strong> dialog as shown in the picture below.
+
+    <br /><img id="130754" style="margin-right: auto; margin-left: auto; display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130754/1/savedialogevent.png" width="880" />
+
+    <br /> The JSON file contains the body and properties of the selected <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventdata.aspx">EventData</a> object. Properties are in camel case.
+
+    <br />
+
+    <div class="scriptcode">
+      <div class="pluginEditHolder" plugincommand="mceScriptCode">
+        <div id="scid:57F11A72-B0E5-49c7-9094-E3A15BD5B5E6:03cc1a52-b598-42b4-b62c-6a2c3c251452" class="wlWriterEditableSmartContent" style="margin: 0px; padding: 0px; float: none; display: inline;"><pre style="background-color:#FFFFFF;white-space:-moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;overflow: auto;"><span style="color: #000000;">{ 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">50</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+  }, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:01.057Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">208</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">id</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">50</span><span style="color: #000000;"> 
+  }, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+  </span><span style="color: #000000;">"</span><span style="color: #000000;">systemProperties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">Publisher</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">EnqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:01.057Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">208</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+  } 
+} </span></pre><!-- Code inserted with Steve Dunn's Windows Live Writer Code Formatter Plugin.  http://dunnhq.com --></div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<ul>
+  <li>As an alternative, you can double click an event in the <strong>Consumer Group or Partition Listener</strong> dialog to open the <strong>View Event Data</strong> dialog and then click the <strong>Save </strong>button as shown in the picture below. </li>
+</ul>
+
+<p style="text-align: center;"><img id="130757" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130757/1/saveevent.png" width="880" /></p>
+
+<ul>
+  <li>In the <strong>Consumer Group or Partition Listener</strong> dialog you can save multiple events to a JSON file: select multiple events and right click one of them to open the context menu and then click <strong>Save Selected Events </strong>as shown in the picture below.&#160; <br /><img id="130759" style="display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130759/1/saveselectedevents.png" width="880" />
+
+    <br />&#160; This opens the <strong>Save File As</strong> dialog as shown in the picture below.
+
+    <br /><img id="130760" style="display: block;" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130760/1/savedialogevent.png" width="880" />
+
+    <br /> The JSON file contains an array of items. Each item contains the body and properties of one of the selected <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventdata.aspx">EventData</a> objects. Properties are in camel case.&#160; <br />
+
+    <div class="scriptcode">
+      <div class="pluginEditHolder" plugincommand="mceScriptCode">
+        <div id="scid:57F11A72-B0E5-49c7-9094-E3A15BD5B5E6:1100db63-a6c9-455f-9ae6-a1b173493eec" class="wlWriterEditableSmartContent" style="margin: 0px; padding: 0px; float: none; display: inline;"><pre style="background-color:#FFFFFF;white-space:-moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;overflow: auto;"><span style="color: #000000;">[ 
+  { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">26</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:03.267Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">624</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">id</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">26</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">3</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">systemProperties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Publisher</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">EnqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:03.267Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">3</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">624</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    } 
+  }, 
+  { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">23</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:02.173Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">416</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">id</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">23</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">2</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">systemProperties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Publisher</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">EnqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:02.173Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">2</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">416</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    } 
+  }, 
+  { 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">body</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">deviceid</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">50</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">enqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:01.057Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">208</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">partitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">properties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">id</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">6</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">name</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">location</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">Milan</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">value</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">50</span><span style="color: #000000;"> 
+    }, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">sequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+    </span><span style="color: #000000;">"</span><span style="color: #000000;">systemProperties</span><span style="color: #000000;">"</span><span style="color: #000000;">: { 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Publisher</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">PartitionKey</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">device006</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">EnqueuedTimeUtc</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">2014-11-06T17:18:01.057Z</span><span style="color: #000000;">"</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">SequenceNumber</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">1</span><span style="color: #000000;">, 
+      </span><span style="color: #000000;">"</span><span style="color: #000000;">Offset</span><span style="color: #000000;">"</span><span style="color: #000000;">: </span><span style="color: #000000;">"</span><span style="color: #000000;">208</span><span style="color: #000000;">"</span><span style="color: #000000;"> 
+    } 
+  } 
+] </span></pre><!-- Code inserted with Steve Dunn's Windows Live Writer Code Formatter Plugin.  http://dunnhq.com --></div>
+      </div>
+    </div>
+  </li>
+</ul>
