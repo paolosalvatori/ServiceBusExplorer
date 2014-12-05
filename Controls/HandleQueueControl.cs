@@ -59,11 +59,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const int EnableDeadLetteringOnMessageExpirationIndex = 1;
         private const int EnablePartitioningIndex = 2;
         private const int EnableExpressIndex = 3;
-        private const int EnableLargeMessagesIndex = 4;
-        private const int RequiresDuplicateDetectionIndex = 5;
-        private const int RequiresSessionIndex = 6;
-        private const int SupportOrderingIndex = 7;
-        private const int IsAnonymousAccessibleIndex = 8;
+        private const int RequiresDuplicateDetectionIndex = 4;
+        private const int RequiresSessionIndex = 5;
+        private const int SupportOrderingIndex = 6;
+        private const int IsAnonymousAccessibleIndex = 7;
 
         //***************************
         // Texts
@@ -1175,9 +1174,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 // EnableExpress
                 checkedListBox.SetItemChecked(EnableExpressIndex, queueDescription.EnableExpress);
-
-                // EnableLargeMessages
-                checkedListBox.SetItemChecked(EnableLargeMessagesIndex, queueDescription.EnableLargeMessages);
             }
 
             // RequiresDuplicateDetection
@@ -1925,7 +1921,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
                         description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                        description.EnableLargeMessages = checkedListBox.GetItemChecked(EnableLargeMessagesIndex);
                     }
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
@@ -2035,10 +2030,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (e.Index == EnableExpressIndex)
             {
                 e.NewValue = queueDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
-            }
-            if (e.Index == EnableLargeMessagesIndex)
-            {
-                e.NewValue = queueDescription.EnableLargeMessages ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == RequiresSessionIndex)
             {

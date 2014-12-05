@@ -55,10 +55,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const int EnableFilteringMessagesBeforePublishingIndex = 1;
         private const int EnablePartitioningIndex = 2;
         private const int EnableExpressIndex = 3;
-        private const int EnableLargeMessagesIndex = 4;
-        private const int RequiresDuplicateDetectionIndex = 5;
-        private const int SupportOrderingIndex = 6;
-        private const int IsAnonymousAccessibleIndex = 7;
+        private const int RequiresDuplicateDetectionIndex = 4;
+        private const int SupportOrderingIndex = 5;
+        private const int IsAnonymousAccessibleIndex = 6;
 
         //***************************
         // Texts
@@ -574,9 +573,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 // EnableExpress
                 checkedListBox.SetItemChecked(EnableExpressIndex, topicDescription.EnableExpress);
-
-                // EnableLargeMessages
-                checkedListBox.SetItemChecked(EnableLargeMessagesIndex, topicDescription.EnableLargeMessages);
             }
 
             // RequiresDuplicateDetection
@@ -609,10 +605,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (e.Index == EnableExpressIndex)
             {
                 e.NewValue = topicDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
-            }
-            if (e.Index == EnableLargeMessagesIndex)
-            {
-                e.NewValue = topicDescription.EnableLargeMessages ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == RequiresDuplicateDetectionIndex)
             {
@@ -830,7 +822,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
                         description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                        description.EnableLargeMessages = checkedListBox.GetItemChecked(EnableLargeMessagesIndex);
                     }
                     description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
                     description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);

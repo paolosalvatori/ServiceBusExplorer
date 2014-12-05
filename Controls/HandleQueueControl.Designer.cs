@@ -699,7 +699,6 @@
             "Enable Dead Lettering On Message Expiration",
             "Enable Partitioning",
             "Enable Express",
-            "Enable Large Messages",
             "Requires Duplicate Detection",
             "Requires Session",
             "Enforce Message Ordering",
