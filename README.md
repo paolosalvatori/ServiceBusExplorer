@@ -1643,12 +1643,12 @@ Properties:&nbsp;
 <p>This version introduces the following updates:</p>
 
 <ul>
-  <li>Updated <strong>Microsoft.ServiceBus.dll to version 2.5.2.0</strong>. </li>
+  <li>Updated <strong>Microsoft.ServiceBus.dll to version 2.5.3.0</strong>. </li>
 
-  <li>Added support for the <strong>EnableExpress </strong>and <strong>EnableLargeMessages </strong>properties of queues and topics: </li>
+  <li>Added support for the <strong>EnableExpress </strong> property of queues and topics: </li>
 </ul>
 
-<p style="text-align: center;"><img id="130735" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130735/1/enableexpress.png" width="880" /></p>
+<p style="text-align: center;"><img id="130735" alt="" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/130781/1/enableexpress.png" width="880" /></p>
 
 <ul>
   <li>The following bug has been fixed: 
