@@ -1,6 +1,6 @@
 ﻿#region Copyright
 //=======================================================================================
-// Windows Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team 
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 

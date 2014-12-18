@@ -346,7 +346,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             try
             {
-                // Add Windows Azure subscription management Certificate to the request
+                // Add Microsoft Azure subscription management Certificate to the request
                 if (request != null)
                 {
                     request.ClientCertificates.Add(certificate);
