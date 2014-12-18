@@ -67,7 +67,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string StringType = "String";
         private const string DeadLetterQueue = "$DeadLetterQueue";
         private const string NullValue = "NULL";
-        private const string CloudServiceBusPostfix = "servicebus.windows.net";
+        private const string CloudServiceBusPostfix = ".servicebus.windows.net";
+        private const string ChinaServiceBusPostfix = ".servicebus.chinacloudapi.cn";
         private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
         private const int MaxBufferSize = 262144; // 256 KB
 
@@ -254,7 +255,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 string uri;
                 return namespaceUri != null &&
                        !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
-                       (uri.Contains(CloudServiceBusPostfix) || uri.Contains(TestServiceBusPostFix));
+                       (uri.Contains(CloudServiceBusPostfix) || 
+                        uri.Contains(TestServiceBusPostFix) || 
+                        uri.Contains(ChinaServiceBusPostfix));
             }
         }
 
