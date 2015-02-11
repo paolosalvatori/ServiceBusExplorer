@@ -620,7 +620,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagePropertyGrid.SelectedObject = brokeredMessage;
             BodyType bodyType;
             txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
-            var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, p.Value.ToString() })).ToArray();
+            var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? "").ToString() })).ToArray();
             messagePropertyListView.Items.Clear();
             messagePropertyListView.Items.AddRange(listViewItems);
         }
