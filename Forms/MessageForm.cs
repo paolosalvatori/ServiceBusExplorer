@@ -100,8 +100,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
 
             // Initialize the DataGridView.
-            bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key, 
-                                                                                                      p.Value.GetType().ToString().Substring(7),
+            bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
+                                                                                                      GetShortValueTypeName(p.Value),
                                                                                                       p.Value)).ToList());
             propertiesDataGridView.AutoGenerateColumns = false;
             propertiesDataGridView.AutoSize = true;
@@ -363,7 +363,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
-        
+
         private void MessageForm_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
@@ -409,11 +409,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
-        
+
         private void propertiesDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;
         }
         #endregion
+
+        private string GetShortValueTypeName(object o)
+        {
+            if (o == null) o = new object();
+            var typeName = o.GetType().ToString();
+            return typeName.Length > 7 ? typeName.Substring(7) : typeName;
+        }
     }
 }
