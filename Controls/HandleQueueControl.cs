@@ -1358,7 +1358,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     int retrieved;
                     do
                     {
-                        var message = messageReceiver.Receive(MainForm.SingletonMainForm.ReceiveTimeout);
+                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
