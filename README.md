@@ -2096,3 +2096,95 @@ Properties:&nbsp;
     </div>
   </li>
 </ul>
+<p><strong>Update</strong>: 2 March 2015</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>The tool now uses the <strong>Microsoft.ServiceBus.dll v.2.6.1.0</strong>. </li>
+<li>Completely refreshed support for dynamic relay services and added full support for persistent relay services. For more information on persistent relay services, see&nbsp;<a href="https://code.msdn.microsoft.com/windowsazure/How-to-handle-Service-Bus-6d65eca1">How  to handle Service Bus Relay Services in a multi-tenant environment</a>. </li>
+<li>You can select dynamic and persistent relay services in the main treeview and view their properties in the main panel. </li>
+</ul>
+<p style="text-align: center;"><img id="134454" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134454/1/relayservices01.png" alt="" width="372" height="570" /></p>
+<ul>
+<li><span style="text-align: center;">You can create, delete, update persistent relay services. In particular, you can define the relay type or binding, the transport security and client authorization characteristics of the persistent relay service in the </span><strong style="text-align: center;">Description </strong><span style="text-align: center;">tab of the </span><strong style="text-align: center;">HandleRelayControl</strong><span style="text-align: center;">.&nbsp;</span> </li>
+</ul>
+<p style="text-align: center;"><img id="134456" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134456/1/relayservices02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Relay service definition</strong></p>
+<ul>
+<li><span style="text-align: center;">You can create, review, update, delete the authorization rules alias shared access policies at the entity level for persistent relay services&nbsp;</span><span style="text-align: center;">n the&nbsp;</span><strong style="text-align: center;">Authorization  Rules&nbsp;</strong><span style="text-align: center;">tab of the&nbsp;</span><strong style="text-align: center;">HandleRelayControl</strong><span style="text-align: center;">.&nbsp;</span> </li>
+</ul>
+<p style="text-align: center;"><img id="134457" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134457/1/relayservices03.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Relay service authorization rules&nbsp;</strong></p>
+<ul>
+<li>You can query the metrics of both persistent and dynamic relay services in the&nbsp;<strong>Metrics&nbsp;</strong>tab of the&nbsp;<strong>HandleRelayControl</strong>. See point <strong>3</strong> in the picture below.&nbsp;For more information on this subject, see <a href="https://msdn.microsoft.com/en-us/library/azure/dn163589.aspx">Service Bus Entity Metrics REST APIs</a>. </li>
+</ul>
+<p style="text-align: center;"><img id="134458" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134458/1/relayservices04.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Metric rule definition</strong></p>
+<p style="text-align: center;"><strong><img id="134459" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134459/1/relayservices05.png" alt="" width="880" /><br /> </strong></p>
+<p style="text-align: center;"><strong>Metrics data and charts</strong></p>
+<ul>
+<li>You can test both dynamic and persistent relay services in SDI and MDI mode. </li>
+</ul>
+<p style="text-align: center;"><img id="134460" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134460/1/relayservices06.png" alt="" width="880" /></p>
+<ul>
+<li>Added support to import/export persistent relay services from/to an XML file. </li>
+<li>When the&nbsp;<strong>saveMessageToFile&nbsp;</strong>setting in the configuration file is set to&nbsp;<strong>true</strong>, the message content of the Test Relay form is saved to file on exit. </li>
+</ul>
+<p><img id="134452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134452/1/relaymessage.png" alt="" width="880" /></p>
+<ul>
+<li>Added support for the <a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.aspx"> PartitionDescription</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.lastenqueuedoffset.aspx">LastEnqueuedOffset</a>,&nbsp;<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.aspx">PartitionDescription</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.lastenqueuedtimeutc.aspx">LastEnqueuedTimeUtc</a>,&nbsp;<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.aspx">PartitionDescription</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.incomingbytespersecond.aspx">IncomingBytesPerSecond</a>,&nbsp;<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.aspx">PartitionDescription</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.partitiondescription.outgoingbytespersecond.aspx">OutgoingBytesPerSecond</a> in both the <strong>HandlePartitionControl</strong> and <strong>PartitionListenerControl</strong> as shown in the figures below. </li>
+</ul>
+<p style="text-align: center;"><img id="134463" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134463/1/bytespersecond01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>HandlePartitionControl</strong></p>
+<p style="text-align: center;"><img id="134464" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134464/1/bytespersecond02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Consumer Group / Partition Listener&nbsp;</strong></p>
+<ul>
+<li>The <strong>Consumer Group / Partition Listener </strong>control added the possibility to start receiving events from a specific point in time by defining a value for the&nbsp;<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubreceiver.aspx">EventHubReceiver</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubreceiver.startingdatetimeutc.aspx">StartingDateTimeUtc</a> property.&nbsp;<strong>Note</strong>: you have to specify date and time in UTC format, not in the local date and time format. </li>
+</ul>
+<p style="text-align: center;"><img id="134480" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134480/1/startingdatetimeutc01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Consumer Group / Partition Listener: Listener Tab</strong></p>
+<p style="text-align: center;"><img id="134481" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134481/1/startingdatetimeutc02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong><strong>Consumer Group / Partition Listener: EventsTab</strong><br /> </strong></p>
+<ul>
+<li>The value of the&nbsp;<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventdata.aspx">EventData</a>.<a href="https://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventdata.serializedsizeinbytes.aspx">SerializedSizeInBytes</a>&nbsp;property  is now used to calculate KB/sec in the <strong>PartitionListenerControl</strong>. </li>
+</ul>
+<p style="text-align: center;"><img id="134461" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134461/1/partitionlistenercontrol01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Consumer Group / Partition Listener</strong></p>
+<ul>
+<li>Fixed visualization of event data properties in the <strong>Consumer Group / Partition Listener </strong>control (<strong>PartitionListenerControl</strong>). </li>
+<li>Greatly improved message tracking&nbsp;in the&nbsp;<strong>Consumer Group / Partition Listener&nbsp;</strong>control (<strong>PartitionListenerControl</strong>). </li>
+<li>Fixed and extended&nbsp;<strong>Clear </strong>funtionality in the&nbsp;<strong>Consumer Group / Partition Listener&nbsp;</strong>control (<strong>PartitionListenerControl</strong>). </li>
+<li>Added the <strong>All </strong>item to <strong>Metrics</strong>. When <strong> All </strong>is selected, the tool will retrieve all the metrics for the selected entity. See point <strong>1</strong> in the picture below. </li>
+<li>Added the possibility to delete a single metric query by pressing the delete button at the end of the row. See point <strong>2 </strong>in the picture below. </li>
+</ul>
+<p style="text-align: center;"><img id="134467" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134467/1/allmetric.png" alt="" width="880" /></p>
+<ul>
+<li>No chart is&nbsp;shown if a metric doesn't return any data. </li>
+<li>When no time range is explicitly specified in a metric rule, the tool retrieves metric data of the last 7 days. </li>
+<li>Added Metrics support for the&nbsp;<strong>Event Hubs</strong>,&nbsp;<strong>Consumer Groups</strong>,&nbsp;<strong>Notification Hubs</strong>&nbsp;and&nbsp;<strong>Relays</strong>. </li>
+</ul>
+<p style="text-align: center;"><img id="134468" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134468/1/eventhubmetrics01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Event Hub: metric rule definition</strong></p>
+<p style="text-align: center;"><img id="134469" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134469/1/eventhubmetrics02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Event Hub: metric data and charts</strong></p>
+<p style="text-align: center;"><strong><img id="134470" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134470/1/consumergroupmetrics01.png" alt="" width="880" /><br /> </strong></p>
+<p style="text-align: center;"><strong>Consumer Group: metric rule definition</strong></p>
+<p style="text-align: center;"><img id="134471" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134471/1/consumergroupmetrics02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Consumer Group:&nbsp;&nbsp;metric data and charts</strong></p>
+<p style="text-align: center;"><img id="134472" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134472/1/notificationhubmetrics01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Notification Hub:&nbsp;<strong>metric rule definition</strong></strong></p>
+<p style="text-align: center;"><img id="134473" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134473/1/notificationhubmetrics02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong><strong><strong><strong>Notification Hub:&nbsp;</strong>metric data and charts</strong><br /> </strong></strong></p>
+<p style="text-align: center;"><img id="134474" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134474/1/relaymetrics01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Relay:&nbsp;<strong>metric rule definition</strong></strong></p>
+<p style="text-align: center;">&nbsp;<img id="134475" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134475/1/relaymetrics02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong><strong>Relay:&nbsp;</strong>metric data and charts</strong></p>
+<ul>
+<li>If you right click the namespace node in treeview and select <strong>Open Metrics in SDI or MDI mode</strong>, you can access a dialog where you can select metrics of different entities. For example, this option allows to compare the throughput of an event  hub with the throughput of one of its consumer groups. </li>
+</ul>
+<p style="text-align: center;"><img id="134476" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134476/1/namespacemetrics01.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong>Namespace:&nbsp;<strong>metric rule definition</strong></strong></p>
+<p style="text-align: center;"><img id="134477" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/134477/1/namespacemetrics02.png" alt="" width="880" /></p>
+<p style="text-align: center;"><strong><strong><strong>Namespace: metric data and charts</strong><br /> </strong></strong></p>
+<ul>
+<li>Bug fixed by the developer community on <a href="https://github.com/paolosalvatori/ServiceBusExplorer"> GitHub</a> (thanks guys!): </li>
+</ul>
