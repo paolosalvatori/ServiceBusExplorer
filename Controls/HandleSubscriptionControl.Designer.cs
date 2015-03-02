@@ -72,7 +72,7 @@
             this.lblForwardTo = new System.Windows.Forms.Label();
             this.txtForwardTo = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelUserDescription = new System.Windows.Forms.Label();
             this.txtMaxDeliveryCount = new System.Windows.Forms.TextBox();
             this.grouperLockDuration = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
             this.lblLockDurationMilliseconds = new System.Windows.Forms.Label();
@@ -147,6 +147,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnCloseTabs = new System.Windows.Forms.Button();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperAutoDeleteOnIdle.SuspendLayout();
@@ -231,7 +232,7 @@
             this.btnRefresh.Location = new System.Drawing.Point(680, 504);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(72, 24);
-            this.btnRefresh.TabIndex = 3;
+            this.btnRefresh.TabIndex = 5;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -250,7 +251,7 @@
             this.btnChangeStatus.Location = new System.Drawing.Point(760, 504);
             this.btnChangeStatus.Name = "btnChangeStatus";
             this.btnChangeStatus.Size = new System.Drawing.Size(72, 24);
-            this.btnChangeStatus.TabIndex = 4;
+            this.btnChangeStatus.TabIndex = 6;
             this.btnChangeStatus.Text = "Disable";
             this.btnChangeStatus.UseVisualStyleBackColor = false;
             this.btnChangeStatus.Click += new System.EventHandler(this.btnChangeStatus_Click);
@@ -269,7 +270,7 @@
             this.btnCancelUpdate.Location = new System.Drawing.Point(920, 504);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(72, 24);
-            this.btnCancelUpdate.TabIndex = 6;
+            this.btnCancelUpdate.TabIndex = 8;
             this.btnCancelUpdate.Text = "Update";
             this.btnCancelUpdate.UseVisualStyleBackColor = false;
             this.btnCancelUpdate.Click += new System.EventHandler(this.btnCancelUpdate_Click);
@@ -286,7 +287,7 @@
             this.btnCreateDelete.Location = new System.Drawing.Point(840, 504);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(72, 24);
-            this.btnCreateDelete.TabIndex = 5;
+            this.btnCreateDelete.TabIndex = 7;
             this.btnCreateDelete.Text = "Create";
             this.btnCreateDelete.UseVisualStyleBackColor = false;
             this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
@@ -305,7 +306,7 @@
             this.btnDeadletter.Location = new System.Drawing.Point(600, 504);
             this.btnDeadletter.Name = "btnDeadletter";
             this.btnDeadletter.Size = new System.Drawing.Size(72, 24);
-            this.btnDeadletter.TabIndex = 2;
+            this.btnDeadletter.TabIndex = 4;
             this.btnDeadletter.Text = "Deadletter";
             this.btnDeadletter.UseVisualStyleBackColor = false;
             this.btnDeadletter.Click += new System.EventHandler(this.btnDeadletter_Click);
@@ -322,7 +323,7 @@
             this.btnMessages.Location = new System.Drawing.Point(520, 504);
             this.btnMessages.Name = "btnMessages";
             this.btnMessages.Size = new System.Drawing.Size(72, 24);
-            this.btnMessages.TabIndex = 1;
+            this.btnMessages.TabIndex = 3;
             this.btnMessages.Text = "Messages";
             this.btnMessages.UseVisualStyleBackColor = false;
             this.btnMessages.Click += new System.EventHandler(this.btnMessages_Click);
@@ -339,7 +340,7 @@
             this.btnSessions.Location = new System.Drawing.Point(440, 504);
             this.btnSessions.Name = "btnSessions";
             this.btnSessions.Size = new System.Drawing.Size(72, 24);
-            this.btnSessions.TabIndex = 0;
+            this.btnSessions.TabIndex = 2;
             this.btnSessions.Text = "Sessions";
             this.btnSessions.UseVisualStyleBackColor = false;
             this.btnSessions.Click += new System.EventHandler(this.btnSessions_Click);
@@ -362,6 +363,7 @@
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
             this.mainTabControl.TabIndex = 12;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
+            this.mainTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.mainTabControl_Selected);
             // 
             // tabPageDescription
             // 
@@ -864,7 +866,7 @@
             this.grouperSubscriptionProperties.Controls.Add(this.lblForwardTo);
             this.grouperSubscriptionProperties.Controls.Add(this.txtForwardTo);
             this.grouperSubscriptionProperties.Controls.Add(this.label2);
-            this.grouperSubscriptionProperties.Controls.Add(this.label3);
+            this.grouperSubscriptionProperties.Controls.Add(this.labelUserDescription);
             this.grouperSubscriptionProperties.Controls.Add(this.txtMaxDeliveryCount);
             this.grouperSubscriptionProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperSubscriptionProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
@@ -996,15 +998,15 @@
             this.label2.TabIndex = 26;
             this.label2.Text = "Max Delivery Count:";
             // 
-            // label3
+            // labelUserDescription
             // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label3.Location = new System.Drawing.Point(16, 72);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(88, 13);
-            this.label3.TabIndex = 27;
-            this.label3.Text = "User Description:";
+            this.labelUserDescription.AutoSize = true;
+            this.labelUserDescription.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.labelUserDescription.Location = new System.Drawing.Point(16, 72);
+            this.labelUserDescription.Name = "labelUserDescription";
+            this.labelUserDescription.Size = new System.Drawing.Size(88, 13);
+            this.labelUserDescription.TabIndex = 27;
+            this.labelUserDescription.Text = "User Description:";
             // 
             // txtMaxDeliveryCount
             // 
@@ -2004,10 +2006,10 @@
             this.btnMetrics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnMetrics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMetrics.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMetrics.Location = new System.Drawing.Point(360, 504);
+            this.btnMetrics.Location = new System.Drawing.Point(280, 504);
             this.btnMetrics.Name = "btnMetrics";
             this.btnMetrics.Size = new System.Drawing.Size(72, 24);
-            this.btnMetrics.TabIndex = 13;
+            this.btnMetrics.TabIndex = 0;
             this.btnMetrics.Text = "Get Metrics";
             this.btnMetrics.UseVisualStyleBackColor = false;
             this.btnMetrics.Click += new System.EventHandler(this.btnMetrics_Click);
@@ -2022,7 +2024,7 @@
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
             this.saveSelectedDeadletteredMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 120);
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 98);
             // 
             // repairAndResubmitDeadletterToolStripMenuItem
             // 
@@ -2102,11 +2104,30 @@
             this.saveSelectedMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
             // 
+            // btnCloseTabs
+            // 
+            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCloseTabs.Enabled = false;
+            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCloseTabs.Location = new System.Drawing.Point(360, 504);
+            this.btnCloseTabs.Name = "btnCloseTabs";
+            this.btnCloseTabs.Size = new System.Drawing.Size(72, 24);
+            this.btnCloseTabs.TabIndex = 1;
+            this.btnCloseTabs.Text = "Close Tabs";
+            this.btnCloseTabs.UseVisualStyleBackColor = false;
+            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
+            // 
             // HandleSubscriptionControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.btnMetrics);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnDeadletter);
@@ -2277,7 +2298,7 @@
         private System.Windows.Forms.Label lblForwardTo;
         private System.Windows.Forms.TextBox txtForwardTo;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelUserDescription;
         private System.Windows.Forms.TextBox txtMaxDeliveryCount;
         private Grouper grouperLockDuration;
         private System.Windows.Forms.Label lblLockDurationMilliseconds;
@@ -2334,5 +2355,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessagesToolStripMenuItem;
+        private System.Windows.Forms.Button btnCloseTabs;
     }
 }

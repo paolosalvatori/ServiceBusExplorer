@@ -618,9 +618,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             brokeredMessage = bindingList[e.RowIndex];
             messagePropertyGrid.SelectedObject = brokeredMessage;
+
             BodyType bodyType;
             txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
-            var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, p.Value.ToString() })).ToArray();
+            var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             messagePropertyListView.Items.Clear();
             messagePropertyListView.Items.AddRange(listViewItems);
         }
@@ -1006,7 +1007,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Indicates if the message-pump should call complete on messages after the callback has completed processing.
                 AutoComplete = checkBoxAutoComplete.Checked,
                 // Indicates the maximum number of concurrent calls to the callback the pump should initiate 
-                MaxConcurrentCalls = txtMaxConcurrentCalls.IntegerValue
+                MaxConcurrentCalls = txtMaxConcurrentCalls.IntegerValue,
+                AutoRenewTimeout = TimeSpan.FromMinutes(1)
             };
             // Allows to get notified of any errors encountered by the message pump
             options.ExceptionReceived += LogErrors;
@@ -1207,6 +1209,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (tracking)
                 {
                     Invoke(new Action(() => messageBindingList.Add(message.Clone())));
+                    //Invoke(new Action(() => messageCollection.Add(message)));
                 }
                 UpdateStatistics(1, GetElapsedTime(), message.Size);
                 if (receiveMode == ReceiveMode.PeekLock && !autoComplete)
@@ -1226,25 +1229,33 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 while (true)
                 {
-                    BrokeredMessage message;
-                    var ok = messageCollection.TryTake(out message, 100);
-                    if (!ok)
+                    try
                     {
-                        continue;
+                        BrokeredMessage message;
+                        var ok = messageCollection.TryTake(out message, 100);
+                        if (!ok)
+                        {
+                            continue;
+                        }
+                        await Task.Delay(TimeSpan.FromMilliseconds(5));
+                        if (InvokeRequired)
+                        {
+                            Invoke(new Action(() => messageBindingList.Add(message.Clone())));
+                        }
+                        else
+                        {
+                            messageBindingList.Add(message.Clone());
+                        }
                     }
-                    await Task.Delay(TimeSpan.FromMilliseconds(5));
-                    if (InvokeRequired)
+                    // ReSharper disable once EmptyGeneralCatchClause
+                    catch 
                     {
-                        Invoke(new Action(() => messageBindingList.Add(message.Clone())));
                     }
-                    else
-                    {
-                        messageBindingList.Add(message.Clone());
-                    }
+                    
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
-            catch
+            catch 
             {
             }
             // ReSharper disable FunctionNeverReturns
@@ -1616,6 +1627,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         disposable.Dispose();
                     }
+                }
+
+                if (queueClient != null)
+                {
+                    queueClient.Close();
+                }
+
+                if (subscriptionClient != null)
+                {
+                    subscriptionClient.Close();
                 }
 
                 for (var i = 0; i < Controls.Count; i++)

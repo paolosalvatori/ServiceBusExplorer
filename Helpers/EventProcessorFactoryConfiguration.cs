@@ -20,8 +20,9 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.ServiceBus.Messaging;
 
@@ -37,6 +38,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly CheckBox verbose;
         private readonly CheckBox offsetInclusive;
         private readonly CheckBox checkpoint;
+        private readonly CancellationToken cancellationToken;
         #endregion
 
         #region Public Conctructor
@@ -49,13 +51,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                   CheckBox tracking,
                                                   CheckBox verbose,
                                                   CheckBox offsetInclusive,
-                                                  CheckBox checkpoint)
+                                                  CheckBox checkpoint,
+                                                  CancellationToken cancellationToken)
         {
             this.logging = logging;
             this.tracking = tracking;
             this.verbose = verbose;
             this.offsetInclusive = offsetInclusive;
             this.checkpoint = checkpoint;
+            this.cancellationToken = cancellationToken;
         }
         #endregion
 
@@ -96,9 +100,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             get
             {
-                return checkpoint != null && (bool)checkpoint.Invoke(new Func<bool>(() => checkpoint.Checked)); ;
+                return checkpoint != null && (bool)checkpoint.Invoke(new Func<bool>(() => checkpoint.Checked));
             }
         }
+
+        public CancellationToken CancellationToken
+        {
+            get
+            {
+                return cancellationToken;
+                
+            }
+        }
+
         public Func<EventData, object> TrackEvent { get; set; }
         public Func<long> GetElapsedTime { get; set; }
         public Action<long, long, long> UpdateStatistics { get; set; }

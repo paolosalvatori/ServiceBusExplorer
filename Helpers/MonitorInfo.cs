@@ -32,9 +32,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             MonitorInfos = new BindingList<MonitorInfo> 
             {
-                new MonitorInfo {FriendlyName = "Active Message Count", Name="ActiveMessageCount", Unit="Messages"},
-                new MonitorInfo {FriendlyName = "Deadletter Message Count", Name="DeadletterMessageCount", Unit="Messages"},
-                new MonitorInfo {FriendlyName = "Size in KB", Name="SizeInKB", Unit = "KB"}
+                new MonitorInfo {DisplayName = "Active Message Count", Name="ActiveMessageCount", Unit="Messages"},
+                new MonitorInfo {DisplayName = "Deadletter Message Count", Name="DeadletterMessageCount", Unit="Messages"},
+                new MonitorInfo {DisplayName = "Size in KB", Name="SizeInKB", Unit = "KB"}
             };
             MonitorInfos.AllowEdit = true;
             MonitorInfos.AllowNew = true;
@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Public Instance Properties
-        public string FriendlyName { get; set; }
+        public string DisplayName { get; set; }
         public string Name { get; set; }
         public string Unit { get; set; }
         #endregion

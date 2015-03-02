@@ -67,7 +67,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         // Messages
         //***************************
-        private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
+        private const string DoubleClickMessage = "Double-click a row to open the event data.";
         private const string ConnectionStringCannotBeNull = "The namespace connection string cannot be null.";
         private const string SelectEventDataInspector = "Select an EventData inspector...";
 
@@ -79,6 +79,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SizeInBytes = "Size in Bytes";
         private const string BeginSequenceNumber = "Begin Sequence Number";
         private const string EndSequenceNumber = "End Sequence Number";
+        private const string IncomingBytesPerSecond = "IncomingBytesPerSecond";
+        private const string OutgoingBytesPerSecond = "OutgoingBytesPerSecond";
+        private const string LastEnqueuedOffset = "LastEnqueuedOffset";
+        private const string LastEnqueuedTimeUtc = "LastEnqueuedTimeUtc";
 
         //***************************
         // Tooltips
@@ -96,6 +100,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string KbPerSecTooltip = "The average number of KB received per second.";
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
         private const string MaxCountTooltip = "The maximum amount of event data the user is willing to accept in one call.";
+        private const string StartDateTimeUtcTooltip = "The starting date and time in UTC format for this receiver. The Receive method starts receiving the next event after this StartingDateTimeUtc value. If null, the receiver starts receiving events from the beginning of the Event Hubs event stream.";
         private const string OffsetInclusiveTooltip = "if set to true, the Starting Offset is treated as an inclusive offset meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.";
 
         //***************************
@@ -120,7 +125,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private bool sorting;
         private readonly SortableBindingList<EventData> eventDataBindingList = new SortableBindingList<EventData> { AllowNew = false, AllowEdit = false, AllowRemove = false };
         private readonly IList<PartitionDescription> partitionDescriptions;
-        private readonly BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
+        private BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
         private System.Timers.Timer timer;
         private long receiverMessageNumber;
         private long receiverMessageSizeTotal;
@@ -145,6 +150,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private DateTime dateTime = DateTime.MinValue;
         private readonly EventHubConsumerGroup consumerGroup;
         private Dictionary<string, bool> registeredDictionary = new Dictionary<string, bool>();
+        private bool clearing;
+        private bool cleared;
         #endregion
 
         #region Public Constructors
@@ -309,6 +316,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(txtRefreshInformation, RefreshTimeoutTooltip);
             toolTip.SetToolTip(txtReceiveTimeout, ReceiveTimeoutTooltip);
             toolTip.SetToolTip(txtMaxBatchSize, MaxCountTooltip);
+            toolTip.SetToolTip(pickerStartingDateTimeUtc, StartDateTimeUtcTooltip);
             
             toolTip.SetToolTip(checkBoxLogging, LoggingTooltip);
             toolTip.SetToolTip(checkBoxVerbose, VerboseTooltip);
@@ -607,7 +615,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             eventDataPropertyGrid.SelectedObject = currentEventData;
             BodyType bodyType;
             txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(currentEventData, out bodyType));
-            var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, p.Value.ToString() })).ToArray();
+            var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             eventDataPropertyListView.Items.Clear();
             eventDataPropertyListView.Items.AddRange(listViewItems);
         }
@@ -723,6 +731,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             sorting = false;
         }
 
+        // ReSharper disable once FunctionComplexityOverflow
         private async void btnStart_Click(object sender, EventArgs e)
         {
             if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
@@ -752,13 +761,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 try
                 {
                     registeredDictionary = new Dictionary<string, bool>(partitionDescriptions.Count);
+                    var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
+                    var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);  
                     var eventProcessorOptions = new EventProcessorOptions
                     {
                         InitialOffsetProvider = partitionId =>
                         {
+                            if (startDateTimeEnabled)
+                            {
+                                return startDateTimeValue;
+                            }
                             var lease = EventProcessorCheckpointHelper.GetLease(ns,
-                                                                                eventHub,
-                                                                                partitionId);
+                                eventHub,
+                                consumerGroup.GroupName,
+                                partitionId);
                             return lease != null ? lease.Offset : "-1";
                         },
                         MaxBatchSize = maxBatchSize,
@@ -768,13 +784,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var checkpointManager = new EventProcessorCheckpointManager
                     {
                         Namespace = serviceBusHelper.Namespace,
-                        EventHub = eventHubDescription.Path
+                        EventHub = eventHubDescription.Path,
+                        ConsumerGroup = consumerGroup.GroupName
                     };
                     var eventProcessorFactoryConfiguration = new EventProcessorFactoryConfiguration(checkBoxLogging,
                                                                                                     checkBoxTrackMessages,
                                                                                                     checkBoxVerbose,
                                                                                                     checkBoxOffsetInclusive,
-                                                                                                    checkBoxCheckpoint)
+                                                                                                    checkBoxCheckpoint,
+                                                                                                    cancellationTokenSource.Token)
                     {
                         TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(m)), ev),
                         GetElapsedTime = GetElapsedTime,
@@ -788,7 +806,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         #pragma warning disable 4014
                         consumerGroup.RegisterProcessorFactoryAsync(
                         #pragma warning restore 4014
-                                EventProcessorCheckpointHelper.GetLease(ns, eventHub, partitionDescription.PartitionId),
+                                EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, partitionDescription.PartitionId),
                                 checkpointManager,
                                 new EventProcessorFactory<EventProcessor>(eventProcessorFactoryConfiguration),
                                 eventProcessorOptions);
@@ -819,6 +837,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
+        public object Bingo(string partitionId)
+        {
+            return DateTime.UtcNow;
+        }
+
         private long GetElapsedTime()
         {
             lock (this)
@@ -841,20 +864,41 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 while (true)
                 {
-                    EventData eventData;
-                    var ok = eventDataCollection.TryTake(out eventData, 100);
-                    if (!ok)
+                    try
                     {
-                        continue;
+                        if (clearing)
+                        {
+                            Thread.Sleep(50);
+                            continue;
+                        }
+                        if (cleared)
+                        {
+                            Invoke(new Action(ClearTrackedMessages));
+                           
+                            cleared = false;
+                            continue;
+                        }
+                        EventData eventData;
+                        var ok = eventDataCollection.TryTake(out eventData, 100);
+                        if (!ok)
+                        {
+                            continue;
+                        }
+                        await Task.Delay(TimeSpan.FromMilliseconds(5));
+                        
+                        if (InvokeRequired)
+                        {
+                            Invoke(new Action(() => eventDataBindingList.Add(eventData)));
+                        }
+                        else
+                        {
+                            eventDataBindingList.Add(eventData);
+                        }
                     }
-                    await Task.Delay(TimeSpan.FromMilliseconds(5));
-                    if (InvokeRequired)
+                    // ReSharper disable once EmptyGeneralCatchClause
+                    catch
                     {
-                        Invoke(new Action(() => eventDataBindingList.Add(eventData.Clone())));
-                    }
-                    else
-                    {
-                        eventDataBindingList.Add(eventData.Clone());
+
                     }
                 }
             }
@@ -870,7 +914,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                eventDataBindingList.Clear();
+                clearing = true;
+                cleared = true;
+                eventDataCollection.Dispose();
+                eventDataCollection = new BlockingCollection<EventData>();
+                ClearTrackedMessages();
+                ClearStatistics();
+                ClearCharts();
                 if (containerForm != null)
                 {
                     containerForm.Clear();
@@ -883,6 +933,40 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 HandleException(ex);
             }
+            finally
+            {
+                clearing = false;
+            }
+        }
+
+        private void ClearTrackedMessages()
+        {
+            eventDataBindingList.Clear();
+            eventDataPropertyGrid.SelectedObject = null;
+            txtMessageText.Text = string.Empty;
+            eventDataPropertyListView.Items.Clear();
+        }
+
+        private void ClearStatistics()
+        {
+            txtEventDataTotal.Text = @"0";
+            txtEventDataPerSecond.Text = @"0";
+            txtAverageDuration.Text = @"0";
+            txtMessageSizePerSecond.Text = @"0";
+
+            receiverTotalTime = 0;
+            receiverMessageSizeTotal = 0;
+            receiverMessageNumber = 0;
+            receiverAverageTime = 0;
+            receiverMessagesPerSecond = 0;
+            receiverMessageSizePerSecond = 0;
+        }
+
+        private void ClearCharts()
+        {
+            chart.Series["ReceiverLatency"].Points.Clear();
+            chart.Series["ReceiverThroughput"].Points.Clear();
+            chart.Series["MessageSizePerSecond"].Points.Clear();
         }
 
         private async void btnClose_Click(object sender, EventArgs e)
@@ -947,8 +1031,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void grouperOptions_Resize(object sender, EventArgs e)
         {
-            var textboxWidth = (grouperOptions.Size.Width - 64) / 3;
-            var width = textboxWidth / 2;
+            var textboxWidth = (grouperOptions.Size.Width - 80 - pickerStartingDateTimeUtc.Size.Width) / 3;
 
             txtRefreshInformation.Size = new Size(textboxWidth, txtRefreshInformation.Size.Height);
             txtReceiveTimeout.Size = new Size(textboxWidth, txtReceiveTimeout.Size.Height);
@@ -959,11 +1042,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             txtMaxBatchSize.Location = new Point(2 * textboxWidth + 48, txtMaxBatchSize.Location.Y);
             lblMaxBatchSize.Location = new Point(2 * textboxWidth + 48, lblMaxBatchSize.Location.Y);
 
-            checkBoxVerbose.Location = new Point(width + 16, checkBoxVerbose.Location.Y);
-            checkBoxTrackMessages.Location = new Point(2 * width + 32, checkBoxTrackMessages.Location.Y);
-            checkBoxGraph.Location = new Point(3 * width + 32, checkBoxGraph.Location.Y);
-            checkBoxOffsetInclusive.Location = new Point(4 * width + 48, checkBoxGraph.Location.Y);
-            checkBoxCheckpoint.Location = new Point(5 * width + 48, checkBoxCheckpoint.Location.Y);
+            var width = (grouperOptions.Size.Width - 32 - checkBoxCheckpoint.Size.Width) / 5;
+            checkBoxVerbose.Location = new Point(width, checkBoxVerbose.Location.Y);
+            checkBoxTrackMessages.Location = new Point(2 * width, checkBoxTrackMessages.Location.Y);
+            checkBoxGraph.Location = new Point(3 * width, checkBoxGraph.Location.Y);
+            checkBoxOffsetInclusive.Location = new Point(4 * width, checkBoxGraph.Location.Y);
+            //checkBoxCheckpoint.Location = new Point(5 * width + 48, checkBoxCheckpoint.Location.Y);
         }
 
         private static void textBox_GotFocus(object sender, EventArgs e)
@@ -982,6 +1066,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private async Task StopListenerAsync()
         {
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+            }
             lock (this)
             {
                 stopping = true;
@@ -1004,10 +1092,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId }, 
                                                                  ServiceBus.Messaging.CloseReason.Shutdown);
                 }
-            }
-            if (cancellationTokenSource != null)
-            {
-                cancellationTokenSource.Cancel();
             }
             lock (this)
             {
@@ -1140,10 +1224,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 containerForm = parentForm as ContainerForm;
             }
-        }
-
-        private void grouperOptions_CustomPaint(PaintEventArgs e)
-        {
         }
 
         private async void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
@@ -1348,7 +1428,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var propertyList = new List<string[]>();
                 var index = partitionDescriptions.Count == 1 ? 0 : cboPartition.InvokeRequired ? (int)Invoke(new Func<int>(() => cboPartition.SelectedIndex)) : cboPartition.SelectedIndex;
                 var partitions = new List<PartitionDescription>(new[] { serviceBusHelper.GetPartition(partitionDescriptions[index].EventHubPath,
-                                                                                                            partitionDescriptions[index].PartitionId) });
+                                                                                                      consumerGroup.GroupName,
+                                                                                                      partitionDescriptions[index].PartitionId) });
                 if (!partitions.Any())
                 {
                     return;
@@ -1362,6 +1443,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 propertyList.AddRange(new[]{new[]{PartitionId, partition.PartitionId},
                                             new[]{EventHubPath, partition.EventHubPath},
                                             new[]{SizeInBytes, partition.SizeInBytes.ToString("N0")},
+                                            new[]{LastEnqueuedOffset, partition.LastEnqueuedOffset ?? "Null"},
+                                            new[]{LastEnqueuedTimeUtc, partition.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
+                                            new[]{IncomingBytesPerSecond, partition.IncomingBytesPerSecond.ToString("N0")},
+                                            new[]{OutgoingBytesPerSecond, partition.OutgoingBytesPerSecond.ToString("N0")},
                                             new[]{BeginSequenceNumber, partition.BeginSequenceNumber.ToString("N0")},
                                             new[]{EndSequenceNumber, partition.EndSequenceNumber.ToString("N0")}});
 

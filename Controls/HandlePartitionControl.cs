@@ -48,10 +48,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SizeInBytes = "Size in Bytes";
         private const string BeginSequenceNumber = "Begin Sequence Number";
         private const string EndSequenceNumber = "End Sequence Number";
+        private const string IncomingBytesPerSecond = "IncomingBytesPerSecond";
+        private const string OutgoingBytesPerSecond = "OutgoingBytesPerSecond";
+        private const string LastEnqueuedOffset = "LastEnqueuedOffset";
+        private const string LastEnqueuedTimeUtc = "LastEnqueuedTimeUtc";
         #endregion
 
         #region Private Fields
         private PartitionDescription partitionDescription;
+        // ReSharper disable once NotAccessedField.Local
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         #endregion
@@ -93,10 +98,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 // Initialize property grid
                 var propertyList = new List<string[]>();
-
+                
                 propertyList.AddRange(new[]{new[]{PartitionId, partitionDescription.PartitionId},
                                             new[]{EventHubPath, partitionDescription.EventHubPath},
                                             new[]{SizeInBytes, partitionDescription.SizeInBytes.ToString("N0")},
+                                            new[]{LastEnqueuedOffset, partitionDescription.LastEnqueuedOffset ?? "Null"},
+                                            new[]{LastEnqueuedTimeUtc, partitionDescription.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
+                                            new[]{IncomingBytesPerSecond, partitionDescription.IncomingBytesPerSecond.ToString("N0")},
+                                            new[]{OutgoingBytesPerSecond, partitionDescription.OutgoingBytesPerSecond.ToString("N0")},
                                             new[]{BeginSequenceNumber, partitionDescription.BeginSequenceNumber.ToString("N0")},
                                             new[]{EndSequenceNumber, partitionDescription.EndSequenceNumber.ToString("N0")}});
 

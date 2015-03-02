@@ -26,17 +26,17 @@ using System;
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     /// <summary>
-    /// This class contains the information of a Relay Service
+    /// This class contains the information of a Relay
     /// </summary>
-    public class RelayServiceWrapper
+    public class RelayWrapper
     {
         #region Public Constructors
         /// <summary>
-        /// Initializes a new instance of the RelayServiceWrapper class.
+        /// Initializes a new instance of the RelayWrapper class.
         /// </summary>
         /// <param name="name">The service name.</param>
         /// <param name="uri">The service uri.</param>
-        public RelayServiceWrapper(string name, Uri uri)
+        public RelayWrapper(string name, Uri uri)
         {
             Name = name;
             Uri = uri;

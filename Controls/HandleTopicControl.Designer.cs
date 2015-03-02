@@ -84,6 +84,7 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.btnMetrics = new System.Windows.Forms.Button();
+            this.btnCloseTabs = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
@@ -793,6 +794,7 @@
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
             this.mainTabControl.TabIndex = 19;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
+            this.mainTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.mainTabControl_Selected);
             // 
             // tabPageAuthorization
             // 
@@ -934,7 +936,7 @@
             this.btnRefresh.Location = new System.Drawing.Point(680, 504);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(72, 24);
-            this.btnRefresh.TabIndex = 15;
+            this.btnRefresh.TabIndex = 2;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -953,7 +955,7 @@
             this.btnChangeStatus.Location = new System.Drawing.Point(760, 504);
             this.btnChangeStatus.Name = "btnChangeStatus";
             this.btnChangeStatus.Size = new System.Drawing.Size(72, 24);
-            this.btnChangeStatus.TabIndex = 16;
+            this.btnChangeStatus.TabIndex = 3;
             this.btnChangeStatus.Text = "Disable";
             this.btnChangeStatus.UseVisualStyleBackColor = false;
             this.btnChangeStatus.Click += new System.EventHandler(this.btnChangeStatus_Click);
@@ -972,7 +974,7 @@
             this.btnCancelUpdate.Location = new System.Drawing.Point(920, 504);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(72, 24);
-            this.btnCancelUpdate.TabIndex = 18;
+            this.btnCancelUpdate.TabIndex = 5;
             this.btnCancelUpdate.Text = "Update";
             this.btnCancelUpdate.UseVisualStyleBackColor = false;
             this.btnCancelUpdate.Click += new System.EventHandler(this.btnCancelUpdate_Click);
@@ -991,7 +993,7 @@
             this.btnCreateDelete.Location = new System.Drawing.Point(840, 504);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(72, 24);
-            this.btnCreateDelete.TabIndex = 17;
+            this.btnCreateDelete.TabIndex = 4;
             this.btnCreateDelete.Text = "Create";
             this.btnCreateDelete.UseVisualStyleBackColor = false;
             this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
@@ -1007,19 +1009,38 @@
             this.btnMetrics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnMetrics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMetrics.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMetrics.Location = new System.Drawing.Point(600, 504);
+            this.btnMetrics.Location = new System.Drawing.Point(520, 504);
             this.btnMetrics.Name = "btnMetrics";
             this.btnMetrics.Size = new System.Drawing.Size(72, 24);
-            this.btnMetrics.TabIndex = 20;
+            this.btnMetrics.TabIndex = 0;
             this.btnMetrics.Text = "Get Metrics";
             this.btnMetrics.UseVisualStyleBackColor = false;
             this.btnMetrics.Click += new System.EventHandler(this.btnMetrics_Click);
+            // 
+            // btnCloseTabs
+            // 
+            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCloseTabs.Enabled = false;
+            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCloseTabs.Location = new System.Drawing.Point(600, 504);
+            this.btnCloseTabs.Name = "btnCloseTabs";
+            this.btnCloseTabs.Size = new System.Drawing.Size(72, 24);
+            this.btnCloseTabs.TabIndex = 1;
+            this.btnCloseTabs.Text = "Close Tabs";
+            this.btnCloseTabs.UseVisualStyleBackColor = false;
+            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
             // 
             // HandleTopicControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.btnMetrics);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnRefresh);
@@ -1126,5 +1147,6 @@
         private Grouper grouperDatapoints;
         private System.Windows.Forms.DataGridView dataPointDataGridView;
         private System.Windows.Forms.Button btnMetrics;
+        private System.Windows.Forms.Button btnCloseTabs;
     }
 }

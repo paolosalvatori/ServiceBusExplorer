@@ -28,7 +28,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 #endregion
 
@@ -65,7 +67,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string CancelText = "Cancel";
         private const string EnableText = "Enable";
         private const string DisableText = "Disable";
-        private const string SubscriptionEntity = "SubscriptionDescription";
         private const string FilterExpression = "Filter Expression";
         private const string ActionExpression = "Action Expression";
         private const string UserMetadata = "User Metadata";
@@ -141,6 +142,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string ForwardToTooltip = "Gets or sets the path to the recipient to which the message is forwarded.";
         private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead lettered message is forwarded.";
+        private const string DeleteTooltip = "Delete the row.";
 
         //***************************
         // Property Labels
@@ -191,11 +193,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TimeFilterOperator2Name = "FilterOperator2";
         private const string TimeFilterValue1Name = "FilterValue1";
         private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "FriendlyName";
+        private const string FriendlyNameProperty = "DisplayName";
         private const string NameProperty = "Name";
-        private const string MetricsSubscriptionEntity = "Subscription";
+        private const string SubscriptionEntity = "Subscription";
         private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
         private const string Unknown = "Unkown";
+        private const string DeleteName = "Delete";
         #endregion
 
         #region Private Fields
@@ -207,7 +210,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private BrokeredMessage deadletterMessage;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
-        private int tabIndex;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
         private bool sorting;
@@ -216,6 +218,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
+        private readonly List<string> metricTabPageIndexList = new List<string>();
+        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -420,17 +424,29 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             dataPointDataGridView.DataSource = dataPointBindingSource;
             dataPointDataGridView.ForeColor = SystemColors.WindowText;
 
+            if (subscriptionWrapper != null)
+            {
+                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
+                                             SubscriptionEntity,
+                                             string.Format(SubscriptionPathFormat,
+                                                           subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                           subscriptionWrapper.SubscriptionDescription.Name)).ContinueWith(t => metricsManualResetEvent.Set());
+            }
+
             if (dataPointDataGridView.Columns.Count == 0)
             {
                 // Create the Metric column
                 var metricColumn = new DataGridViewComboBoxColumn
                     {
-                        DataSource = MetricInfo.MetricInfos,
+                        DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity) ?
+                                 MetricInfo.EntityMetricDictionary[SubscriptionEntity] :
+                                 null,
                         DataPropertyName = MetricProperty,
                         DisplayMember = FriendlyNameProperty,
                         ValueMember = NameProperty,
                         Name = MetricProperty,
                         Width = 144,
+                        DropDownWidth = 250,
                         FlatStyle = FlatStyle.Flat,
                         DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                     };
@@ -490,6 +506,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         Width = 136
                     };
                 dataPointDataGridView.Columns.Add(value2Column);
+
+                // Create delete column
+                var deleteButtonColumn = new DataGridViewButtonColumn
+                {
+                    Name = DeleteName,
+                    CellTemplate = new DataGridViewDeleteButtonCell(),
+                    HeaderText = string.Empty,
+                    Width = 22
+                };
+                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
+                deleteButtonColumn.UseColumnTextForButtonValue = true;
+                dataPointDataGridView.Columns.Add(deleteButtonColumn);
             }
 
             if (subscriptionWrapper != null &&
@@ -801,6 +829,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnSessions.Visible = false;
                 btnDeadletter.Visible = false;
                 btnMetrics.Visible = false;
+                btnCloseTabs.Visible = false;
                 txtName.Focus();
             }
         }
@@ -820,17 +849,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             if (!btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnMessages.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnMessages.Location;
             }
             if (!btnMessages.Visible && btnSessions.Visible)
             {
-                btnMetrics.Location = btnSessions.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnSessions.Location;
                 btnSessions.Location = btnMessages.Location;
             }
             if (btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnSessions.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnSessions.Location;
             }
+
             btnMetrics.Visible = serviceBusHelper.IsCloudNamespace;
             btnDeadletter.Visible = true;
             btnOpenFilterForm.Enabled = false;
@@ -1098,7 +1131,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     int retrieved;
                     do
                     {
-                        var message = messageReceiver.Receive();
+                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
@@ -2414,6 +2447,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
+            if (dataGridViewColumn != null &&
+                e.ColumnIndex == dataGridViewColumn.Index &&
+                e.RowIndex > -1 &&
+               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
+            {
+                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
+                return;
+            }
             dataPointDataGridView.NotifyCurrentCellDirty(true);
         }
 
@@ -2444,6 +2486,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
+                if (!MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity))
+                {
+                    return;
+                }
+                if (metricTabPageIndexList.Count > 0)
+                {
+                    for (var i = 0; i < metricTabPageIndexList.Count; i++)
+                    {
+                        mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
+                    }
+                    metricTabPageIndexList.Clear();
+                }
                 Cursor.Current = Cursors.WaitCursor;
                 if (dataPointBindingList.Count == 0)
                 {
@@ -2454,17 +2508,47 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     item.Entity = string.Format(SubscriptionPathFormat,
                                                 subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                 subscriptionWrapper.SubscriptionDescription.Name);
-                    item.Type = MetricsSubscriptionEntity;
+                    item.Type = SubscriptionEntity;
+                }
+                BindingList<MetricDataPoint> pointBindingList;
+                var allDataPoint = dataPointBindingList.FirstOrDefault(m => string.Compare(m.Metric, "all", StringComparison.OrdinalIgnoreCase) == 0);
+                if (allDataPoint != null)
+                {
+                    pointBindingList = new BindingList<MetricDataPoint>();
+                    foreach (var item in MetricInfo.EntityMetricDictionary[SubscriptionEntity])
+                    {
+                        if (string.Compare(item.Name, "all", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            continue;
+                        }
+                        pointBindingList.Add(new MetricDataPoint
+                        {
+                            Entity = allDataPoint.Entity,
+                            FilterOperator1 = allDataPoint.FilterOperator1,
+                            FilterOperator2 = allDataPoint.FilterOperator2,
+                            FilterValue1 = allDataPoint.FilterValue1,
+                            FilterValue2 = allDataPoint.FilterValue2,
+                            Granularity = allDataPoint.Granularity,
+                            Graph = allDataPoint.Graph,
+                            Metric = item.Name,
+                            Type = allDataPoint.Type
+                        });
+                    }
+                }
+                else
+                {
+                    pointBindingList = dataPointBindingList;
                 }
                 var uris = MetricHelper.BuildUriListForDataPointMetricQueries(MainForm.SingletonMainForm.SubscriptionId,
-                                                                              serviceBusHelper.Namespace,
-                                                                              dataPointBindingList);
+                    serviceBusHelper.Namespace,
+                    pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
                 if (uris == null || !uriList.Any())
                 {
                     return;
                 }
-                var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList, MainForm.SingletonMainForm.CertificateThumbprint);
+                var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList,
+                    MainForm.SingletonMainForm.CertificateThumbprint);
                 var metricList = metricData as IList<IEnumerable<MetricValue>> ?? metricData.ToList();
                 if (metricData == null && metricList.Count == 0)
                 {
@@ -2472,29 +2556,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 for (var i = 0; i < metricList.Count; i++)
                 {
-                    if (metricList[i] == null)
+                    if (metricList[i] == null || !metricList[i].Any())
                     {
                         continue;
                     }
-                    var key = string.Format(MetricTabPageKeyFormat, tabIndex++);
-                    var metricInfo = MetricInfo.MetricInfos.FirstOrDefault(m => m.Name == dataPointBindingList[i].Metric);
-                    var friendlyName = metricInfo != null ? metricInfo.FriendlyName : dataPointBindingList[i].Metric;
+                    var key = string.Format(MetricTabPageKeyFormat, i);
+                    var metricInfo = MetricInfo.EntityMetricDictionary[SubscriptionEntity].FirstOrDefault(m => m.Name == pointBindingList[i].Metric);
+                    var friendlyName = metricInfo != null ? metricInfo.DisplayName : pointBindingList[i].Metric;
                     var unit = metricInfo != null ? metricInfo.Unit : Unknown;
                     mainTabControl.TabPages.Add(key, friendlyName);
+                    metricTabPageIndexList.Add(key);
                     var tabPage = mainTabControl.TabPages[key];
                     tabPage.BackColor = Color.FromArgb(215, 228, 242);
                     tabPage.ForeColor = SystemColors.ControlText;
                     var control = new MetricValueControl(writeToLog,
-                                                    () => mainTabControl.TabPages.RemoveByKey(key),
-                                                    metricList[i],
-                                                    dataPointBindingList[i],
-                                                    metricInfo)
-                        {
-                            Location = new Point(0, 0),
-                            Dock = DockStyle.Fill,
-                            Tag = string.Format(GrouperFormat, friendlyName, unit)
-                        };
+                        () => mainTabControl.TabPages.RemoveByKey(key),
+                        metricList[i],
+                        pointBindingList[i],
+                        metricInfo)
+                    {
+                        Location = new Point(0, 0),
+                        Dock = DockStyle.Fill,
+                        Tag = string.Format(GrouperFormat, friendlyName, unit)
+                    };
                     mainTabControl.TabPages[key].Controls.Add(control);
+                    btnCloseTabs.Enabled = true;
                 }
             }
             catch (Exception ex)
@@ -3137,6 +3223,39 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return string.Format(MessageFileFormat,
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private void btnCloseTabs_Click(object sender, EventArgs e)
+        {
+            if (metricTabPageIndexList.Count <= 0)
+            {
+                return;
+            }
+            for (var i = 0; i < metricTabPageIndexList.Count; i++)
+            {
+                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
+            }
+            metricTabPageIndexList.Clear();
+            btnCloseTabs.Enabled = false;
+        }
+
+        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
+            {
+                return;
+            }
+            Task.Run(() =>
+            {
+                metricsManualResetEvent.WaitOne();
+                var dataGridViewComboBoxColumn = (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
+                if (dataGridViewComboBoxColumn != null)
+                {
+                    dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity)
+                        ? MetricInfo.EntityMetricDictionary[SubscriptionEntity]
+                        : null;
+                }
+            });
         }
         #endregion
     }

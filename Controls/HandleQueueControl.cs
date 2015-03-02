@@ -29,7 +29,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Linq;
+using System.Threading;
 using Microsoft.ServiceBus.Messaging;
+using System.Threading.Tasks;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -73,7 +75,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string CancelText = "Cancel";
         private const string EnableText = "Enable";
         private const string DisableText = "Disable";
-        private const string QueueEntity = "QueueDescription";
         private const string UserMetadata = "User Metadata";
         private const string MaxGigabytes = "MAX";
         private const string MessageId = "MessageId";
@@ -127,7 +128,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SelectEntityGrouperTitle = "Forward To";
         private const string SelectEntityLabelText = "Target Queue or Topic:";
         private const string KeyNameCannotBeNull = "Authorization Rule [{0}]: the KeyName cannot be null";
-        private const string PrimaryKeyCannotBeNull = "Authorization Rule [{0}]: the PrimaryKey cannot be null";
         private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
         private const string MessageSentMessage = "[{0}] messages where sent to [{1}]";
         private const string FilterExpressionTitle = "Define Filter Expression";
@@ -151,6 +151,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string LockDurationTooltip = "Gets or sets the lock duration timespan associated with this queue.";
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string MaxDeliveryCountTooltip = "Gets or sets the maximum delivery count. A message is automatically deadlettered after this number of deliveries.";
+        private const string DeleteTooltip = "Delete the row.";
 
         //***************************
         // Property Labels
@@ -203,10 +204,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TimeFilterOperator2Name = "FilterOperator2";
         private const string TimeFilterValue1Name = "FilterValue1";
         private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "FriendlyName";
+        private const string FriendlyNameProperty = "DisplayName";
         private const string NameProperty = "Name";
-        private const string MetricsQueueEntity = "Queue";
+        private const string QueueEntity = "Queue";
         private const string Unknown = "Unkown";
+        private const string DeleteName = "Delete";
         #endregion
 
         #region Private Fields
@@ -219,7 +221,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private BrokeredMessage deadletterMessage;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
-        private int tabIndex;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
         private bool sorting;
@@ -228,6 +229,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
+        private readonly List<string> metricTabPageIndexList = new List<string>();
+        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -558,17 +561,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             dataPointDataGridView.DataSource = dataPointBindingSource;
             dataPointDataGridView.ForeColor = SystemColors.WindowText;
 
+            if (queueDescription != null)
+            {
+                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, QueueEntity, queueDescription.Path).ContinueWith(t => metricsManualResetEvent.Set());
+            }
+
             if (dataPointDataGridView.Columns.Count == 0)
             {
                 // Create the Metric column
                 var metricColumn = new DataGridViewComboBoxColumn
                 {
-                    DataSource = MetricInfo.MetricInfos,
+                    DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(QueueEntity) ?
+                                 MetricInfo.EntityMetricDictionary[QueueEntity] :
+                                 null,
                     DataPropertyName = MetricProperty,
                     DisplayMember = FriendlyNameProperty,
                     ValueMember = NameProperty,
                     Name = MetricProperty,
                     Width = 144,
+                    DropDownWidth = 250,
                     FlatStyle = FlatStyle.Flat,
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                 };
@@ -628,6 +639,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     Width = 136
                 };
                 dataPointDataGridView.Columns.Add(value2Column);
+
+                // Create delete column
+                var deleteButtonColumn = new DataGridViewButtonColumn
+                {
+                    Name = DeleteName,
+                    CellTemplate = new DataGridViewDeleteButtonCell(),
+                    HeaderText = string.Empty,
+                    Width = 22
+                };
+                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
+                deleteButtonColumn.UseColumnTextForButtonValue = true;
+                dataPointDataGridView.Columns.Add(deleteButtonColumn);
             }
 
             if (queueDescription != null)
@@ -934,6 +957,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnSessions.Visible = false;
                 btnDeadletter.Visible = false;
                 btnMetrics.Visible = false;
+                btnCloseTabs.Visible = false;
 
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
@@ -958,7 +982,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (queueDescription.Authorization.Count > 0 && queueDescription.Authorization.Count > e.NewIndex)
+                if (queueDescription != null && 
+                    queueDescription.Authorization.Count > 0 && 
+                    queueDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = queueDescription.Authorization.ElementAt(e.NewIndex);
                     if (rule != null)
@@ -984,16 +1010,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             if (!btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnMessages.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnMessages.Location;
             }
             if (!btnMessages.Visible && btnSessions.Visible)
             {
-                btnMetrics.Location = btnSessions.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnSessions.Location;
                 btnSessions.Location = btnMessages.Location;
             }
             if (btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnSessions.Location;
+                btnMetrics.Location = btnCloseTabs.Location;
+                btnCloseTabs.Location = btnSessions.Location;
             }
             btnMetrics.Visible = serviceBusHelper.IsCloudNamespace;
             btnDeadletter.Visible = true;
@@ -1358,7 +1387,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     int retrieved;
                     do
                     {
-                        var message = messageReceiver.Receive(MainForm.SingletonMainForm.ReceiveTimeout);
+                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
@@ -1945,11 +1974,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     writeToLog(string.Format(KeyNameCannotBeNull, i));
                                     continue;
                                 }
-                                if (string.IsNullOrWhiteSpace(rule.PrimaryKey))
-                                {
-                                    writeToLog(string.Format(PrimaryKeyCannotBeNull, i));
-                                    continue;
-                                }
                             }
                             var rightList = new List<AccessRights>();
                             if (rule.Manage)
@@ -1972,14 +1996,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 if (string.IsNullOrWhiteSpace(rule.SecondaryKey))
                                 {
                                     description.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
-                                        rule.PrimaryKey,
+                                        rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
                                 else
                                 {
                                     description.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
-                                        rule.PrimaryKey,
-                                        rule.SecondaryKey,
+                                        rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
+                                        rule.SecondaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
                             }
@@ -2373,14 +2397,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 else if (string.IsNullOrWhiteSpace(rule.SecondaryKey))
                                 {
                                     queueDescription.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
-                                        rule.PrimaryKey,
+                                        rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
                                 else
                                 {
                                     queueDescription.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
-                                        rule.PrimaryKey,
-                                        rule.SecondaryKey,
+                                        rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
+                                        rule.SecondaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
                             }
@@ -3119,6 +3143,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
+            if (dataGridViewColumn != null &&
+                e.ColumnIndex == dataGridViewColumn.Index &&
+                e.RowIndex > -1 &&
+               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
+            {
+                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
+                return;
+            }
             dataPointDataGridView.NotifyCurrentCellDirty(true);
         }
 
@@ -3149,6 +3182,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
+                if (!MetricInfo.EntityMetricDictionary.ContainsKey(QueueEntity))
+                {
+                    return;
+                }
+                if (metricTabPageIndexList.Count > 0)
+                {
+                    for (var i = 0; i < metricTabPageIndexList.Count; i++)
+                    {
+                        mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
+                    }
+                    metricTabPageIndexList.Clear();
+                }
                 Cursor.Current = Cursors.WaitCursor;
                 if (dataPointBindingList.Count == 0)
                 {
@@ -3157,11 +3202,40 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 foreach (var item in dataPointBindingList)
                 {
                     item.Entity = queueDescription.Path;
-                    item.Type = MetricsQueueEntity;
+                    item.Type = QueueEntity;
+                }
+                BindingList<MetricDataPoint> pointBindingList;
+                var allDataPoint = dataPointBindingList.FirstOrDefault(m => string.Compare(m.Metric, "all", StringComparison.OrdinalIgnoreCase) == 0);
+                if (allDataPoint != null)
+                {
+                    pointBindingList = new BindingList<MetricDataPoint>();
+                    foreach (var item in MetricInfo.EntityMetricDictionary[QueueEntity])
+                    {
+                        if (string.Compare(item.Name, "all", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            continue;
+                        }
+                        pointBindingList.Add(new MetricDataPoint
+                        {
+                            Entity = allDataPoint.Entity,
+                            FilterOperator1 = allDataPoint.FilterOperator1,
+                            FilterOperator2 = allDataPoint.FilterOperator2,
+                            FilterValue1 = allDataPoint.FilterValue1,
+                            FilterValue2 = allDataPoint.FilterValue2,
+                            Granularity = allDataPoint.Granularity,
+                            Graph = allDataPoint.Graph,
+                            Metric = item.Name,
+                            Type = allDataPoint.Type
+                        });
+                    }
+                }
+                else
+                {
+                    pointBindingList = dataPointBindingList;
                 }
                 var uris = MetricHelper.BuildUriListForDataPointMetricQueries(MainForm.SingletonMainForm.SubscriptionId,
                     serviceBusHelper.Namespace,
-                    dataPointBindingList);
+                    pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
                 if (uris == null || !uriList.Any())
                 {
@@ -3176,22 +3250,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 for (var i = 0; i < metricList.Count; i++)
                 {
-                    if (metricList[i] == null)
+                    if (metricList[i] == null || !metricList[i].Any())
                     {
                         continue;
                     }
-                    var key = string.Format(MetricTabPageKeyFormat, tabIndex++);
-                    var metricInfo = MetricInfo.MetricInfos.FirstOrDefault(m => m.Name == dataPointBindingList[i].Metric);
-                    var friendlyName = metricInfo != null ? metricInfo.FriendlyName : dataPointBindingList[i].Metric;
+                    var key = string.Format(MetricTabPageKeyFormat, i);
+                    var metricInfo = MetricInfo.EntityMetricDictionary[QueueEntity].FirstOrDefault(m => m.Name == pointBindingList[i].Metric);
+                    var friendlyName = metricInfo != null ? metricInfo.DisplayName : pointBindingList[i].Metric;
                     var unit = metricInfo != null ? metricInfo.Unit : Unknown;
                     mainTabControl.TabPages.Add(key, friendlyName);
+                    metricTabPageIndexList.Add(key);
                     var tabPage = mainTabControl.TabPages[key];
                     tabPage.BackColor = Color.FromArgb(215, 228, 242);
                     tabPage.ForeColor = SystemColors.ControlText;
                     var control = new MetricValueControl(writeToLog,
                         () => mainTabControl.TabPages.RemoveByKey(key),
                         metricList[i],
-                        dataPointBindingList[i],
+                        pointBindingList[i],
                         metricInfo)
                     {
                         Location = new Point(0, 0),
@@ -3199,6 +3274,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         Tag = string.Format(GrouperFormat, friendlyName, unit)
                     };
                     mainTabControl.TabPages[key].Controls.Add(control);
+                    btnCloseTabs.Enabled = true;
                 }
             }
             catch (Exception ex)
@@ -3866,6 +3942,39 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return string.Format(MessageFileFormat,
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private void btnCloseTabs_Click(object sender, EventArgs e)
+        {
+            if (metricTabPageIndexList.Count <= 0)
+            {
+                return;
+            }
+            for (var i = 0; i < metricTabPageIndexList.Count; i++)
+            {
+                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
+            }
+            metricTabPageIndexList.Clear();
+            btnCloseTabs.Enabled = false;
+        }
+
+        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
+            {
+                return;
+            }
+            Task.Run(() =>
+            {
+                metricsManualResetEvent.WaitOne();
+                var dataGridViewComboBoxColumn = (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
+                if (dataGridViewComboBoxColumn != null)
+                {
+                    dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(QueueEntity)
+                        ? MetricInfo.EntityMetricDictionary[QueueEntity]
+                        : null;
+                }
+            });
         }
         #endregion
     }

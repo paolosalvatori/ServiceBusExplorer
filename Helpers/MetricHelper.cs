@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,6 +28,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -37,17 +39,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         // Formats
         //***************************
-        //private const string MetricsUriBatchFormat = "https://management.core.windows.net/{0}/services/ServiceBus/Namespaces/{1}/$batch";
-        private const string MetricsUriFormatDiscover = "https://management.core.windows.net/{0}/services/ServiceBus/Namespaces/{1}/{2}/metrics";
-        private const string MetricsUriFormatDiscoverRollup = "https://management.core.windows.net/{0}/services/ServiceBus/Namespaces/{1}/{2}/metrics/{3}/rollups";
-        private const string OneFilterMetricsUriFormat = "https://management.core.windows.net/{0}/services/ServiceBus/Namespaces/{1}/{2}/metrics/{3}/rollups/{4}/Values/?$filter=Timestamp {5} datetime'{6}'";
-        private const string TwoFiltersMetricsUriFormat = "https://management.core.windows.net/{0}/services/ServiceBus/Namespaces/{1}/{2}/metrics/{3}/rollups/{4}/Values/?$filter=Timestamp {5} datetime'{6}' and Timestamp {7} datetime'{8}'";
-        private const string ODataBatchOneFilterMetricsUriFormat = "https://management.core.windows.net/{0}/Namespaces/{1}/{2}/metrics/{3}/rollups/{4}/Values/?$filter=Timestamp {5} datetime'{6}'";
-        private const string ODataBatchTwoFiltersMetricsUriFormat = "https://management.core.windows.net/{0}/Namespaces/{1}/{2}/metrics/{3}/rollups/{4}/Values/?$filter=Timestamp {5} datetime'{6}' and Timestamp {7} datetime'{8}'";
+        //private const string MetricsUriBatchFormat = "https://management.core.windows.net/{0}/services/servicebus/namespaces/{1}/$batch";
+        private const string MetricsUriFormatDiscover = "https://management.core.windows.net/{0}/services/servicebus/namespaces/{1}/{2}/{3}/metrics";
+        private const string MetricsUriFormatDiscoverRollup = "https://management.core.windows.net/{0}/services/servicebus/namespaces/{1}/{2}/metrics/{3}/rollups";
+        private const string OneFilterMetricsUriFormat = "https://management.core.windows.net/{0}/services/servicebus/namespaces/{1}/{2}/metrics/{3}/rollups/{4}/values/?$filter=Timestamp {5} datetime'{6}'";
+        private const string TwoFiltersMetricsUriFormat = "https://management.core.windows.net/{0}/services/servicebus/namespaces/{1}/{2}/metrics/{3}/rollups/{4}/values/?$filter=Timestamp {5} datetime'{6}' and Timestamp {7} datetime'{8}'";
+        private const string ODataBatchOneFilterMetricsUriFormat = "https://management.core.windows.net/{0}/namespaces/{1}/{2}/metrics/{3}/rollups/{4}/values/?$filter=Timestamp {5} datetime'{6}'";
+        private const string ODataBatchTwoFiltersMetricsUriFormat = "https://management.core.windows.net/{0}/namespaces/{1}/{2}/metrics/{3}/rollups/{4}/values/?$filter=Timestamp {5} datetime'{6}' and Timestamp {7} datetime'{8}'";
         private const string TimestampFormat = "yyyy-MM-ddTHH:mm:ss";
         private const string ExceptionFormat = "An error occurred while retrieving [{0}] metric data for the [{1}] entity:\n\r{2}";
         private const string SubscriptionFormat = "{0}{1}{2}";
-        private const string MetricDataSuccessfullyRetrieved = "[{0}] metric data for the [{1}] entity has been successfully retrieved.";
+        private const string MetricDataSuccessfullyRetrieved = "[{0}] records for the [{1}] metric of the [{2}] entity have been successfully retrieved.";
 
         //***************************
         // Messages
@@ -69,6 +71,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string QueueEntity = "Queue";
         private const string TopicEntity = "Topic";
         private const string SubscriptionEntity = "Subscription";
+        private const string EventHubEntity = "Event Hub";
+        private const string ConsumerGroupEntity = "Consumer Group";
+        private const string NotificationHubEntity = "Notification Hub";
+        private const string RelayEntity = "Relay";
         private const string Unknown = "Unkown";
         private const string Metrics = "metrics/";
         private const string Namespaces = "namespaces/";
@@ -76,19 +82,24 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         // Metrics
         //***************************
-        private const string QueueMetricFormat = "Queues/{0}";
-        private const string TopicMetricFormat = "Topics/{0}";
-        private const string SubscriptionMetricFormat = "Topics/{0}";
+        private const string QueueMetricFormat = "queues/{0}";
+        private const string TopicMetricFormat = "topics/{0}";
+        private const string SubscriptionMetricFormat = "topics/{0}";
+        private const string EventHubsMetricFormat = "eventhubs/{0}";
+        private const string NotificationHubsMetricFormat = "notificationhubs/{0}";
+        private const string RelaysMetricFormat = "relays/{0}";
         #endregion
 
         #region Public Static Methods
         public static Uri BuildUriForDataPointDiscoveryQuery(string subscriptionId,
                                                              string namespaceName,
+                                                             string entityType,
                                                              string entityPath)
         {
             return new Uri(string.Format(MetricsUriFormatDiscover,
                                          subscriptionId,
                                          namespaceName,
+                                         entityType,
                                          entityPath));
         }
 
@@ -185,6 +196,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         case SubscriptionEntity:
                             format = SubscriptionMetricFormat;
                             break;
+                        case EventHubEntity:
+                            format = EventHubsMetricFormat;
+                            break;
+                        case ConsumerGroupEntity:
+                            format = EventHubsMetricFormat;
+                            break;
+                        case NotificationHubEntity:
+                            format = NotificationHubsMetricFormat;
+                            break;
+                        case RelayEntity:
+                            format = RelaysMetricFormat;
+                            break;
                         default:
                             format = QueueMetricFormat;
                             break;
@@ -202,7 +225,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                  dataPoint.Metric,
                                                                  dataPoint.Granularity,
                                                                  "ge",
-                                                                 DateTime.UtcNow.Subtract(TimeSpan.FromHours(1)).ToString(TimestampFormat),
+                                                                 DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)).ToString(TimestampFormat),
                                                                  oDataBatch));
                         continue;
                     }
@@ -309,6 +332,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             return InternalReadMetricData(uri, certificate);
         }
+
+        public static Task<IEnumerable<MetricInfo>> GetSupportedMetricsAsync(Uri uri, string certificateThumbprint)
+        {
+            if (certificateThumbprint == null)
+            {
+                throw new ArgumentException(CertificateThumbPrintCannotBeNull);
+            }
+
+            return InternalGetSupportedMetricsAsync(uri, GetManagementCertificate(certificateThumbprint));
+        } 
         #endregion
 
         #region Private Static Methods
@@ -340,6 +373,46 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             throw new ArgumentException(string.Format(CertificateCannotBeFound, certificateThumbprint));
         }
 
+        private async static Task<IEnumerable<MetricInfo>> InternalGetSupportedMetricsAsync(Uri uri, X509Certificate2 certificate)
+        {
+            var request = WebRequest.Create(uri) as HttpWebRequest;
+
+            try
+            {
+                // Add Microsoft Azure subscription management Certificate to the request
+                if (request != null)
+                {
+                    request.ClientCertificates.Add(certificate);
+                    request.Accept = JsonContentType;
+                    //create the request headers and specify the method required for this type of operation
+                    request.Headers.Add(RdfeHeader, RdfeHeaderValue);
+                    request.ContentType = JsonContentType;
+                    request.Method = "GET";
+                    request.KeepAlive = true;
+                    using (var response = await request.GetResponseAsync() as HttpWebResponse)
+                    {
+                        if (response != null &&
+                            response.StatusCode == HttpStatusCode.OK)
+                        {
+                            using (var stream = response.GetResponseStream())
+                            {
+                                if (stream != null)
+                                {
+                                    return JsonSerializerHelper.Deserialize<MetricInfo[]>(stream);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(CreateExceptionMessage(uri, ex));
+                throw;
+            }
+            return null;
+        }
+
         private static IEnumerable<MetricValue> InternalReadMetricData(Uri uri, X509Certificate2 certificate)
         {
             var request = WebRequest.Create(uri) as HttpWebRequest;
@@ -367,8 +440,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     string metric, entity;
                                     GetMetricAndEntityFromUri(uri, out metric, out entity);
-                                    Trace.WriteLine(string.Format(MetricDataSuccessfullyRetrieved, metric, entity));
-                                    return JsonSerializerHelper.Deserialize<MetricValue[]>(stream);
+                                    
+                                    var array = JsonSerializerHelper.Deserialize<MetricValue[]>(stream);
+                                    var length = array != null ? array.Length : 0;
+                                    Trace.WriteLine(string.Format(MetricDataSuccessfullyRetrieved,
+                                                                      length,
+                                                                      metric,
+                                                                      WebUtility.UrlDecode(entity)));
+                                    return array;
                                 }
                             }
                         }

@@ -37,7 +37,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Constants
         //***************************
         private const string FileName = "EventHubPartitionCheckpoints.json";
-        private const string KeyFormat = "{0}-{1}";
+        private const string KeyFormat = "{0}-{1}-{2}";
         #endregion
 
         #region Private Static Fields
@@ -52,23 +52,26 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         public static void ReadCheckpoints()
         {
-            if (!File.Exists(filePath))
+            lock (filePath)
             {
-                itemList = new List<EventProcessorCheckpointInfo>();
-                return;
-            }
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                itemList = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream) ?? new List<EventProcessorCheckpointInfo>();
-            }
-            if (itemList == null || itemList.Count == 0)
-            {
-                itemList = new List<EventProcessorCheckpointInfo>();
-                return;
-            }
-            foreach (var item in itemList)
-            {
-                mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub), item);
+                if (!File.Exists(filePath))
+                {
+                    itemList = new List<EventProcessorCheckpointInfo>();
+                    return;
+                }
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    itemList = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream) ?? new List<EventProcessorCheckpointInfo>();
+                }
+                if (itemList == null || itemList.Count == 0)
+                {
+                    itemList = new List<EventProcessorCheckpointInfo>();
+                    return;
+                }
+                foreach (var item in itemList)
+                {
+                    mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup), item);
+                }
             }
         }
 
@@ -90,15 +93,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="ns">Namespace name.</param>
         /// <param name="eventHub">Event hub name.</param>
+        /// <param name="consumerGroup"></param>
         /// <returns>The in-memory or persisted lease for the event hub partition.</returns>
-        public static Dictionary<string, Lease> GetLease(string ns, string eventHub)
+        public static Dictionary<string, Lease> GetLease(string ns, string eventHub, string consumerGroup)
         {
             if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub))
+                string.IsNullOrWhiteSpace(eventHub) ||
+                string.IsNullOrWhiteSpace(consumerGroup))
             {
                 return null;
             }
-            var key = string.Format(KeyFormat, ns, eventHub);
+            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
             return mapDictionary.ContainsKey(key) ?
                    mapDictionary[key].Leases :
                    null;
@@ -109,17 +114,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="ns">Namespace name.</param>
         /// <param name="eventHub">Event hub name.</param>
+        /// <param name="consumerGroup">Consumer group</param>
         /// <param name="partitionId">Partition Id.</param>
         /// <returns>The in-memory or persisted lease for the event hub partition.</returns>
-        public static Lease GetLease(string ns, string eventHub, string partitionId)
+        public static Lease GetLease(string ns, string eventHub, string consumerGroup, string partitionId)
         {
             if (string.IsNullOrWhiteSpace(ns) ||
                 string.IsNullOrWhiteSpace(eventHub) ||
+                string.IsNullOrWhiteSpace(consumerGroup) ||
                 string.IsNullOrWhiteSpace(partitionId))
             {
                 return null;
             }
-            var key = string.Format(KeyFormat, ns, eventHub);
+            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
             var value = mapDictionary.ContainsKey(key) &&
                    mapDictionary[key].Leases != null && 
                    mapDictionary[key].Leases.ContainsKey(partitionId) ?
@@ -134,15 +141,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="ns">Namespace name.</param>
         /// <param name="eventHub">Event hub name.</param>
+        /// <param name="consumerGroup">Consumer group</param>
         /// <param name="leases">A dictionary of partition leases.</param>
-        public static void SetLease(string ns, string eventHub, Dictionary<string, Lease> leases)
+        public static void SetLease(string ns, string eventHub, string consumerGroup, Dictionary<string, Lease> leases)
         {
             if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub))
+                string.IsNullOrWhiteSpace(eventHub) ||
+                string.IsNullOrWhiteSpace(consumerGroup))
             {
                 return;
             }
-            var key = string.Format(KeyFormat, ns, eventHub);
+            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
             if (mapDictionary.ContainsKey(key))
             {
                 if (leases != null)
@@ -169,6 +178,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Namespace = ns, 
                     EventHub = eventHub, 
+                    ConsumerGroup =  consumerGroup,    
                     Leases = leases
                 };
                 lock (mapDictionary)
@@ -185,17 +195,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="ns">Namespace name.</param>
         /// <param name="eventHub">Event hub name.</param>
+        /// <param name="consumerGroup"></param>
         /// <param name="partitionId">Partition Id.</param>
         /// <param name="lease">The lease for the event hub partition.</param>
-        public static void SetLease(string ns, string eventHub, string partitionId, Lease lease)
+        public static void SetLease(string ns, string eventHub, string consumerGroup, string partitionId, Lease lease)
         {
             if (string.IsNullOrWhiteSpace(ns) ||
                 string.IsNullOrWhiteSpace(eventHub) ||
+                string.IsNullOrWhiteSpace(consumerGroup) ||
                 string.IsNullOrWhiteSpace(partitionId))
             {
                 return;
             }
-            var key = string.Format(KeyFormat, ns, eventHub);
+            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
             if (mapDictionary.ContainsKey(key))
             {
                 if (lease != null)
@@ -226,6 +238,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Namespace = ns,
                     EventHub = eventHub,
+                    ConsumerGroup = consumerGroup,
                     Leases = new Dictionary<string, Lease> { { partitionId, lease } }
                 };
                 lock (mapDictionary)
@@ -251,12 +264,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        public static Task CheckpointAsync(string ns, string eventHub, Lease lease, string offset, long sequenceNumber)
+        public static Task CheckpointAsync(string ns, string eventHub, string consumerGroup, Lease lease, string offset, long sequenceNumber)
         {
+            if (string.IsNullOrWhiteSpace(ns) ||
+                string.IsNullOrWhiteSpace(eventHub) ||
+                string.IsNullOrWhiteSpace(consumerGroup) ||
+                lease == null ||
+                string.IsNullOrWhiteSpace(offset))
+            {
+                Task.FromResult<object>(null); 
+            }
             if (lease != null && !string.IsNullOrWhiteSpace(offset))
             {
                 lease.Offset = offset;
-                SetLease(ns, eventHub, lease.PartitionId, lease);
+                SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
             }
             return Task.FromResult<object>(null);
         } 
@@ -297,7 +318,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 PartitionId = partitionId,
                 Epoch = 0,
                 SequenceNumber = 0,
-                Offset = "-1",
+                Offset = null,
                 Owner = "ServiceBusExplorer",
                 Token = null
             };

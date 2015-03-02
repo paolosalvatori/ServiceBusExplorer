@@ -39,7 +39,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         [JsonProperty(PropertyName = "eventHub", Order = 2)]
         public string EventHub { get; set; }
 
-        [JsonProperty(PropertyName = "leases", Order = 3)]
+        [JsonProperty(PropertyName = "consumerGroup", Order = 3)]
+        public string ConsumerGroup { get; set; }
+
+        [JsonProperty(PropertyName = "leases", Order = 4)]
         public Dictionary<string, Lease> Leases { get; set; } 
         #endregion
 

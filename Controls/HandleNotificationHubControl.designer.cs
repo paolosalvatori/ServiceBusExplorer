@@ -71,6 +71,9 @@
             this.tabPageAuthorization = new System.Windows.Forms.TabPage();
             this.grouperAuthorizationRuleList = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
+            this.tabPageMetrics = new System.Windows.Forms.TabPage();
+            this.grouperDatapoints = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.dataPointDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageRegistrations = new System.Windows.Forms.TabPage();
             this.registrationsSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperRegistrations = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
@@ -215,6 +218,8 @@
             this.gcmHeadersBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gcmTagsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.btnCloseTabs = new System.Windows.Forms.Button();
+            this.btnMetrics = new System.Windows.Forms.Button();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperNotificationHubInformation.SuspendLayout();
@@ -228,6 +233,9 @@
             this.tabPageAuthorization.SuspendLayout();
             this.grouperAuthorizationRuleList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).BeginInit();
+            this.tabPageMetrics.SuspendLayout();
+            this.grouperDatapoints.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataPointDataGridView)).BeginInit();
             this.tabPageRegistrations.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.registrationsSplitContainer)).BeginInit();
             this.registrationsSplitContainer.Panel1.SuspendLayout();
@@ -376,7 +384,7 @@
             this.btnSend.Location = new System.Drawing.Point(680, 504);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(72, 24);
-            this.btnSend.TabIndex = 1;
+            this.btnSend.TabIndex = 3;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = false;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
@@ -390,6 +398,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTabControl.Controls.Add(this.tabPageDescription);
             this.mainTabControl.Controls.Add(this.tabPageAuthorization);
+            this.mainTabControl.Controls.Add(this.tabPageMetrics);
             this.mainTabControl.Controls.Add(this.tabPageRegistrations);
             this.mainTabControl.Controls.Add(this.tabPageTemplateNotification);
             this.mainTabControl.Controls.Add(this.tabPageMpnsNativeNotification);
@@ -407,6 +416,7 @@
             this.mainTabControl.TabIndex = 4;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             this.mainTabControl.SelectedIndexChanged += new System.EventHandler(this.mainTabControl_SelectedIndexChanged);
+            this.mainTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.mainTabControl_Selected);
             // 
             // tabPageDescription
             // 
@@ -1177,6 +1187,66 @@
             this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
             this.authorizationRulesDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.authorizationRulesDataGridView_UserDeletingRow);
             this.authorizationRulesDataGridView.Resize += new System.EventHandler(this.authorizationRulesDataGridView_Resize);
+            // 
+            // tabPageMetrics
+            // 
+            this.tabPageMetrics.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageMetrics.Controls.Add(this.grouperDatapoints);
+            this.tabPageMetrics.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPageMetrics.Location = new System.Drawing.Point(4, 22);
+            this.tabPageMetrics.Name = "tabPageMetrics";
+            this.tabPageMetrics.Size = new System.Drawing.Size(968, 454);
+            this.tabPageMetrics.TabIndex = 7;
+            this.tabPageMetrics.Text = "Metrics";
+            // 
+            // grouperDatapoints
+            // 
+            this.grouperDatapoints.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperDatapoints.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDatapoints.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperDatapoints.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperDatapoints.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDatapoints.BorderThickness = 1F;
+            this.grouperDatapoints.Controls.Add(this.dataPointDataGridView);
+            this.grouperDatapoints.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDatapoints.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperDatapoints.ForeColor = System.Drawing.Color.White;
+            this.grouperDatapoints.GroupImage = null;
+            this.grouperDatapoints.GroupTitle = "Metrics Rules";
+            this.grouperDatapoints.Location = new System.Drawing.Point(16, 8);
+            this.grouperDatapoints.Name = "grouperDatapoints";
+            this.grouperDatapoints.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDatapoints.PaintGroupBox = true;
+            this.grouperDatapoints.RoundCorners = 4;
+            this.grouperDatapoints.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperDatapoints.ShadowControl = false;
+            this.grouperDatapoints.ShadowThickness = 1;
+            this.grouperDatapoints.Size = new System.Drawing.Size(936, 432);
+            this.grouperDatapoints.TabIndex = 3;
+            // 
+            // dataPointDataGridView
+            // 
+            this.dataPointDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataPointDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.dataPointDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataPointDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataPointDataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dataPointDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.dataPointDataGridView.Location = new System.Drawing.Point(16, 32);
+            this.dataPointDataGridView.Name = "dataPointDataGridView";
+            this.dataPointDataGridView.RowHeadersWidth = 24;
+            this.dataPointDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataPointDataGridView.Size = new System.Drawing.Size(904, 384);
+            this.dataPointDataGridView.TabIndex = 27;
+            this.dataPointDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPointDataGridView_CellClick);
+            this.dataPointDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataPointDataGridView_DataError);
+            this.dataPointDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataPointDataGridView_RowsAdded);
+            this.dataPointDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataPointDataGridView_RowsRemoved);
+            this.dataPointDataGridView.Resize += new System.EventHandler(this.dataPointDataGridView_Resize);
             // 
             // tabPageRegistrations
             // 
@@ -3366,7 +3436,7 @@
             this.btnRefresh.Location = new System.Drawing.Point(760, 504);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(72, 24);
-            this.btnRefresh.TabIndex = 2;
+            this.btnRefresh.TabIndex = 4;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -3385,7 +3455,7 @@
             this.btnCancelUpdate.Location = new System.Drawing.Point(920, 504);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(72, 24);
-            this.btnCancelUpdate.TabIndex = 4;
+            this.btnCancelUpdate.TabIndex = 6;
             this.btnCancelUpdate.Text = "Update";
             this.btnCancelUpdate.UseVisualStyleBackColor = false;
             this.btnCancelUpdate.Click += new System.EventHandler(this.btnCancelUpdate_Click);
@@ -3404,7 +3474,7 @@
             this.btnCreateDelete.Location = new System.Drawing.Point(840, 504);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(72, 24);
-            this.btnCreateDelete.TabIndex = 3;
+            this.btnCreateDelete.TabIndex = 5;
             this.btnCreateDelete.Text = "Create";
             this.btnCreateDelete.UseVisualStyleBackColor = false;
             this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
@@ -3423,7 +3493,7 @@
             this.btnRegistrations.Location = new System.Drawing.Point(594, 504);
             this.btnRegistrations.Name = "btnRegistrations";
             this.btnRegistrations.Size = new System.Drawing.Size(78, 24);
-            this.btnRegistrations.TabIndex = 0;
+            this.btnRegistrations.TabIndex = 2;
             this.btnRegistrations.Text = "Registrations";
             this.btnRegistrations.UseVisualStyleBackColor = false;
             this.btnRegistrations.Click += new System.EventHandler(this.btnRegistrations_Click);
@@ -3452,11 +3522,48 @@
             this.deleteRegistrationToolStripMenuItem.Text = "Delete Registration";
             this.deleteRegistrationToolStripMenuItem.Click += new System.EventHandler(this.deleteRegistrationToolStripMenuItem_Click);
             // 
+            // btnCloseTabs
+            // 
+            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCloseTabs.Enabled = false;
+            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCloseTabs.Location = new System.Drawing.Point(514, 504);
+            this.btnCloseTabs.Name = "btnCloseTabs";
+            this.btnCloseTabs.Size = new System.Drawing.Size(72, 24);
+            this.btnCloseTabs.TabIndex = 1;
+            this.btnCloseTabs.Text = "Close Tabs";
+            this.btnCloseTabs.UseVisualStyleBackColor = false;
+            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
+            // 
+            // btnMetrics
+            // 
+            this.btnMetrics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMetrics.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnMetrics.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMetrics.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMetrics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMetrics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMetrics.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnMetrics.Location = new System.Drawing.Point(434, 504);
+            this.btnMetrics.Name = "btnMetrics";
+            this.btnMetrics.Size = new System.Drawing.Size(72, 24);
+            this.btnMetrics.TabIndex = 0;
+            this.btnMetrics.Text = "Get Metrics";
+            this.btnMetrics.UseVisualStyleBackColor = false;
+            this.btnMetrics.Click += new System.EventHandler(this.btnMetrics_Click);
+            // 
             // HandleNotificationHubControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.Controls.Add(this.btnCloseTabs);
+            this.Controls.Add(this.btnMetrics);
             this.Controls.Add(this.btnRegistrations);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCancelUpdate);
@@ -3486,6 +3593,9 @@
             this.tabPageAuthorization.ResumeLayout(false);
             this.grouperAuthorizationRuleList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
+            this.tabPageMetrics.ResumeLayout(false);
+            this.grouperDatapoints.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataPointDataGridView)).EndInit();
             this.tabPageRegistrations.ResumeLayout(false);
             this.registrationsSplitContainer.Panel1.ResumeLayout(false);
             this.registrationsSplitContainer.Panel2.ResumeLayout(false);
@@ -3836,5 +3946,10 @@
         private Grouper grouperGcmAdditionalHeaders;
         private System.Windows.Forms.DataGridView gcmHeadersDataGridView;
         private System.Windows.Forms.PictureBox pictFindRegistrations;
+        private System.Windows.Forms.TabPage tabPageMetrics;
+        private Grouper grouperDatapoints;
+        private System.Windows.Forms.DataGridView dataPointDataGridView;
+        private System.Windows.Forms.Button btnCloseTabs;
+        private System.Windows.Forms.Button btnMetrics;
     }
 }

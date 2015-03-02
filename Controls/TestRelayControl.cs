@@ -36,12 +36,13 @@ using System.Threading;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    public partial class TestRelayServiceControl : UserControl
+    public partial class TestRelayControl : UserControl
     {
         #region Private Constants
         //***************************
@@ -89,7 +90,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Instance Fields
-        private readonly RelayServiceWrapper relayServiceWrapper;
+        private readonly RelayDescription relayDescription;
         private readonly MainForm mainForm;
         private readonly WriteToLogDelegate writeToLog;
         private readonly Func<Task> stopLog;
@@ -113,18 +114,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Public Constructors
-        public TestRelayServiceControl(MainForm mainForm, 
-                                       WriteToLogDelegate writeToLog,
-                                       Func<Task> stopLog,
-                                       Action startLog,
-                                       RelayServiceWrapper relayServiceWrapper, 
-                                       ServiceBusHelper serviceBusHelper)
+        public TestRelayControl(MainForm mainForm, 
+                                WriteToLogDelegate writeToLog,
+                                Func<Task> stopLog,
+                                Action startLog,
+                                RelayDescription relayDescription, 
+                                ServiceBusHelper serviceBusHelper)
         {
             this.mainForm = mainForm;
             this.writeToLog = writeToLog;
             this.stopLog = stopLog;
             this.startLog = startLog;
-            this.relayServiceWrapper = relayServiceWrapper;
+            this.relayDescription = relayDescription;
             this.serviceBusHelper = serviceBusHelper;
             InitializeComponent();
             InitializeControls();
@@ -150,6 +151,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (cboBinding.Items.Count > 0)
                 {
                     cboBinding.SelectedIndex = 0;
+                }
+
+                switch (relayDescription.RelayType)
+                {
+                    case RelayType.Http:
+                        cboBinding.Text = typeof(BasicHttpRelayBinding).Name;
+                        break;
+                    case RelayType.NetEvent:
+                        cboBinding.Text = typeof(NetEventRelayBinding).Name;
+                        break;
+                    case RelayType.NetOneway:
+                        cboBinding.Text = typeof(NetOnewayRelayBinding).Name;
+                        break;
+                    case RelayType.NetTcp:
+                        cboBinding.Text = typeof(NetTcpRelayBinding).Name;
+                        break;
+                    case RelayType.None:
+                        cboBinding.Text = typeof(BasicHttpRelayBinding).Name;
+                        break;
                 }
 
                 bindingSource.DataSource = CustomMessageHeaderInfo.Headers;
@@ -213,8 +233,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 headersDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 txtMessageText.Text = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
+                                      !string.IsNullOrWhiteSpace(mainForm.RelayMessageText) ?
+                                      XmlHelper.Indent(mainForm.RelayMessageText) :
                                       DefaultMessageText;
 
                 // Set Tooltips
@@ -322,7 +342,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     };
 
                     //*****************************************************************************************************
-                    //                                   Sending messages to the Relay Service
+                    //                                   Sending messages to the Relay
                     //*****************************************************************************************************
                     if (binding != null &&
                         messageCount > 0)
@@ -377,12 +397,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                             messageBuffer = message.CreateBufferedCopy(1048576); // 1 MB
                                         }
                                     }
-                                    
-                                    var tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(serviceBusHelper.IssuerName,
-                                                                                                      serviceBusHelper.IssuerSecret);
+
+                                    var tokenProvider = CreateTokenProvider();
+
                                     if (oneWay)
                                     {
-                                        outputChannelFactory = new ChannelFactory<IOutputChannel>(binding, relayServiceWrapper.Uri.AbsoluteUri);
+                                        outputChannelFactory = new ChannelFactory<IOutputChannel>(binding, serviceBusHelper.GetRelayUri(relayDescription).AbsoluteUri);
                                         outputChannelFactory.Endpoint.Contract.SessionMode = SessionMode.Allowed;
                                         if (ServiceBusBindingHelper.GetRelayClientAuthenticationType(binding) == RelayClientAuthenticationType.RelayAccessToken)
                                         {
@@ -394,11 +414,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     {
                                         if (binding is WebHttpRelayBinding)
                                         {
-                                            requestChannelFactory = new WebChannelFactory<IRequestChannel>(binding, relayServiceWrapper.Uri);
+                                            requestChannelFactory = new WebChannelFactory<IRequestChannel>(binding, serviceBusHelper.GetRelayUri(relayDescription));
                                         }
                                         else
                                         {
-                                            requestChannelFactory = new ChannelFactory<IRequestChannel>(binding, relayServiceWrapper.Uri.AbsoluteUri);
+                                            requestChannelFactory = new ChannelFactory<IRequestChannel>(binding, serviceBusHelper.GetRelayUri(relayDescription).AbsoluteUri);
                                         }
                                         
                                         requestChannelFactory.Endpoint.Contract.SessionMode = SessionMode.Allowed;
@@ -796,6 +816,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
+        private TokenProvider CreateTokenProvider()
+        {
+            if (!string.IsNullOrWhiteSpace(serviceBusHelper.SharedAccessKeyName) &&
+                !string.IsNullOrWhiteSpace(serviceBusHelper.SharedAccessKey))
+            {
+                return TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceBusHelper.SharedAccessKeyName, serviceBusHelper.SharedAccessKey);
+            }
+            if (!string.IsNullOrWhiteSpace(serviceBusHelper.IssuerName) &&
+                !string.IsNullOrWhiteSpace(serviceBusHelper.IssuerSecret))
+            {
+                return TokenProvider.CreateSharedSecretTokenProvider(serviceBusHelper.IssuerName, serviceBusHelper.IssuerSecret);
+            }
+            return null;
+        }
+
         private void HandleException(Exception ex)
         {
             if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
@@ -908,7 +943,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private async Task CancelActions()
+        public async Task CancelActions()
         {
             if (stopLog != null)
             {
@@ -924,10 +959,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private async void btnCancel_Click(object sender, EventArgs e)
+        public async void btnCancel_Click(object sender, EventArgs e)
         {
             await CancelActions();
-            OnCancel();
+            if (OnCancel != null) OnCancel();
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -1041,6 +1076,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (type != null)
             {
                 binding = Activator.CreateInstance(type) as System.ServiceModel.Channels.Binding;
+                ServiceBusBindingHelper.SetSecurityProperties(relayDescription.RequiresClientAuthorization,
+                                                              relayDescription.RequiresTransportSecurity,
+                                                              ref binding);
                 BuildBindingTreeView(binding);
                 bindingPropertyGrid.SelectedObject = binding;
             }
@@ -1055,7 +1093,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (InvokeRequired)
             {
-                Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), new object[] { 1, elapsedMilliseconds, direction });
+                Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), 1, elapsedMilliseconds, direction);
             }
             else
             {

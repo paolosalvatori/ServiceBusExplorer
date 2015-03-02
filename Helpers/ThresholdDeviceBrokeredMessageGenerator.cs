@@ -29,6 +29,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
+
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -42,16 +43,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the device id.
         /// </summary>
-        [XmlElement(ElementName = "deviceid", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "deviceid", Order = 1)]
+        [XmlElement(ElementName = "eventId", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
+        [JsonProperty(PropertyName = "eventId", Order = 1)]
+        public int EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the device id.
+        /// </summary>
+        [XmlElement(ElementName = "deviceId", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
+        [JsonProperty(PropertyName = "deviceId", Order = 2)]
         public int DeviceId { get; set; }
 
         /// <summary>
         /// Gets or sets the device value.
         /// </summary>
         [XmlElement(ElementName = "value", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "value", Order = 2)]
+        [JsonProperty(PropertyName = "value", Order = 3)]
         public int Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event timestamp.
+        /// </summary>
+        [XmlElement(ElementName = "timestamp", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
+        [JsonProperty(PropertyName = "timestamp", Order = 4)]
+        public DateTime Timestamp { get; set; }
     }
 
     public class ThresholdDeviceBrokeredMessageGenerator : IBrokeredMessageGenerator, IDisposable
@@ -78,6 +93,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         private const string BrokeredMessageCreatedFormat = "[ThresholdDeviceBrokeredMessageGenerator] {0} objects have been successfully created.";
+        #endregion
+
+        #region Public Static Fields
+        public static int EventId;
         #endregion
 
         #region Public Constructor
@@ -108,8 +127,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     var payload = new ThresholdDeviceEvent
                     {
+                        EventId = EventId++,
                         DeviceId = random.Next(MinDeviceId, MaxDeviceId + 1),
-                        Value = random.Next(MinDeviceId, MaxDeviceId + 1)
+                        Value = random.Next(MinDeviceId, MaxDeviceId + 1),
+                        Timestamp = DateTime.UtcNow
                     };
                     var text = MessageFormat == MessageFormat.Json
                         ? JsonSerializerHelper.Serialize(payload)
@@ -118,6 +139,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         MessageId = payload.DeviceId.ToString(CultureInfo.InvariantCulture),
                     };
+                    brokeredMessage.Properties.Add("eventId", payload.EventId);
                     brokeredMessage.Properties.Add("deviceId", payload.DeviceId);
                     brokeredMessage.Properties.Add("value", payload.Value);
                     brokeredMessage.Properties.Add("time", DateTime.UtcNow.Ticks);

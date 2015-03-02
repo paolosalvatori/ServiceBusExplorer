@@ -42,7 +42,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private string issuerName;
         #endregion
 
-
         #region Public Constructor
 		public AuthorizationRuleWrapper()
         {

@@ -39,7 +39,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TopicEntities = "Topics";
         private const string EventHubsEntities = "Event Hubs";
         private const string NotificationHubsEntities = "Notification Hubs";
-        private const string RelayServiceEntities = "Relay Services";
+        private const string RelayEntities = "Relays";
         private const string PartitionEntities = "Partitions";
         private const string ConsumerGroupEntities = "Consumer Groups";
         #endregion
@@ -89,7 +89,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return -1;
             }
 
-            if (leftNode.Name.StartsWith(RelayServiceEntities))
+            if (leftNode.Name.StartsWith(RelayEntities))
             {
                 return 1;
             }

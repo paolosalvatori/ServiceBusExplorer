@@ -275,8 +275,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 chart.ChartAreas[0].Axes[0].Title = "Time";
                 chart.ChartAreas[0].Axes[1].Title = metricInfo.Unit;
-                chart.Titles[0].Text = !string.IsNullOrWhiteSpace(metricInfo.FriendlyName)
-                                           ? metricInfo.FriendlyName
+                chart.Titles[0].Text = !string.IsNullOrWhiteSpace(metricInfo.DisplayName)
+                                           ? metricInfo.DisplayName
                                            : metricDataPoint.Metric;
             }
             catch (Exception ex)

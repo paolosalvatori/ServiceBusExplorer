@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    partial class TestRelayServiceControl
+    partial class TestRelayControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestRelayServiceControl));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestRelayControl));
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -930,7 +930,7 @@
             this.btnOpenFile.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnOpenFile.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // TestRelayServiceControl
+            // TestRelayControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -939,7 +939,7 @@
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnStart);
-            this.Name = "TestRelayServiceControl";
+            this.Name = "TestRelayControl";
             this.Size = new System.Drawing.Size(816, 344);
             this.mainTabControl.ResumeLayout(false);
             this.mainTabMessagePage.ResumeLayout(false);
@@ -976,7 +976,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnStart;
-        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.TabControl mainTabControl;
         private System.Windows.Forms.TabPage mainTabMessagePage;
@@ -1027,5 +1026,6 @@
         private System.Windows.Forms.SplitContainer bindingSplitContainer;
         private System.Windows.Forms.TreeView bindingTreeView;
         private System.Windows.Forms.PropertyGrid bindingPropertyGrid;
+        public System.Windows.Forms.Button btnCancel;
     }
 }

@@ -31,12 +31,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Properties
         public string Namespace { get; set; }
         public string EventHub { get; set; }
+        public string ConsumerGroup { get; set; }
         #endregion
 
         #region ICheckpointManager Methods
         public Task CheckpointAsync(Lease lease, string offset, long sequenceNumber)
         {
-            return EventProcessorCheckpointHelper.CheckpointAsync(Namespace, EventHub, lease, offset, sequenceNumber);
+            return EventProcessorCheckpointHelper.CheckpointAsync(Namespace, EventHub, ConsumerGroup, lease, offset, sequenceNumber);
         }
         #endregion
     }

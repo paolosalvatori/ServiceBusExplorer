@@ -64,7 +64,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 UpdateStatistics = (a, b, c) =>{},
                 MessageInspector = null,
                 WriteToLog = DummyWriteToLog,
-                ServiceBusHelper = null,
+                ServiceBusHelper = null
             };
         }
 
@@ -94,14 +94,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return Task.FromResult<object>(null);
         }
 
+        // ReSharper disable once FunctionComplexityOverflow
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
             try
             {
+                if (configuration.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
                 var events = messages as IList<EventData> ?? messages.ToList();
                 var bodySize = (long)0;
                 for (var i = 0; i < events.Count; i++)
                 {
+                    if (configuration.CancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
                     if (configuration.MessageInspector != null)
                     {
                         events[i] = configuration.MessageInspector.AfterReceiveMessage(events[i]);
@@ -122,15 +131,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         configuration.WriteToLog(builder.ToString());
                     }
-                    if (configuration.Tracking)
+                    if (configuration.Tracking && !configuration.CancellationToken.IsCancellationRequested)
                     {
                         configuration.TrackEvent(events[i]);
                     }
-                    var bodyStream = events[i].GetBodyStream();
-                    if (bodyStream != null && bodyStream.CanSeek)
-                    {
-                        bodySize += bodyStream.Length;
-                    }
+                    bodySize += events[i].SerializedSizeInBytes;
                     if (!configuration.Checkpoint)
                     {
                         continue;

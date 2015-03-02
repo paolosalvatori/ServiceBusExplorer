@@ -20,9 +20,9 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -96,6 +96,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             CreateChart();
         }
 
+        // ReSharper disable once FunctionComplexityOverflow
         private void CreateChart()
         {
             try
@@ -105,14 +106,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     try
                     {
-                        var metricInfo = MetricInfo.MetricInfos.FirstOrDefault(m => m.Name == metricDataPointList[i].Metric);
+                        if (metricDataPointList[i] == null ||
+                            string.IsNullOrWhiteSpace(metricDataPointList[i].Type) ||
+                            !MetricInfo.EntityMetricDictionary.ContainsKey(metricDataPointList[i].Type))
+                        {
+                            continue;
+                        }
+                        var metricInfo = MetricInfo.EntityMetricDictionary[metricDataPointList[i].Type].FirstOrDefault(m => m.Name == metricDataPointList[i].Metric);
                         if (metricInfo == null)
                         {
                             continue;
                         }
                         var metricName = string.Format(@"{0}\{1}",
                                                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(metricDataPointList[i].Entity),
-                                                       metricInfo.FriendlyName);
+                                                       metricInfo.DisplayName);
                         if (chart.Series.Any(s => s.Name == metricName))
                         {
                             continue;

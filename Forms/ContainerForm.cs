@@ -60,11 +60,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TestQueueFormat = "Test queue {0} in MDI mode";
         private const string TestTopicFormat = "Test topic {0} in MDI mode";
         private const string TestSubscriptionFormat = "Test subscription {0} in MDI mode";
+        private const string TestRelayFormat = "Test relay {0} in MDI mode";
         private const string HeaderTextTestQueueFormat = "Test Queue: {0}";
         private const string HeaderTextTestTopicFormat = "Test Topic: {0}";
         private const string HeaderTextTestSubscriptionFormat = "Test Subscription: {0}";
         private const string HeaderTextTestEventHubFormat = "Test Event Hub: {0}";
         private const string HeaderTextTestEventHubPartitionFormat = "Test Partition: {0} of Event Hub: {1}";
+        private const string HeaderTextTestRelayFormat = "Test Relay: {0}";
         private const string LogFileNameFormat = "ServiceBusExplorer {0}.txt";
         private const string QueueListenerFormat = "Listener for queue {0}";
         private const string SubscriptionListenerFormat = "Listener for subscription {0}";
@@ -97,6 +99,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly TestTopicControl testTopicControl;
         private readonly TestSubscriptionControl testSubscriptionControl;
         private readonly TestEventHubControl testEventHubControl;
+        private readonly TestRelayControl testRelayControl;
         private readonly LogTraceListener logTraceListener;
         private readonly int mainSplitterDistance;
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
@@ -458,6 +461,50 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription)
+        {
+            try
+            {
+                InitializeComponent();
+                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+                {
+                    if (t.IsFaulted && t.Exception != null)
+                    {
+                        WriteToLog(t.Exception.Message);
+                    }
+                });
+                this.mainForm = mainForm;
+                mainSplitterDistance = mainSplitContainer.SplitterDistance;
+                SuspendLayout();
+                panelMain.SuspendDrawing();
+                panelMain.Controls.Clear();
+                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+
+                testRelayControl = new TestRelayControl(mainForm, WriteToLog, StopLog, StartLog, relayDescription, new ServiceBusHelper(WriteToLog, serviceBusHelper))
+                {
+                    Location = new Point(1, panelMain.HeaderHeight + 1),
+                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                };
+
+                Text = string.Format(TestRelayFormat, relayDescription.Path);
+
+                testRelayControl.btnCancel.Text = CloseLabel;
+                testRelayControl.btnCancel.Click -= testRelayControl.btnCancel_Click;
+                testRelayControl.btnCancel.Click += BtnCancelOnClick;
+                testRelayControl.Focus();
+
+                panelMain.HeaderText = string.Format(HeaderTextTestRelayFormat, relayDescription.Path);
+
+                panelMain.Controls.Add(testRelayControl);
+                SetStyle(ControlStyles.ResizeRedraw, true);
+            }
+            finally
+            {
+                panelMain.ResumeDrawing();
+                ResumeLayout();
+            }
+        }
         #endregion
 
         #region Public Methods
@@ -485,6 +532,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (testEventHubControl != null)
             {
                 await testEventHubControl.CancelActions();
+            }
+            if (testRelayControl != null)
+            {
+                await testRelayControl.CancelActions();
             }
             Close();
         }

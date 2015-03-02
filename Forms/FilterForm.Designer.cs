@@ -120,7 +120,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.imageList.Images.SetKeyName(6, "exec.ico");
             this.imageList.Images.SetKeyName(7, "AzureLogo.ico");
             this.imageList.Images.SetKeyName(8, "World.png");
-            this.imageList.Images.SetKeyName(9, "RelayService.png");
+            this.imageList.Images.SetKeyName(9, "Relay.png");
             this.imageList.Images.SetKeyName(10, "folder_web.ico");
             this.imageList.Images.SetKeyName(11, "Web.ico");
             this.imageList.Images.SetKeyName(12, "GreyChart.ico");

@@ -182,13 +182,16 @@
             this.expandSubTreeMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseSubTreeMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.relayServicesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.refreshRelayServicesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator65 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem19 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator67 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
             this.expandSubTreeMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseSubTreeMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.relayServiceContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyRelayServiceUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.queueFolderContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.folderCreateQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -286,6 +289,24 @@
             this.toolStripSeparator62 = new System.Windows.Forms.ToolStripSeparator();
             this.createConsumerGroupListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
+            this.relayServiceFolderContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator63 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator64 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
+            this.relayContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteRelayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshRelayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.relayToolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportRelayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.relayToolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyRelayUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -307,7 +328,6 @@
             this.queueContextMenuStrip.SuspendLayout();
             this.topicsContextMenuStrip.SuspendLayout();
             this.relayServicesContextMenuStrip.SuspendLayout();
-            this.relayServiceContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.queueFolderContextMenuStrip.SuspendLayout();
             this.topicFolderContextMenuStrip.SuspendLayout();
@@ -321,6 +341,8 @@
             this.partitionsContextMenuStrip.SuspendLayout();
             this.consumerGroupContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
+            this.relayServiceFolderContextMenuStrip.SuspendLayout();
+            this.relayContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList
@@ -336,7 +358,7 @@
             this.imageList.Images.SetKeyName(6, "exec.ico");
             this.imageList.Images.SetKeyName(7, "AzureLogo.ico");
             this.imageList.Images.SetKeyName(8, "World.png");
-            this.imageList.Images.SetKeyName(9, "RelayService.png");
+            this.imageList.Images.SetKeyName(9, "Relay.png");
             this.imageList.Images.SetKeyName(10, "folder_web.ico");
             this.imageList.Images.SetKeyName(11, "Web.ico");
             this.imageList.Images.SetKeyName(12, "GreyChart.ico");
@@ -816,7 +838,7 @@
             this.deleteQueuesMenuItem.Name = "deleteQueuesMenuItem";
             this.deleteQueuesMenuItem.Size = new System.Drawing.Size(175, 22);
             this.deleteQueuesMenuItem.Text = "Delete Queues";
-            this.deleteQueuesMenuItem.ToolTipText = "Deletes all queues in the current namespace.";
+            this.deleteQueuesMenuItem.ToolTipText = "Deletes all the queues in the current namespace.";
             this.deleteQueuesMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
             // 
             // toolStripSeparator37
@@ -830,7 +852,7 @@
             this.refreshQueuesMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.refreshQueuesMenuItem.Size = new System.Drawing.Size(175, 22);
             this.refreshQueuesMenuItem.Text = "Refresh Queues";
-            this.refreshQueuesMenuItem.ToolTipText = "Refresh all queues in the current namespace.";
+            this.refreshQueuesMenuItem.ToolTipText = "Refresh all the queues in the current namespace.";
             this.refreshQueuesMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
             // 
             // toolStripSeparator36
@@ -1541,7 +1563,7 @@
             this.deleteTopicsMenuItem.Name = "deleteTopicsMenuItem";
             this.deleteTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.deleteTopicsMenuItem.Text = "Delete Topics";
-            this.deleteTopicsMenuItem.ToolTipText = "Delete all topics in the current namespace.";
+            this.deleteTopicsMenuItem.ToolTipText = "Delete all the topics in the current namespace.";
             this.deleteTopicsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
             // 
             // toolStripSeparator38
@@ -1555,7 +1577,7 @@
             this.refreshTopicsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.refreshTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.refreshTopicsMenuItem.Text = "Refresh Topics";
-            this.refreshTopicsMenuItem.ToolTipText = "Refresh all topics in the current namespace.";
+            this.refreshTopicsMenuItem.ToolTipText = "Refresh all the topics in the current namespace.";
             this.refreshTopicsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
             // 
             // toolStripSeparator4
@@ -1608,31 +1630,70 @@
             // relayServicesContextMenuStrip
             // 
             this.relayServicesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.refreshRelayServicesMenuItem,
+            this.toolStripMenuItem15,
+            this.toolStripMenuItem16,
+            this.toolStripSeparator65,
+            this.toolStripMenuItem19,
+            this.toolStripSeparator67,
+            this.toolStripMenuItem21,
             this.toolStripSeparator24,
             this.expandSubTreeMenuItem11,
             this.collapseSubTreeMenuItem11});
             this.relayServicesContextMenuStrip.Name = "relayServicesContextMenuStrip";
-            this.relayServicesContextMenuStrip.Size = new System.Drawing.Size(209, 76);
+            this.relayServicesContextMenuStrip.Size = new System.Drawing.Size(169, 154);
             // 
-            // refreshRelayServicesMenuItem
+            // toolStripMenuItem15
             // 
-            this.refreshRelayServicesMenuItem.Name = "refreshRelayServicesMenuItem";
-            this.refreshRelayServicesMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRelayServicesMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.refreshRelayServicesMenuItem.Text = "Refresh Relay Services";
-            this.refreshRelayServicesMenuItem.ToolTipText = "Refresh all relay services in the current namespace.";
-            this.refreshRelayServicesMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
+            this.toolStripMenuItem15.Name = "toolStripMenuItem15";
+            this.toolStripMenuItem15.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem15.Text = "Create Relay";
+            this.toolStripMenuItem15.ToolTipText = "Create a new relay.";
+            this.toolStripMenuItem15.Click += new System.EventHandler(this.createEntity_Click);
+            // 
+            // toolStripMenuItem16
+            // 
+            this.toolStripMenuItem16.Name = "toolStripMenuItem16";
+            this.toolStripMenuItem16.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem16.Text = "Delete Relays";
+            this.toolStripMenuItem16.ToolTipText = "Deletes all the services in the current namespace.";
+            this.toolStripMenuItem16.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // toolStripSeparator65
+            // 
+            this.toolStripSeparator65.Name = "toolStripSeparator65";
+            this.toolStripSeparator65.Size = new System.Drawing.Size(165, 6);
+            // 
+            // toolStripMenuItem19
+            // 
+            this.toolStripMenuItem19.Name = "toolStripMenuItem19";
+            this.toolStripMenuItem19.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.toolStripMenuItem19.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem19.Text = "Refresh Relays";
+            this.toolStripMenuItem19.ToolTipText = "Refresh all the relays in the current namespace.";
+            this.toolStripMenuItem19.Click += new System.EventHandler(this.refreshEntity_Click);
+            // 
+            // toolStripSeparator67
+            // 
+            this.toolStripSeparator67.Name = "toolStripSeparator67";
+            this.toolStripSeparator67.Size = new System.Drawing.Size(165, 6);
+            // 
+            // toolStripMenuItem21
+            // 
+            this.toolStripMenuItem21.Name = "toolStripMenuItem21";
+            this.toolStripMenuItem21.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem21.Text = "Export Relays";
+            this.toolStripMenuItem21.ToolTipText = "Export relays definition to file.";
+            this.toolStripMenuItem21.Click += new System.EventHandler(this.exportEntity_Click);
             // 
             // toolStripSeparator24
             // 
             this.toolStripSeparator24.Name = "toolStripSeparator24";
-            this.toolStripSeparator24.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator24.Size = new System.Drawing.Size(165, 6);
             // 
             // expandSubTreeMenuItem11
             // 
             this.expandSubTreeMenuItem11.Name = "expandSubTreeMenuItem11";
-            this.expandSubTreeMenuItem11.Size = new System.Drawing.Size(208, 22);
+            this.expandSubTreeMenuItem11.Size = new System.Drawing.Size(168, 22);
             this.expandSubTreeMenuItem11.Text = "Expand Subtree";
             this.expandSubTreeMenuItem11.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem11.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1640,25 +1701,10 @@
             // collapseSubTreeMenuItem11
             // 
             this.collapseSubTreeMenuItem11.Name = "collapseSubTreeMenuItem11";
-            this.collapseSubTreeMenuItem11.Size = new System.Drawing.Size(208, 22);
+            this.collapseSubTreeMenuItem11.Size = new System.Drawing.Size(168, 22);
             this.collapseSubTreeMenuItem11.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem11.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem11.Click += new System.EventHandler(this.collapseEntity_Click);
-            // 
-            // relayServiceContextMenuStrip
-            // 
-            this.relayServiceContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyRelayServiceUrlMenuItem});
-            this.relayServiceContextMenuStrip.Name = "subscriptionContextMenuStrip";
-            this.relayServiceContextMenuStrip.Size = new System.Drawing.Size(192, 26);
-            // 
-            // copyRelayServiceUrlMenuItem
-            // 
-            this.copyRelayServiceUrlMenuItem.Name = "copyRelayServiceUrlMenuItem";
-            this.copyRelayServiceUrlMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.copyRelayServiceUrlMenuItem.Text = "Copy Relay Service Url";
-            this.copyRelayServiceUrlMenuItem.ToolTipText = "Copy the relay service url to the clipboard.";
-            this.copyRelayServiceUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // mainMenuStrip
             // 
@@ -1937,7 +1983,7 @@
             this.refreshNotificationHubsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.refreshNotificationHubsMenuItem.Size = new System.Drawing.Size(229, 22);
             this.refreshNotificationHubsMenuItem.Text = "Refresh Notification Hubs";
-            this.refreshNotificationHubsMenuItem.ToolTipText = "Refresh all relay services in the current namespace.";
+            this.refreshNotificationHubsMenuItem.ToolTipText = "Refresh all relays in the current namespace.";
             this.refreshNotificationHubsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
             // 
             // toolStripSeparator42
@@ -2435,6 +2481,148 @@
             this.logoPictureBox.TabIndex = 23;
             this.logoPictureBox.TabStop = false;
             // 
+            // relayServiceFolderContextMenuStrip
+            // 
+            this.relayServiceFolderContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2,
+            this.toolStripSeparator63,
+            this.toolStripMenuItem3,
+            this.toolStripSeparator64,
+            this.toolStripMenuItem7,
+            this.toolStripMenuItem14});
+            this.relayServiceFolderContextMenuStrip.Name = "createContextMenuStrip";
+            this.relayServiceFolderContextMenuStrip.Size = new System.Drawing.Size(163, 126);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem1.Text = "Create Relay";
+            this.toolStripMenuItem1.ToolTipText = "Create a new relay in the current path.";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem2.Text = "Delete Relays";
+            this.toolStripMenuItem2.ToolTipText = "Deletes all relays in the current path.";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // toolStripSeparator63
+            // 
+            this.toolStripSeparator63.Name = "toolStripSeparator63";
+            this.toolStripSeparator63.Size = new System.Drawing.Size(159, 6);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem3.Text = "Export Relays";
+            this.toolStripMenuItem3.ToolTipText = "Export the definition of the relays in the current path to file.";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.exportEntity_Click);
+            // 
+            // toolStripSeparator64
+            // 
+            this.toolStripSeparator64.Name = "toolStripSeparator64";
+            this.toolStripSeparator64.Size = new System.Drawing.Size(159, 6);
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem7.Text = "Expand Subtree";
+            this.toolStripMenuItem7.ToolTipText = "Expand the subtree.";
+            this.toolStripMenuItem7.Click += new System.EventHandler(this.expandEntity_Click);
+            // 
+            // toolStripMenuItem14
+            // 
+            this.toolStripMenuItem14.Name = "toolStripMenuItem14";
+            this.toolStripMenuItem14.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem14.Text = "Collapse Subtree";
+            this.toolStripMenuItem14.ToolTipText = "Collapse the subtree.";
+            this.toolStripMenuItem14.Click += new System.EventHandler(this.collapseEntity_Click);
+            // 
+            // relayContextMenuStrip
+            // 
+            this.relayContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteRelayMenuItem,
+            this.refreshRelayMenuItem,
+            this.relayToolStripSeparator1,
+            this.exportRelayMenuItem,
+            this.relayToolStripSeparator2,
+            this.copyRelayUrlMenuItem,
+            this.toolStripSeparator69,
+            this.toolStripMenuItem27,
+            this.toolStripMenuItem28});
+            this.relayContextMenuStrip.Name = "nodeContextMenuStrip";
+            this.relayContextMenuStrip.Size = new System.Drawing.Size(200, 154);
+            // 
+            // deleteRelayMenuItem
+            // 
+            this.deleteRelayMenuItem.Name = "deleteRelayMenuItem";
+            this.deleteRelayMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.deleteRelayMenuItem.Text = "Delete Relay";
+            this.deleteRelayMenuItem.ToolTipText = "Delete the current relay.";
+            this.deleteRelayMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // refreshRelayMenuItem
+            // 
+            this.refreshRelayMenuItem.Name = "refreshRelayMenuItem";
+            this.refreshRelayMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.refreshRelayMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.refreshRelayMenuItem.Text = "Refresh Relay";
+            this.refreshRelayMenuItem.ToolTipText = "Refresh the current relay.";
+            this.refreshRelayMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
+            // 
+            // relayToolStripSeparator1
+            // 
+            this.relayToolStripSeparator1.Name = "relayToolStripSeparator1";
+            this.relayToolStripSeparator1.Size = new System.Drawing.Size(196, 6);
+            // 
+            // exportRelayMenuItem
+            // 
+            this.exportRelayMenuItem.Name = "exportRelayMenuItem";
+            this.exportRelayMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.exportRelayMenuItem.Text = "Export Relay";
+            this.exportRelayMenuItem.ToolTipText = "Export relay definition to file.";
+            this.exportRelayMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
+            // 
+            // relayToolStripSeparator2
+            // 
+            this.relayToolStripSeparator2.Name = "relayToolStripSeparator2";
+            this.relayToolStripSeparator2.Size = new System.Drawing.Size(196, 6);
+            // 
+            // copyRelayUrlMenuItem
+            // 
+            this.copyRelayUrlMenuItem.Name = "copyRelayUrlMenuItem";
+            this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.copyRelayUrlMenuItem.Text = "Copy Relay Url";
+            this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay url to the clipboard.";
+            this.copyRelayUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
+            // 
+            // toolStripSeparator69
+            // 
+            this.toolStripSeparator69.Name = "toolStripSeparator69";
+            this.toolStripSeparator69.Size = new System.Drawing.Size(196, 6);
+            // 
+            // toolStripMenuItem27
+            // 
+            this.toolStripMenuItem27.Name = "toolStripMenuItem27";
+            this.toolStripMenuItem27.Size = new System.Drawing.Size(199, 22);
+            this.toolStripMenuItem27.Text = "Test Relay In SDI Mode";
+            this.toolStripMenuItem27.ToolTipText = "Test the current relay in SDI mode.";
+            this.toolStripMenuItem27.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
+            // 
+            // toolStripMenuItem28
+            // 
+            this.toolStripMenuItem28.Name = "toolStripMenuItem28";
+            this.toolStripMenuItem28.Size = new System.Drawing.Size(199, 22);
+            this.toolStripMenuItem28.Text = "Test Relay In MDI Mode";
+            this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
+            this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2450,7 +2638,7 @@
             this.KeyPreview = true;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Service Bus Explorer 2.5.3.1";
+            this.Text = "Service Bus Explorer 2.6.1.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
@@ -2477,7 +2665,6 @@
             this.queueContextMenuStrip.ResumeLayout(false);
             this.topicsContextMenuStrip.ResumeLayout(false);
             this.relayServicesContextMenuStrip.ResumeLayout(false);
-            this.relayServiceContextMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.queueFolderContextMenuStrip.ResumeLayout(false);
@@ -2492,6 +2679,8 @@
             this.partitionsContextMenuStrip.ResumeLayout(false);
             this.consumerGroupContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
+            this.relayServiceFolderContextMenuStrip.ResumeLayout(false);
+            this.relayContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2570,7 +2759,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem exportTopicsMenuItem;
         private System.Windows.Forms.ContextMenuStrip relayServicesContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem refreshRelayServicesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem copyQueueUrlMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyQueueDeadletterQueueUrlMenuItem;
@@ -2584,8 +2772,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportEntityMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteEntityMenuItem;
         private System.Windows.Forms.ToolStripMenuItem actionsToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip relayServiceContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem copyRelayServiceUrlMenuItem;
         private System.Windows.Forms.MenuStrip mainMenuStrip;
         private System.Windows.Forms.PictureBox logoPictureBox;
         private System.Windows.Forms.ContextMenuStrip queueFolderContextMenuStrip;
@@ -2755,6 +2941,30 @@
         private System.Windows.Forms.ToolStripMenuItem createConsumerGroupListenerMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator60;
         private System.Windows.Forms.ToolStripMenuItem sendMessagesEventHubPartitionMenuItem;
+        private System.Windows.Forms.ContextMenuStrip relayServiceFolderContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator63;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator64;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem14;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem16;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator65;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem19;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator67;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem21;
+        private System.Windows.Forms.ContextMenuStrip relayContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem deleteRelayMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem refreshRelayMenuItem;
+        private System.Windows.Forms.ToolStripSeparator relayToolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem exportRelayMenuItem;
+        private System.Windows.Forms.ToolStripSeparator relayToolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem copyRelayUrlMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator69;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem27;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem28;
     }
 }
 

@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -50,16 +51,16 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Microsoft.ServiceBus, Version=2.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.ServiceBus, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WindowsAzure.ServiceBus.2.5.3.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>packages\WindowsAzure.ServiceBus.2.6.1\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -105,6 +106,12 @@
     </Compile>
     <Compile Include="Controls\HandlePartitionControl.Designer.cs">
       <DependentUpon>HandlePartitionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HandleRelayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleRelayControl.Designer.cs">
+      <DependentUpon>HandleRelayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\PartitionListenerControl.cs">
       <SubType>UserControl</SubType>
@@ -179,11 +186,11 @@
     <Compile Include="Controls\StandardValueEditorUI.designer.cs">
       <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TestRelayServiceControl.cs">
+    <Compile Include="Controls\TestRelayControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestRelayServiceControl.Designer.cs">
-      <DependentUpon>TestRelayServiceControl.cs</DependentUpon>
+    <Compile Include="Controls\TestRelayControl.Designer.cs">
+      <DependentUpon>TestRelayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TestSubscriptionControl.cs">
       <SubType>UserControl</SubType>
@@ -336,6 +343,7 @@
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
+    <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointHelper.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointInfo.cs" />
     <Compile Include="Helpers\CustomMessageSessionAsyncHandler.cs" />
@@ -422,7 +430,7 @@
     <Compile Include="Helpers\PropertyStateFlagsAttribute.cs" />
     <Compile Include="Helpers\PropertyValuePaintEditor.cs" />
     <Compile Include="Helpers\ProviderInstaller.cs" />
-    <Compile Include="Helpers\RelayServiceWrapper.cs" />
+    <Compile Include="Helpers\RelayWrapper.cs" />
     <Compile Include="Helpers\RetryHelper.cs" />
     <Compile Include="Helpers\RuleWrapper.cs" />
     <Compile Include="Helpers\ImportExportHelper.cs" />
@@ -469,6 +477,10 @@
     <EmbeddedResource Include="Controls\HandlePartitionControl.resx">
       <DependentUpon>HandlePartitionControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HandleRelayControl.resx">
+      <DependentUpon>HandleRelayControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\PartitionListenerControl.resx">
       <DependentUpon>PartitionListenerControl.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -500,8 +512,8 @@
     <EmbeddedResource Include="Controls\StandardValueEditorUI.resx">
       <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestRelayServiceControl.resx">
-      <DependentUpon>TestRelayServiceControl.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\TestRelayControl.resx">
+      <DependentUpon>TestRelayControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TestSubscriptionControl.resx">
       <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
@@ -661,6 +673,7 @@
     <Content Include="Images\kdf.png" />
     <Content Include="Images\notepad.png" />
     <Content Include="Images\Objects.gif" />
+    <Content Include="Images\PaoloAnja.png" />
     <Content Include="Images\Plus.png" />
     <Content Include="Images\Properties.png" />
     <Content Include="Images\Property.png" />

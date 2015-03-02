@@ -93,7 +93,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(81, 13);
             this.label3.TabIndex = 42;
-            this.label3.Text = "Version: 2.5.3.1";
+            this.label3.Text = "Version: 2.6.1.0";
             // 
             // label2
             // 
@@ -196,11 +196,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " About Service Bus Explorer 2.5.3.1";
+            this.Text = " About Service Bus Explorer 2.6.1.0";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AboutForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 

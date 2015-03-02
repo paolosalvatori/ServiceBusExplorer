@@ -107,6 +107,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SubscriptionUpdated = "The {0} subscription for the {1} topic has been successfully updated.";
         private const string RuleCreated = "The {0} rule for the {1} subscription has been successfully created.";
         private const string RuleDeleted = "The {0} rule for the {1} subscription has been successfully deleted.";
+        private const string RelayCreated = "The relay {0} has been successfully created.";
+        private const string RelayDeleted = "The relay {0} has been successfully deleted.";
+        private const string RelayUpdated = "The relay {0} has been successfully updated.";
         private const string EventHubCreated = "The event hub {0} has been successfully created.";
         private const string EventHubDeleted = "The event hub {0} has been successfully deleted.";
         private const string EventHubUpdated = "The event hub {0} has been successfully updated.";
@@ -166,20 +169,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private NamespaceManager namespaceManager;
         private MessagingFactory messagingFactory;
-        private bool traceEnabled = true;
+        private bool traceEnabled;
         private string scheme = DefaultScheme;
         private TokenProvider tokenProvider;
         private Uri namespaceUri;
         private Uri atomFeedUri;
         private string ns;
         private string servicePath;
+        private string connectionString;
+        private List<BrokeredMessage> brokeredMessageList;
+        private readonly WriteToLogDelegate writeToLog;
         private string currentIssuerName;
         private string currentIssuerSecret;
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
-        private string connectionString;
-        private List<BrokeredMessage> brokeredMessageList;
-        private readonly WriteToLogDelegate writeToLog;
         private TransportType currentTransportType;
         #endregion
 
@@ -218,20 +221,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public ServiceBusHelper(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper)
         {
             this.writeToLog = writeToLog;
-            traceEnabled = serviceBusHelper.TraceEnabled;
             AtomFeedUri = serviceBusHelper.AtomFeedUri;
-            IssuerName = serviceBusHelper.IssuerName;
-            IssuerSecret = serviceBusHelper.IssuerSecret;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
             namespaceManager = serviceBusHelper.NamespaceManager;
             MessagingFactory = serviceBusHelper.MessagingFactory;
             Namespace = serviceBusHelper.Namespace;
             NamespaceUri = serviceBusHelper.NamespaceUri;
-            IssuerSecret = serviceBusHelper.IssuerSecret;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
-            MessagingFactory = serviceBusHelper.MessagingFactory;
-            Namespace = serviceBusHelper.Namespace;
             Scheme = serviceBusHelper.Scheme;
             ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
             BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
@@ -241,6 +238,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             ServicePath = serviceBusHelper.ServicePath;
             TokenProvider = serviceBusHelper.TokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
+            IssuerName = serviceBusHelper.IssuerName;
+            IssuerSecret = serviceBusHelper.IssuerSecret;
+            SharedAccessKey = serviceBusHelper.SharedAccessKey;
+            SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
+            TransportType = serviceBusHelper.TransportType;
         }
         #endregion
 
@@ -494,6 +496,27 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         /// <summary>
+        /// Gets or sets the issuer secret.
+        /// </summary>
+        public TransportType TransportType
+        {
+            get
+            {
+                lock (this)
+                {
+                    return currentTransportType;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    currentTransportType = value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the URI of the current service bus namespace.
         /// </summary>
         public Uri NamespaceUri
@@ -578,27 +601,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 lock (this)
                 {
                     messagingFactory = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the issuer secret.
-        /// </summary>
-        public TransportType TransportType
-        {
-            get
-            {
-                lock (this)
-                {
-                    return currentTransportType;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    currentTransportType = value;
                 }
             }
         }
@@ -715,7 +717,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                      path);
                 Namespace = nameSpace;
                 ServicePath = path;
-                TransportType = transportType;
 
                 // Create shared secret credentials to to authenticate with the Access Control service, 
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
@@ -727,6 +728,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
                 currentSharedAccessKey = sharedAccessKey;
+                currentTransportType = transportType;
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
@@ -827,7 +829,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
                 currentSharedAccessKey = sharedAccessKey;
-                TransportType = transportType;
+                currentTransportType = transportType;
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
@@ -881,9 +883,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
 
                 connectionString = serviceBusNamespace.ConnectionString;
-                IssuerName = serviceBusNamespace.IssuerName;
-                IssuerSecret = serviceBusNamespace.IssuerSecret;
-                TransportType = serviceBusNamespace.TransportType;
+                currentIssuerName = serviceBusNamespace.IssuerName;
+                currentIssuerSecret = serviceBusNamespace.IssuerSecret;
+                currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
+                currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
+                currentTransportType = serviceBusNamespace.TransportType;
                 
                 // The NamespaceManager class can be used for managing entities, 
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
@@ -902,6 +906,139 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return true;
             });
             return RetryHelper.RetryFunc(func, writeToLog);
+        }
+
+        /// <summary>
+        /// Retrieves the relay from the service namespace.
+        /// </summary>
+        /// <param name="path">Path of the relay relative to the service namespace base address.</param>
+        /// <returns>A RelayDescription handle to the relay, or null if the relay does not exist in the service namespace. </returns>
+        public RelayDescription GetRelay(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                return RetryHelper.RetryFunc(() => namespaceManager.GetRelayAsync(path).Result, writeToLog);
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves an enumerable collection of all relays in the service bus namespace.
+        /// </summary>
+        /// <returns>Returns an IEnumerable<RelayDescription/> collection of all relays in the service namespace. 
+        ///          Returns an empty collection if no relay exists in this service namespace.</returns>
+        public IEnumerable<RelayDescription> GetRelays()
+        {
+            if (namespaceManager != null)
+            {
+                return RetryHelper.RetryFunc(() => namespaceManager.GetRelaysAsync().Result, writeToLog);
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Creates a new relay in the service namespace with the given name.
+        /// </summary>
+        /// <param name="description">A RelayDescription object describing the attributes with which the new event hub will be created.</param>
+        /// <returns>Returns a newly-created RelayDescription object.</returns>
+        public RelayDescription CreateRelay(RelayDescription description)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(DescriptionCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var relayService = RetryHelper.RetryFunc(() => namespaceManager.CreateRelayAsync(description).Result, writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayCreated, description.Path));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
+                return relayService;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Deletes the relay described by the relative name of the service namespace base address.
+        /// </summary>
+        /// <param name="path">Path of the relay relative to the service namespace base address.</param>
+        public void DeleteRelay(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                RetryHelper.RetryAction(() => namespaceManager.DeleteRelayAsync(path).Wait(), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayDeleted, path));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Relay));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
+        }
+
+        /// <summary>
+        /// Deletes all the relays in the list.
+        /// <param name="relayServices">A list of relays to delete.</param>
+        /// </summary>
+        public void DeleteRelays(IEnumerable<string> relayServices)
+        {
+            if (relayServices == null)
+            {
+                return;
+            }
+            foreach (var relayService in relayServices)
+            {
+                DeleteRelay(relayService);
+            }
+        }
+
+        /// <summary>
+        /// Updates a relay in the service namespace with the given name.
+        /// </summary>
+        /// <param name="description">A RelayDescription object describing the attributes with which the new relay will be updated.</param>
+        /// <returns>Returns an updated RelayDescription object.</returns>
+        public RelayDescription UpdateRelay(RelayDescription description)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(DescriptionCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var relayService = RetryHelper.RetryFunc(() => namespaceManager.UpdateRelayAsync(description).Result, writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayUpdated, description.Path));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
+                return relayService;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Gets the uri of a relay.
+        /// </summary>
+        /// <param name="description">The description of a relay.</param>
+        /// <returns>The absolute uri of the relay.</returns>
+        public Uri GetRelayUri(RelayDescription description)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(DescriptionCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var currentScheme = description.RelayType != RelayType.Http
+                    ? scheme
+                    : description.RequiresTransportSecurity ? "https" : "http";
+                return ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
+            }
+            return null;
         }
 
         /// <summary>
@@ -951,7 +1088,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var eventHub = RetryHelper.RetryFunc(() => namespaceManager.CreateEventHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubCreated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
                 return eventHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -971,7 +1108,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteEventHub(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, path));
-                OnDelete(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
             }
             else
             {
@@ -994,7 +1131,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteEventHubAsync(eventHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, eventHubDescription.Path));
-                OnDelete(new ServiceBusHelperEventArgs(eventHubDescription, EntityType.EventHub));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(eventHubDescription, EntityType.EventHub));
             }
             else
             {
@@ -1033,7 +1170,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var eventHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateEventHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubUpdated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
                 return eventHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1062,7 +1199,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(partitionDescription.EventHubPath, partitionDescription.PartitionId), writeToLog);
+                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(partitionDescription.EventHubPath, partitionDescription.ConsumerGroupName, partitionDescription.PartitionId), writeToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1071,9 +1208,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// Retrieves a partition.
         /// </summary>
         /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
+        /// <param name="consumerGroupName">The consumer group name.</param>
         /// <param name="name">Partition name.</param>
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
-        public PartitionDescription GetPartition(string path, string name)
+        public PartitionDescription GetPartition(string path, string consumerGroupName, string name)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1081,7 +1219,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(path, name), writeToLog);
+                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(path, consumerGroupName, name), writeToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1209,7 +1347,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.CreateConsumerGroup(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupCreated, description.Name));
-                OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
                 return consumerGroup;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1230,7 +1368,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(eventHubName, name), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, name));
-                OnDelete(new ServiceBusHelperEventArgs(new ConsumerGroupDescription(eventHubName, name), EntityType.ConsumerGroup));
+                if (OnDelete != null)
+                    OnDelete(new ServiceBusHelperEventArgs(new ConsumerGroupDescription(eventHubName, name), EntityType.ConsumerGroup));
             }
             else
             {
@@ -1253,7 +1392,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(consumerGroupDescription.EventHubPath, consumerGroupDescription.Name), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, consumerGroupDescription.Name));
-                OnDelete(new ServiceBusHelperEventArgs(consumerGroupDescription, EntityType.ConsumerGroup));
+                if (OnDelete != null)
+                    OnDelete(new ServiceBusHelperEventArgs(consumerGroupDescription, EntityType.ConsumerGroup));
             }
             else
             {
@@ -1293,7 +1433,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.UpdateConsumerGroup(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupUpdated, description.Name));
-                OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
                 return consumerGroup;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1356,7 +1496,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteNotificationHub(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
-                OnDelete(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
             }
             else
             {
@@ -1379,7 +1519,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var notificationHub = RetryHelper.RetryFunc(() => namespaceManager.CreateNotificationHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubCreated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
+                if (OnCreate != null)
+                    OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
                 return notificationHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1400,7 +1541,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
-                OnDelete(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
+                if (OnDelete != null)
+                    OnDelete(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
             }
             else
             {
@@ -1439,7 +1581,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var notificationHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateNotificationHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubUpdated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
+                if (OnCreate != null)
+                    OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
                 return notificationHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1886,7 +2029,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.CreateQueue(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, path));
-                OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1907,7 +2050,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.CreateQueue(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1928,7 +2071,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.UpdateQueue(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueUpdated, description.Path));
-                OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1964,7 +2107,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
-                OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Queue));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Queue));
             }
             else
             {
@@ -1986,7 +2129,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(queueDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Path));
-                OnDelete(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
             }
             else
             {
@@ -2009,7 +2152,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
-                OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2030,7 +2173,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(topicDescription), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
-                OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2051,7 +2194,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.UpdateTopic(topicDescription), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
-                OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2087,7 +2230,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
-                OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Topic));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Topic));
             }
             else
             {
@@ -2109,7 +2252,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(topic.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
-                OnDelete(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
             }
             else
             {
@@ -2135,7 +2278,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             var subscription = RetryHelper.RetryFunc(() => namespaceManager.CreateSubscription(subscriptionDescription), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
-            OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
+            if (OnCreate != null)
+                OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
         }
 
@@ -2164,7 +2308,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             var subscription = RetryHelper.RetryFunc(() => namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
-            OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
+            if (OnCreate != null)
+                OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
         }
 
@@ -2223,7 +2368,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(topicPath, name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, name, topicPath));
-            OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Subscription));
+            if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Subscription));
         }
 
         /// <summary>
@@ -2238,7 +2383,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, subscriptionDescription.Name, subscriptionDescription.TopicPath));
-            OnDelete(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
+            if (OnDelete != null)
+                OnDelete(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
         }
 
         /// <summary>
@@ -2265,7 +2411,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var rules = RetryHelper.RetryFunc(func, writeToLog);
             var rule = rules.FirstOrDefault(r => r.Name == ruleDescription.Name);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleCreated, ruleDescription.Name, subscriptionDescription.Name));
-            OnCreate(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+            if (OnCreate != null)
+                OnCreate(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
             return rule;
         }
 
@@ -2304,7 +2451,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, name, subscriptionClient.Name));
-            OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Rule));
+            if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Rule));
         }
 
         /// <summary>
@@ -2326,7 +2473,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(rule.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionClient.Name));
-            OnDelete(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+            if (OnDelete != null)
+                OnDelete(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
         }
 
         /// <summary>
@@ -3342,6 +3490,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         using (var dictionaryReader = XmlDictionaryReader.CreateDictionaryReader(xmlReader))
                         {
                             message = Message.CreateMessage(MessageVersion.Default, "*", dictionaryReader);
+                            message.Headers.To = to;
                             encoder.WriteMessage(message, outputStream);
                             outputStream.Seek(0, SeekOrigin.Begin);
                         }
@@ -3353,6 +3502,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (isJson)
                 {
                     message = Message.CreateMessage(MessageVersion.Default, "*", new StringBodyWriter(messageText));
+                    message.Headers.To = to;
                     encoder.WriteMessage(message, outputStream);
                     outputStream.Seek(0, SeekOrigin.Begin);
                 }
@@ -3360,8 +3510,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             if (message != null && outputStream.Length > 0)
             {
-                message.Headers.To = to;
-
                 var outboundMessage = new BrokeredMessage(outputStream, true)
                 {
                     ContentType = encoder.ContentType
@@ -4891,6 +5039,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="cancellationTokenSource">Cancellation token source.</param>
         public void ReceiveMessages(EntityDescription entityDescription, int? messageCount, bool complete, bool deadletterQueue, TimeSpan receiveTimeout, TimeSpan sessionTimeout, CancellationTokenSource cancellationTokenSource)
         {
+            // ReSharper disable once CollectionNeverQueried.Local
             var receiverList = new List<MessageReceiver>();
             if (brokeredMessageList != null &&
                 brokeredMessageList.Count > 0)

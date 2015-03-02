@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,12 +69,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TimeFilterValue1Name = "FilterValue1";
         private const string TimeFilterValue2Name = "FilterValue2";
         private const string GraphName = "Graph";
-        private const string FriendlyNameProperty = "FriendlyName";
+        private const string DeleteName = "Delete";
+        private const string FriendlyNameProperty = "DisplayName";
         private const string NameProperty = "Name";
         private const string SelectEntityDialogTitle = "Select an Entity";
         private const string SelectEntityGrouperTitle = "Entity";
         private const string SelectEntityLabelText = "Name:";
-        private const string Unknown = "Unkown";
         private const string SaveAsTitle = "Save File As";
         private const string XmlExtension = "xml";
         private const string XmlFilter = "XML Files|*.xml";
@@ -125,6 +126,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const int QueryTabPageIndex = 0;
         private const int MonitorTabPageIndex = 1;
+
+        //***************************
+        // Tooltips
+        //***************************
+        private const string DeleteTooltip = "Delete the row.";
         #endregion
 
         #region Private Instance Fields
@@ -362,12 +368,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create the Metric column
                 var metricColumn = new DataGridViewComboBoxColumn
                 {
-                    DataSource = MetricInfo.MetricInfos,
+                    DataSource = null,
                     DataPropertyName = MetricProperty,
                     DisplayMember = FriendlyNameProperty,
                     ValueMember = NameProperty,
                     Name = MetricProperty,
                     Width = 132,
+                    DropDownWidth = 250,
                     FlatStyle = FlatStyle.Flat,
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                 };
@@ -437,6 +444,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         Width = 50
                     };
                 dataPointDataGridView.Columns.Add(graphColumn);
+                
+                // Create delete column
+                var deleteButtonColumn = new DataGridViewButtonColumn
+                {
+                    Name = DeleteName,
+                    CellTemplate = new DataGridViewDeleteButtonCell(),
+                    HeaderText = string.Empty,
+                    Width = 22
+                };
+                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
+                deleteButtonColumn.UseColumnTextForButtonValue = true;
+                dataPointDataGridView.Columns.Add(deleteButtonColumn);
             }
             catch (Exception ex)
             {
@@ -495,6 +514,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
+            if (dataGridViewColumn != null && 
+                e.ColumnIndex == dataGridViewColumn.Index && 
+                e.RowIndex > -1 && 
+               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
+            {
+                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
+                return;
+            }
             if (e.ColumnIndex == TypeMetricsDataGridViewColumnIndex)
             {
                 return;
@@ -510,14 +538,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 dataPointDataGridView.NotifyCurrentCellDirty(true);
                 return;
             }
-            var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, true);
-            if (form.ShowDialog() != DialogResult.OK)
+            using (var form = new SelectEntityForm(SelectEntityDialogTitle, 
+                                                   SelectEntityGrouperTitle, 
+                                                   SelectEntityLabelText,
+                                                   true, 
+                                                   true, 
+                                                   true, 
+                                                   true))
             {
-                return;
+                if (form.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                dataPointDataGridView.NotifyCurrentCellDirty(true);
+                currentRow.Cells[EntityProperty].Value = form.Path;
+                currentRow.Cells[TypeProperty].Value = form.Type;
+                var entity = (string)currentRow.Cells[TypeProperty].Value;
+                if (string.IsNullOrWhiteSpace(entity))
+                {
+                    return;
+                }
+                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, entity, form.Path);
+                ((DataGridViewComboBoxCell)currentRow.Cells[MetricProperty]).DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(entity) ?
+                                                                                          MetricInfo.EntityMetricDictionary[entity] :
+                                                                                          null;
             }
-            dataPointDataGridView.NotifyCurrentCellDirty(true);
-            currentRow.Cells[EntityProperty].Value = form.Path;
-            currentRow.Cells[TypeProperty].Value = form.Type;
         }
 
         private void HandleException(Exception ex)
@@ -730,9 +775,49 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         item.Type = entityType;
                     }
                 }
+                
+                var allDataPoints = dataPointBindingList.Where(m => string.Compare(m.Metric, "all", StringComparison.OrdinalIgnoreCase) == 0);
+                var allDataPointList = allDataPoints as IList<MetricDataPoint> ?? allDataPoints.ToList();
+                BindingList<MetricDataPoint> pointBindingList;
+                if (allDataPointList.Any())
+                {
+                    pointBindingList = new BindingList<MetricDataPoint>();
+                    foreach (var allDataPoint in allDataPointList)
+                    {
+                        if (allDataPoint == null ||
+                            string.IsNullOrWhiteSpace(allDataPoint.Type) ||
+                            !MetricInfo.EntityMetricDictionary.ContainsKey(allDataPoint.Type))
+                        {
+                            continue;
+                        }
+                        foreach (var item in MetricInfo.EntityMetricDictionary[allDataPoint.Type])
+                        {
+                            if (string.Compare(item.Name, "all", StringComparison.OrdinalIgnoreCase) == 0)
+                            {
+                                continue;
+                            }
+                            pointBindingList.Add(new MetricDataPoint
+                            {
+                                Entity = allDataPoint.Entity,
+                                FilterOperator1 = allDataPoint.FilterOperator1,
+                                FilterOperator2 = allDataPoint.FilterOperator2,
+                                FilterValue1 = allDataPoint.FilterValue1,
+                                FilterValue2 = allDataPoint.FilterValue2,
+                                Granularity = allDataPoint.Granularity,
+                                Graph = allDataPoint.Graph,
+                                Metric = item.Name,
+                                Type = allDataPoint.Type
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    pointBindingList = dataPointBindingList;
+                }
                 var uris = MetricHelper.BuildUriListForDataPointMetricQueries(MainForm.SingletonMainForm.SubscriptionId,
                                                                               serviceBusHelper.Namespace,
-                                                                              dataPointBindingList);
+                                                                              pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
                 if (uris == null || !uriList.Any())
                 {
@@ -746,7 +831,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return;
                 }
                 // Common Graph
-                var graphDataPoints = dataPointBindingList.Where(d => d.Graph);
+                var graphDataPoints = pointBindingList.Where(d => d.Graph);
                 if (graphDataPoints.Any())
                 {
                     if (mainTabControl.TabPages.ContainsKey(GraphTabPage))
@@ -760,7 +845,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var metricGraphControl = new MetricGraphControl(writeToLog,
                                                                     () => mainTabControl.TabPages.RemoveByKey(GraphTabPage),
                                                                     metricList,
-                                                                    dataPointBindingList.ToList())
+                                                                    pointBindingList.ToList())
                     {
                         Location = new Point(0, 0),
                         Dock = DockStyle.Fill
@@ -771,16 +856,24 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Individual Metrics
                 for (var i = 0; i < metricList.Count; i++)
                 {
-                    if (metricList[i] == null)
+                    if (metricList[i] == null || 
+                        !metricList[i].Any() ||
+                        pointBindingList[i] == null ||
+                        string.IsNullOrWhiteSpace(pointBindingList[i].Type) ||
+                        !MetricInfo.EntityMetricDictionary.ContainsKey(pointBindingList[i].Type))
                     {
                         continue;
                     }
-                    var metricInfo = MetricInfo.MetricInfos.FirstOrDefault(m => m.Name == dataPointBindingList[i].Metric);
-                    var friendlyName = metricInfo != null ? metricInfo.FriendlyName : dataPointBindingList[i].Metric;
-                    var unit = metricInfo != null ? metricInfo.Unit : Unknown;
-                    var entity = dataPointBindingList[i].Type == SubscriptionEntity
-                                     ? new Uri(string.Format("http://x/{0}", dataPointBindingList[i].Entity)).Segments[3]
-                                     : dataPointBindingList[i].Entity;
+                    var metricInfo = MetricInfo.EntityMetricDictionary[pointBindingList[i].Type].FirstOrDefault(m => m.Name == pointBindingList[i].Metric);
+                    if (metricInfo == null)
+                    {
+                        continue;
+                    }
+                    var friendlyName = metricInfo.DisplayName;
+                    var unit = metricInfo.Unit;
+                    var entity = pointBindingList[i].Type == SubscriptionEntity
+                                     ? new Uri(string.Format("http://x/{0}", pointBindingList[i].Entity)).Segments[3]
+                                     : pointBindingList[i].Entity;
                     var key = !existingEntity
                                     ? string.Format(@"{0}\{1}", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(entity),
                                                     friendlyName)
@@ -797,7 +890,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var metricValueControl = new MetricValueControl(writeToLog,
                                                                     () => mainTabControl.TabPages.RemoveByKey(key),
                                                                     metricList[i],
-                                                                    dataPointBindingList[i],
+                                                                    pointBindingList[i],
                                                                     metricInfo)
                         {
                             Location = new Point(0, 0),
@@ -1177,7 +1270,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     var seriesName = string.Format(@"{0}\{1}",
                                                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rule.Entity),
-                                                       monitorInfo.FriendlyName);
+                                                       monitorInfo.DisplayName);
                     var series = chart.Series.Add(seriesName);
                     series.ChartType = SeriesChartType.FastLine;
                     series.XAxisType = AxisType.Primary;
@@ -1502,7 +1595,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private void AddEvent(MonitorRule monitorRule, MonitorState state)
         {
             var monitorInfo = MonitorInfo.MonitorInfos.FirstOrDefault(m => m.Name == monitorRule.Monitor);
-            var value = monitorInfo != null ? monitorInfo.FriendlyName : monitorRule.Monitor;
+            var value = monitorInfo != null ? monitorInfo.DisplayName : monitorRule.Monitor;
             var listViewItem = new ListViewItem(state.ToString());
             listViewItem.SubItems.AddRange(new []{monitorRule.Entity,
                                                   value, 

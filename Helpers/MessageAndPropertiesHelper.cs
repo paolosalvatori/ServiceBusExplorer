@@ -38,6 +38,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Constants
         //***************************
         private const string MessageFileName = "Message.xml";
+        private const string RelayMessageFileName = "RelayMessage.xml";
         private const string PropertiesFileName = "Properties.xml";
         private const string Namespace = @"http://schemas.microsoft.com/servicebusexplorer";
         private const string Message = "Message";
@@ -52,6 +53,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Private Static Fields
         private static readonly string messageFilePath = Path.Combine(Environment.CurrentDirectory, MessageFileName);
+        private static readonly string relayMessageFilePath = Path.Combine(Environment.CurrentDirectory, RelayMessageFileName);
         private static readonly string propertiesFilePath = Path.Combine(Environment.CurrentDirectory, PropertiesFileName);
         #endregion
 
@@ -97,6 +99,46 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         /// <summary>
+        /// Write a relay message to an XML file in the current directory.
+        /// </summary>
+        /// <param name="message">The message to save.</param>
+        public static void WriteRelayMessage(string message)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    return;
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
+                    {
+                        var settings = new XmlWriterSettings { Indent = true };
+                        using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+                        {
+                            xmlWriter.WriteStartElement(Message, Namespace);
+                            xmlWriter.WriteStartElement(Date, Namespace);
+                            var now = DateTime.Now;
+                            xmlWriter.WriteString(now.ToLongDateString() + " " + now.ToLongTimeString());
+                            xmlWriter.WriteEndElement();
+                            xmlWriter.WriteStartElement(Content, Namespace);
+                            xmlWriter.WriteCData(message);
+                            xmlWriter.WriteEndElement();
+                            xmlWriter.WriteEndElement();
+                        }
+                    }
+                    var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    WriteFile(relayMessageFilePath, xml);
+                }
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
         /// Reads a message from an XML file in the current directory.
         /// </summary>
         /// <returns>The message read from the XML file.</returns>
@@ -105,6 +147,39 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 if (!File.Exists(messageFilePath))
+                {
+                    return null;
+                }
+
+                using (var reader = new StreamReader(messageFilePath))
+                {
+                    using (var xmlReader = XmlReader.Create(reader))
+                    {
+                        var root = XElement.Load(xmlReader);
+                        var cdata = root.DescendantNodes().OfType<XCData>().FirstOrDefault();
+                        if (cdata != null)
+                        {
+                            return cdata.Value;
+                        }
+                    }
+                }
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Reads a relay message from an XML file in the current directory.
+        /// </summary>
+        /// <returns>The message read from the XML file.</returns>
+        public static string ReadRelayMessage()
+        {
+            try
+            {
+                if (!File.Exists(relayMessageFilePath))
                 {
                     return null;
                 }
