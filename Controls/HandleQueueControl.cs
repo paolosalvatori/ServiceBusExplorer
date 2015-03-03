@@ -1238,18 +1238,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                        ReceiveMode.PeekLock);
-
-                    var messageEnumerable = queueClient.PeekBatch(count);
-                    if (messageEnumerable == null)
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path, ReceiveMode.PeekLock);
+                    var totalRetrieved = 0;
+                    while (totalRetrieved < count)
                     {
-                        return;
-                    }
-                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                    brokeredMessages = messageInspector != null ?
+                        var messageEnumerable = queueClient.PeekBatch(count);
+                        if (messageEnumerable == null)
+                        {
+                            break;
+                        }
+                        var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
+                        var partialList = messageInspector != null ?
                                        messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
                                        new List<BrokeredMessage>(messageArray);
+                        brokeredMessages.AddRange(partialList);
+                        totalRetrieved += partialList.Count;
+                    }
                     writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1350,8 +1354,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                        ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
                         var message = queueClient.Peek();

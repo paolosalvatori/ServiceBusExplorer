@@ -424,7 +424,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             dataPointDataGridView.DataSource = dataPointBindingSource;
             dataPointDataGridView.ForeColor = SystemColors.WindowText;
 
-            if (subscriptionWrapper != null)
+            if (subscriptionWrapper != null && subscriptionWrapper.SubscriptionDescription != null)
             {
                 MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
                                              SubscriptionEntity,
@@ -981,19 +981,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                                                         subscriptionWrapper.SubscriptionDescription.Name,
                                                                                                         ReceiveMode.PeekLock);
-
-                    var messageEnumerable = subscriptionClient.PeekBatch(count);
-                    if (messageEnumerable == null)
+                    var totalRetrieved = 0;
+                    while (totalRetrieved < count)
                     {
-                        return;
-                    }
-                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                    brokeredMessages = messageInspector != null ? 
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() : 
+                        var messageEnumerable = subscriptionClient.PeekBatch(count);
+                        if (messageEnumerable == null)
+                        {
+                            break;
+                        }
+                        var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
+                        var partialList = messageInspector != null ?
+                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
                                        new List<BrokeredMessage>(messageArray);
-                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, 
-                                             brokeredMessages.Count,
-                                              subscriptionWrapper.SubscriptionDescription.Name));
+                        brokeredMessages.AddRange(partialList);
+                        totalRetrieved += partialList.Count;
+                    }
+                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
                 else
                 {
