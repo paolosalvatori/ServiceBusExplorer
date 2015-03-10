@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Service Bus Explorer")]
-[assembly: AssemblyDescription("Author: Paolo Salvatori")]
+[assembly: AssemblyDescription("The Service Bus Explorer allows users to connect to a Service Bus namespace and easily administer and test the entities of an Azure Service Bus namespace. The tool provides advanced features like import/export functionality, the ability to test entities and monitor their metrics.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Paolo Salvatori")]
 [assembly: AssemblyProduct("Service Bus Explorer")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2012")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,3 +34,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.6.1.0")]
 [assembly: AssemblyFileVersion("2.6.1.0")]
+
+

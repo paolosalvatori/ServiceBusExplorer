@@ -42,6 +42,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string InnerExceptionFormat = "InnerException: {0}";
         private const string RetrievingMetricsFormat = "Retrieving metrics for the [{0}] entity...";
         private const string MetricSuccessfullyRetrievedFormat = "[{0}] metrics successfully retrieved for the [{1}] entity.";
+        private const string NoSubscriptionIdOrCertificateThumbprint = "Warning: the Azure subscription ID or certificate thumbprint are not defined in the configuration file.\n\rSpecify your Azure subscription ID and the thumbprint of an Azure management certificate in the local machine or current user store, if you want to use entity metrics.";
 
         //***************************
         // Entities
@@ -109,6 +110,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 !entityToUrlSegmentMapDictionary.ContainsKey(entityType) ||
                 EntityMetricDictionary.ContainsKey(entityType))
                 {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(MainForm.SingletonMainForm.SubscriptionId) ||
+                    string.IsNullOrWhiteSpace(MainForm.SingletonMainForm.CertificateThumbprint))
+                {
+                    Trace.WriteLine(NoSubscriptionIdOrCertificateThumbprint);
                     return;
                 }
                 Trace.WriteLine(string.Format(RetrievingMetricsFormat, entityType));
