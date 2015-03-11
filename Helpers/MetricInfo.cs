@@ -41,8 +41,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         private const string RetrievingMetricsFormat = "Retrieving metrics for the [{0}] entity...";
+        private const string NoMetricRetrievedFormat = "No metric was retrieved for the [{0}] entity. Check the subscriptionId and certificateThumbprint settings in the configuration file.";
         private const string MetricSuccessfullyRetrievedFormat = "[{0}] metrics successfully retrieved for the [{1}] entity.";
-        private const string NoSubscriptionIdOrCertificateThumbprint = "Warning: the Azure subscription ID or certificate thumbprint are not defined in the configuration file.\n\rSpecify your Azure subscription ID and the thumbprint of an Azure management certificate in the local machine or current user store, if you want to use entity metrics.";
+        private const string NoSubscriptionIdOrCertificateThumbprint = "Warning: the subscriptionId or certificateThumbprint settings are not defined in the configuration file.\n\rSpecify your Azure subscription ID and the thumbprint of an Azure management certificate in the local machine or current user store, if you want to use entity metrics.";
 
         //***************************
         // Entities
@@ -92,6 +93,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {NotificationHubEntity, NotificationHubEntities},
             {RelayEntity, RelayEntities}
         };
+
+        private static bool warningShown = false;
         #endregion
 
         #region Public Static Properties
@@ -115,7 +118,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (string.IsNullOrWhiteSpace(MainForm.SingletonMainForm.SubscriptionId) ||
                     string.IsNullOrWhiteSpace(MainForm.SingletonMainForm.CertificateThumbprint))
                 {
-                    Trace.WriteLine(NoSubscriptionIdOrCertificateThumbprint);
+                    if (!warningShown)
+                    {
+                        Trace.WriteLine(NoSubscriptionIdOrCertificateThumbprint);
+                        warningShown = true;
+                    }
                     return;
                 }
                 Trace.WriteLine(string.Format(RetrievingMetricsFormat, entityType));
@@ -124,6 +131,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                           entityToUrlSegmentMapDictionary[entityType],
                                                                           entityPath);
                 var enumerable = await MetricHelper.GetSupportedMetricsAsync(uri, MainForm.SingletonMainForm.CertificateThumbprint);
+                if (enumerable == null)
+                {
+                    Trace.WriteLine(string.Format(NoMetricRetrievedFormat, entityType));
+                    return;
+                }
                 var metricInfoList = enumerable.ToList();
                 var count = metricInfoList.Count;
                 metricInfoList.Insert(0, new MetricInfo { DisplayName = "All", Name = "all", Unit = "Requests", PrimaryAggregation = "Total" });
@@ -131,7 +143,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     item.DisplayName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(item.DisplayName.Replace('.', ' '));
                 }
-                if (enumerable == null || !metricInfoList.Any())
+                if (!metricInfoList.Any())
                 {
                     return;
                 }

@@ -405,10 +405,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Trace.WriteLine(CreateExceptionMessage(uri, ex));
-                throw;
+                // ignored
             }
             return null;
         }
