@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,7 +95,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {RelayEntity, RelayEntities}
         };
 
-        private static bool warningShown = false;
+        private static bool warningShown;
+        private static bool retrieveMetrics = true;
         #endregion
 
         #region Public Static Properties
@@ -107,6 +109,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
+                if (!retrieveMetrics)
+                {
+                    return;
+                }
                 if (string.IsNullOrWhiteSpace(ns) ||
                 string.IsNullOrEmpty(entityType) ||
                 string.IsNullOrWhiteSpace(entityPath) ||
@@ -133,6 +139,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var enumerable = await MetricHelper.GetSupportedMetricsAsync(uri, MainForm.SingletonMainForm.CertificateThumbprint);
                 if (enumerable == null)
                 {
+                    retrieveMetrics = false;
                     Trace.WriteLine(string.Format(NoMetricRetrievedFormat, entityType));
                     return;
                 }
