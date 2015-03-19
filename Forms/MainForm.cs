@@ -353,8 +353,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                    label,
                                                    messageFile,
                                                    messageText,
-                                                   (decimal) lstLog.Font.Size,
-                                                   (decimal) serviceBusTreeView.Font.Size,
+                                                   (decimal)lstLog.Font.Size,
+                                                   (decimal)serviceBusTreeView.Font.Size,
                                                    RetryHelper.RetryCount,
                                                    RetryHelper.RetryTimeout,
                                                    receiveTimeout,
@@ -379,10 +379,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 certificateThumbprint = optionForm.CertificateThumbprint;
                 label = optionForm.Label;
                 messageFile = optionForm.MessageFile;
-                messageText = optionForm.MessageText; 
+                messageText = optionForm.MessageText;
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.LogFontSize);
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
-                                                   (float) optionForm.TreeViewFontSize);
+                                                   (float)optionForm.TreeViewFontSize);
                 RetryHelper.RetryCount = optionForm.RetryCount;
                 RetryHelper.RetryTimeout = optionForm.RetryTimeout;
                 receiveTimeout = optionForm.ReceiveTimeout;
@@ -998,18 +998,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         else
                         {
-                            subscriptionsNode = topicNode.Nodes.Add(SubscriptionEntities, 
+                            subscriptionsNode = topicNode.Nodes.Add(SubscriptionEntities,
                                                                     SubscriptionEntities,
                                                                     wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex,
                                                                     wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex);
                             subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
                             subscriptionsNode.Tag = new SubscriptionWrapper(null, wrapper.TopicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
                         }
-                        var subscriptionNode = subscriptionsNode.Nodes.Add(wrapper.SubscriptionDescription.Name, 
+                        var subscriptionNode = subscriptionsNode.Nodes.Add(wrapper.SubscriptionDescription.Name,
                                                                            showMessageCount ?
                                                                            string.Format(NameMessageCountFormat,
                                                                                          wrapper.SubscriptionDescription.Name,
-                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount,                        
+                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount,
                                                                                          wrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount) :
                                                                            wrapper.SubscriptionDescription.Name,
                                                                            wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
@@ -1466,15 +1466,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var queueList = new List<EntityDescription>();
                         GetQueueList(queueList, serviceBusTreeView.SelectedNode);
                         ExportEntities(queueList,
-                                       FormatAbsolutePathForExport(urlSegmentWrapper.Uri), 
+                                       FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
                                        QueueEntities);
                     }
                     else if (urlSegmentWrapper.EntityType == EntityType.Topic)
                     {
                         var topicList = new List<EntityDescription>();
                         GetTopicList(topicList, serviceBusTreeView.SelectedNode);
-                        ExportEntities(topicList, 
-                                       FormatAbsolutePathForExport(urlSegmentWrapper.Uri), 
+                        ExportEntities(topicList,
+                                       FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
                                        TopicEntities);
                     }
                     else
@@ -1640,8 +1640,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             control.RefreshData(queueDescription);
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
-                        serviceBusTreeView.SelectedNode.Text = showMessageCount ? 
-                                                               string.Format(NameMessageCountFormat, 
+                        serviceBusTreeView.SelectedNode.Text = showMessageCount ?
+                                                               string.Format(NameMessageCountFormat,
                                                                              serviceBusTreeView.SelectedNode.Name,
                                                                              queueDescription.MessageCountDetails.ActiveMessageCount,
                                                                              queueDescription.MessageCountDetails.DeadLetterMessageCount) :
@@ -1681,8 +1681,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             var relayDescriptions = relayCollection as IList<RelayDescription> ?? relayCollection.ToList();
                             if (relayDescriptions.Any())
                             {
-                                var relayDescription = relayDescriptions.First(r => string.Compare(r.Path, 
-                                                                                                   description.Path, 
+                                var relayDescription = relayDescriptions.First(r => string.Compare(r.Path,
+                                                                                                   description.Path,
                                                                                                    StringComparison.InvariantCultureIgnoreCase) == 0);
                                 if (relayDescription != null)
                                 {
@@ -1786,7 +1786,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     // Partition Node
                     if (serviceBusTreeView.SelectedNode.Tag is PartitionDescription)
                     {
-                        var partitionDescription = (PartitionDescription) serviceBusTreeView.SelectedNode.Tag;
+                        var partitionDescription = (PartitionDescription)serviceBusTreeView.SelectedNode.Tag;
                         var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
                         var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
                         var partition = serviceBusHelper.GetPartition(partitionDescription.EventHubPath, consumerGroupName, partitionDescription.PartitionId);
@@ -1853,14 +1853,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             subscriptionsNode.Nodes.Clear();
                             foreach (var subscription in subscriptionDescriptions)
                             {
-                                var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name, 
-                                                                                   showMessageCount ? 
+                                var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
+                                                                                   showMessageCount ?
                                                                                    string.Format(NameMessageCountFormat,
                                                                                                  subscription.Name,
                                                                                                  subscription.MessageCountDetails.ActiveMessageCount,
                                                                                                  subscription.MessageCountDetails.DeadLetterMessageCount) :
-                                                                                   subscription.Name, 
-                                                                                   subscription.Status == EntityStatus.Active? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                                   subscription.Name,
+                                                                                   subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                                    subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                                 subscriptionNode.Tag = new SubscriptionWrapper(subscription, wrapper.TopicDescription);
@@ -1933,16 +1933,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         if (control != null)
                         {
                             control.RefreshData(wrapper);
-                            WriteToLog(string.Format(SubscriptionRetrievedFormat, 
-                                                     wrapper.SubscriptionDescription.Name, 
-                                                     wrapper.SubscriptionDescription.TopicPath), 
+                            WriteToLog(string.Format(SubscriptionRetrievedFormat,
+                                                     wrapper.SubscriptionDescription.Name,
+                                                     wrapper.SubscriptionDescription.TopicPath),
                                        false);
                         }
                         serviceBusTreeView.SelectedNode.Text = showMessageCount ?
                                                                string.Format(NameMessageCountFormat,
                                                                              serviceBusTreeView.SelectedNode.Name,
                                                                              subscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                                                             subscriptionDescription.MessageCountDetails.DeadLetterMessageCount):
+                                                                             subscriptionDescription.MessageCountDetails.DeadLetterMessageCount) :
                                                                serviceBusTreeView.SelectedNode.Name;
                     }
                 }
@@ -2016,7 +2016,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         // UrlSegment Node
                         if (serviceBusTreeView.SelectedNode.Tag is UrlSegmentWrapper)
                         {
-                            var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper; 
+                            var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
                             if (urlSegmentWrapper.EntityType == EntityType.Queue)
                             {
                                 panelMain.HeaderText = CreateQueue;
@@ -2535,7 +2535,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         return;
                     }
-                    
+
                     // Subscription Node
                     if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
                     {
@@ -2661,7 +2661,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     var relay = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
                     panelMain.HeaderText = string.Format(TestRelayFormat, relay.Path);
-                    TestRelay(relay, true);;
+                    TestRelay(relay, true); ;
                 }
             }
             catch (Exception ex)
@@ -2742,7 +2742,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                
+
                 // QueueDescription Node
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
@@ -2773,7 +2773,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     var consumerGroupPartition = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
                     var partitionDescription = serviceBusTreeView.SelectedNode.Tag as PartitionDescription;
-                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, new []{partitionDescription});
+                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, new[] { partitionDescription });
                     form.Show();
                 }
             }
@@ -2855,7 +2855,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             catch
             {
             }
-        // ReSharper disable FunctionNeverReturns
+            // ReSharper disable FunctionNeverReturns
         }
         // ReSharper restore FunctionNeverReturns
 
@@ -3097,8 +3097,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     panelMain.HeaderText = string.Format(ViewPartitionFormat, partitionDescription.PartitionId);
                     var consumerGroup = node.Parent.Parent.Tag as ConsumerGroupDescription;
                     var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
-                    partitionDescription = serviceBusHelper.GetPartition(partitionDescription.EventHubPath, 
-                                                                         consumerGroupName, 
+                    partitionDescription = serviceBusHelper.GetPartition(partitionDescription.EventHubPath,
+                                                                         consumerGroupName,
                                                                          partitionDescription.PartitionId);
                     ShowPartition(partitionDescription);
                     return;
@@ -3141,7 +3141,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     ShowSubscription(wrapper);
                     return;
                 }
-                
+
                 // RuleDescription Node
                 if (node.Tag is RuleWrapper)
                 {
@@ -3180,61 +3180,61 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             if (toLower.Contains(ConnectionStringEndpoint) &&
                 toLower.Contains(ConnectionStringSharedAccessKeyName) &&
                 toLower.Contains(ConnectionStringSharedAccessKey))
-             {
-                 if (parameters.Count < 3)
-                 {
-                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                     return null;
-                 }
-                 var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                                parameters[ConnectionStringEndpoint] :
-                                null;
+            {
+                if (parameters.Count < 3)
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                    return null;
+                }
+                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
+                               parameters[ConnectionStringEndpoint] :
+                               null;
 
-                 if (string.IsNullOrWhiteSpace(endpoint))
-                 {
-                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                     return null;
-                 }
+                if (string.IsNullOrWhiteSpace(endpoint))
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                    return null;
+                }
 
-                 var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                   parameters[ConnectionStringStsEndpoint] :
-                                   null;
+                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
+                                  parameters[ConnectionStringStsEndpoint] :
+                                  null;
 
-                 Uri uri;
-                 try
-                 {
-                     uri = new Uri(endpoint);
-                 }
-                 catch (Exception)
-                 {
-                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                     return null;
-                 }
-                 var ns = uri.Host.Split('.')[0];
+                Uri uri;
+                try
+                {
+                    uri = new Uri(endpoint);
+                }
+                catch (Exception)
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
+                    return null;
+                }
+                var ns = uri.Host.Split('.')[0];
 
-                 if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
-                 {
-                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
-                 }
-                 var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
+                if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
+                }
+                var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
 
-                 if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
-                 {
-                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
-                 }
-                 var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
+                if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                }
+                var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
 
 
-                 var settings = new MessagingFactorySettings();
-                 var transportType = settings.TransportType;
+                var settings = new MessagingFactorySettings();
+                var transportType = settings.TransportType;
 
-                 if (parameters.ContainsKey(ConnectionStringTransportType))
-                 {
-                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                 }
+                if (parameters.ContainsKey(ConnectionStringTransportType))
+                {
+                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+                }
 
-                 return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true);
-             }
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true);
+            }
 
             if (toLower.Contains(ConnectionStringRuntimePort) ||
                 toLower.Contains(ConnectionStringManagementPort) ||
@@ -3331,7 +3331,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
                     return null;
                 }
-                
+
                 var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
                                parameters[ConnectionStringEndpoint] :
                                null;
@@ -3441,7 +3441,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return;
                 }
                 var hashtable = ConfigurationManager.GetSection(ServiceBusNamespaces) as Hashtable;
-                
+
                 if (hashtable == null || hashtable.Count == 0)
                 {
                     WriteToLog(ServiceBusNamespacesNotConfigured);
@@ -3509,11 +3509,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var type = Type.GetType(e.Value as string);
                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageInspector)))
                         {
-                            if (type.GetConstructor(BindingFlags.Instance | 
-                                                    BindingFlags.Public | 
-                                                    BindingFlags.NonPublic, 
+                            if (type.GetConstructor(BindingFlags.Instance |
+                                                    BindingFlags.Public |
+                                                    BindingFlags.NonPublic,
                                                     null,
-                                                    Type.EmptyTypes, 
+                                                    Type.EmptyTypes,
                                                     null) != null)
                             {
                                 serviceBusHelper.BrokeredMessageInspectors.Add(e.Key as string, type);
@@ -3775,23 +3775,24 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             subscriptionId = ConfigurationManager.AppSettings[ConfigurationParameters.SubscriptionIdParameter];
             certificateThumbprint = ConfigurationManager.AppSettings[ConfigurationParameters.CertificateThumbprintParameter];
-            
-            
+
+
             var logFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.LogFontSize];
             float tempFloat;
-            if (float.TryParse(logFontSizeValue, out  tempFloat))
+
+            if (Single.TryParse(logFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out tempFloat))
             {
                 logFontSize = tempFloat;
                 lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
             }
 
             var treeViewFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.TreeViewFontSize];
-            if (float.TryParse(treeViewFontSizeValue, out  tempFloat))
+            if (Single.TryParse(treeViewFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out  tempFloat))
             {
                 treeViewFontSize = tempFloat;
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
             }
-            
+
             var retryCountValue = ConfigurationManager.AppSettings[ConfigurationParameters.RetryCountParameter];
             int retryCount;
             if (int.TryParse(retryCountValue, out  retryCount))
@@ -4642,7 +4643,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private  void CreateEventHubSubTree(EventHubDescription eventHub, TreeNode entityNode)
+        private void CreateEventHubSubTree(EventHubDescription eventHub, TreeNode entityNode)
         {
             try
             {
@@ -4657,7 +4658,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private  void CreateEventHubPartitions(EventHubDescription eventHub, TreeNode entityNode)
+        private void CreateEventHubPartitions(EventHubDescription eventHub, TreeNode entityNode)
         {
             var partitions = GetPartitionsFromPartitionIds(eventHub);
             var partitionDescriptions = partitions as IList<PartitionDescription> ?? partitions.ToList();
@@ -4971,7 +4972,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                
+
                 if (string.IsNullOrWhiteSpace(partition.LastEnqueuedOffset))
                 {
                     var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
@@ -4979,7 +4980,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     partition = serviceBusHelper.GetPartition(partition.EventHubPath,
                                                               consumerGroupName,
                                                               partition.PartitionId);
-                }                
+                }
                 partitionControl = new HandlePartitionControl(WriteToLog, serviceBusHelper, partition);
                 partitionControl.SuspendDrawing();
                 partitionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5181,11 +5182,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     panelMain.Controls.Clear();
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    subscriptionControl = new TestSubscriptionControl(this, 
-                                                                      WriteToLog, 
+                    subscriptionControl = new TestSubscriptionControl(this,
+                                                                      WriteToLog,
                                                                       StopLog,
                                                                       StartLog,
-                                                                      serviceBusHelper, 
+                                                                      serviceBusHelper,
                                                                       subscriptionWrapper);
                     subscriptionControl.SuspendDrawing();
                     subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5228,11 +5229,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     panelMain.Controls.Clear();
                     panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    relayServiceControl = new TestRelayControl(this, 
+                    relayServiceControl = new TestRelayControl(this,
                                                                WriteToLog,
                                                                StopLog,
                                                                StartLog,
-                                                               relayDescription, 
+                                                               relayDescription,
                                                                serviceBusHelper);
                     relayServiceControl.SuspendDrawing();
                     relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5413,7 +5414,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             var node = serviceBusTreeView.SelectedNode.Parent.Parent;
                             if (node != null && node.Tag is ConsumerGroupDescription)
                             {
-                                var notificationHubDescription = node.Tag as ConsumerGroupDescription; 
+                                var notificationHubDescription = node.Tag as ConsumerGroupDescription;
                                 uri = serviceBusHelper.GetPartitionUri(partitionDescription.EventHubPath, notificationHubDescription.Name, partitionDescription.PartitionId);
                             }
                         }
@@ -5435,7 +5436,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
             }
         }
-        
+
         private List<ToolStripItem> CloneItems(ToolStripItemCollection collection)
         {
             var list = new List<ToolStripItem>();
@@ -5454,20 +5455,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         if (toolStripMenuItem != null)
                         {
                             var item = new ToolStripMenuItem
-                                            {
-                                                Name = toolStripMenuItem.Name,
-                                                Size = toolStripMenuItem.Size,
-                                                Text = toolStripMenuItem.Text,
-                                                ToolTipText = toolStripMenuItem.ToolTipText,
-                                                ShortcutKeys = toolStripMenuItem.ShortcutKeys,
-                                                ShortcutKeyDisplayString = toolStripMenuItem.ShortcutKeyDisplayString,
-                                                ShowShortcutKeys = toolStripMenuItem.ShowShortcutKeys
-                                            };
+                            {
+                                Name = toolStripMenuItem.Name,
+                                Size = toolStripMenuItem.Size,
+                                Text = toolStripMenuItem.Text,
+                                ToolTipText = toolStripMenuItem.ToolTipText,
+                                ShortcutKeys = toolStripMenuItem.ShortcutKeys,
+                                ShortcutKeyDisplayString = toolStripMenuItem.ShortcutKeyDisplayString,
+                                ShowShortcutKeys = toolStripMenuItem.ShowShortcutKeys
+                            };
                             var events = (EventHandlerList)eventsPropertyInfo.GetValue(toolStripMenuItem, null);
-                            var secret = eventClickFieldInfo.GetValue(null); 
+                            var secret = eventClickFieldInfo.GetValue(null);
                             var handlers = events[secret];
                             events = (EventHandlerList)eventsPropertyInfo.GetValue(item, null);
-                            events.AddHandler(secret, handlers); 
+                            events.AddHandler(secret, handlers);
                             list.Add(item);
                         }
                     }
@@ -5487,12 +5488,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 list.Add(new ToolStripSeparator());
             }
             var item = new ToolStripMenuItem
-                            {
-                                Name = ImportToolStripMenuItemName,
-                                Size = new Size(154, 22),
-                                Text = ImportToolStripMenuItemText,
-                                ToolTipText = ImportToolStripMenuItemToolTipText
-                            };
+            {
+                Name = ImportToolStripMenuItemName,
+                Size = new Size(154, 22),
+                Text = ImportToolStripMenuItemText,
+                ToolTipText = ImportToolStripMenuItemToolTipText
+            };
 
             item.Click += importEntity_Click;
             list.Add(item);
@@ -5507,7 +5508,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             // Return char and concat substring.
             var parts = text.Split('.');
-            
+
             return string.Format("{0}.{1}", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].Replace(' ', '_').Replace('/', '_')), parts[1]);
         }
 
@@ -5570,8 +5571,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return null;
         }
 
-        private TreeNode CreateNode(string path, 
-                                    object tag, 
+        private TreeNode CreateNode(string path,
+                                    object tag,
                                     TreeNode node,
                                     bool log)
         {
@@ -5626,7 +5627,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             var queueDescription = tag as QueueDescription;
                             entityNode = entityNode.Nodes.Add(segments[i],
                                                               showMessageCount ?
-                                                              string.Format(NameMessageCountFormat, 
+                                                              string.Format(NameMessageCountFormat,
                                                                             segments[i],
                                                                             queueDescription.MessageCountDetails.ActiveMessageCount,
                                                                             queueDescription.MessageCountDetails.DeadLetterMessageCount) :
@@ -5635,7 +5636,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
                             entityNode.Tag = tag;
-                            
+
                             if (log)
                             {
                                 WriteToLog(string.Format(CultureInfo.CurrentCulture, QueueRetrievedFormat, queueDescription.Path), false);
@@ -5651,7 +5652,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                               topicDescription.Status == EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex);
                             entityNode.ContextMenuStrip = topicContextMenuStrip;
                             entityNode.Tag = tag;
-                            
+
                             if (log)
                             {
                                 WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicRetrievedFormat, topicDescription.Path), false);
@@ -6130,7 +6131,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             var queueListNode = FindNode(QueueEntities, rootNode);
             var topicListNode = FindNode(TopicEntities, rootNode);
-            
+
             // Queues
             if (serviceBusTreeView.SelectedNode == queueListNode)
             {
@@ -6306,7 +6307,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             catch (Exception ex)
             {
-               HandleException(ex);
+                HandleException(ex);
             }
         }
 
