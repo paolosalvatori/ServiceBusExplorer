@@ -3779,14 +3779,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             
             var logFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.LogFontSize];
             float tempFloat;
-            if (float.TryParse(logFontSizeValue, out  tempFloat))
+            if (Single.TryParse(logFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out tempFloat))
             {
                 logFontSize = tempFloat;
                 lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
             }
 
             var treeViewFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.TreeViewFontSize];
-            if (float.TryParse(treeViewFontSizeValue, out  tempFloat))
+            if (Single.TryParse(treeViewFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out  tempFloat))
             {
                 treeViewFontSize = tempFloat;
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
