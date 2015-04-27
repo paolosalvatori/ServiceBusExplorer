@@ -1253,6 +1253,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                        new List<BrokeredMessage>(messageArray);
                         brokeredMessages.AddRange(partialList);
                         totalRetrieved += partialList.Count;
+                        if (partialList.Count == 0)
+                        {
+                            break;
+                        }
                     }
                     writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
