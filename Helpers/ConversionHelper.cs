@@ -126,6 +126,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return Convert.ChangeType(value, typeof(bool));
                 case "Decimal":
                     return Convert.ChangeType(value, typeof(decimal));
+                case "DateTime":
+                    return Convert.ChangeType(value, typeof(DateTime));
                 case "Guid":
                     return new Guid(value as string);
             }
