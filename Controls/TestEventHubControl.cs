@@ -111,7 +111,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly Func<Task> stopLog;
         private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
-        private List<EventHubClient> eventHubClientCollection = new List<EventHubClient>();
+        private List<Helpers.EventHubClientHelper> eventHubClientCollection = new List<Helpers.EventHubClientHelper>();
         private CancellationTokenSource senderCancellationTokenSource;
         private CancellationTokenSource managerCancellationTokenSource;
         private CancellationTokenSource graphCancellationTokenSource;
@@ -503,11 +503,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             eventHubClientCollection.Count == 0 ||
                             eventHubClientCollection.Count < senderTaskCount)
                         {
-                            eventHubClientCollection = new List<EventHubClient>(senderTaskCount);
+                            eventHubClientCollection.ForEach(c => c.Close());
+                            eventHubClientCollection = new List<Helpers.EventHubClientHelper>(senderTaskCount);
                             var amqpConnectionString = GetAmqpConnectionString(serviceBusHelper.ConnectionString);
                             for (var i = 0; i < senderTaskCount; i++)
                             {
-                                eventHubClientCollection.Add(EventHubClient.CreateFromConnectionString(amqpConnectionString, eventHubDescription.Path));
+                                eventHubClientCollection.Add(
+                                    new Helpers.EventHubClientHelper(
+                                        amqpConnectionString,
+                                        eventHubDescription.Path,
+                                        checkBoxSocketPerTask.Checked));
                             }
                             isSenderFaulted = false;
                         }
@@ -637,7 +642,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     try
                                     {
-                                        var traceMessage = serviceBusHelper.SendEventData(eventHubClientCollection[taskId],
+                                        var traceMessage = serviceBusHelper.SendEventData(eventHubClientCollection[taskId].Client,
                                                                                             messageTemplateEnumerable,
                                                                                             getMessageNumber,
                                                                                             eventDataCount,
@@ -1337,6 +1342,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Controls[i].Dispose();
                 }
+
+                this.eventHubClientCollection.ForEach(s => s.Close());
 
                 base.Dispose(disposing);
             }
