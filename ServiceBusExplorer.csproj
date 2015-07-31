@@ -51,9 +51,9 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Microsoft.ServiceBus, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.ServiceBus, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WindowsAzure.ServiceBus.2.6.5\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>packages\WindowsAzure.ServiceBus.2.7.5\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -345,6 +345,7 @@
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
+    <Compile Include="Helpers\EventHubClientHelper.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointHelper.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointInfo.cs" />
     <Compile Include="Helpers\CustomMessageSessionAsyncHandler.cs" />
