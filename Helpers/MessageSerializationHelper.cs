@@ -63,7 +63,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var entityDictionary = new SortedDictionary<string, object>();
                 if (JsonSerializerHelper.IsJson(bodyEnumerable[i]))
                 {
-                    entityDictionary.Add("body", JObject.Parse(bodyEnumerable[i]));
+                    try
+                    {
+                        entityDictionary.Add("body", JObject.Parse(bodyEnumerable[i]));
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            entityDictionary.Add("body", JArray.Parse(bodyEnumerable[i]));
+                        }
+                        catch (Exception)
+                        {
+                            entityDictionary.Add("body", bodyEnumerable[i]);
+                        }
+                    }
                 }
                 else
                 {
@@ -106,7 +120,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var entityDictionary = new SortedDictionary<string, object>();
             if (JsonSerializerHelper.IsJson(body))
             {
-                entityDictionary.Add("body", JObject.Parse(body));
+                try
+                {
+                    entityDictionary.Add("body", JObject.Parse(body));
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        entityDictionary.Add("body", JArray.Parse(body));
+                    }
+                    catch (Exception)
+                    {
+                        entityDictionary.Add("body", body);
+                    }
+                }
             }
             else
             {
