@@ -4901,7 +4901,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="eventDataToRead">The EventData to read.</param>
         /// <param name="bodyType">BodyType</param>
         /// <returns>The content of the EventData.</returns>
-        public string GetMessageText(EventData eventDataToRead, out BodyType bodyType)
+        public string GetMessageText(EventData eventDataToRead, out BodyType bodyType, bool doNotSerializeBody = false)
         {
             string eventDataText = null;
             Stream stream = null;
@@ -4911,42 +4911,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return null;
             }
             var inboundMessage = eventDataToRead.Clone();
-            try
+            bool bBodyParsed = false;
+            if (!doNotSerializeBody)
             {
-                stream = inboundMessage.GetBody<Stream>();
-                if (stream != null)
-                {
-                    var element = new BinaryMessageEncodingBindingElement
-                    {
-                        ReaderQuotas = new XmlDictionaryReaderQuotas
-                        {
-                            MaxArrayLength = int.MaxValue,
-                            MaxBytesPerRead = int.MaxValue,
-                            MaxDepth = int.MaxValue,
-                            MaxNameTableCharCount = int.MaxValue,
-                            MaxStringContentLength = int.MaxValue
-                        }
-                    };
-                    var encoderFactory = element.CreateMessageEncoderFactory();
-                    var encoder = encoderFactory.Encoder;
-                    var stringBuilder = new StringBuilder();
-                    var eventData = encoder.ReadMessage(stream, MaxBufferSize);
-                    using (var reader = eventData.GetReaderAtBodyContents())
-                    {
-                        // The XmlWriter is used just to indent the XML eventData
-                        var settings = new XmlWriterSettings { Indent = true };
-                        using (var writer = XmlWriter.Create(stringBuilder, settings))
-                        {
-                            writer.WriteNode(reader, true);
-                        }
-                    }
-                    eventDataText = stringBuilder.ToString();
-                    bodyType = BodyType.Wcf;
-                }
-            }
-            catch (Exception)
-            {
-                inboundMessage = eventDataToRead.Clone();
                 try
                 {
                     stream = inboundMessage.GetBody<Stream>();
@@ -4965,63 +4932,109 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         };
                         var encoderFactory = element.CreateMessageEncoderFactory();
                         var encoder = encoderFactory.Encoder;
+                        var stringBuilder = new StringBuilder();
                         var eventData = encoder.ReadMessage(stream, MaxBufferSize);
                         using (var reader = eventData.GetReaderAtBodyContents())
                         {
-                            eventDataText = reader.ReadString();
+                            // The XmlWriter is used just to indent the XML eventData
+                            var settings = new XmlWriterSettings { Indent = true };
+                            using (var writer = XmlWriter.Create(stringBuilder, settings))
+                            {
+                                writer.WriteNode(reader, true);
+                            }
                         }
+                        eventDataText = stringBuilder.ToString();
                         bodyType = BodyType.Wcf;
                     }
+                    bBodyParsed = true;
                 }
                 catch (Exception)
                 {
+                    inboundMessage = eventDataToRead.Clone();
                     try
                     {
+                        stream = inboundMessage.GetBody<Stream>();
                         if (stream != null)
                         {
-                            try
+                            var element = new BinaryMessageEncodingBindingElement
                             {
-                                stream.Seek(0, SeekOrigin.Begin);
-                                var serializer = new CustomDataContractBinarySerializer(typeof(string));
-                                eventDataText = serializer.ReadObject(stream) as string;
-                                bodyType = BodyType.String;
+                                ReaderQuotas = new XmlDictionaryReaderQuotas
+                                {
+                                    MaxArrayLength = int.MaxValue,
+                                    MaxBytesPerRead = int.MaxValue,
+                                    MaxDepth = int.MaxValue,
+                                    MaxNameTableCharCount = int.MaxValue,
+                                    MaxStringContentLength = int.MaxValue
+                                }
+                            };
+                            var encoderFactory = element.CreateMessageEncoderFactory();
+                            var encoder = encoderFactory.Encoder;
+                            var eventData = encoder.ReadMessage(stream, MaxBufferSize);
+                            using (var reader = eventData.GetReaderAtBodyContents())
+                            {
+                                eventDataText = reader.ReadString();
                             }
-                            catch (Exception)
+                            bodyType = BodyType.Wcf;
+                        }
+                        bBodyParsed = true;
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            if (stream != null)
                             {
                                 try
                                 {
                                     stream.Seek(0, SeekOrigin.Begin);
-                                    using (var reader = new StreamReader(stream))
-                                    {
-                                        eventDataText = reader.ReadToEnd();
-                                        if (eventDataText.ToCharArray().GroupBy(c => c).
-                                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
-                                            Select(g => g.First()).Any())
-                                        {
-                                            stream.Seek(0, SeekOrigin.Begin);
-                                            using (var binaryReader = new BinaryReader(stream))
-                                            {
-                                                var bytes = binaryReader.ReadBytes((int)stream.Length);
-                                                eventDataText = BitConverter.ToString(bytes).Replace('-', ' ');
-                                            }
-                                        }
-                                    }
+                                    var serializer = new CustomDataContractBinarySerializer(typeof(string));
+                                    eventDataText = serializer.ReadObject(stream) as string;
+                                    bodyType = BodyType.String;
+                                    bBodyParsed = true;
                                 }
                                 catch (Exception)
                                 {
-                                    eventDataText = UnableToReadMessageBody;
+                                    bBodyParsed = false;
                                 }
                             }
+                            else
+                            {
+                                bBodyParsed = false;
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
-                            eventDataText = UnableToReadMessageBody;
+                            bBodyParsed = false;
                         }
                     }
-                    catch (Exception)
+                }
+            }
+            if (!bBodyParsed)
+            {
+                try
+                {
+                    inboundMessage = eventDataToRead.Clone();
+                    stream = inboundMessage.GetBody<Stream>();
+                    stream.Seek(0, SeekOrigin.Begin);
+                    using (var reader = new StreamReader(stream))
                     {
-                        eventDataText = UnableToReadMessageBody;
+                        eventDataText = reader.ReadToEnd();
+                        if (eventDataText.ToCharArray().GroupBy(c => c).
+                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
+                            Select(g => g.First()).Any())
+                        {
+                            stream.Seek(0, SeekOrigin.Begin);
+                            using (var binaryReader = new BinaryReader(stream))
+                            {
+                                var bytes = binaryReader.ReadBytes((int)stream.Length);
+                                eventDataText = BitConverter.ToString(bytes).Replace('-', ' ');
+                            }
+                        }
                     }
+                }
+                catch (Exception)
+                {
+                    eventDataText = UnableToReadMessageBody;
                 }
             }
             return eventDataText;

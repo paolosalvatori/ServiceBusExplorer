@@ -109,7 +109,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string DefaultConsumerGroupName = "$Default";
         private const string SaveAsTitle = "Save File As";
         private const string JsonExtension = "json";
-        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string JsonFilter = "JSON Files|*.json|JSON Files With Unserialized Body|*.json|Text Documents|*.txt";
         private const string MessageFileFormat = "EventData_{0}_{1}.json";
         #endregion
 
@@ -1522,9 +1522,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+                bool doNotSerializeBody = saveFileDialog.FilterIndex == 2;
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text, doNotSerializeBody));
                 }
             }
             catch (Exception ex)
@@ -1560,11 +1561,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+                bool doNotSerializeBody = saveFileDialog.FilterIndex == 2;
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType, doNotSerializeBody));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody));
                 }
             }
             catch (Exception ex)
