@@ -36,6 +36,10 @@ using System.Threading;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceBus.Notifications;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Formatting = Newtonsoft.Json.Formatting;
+
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -46,7 +50,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
     {
         Stream,
         String,
-        Wcf
+        Wcf,
+        ByteArray
     }
 
     public class ServiceBusHelper
@@ -4730,54 +4735,75 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     try
                     {
-                        if (stream != null)
+                        messageText = AttemptToReadByteArrayBody(messageToRead.Clone());
+                        bodyType = BodyType.ByteArray;
+                    }
+                    catch (Exception)
+                    {
+                        try
                         {
-                            try
-                            {
-                                stream.Seek(0, SeekOrigin.Begin);
-                                var serializer = new CustomDataContractBinarySerializer(typeof(string));
-                                messageText = serializer.ReadObject(stream) as string;
-                                bodyType = BodyType.String;
-                            }
-                            catch (Exception)
+                            if (stream != null)
                             {
                                 try
                                 {
                                     stream.Seek(0, SeekOrigin.Begin);
-                                    using (var reader = new StreamReader(stream))
-                                    {
-                                        messageText = reader.ReadToEnd();
-                                        if (messageText.ToCharArray().GroupBy(c => c).
-                                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
-                                            Select(g => g.First()).Any())
-                                        {
-                                            stream.Seek(0, SeekOrigin.Begin);
-                                            using (var binaryReader = new BinaryReader(stream))
-                                            {
-                                                var bytes = binaryReader.ReadBytes((int)stream.Length);
-                                                messageText = BitConverter.ToString(bytes).Replace('-', ' ');
-                                            }
-                                        }
-                                    }
+                                    var serializer = new CustomDataContractBinarySerializer(typeof(string));
+                                    messageText = serializer.ReadObject(stream) as string;
+                                    bodyType = BodyType.String;
                                 }
                                 catch (Exception)
                                 {
-                                    messageText = UnableToReadMessageBody;
+                                    try
+                                    {
+                                        stream.Seek(0, SeekOrigin.Begin);
+                                        using (var reader = new StreamReader(stream))
+                                        {
+                                            messageText = reader.ReadToEnd();
+                                            if (messageText.ToCharArray().GroupBy(c => c).
+                                                Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
+                                                Select(g => g.First()).Any())
+                                            {
+                                                stream.Seek(0, SeekOrigin.Begin);
+                                                using (var binaryReader = new BinaryReader(stream))
+                                                {
+                                                    var bytes = binaryReader.ReadBytes((int)stream.Length);
+                                                    messageText = BitConverter.ToString(bytes).Replace('-', ' ');
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        messageText = UnableToReadMessageBody;
+                                    }
                                 }
                             }
+                            else
+                            {
+                                messageText = UnableToReadMessageBody;
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
                             messageText = UnableToReadMessageBody;
                         }
                     }
-                    catch (Exception)
-                    {
-                        messageText = UnableToReadMessageBody;
-                    }
                 }
             }
             return messageText;
+        }
+
+        private string AttemptToReadByteArrayBody(BrokeredMessage brokeredMessage)
+        {
+            var body = brokeredMessage.GetBody<byte[]>();
+            var bodyAsText = Encoding.UTF8.GetString(body);
+            var bom = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
+            if (bodyAsText.StartsWith(bom))
+            {
+                bodyAsText = bodyAsText.Remove(0, bom.Length);
+            }
+            var jToken = JToken.Parse(bodyAsText);
+            return jToken.ToString(Formatting.Indented);
         }
 
         /// <summary>
