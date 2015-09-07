@@ -4796,14 +4796,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private string AttemptToReadByteArrayBody(BrokeredMessage brokeredMessage)
         {
             var body = brokeredMessage.GetBody<byte[]>();
-            var bodyAsText = Encoding.UTF8.GetString(body);
-            var bom = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
-            if (bodyAsText.StartsWith(bom))
-            {
-                bodyAsText = bodyAsText.Remove(0, bom.Length);
-            }
-            var jToken = JToken.Parse(bodyAsText);
-            return jToken.ToString(Formatting.Indented);
+            return Encoding.UTF8.GetString(body);
         }
 
         /// <summary>
