@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Public Static Methods
 
-        public static string Serialize(IEnumerable<object> entities, IEnumerable<string> bodies)
+        public static string Serialize(IEnumerable<object> entities, IEnumerable<string> bodies, bool doNotSerializeBody = false)
         {
             var entityEnumerable = entities as object[] ?? entities.ToArray();
             var bodyEnumerable = bodies as string[] ?? bodies.ToArray();
@@ -61,9 +61,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             for (var i = 0; i < entityEnumerable.Length; i++)
             {
                 var entityDictionary = new SortedDictionary<string, object>();
-                if (JsonSerializerHelper.IsJson(bodyEnumerable[i]))
+                if (!doNotSerializeBody && JsonSerializerHelper.IsJson(bodyEnumerable[i]))
                 {
-                    entityDictionary.Add("body", JObject.Parse(bodyEnumerable[i]));
+                    try
+                    {
+                        entityDictionary.Add("body", JObject.Parse(bodyEnumerable[i]));
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            entityDictionary.Add("body", JArray.Parse(bodyEnumerable[i]));
+                        }
+                        catch (Exception)
+                        {
+                            entityDictionary.Add("body", bodyEnumerable[i]);
+                        }
+                    }
                 }
                 else
                 {
@@ -90,7 +104,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return JsonSerializerHelper.Serialize(entityList.ToArray(), Formatting.Indented);
         }
 
-        public static string Serialize(object entity, string body)
+        public static string Serialize(object entity, string body, bool doNotSerializeBody = false)
         {
             if (entity == null)
             {
@@ -104,9 +118,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             var propertyDictionary = propertyCache[type.FullName];
             var entityDictionary = new SortedDictionary<string, object>();
-            if (JsonSerializerHelper.IsJson(body))
+            if (!doNotSerializeBody && JsonSerializerHelper.IsJson(body))
             {
-                entityDictionary.Add("body", JObject.Parse(body));
+                try
+                {
+                    entityDictionary.Add("body", JObject.Parse(body));
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        entityDictionary.Add("body", JArray.Parse(body));
+                    }
+                    catch (Exception)
+                    {
+                        entityDictionary.Add("body", body);
+                    }
+                }
             }
             else
             {
