@@ -2465,17 +2465,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                    ? null
                                                                    : new GcmCredential(txtGcmApiKey.Text);
 
-                    notificationHubDescription.MpnsCredential = !string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) &&
-                                                                !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey) 
-                                                                ? new MpnsCredential(mpnsCredentialCertificatePath, mpnsCredentialCertificateKey)
-                                                                : checkBoxEnableUnauthenticatedMpns.Checked
-                                                                    ? new MpnsCredential()
-                                                                    : null;
+                    if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) && !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
+                    {
+                        notificationHubDescription.MpnsCredential = new MpnsCredential(mpnsCredentialCertificatePath, mpnsCredentialCertificateKey);
+                    }
+                    else if (checkBoxEnableUnauthenticatedMpns.Checked)
+                    {
+                        notificationHubDescription.MpnsCredential = new MpnsCredential();
+                    }
 
-                    notificationHubDescription.ApnsCredential = !string.IsNullOrWhiteSpace(apnsCredentialCertificatePath) &&
-                                                                !string.IsNullOrWhiteSpace(apnsCredentialCertificateKey)
-                                                                ? new ApnsCredential(apnsCredentialCertificatePath, apnsCredentialCertificateKey)
-                                                                : null;
+                    if (!string.IsNullOrWhiteSpace(apnsCredentialCertificatePath) && !string.IsNullOrWhiteSpace(apnsCredentialCertificateKey))
+                    {
+                        notificationHubDescription.ApnsCredential = new ApnsCredential(apnsCredentialCertificatePath, apnsCredentialCertificateKey);
+                    }
+                    if (!string.IsNullOrWhiteSpace(txtApnsEndpoint.Text) && notificationHubDescription.ApnsCredential != null)
+                    {
+                        notificationHubDescription.ApnsCredential.Endpoint = txtApnsEndpoint.Text.Trim();
+                    }
 
                     notificationHubDescription.UserMetadata = txtUserMetadata.Text;
 
