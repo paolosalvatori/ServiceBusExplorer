@@ -2199,4 +2199,4 @@ Properties:&nbsp;
 <p>&nbsp;</p>
 <p style="text-align: center;"><img id="142380" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/142380/1/menuitem.png" alt="" width="369" height="257" /></p>
 <p style="text-align: center;">&nbsp;</p>
-<p style="text-align: center;"><img id="142381" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/142381/1/button.png" alt="" width="660" /></p>
+<p style="text-align: center;"><img id="142381" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/142381/1/button.png" alt="" width="800" /></p>
