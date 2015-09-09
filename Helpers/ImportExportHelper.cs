@@ -27,13 +27,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.ServiceBus.Notifications;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -172,7 +173,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
         /// <param name="entityList">The list of entities to serialize.</param>
         /// <returns>A XML string.</returns>
-        public async static Task<string> ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<EntityDescription> entityList)
+        public async static Task<string> ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<IExtensibleDataObject> entityList)
         {
             if (entityList != null &&
                 entityList.Count > 0)

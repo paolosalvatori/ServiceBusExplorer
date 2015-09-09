@@ -145,6 +145,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.registrationPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.registrationPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.registrationPropertyGrid.HelpVisible = false;
             this.registrationPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.registrationPropertyGrid.Location = new System.Drawing.Point(16, 96);

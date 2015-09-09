@@ -23,14 +23,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing.Design;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
-using Microsoft.ServiceBus.Notifications;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Helpers;
-
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer

@@ -33,14 +33,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.ServiceBus;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.ServiceBus.Notifications;
-
+using ConnectivityMode = Microsoft.ServiceBus.ConnectivityMode;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -1394,11 +1394,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Root
                 if (serviceBusTreeView.SelectedNode == rootNode)
                 {
-                    var queueList = new List<EntityDescription>();
-                    var topicList = new List<EntityDescription>();
-                    var relayList = new List<EntityDescription>();
-                    var eventHubList = new List<EntityDescription>();
-                    var notificationHubList = new List<EntityDescription>();
+                    var queueList = new List<IExtensibleDataObject>();
+                    var topicList = new List<IExtensibleDataObject>();
+                    var relayList = new List<IExtensibleDataObject>();
+                    var eventHubList = new List<IExtensibleDataObject>();
+                    var notificationHubList = new List<IExtensibleDataObject>();
 
                     GetQueueList(queueList, queueListNode);
                     GetTopicList(topicList, topicListNode);
@@ -1415,7 +1415,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Queues
                 if (serviceBusTreeView.SelectedNode == queueListNode)
                 {
-                    var queueList = new List<EntityDescription>();
+                    var queueList = new List<IExtensibleDataObject>();
                     GetQueueList(queueList, queueListNode);
                     ExportEntities(queueList, QueueEntities, null);
                     return;
@@ -1423,7 +1423,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Topics
                 if (serviceBusTreeView.SelectedNode == topicListNode)
                 {
-                    var topicList = new List<EntityDescription>();
+                    var topicList = new List<IExtensibleDataObject>();
                     GetTopicList(topicList, topicListNode);
                     ExportEntities(topicList, TopicEntities, null);
                     return;
@@ -1431,7 +1431,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Relays
                 if (serviceBusTreeView.SelectedNode == relayListNode)
                 {
-                    var relayList = new List<EntityDescription>();
+                    var relayList = new List<IExtensibleDataObject>();
                     GetRelayList(relayList, relayListNode);
                     ExportEntities(relayList, RelayEntities, null);
                     return;
@@ -1439,7 +1439,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // EventHubs
                 if (serviceBusTreeView.SelectedNode == eventHubListNode)
                 {
-                    var eventHubList = new List<EntityDescription>();
+                    var eventHubList = new List<IExtensibleDataObject>();
                     GetEventHubList(eventHubList, eventHubListNode);
                     ExportEntities(eventHubList, EventHubEntities, null);
                     return;
@@ -1447,7 +1447,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // NotificationHubs
                 if (serviceBusTreeView.SelectedNode == notificationHubListNode)
                 {
-                    var notificationHubList = new List<EntityDescription>();
+                    var notificationHubList = new List<IExtensibleDataObject>();
                     GetNotificationHubList(notificationHubList, notificationHubListNode);
                     ExportEntities(notificationHubList, NotificationHubEntities, null);
                     return;
@@ -1463,7 +1463,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
                     if (urlSegmentWrapper.EntityType == EntityType.Queue)
                     {
-                        var queueList = new List<EntityDescription>();
+                        var queueList = new List<IExtensibleDataObject>();
                         GetQueueList(queueList, serviceBusTreeView.SelectedNode);
                         ExportEntities(queueList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
@@ -1471,7 +1471,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     else if (urlSegmentWrapper.EntityType == EntityType.Topic)
                     {
-                        var topicList = new List<EntityDescription>();
+                        var topicList = new List<IExtensibleDataObject>();
                         GetTopicList(topicList, serviceBusTreeView.SelectedNode);
                         ExportEntities(topicList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
@@ -1479,7 +1479,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     else
                     {
-                        var relayList = new List<EntityDescription>();
+                        var relayList = new List<IExtensibleDataObject>();
                         GetRelayList(relayList, serviceBusTreeView.SelectedNode);
                         ExportEntities(relayList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
@@ -1491,7 +1491,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
                     var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                    ExportEntities(new List<EntityDescription> { queueDescription },
+                    ExportEntities(new List<IExtensibleDataObject> { queueDescription },
                                    queueDescription.Path,
                                    QueueEntity);
                     return;
@@ -1500,7 +1500,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
                 {
                     var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                    ExportEntities(new List<EntityDescription> { topicDescription },
+                    ExportEntities(new List<IExtensibleDataObject> { topicDescription },
                                    topicDescription.Path,
                                    TopicEntity);
                 }
@@ -1508,7 +1508,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
                 {
                     var relayDescription = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
-                    ExportEntities(new List<EntityDescription> { relayDescription },
+                    ExportEntities(new List<IExtensibleDataObject> { relayDescription },
                                    relayDescription.Path,
                                    RelayEntity);
                     return;
@@ -1517,7 +1517,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
                 {
                     var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
-                    ExportEntities(new List<EntityDescription> { eventHubDescription },
+                    ExportEntities(new List<IExtensibleDataObject> { eventHubDescription },
                                    eventHubDescription.Path,
                                    EventHubEntity);
                 }
@@ -1525,7 +1525,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is NotificationHubDescription)
                 {
                     var notificationHubDescription = serviceBusTreeView.SelectedNode.Tag as NotificationHubDescription;
-                    ExportEntities(new List<EntityDescription> { notificationHubDescription },
+                    ExportEntities(new List<IExtensibleDataObject> { notificationHubDescription },
                                    notificationHubDescription.Path,
                                    NotificationHubEntity);
                 }
@@ -4441,25 +4441,32 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             (entityType == EntityType.All ||
                             entityType == EntityType.NotificationHub))
                         {
-                            var notificationHubs = serviceBusHelper.GetNotificationHubs();
-                            notificationHubListNode.Nodes.Clear();
-                            if (notificationHubs != null)
+                            try
                             {
-                                foreach (var notificationHub in notificationHubs)
+                                var notificationHubs = serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubs();
+                                notificationHubListNode.Nodes.Clear();
+                                if (notificationHubs != null)
                                 {
-                                    if (string.IsNullOrWhiteSpace(notificationHub.Path))
+                                    foreach (var notificationHub in notificationHubs)
                                     {
-                                        continue;
+                                        if (string.IsNullOrWhiteSpace(notificationHub.Path))
+                                        {
+                                            continue;
+                                        }
+                                        CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
                                     }
-                                    CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
+                                }
+                                if (entityType == EntityType.NotificationHub)
+                                {
+                                    serviceBusTreeView.SelectedNode = notificationHubListNode;
+                                    serviceBusTreeView.SelectedNode.EnsureVisible();
+                                    HandleNodeMouseClick(notificationHubListNode);
                                 }
                             }
-                            if (entityType == EntityType.NotificationHub)
+                            catch (UnauthorizedAccessException)
                             {
-                                serviceBusTreeView.SelectedNode = notificationHubListNode;
-                                serviceBusTreeView.SelectedNode.EnsureVisible();
-                                HandleNodeMouseClick(notificationHubListNode);
-                            }
+                                serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                            }                         
                         }
                         if (selectedEntites.Contains(RelayEntities) &&
                             (entityType == EntityType.All ||
@@ -5303,7 +5310,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //    }
         //}
 
-        private async void ExportEntities(List<EntityDescription> list, string entityName, string entityType)
+        private async void ExportEntities(List<IExtensibleDataObject> list, string entityName, string entityType)
         {
             var xml = await serviceBusHelper.ExportEntities(list);
             var path = entityType == null ?
@@ -5732,7 +5739,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private static void GetQueueList(ICollection<EntityDescription> list, TreeNode node)
+        private static void GetQueueList(ICollection<IExtensibleDataObject> list, TreeNode node)
         {
             if (node == null)
             {
@@ -5768,7 +5775,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private static void GetTopicList(ICollection<EntityDescription> list, TreeNode node)
+        private static void GetTopicList(ICollection<IExtensibleDataObject> list, TreeNode node)
         {
             if (node == null)
             {
@@ -5804,7 +5811,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private static void GetRelayList(ICollection<EntityDescription> list, TreeNode node)
+        private static void GetRelayList(ICollection<IExtensibleDataObject> list, TreeNode node)
         {
             if (node == null)
             {
@@ -5840,7 +5847,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private static void GetEventHubList(ICollection<EntityDescription> list, TreeNode node)
+        private static void GetEventHubList(ICollection<IExtensibleDataObject> list, TreeNode node)
         {
             if (node == null)
             {
@@ -5894,7 +5901,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private static void GetNotificationHubList(ICollection<EntityDescription> list, TreeNode node)
+        private static void GetNotificationHubList(ICollection<IExtensibleDataObject> list, TreeNode node)
         {
             if (node == null)
             {
@@ -6458,6 +6465,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.Window;
                 GetEntities(EntityType.All);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void getPartitionDataMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null ||
+                    serviceBusTreeView.SelectedNode.Tag == null)
+                {
+                    return;
+                }
+                
+                if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
+                {
+                    var control = panelMain.Controls[0] as HandleConsumerGroupControl;
+                    if (control != null)
+                    {
+                        control.GetPartitions();
+                    }
+                }
             }
             catch (Exception ex)
             {

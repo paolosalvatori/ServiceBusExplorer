@@ -56,6 +56,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
+            this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
+            this.cboSelectedEntities = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxComboBox();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.lblShowMessageCount = new System.Windows.Forms.Label();
             this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
@@ -102,9 +105,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblLogFontSize = new System.Windows.Forms.Label();
             this.btnDefault = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
-            this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
-            this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.cboSelectedEntities = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxComboBox();
             this.mainPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).BeginInit();
@@ -213,6 +213,41 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.mainPanel.Size = new System.Drawing.Size(560, 505);
             this.mainPanel.TabIndex = 33;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
+            // 
+            // lblSaveCheckpointsOnExit
+            // 
+            this.lblSaveCheckpointsOnExit.AutoSize = true;
+            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(248, 244);
+            this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
+            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(258, 13);
+            this.lblSaveCheckpointsOnExit.TabIndex = 86;
+            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints to File on Exit:";
+            // 
+            // saveCheckpointsToFileCheckBox
+            // 
+            this.saveCheckpointsToFileCheckBox.AutoSize = true;
+            this.saveCheckpointsToFileCheckBox.Checked = true;
+            this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(528, 244);
+            this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
+            this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.saveCheckpointsToFileCheckBox.TabIndex = 87;
+            this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
+            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
+            // 
+            // cboSelectedEntities
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedEntities.DisplayMemberSingleItem = "";
+            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedEntities.FormattingEnabled = true;
+            this.cboSelectedEntities.Location = new System.Drawing.Point(184, 464);
+            this.cboSelectedEntities.Name = "cboSelectedEntities";
+            this.cboSelectedEntities.Size = new System.Drawing.Size(360, 21);
+            this.cboSelectedEntities.TabIndex = 85;
             // 
             // lblSelectedEntities
             // 
@@ -794,41 +829,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // lblSaveCheckpointsOnExit
-            // 
-            this.lblSaveCheckpointsOnExit.AutoSize = true;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(248, 244);
-            this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
-            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(258, 13);
-            this.lblSaveCheckpointsOnExit.TabIndex = 86;
-            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints to File on Exit:";
-            // 
-            // saveCheckpointsToFileCheckBox
-            // 
-            this.saveCheckpointsToFileCheckBox.AutoSize = true;
-            this.saveCheckpointsToFileCheckBox.Checked = true;
-            this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(528, 244);
-            this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
-            this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveCheckpointsToFileCheckBox.TabIndex = 87;
-            this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
-            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
-            // 
-            // cboSelectedEntities
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
-            this.cboSelectedEntities.DisplayMemberSingleItem = "";
-            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(184, 464);
-            this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(360, 21);
-            this.cboSelectedEntities.TabIndex = 85;
             // 
             // OptionForm
             // 

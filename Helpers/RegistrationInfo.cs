@@ -25,7 +25,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.ServiceBus.Notifications;
+using Microsoft.Azure.NotificationHubs;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer

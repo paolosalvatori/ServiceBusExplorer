@@ -136,7 +136,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var inboundMessage = eventDataToRead.Clone();
             try
             {
-                stream = inboundMessage.GetBody<Stream>();
+                stream = inboundMessage.GetBodyStream();
                 if (stream != null)
                 {
                     var element = new BinaryMessageEncodingBindingElement
@@ -171,7 +171,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 inboundMessage = eventDataToRead.Clone();
                 try
                 {
-                    stream = inboundMessage.GetBody<Stream>();
+                    stream = inboundMessage.GetBodyStream();
                     if (stream != null)
                     {
                         var element = new BinaryMessageEncodingBindingElement

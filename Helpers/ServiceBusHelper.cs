@@ -31,14 +31,12 @@ using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.ServiceBus.Notifications;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Formatting = Newtonsoft.Json.Formatting;
+using Microsoft.Azure.NotificationHubs;
 
 #endregion
 
@@ -57,13 +55,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
     public class ServiceBusHelper
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string StackTraceFormat = "StackTrace: {0}";
-
         //***************************
         // Constants
         //***************************
@@ -92,6 +83,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
         private const string RuleDescriptionCannotBeNull = "The rule description argument cannot be null.";
         private const string EventHubDescriptionCannotBeNull = "The event hub description argument cannot be null.";
+        private const string ConsumerGroupCannotBeNull = "The consumerGroup argument cannot be null or empty.";
         private const string PartitionDescriptionCannotBeNull = "The partition description argument cannot be null.";
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
@@ -172,11 +164,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
-        private NamespaceManager namespaceManager;
+        private ServiceBus.NamespaceManager namespaceManager;
+        private Azure.NotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private TokenProvider tokenProvider;
+        private ServiceBus.TokenProvider tokenProvider;
+        private Azure.NotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private Uri atomFeedUri;
         private string ns;
@@ -230,6 +224,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
             namespaceManager = serviceBusHelper.NamespaceManager;
+            notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
             MessagingFactory = serviceBusHelper.MessagingFactory;
             Namespace = serviceBusHelper.Namespace;
             NamespaceUri = serviceBusHelper.NamespaceUri;
@@ -242,6 +237,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
             ServicePath = serviceBusHelper.ServicePath;
             TokenProvider = serviceBusHelper.TokenProvider;
+            notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             IssuerName = serviceBusHelper.IssuerName;
             IssuerSecret = serviceBusHelper.IssuerSecret;
@@ -358,13 +354,27 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <summary>
         /// Gets the current namespace manager.
         /// </summary>
-        public NamespaceManager NamespaceManager
+        public ServiceBus.NamespaceManager NamespaceManager
         {
             get
             {
                 lock (this)
                 {
                     return namespaceManager;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the current namespace manager.
+        /// </summary>
+        public Azure.NotificationHubs.NamespaceManager NotificationHubNamespaceManager
+        {
+            get
+            {
+                lock (this)
+                {
+                    return notificationHubNamespaceManager;
                 }
             }
         }
@@ -566,7 +576,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the credentials of the current service bus account.
         /// </summary>
-        public TokenProvider TokenProvider
+        public ServiceBus.TokenProvider TokenProvider
         {
             get
             {
@@ -642,15 +652,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the connectivity mode when connecting to namespaces
         /// </summary>
-        public static ConnectivityMode ConnectivityMode
+        public static ServiceBus.ConnectivityMode ConnectivityMode
         {
             get
             {
-                return ServiceBusEnvironment.SystemConnectivity.Mode;
+                return ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode;
             }
             set
             {
-                ServiceBusEnvironment.SystemConnectivity.Mode = value;
+                ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode = value;
             }
         }
 
@@ -713,11 +723,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
 
                 // Create the service URI using the scheme, namespace and service name (optional)
-                namespaceUri = ServiceBusEnvironment.CreateServiceUri(scheme,
+                namespaceUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme,
                                                                       nameSpace,
                                                                       path);
                 // Create the atom feed URI using the scheme, namespace and service name (optional)
-                atomFeedUri = ServiceBusEnvironment.CreateServiceUri(Uri.UriSchemeHttp,
+                atomFeedUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(Uri.UriSchemeHttp,
                                                                      nameSpace,
                                                                      path);
                 Namespace = nameSpace;
@@ -726,8 +736,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create shared secret credentials to to authenticate with the Access Control service, 
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
-                tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(issuerName,
-                                                                              issuerSecret);
+                tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
 
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
@@ -737,9 +747,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
-                var namespaceManagerSettings = new NamespaceManagerSettings
+                var namespaceManagerSettings = new ServiceBus.NamespaceManagerSettings
                 {
                     TokenProvider = tokenProvider,
+                    OperationTimeout = TimeSpan.FromMinutes(5)
+                };
+                var notificationHubNamespaceManagerSettings = new Azure.NotificationHubs.NamespaceManagerSettings
+                {
+                    TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
@@ -747,7 +762,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                namespaceManager = new NamespaceManager(namespaceUri, namespaceManagerSettings);
+                namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
+                notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri));
 
                 // The MessagingFactorySettings specifies the service bus messaging factory settings.
@@ -827,8 +843,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create shared secret credentials to to authenticate with the Access Control service, 
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
-                tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(issuerName,
-                                                                              issuerSecret);
+                tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
 
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
@@ -838,9 +854,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
-                var namespaceManagerSettings = new NamespaceManagerSettings
+                var namespaceManagerSettings = new ServiceBus.NamespaceManagerSettings
                 {
                     TokenProvider = tokenProvider,
+                    OperationTimeout = TimeSpan.FromMinutes(5)
+                };
+                var notificationHubNamespaceManagerSettings = new Azure.NotificationHubs.NamespaceManagerSettings
+                {
+                    TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
@@ -848,7 +869,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                namespaceManager = new NamespaceManager(namespaceUri, namespaceManagerSettings);
+                namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
+                notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri));
 
                 // The MessagingFactorySettings specifies the service bus messaging factory settings.
@@ -898,7 +920,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+
+                namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                notificationHubNamespaceManager = Azure.NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
@@ -1041,7 +1065,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var currentScheme = description.RelayType != RelayType.Http
                     ? scheme
                     : description.RequiresTransportSecurity ? "https" : "http";
-                return ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
             }
             return null;
         }
@@ -1188,7 +1212,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <returns>The absolute uri of the event hub.</returns>
         public Uri GetEventHubUri(string eventHubPath)
         {
-            return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubPath));
+            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubPath));
         }
 
         /// <summary>
@@ -1267,6 +1291,53 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         /// <summary>
+        /// Retrieves the collection of partitions of the event hub passed as a parameter.
+        /// </summary>
+        /// <param name="description">A event hub belonging to the current service namespace base.</param>
+        /// <param name="consumerGroupName">The consumer group name.</param>
+        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
+        public IEnumerable<PartitionDescription> GetPartitions(EventHubDescription description, string consumerGroupName)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(EventHubDescriptionCannotBeNull);
+            }
+            if (string.IsNullOrWhiteSpace(consumerGroupName))
+            {
+                throw new ArgumentException(ConsumerGroupCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, consumerGroupName, description.PartitionIds[index]), writeToLog)).ToList();
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves the collection of partitions of the event hub passed as a parameter.
+        /// </summary>
+        /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
+        /// <param name="consumerGroupName">The consumer group name.</param>
+        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
+        public IEnumerable<PartitionDescription> GetPartitions(string path, string consumerGroupName)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (string.IsNullOrWhiteSpace(consumerGroupName))
+            {
+                throw new ArgumentException(ConsumerGroupCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var description = namespaceManager.GetEventHub(path);
+                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, consumerGroupName, description.PartitionIds[index]), writeToLog)).ToList();
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
         /// Gets the uri of a partition.
         /// </summary>
         /// <param name="eventHubName">Name of the event hub.</param>
@@ -1275,7 +1346,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <returns>The absolute uri of the partition.</returns>
         public Uri GetPartitionUri(string eventHubName, string consumerGroupName, string partitionId)
         {
-            return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupName, "/", partitionId));
+            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupName, "/", partitionId));
         }
 
         /// <summary>
@@ -1452,7 +1523,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <returns>The absolute uri of the consumer group.</returns>
         public Uri GetConsumerGroupUri(string eventHubName, string consumerGroupPath)
         {
-            return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupPath));
+            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupPath));
         }
 
         /// <summary>
@@ -1468,7 +1539,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetNotificationHub(path), writeToLog);
+                return RetryHelper.RetryFunc(() => notificationHubNamespaceManager.GetNotificationHub(path), writeToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1482,7 +1553,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetNotificationHubs(), writeToLog);
+                return RetryHelper.RetryFunc(() => notificationHubNamespaceManager.GetNotificationHubs(), writeToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1499,7 +1570,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteNotificationHub(path), writeToLog);
+                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
                 if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
             }
@@ -1522,7 +1593,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                var notificationHub = RetryHelper.RetryFunc(() => namespaceManager.CreateNotificationHub(description), writeToLog);
+                var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.CreateNotificationHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubCreated, description.Path));
                 if (OnCreate != null)
                     OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
@@ -1544,7 +1615,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
+                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
                 if (OnDelete != null)
                     OnDelete(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
@@ -1584,7 +1655,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                var notificationHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateNotificationHub(description), writeToLog);
+                var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.UpdateNotificationHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubUpdated, description.Path));
                 if (OnCreate != null)
                     OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
@@ -1600,7 +1671,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <returns>The absolute uri of the notification hub.</returns>
         public Uri GetNotificationHubUri(string notificationHubPath)
         {
-            return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, notificationHubPath));
+            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, notificationHubPath));
         }
 
         /// <summary>
@@ -1901,7 +1972,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, queuePath));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, queuePath));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -1926,7 +1997,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, QueueClient.FormatDeadLetterPath(queuePath)));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, QueueClient.FormatDeadLetterPath(queuePath)));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -1951,7 +2022,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, topicPath));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, topicPath));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -1977,7 +2048,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -2003,7 +2074,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, SubscriptionClient.FormatDeadLetterPath(topicPath, name));
+                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, SubscriptionClient.FormatDeadLetterPath(topicPath, name));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -4638,7 +4709,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="entityDescriptionList">The list of the entities to export.</param>
         /// <returns>The xml string representing the entity list.</returns>
-        public async Task<string> ExportEntities(List<EntityDescription> entityDescriptionList)
+        public async Task<string> ExportEntities(List<IExtensibleDataObject> entityDescriptionList)
         {
             return await ImportExportHelper.ReadAndSerialize(this, entityDescriptionList);
         }
@@ -4919,6 +4990,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         /// <param name="eventDataToRead">The EventData to read.</param>
         /// <param name="bodyType">BodyType</param>
+        /// <param name="doNotSerializeBody"></param>
         /// <returns>The content of the EventData.</returns>
         public string GetMessageText(EventData eventDataToRead, out BodyType bodyType, bool doNotSerializeBody = false)
         {
@@ -4935,7 +5007,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 try
                 {
-                    stream = inboundMessage.GetBody<Stream>();
+                    stream = inboundMessage.GetBodyStream();
                     if (stream != null)
                     {
                         var element = new BinaryMessageEncodingBindingElement
@@ -4972,7 +5044,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     inboundMessage = eventDataToRead.Clone();
                     try
                     {
-                        stream = inboundMessage.GetBody<Stream>();
+                        stream = inboundMessage.GetBodyStream();
                         if (stream != null)
                         {
                             var element = new BinaryMessageEncodingBindingElement
@@ -5033,7 +5105,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 try
                 {
                     inboundMessage = eventDataToRead.Clone();
-                    stream = inboundMessage.GetBody<Stream>();
+                    stream = inboundMessage.GetBodyStream();
                     stream.Seek(0, SeekOrigin.Begin);
                     using (var reader = new StreamReader(stream))
                     {
@@ -5168,31 +5240,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 messageReceiver.PrefetchCount = 0;
                 receiverList.Add(messageReceiver);
-                ReceiveNextMessage(messageCount, 0, messageReceiver, ReceiveCallback, encoder, complete, receiveTimeout, cancellationTokenSource.Token);
+                ReceiveNextMessage(messageCount, 0, messageReceiver, encoder, complete, receiveTimeout);
             }
         }
         #endregion
 
         #region Private Methods
-        /// <summary>
-        /// Writes the specified message to the trace listener.
-        /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        private void HandleException(Exception ex)
-        {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
-            {
-                return;
-            }
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
-            {
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
-            }
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, StackTraceFormat, ex.StackTrace));
-        }
-
-
 
         /// <summary>
         /// Gets a new messaging factory object.
@@ -5226,121 +5279,76 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="messageTotal">The total number of messages read.</param>
         /// <param name="messageReceiver">The message receiver used to receive messages.</param>
         /// <param name="complete">Call Complete method to delete the message.</param>
-        /// <param name="callback">The callback function invoked when a message is received.</param>
         /// <param name="encoder">MessageEncoder used to decode a WCF message.</param>
         /// <param name="timeout">The receive receiveTimeout.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        private void ReceiveNextMessage(int? messageCount, int messageTotal, MessageReceiver messageReceiver, Func<IAsyncResult, BrokeredMessage> callback, MessageEncoder encoder, bool complete, TimeSpan timeout, CancellationToken cancellationToken)
+        private async void ReceiveNextMessage(int? messageCount, int messageTotal, MessageReceiver messageReceiver, MessageEncoder encoder, bool complete, TimeSpan timeout)
         {
-            Task.Factory.FromAsync(messageReceiver.BeginReceive,
-                                   callback,
-                                   timeout,
-                                   messageReceiver,
-                                   TaskCreationOptions.None).
-                                   ContinueWith(taskResult =>
-                                   {
-                                       // Start receiving the next message as soon as we 
-                                       // received the previous one. 
-                                       // This will not cause a stack overflow because the 
-                                       // call will be made from a new Task. 
-                                       if (taskResult.Exception != null)
-                                       {
-                                           Console.WriteLine(taskResult.Exception.ToString());
-                                       }
-                                       var inboundMessage = taskResult.Result;
-                                       if (inboundMessage == null ||
-                                           messageCount.HasValue && messageCount == 0)
-                                       {
-                                           if (brokeredMessageList != null &&
-                                               brokeredMessageList.Count > 0)
-                                           {
-                                               brokeredMessageList.ForEach(b =>
-                                                                               {
-                                                                                   try
-                                                                                   {
-                                                                                       if (complete)
-                                                                                       {
-                                                                                           b.Complete();
-                                                                                       }
-                                                                                       else
-                                                                                       {
-                                                                                           b.Abandon();
-                                                                                       }
-                                                                                   }
-                                                                                   catch (MessageLockLostException)
-                                                                                   {
-                                                                                   }
-                                                                                    // ReSharper disable EmptyGeneralCatchClause
-                                                                                   catch (Exception)
-                                                                                    // ReSharper restore EmptyGeneralCatchClause
-                                                                                   {
-                                                                                   }
-
-                                                                               });
-                                               brokeredMessageList = null;
-                                           }
-                                           var builder = new StringBuilder();
-                                           builder.AppendLine(string.Format(ReceiverStatitiscsLineNoTask,
-                                                                            complete ? Read : Peeked,
-                                                                            messageTotal));
-                                           var traceMessage = builder.ToString();
-                                           WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
-                                       }
-                                       else
-                                       {
-                                           messageCount--;
-                                           messageTotal++;
-                                           var builder = new StringBuilder();
-                                           builder.AppendLine(string.Format(MessageSuccessfullyReceivedNoTask,
-                                                                            complete ? Read :Peeked,
-                                                                            string.IsNullOrWhiteSpace(
-                                                                                inboundMessage.MessageId)
-                                                                                ? NullValue
-                                                                                : inboundMessage.MessageId,
-                                                                            string.IsNullOrWhiteSpace(
-                                                                                inboundMessage.SessionId)
-                                                                                ? NullValue
-                                                                                : inboundMessage.SessionId,
-                                                                            string.IsNullOrWhiteSpace(inboundMessage.Label)
-                                                                                ? NullValue
-                                                                                : inboundMessage.Label,
-                                                                            inboundMessage.Size,
-                                                                            inboundMessage.DeliveryCount));
-
-                                           GetMessageAndProperties(builder, inboundMessage, encoder);
-                                           var traceMessage = builder.ToString();
-                                           WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
-                                           brokeredMessageList.Add(inboundMessage);
-                                           ReceiveNextMessage(messageCount, messageTotal, messageReceiver, callback, encoder, complete, timeout, cancellationToken);
-                                       }
-                                   }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Receive callback
-        /// </summary>
-        /// <param name="asyncResult">AsyncResult object used to complete the asynchronous call.</param>
-        /// <returns></returns>
-        private BrokeredMessage ReceiveCallback(IAsyncResult asyncResult)
-        {
-            try
+            var inboundMessage = await messageReceiver.ReceiveAsync(timeout);
+            if (inboundMessage == null ||
+                messageCount.HasValue && messageCount == 0)
             {
-                var messageReceiver = asyncResult.AsyncState as MessageReceiver;
-                if (messageReceiver != null)
+                if (brokeredMessageList != null &&
+                    brokeredMessageList.Count > 0)
                 {
-                    var bm = messageReceiver.EndReceive(asyncResult);
-                    return bm;
+                    brokeredMessageList.ForEach(b =>
+                                                    {
+                                                        try
+                                                        {
+                                                            if (complete)
+                                                            {
+                                                                b.Complete();
+                                                            }
+                                                            else
+                                                            {
+                                                                b.Abandon();
+                                                            }
+                                                        }
+                                                        catch (MessageLockLostException)
+                                                        {
+                                                        }
+                                                        // ReSharper disable EmptyGeneralCatchClause
+                                                        catch (Exception)
+                                                        // ReSharper restore EmptyGeneralCatchClause
+                                                        {
+                                                        }
+
+                                                    });
+                    brokeredMessageList = null;
                 }
-                return null;
+                var builder = new StringBuilder();
+                builder.AppendLine(string.Format(ReceiverStatitiscsLineNoTask,
+                                                complete ? Read : Peeked,
+                                                messageTotal));
+                var traceMessage = builder.ToString();
+                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
             }
-            catch (TimeoutException)
+            else
             {
+                messageCount--;
+                messageTotal++;
+                var builder = new StringBuilder();
+                builder.AppendLine(string.Format(MessageSuccessfullyReceivedNoTask,
+                                                complete ? Read :Peeked,
+                                                string.IsNullOrWhiteSpace(
+                                                    inboundMessage.MessageId)
+                                                    ? NullValue
+                                                    : inboundMessage.MessageId,
+                                                string.IsNullOrWhiteSpace(
+                                                    inboundMessage.SessionId)
+                                                    ? NullValue
+                                                    : inboundMessage.SessionId,
+                                                string.IsNullOrWhiteSpace(inboundMessage.Label)
+                                                    ? NullValue
+                                                    : inboundMessage.Label,
+                                                inboundMessage.Size,
+                                                inboundMessage.DeliveryCount));
+
+                GetMessageAndProperties(builder, inboundMessage, encoder);
+                var traceMessage = builder.ToString();
+                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                brokeredMessageList.Add(inboundMessage);
+                ReceiveNextMessage(messageCount, messageTotal, messageReceiver, encoder, complete, timeout);
             }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            return null;
         }
 
         /// <summary>
@@ -5464,7 +5472,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 var eventDataClone = inboundMessage.Clone();
-                stream = eventDataClone.GetBody<Stream>();
+                stream = eventDataClone.GetBodyStream();
                 if (stream != null)
                 {
                     using (var reader = new StreamReader(stream))

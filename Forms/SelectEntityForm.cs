@@ -23,9 +23,8 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.ServiceBus.Notifications;
-
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer

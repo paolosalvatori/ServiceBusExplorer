@@ -105,6 +105,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         // Pages
         //***************************
         private const string MetricsTabPage = "tabPageMetrics";
+        private const string PartitionsTabPage = "tabPagePartitions";
 
         //***************************
         // Tooltips
@@ -118,7 +119,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly WriteToLogDelegate writeToLog;
         private readonly string eventHubName;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
+        private readonly BindingSource partitionsBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
+        private SortableBindingList<PartitionDescription> partitionsBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private readonly List<string> metricTabPageIndexList = new List<string>();
         private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
@@ -165,11 +168,125 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 HandleException(ex);
             }
         }
+
+        public void GetPartitions()
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                try
+                {
+                    if (serviceBusHelper == null)
+                    {
+                        return;
+                    }
+
+                    // ConsumerGroup Node
+                    if (consumerGroupDescription == null)
+                    {
+                        return;
+                    }
+
+                    var partitionEnumerable = serviceBusHelper.GetPartitions(consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
+                    var partitionDescriptionList = partitionEnumerable as IList<PartitionDescription> ??
+                                                   partitionEnumerable.ToList();
+                    if (partitionEnumerable == null || !partitionDescriptionList.Any())
+                    {
+                        return;
+                    }
+                    partitionsBindingList = new SortableBindingList<PartitionDescription>(partitionDescriptionList)
+                    {
+                        AllowEdit = false,
+                        AllowNew = false,
+                        AllowRemove = false
+                    };
+                    partitionsBindingSource.DataSource = partitionsBindingList;
+                    partitionsDataGridView.DataSource = partitionsBindingSource;
+
+                    var dataGridViewColumn = partitionsDataGridView.Columns["IsReadOnly"];
+                    if (dataGridViewColumn != null)
+                    {
+                        dataGridViewColumn.Visible = false;
+                    }
+
+                    dataGridViewColumn = partitionsDataGridView.Columns["ExtensionData"];
+                    if (dataGridViewColumn != null)
+                    {
+                        dataGridViewColumn.Visible = false;
+                    }
+
+                    dataGridViewColumn = partitionsDataGridView.Columns["EventHubPath"];
+                    if (dataGridViewColumn != null)
+                    {
+                        dataGridViewColumn.Visible = false;
+                    }
+
+                    dataGridViewColumn = partitionsDataGridView.Columns["ConsumerGroupName"];
+                    if (dataGridViewColumn != null)
+                    {
+                        dataGridViewColumn.Visible = false;
+                    }
+
+                    partitionsDataGridView.Refresh();
+
+                    if (mainTabControl.TabPages[PartitionsTabPage] == null)
+                    {
+                        EnablePage(PartitionsTabPage);
+                    }
+                    if (mainTabControl.TabPages[PartitionsTabPage] != null)
+                    {
+                        mainTabControl.SelectTab(PartitionsTabPage);
+                    }
+                    CalculateLastColumnWidth();
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
         #endregion
 
         #region Private Methods
         private void InitializeControls()
         {
+            // Set Grid style
+            partitionsDataGridView.EnableHeadersVisualStyles = false;
+
+            // Set the selection background color for all the cells.
+            partitionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            partitionsDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            partitionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            partitionsDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            partitionsDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //filtersDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //filtersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            partitionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            partitionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            partitionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            partitionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Initialize the DataGridView.
+            partitionsDataGridView.AutoGenerateColumns = true;
+            partitionsDataGridView.AutoSize = true;
+            partitionsDataGridView.ForeColor = SystemColors.WindowText;
+
             // Set Grid style
             dataPointDataGridView.EnableHeadersVisualStyles = false;
 
@@ -296,6 +413,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 deleteButtonColumn.UseColumnTextForButtonValue = true;
                 dataPointDataGridView.Columns.Add(deleteButtonColumn);
             }
+
+            DisablePage(PartitionsTabPage);
 
             if (consumerGroupDescription != null)
             {
@@ -966,6 +1085,78 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         : null;
                 }
             });
+        }
+
+        private void partitionsDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+        private void partitionsDataGridView_Resize(object sender, EventArgs e)
+        {
+            CalculateLastColumnWidth(sender);
+        }
+
+        private void partitionsDataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            CalculateLastColumnWidth(sender);
+        }
+
+        private void partitionsDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            CalculateLastColumnWidth(sender);
+        }
+
+        private void CalculateLastColumnWidth(object sender)
+        {
+            var dataGridView = sender as DataGridView;
+            if (dataGridView == null)
+            {
+                return;
+            }
+            try
+            {
+                if (dataGridView.ColumnCount == 0)
+                {
+                    return;
+                }
+                dataGridView.SuspendDrawing();
+                dataGridView.SuspendLayout();
+                var width = dataGridView.Width - dataGridView.RowHeadersWidth;
+                var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
+                if (verticalScrollbar.Visible)
+                {
+                    width -= verticalScrollbar.Width;
+                }
+                var columnCount = partitionsDataGridView.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
+                var columnWidth = width/columnCount;
+                for (var i = 0; i < partitionsDataGridView.Columns.Count; i++)
+                {
+                    partitionsDataGridView.Columns[i].Width = columnWidth;
+                }
+            }
+            finally
+            {
+                dataGridView.ResumeLayout();
+                dataGridView.ResumeDrawing();
+            }
+        }
+
+        private void grouperPartitionsList_CustomPaint(PaintEventArgs e)
+        {
+            partitionsDataGridView.Size = new Size(
+                grouperPartitionsList.Size.Width - (partitionsDataGridView.Location.X * 2 + 2),
+                grouperPartitionsList.Size.Height - partitionsDataGridView.Location.Y - partitionsDataGridView.Location.X - 2);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                partitionsDataGridView.Location.X - 1,
+                partitionsDataGridView.Location.Y - 1,
+                partitionsDataGridView.Size.Width + 1,
+                partitionsDataGridView.Size.Height + 1);
+        }
+
+        private void btnGetPartitions_Click(object sender, EventArgs e)
+        {
+            GetPartitions();
         }
         #endregion
     }

@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 return null;
             }
-            var stream = eventData.Clone().GetBody<Stream>();
+            var stream = eventData.Clone().GetBodyStream();
             if (stream == null)
             {
                 return null;
@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 return null;
             }
-            var stream = eventData.Clone().GetBody<Stream>();
+            var stream = eventData.Clone().GetBodyStream();
             if (stream == null)
             {
                 return null;
