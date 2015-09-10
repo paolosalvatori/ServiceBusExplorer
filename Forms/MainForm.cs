@@ -32,6 +32,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -2661,7 +2662,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     var relay = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
                     panelMain.HeaderText = string.Format(TestRelayFormat, relay.Path);
-                    TestRelay(relay, true); ;
+                    TestRelay(relay, true);
                 }
             }
             catch (Exception ex)
@@ -4463,10 +4464,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     HandleNodeMouseClick(notificationHubListNode);
                                 }
                             }
+                            catch (ArgumentException)
+                            {
+                                serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                            }
+                            catch (WebException)
+                            {
+                                serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                            }
                             catch (UnauthorizedAccessException)
                             {
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            }                         
+                            }                                   
                         }
                         if (selectedEntites.Contains(RelayEntities) &&
                             (entityType == EntityType.All ||
