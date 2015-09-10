@@ -2188,3 +2188,15 @@ Properties:&nbsp;
 <ul>
 <li>Bug fixed by the developer community on <a href="https://github.com/paolosalvatori/ServiceBusExplorer"> GitHub</a> (thanks guys!): </li>
 </ul>
+<p><strong>Update</strong>: 9 September 2015</p>
+<p>This version introduces the following updates:</p>
+<ul>
+<li>Bugs fixed buy the community (thanks guys!). </li>
+<li>Updated Microsoft.ServiceBus.dll to version 3.0.1 </li>
+<li>Introduced a reference to the new Microsoft.Azure.NotificationHubs.dll </li>
+<li>Introduced the possibility to retrieve the data of all the partitions associated to the consumer group of an event hub using the Get Partition Data menu item or the Partitions button as highlighted in the pictures below </li>
+</ul>
+<p>&nbsp;</p>
+<p style="text-align: center;"><img id="142380" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/142380/1/menuitem.png" alt="" width="369" height="257" /></p>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;"><img id="142381" src="https://i1.code.msdn.s-msft.com/windowsazure/service-bus-explorer-f2abca5a/image/file/142381/1/button.png" alt="" width="800" /></p>
