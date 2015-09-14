@@ -2662,7 +2662,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     var relay = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
                     panelMain.HeaderText = string.Format(TestRelayFormat, relay.Path);
-                    TestRelay(relay, true); ;
+                    TestRelay(relay, true);
                 }
             }
             catch (Exception ex)
@@ -4475,7 +4475,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             catch (UnauthorizedAccessException)
                             {
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            }
+                            }                                   
                         }
                         if (selectedEntites.Contains(RelayEntities) &&
                             (entityType == EntityType.All ||
