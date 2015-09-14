@@ -4442,40 +4442,48 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             (entityType == EntityType.All ||
                             entityType == EntityType.NotificationHub))
                         {
-                            try
+                            if (serviceBusHelper.NotificationHubNamespaceManager != null)
                             {
-                                var notificationHubs = serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubs();
-                                notificationHubListNode.Nodes.Clear();
-                                if (notificationHubs != null)
+                                try
                                 {
-                                    foreach (var notificationHub in notificationHubs)
+                                    var notificationHubs = serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubs();
+                                    notificationHubListNode.Nodes.Clear();
+                                    if (notificationHubs != null)
                                     {
-                                        if (string.IsNullOrWhiteSpace(notificationHub.Path))
+                                        foreach (var notificationHub in notificationHubs)
                                         {
-                                            continue;
+                                            if (string.IsNullOrWhiteSpace(notificationHub.Path))
+                                            {
+                                                continue;
+                                            }
+                                            CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
                                         }
-                                        CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
+                                    }
+                                    if (entityType == EntityType.NotificationHub)
+                                    {
+                                        serviceBusTreeView.SelectedNode = notificationHubListNode;
+                                        serviceBusTreeView.SelectedNode.EnsureVisible();
+                                        HandleNodeMouseClick(notificationHubListNode);
                                     }
                                 }
-                                if (entityType == EntityType.NotificationHub)
+                                catch (ArgumentException)
                                 {
-                                    serviceBusTreeView.SelectedNode = notificationHubListNode;
-                                    serviceBusTreeView.SelectedNode.EnsureVisible();
-                                    HandleNodeMouseClick(notificationHubListNode);
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
+                                catch (WebException)
+                                {
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                                }
+                                catch (UnauthorizedAccessException)
+                                {
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                                }                        
                             }
-                            catch (ArgumentException)
+                            else
+
                             {
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            }
-                            catch (WebException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            }
-                            catch (UnauthorizedAccessException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            }                                   
+                            } 
                         }
                         if (selectedEntites.Contains(RelayEntities) &&
                             (entityType == EntityType.All ||

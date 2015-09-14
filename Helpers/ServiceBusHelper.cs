@@ -737,8 +737,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
                 tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
-                notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
-
+                try
+                {
+                    notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+                
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
@@ -763,7 +770,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
                 namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
-                notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                try
+                {
+                    notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri));
 
                 // The MessagingFactorySettings specifies the service bus messaging factory settings.
@@ -844,8 +858,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
                 tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
-                notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
-
+                try
+                {
+                    notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+                
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
@@ -870,7 +891,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
                 namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
-                notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                try
+                {
+                    notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri));
 
                 // The MessagingFactorySettings specifies the service bus messaging factory settings.
@@ -922,7 +950,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // to manage your service namespace.
 
                 namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
-                notificationHubNamespaceManager = Azure.NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
+                try
+                {
+                    notificationHubNamespaceManager = Azure.NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
