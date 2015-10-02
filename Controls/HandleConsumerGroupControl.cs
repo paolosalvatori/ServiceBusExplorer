@@ -434,6 +434,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnRefresh.Visible = true;
                 btnMetrics.Visible = true;
                 btnCloseTabs.Visible = true;
+                btnGetPartitions.Visible = true;
 
                 // Initialize textboxes
                 txtName.ReadOnly = true;
@@ -459,6 +460,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnRefresh.Visible = false;
                 btnMetrics.Visible = false;
                 btnCloseTabs.Visible = false;
+                btnGetPartitions.Visible = false;
             }
         }
 

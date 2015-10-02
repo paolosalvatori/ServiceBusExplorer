@@ -29,6 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -72,10 +73,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SubscriptionListenerFormat = "Listener for subscription {0}";
         private const string HeaderTextQueueListenerFormat = "Queue Listener: {0}";
         private const string HeaderTextSubscriptionListenerFormat = "Subscription Listener: {0}";
-        private const string ConsumerGroupListenerFormat = "Listener consumer group {0}";
-        private const string PartitionListenerFormat = "Listener for partition {0} of consumer group {1}";
+        private const string ConsumerGroupListenerFormat = "Listener for Consumer Group {0}";
+        private const string PartitionListenerFormat = "Listener for Partition {0} of Consumer Group {1}";
+        private const string IoTHubListenerFormat = "Listener for Consumer Group {0} of IoT HUb {1}";
         private const string HeaderTextConsumerGroupListenerFormat = "Consumer Group Listener: {0}";
         private const string HeaderTextPartitionListenerFormat = "Partition Listener: {0}";
+        private const string HeaderTextIoTHubListenerFormat = "IoT Hub Listener: {0}";
 
         //***************************
         // Constants
@@ -104,6 +107,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly int mainSplitterDistance;
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        // ReSharper disable once NotAccessedField.Local
         private Task logTask;
         #endregion
 
@@ -450,6 +454,50 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     Text = string.Format(ConsumerGroupListenerFormat, consumerGroupDescription.Name);
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroupDescription.Name);
                 }                
+                partitionListenerControl.Focus();
+                panelMain.Controls.Add(partitionListenerControl);
+                SetStyle(ControlStyles.ResizeRedraw, true);
+            }
+            finally
+            {
+                panelMain.ResumeDrawing();
+                ResumeLayout();
+            }
+        }
+
+        public ContainerForm(MainForm mainForm, string connectionString, string consumerGroup)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(consumerGroup))
+                {
+                    return;
+                }
+                InitializeComponent();
+                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
+                {
+                    if (t.IsFaulted && t.Exception != null)
+                    {
+                        WriteToLog(t.Exception.Message);
+                    }
+                });
+                this.mainForm = mainForm;
+                mainSplitterDistance = mainSplitContainer.SplitterDistance;
+                SuspendLayout();
+                panelMain.SuspendDrawing();
+                panelMain.Controls.Clear();
+                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+
+                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, consumerGroup)
+                {
+                    Location = new Point(1, panelMain.HeaderHeight + 1),
+                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                };
+                var match = Regex.Match(connectionString, @"HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
+                var ioTHubName = match.Success ? match.Groups[1].Value : string.Empty;
+                Text = string.Format(IoTHubListenerFormat, consumerGroup, ioTHubName);
+                panelMain.HeaderText = string.Format(HeaderTextIoTHubListenerFormat, ioTHubName);
                 partitionListenerControl.Focus();
                 panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);

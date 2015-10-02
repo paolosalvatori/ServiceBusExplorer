@@ -2739,7 +2739,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                if (serviceBusTreeView.SelectedNode == null || serviceBusTreeView.SelectedNode.Tag == null)
+                if (serviceBusTreeView.SelectedNode == null || ServiceBusTreeView.SelectedNode.Tag == null)
                 {
                     return;
                 }
@@ -2930,7 +2930,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var eventHubListNode = FindNode(EventHubEntities, rootNode);
                 var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
                 var relayServiceListNode = FindNode(RelayEntities, rootNode);
+                var menuItem = createIoTHubListenerMenuItem;
                 actionsToolStripMenuItem.DropDownItems.Clear();
+                actionsToolStripMenuItem.DropDownItems.Add(menuItem);
                 // Root Node
                 if (node == rootNode)
                 {
@@ -5546,6 +5548,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var list = new List<ToolStripItem>();
             if (collection != null)
             {
+                list.Add(new ToolStripSeparator());
                 var enumerable = collection.Cast<ToolStripItem>();
                 foreach (var toolStripItem in enumerable)
                 {
@@ -6586,6 +6589,28 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         control.GetPartitions();
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void createIoTHubListenerMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var parameterForm = new ParameterForm("Enter IoT connection string and Consumer Group", 
+                                                             new List<string> {"IoT Connection String", "Consumer Group"}, 
+                                                             new List<string>{null, "$Default"}))
+                {
+                    if (parameterForm.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    var form = new ContainerForm(this, parameterForm.ParameterValues[0], parameterForm.ParameterValues[1]);
+                    form.Show();
                 }
             }
             catch (Exception ex)

@@ -512,7 +512,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     dataPointDataGridView.Size.Height + 1);
         }
 
-        private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
             if (dataGridViewColumn != null && 
@@ -558,7 +558,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, entity, form.Path);
+                await MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, entity, form.Path);
                 ((DataGridViewComboBoxCell)currentRow.Cells[MetricProperty]).DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(entity) ?
                                                                                           MetricInfo.EntityMetricDictionary[entity] :
                                                                                           null;

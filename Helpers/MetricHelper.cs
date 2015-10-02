@@ -274,9 +274,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         public static IEnumerable<IEnumerable<MetricValue>> ReadMetricDataUsingTasks(IEnumerable<Uri> uris, string certificateThumbprint)
         {
-            if (certificateThumbprint == null)
+            if (string.IsNullOrWhiteSpace(certificateThumbprint))
             {
-                throw new ArgumentException(CertificateThumbPrintCannotBeNull);
+                throw new ArgumentException(CertificateThumbPrintCannotBeNull, "certificateThumbprint");
             }
 
             return ReadMetricDataUsingTasks(uris, GetManagementCertificate(certificateThumbprint));
@@ -310,7 +310,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         public static IEnumerable<MetricValue> ReadMetricData(Uri uri, string certificateThumbprint)
         {
-            if (certificateThumbprint == null)
+            if (string.IsNullOrEmpty(certificateThumbprint))
             {
                 throw new ArgumentException(CertificateThumbPrintCannotBeNull);
             }
@@ -335,9 +335,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         public static Task<IEnumerable<MetricInfo>> GetSupportedMetricsAsync(Uri uri, string certificateThumbprint)
         {
-            if (certificateThumbprint == null)
+            if (string.IsNullOrWhiteSpace(certificateThumbprint))
             {
-                throw new ArgumentException(CertificateThumbPrintCannotBeNull);
+                throw new ArgumentException(CertificateThumbPrintCannotBeNull, "certificateThumbprint");
             }
 
             return InternalGetSupportedMetricsAsync(uri, GetManagementCertificate(certificateThumbprint));
@@ -370,7 +370,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
             }
 
-            throw new ArgumentException(string.Format(CertificateCannotBeFound, certificateThumbprint));
+            throw new ArgumentException(string.Format(CertificateCannotBeFound, certificateThumbprint), "certificateThumbprint");
         }
 
         private async static Task<IEnumerable<MetricInfo>> InternalGetSupportedMetricsAsync(Uri uri, X509Certificate2 certificate)

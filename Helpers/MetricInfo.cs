@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -131,12 +130,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     return;
                 }
-                Trace.WriteLine(string.Format(RetrievingMetricsFormat, entityType));
                 var uri = MetricHelper.BuildUriForDataPointDiscoveryQuery(MainForm.SingletonMainForm.SubscriptionId,
                                                                           ns,
                                                                           entityToUrlSegmentMapDictionary[entityType],
                                                                           entityPath);
                 var enumerable = await MetricHelper.GetSupportedMetricsAsync(uri, MainForm.SingletonMainForm.CertificateThumbprint);
+                Trace.WriteLine(string.Format(RetrievingMetricsFormat, entityType));
                 if (enumerable == null)
                 {
                     retrieveMetrics = false;
@@ -161,6 +160,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     AllowRemove = true
                 };
                 Trace.WriteLine(string.Format(MetricSuccessfullyRetrievedFormat, count, entityType));
+            }
+            catch (ArgumentException ex)
+            {
+                if (string.Compare(ex.ParamName, "certificateThumbprint", StringComparison.OrdinalIgnoreCase) != 0)
+                {
+                    HandleException(ex);
+                }
             }
             catch (Exception ex)
             {

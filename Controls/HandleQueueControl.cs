@@ -2856,7 +2856,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 messagePropertyGrid.SelectedObject = brokeredMessage;
             }
             // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }

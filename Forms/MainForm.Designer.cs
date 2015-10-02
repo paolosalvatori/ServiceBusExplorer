@@ -39,6 +39,7 @@
             this.clearLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createIoTHubListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setDefaultLayouToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -282,6 +283,8 @@
             this.deleteConsumerGroupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshConsumerGroupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator59 = new System.Windows.Forms.ToolStripSeparator();
+            this.getPartitionDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator66 = new System.Windows.Forms.ToolStripSeparator();
             this.copyConsumerGroupUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator61 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem17 = new System.Windows.Forms.ToolStripMenuItem();
@@ -307,8 +310,6 @@
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator66 = new System.Windows.Forms.ToolStripSeparator();
-            this.getPartitionDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -434,9 +435,19 @@
             // 
             // actionsToolStripMenuItem
             // 
+            this.actionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createIoTHubListenerMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
             this.actionsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.actionsToolStripMenuItem.Text = "&Actions";
+            // 
+            // createIoTHubListenerMenuItem
+            // 
+            this.createIoTHubListenerMenuItem.Name = "createIoTHubListenerMenuItem";
+            this.createIoTHubListenerMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.createIoTHubListenerMenuItem.Text = "Create IoT Hub Listener";
+            this.createIoTHubListenerMenuItem.ToolTipText = "Create IoT Hub listener.";
+            this.createIoTHubListenerMenuItem.Click += new System.EventHandler(this.createIoTHubListenerMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -2407,7 +2418,7 @@
             this.toolStripSeparator62,
             this.createConsumerGroupListenerMenuItem});
             this.consumerGroupContextMenuStrip.Name = "topicContextMenuStrip";
-            this.consumerGroupContextMenuStrip.Size = new System.Drawing.Size(247, 204);
+            this.consumerGroupContextMenuStrip.Size = new System.Drawing.Size(247, 182);
             // 
             // deleteConsumerGroupMenuItem
             // 
@@ -2430,6 +2441,19 @@
             // 
             this.toolStripSeparator59.Name = "toolStripSeparator59";
             this.toolStripSeparator59.Size = new System.Drawing.Size(243, 6);
+            // 
+            // getPartitionDataMenuItem
+            // 
+            this.getPartitionDataMenuItem.Name = "getPartitionDataMenuItem";
+            this.getPartitionDataMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.getPartitionDataMenuItem.Text = "Get Partition Data";
+            this.getPartitionDataMenuItem.ToolTipText = "Get partition data for the current event hub .";
+            this.getPartitionDataMenuItem.Click += new System.EventHandler(this.getPartitionDataMenuItem_Click);
+            // 
+            // toolStripSeparator66
+            // 
+            this.toolStripSeparator66.Name = "toolStripSeparator66";
+            this.toolStripSeparator66.Size = new System.Drawing.Size(243, 6);
             // 
             // copyConsumerGroupUrlMenuItem
             // 
@@ -2626,19 +2650,6 @@
             this.toolStripMenuItem28.Text = "Test Relay In MDI Mode";
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
-            // 
-            // toolStripSeparator66
-            // 
-            this.toolStripSeparator66.Name = "toolStripSeparator66";
-            this.toolStripSeparator66.Size = new System.Drawing.Size(243, 6);
-            // 
-            // getPartitionDataMenuItem
-            // 
-            this.getPartitionDataMenuItem.Name = "getPartitionDataMenuItem";
-            this.getPartitionDataMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.getPartitionDataMenuItem.Text = "Get Partition Data";
-            this.getPartitionDataMenuItem.ToolTipText = "Get partition data for the current event hub .";
-            this.getPartitionDataMenuItem.Click += new System.EventHandler(this.getPartitionDataMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2984,6 +2995,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem28;
         private System.Windows.Forms.ToolStripMenuItem getPartitionDataMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator66;
+        private System.Windows.Forms.ToolStripMenuItem createIoTHubListenerMenuItem;
     }
 }
 
