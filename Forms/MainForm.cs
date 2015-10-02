@@ -6601,7 +6601,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                using (var parameterForm = new ParameterForm("Enter IoT connection string and Consumer Group", 
+                using (var parameterForm = new ParameterForm("Enter IoT Connection String and Consumer Group", 
                                                              new List<string> {"IoT Connection String", "Consumer Group"}, 
                                                              new List<string>{null, "$Default"}))
                 {

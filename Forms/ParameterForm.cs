@@ -55,7 +55,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Name = string.Format("lbl{0}:", parameter),
                     Text = parameter,
-                    Location = new Point(16, labelY)
+                    Location = new Point(16, labelY),
+                    Size = new Size(400, 20)
                 };
                 mainPanel.Controls.Add(label);
                 var textBox = new TextBox
