@@ -6601,12 +6601,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                using (var parameterForm = new ParameterForm("Enter IoT Connection String and Consumer Group", 
-                                                             new List<string> {"IoT Connection String", "Consumer Group"}, 
-                                                             new List<string>{null, "$Default"}))
+                using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group", 
+                                                             new List<string> {"IoT Hub Connection String", "Consumer Group"}, 
+                                                             new List<string>{null, "$Default"},
+                                                             new List<bool>{false, false}))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
                     {
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[0]))
+                    {
+                        WriteToLog("The IoT Hub Connection string parameter cannot be null.");
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[1]))
+                    {
+                        WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
                     var form = new ContainerForm(this, parameterForm.ParameterValues[0], parameterForm.ParameterValues[1]);

@@ -504,7 +504,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             finally
             {
-                panelMain.ResumeDrawing();
+                if (panelMain != null)
+                {
+                    panelMain.ResumeDrawing();
+                }
                 ResumeLayout();
             }
         }

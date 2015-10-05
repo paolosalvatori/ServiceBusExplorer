@@ -33,8 +33,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public partial class ParameterForm : Form
     {
+        #region Private Fields
+        private IList<bool> canBeNullList;
+        private readonly IList<Control> textBoxList; 
+        #endregion
+
         #region Public Constructor
-        public ParameterForm(string title, IList<string> parameterNameList, IList<string> parameterValueList)
+        public ParameterForm(string title, IList<string> parameterNameList, IList<string> parameterValueList, IList<bool> canBeNullList = null)
         {
             InitializeComponent();
             if (!string.IsNullOrWhiteSpace(title))
@@ -45,6 +50,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 return;
             }
+            this.canBeNullList = canBeNullList;
             var labelY = 16;
             var textBoxY = 32;
             var textBoxWidth = mainPanel.Size.Width - 32;
@@ -53,8 +59,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 var parameter = parameterNameList[i];
                 var label = new Label
                 {
-                    Name = string.Format("lbl{0}:", parameter),
-                    Text = parameter,
+                    Name = string.Format("lbl{0}", parameter),
+                    Text = string.Format("{0}:", parameter),
                     Location = new Point(16, labelY),
                     Size = new Size(400, 20)
                 };
@@ -65,19 +71,41 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     AutoSize = false,
                     Size = new Size(textBoxWidth, 24),
                     Location = new Point(16, textBoxY),
-                    Tag = i
+                    Tag = i 
                 };
+                
                 if (parameterNameList.Count == parameterValueList.Count)
                 {
                     textBox.Text = parameterValueList[i];
+                }
+                if (canBeNullList != null && 
+                    parameterValueList.Count == canBeNullList.Count)
+                {
+                    textBox.TextChanged += textBox_TextChanged;
                 }
                 mainPanel.Controls.Add(textBox);
                 textBox.BringToFront();
                 labelY += 48;
                 textBoxY += 48;
             }
+            textBoxList = mainPanel.Controls.Cast<Control>().Where(c => c is TextBox).ToList();
             var delta = parameterNameList.Count*48;
             Size = new Size(Size.Width, Size.Height + delta);
+            textBox_TextChanged(null, null);
+        }
+
+        void textBox_TextChanged(object sender, EventArgs e)
+        {
+            var ok = true;
+            for (var i = 0; i < textBoxList.Count; i++)
+            {
+                if (string.IsNullOrWhiteSpace(textBoxList[i].Text) && !canBeNullList[i])
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            btnOk.Enabled = ok;
         }
 
         public override sealed string Text
