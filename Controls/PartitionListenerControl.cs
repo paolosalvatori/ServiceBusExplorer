@@ -161,7 +161,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
                                         Func<Task> stopLog,
                                         Action startLog,
-                                        ServiceBusHelper serviceBusHelper, 
+                                        ServiceBusHelper serviceBusHelper,
                                         ConsumerGroupDescription consumerGroupDescription,
                                         IEnumerable<PartitionDescription> partitionDescriptions)
         {
@@ -212,6 +212,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.writeToLog = writeToLog;
             this.stopLog = stopLog;
             this.startLog = startLog;
+            serviceBusHelper = new ServiceBusHelper(writeToLog);
             eventHubClient = EventHubClient.CreateFromConnectionString(iotHubConnectionString, "messages/events");
             consumerGroup = string.Compare(consumerGroupName,
                                            DefaultConsumerGroupName,
@@ -352,7 +353,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(txtReceiveTimeout, ReceiveTimeoutTooltip);
             toolTip.SetToolTip(txtMaxBatchSize, MaxCountTooltip);
             toolTip.SetToolTip(pickerStartingDateTimeUtc, StartDateTimeUtcTooltip);
-            
+
             toolTip.SetToolTip(checkBoxLogging, LoggingTooltip);
             toolTip.SetToolTip(checkBoxVerbose, VerboseTooltip);
             toolTip.SetToolTip(checkBoxTrackMessages, TrackingTooltip);
@@ -368,7 +369,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             toolTip.SetToolTip(cboEventDataPerSecond, ScaleTooltip);
             toolTip.SetToolTip(cboAverageDuration, ScaleTooltip);
             toolTip.SetToolTip(cboMessageSizePerSecond, ScaleTooltip);
-            
+
 
             propertyListView.ContextMenuStrip = partitionInformationContextMenuStrip;
 
@@ -797,7 +798,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     registeredDictionary = new Dictionary<string, bool>(partitionRuntumeInformationList.Count);
                     var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
-                    var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);  
+                    var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);
                     var eventProcessorOptions = new EventProcessorOptions
                     {
                         InitialOffsetProvider = partitionId =>
@@ -838,18 +839,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     };
                     foreach (var partitionRuntimeInformation in partitionRuntumeInformationList)
                     {
-                        #pragma warning disable 4014
+#pragma warning disable 4014
                         consumerGroup.RegisterProcessorFactoryAsync(
-                        #pragma warning restore 4014
-                                EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, partitionRuntimeInformation.PartitionId),
+#pragma warning restore 4014
+EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, partitionRuntimeInformation.PartitionId),
                                 checkpointManager,
                                 new EventProcessorFactory<EventProcessor>(eventProcessorFactoryConfiguration),
                                 eventProcessorOptions);
                         registeredDictionary.Add(partitionRuntimeInformation.PartitionId, true);
                     }
-                    #pragma warning disable 4014
+#pragma warning disable 4014
                     Task.Run(new Action(RefreshGraph));
-                    #pragma warning restore 4014
+#pragma warning restore 4014
                 }
                 catch (Exception ex)
                 {
@@ -909,7 +910,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         if (cleared)
                         {
                             Invoke(new Action(ClearTrackedMessages));
-                           
+
                             cleared = false;
                             continue;
                         }
@@ -920,7 +921,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             continue;
                         }
                         await Task.Delay(TimeSpan.FromMilliseconds(5));
-                        
+
                         if (InvokeRequired)
                         {
                             Invoke(new Action(() => eventDataBindingList.Add(eventData)));
@@ -1124,7 +1125,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (registeredDictionary.ContainsKey(partitionDescription.PartitionId) &&
                     registeredDictionary[partitionDescription.PartitionId])
                 {
-                    await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId }, 
+                    await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId },
                                                                  ServiceBus.Messaging.CloseReason.Shutdown);
                 }
             }
@@ -1227,7 +1228,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 receiverMessageNumber += messageNumber;
                 receiverAverageTime = receiverMessageNumber > 0 ? receiverTotalTime / receiverMessageNumber : 0;
                 receiverMessagesPerSecond = receiverTotalTime > 0 ? receiverMessageNumber * partitionCount / receiverTotalTime : 0;
-                receiverMessageSizePerSecond = receiverTotalTime > 0 ? (receiverMessageSizeTotal * partitionCount) / (receiverTotalTime * 1024): 0;
+                receiverMessageSizePerSecond = receiverTotalTime > 0 ? (receiverMessageSizeTotal * partitionCount) / (receiverTotalTime * 1024) : 0;
 
                 txtEventDataPerSecond.Text = string.Format(LabelFormat, receiverMessagesPerSecond);
                 txtEventDataPerSecond.Refresh();
@@ -1290,7 +1291,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 throw new ApplicationException(ConnectionStringCannotBeNull);
             }
-            var builder = new ServiceBusConnectionStringBuilder(connectionString) {TransportType = TransportType.Amqp};
+            var builder = new ServiceBusConnectionStringBuilder(connectionString) { TransportType = TransportType.Amqp };
             return builder.ToString();
         }
 
@@ -1307,11 +1308,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     cboPartition.Size.Height + 1);
         }
 
-        private  void cboPartition_SelectedIndexChanged(object sender, EventArgs e)
+        private void cboPartition_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetPartitionRuntimeInformation();
         }
-        
+
         private void cboEventDataPerSecond_SelectedIndexChanged(object sender, EventArgs e)
         {
             eventDataPerSecondScale = (double)cboEventDataPerSecond.SelectedItem;
