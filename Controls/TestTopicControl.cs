@@ -132,6 +132,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string OneSessionPerSenderTaskTooltip = "Use one session per sender task.";
         private const string EnableMoveToDeadLetterTooltip = "When this option is enabled, all received messages are moved to the DeadLetter queue.";
         private const string EnableReadFromDeadLetterTooltip = "When this option is enabled, the receivers attempts to read messages from the DeadLetter queue.";
+        private const string EnableCreateNewMessagingFactoryForSender = "Creating a new messaging factory for each sender task";
+        private const string EnableCreateNewMessagingFactoryForReceiver = "Creating a new messaging factory for each receiver task";
 
         //***************************
         // Tab Pages
@@ -192,6 +194,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private IBrokeredMessageGenerator brokeredMessageGenerator;
         private IBrokeredMessageInspector senderBrokeredMessageInspector;
         private IBrokeredMessageInspector receiverBrokeredMessageInspector;
+        private List<MessagingFactory> senderFactories = new List<MessagingFactory>();
+        private List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
         #endregion
 
         #region Private Static Fields
@@ -203,8 +207,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 WriteToLogDelegate writeToLog,
                                 Func<Task> stopLog,
                                 Action startLog,
-                                ServiceBusHelper serviceBusHelper, 
-                                TopicDescription topic, 
+                                ServiceBusHelper serviceBusHelper,
+                                TopicDescription topic,
                                 List<SubscriptionDescription> subscriptionList)
         {
             this.mainForm = mainForm;
@@ -216,7 +220,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.subscriptionList = subscriptionList;
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -342,15 +346,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 txtMessageText.Text = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ? 
-                                      XmlHelper.Indent(mainForm.MessageText) : 
+                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
+                                      XmlHelper.Indent(mainForm.MessageText) :
                                       DefaultMessageText;
                 txtLabel.Text = mainForm != null &&
                                 !string.IsNullOrWhiteSpace(mainForm.Label) ?
                                 mainForm.Label :
                                 DefaultMessageText;
                 txtMessageId.Text = Guid.NewGuid().ToString();
-                txtSessionId.Text = Guid.NewGuid().ToString();
                 checkBoxOneSessionPerTask.Checked = false;
                 txtMessageCount.Text = DefaultMessageCount;
                 txtSendBatchSize.Text = DefaulSendBatchSize;
@@ -416,6 +419,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 toolTip.SetToolTip(checkBoxMoveToDeadLetter, EnableMoveToDeadLetterTooltip);
                 toolTip.SetToolTip(checkBoxReadFromDeadLetter, EnableReadFromDeadLetterTooltip);
                 toolTip.SetToolTip(cboReceivedMode, ReceiveModeTooltip);
+                toolTip.SetToolTip(checkBoxSendNewFactory, EnableCreateNewMessagingFactoryForSender);
+                toolTip.SetToolTip(checkBoxReceiveNewFactory, EnableCreateNewMessagingFactoryForReceiver);
 
                 splitContainer.SplitterWidth = 16;
                 splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth) / 2;
@@ -557,10 +562,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
-                    //*****************************************************************************************************
-                    //                                   Retrieve Messaging Factory
-                    //*****************************************************************************************************
-                    var messagingFactory = serviceBusHelper.MessagingFactory;
 
                     //*****************************************************************************************************
                     //                                   Initialize Statistics and Manager Action
@@ -703,12 +704,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         if (isSenderFaulted ||
                             messageSenderCollection == null ||
                             messageSenderCollection.Count == 0 ||
-                            messageSenderCollection.Count < senderTaskCount)
+                            messageSenderCollection.Count < senderTaskCount ||
+                            checkBoxSendNewFactory.Checked)
                         {
                             messageSenderCollection = new List<MessageSender>(senderTaskCount);
                             for (var i = 0; i < senderTaskCount; i++)
                             {
-                                messageSenderCollection.Add(messagingFactory.CreateMessageSender(topic.Path));
+                                if (checkBoxSendNewFactory.Checked)
+                                {
+                                    var factory = serviceBusHelper.CreateMessagingFactory();
+                                    senderFactories.Add(factory);
+                                    messageSenderCollection.Add(factory.CreateMessageSender(topic.Path));
+                                }
+                                else
+                                {
+                                    messageSenderCollection.Add(serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path));
+                                }
                             }
                             isSenderFaulted = false;
                         }
@@ -913,7 +924,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     string traceMessage;
                                     bool ok;
-                                    
+
                                     if (checkBoxSenderUseTransaction.Checked)
                                     {
                                         using (var scope = new TransactionScope())
@@ -1017,7 +1028,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             HandleException(ex);
                         }
                     }
-                    
+
                     //*****************************************************************************************************
                     //                                   Receiving messages from a Subscription
                     //*****************************************************************************************************
@@ -1041,7 +1052,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                           ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
                                                           : null;
 
-                            Action<int> receiverAction = taskId =>
+                            Action<int, MessagingFactory> receiverAction = (taskId, messagingFactory) =>
                             {
                                 var allSessionsAccepted = false;
 
@@ -1053,7 +1064,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                         if (currentReadFromDeadLetterQueue)
                                         {
                                             messageReceiver =
-                                                messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath, 
+                                                messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath,
                                                                                                                                currentSubscription.Name),
                                                                                        currentReceiveMode);
                                         }
@@ -1061,7 +1072,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                         {
                                             if (currentSubscription.RequiresSession)
                                             {
-                                                var subscriptionClient = messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath, 
+                                                var subscriptionClient = messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath,
                                                                                                                    currentSubscription.Name,
                                                                                                                    currentReceiveMode);
                                                 messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
@@ -1159,7 +1170,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             // Define Receiver AsyncCallback
                             AsyncCallback receiverCallback = a =>
                             {
-                                var action = a.AsyncState as Action<int>;
+                                var action = a.AsyncState as Action<int, MessagingFactory>;
                                 if (action != null)
                                 {
                                     action.EndInvoke(a);
@@ -1173,7 +1184,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             // Start Receiver Actions
                             for (var i = 0; i < receiverTaskCount; i++)
                             {
-                                receiverAction.BeginInvoke(i, receiverCallback, receiverAction);
+                                MessagingFactory factory;
+                                if (checkBoxReceiveNewFactory.Checked)
+                                {
+                                    factory = serviceBusHelper.CreateMessagingFactory();
+                                    receiverFactories.Add(factory);
+                                }
+                                else
+                                {
+                                    factory = serviceBusHelper.MessagingFactory;
+                                }
+
+                                receiverAction.BeginInvoke(i, factory, receiverCallback, receiverAction);
                                 Interlocked.Increment(ref actionCount);
                             }
                         }
@@ -1351,12 +1373,51 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 receiverCancellationTokenSource.Cancel();
             }
+
+            // always cleans up the factories
+            // clean up factories if the checkbox is checked.
+            if (senderFactories != null && senderFactories.Count > 0)
+            {
+                foreach (var messagingFactory in senderFactories)
+                {
+                    try
+                    {
+                        await messagingFactory.CloseAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
+                }
+
+                senderFactories.Clear();
+            }
+
+            if (receiverFactories != null && receiverFactories.Count > 0)
+            {
+                foreach (var messagingFactory in receiverFactories)
+                {
+                    try
+                    {
+                        await messagingFactory.CloseAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
+                }
+
+                receiverFactories.Clear();
+            }
         }
 
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
             await CancelActions();
-            OnCancel();
+            if (OnCancel != null)
+            {
+                OnCancel();
+            }
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -1445,7 +1506,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 openFileDialog.FileName = string.Empty;
-                if (openFileDialog.ShowDialog() != DialogResult.OK || 
+                if (openFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(openFileDialog.FileName) ||
                     !File.Exists(openFileDialog.FileName))
                 {
@@ -1640,7 +1701,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 series2.Legend = "Default";
                 series2.LegendText = "Receiver Latency";
                 series2.Name = "ReceiverLatency";
-                
+
                 series4.BorderWidth = 2;
                 series4.ChartArea = "Default";
                 series4.ChartType = SeriesChartType.FastLine;
@@ -1818,7 +1879,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     cboSenderInspector.Size.Width + 1,
                                     cboSenderInspector.Size.Height + 1);
         }
-        
+
         private void grouperReceiver_CustomPaint(PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
@@ -1861,7 +1922,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
@@ -2031,7 +2092,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                      cboBrokeredMessageGeneratorType.Size.Height + 1);
             brokeredMessageGeneratorPropertyGrid.HelpVisible = brokeredMessageGeneratorPropertyGrid.Height > 250;
         }
-        
+
         private void cboBrokeredMessageGeneratorType_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -2136,7 +2197,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Controls[i].Dispose();
                 }
-                
+
                 base.Dispose(disposing);
             }
             // ReSharper disable once EmptyGeneralCatchClause

@@ -606,7 +606,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     if (messagingFactory == null ||
                         messagingFactory.IsClosed)
                     {
-                        messagingFactory = GetMessagingFactory();
+                        messagingFactory = CreateMessagingFactory();
                     }
                     return messagingFactory;
                 }
@@ -687,6 +687,40 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Creates a new messaging factory object.
+        /// </summary>
+        /// <returns>A messaging factory object.</returns>
+        public MessagingFactory CreateMessagingFactory()
+        {
+            MessagingFactory factory;
+            if (!string.IsNullOrEmpty(ConnectionString))
+            {
+                factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
+            }
+            else
+            {
+                // The MessagingFactorySettings specifies the service bus messaging factory settings.
+                var messagingFactorySettings = new MessagingFactorySettings
+                {
+                    TokenProvider = tokenProvider,
+                    OperationTimeout = TimeSpan.FromMinutes(5)
+                };
+                // In the first release of the service bus, the only available transport protocol is sb 
+                if (scheme == DefaultScheme)
+                {
+                    messagingFactorySettings.NetMessagingTransportSettings = new NetMessagingTransportSettings();
+                }
+
+                // As the name suggests, the MessagingFactory class is a Factory class that allows to create
+                // instances of the QueueClient, TopicClient and SubscriptionClient classes.
+                factory = MessagingFactory.Create(namespaceUri, messagingFactorySettings);
+            }
+
+            WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
+            return factory;
+        }
 
         /// <summary>
         /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
@@ -5281,32 +5315,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Methods
-
-        /// <summary>
-        /// Gets a new messaging factory object.
-        /// </summary>
-        /// <returns>A messaging factory object.</returns>
-        private MessagingFactory GetMessagingFactory()
-        {
-            // The MessagingFactorySettings specifies the service bus messaging factory settings.
-            var messagingFactorySettings = new MessagingFactorySettings
-            {
-                TokenProvider = tokenProvider,
-                OperationTimeout = TimeSpan.FromMinutes(5)
-            };
-            // In the first release of the service bus, the only available transport protocol is sb 
-            if (scheme == DefaultScheme)
-            {
-                messagingFactorySettings.NetMessagingTransportSettings = new NetMessagingTransportSettings();
-            }
-
-            // As the name suggests, the MessagingFactory class is a Factory class that allows to create
-            // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-            var factory = MessagingFactory.Create(namespaceUri, messagingFactorySettings);
-            WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
-            return factory;
-        }
-
         /// <summary>
         /// Receives a message from a queue or a subscription.
         /// </summary>
