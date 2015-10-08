@@ -67,7 +67,7 @@
 <h1>Service Bus Explorer</h1>
 <div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio 2010</a> and requires the installation of the .<a href="http://www.microsoft.com/download/en/details.aspx?id=17718">NET Framework 4.0</a> and <a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=27421"> </a><a title="Windows Azure SDK for .NET" href="http://www.microsoft.com/download/en/details.aspx?id=28045">Windows Azure SDK for .NET</a>. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test  the Brokered and Relay messaging services defined in a given Service Bus namespace.</div>
 <div style="text-align: center;">&nbsp;</div>
-<div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" width="800" /></div>
+<div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" /></div>
 <div></div>
 <div>Read the full article on <a title="MSDN" href="http://msdn.microsoft.com/en-us/library/hh532261(v=VS.103).aspx" target="_blank"> MSDN</a>.</div>
 <div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
