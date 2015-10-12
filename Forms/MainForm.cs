@@ -320,6 +320,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             GetServiceBusNamespacesFromConfiguration();
+            GetServiceBusNamespaceFromEnvironmentVariable();
             GetBrokeredMessageInspectorsFromConfiguration();
             GetEventDataInspectorsFromConfiguration();
             GetBrokeredMessageGeneratorsFromConfiguration();
@@ -3481,6 +3482,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+        }
+
+        private void GetServiceBusNamespaceFromEnvironmentVariable()
+        {
+            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                const string key = @"HKEY_CURRENT_USER\Environment connection string";
+                serviceBusHelper.ServiceBusNamespaces.Add(key, GetServiceBusNamespace(key, connectionString));
             }
         }
 
