@@ -576,6 +576,7 @@
             this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
             this.serviceBusTreeView.TabIndex = 13;
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
+            this.serviceBusTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyUp);
             // 
             // panelMain
             // 
