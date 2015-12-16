@@ -6639,7 +6639,46 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
-                    var form = new ContainerForm(this, parameterForm.ParameterValues[0], parameterForm.ParameterValues[1]);
+                    var form = new ContainerForm(this, parameterForm.ParameterValues[0], "messages/events", parameterForm.ParameterValues[1], true);
+                    form.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void createEventHubListenerMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var parameterForm = new ParameterForm("Enter Event Hub Connection String, Event Hub name and Consumer Group",
+                                                             new List<string> { "Event Hub Connection String", "Event Hub Path", "Consumer Group" },
+                                                             new List<string> { null, null, "$Default" },
+                                                             new List<bool> { false, false, false }))
+                {
+                    if (parameterForm.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[0]))
+                    {
+                        WriteToLog("The Event Hub Connection string parameter cannot be null.");
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[1]))
+                    {
+                        WriteToLog("The Event Hub Path string parameter cannot be null.");
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[2]))
+                    {
+                        WriteToLog("The Consumer Group parameter cannot be null.");
+                        return;
+                    }
+                    var form = new ContainerForm(this, parameterForm.ParameterValues[0],
+                        parameterForm.ParameterValues[1], parameterForm.ParameterValues[2], false);
                     form.Show();
                 }
             }

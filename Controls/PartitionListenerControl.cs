@@ -199,6 +199,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                         Func<Task> stopLog,
                                         Action startLog,
                                         string iotHubConnectionString,
+                                        string hubName,
                                         string consumerGroupName)
         {
             Task.Factory.StartNew(AsyncTrackEventData).ContinueWith(t =>
@@ -213,7 +214,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.stopLog = stopLog;
             this.startLog = startLog;
             serviceBusHelper = new ServiceBusHelper(writeToLog);
-            eventHubClient = EventHubClient.CreateFromConnectionString(iotHubConnectionString, "messages/events");
+            eventHubClient = EventHubClient.CreateFromConnectionString(iotHubConnectionString, hubName);
             consumerGroup = string.Compare(consumerGroupName,
                                            DefaultConsumerGroupName,
                                            StringComparison.InvariantCultureIgnoreCase) == 0

@@ -310,6 +310,7 @@
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
+            this.createEventHubListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -436,7 +437,8 @@
             // actionsToolStripMenuItem
             // 
             this.actionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createIoTHubListenerMenuItem});
+            this.createIoTHubListenerMenuItem,
+            this.createEventHubListenerMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
             this.actionsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.actionsToolStripMenuItem.Text = "&Actions";
@@ -444,7 +446,7 @@
             // createIoTHubListenerMenuItem
             // 
             this.createIoTHubListenerMenuItem.Name = "createIoTHubListenerMenuItem";
-            this.createIoTHubListenerMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.createIoTHubListenerMenuItem.Size = new System.Drawing.Size(210, 22);
             this.createIoTHubListenerMenuItem.Text = "Create IoT Hub Listener";
             this.createIoTHubListenerMenuItem.ToolTipText = "Create IoT Hub listener.";
             this.createIoTHubListenerMenuItem.Click += new System.EventHandler(this.createIoTHubListenerMenuItem_Click);
@@ -1253,19 +1255,19 @@
             this.toolStripSeparator35,
             this.sendMessagesTopicMenuItem});
             this.topicContextMenuStrip.Name = "topicContextMenuStrip";
-            this.topicContextMenuStrip.Size = new System.Drawing.Size(200, 304);
+            this.topicContextMenuStrip.Size = new System.Drawing.Size(202, 304);
             // 
             // changeStatusTopicMenuItem
             // 
             this.changeStatusTopicMenuItem.Name = "changeStatusTopicMenuItem";
-            this.changeStatusTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.changeStatusTopicMenuItem.Size = new System.Drawing.Size(201, 22);
             this.changeStatusTopicMenuItem.Text = "Change Status Topic";
             this.changeStatusTopicMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
             // 
             // deleteTopicMenuItem
             // 
             this.deleteTopicMenuItem.Name = "deleteTopicMenuItem";
-            this.deleteTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.deleteTopicMenuItem.Size = new System.Drawing.Size(201, 22);
             this.deleteTopicMenuItem.Text = "Delete Topic";
             this.deleteTopicMenuItem.ToolTipText = "Delete the current topic.";
             this.deleteTopicMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1274,7 +1276,7 @@
             // 
             this.refreshTopicMenuItem.Name = "refreshTopicMenuItem";
             this.refreshTopicMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.refreshTopicMenuItem.Size = new System.Drawing.Size(201, 22);
             this.refreshTopicMenuItem.Text = "Refresh Topic";
             this.refreshTopicMenuItem.ToolTipText = "Refresh the current topic.";
             this.refreshTopicMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1282,12 +1284,12 @@
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(198, 6);
             // 
             // exportTopicMenuItem
             // 
             this.exportTopicMenuItem.Name = "exportTopicMenuItem";
-            this.exportTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.exportTopicMenuItem.Size = new System.Drawing.Size(201, 22);
             this.exportTopicMenuItem.Text = "Export Topic";
             this.exportTopicMenuItem.ToolTipText = "Export topic definition to file.";
             this.exportTopicMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1295,12 +1297,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(198, 6);
             // 
             // addSubscriptionMenuItem1
             // 
             this.addSubscriptionMenuItem1.Name = "addSubscriptionMenuItem1";
-            this.addSubscriptionMenuItem1.Size = new System.Drawing.Size(199, 22);
+            this.addSubscriptionMenuItem1.Size = new System.Drawing.Size(201, 22);
             this.addSubscriptionMenuItem1.Text = "Create Subscription";
             this.addSubscriptionMenuItem1.ToolTipText = "Create a new subscription to the current topic.";
             this.addSubscriptionMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
@@ -1308,7 +1310,7 @@
             // deleteTopicSubscriptionsMenuItem
             // 
             this.deleteTopicSubscriptionsMenuItem.Name = "deleteTopicSubscriptionsMenuItem";
-            this.deleteTopicSubscriptionsMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.deleteTopicSubscriptionsMenuItem.Size = new System.Drawing.Size(201, 22);
             this.deleteTopicSubscriptionsMenuItem.Text = "Delete Subscriptions";
             this.deleteTopicSubscriptionsMenuItem.ToolTipText = "Delete all subscription for the current topic.";
             this.deleteTopicSubscriptionsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1316,12 +1318,12 @@
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(198, 6);
             // 
             // copyTopicUrlMenuItem
             // 
             this.copyTopicUrlMenuItem.Name = "copyTopicUrlMenuItem";
-            this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(201, 22);
             this.copyTopicUrlMenuItem.Text = "Copy Topic Url";
             this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic url to the clipboard.";
             this.copyTopicUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1329,12 +1331,12 @@
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(198, 6);
             // 
             // expandSubTreeMenuItem5
             // 
             this.expandSubTreeMenuItem5.Name = "expandSubTreeMenuItem5";
-            this.expandSubTreeMenuItem5.Size = new System.Drawing.Size(199, 22);
+            this.expandSubTreeMenuItem5.Size = new System.Drawing.Size(201, 22);
             this.expandSubTreeMenuItem5.Text = "Expand Subtree";
             this.expandSubTreeMenuItem5.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem5.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1342,7 +1344,7 @@
             // collapseSubTreeMenuItem5
             // 
             this.collapseSubTreeMenuItem5.Name = "collapseSubTreeMenuItem5";
-            this.collapseSubTreeMenuItem5.Size = new System.Drawing.Size(199, 22);
+            this.collapseSubTreeMenuItem5.Size = new System.Drawing.Size(201, 22);
             this.collapseSubTreeMenuItem5.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem5.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem5.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1350,12 +1352,12 @@
             // toolStripSeparator32
             // 
             this.toolStripSeparator32.Name = "toolStripSeparator32";
-            this.toolStripSeparator32.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator32.Size = new System.Drawing.Size(198, 6);
             // 
             // testTopicSDIMenuItem
             // 
             this.testTopicSDIMenuItem.Name = "testTopicSDIMenuItem";
-            this.testTopicSDIMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.testTopicSDIMenuItem.Size = new System.Drawing.Size(201, 22);
             this.testTopicSDIMenuItem.Text = "Test Topic In SDI Mode";
             this.testTopicSDIMenuItem.ToolTipText = "Test the current topic in SDI mode.";
             this.testTopicSDIMenuItem.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -1363,7 +1365,7 @@
             // testTopicMDIMenuItem
             // 
             this.testTopicMDIMenuItem.Name = "testTopicMDIMenuItem";
-            this.testTopicMDIMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.testTopicMDIMenuItem.Size = new System.Drawing.Size(201, 22);
             this.testTopicMDIMenuItem.Text = "Test Topic In MDI Mode";
             this.testTopicMDIMenuItem.ToolTipText = "Test the current topic in MDI mode.";
             this.testTopicMDIMenuItem.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
@@ -1371,12 +1373,12 @@
             // toolStripSeparator35
             // 
             this.toolStripSeparator35.Name = "toolStripSeparator35";
-            this.toolStripSeparator35.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator35.Size = new System.Drawing.Size(198, 6);
             // 
             // sendMessagesTopicMenuItem
             // 
             this.sendMessagesTopicMenuItem.Name = "sendMessagesTopicMenuItem";
-            this.sendMessagesTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.sendMessagesTopicMenuItem.Size = new System.Drawing.Size(201, 22);
             this.sendMessagesTopicMenuItem.Text = "Send Messages";
             this.sendMessagesTopicMenuItem.ToolTipText = "Send test messages to the current topic.";
             this.sendMessagesTopicMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
@@ -1562,12 +1564,12 @@
             this.expandSubTreeMenuItem3,
             this.collapseSubTreeMenuItem3});
             this.topicsContextMenuStrip.Name = "createContextMenuStrip";
-            this.topicsContextMenuStrip.Size = new System.Drawing.Size(170, 182);
+            this.topicsContextMenuStrip.Size = new System.Drawing.Size(171, 182);
             // 
             // createTopicMenuItem
             // 
             this.createTopicMenuItem.Name = "createTopicMenuItem";
-            this.createTopicMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.createTopicMenuItem.Size = new System.Drawing.Size(170, 22);
             this.createTopicMenuItem.Text = "Create Topic";
             this.createTopicMenuItem.ToolTipText = "Create a new topic.";
             this.createTopicMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -1575,7 +1577,7 @@
             // deleteTopicsMenuItem
             // 
             this.deleteTopicsMenuItem.Name = "deleteTopicsMenuItem";
-            this.deleteTopicsMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.deleteTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.deleteTopicsMenuItem.Text = "Delete Topics";
             this.deleteTopicsMenuItem.ToolTipText = "Delete all the topics in the current namespace.";
             this.deleteTopicsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1583,13 +1585,13 @@
             // toolStripSeparator38
             // 
             this.toolStripSeparator38.Name = "toolStripSeparator38";
-            this.toolStripSeparator38.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator38.Size = new System.Drawing.Size(167, 6);
             // 
             // refreshTopicsMenuItem
             // 
             this.refreshTopicsMenuItem.Name = "refreshTopicsMenuItem";
             this.refreshTopicsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshTopicsMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.refreshTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.refreshTopicsMenuItem.Text = "Refresh Topics";
             this.refreshTopicsMenuItem.ToolTipText = "Refresh all the topics in the current namespace.";
             this.refreshTopicsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1597,12 +1599,12 @@
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(167, 6);
             // 
             // filterTopicsMenuItem
             // 
             this.filterTopicsMenuItem.Name = "filterTopicsMenuItem";
-            this.filterTopicsMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.filterTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.filterTopicsMenuItem.Text = "Filter Topics";
             this.filterTopicsMenuItem.ToolTipText = "Define a filter expression for topics.";
             this.filterTopicsMenuItem.Click += new System.EventHandler(this.filterEntity_Click);
@@ -1610,12 +1612,12 @@
             // toolStripSeparator39
             // 
             this.toolStripSeparator39.Name = "toolStripSeparator39";
-            this.toolStripSeparator39.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator39.Size = new System.Drawing.Size(167, 6);
             // 
             // exportTopicsMenuItem
             // 
             this.exportTopicsMenuItem.Name = "exportTopicsMenuItem";
-            this.exportTopicsMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.exportTopicsMenuItem.Size = new System.Drawing.Size(170, 22);
             this.exportTopicsMenuItem.Text = "Export Topics";
             this.exportTopicsMenuItem.ToolTipText = "Export topics definition to file.";
             this.exportTopicsMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1623,12 +1625,12 @@
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(167, 6);
             // 
             // expandSubTreeMenuItem3
             // 
             this.expandSubTreeMenuItem3.Name = "expandSubTreeMenuItem3";
-            this.expandSubTreeMenuItem3.Size = new System.Drawing.Size(169, 22);
+            this.expandSubTreeMenuItem3.Size = new System.Drawing.Size(170, 22);
             this.expandSubTreeMenuItem3.Text = "Expand Subtree";
             this.expandSubTreeMenuItem3.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem3.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1636,7 +1638,7 @@
             // collapseSubTreeMenuItem3
             // 
             this.collapseSubTreeMenuItem3.Name = "collapseSubTreeMenuItem3";
-            this.collapseSubTreeMenuItem3.Size = new System.Drawing.Size(169, 22);
+            this.collapseSubTreeMenuItem3.Size = new System.Drawing.Size(170, 22);
             this.collapseSubTreeMenuItem3.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem3.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem3.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2586,12 +2588,12 @@
             this.toolStripMenuItem27,
             this.toolStripMenuItem28});
             this.relayContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.relayContextMenuStrip.Size = new System.Drawing.Size(199, 154);
+            this.relayContextMenuStrip.Size = new System.Drawing.Size(200, 154);
             // 
             // deleteRelayMenuItem
             // 
             this.deleteRelayMenuItem.Name = "deleteRelayMenuItem";
-            this.deleteRelayMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.deleteRelayMenuItem.Size = new System.Drawing.Size(199, 22);
             this.deleteRelayMenuItem.Text = "Delete Relay";
             this.deleteRelayMenuItem.ToolTipText = "Delete the current relay.";
             this.deleteRelayMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2600,7 +2602,7 @@
             // 
             this.refreshRelayMenuItem.Name = "refreshRelayMenuItem";
             this.refreshRelayMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRelayMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.refreshRelayMenuItem.Size = new System.Drawing.Size(199, 22);
             this.refreshRelayMenuItem.Text = "Refresh Relay";
             this.refreshRelayMenuItem.ToolTipText = "Refresh the current relay.";
             this.refreshRelayMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2608,12 +2610,12 @@
             // relayToolStripSeparator1
             // 
             this.relayToolStripSeparator1.Name = "relayToolStripSeparator1";
-            this.relayToolStripSeparator1.Size = new System.Drawing.Size(195, 6);
+            this.relayToolStripSeparator1.Size = new System.Drawing.Size(196, 6);
             // 
             // exportRelayMenuItem
             // 
             this.exportRelayMenuItem.Name = "exportRelayMenuItem";
-            this.exportRelayMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.exportRelayMenuItem.Size = new System.Drawing.Size(199, 22);
             this.exportRelayMenuItem.Text = "Export Relay";
             this.exportRelayMenuItem.ToolTipText = "Export relay definition to file.";
             this.exportRelayMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2621,12 +2623,12 @@
             // relayToolStripSeparator2
             // 
             this.relayToolStripSeparator2.Name = "relayToolStripSeparator2";
-            this.relayToolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            this.relayToolStripSeparator2.Size = new System.Drawing.Size(196, 6);
             // 
             // copyRelayUrlMenuItem
             // 
             this.copyRelayUrlMenuItem.Name = "copyRelayUrlMenuItem";
-            this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(199, 22);
             this.copyRelayUrlMenuItem.Text = "Copy Relay Url";
             this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay url to the clipboard.";
             this.copyRelayUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -2634,12 +2636,12 @@
             // toolStripSeparator69
             // 
             this.toolStripSeparator69.Name = "toolStripSeparator69";
-            this.toolStripSeparator69.Size = new System.Drawing.Size(195, 6);
+            this.toolStripSeparator69.Size = new System.Drawing.Size(196, 6);
             // 
             // toolStripMenuItem27
             // 
             this.toolStripMenuItem27.Name = "toolStripMenuItem27";
-            this.toolStripMenuItem27.Size = new System.Drawing.Size(198, 22);
+            this.toolStripMenuItem27.Size = new System.Drawing.Size(199, 22);
             this.toolStripMenuItem27.Text = "Test Relay In SDI Mode";
             this.toolStripMenuItem27.ToolTipText = "Test the current relay in SDI mode.";
             this.toolStripMenuItem27.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -2647,10 +2649,17 @@
             // toolStripMenuItem28
             // 
             this.toolStripMenuItem28.Name = "toolStripMenuItem28";
-            this.toolStripMenuItem28.Size = new System.Drawing.Size(198, 22);
+            this.toolStripMenuItem28.Size = new System.Drawing.Size(199, 22);
             this.toolStripMenuItem28.Text = "Test Relay In MDI Mode";
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
+            // 
+            // createEventHubListenerMenuItem
+            // 
+            this.createEventHubListenerMenuItem.Name = "createEventHubListenerMenuItem";
+            this.createEventHubListenerMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.createEventHubListenerMenuItem.Text = "Create Event Hub Listener";
+            this.createEventHubListenerMenuItem.Click += new System.EventHandler(this.createEventHubListenerMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2997,6 +3006,7 @@
         private System.Windows.Forms.ToolStripMenuItem getPartitionDataMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator66;
         private System.Windows.Forms.ToolStripMenuItem createIoTHubListenerMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createEventHubListenerMenuItem;
     }
 }
 
