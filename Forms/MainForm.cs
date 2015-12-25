@@ -2097,6 +2097,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 deleteEntity_Click(sender, keyEventArgs);
             }
+
+            if (keyEventArgs.KeyCode == Keys.Enter)
+            {
+                HandleNodeMouseClick(serviceBusTreeView.SelectedNode);
+            }
         }
 
         private void deleteEntity_Click(object sender, EventArgs e)
