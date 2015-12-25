@@ -303,6 +303,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
+        public void PurgeMessages(int numberOfMessages)
+        {
+            if (queueDescription.EnablePartitioning)
+            {
+                ReadMessagesOneAtTheTime(false, true, numberOfMessages, null);
+            }
+            else
+            {
+                GetMessages(false, true, numberOfMessages, null);
+            }
+        }
+
         public void GetDeadletterMessages()
         {
             using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
