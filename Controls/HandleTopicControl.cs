@@ -629,10 +629,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 e.NewValue = topicDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == EnableExpressIndex)
-            {
-                e.NewValue = topicDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
-            }
             if (e.Index == RequiresDuplicateDetectionIndex)
             {
                 e.NewValue = topicDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
@@ -1130,6 +1126,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
 
                     topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
+                    topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);
                     topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
                     

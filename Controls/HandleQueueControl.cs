@@ -2058,10 +2058,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == EnableExpressIndex)
-            {
-                e.NewValue = queueDescription.EnableExpress ? CheckState.Checked : CheckState.Unchecked;
-            }
             if (e.Index == RequiresSessionIndex)
             {
                 e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
@@ -2351,6 +2347,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
 
                     queueDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
+                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     queueDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
                     queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
 
