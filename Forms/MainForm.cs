@@ -2093,9 +2093,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void serviceBusTreeView_KeyUp(object sender, KeyEventArgs keyEventArgs)
         {
-            if (keyEventArgs.KeyCode == Keys.Delete)
+            switch (keyEventArgs.KeyCode)
             {
-                deleteEntity_Click(sender, keyEventArgs);
+                case Keys.Delete: // purge entity
+                    if (keyEventArgs.Modifiers == Keys.Shift)
+                    {
+                        receiveMessages_Click(sender, keyEventArgs);
+                    }
+                    else // delete entity
+                    {
+                        deleteEntity_Click(sender, keyEventArgs);
+                    }
+                    break;
+
+                case Keys.Enter: // select entity
+                    HandleNodeMouseClick(serviceBusTreeView.SelectedNode);
+                    break;
             }
         }
 
@@ -6104,6 +6117,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 Cursor.Current = Cursors.WaitCursor;
                 if (serviceBusTreeView.SelectedNode != null)
                 {
+                    // queue purge was requested
+                    if (sender is TreeView)
+                    {
+                        var queueControl = panelMain.Controls[0] as HandleQueueControl;
+                        if (queueControl != null)
+                        {
+                            var queueDescription = ((TreeView) sender).SelectedNode.Tag as QueueDescription;
+                            queueControl.PurgeMessages(Convert.ToInt32(queueDescription.MessageCount));
+                            return;
+                        }
+                    }
+
                     var text = ((ToolStripMenuItem)sender).Text;
                     var deadletter = string.Compare(text, queueReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0 ||
                                      string.Compare(text, subscriptionReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0;
