@@ -164,7 +164,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             if (cboServiceBusNamespace.Text == EnterConnectionString || connectionStringType == ServiceBusNamespaceType.OnPremises || containsStsEndpoint)
             {
-                ConnectionString = txtUri.Text;
+                ConnectionString = txtUri.Text.Trim();
                 if (string.IsNullOrWhiteSpace(ConnectionString))
                 {
                     MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);

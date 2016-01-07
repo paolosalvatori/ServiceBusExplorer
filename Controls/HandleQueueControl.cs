@@ -2886,6 +2886,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var stream = messageSession.GetState();
             if (stream == null)
             {
+                txtSessionState.Text = string.Empty;
                 return;
             }
             using (stream)
