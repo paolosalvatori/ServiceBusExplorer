@@ -465,7 +465,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        public ContainerForm(MainForm mainForm, string connectionString, string consumerGroup)
+        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub)
         {
             try
             {
@@ -488,16 +488,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, consumerGroup)
+                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, hubName, consumerGroup)
                 {
                     Location = new Point(1, panelMain.HeaderHeight + 1),
                     Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
                     Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                 };
-                var match = Regex.Match(connectionString, @"HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
-                var ioTHubName = match.Success ? match.Groups[1].Value : string.Empty;
-                Text = string.Format(IoTHubListenerFormat, consumerGroup, ioTHubName);
-                panelMain.HeaderText = string.Format(HeaderTextIoTHubListenerFormat, ioTHubName);
+
+                if (iotHub)
+                {
+                    var match = Regex.Match(connectionString, @"HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
+                    var ioTHubName = match.Success ? match.Groups[1].Value : string.Empty;
+                    Text = string.Format(IoTHubListenerFormat, consumerGroup, ioTHubName);
+                    panelMain.HeaderText = string.Format(HeaderTextIoTHubListenerFormat, ioTHubName);
+                }
+                else
+                {
+                    Text = string.Format(ConsumerGroupListenerFormat, consumerGroup);
+                    panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroup);
+                }
                 partitionListenerControl.Focus();
                 panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
