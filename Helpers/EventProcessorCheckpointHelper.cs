@@ -316,7 +316,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return new Lease
             {
                 PartitionId = partitionId,
-                Epoch = 0,
                 SequenceNumber = 0,
                 Offset = null,
                 Owner = "ServiceBusExplorer",

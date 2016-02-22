@@ -39,14 +39,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string EventProcessorOpenAsyncFormat = "[EventProcessor] Open. PartitionId=[{0}] Offset=[{1}]";
-        private const string EventProcessorCloseAsyncFormat = "[EventProcessor] Close. PartitionId=[{0}] Reason=[{1}]";
-        private const string EventDataSuccessfullyReceived = "[EventProcessor] Event received. PartitionId=[{0}] PartitionKey=[{1}] SequenceNumber=[{2}] Offset=[{3}] EnqueuedTimeUtc=[{4}]";
-
-        //***************************
-        // Constants
-        //***************************
-        private const string NullValue = "NULL";
+        private const string EventProcessorOpenAsyncFormat = "[EventProcessor] Open: PartitionId=[{0}] Offset=[{1}]";
+        private const string EventProcessorCloseAsyncFormat = "[EventProcessor] Close: PartitionId=[{0}] Reason=[{1}]";
+        private const string EventDataSuccessfullyReceived = "[EventProcessor] Event: PartitionId=[{0}] PartitionKey=[{1}] SequenceNumber=[{2}] Offset=[{3}] EnqueuedTimeUtc=[{4}]";
+        private const string EventDataSuccessfullyNoPartitionKeyReceived = "[EventProcessor] Event: PartitionId=[{0}] SequenceNumber=[{1}] Offset=[{2}] EnqueuedTimeUtc=[{3}]";
         #endregion
 
         #region Private Fields
@@ -117,11 +113,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     if (configuration.Logging)
                     {
-                        var builder = new StringBuilder(string.Format(EventDataSuccessfullyReceived,
+                        var builder = new StringBuilder(string.IsNullOrWhiteSpace(events[i].PartitionKey)?
+                                                        string.Format(EventDataSuccessfullyNoPartitionKeyReceived,
                                                         context.Lease.PartitionId,
-                                                        string.IsNullOrWhiteSpace(events[i].PartitionKey)
-                                                            ? NullValue
-                                                            : events[i].PartitionKey,
+                                                        events[i].SequenceNumber,
+                                                        events[i].Offset,
+                                                        events[i].EnqueuedTimeUtc):
+                                                        string.Format(EventDataSuccessfullyReceived,
+                                                        context.Lease.PartitionId,
+                                                        events[i].PartitionKey,
                                                         events[i].SequenceNumber,
                                                         events[i].Offset,
                                                         events[i].EnqueuedTimeUtc));
