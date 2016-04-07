@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ServiceBusExplorer.Setup", "ServiceBusExplorer.Setup\ServiceBusExplorer.Setup.vdproj", "{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer.Tests", "ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "{41D3C27D-37FF-43B8-AAC0-4F483E507698}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -22,6 +24,10 @@ Global
 		{32754F39-E353-4607-94FE-B9B9ACFD58EF}.Release|x86.Build.0 = Release|x86
 		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Debug|x86.ActiveCfg = Debug
 		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Release|x86.ActiveCfg = Release
+		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Debug|x86.Build.0 = Debug|Any CPU
+		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Release|x86.ActiveCfg = Release|Any CPU
+		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
