@@ -129,7 +129,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 case "DateTime":
                     return Convert.ChangeType(value, typeof(DateTime));
                 case "Guid":
-                    return new Guid(value as string);
+                    return new Guid(value.ToString());
             }
             throw new NotSupportedException(string.Format(TypeNotSupported, type));
         }
