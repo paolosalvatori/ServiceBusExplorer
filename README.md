@@ -69,7 +69,6 @@
 <div style="text-align: center;">&nbsp;</div>
 <div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" /></div>
 <div></div>
-<div>Read the full article on <a title="MSDN" href="http://msdn.microsoft.com/en-us/library/hh532261(v=VS.103).aspx" target="_blank"> MSDN</a>.</div>
 <div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
 <div><strong>Author: </strong>Paolo Salvatori</div>
 <div><strong>Update</strong>: 28 August 2012</div>
