@@ -21,37 +21,37 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3DB881BFD5354FE91E430D32FD285A2A"
+        "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4D7B9F0968AA641A3EC85246C12E272B"
+        "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6459F2B9AD5E10022F9CEA5E74E0346F"
-        "OwnerKey" = "8:_E323CCE68FE685C84FDA0F5009782D62"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6459F2B9AD5E10022F9CEA5E74E0346F"
+        "MsmKey" = "8:_7CE6C811156E575AAEE98A92CB906B35"
         "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_68B7A93CC9A128AE2DD40C99EB7AE148"
-        "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
+        "MsmKey" = "8:_C23E97B8A189C3F8B12291030A662420"
+        "OwnerKey" = "8:_4D7B9F0968AA641A3EC85246C12E272B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B6D43F6EC3A2DB3ED3EBCC08E8E95310"
-        "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E323CCE68FE685C84FDA0F5009782D62"
+        "MsmKey" = "8:_C23E97B8A189C3F8B12291030A662420"
         "OwnerKey" = "8:_62D367FBB8034D179A84CD897BEAC37F"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -64,25 +64,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B6D43F6EC3A2DB3ED3EBCC08E8E95310"
+        "OwnerKey" = "8:_7CE6C811156E575AAEE98A92CB906B35"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_68B7A93CC9A128AE2DD40C99EB7AE148"
+        "OwnerKey" = "8:_3DB881BFD5354FE91E430D32FD285A2A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E323CCE68FE685C84FDA0F5009782D62"
+        "OwnerKey" = "8:_4D7B9F0968AA641A3EC85246C12E272B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6459F2B9AD5E10022F9CEA5E74E0346F"
+        "OwnerKey" = "8:_C23E97B8A189C3F8B12291030A662420"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -103,6 +103,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -119,6 +127,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -140,7 +164,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.5"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.6.1"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=395269"
                 }
@@ -168,45 +192,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6459F2B9AD5E10022F9CEA5E74E0346F"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_6459F2B9AD5E10022F9CEA5E74E0346F"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Newtonsoft.Json.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_09AADFF693624C8F9D74EE6067E9A2BA"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_68B7A93CC9A128AE2DD40C99EB7AE148"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3DB881BFD5354FE91E430D32FD285A2A"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_68B7A93CC9A128AE2DD40C99EB7AE148"
+                    "_3DB881BFD5354FE91E430D32FD285A2A"
                     {
                     "Name" = "8:Microsoft.WindowsAzure.Configuration.dll"
                     "Attributes" = "3:512"
@@ -230,14 +223,45 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B6D43F6EC3A2DB3ED3EBCC08E8E95310"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4D7B9F0968AA641A3EC85246C12E272B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.Azure.NotificationHubs, Version=2.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_4D7B9F0968AA641A3EC85246C12E272B"
+                    {
+                    "Name" = "8:Microsoft.Azure.NotificationHubs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.Azure.NotificationHubs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_09AADFF693624C8F9D74EE6067E9A2BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7CE6C811156E575AAEE98A92CB906B35"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B6D43F6EC3A2DB3ED3EBCC08E8E95310"
+                    "_7CE6C811156E575AAEE98A92CB906B35"
                     {
                     "Name" = "8:Microsoft.ServiceBus.dll"
                     "Attributes" = "3:512"
@@ -261,20 +285,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E323CCE68FE685C84FDA0F5009782D62"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C23E97B8A189C3F8B12291030A662420"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Azure.NotificationHubs, Version=2.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E323CCE68FE685C84FDA0F5009782D62"
+                    "_C23E97B8A189C3F8B12291030A662420"
                     {
-                    "Name" = "8:Microsoft.Azure.NotificationHubs.dll"
+                    "Name" = "8:Newtonsoft.Json.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Microsoft.Azure.NotificationHubs.dll"
+            "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_09AADFF693624C8F9D74EE6067E9A2BA"
@@ -349,7 +373,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Service Bus Explorer"
         "ProductCode" = "8:{294E1266-DA15-4E1B-898E-2639AD5C6FD4}"
-        "PackageCode" = "8:{5794F6D7-B644-45EE-8D77-E73CED121C6E}"
+        "PackageCode" = "8:{3F5C901F-228D-48CF-8BC6-6ACA20041A2C}"
         "UpgradeCode" = "8:{29DD30A4-4EFD-4783-98A2-D97A8C2E4844}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -884,7 +908,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_62D367FBB8034D179A84CD897BEAC37F"
             {
-            "SourcePath" = "8:..\\obj\\x86\\Debug\\ServiceBusExplorer.exe"
+            "SourcePath" = "8:..\\obj\\Release\\ServiceBusExplorer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_09AADFF693624C8F9D74EE6067E9A2BA"
