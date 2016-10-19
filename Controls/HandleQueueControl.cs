@@ -1475,15 +1475,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var queueClient =
                         serviceBusHelper.MessagingFactory.CreateQueueClient(
                             QueueClient.FormatDeadLetterPath(queueDescription.Path), ReceiveMode.PeekLock);
-                    var messageEnumerable = queueClient.PeekBatch(count);
-                    if (messageEnumerable == null)
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
                     {
-                        return;
-                    }
-                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                    brokeredMessages = messageInspector != null ?
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
-                                       new List<BrokeredMessage>(messageArray);
+                        var messages = queueClient.PeekBatch(all
+                            ? MainForm.SingletonMainForm.TopCount
+                            : count - totalRetrieved);
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Count();
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
+                    } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count,
                         queueDescription.Path));
                 }

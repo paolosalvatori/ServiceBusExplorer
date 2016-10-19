@@ -1210,15 +1210,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                                                                               subscriptionWrapper.SubscriptionDescription.Name),
                                                                                               ReceiveMode.PeekLock);
-                    var messageEnumerable = messageReceiver.PeekBatch(count);
-                    if (messageEnumerable == null)
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
                     {
-                        return;
+                        var messages = messageReceiver.PeekBatch(all ?
+                                                                    MainForm.SingletonMainForm.TopCount :
+                                                                    count - totalRetrieved);
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Count();
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
                     }
-                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                    brokeredMessages = messageInspector != null ?
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
-                                       new List<BrokeredMessage>(messageArray);
+                    while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
                 else
