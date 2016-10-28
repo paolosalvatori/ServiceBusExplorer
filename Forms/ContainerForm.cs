@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team 
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -29,8 +25,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.ServiceBus.Messaging;
@@ -56,29 +50,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         private const string SendMessagesFormat = "Send messages to {0}";
-        private const string SendEventsToEventHubFormat = "Send events to {0}";
-        private const string SendEventsToEventHubPartitionFormat = "Send events to partition {0} of {1}";
         private const string TestQueueFormat = "Test queue {0} in MDI mode";
         private const string TestTopicFormat = "Test topic {0} in MDI mode";
         private const string TestSubscriptionFormat = "Test subscription {0} in MDI mode";
-        private const string TestRelayFormat = "Test relay {0} in MDI mode";
         private const string HeaderTextTestQueueFormat = "Test Queue: {0}";
         private const string HeaderTextTestTopicFormat = "Test Topic: {0}";
         private const string HeaderTextTestSubscriptionFormat = "Test Subscription: {0}";
-        private const string HeaderTextTestEventHubFormat = "Test Event Hub: {0}";
-        private const string HeaderTextTestEventHubPartitionFormat = "Test Partition: {0} of Event Hub: {1}";
-        private const string HeaderTextTestRelayFormat = "Test Relay: {0}";
         private const string LogFileNameFormat = "ServiceBusExplorer {0}.txt";
         private const string QueueListenerFormat = "Listener for queue {0}";
         private const string SubscriptionListenerFormat = "Listener for subscription {0}";
         private const string HeaderTextQueueListenerFormat = "Queue Listener: {0}";
         private const string HeaderTextSubscriptionListenerFormat = "Subscription Listener: {0}";
-        private const string ConsumerGroupListenerFormat = "Listener for Consumer Group {0}";
-        private const string PartitionListenerFormat = "Listener for Partition {0} of Consumer Group {1}";
-        private const string IoTHubListenerFormat = "Listener for Consumer Group {0} of IoT HUb {1}";
-        private const string HeaderTextConsumerGroupListenerFormat = "Consumer Group Listener: {0}";
-        private const string HeaderTextPartitionListenerFormat = "Partition Listener: {0}";
-        private const string HeaderTextIoTHubListenerFormat = "IoT Hub Listener: {0}";
 
         //***************************
         // Constants
@@ -101,14 +83,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly TestQueueControl testQueueControl;
         private readonly TestTopicControl testTopicControl;
         private readonly TestSubscriptionControl testSubscriptionControl;
-        private readonly TestEventHubControl testEventHubControl;
-        private readonly TestRelayControl testRelayControl;
         private readonly LogTraceListener logTraceListener;
         private readonly int mainSplitterDistance;
-        private BlockingCollection<string> logCollection = new BlockingCollection<string>();
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        // ReSharper disable once NotAccessedField.Local
-        private Task logTask;
+        private readonly BlockingCollection<string> logCollection = new BlockingCollection<string>();
         #endregion
 
         #region Public Constructors
@@ -117,13 +94,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 InitializeComponent();
-                logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
+                Task.Factory.StartNew(AsyncWriteToLog);
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
@@ -158,13 +129,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
+                Task.Factory.StartNew(AsyncWriteToLog);
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
@@ -174,22 +139,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
+                    var listenerControl = new ListenerControl(WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
-                        Size = new Size(panelMain.Size.Width - 3, queueDescription.RequiresSession ? 544 : 520),
+                        Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
                         Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                     };
                     listenerControl.Focus();
 
                     Text = string.Format(QueueListenerFormat, queueDescription.Path);
-                    mainSplitContainer.SplitterDistance = queueDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
                     panelMain.HeaderText = string.Format(HeaderTextQueueListenerFormat, queueDescription.Path);
                     panelMain.Controls.Add(listenerControl);
                 }
                 else
                 {
-                    testQueueControl = new TestQueueControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
+                    testQueueControl = new TestQueueControl(mainForm, WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
                                            {
                                                Location = new Point(1, panelMain.HeaderHeight + 1),
                                                Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -201,14 +165,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         testQueueControl.mainTabControl.TabPages.RemoveAt(2);
                         testQueueControl.receiverEnabledCheckBox.Checked = false;
-                        testQueueControl.senderEnabledCheckBox.Checked = true;
-                        testQueueControl.senderEnabledCheckBox.Visible = false;
-                        testQueueControl.grouperMessage.Location = new Point(testQueueControl.grouperMessage.Location.X, 8);
-                        testQueueControl.grouperMessage.Size = new Size(testQueueControl.grouperMessage.Size.Width, 
-                                                                        testQueueControl.grouperMessage.Size.Height + 16);
-                        testQueueControl.grouperSender.Location = new Point(testQueueControl.grouperSender.Location.X, 8);
-                        testQueueControl.grouperSender.Size = new Size(testQueueControl.grouperSender.Size.Width,
-                                                                       testQueueControl.grouperSender.Size.Height + 16);
                         Text = string.Format(SendMessagesFormat, queueDescription.Path);
                     }
                     else
@@ -240,13 +196,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
+                Task.Factory.StartNew(AsyncWriteToLog);
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
@@ -254,7 +204,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testTopicControl = new TestTopicControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
+                testTopicControl = new TestTopicControl(mainForm, WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
                                        {
                                            Location = new Point(1, panelMain.HeaderHeight + 1),
                                            Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -266,14 +216,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     testTopicControl.mainTabControl.TabPages.RemoveAt(2);
                     testTopicControl.receiverEnabledCheckBox.Checked = false;
-                    testTopicControl.senderEnabledCheckBox.Checked = true;
-                    testTopicControl.senderEnabledCheckBox.Visible = false;
-                    testTopicControl.grouperMessage.Location = new Point(testTopicControl.grouperMessage.Location.X, 8);
-                    testTopicControl.grouperMessage.Size = new Size(testTopicControl.grouperMessage.Size.Width,
-                                                                    testTopicControl.grouperMessage.Size.Height + 16);
-                    testTopicControl.grouperSender.Location = new Point(testTopicControl.grouperSender.Location.X, 8);
-                    testTopicControl.grouperSender.Size = new Size(testTopicControl.grouperSender.Size.Width,
-                                                                   testTopicControl.grouperSender.Size.Height + 16);
                     Text = string.Format(SendMessagesFormat, topicDescription.Path);
                 }
                 else
@@ -304,13 +246,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
+                Task.Factory.StartNew(AsyncWriteToLog);
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
@@ -320,22 +256,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
+                    var listenerControl = new ListenerControl(WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
-                        Size = new Size(panelMain.Size.Width - 3, subscriptionWrapper.SubscriptionDescription.RequiresSession ? 544 : 520),
+                        Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
                         Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                     };
                     listenerControl.Focus();
 
                     Text = string.Format(SubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
-                    mainSplitContainer.SplitterDistance = subscriptionWrapper.SubscriptionDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
                     panelMain.HeaderText = string.Format(HeaderTextSubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
                     panelMain.Controls.Add(listenerControl);
                 }
                 else
                 {
-                    testSubscriptionControl = new TestSubscriptionControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper)
+                    testSubscriptionControl = new TestSubscriptionControl(mainForm, WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper)
                     {
                         Location = new Point(1, panelMain.HeaderHeight + 1),
                         Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
@@ -359,212 +294,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 ResumeLayout();
             }
         }
-
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null)
-        {
-            try
-            {
-                InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
-                this.mainForm = mainForm;
-                mainSplitterDistance = mainSplitContainer.SplitterDistance;
-                SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-
-                testEventHubControl = new TestEventHubControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), eventHubDescription, partitionDescription)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-                Text = partitionDescription == null
-                    ? string.Format(SendEventsToEventHubFormat, eventHubDescription.Path)
-                    : string.Format(SendEventsToEventHubPartitionFormat,
-                        partitionDescription.PartitionId,
-                        eventHubDescription.Path);
-
-                testEventHubControl.btnCancel.Text = CloseLabel;
-                testEventHubControl.btnCancel.Click -= testEventHubControl.btnCancel_Click;
-                testEventHubControl.btnCancel.Click += BtnCancelOnClick;
-                testEventHubControl.Focus();
-
-                panelMain.HeaderText = partitionDescription == null ?
-                                       string.Format(HeaderTextTestEventHubFormat, eventHubDescription.Path) :
-                                       string.Format(HeaderTextTestEventHubPartitionFormat, 
-                                                     partitionDescription.PartitionId, 
-                                                     eventHubDescription.Path);
-
-                panelMain.Controls.Add(testEventHubControl);
-                SetStyle(ControlStyles.ResizeRedraw, true);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                ResumeLayout();
-            }
-        }
-
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, ConsumerGroupDescription consumerGroupDescription, IEnumerable<PartitionDescription> partitionDescriptions)
-        {
-            try
-            {
-                var descriptions = partitionDescriptions as IList<PartitionDescription> ?? partitionDescriptions.ToList();
-                if (partitionDescriptions == null || !descriptions.Any())
-                {
-                    return;
-                }
-                InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
-                this.mainForm = mainForm;
-                mainSplitterDistance = mainSplitContainer.SplitterDistance;
-                SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-                if (descriptions.Count == 1)
-                {
-                    Text = string.Format(PartitionListenerFormat, descriptions[0].PartitionId, consumerGroupDescription.Name);
-                    panelMain.HeaderText = string.Format(HeaderTextPartitionListenerFormat, descriptions[0].PartitionId);
-                }
-                else
-                {
-                    Text = string.Format(ConsumerGroupListenerFormat, consumerGroupDescription.Name);
-                    panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroupDescription.Name);
-                }                
-                partitionListenerControl.Focus();
-                panelMain.Controls.Add(partitionListenerControl);
-                SetStyle(ControlStyles.ResizeRedraw, true);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                ResumeLayout();
-            }
-        }
-
-        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(consumerGroup))
-                {
-                    return;
-                }
-                InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
-                this.mainForm = mainForm;
-                mainSplitterDistance = mainSplitContainer.SplitterDistance;
-                SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, hubName, consumerGroup)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-                if (iotHub)
-                {
-                    var match = Regex.Match(connectionString, @"HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
-                    var ioTHubName = match.Success ? match.Groups[1].Value : string.Empty;
-                    Text = string.Format(IoTHubListenerFormat, consumerGroup, ioTHubName);
-                    panelMain.HeaderText = string.Format(HeaderTextIoTHubListenerFormat, ioTHubName);
-                }
-                else
-                {
-                    Text = string.Format(ConsumerGroupListenerFormat, consumerGroup);
-                    panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroup);
-                }
-                partitionListenerControl.Focus();
-                panelMain.Controls.Add(partitionListenerControl);
-                SetStyle(ControlStyles.ResizeRedraw, true);
-            }
-            finally
-            {
-                if (panelMain != null)
-                {
-                    panelMain.ResumeDrawing();
-                }
-                ResumeLayout();
-            }
-        }
-
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription)
-        {
-            try
-            {
-                InitializeComponent();
-                Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
-                this.mainForm = mainForm;
-                mainSplitterDistance = mainSplitContainer.SplitterDistance;
-                SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-
-                testRelayControl = new TestRelayControl(mainForm, WriteToLog, StopLog, StartLog, relayDescription, new ServiceBusHelper(WriteToLog, serviceBusHelper))
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-                Text = string.Format(TestRelayFormat, relayDescription.Path);
-
-                testRelayControl.btnCancel.Text = CloseLabel;
-                testRelayControl.btnCancel.Click -= testRelayControl.btnCancel_Click;
-                testRelayControl.btnCancel.Click += BtnCancelOnClick;
-                testRelayControl.Focus();
-
-                panelMain.HeaderText = string.Format(HeaderTextTestRelayFormat, relayDescription.Path);
-
-                panelMain.Controls.Add(testRelayControl);
-                SetStyle(ControlStyles.ResizeRedraw, true);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                ResumeLayout();
-            }
-        }
         #endregion
 
         #region Public Methods
@@ -575,27 +304,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Methods
-        private async void BtnCancelOnClick(object sender, EventArgs eventArgs)
+        private void BtnCancelOnClick(object sender, EventArgs eventArgs)
         {
             if (testQueueControl != null)
             {
-                await testQueueControl.CancelActions();
+                testQueueControl.CancelActions();
             }
             if (testTopicControl != null)
             {
-                await testTopicControl.CancelActions();
+                testTopicControl.CancelActions();
             }
             if (testSubscriptionControl != null)
             {
-                await testSubscriptionControl.CancelActions();
-            }
-            if (testEventHubControl != null)
-            {
-                await testEventHubControl.CancelActions();
-            }
-            if (testRelayControl != null)
-            {
-                await testRelayControl.CancelActions();
+                testSubscriptionControl.CancelActions();
             }
             Close();
         }
@@ -665,62 +386,25 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private Task StopLog()
+        private void AsyncWriteToLog()
         {
-            cancellationTokenSource.Cancel();
-            return Task.FromResult(true);
-        }
-
-        private void StartLog()
-        {
-            if (logCollection != null)
+            while (true)
             {
-                logCollection.Dispose();
-            }
-            logCollection = new BlockingCollection<string>();
-            cancellationTokenSource = new CancellationTokenSource();
-            logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-            {
-                if (t.IsFaulted && t.Exception != null)
+                string message;
+                var ok = logCollection.TryTake(out message, 100);
+                if (!ok)
                 {
-                    WriteToLog(t.Exception.Message);
+                    continue;
                 }
-            });
-        }
-
-        private async void AsyncWriteToLog()
-        {
-            try
-            {
-                var count = 1;
-                while (!cancellationTokenSource.IsCancellationRequested)
+                if (InvokeRequired)
                 {
-                    string message;
-                    var ok = logCollection.TryTake(out message, 100);
-                    if (!ok)
-                    {
-                        continue;
-                    }
-                    count = (count + 1) % 10;
-                    if (count == 0)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(5));
-                    }
-                    if (InvokeRequired)
-                    {
-                        Invoke(new Action<string>(InternalWriteToLog), new object[] { message });
-                    }
-                    else
-                    {
-                        InternalWriteToLog(message);
-                    }
+                    Invoke(new Action<string>(InternalWriteToLog), new object[] { message });
+                }
+                else
+                {
+                    InternalWriteToLog(message);
                 }
             }
-// ReSharper disable once EmptyGeneralCatchClause
-            catch
-            {
-            }
-            
 // ReSharper disable FunctionNeverReturns
         }
 // ReSharper restore FunctionNeverReturns
@@ -778,11 +462,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cancellationTokenSource.Cancel(false);
-            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-            {
-                userControl.Dispose();
-            }
             if (logTraceListener != null &&
                 Trace.Listeners.Contains(logTraceListener))
             {

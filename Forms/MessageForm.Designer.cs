@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -66,8 +62,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblBody = new System.Windows.Forms.Label();
             this.cboBodyType = new System.Windows.Forms.ComboBox();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.cboSenderInspector = new System.Windows.Forms.ComboBox();
-            this.lblReceiverInspector = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).BeginInit();
             this.messagesSplitContainer.Panel1.SuspendLayout();
             this.messagesSplitContainer.Panel2.SuspendLayout();
@@ -90,7 +84,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnClose.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(880, 508);
+            this.btnClose.Location = new System.Drawing.Point(880, 464);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(72, 24);
             this.btnClose.TabIndex = 2;
@@ -108,7 +102,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(800, 508);
+            this.btnSave.Location = new System.Drawing.Point(800, 464);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 1;
@@ -124,7 +118,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSubmit.Location = new System.Drawing.Point(720, 508);
+            this.btnSubmit.Location = new System.Drawing.Point(720, 464);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(72, 24);
             this.btnSubmit.TabIndex = 0;
@@ -147,7 +141,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // messagesSplitContainer.Panel2
             // 
             this.messagesSplitContainer.Panel2.Controls.Add(this.grouperMessageProperties);
-            this.messagesSplitContainer.Size = new System.Drawing.Size(936, 474);
+            this.messagesSplitContainer.Size = new System.Drawing.Size(936, 430);
             this.messagesSplitContainer.SplitterDistance = 608;
             this.messagesSplitContainer.SplitterWidth = 16;
             this.messagesSplitContainer.TabIndex = 4;
@@ -166,8 +160,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // messageListTextPropertiesSplitContainer.Panel2
             // 
             this.messageListTextPropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
-            this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(608, 474);
-            this.messageListTextPropertiesSplitContainer.SplitterDistance = 226;
+            this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(608, 430);
+            this.messageListTextPropertiesSplitContainer.SplitterDistance = 206;
             this.messageListTextPropertiesSplitContainer.SplitterWidth = 8;
             this.messageListTextPropertiesSplitContainer.TabIndex = 0;
             // 
@@ -193,7 +187,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(608, 226);
+            this.grouperMessageText.Size = new System.Drawing.Size(608, 206);
             this.grouperMessageText.TabIndex = 26;
             // 
             // txtMessageText
@@ -202,12 +196,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageText.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMessageText.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
             this.txtMessageText.Multiline = true;
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtMessageText.Size = new System.Drawing.Size(576, 178);
+            this.txtMessageText.Size = new System.Drawing.Size(576, 158);
             this.txtMessageText.TabIndex = 0;
             // 
             // grouperMessageCustomProperties
@@ -232,7 +225,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageCustomProperties.ShadowControl = false;
             this.grouperMessageCustomProperties.ShadowThickness = 1;
-            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(608, 240);
+            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(608, 216);
             this.grouperMessageCustomProperties.TabIndex = 27;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
@@ -248,9 +241,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.propertiesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.propertiesDataGridView.Location = new System.Drawing.Point(16, 32);
             this.propertiesDataGridView.Name = "propertiesDataGridView";
-            this.propertiesDataGridView.Size = new System.Drawing.Size(576, 192);
+            this.propertiesDataGridView.Size = new System.Drawing.Size(576, 168);
             this.propertiesDataGridView.TabIndex = 0;
-            this.propertiesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.propertiesDataGridView_DataError);
             this.propertiesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.propertiesDataGridView_RowsAdded);
             this.propertiesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.propertiesDataGridView_RowsRemoved);
             this.propertiesDataGridView.Resize += new System.EventHandler(this.propertiesDataGridView_Resize);
@@ -277,7 +269,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
-            this.grouperMessageProperties.Size = new System.Drawing.Size(312, 474);
+            this.grouperMessageProperties.Size = new System.Drawing.Size(312, 430);
             this.grouperMessageProperties.TabIndex = 19;
             // 
             // messagePropertyGrid
@@ -286,21 +278,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagePropertyGrid.BackColor = System.Drawing.SystemColors.Window;
-            this.messagePropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.messagePropertyGrid.HelpVisible = false;
             this.messagePropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.messagePropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyGrid.Name = "messagePropertyGrid";
-            this.messagePropertyGrid.Size = new System.Drawing.Size(280, 428);
+            this.messagePropertyGrid.Size = new System.Drawing.Size(280, 384);
             this.messagePropertyGrid.TabIndex = 0;
             this.messagePropertyGrid.ToolbarVisible = false;
             // 
             // lblBody
             // 
-            this.lblBody.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblBody.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblBody.AutoSize = true;
             this.lblBody.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblBody.Location = new System.Drawing.Point(472, 512);
+            this.lblBody.Location = new System.Drawing.Point(568, 468);
             this.lblBody.Name = "lblBody";
             this.lblBody.Size = new System.Drawing.Size(61, 13);
             this.lblBody.TabIndex = 77;
@@ -308,7 +299,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // 
             // cboBodyType
             // 
-            this.cboBodyType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cboBodyType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cboBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboBodyType.FormattingEnabled = true;
@@ -316,42 +307,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             "Stream",
             "String",
             "WCF"});
-            this.cboBodyType.Location = new System.Drawing.Point(536, 509);
+            this.cboBodyType.Location = new System.Drawing.Point(640, 465);
             this.cboBodyType.Name = "cboBodyType";
-            this.cboBodyType.Size = new System.Drawing.Size(88, 21);
+            this.cboBodyType.Size = new System.Drawing.Size(72, 21);
             this.cboBodyType.TabIndex = 76;
-            // 
-            // cboSenderInspector
-            // 
-            this.cboSenderInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cboSenderInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSenderInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSenderInspector.FormattingEnabled = true;
-            this.cboSenderInspector.Location = new System.Drawing.Point(120, 509);
-            this.cboSenderInspector.Name = "cboSenderInspector";
-            this.cboSenderInspector.Size = new System.Drawing.Size(344, 21);
-            this.cboSenderInspector.TabIndex = 152;
-            // 
-            // lblReceiverInspector
-            // 
-            this.lblReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblReceiverInspector.AutoSize = true;
-            this.lblReceiverInspector.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiverInspector.Location = new System.Drawing.Point(16, 512);
-            this.lblReceiverInspector.Name = "lblReceiverInspector";
-            this.lblReceiverInspector.Size = new System.Drawing.Size(100, 13);
-            this.lblReceiverInspector.TabIndex = 151;
-            this.lblReceiverInspector.Text = "Message Inspector:";
             // 
             // MessageForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(968, 541);
-            this.Controls.Add(this.cboSenderInspector);
-            this.Controls.Add(this.lblReceiverInspector);
+            this.ClientSize = new System.Drawing.Size(968, 497);
             this.Controls.Add(this.lblBody);
             this.Controls.Add(this.cboBodyType);
             this.Controls.Add(this.messagesSplitContainer);
@@ -398,7 +364,5 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private System.Windows.Forms.Label lblBody;
         private System.Windows.Forms.ComboBox cboBodyType;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private System.Windows.Forms.ComboBox cboSenderInspector;
-        private System.Windows.Forms.Label lblReceiverInspector;
     }
 }

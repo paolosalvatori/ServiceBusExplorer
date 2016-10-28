@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -55,12 +51,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectEntityForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.grouperTreeView = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
             this.lblSelectTargetEntity = new System.Windows.Forms.Label();
             this.lblTargetQueueTopic = new System.Windows.Forms.Label();
             this.txtEntity = new System.Windows.Forms.TextBox();
             this.serviceBusTreeView = new System.Windows.Forms.TreeView();
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.btnClear = new System.Windows.Forms.Button();
             this.grouperTreeView.SuspendLayout();
             this.SuspendLayout();
@@ -100,6 +96,26 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             this.btnCancel.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCancel.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // imageList
+            // 
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "Queue.ico");
+            this.imageList.Images.SetKeyName(1, "Topic.ico");
+            this.imageList.Images.SetKeyName(2, "Chart.ico");
+            this.imageList.Images.SetKeyName(3, "Class.ico");
+            this.imageList.Images.SetKeyName(4, "Add.ico");
+            this.imageList.Images.SetKeyName(5, "UserInfo.ico");
+            this.imageList.Images.SetKeyName(6, "exec.ico");
+            this.imageList.Images.SetKeyName(7, "AzureLogo.ico");
+            this.imageList.Images.SetKeyName(8, "World.png");
+            this.imageList.Images.SetKeyName(9, "RelayService.png");
+            this.imageList.Images.SetKeyName(10, "folder_web.ico");
+            this.imageList.Images.SetKeyName(11, "Web.ico");
+            this.imageList.Images.SetKeyName(12, "GreyChart.ico");
+            this.imageList.Images.SetKeyName(13, "GreyClass.ico");
+            this.imageList.Images.SetKeyName(14, "GreyUserInfo.ico");
             // 
             // grouperTreeView
             // 
@@ -152,7 +168,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblTargetQueueTopic.TabIndex = 23;
             this.lblTargetQueueTopic.Text = "Target Queue or Topic:";
             // 
-            // txtEntity
+            // txtForwardTo
             // 
             this.txtEntity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -179,35 +195,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.serviceBusTreeView.Size = new System.Drawing.Size(429, 294);
             this.serviceBusTreeView.TabIndex = 0;
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
-            // 
-            // imageList
-            // 
-            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList.Images.SetKeyName(0, "Queue.ico");
-            this.imageList.Images.SetKeyName(1, "Topic.ico");
-            this.imageList.Images.SetKeyName(2, "Chart.ico");
-            this.imageList.Images.SetKeyName(3, "Class.ico");
-            this.imageList.Images.SetKeyName(4, "Add.ico");
-            this.imageList.Images.SetKeyName(5, "UserInfo.ico");
-            this.imageList.Images.SetKeyName(6, "exec.ico");
-            this.imageList.Images.SetKeyName(7, "AzureLogo.ico");
-            this.imageList.Images.SetKeyName(8, "World.png");
-            this.imageList.Images.SetKeyName(9, "Relay.png");
-            this.imageList.Images.SetKeyName(10, "folder_web.ico");
-            this.imageList.Images.SetKeyName(11, "Web.ico");
-            this.imageList.Images.SetKeyName(12, "GreyChart.ico");
-            this.imageList.Images.SetKeyName(13, "GreyClass.ico");
-            this.imageList.Images.SetKeyName(14, "GreyUserInfo.ico");
-            this.imageList.Images.SetKeyName(15, "hub.png");
-            this.imageList.Images.SetKeyName(16, "app.ico");
-            this.imageList.Images.SetKeyName(17, "Funnel.ico");
-            this.imageList.Images.SetKeyName(18, "EventHub.ico");
-            this.imageList.Images.SetKeyName(19, "GreyEventHub.ico");
-            this.imageList.Images.SetKeyName(20, "kdf.png");
-            this.imageList.Images.SetKeyName(21, "groupofusers.ico");
-            this.imageList.Images.SetKeyName(22, "groupofusers_grey.ico");
-            this.imageList.Images.SetKeyName(23, "PieDiagram.ico");
             // 
             // btnClear
             // 
@@ -255,7 +242,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private System.Windows.Forms.TextBox txtEntity;
         private System.Windows.Forms.Label lblTargetQueueTopic;
         private System.Windows.Forms.Label lblSelectTargetEntity;
-        private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.ImageList imageList;
+        private System.Windows.Forms.Button btnClear;
     }
 }

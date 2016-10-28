@@ -1,27 +1,22 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team  
+// Windows Azure Customer Advisory Team  
 //
 // This sample is supplemental to the technical guidance published on the community
 // blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
 #region Using Directives
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -49,15 +44,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ConnectionStringTransportTypeFormat = ";TransportType={0}";
         private const string DefaultNetMessagingRuntimePort = "9354";
         private const string DefaultAmqpRuntimePort = "5671";
-        private const string SharedSecretIssuerNameLabel = "Shared Secret Issuer Name:";
-        private const string SharedSecretIssuerSecretLabel = "Shared Secret Issuer Secret:";
-        private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
-        private const string SharedAccessKeyLabel = "Shared Access Key:";
 
         //***************************
         // Tooltips
         //***************************
-        private const string ConnectionStringTooltip = "Microsoft Azure Service Bus\r\n-----------------------------\r\nEndpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedSecretIssuer=<issuer>;SharedSecretValue=<secret>\r\n\r\nService Bus for Windows Server\r\n---------------------------------\r\nEndpoint=sb://<machinename>/<servicebusnamespace>;StsEndpoint=https://<machinename>:9355/<servicebusnamespace>;\r\nRuntimePort=9354;ManagementPort=9355;WindowsUsername=<username>;WindowsDomain=<domain/machinename>;WindowsPassword=<password>";
+        private const string ConnectionStringTooltip = "Windows Azure Service Bus\r\n-----------------------------\r\nEndpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedSecretIssuer=<issuer>;SharedSecretValue=<secret>\r\n\r\nService Bus for Windows Server\r\n---------------------------------\r\nEndpoint=sb://<machinename>/<servicebusnamespace>;StsEndpoint=https://<machinename>:9355/<servicebusnamespace>;\r\nRuntimePort=9354;ManagementPort=9355;WindowsUsername=<username>;WindowsDomain=<domain/machinename>;WindowsPassword=<password>";
         private const string UriTooltip = "Gets or sets the Uri of the service bus namespace endpoint.";
 
         //***************************
@@ -68,14 +59,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Private Instance Fields
         private readonly ServiceBusHelper serviceBusHelper;
-        private bool isIssuerName;
         #endregion
 
         #region Private Static Fields
         private static int connectionStringIndex = -1;
         private static string connectionString;
         #endregion
-
+        
         #region Public Constructor
         public ConnectForm(ServiceBusHelper serviceBusHelper)
         {
@@ -108,16 +98,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             txtTopicFilterExpression.Text = FilterExpressionHelper.TopicFilterExpression;
             txtSubscriptionFilterExpression.Text = FilterExpressionHelper.SubscriptionFilterExpression;
             btnOk.Enabled = cboServiceBusNamespace.SelectedIndex > 1 || (cboServiceBusNamespace.Text == EnterConnectionString && !string.IsNullOrWhiteSpace(connectionString));
-
-            foreach (var item in MainForm.SingletonMainForm.Entities)
-            {
-                cboSelectedEntities.Items.Add(item);
-            }
-
-            foreach (var item in MainForm.SingletonMainForm.SelectedEntities)
-            {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
-            }
         }
         #endregion
 
@@ -128,18 +108,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public string ServicePath { get; set; }
         public string IssuerName { get; private set; }
         public string IssuerSecret { get; private set; }
-        public string SharedAccessKeyName { get; private set; }
-        public string SharedAccessKey { get; private set; }
         public string ConnectionString { get; private set; }
         public ConnectivityMode ConnectivityMode { get; private set; }
         public TransportType TransportType { get; set; }
-        public List<string> SelectedEntities
-        {
-            get
-            {
-                return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
-            }
-        }
         #endregion
 
         #region Event Handlers
@@ -164,7 +135,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             if (cboServiceBusNamespace.Text == EnterConnectionString || connectionStringType == ServiceBusNamespaceType.OnPremises || containsStsEndpoint)
             {
-                ConnectionString = txtUri.Text.Trim();
+                ConnectionString = txtUri.Text;
                 if (string.IsNullOrWhiteSpace(ConnectionString))
                 {
                     MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
@@ -175,27 +146,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 Uri = txtUri.Text;
                 Namespace = txtNamespace.Text;
+                IssuerName = txtIssuerName.Text;
+                IssuerSecret = txtIssuerSecret.Text;
                 TransportType = (TransportType)cboTransportType.SelectedItem;
-                if (isIssuerName)
-                {
-                    IssuerName = txtIssuerName.Text;
-                    IssuerSecret = txtIssuerSecret.Text;
-                    ConnectionString = string.Format(ServiceBusNamespace.ConnectionStringFormat,
-                                                     Uri,
-                                                     IssuerName,
-                                                     IssuerSecret,
-                                                     TransportType);
-                }
-                else
-                {
-                    SharedAccessKeyName = txtIssuerName.Text;
-                    SharedAccessKey = txtIssuerSecret.Text;
-                    ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
-                                                     Uri,
-                                                     SharedAccessKeyName,
-                                                     SharedAccessKey,
-                                                     TransportType);
-                }
+                ConnectionString = string.Format(ServiceBusNamespace.ConnectionStringFormat,
+                                                 Uri,
+                                                 IssuerName,
+                                                 IssuerSecret,
+                                                 TransportType);
             }
             DialogResult = DialogResult.OK;
             ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
@@ -262,9 +220,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                        serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType :
                                        ServiceBusNamespaceType.Custom;
 
-            Key = cboServiceBusNamespace.SelectedIndex > 1 &&
-                  serviceBusHelper.ServiceBusNamespaces.ContainsKey(cboServiceBusNamespace.Text) ?
-                  cboServiceBusNamespace.Text :
+            Key = cboServiceBusNamespace.SelectedIndex > 1 && 
+                  serviceBusHelper.ServiceBusNamespaces.ContainsKey(cboServiceBusNamespace.Text) ? 
+                  cboServiceBusNamespace.Text : 
                   null;
 
             var containsStsEndpoint = !string.IsNullOrWhiteSpace(Key) &&
@@ -302,22 +260,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 txtUri.Text = ns.Uri;
                 txtNamespace.Text = ns.Namespace;
-                if (!string.IsNullOrWhiteSpace(ns.SharedAccessKeyName) && !string.IsNullOrWhiteSpace(ns.SharedAccessKey))
-                {
-                    txtIssuerName.Text = ns.SharedAccessKeyName;
-                    txtIssuerSecret.Text = ns.SharedAccessKey;
-                    lblIssuerName.Text = SharedAccessKeyNameLabel;
-                    lblIssuerSecret.Text = SharedAccessKeyLabel;
-                    isIssuerName = false;
-                }
-                else
-                {
-                    txtIssuerName.Text = ns.IssuerName;
-                    txtIssuerSecret.Text = ns.IssuerSecret;
-                    lblIssuerName.Text = SharedSecretIssuerNameLabel;
-                    lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
-                    isIssuerName = true;
-                }
+                txtIssuerName.Text = ns.IssuerName;
+                txtIssuerSecret.Text = ns.IssuerSecret;
             }
             cboTransportType.SelectedItem = ns.TransportType;
         }
@@ -327,10 +271,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var connectionStringType = cboServiceBusNamespace.SelectedIndex > 1 ?
                                        serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType :
                                        ServiceBusNamespaceType.Custom;
-            var containsStsEndpoint = !string.IsNullOrWhiteSpace(Key) &&
-                                      !string.IsNullOrWhiteSpace(serviceBusHelper.ServiceBusNamespaces[Key].StsEndpoint);
-
-            if (cboServiceBusNamespace.Text == EnterConnectionString || connectionStringType == ServiceBusNamespaceType.OnPremises || containsStsEndpoint)
+            if (cboServiceBusNamespace.Text == EnterConnectionString || connectionStringType == ServiceBusNamespaceType.OnPremises)
             {
                 btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text);
                 if (string.IsNullOrEmpty(txtUri.Text))
@@ -354,7 +295,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     var transportType = (TransportType)cboTransportType.SelectedItem;
                     value = value.Replace(parameters[ConnectionStringRuntimePort],
-                                       transportType == TransportType.Amqp ?
+                                       transportType == TransportType.Amqp ? 
                                        DefaultAmqpRuntimePort :
                                        DefaultNetMessagingRuntimePort);
                 }
@@ -456,15 +397,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     cboServiceBusNamespace.Location.Y - 1,
                                     cboServiceBusNamespace.Size.Width + 1,
                                     cboServiceBusNamespace.Size.Height + 1);
-        }
-
-        private void grouperFilters_CustomPaint(PaintEventArgs e)
-        {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboSelectedEntities.Location.X - 1,
-                                    cboSelectedEntities.Location.Y - 1,
-                                    cboSelectedEntities.Size.Width + 1,
-                                    cboSelectedEntities.Size.Height + 1);
         }
 
         private void grouperServiceBusNamespaceSettings_CustomPaint(PaintEventArgs e)

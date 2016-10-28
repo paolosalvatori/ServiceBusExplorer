@@ -7,15 +7,11 @@
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -27,14 +23,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.Azure.NotificationHubs;
-using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using Microsoft.ServiceBus.Notifications;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -51,27 +44,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string Namespace = @"http://schemas.microsoft.com/servicebusexplorer";
         private const string QueueDescriptionClass = "QueueDescription";
         private const string TopicDescriptionClass = "TopicDescription";
-        private const string RelayDescriptionClass = "RelayDescription";
         private const string NotificationHubDescriptionClass = "NotificationHubDescription";
         private const string SubscriptionDescriptionClass = "SubscriptionDescription";
         private const string RuleDescriptionClass = "RuleDescription";
-        private const string EventHubDescriptionClass = "EventHubDescription";
-        private const string ConsumerGroupDescriptionClass = "ConsumerGroupDescription";
-        private const string PartitionDescriptionClass = "PartitionDescription";
         private const string QueueEntity = "Queue";
         private const string TopicEntity = "Topic";
-        private const string RelayEntity = "Relay";
         private const string NotificationHubEntity = "NotificationHub";
         private const string SubscriptionEntity = "Subscription";
         private const string RuleEntity = "Rule";
         private const string FilterEntity = "Filter";
         private const string ActionEntity = "Action";
-        private const string EventHubEntity = "EventHub";
-        private const string ConsumerGroupEntity = "ConsumerGroup";
-        private const string PartitionEntity = "Partition";
         private const string QueueEntityList = "Queues";
         private const string TopicEntityList = "Topics";
-        private const string RelayEntityList = "Relays";
         private const string SubscriptionEntityList = "Subscriptions";
         private const string AuthorizationRuleList = "AuthorizationRules";
         private const string RuleEntityList = "Rules";
@@ -80,8 +64,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SqlRuleActionEntity = "SqlRuleAction";
         private const string EntityList = "Entities";
         private const string NotificationHubEntityList = "NotificationHubs";
-        private const string EventHubEntityList = "EventHubs";
-        private const string ConsumerGroupEntityList = "ConsumerGroups";
         private const string ApnsCredentialEntity = "ApnsCredential";
         private const string WnsCredentialEntity = "WnsCredential";
         private const string NamespaceAttribute = "serviceBusNamespace";
@@ -98,16 +80,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string Path = "Path";
         private const string Name = "Name";
         private const string TopicPath = "TopicPath";
-        private const string EventHubPath = "EventHubPath";
         private const string SqlExpression = "SqlExpression";
         private const string Correlationid = "Correlationid";
         private const string QueueExported = "The queue {0} has been successfully exported.";
         private const string TopicExported = "The topic {0} has been successfully exported.";
-        private const string RelayExported = "The relay {0} has been successfully exported.";
         private const string SubscriptionExported = "The subscription {0} of the topic {1} has been successfully exported.";
         private const string RuleExported = "The rule {0} has been successfully exported.";
-        private const string EventHubExported = "The event hub {0} has been successfully exported.";
-        private const string ConsumerGroupExported = "The consumer group {0} has been successfully exported.";
         private const string NotificationHubExported = "The notification hub {0} has been successfully exported.";
         private const string MaxSizeInMegabytes = "MaxSizeInMegabytes";
         private const string ForwardTo = "ForwardTo";
@@ -119,8 +97,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string IssuerName = "IssuerName";
         private const string ClaimType = "ClaimType";
         private const string ClaimValue = "ClaimValue";
-        private const string DefaultConsumerGroupName = "$Default";
-        private const string RelayType = "RelayType";
+
         #endregion
 
         #region Private Static Fields
@@ -135,10 +112,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             GetProperties(typeof(QueueDescription), true, true);
             GetProperties(typeof(TopicDescription), true, true);
-            GetProperties(typeof(RelayDescription), true, true);
-            GetProperties(typeof(EventHubDescription), true, true);
-            GetProperties(typeof(ConsumerGroupDescription), true, true);
-            GetProperties(typeof(PartitionDescription), true, true);
             GetProperties(typeof(NotificationHubDescription), true, true);
             GetProperties(typeof(ApnsCredential), true, true);
             GetProperties(typeof(WnsCredential), true, true);
@@ -173,7 +146,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
         /// <param name="entityList">The list of entities to serialize.</param>
         /// <returns>A XML string.</returns>
-        public async static Task<string> ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<IExtensibleDataObject> entityList)
+        public static string ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<EntityDescription> entityList)
         {
             if (entityList != null &&
                 entityList.Count > 0)
@@ -186,8 +159,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         {
                             var queueList = entityList.Where(e => e is QueueDescription).Cast<QueueDescription>();
                             var topicList = entityList.Where(e => e is TopicDescription).Cast<TopicDescription>();
-                            var relayList = entityList.Where(e => e is RelayDescription).Cast<RelayDescription>();
-                            var eventHubList = entityList.Where(e => e is EventHubDescription).Cast<EventHubDescription>();
                             var notificationHubList = entityList.Where(e => e is NotificationHubDescription).Cast<NotificationHubDescription>();
                             xmlWriter.WriteStartElement(EntityList, Namespace);
                             xmlWriter.WriteAttributeString(NamespaceAttribute, string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ?
@@ -201,7 +172,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     try
                                     {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, queue);
+                                        SerializeEntity(serviceBusHelper, xmlWriter, queue);
                                     }
                                     catch (Exception ex)
                                     {
@@ -218,41 +189,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     try
                                     {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, topic);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
-                                }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var relayDescriptions = relayList as RelayDescription[] ?? relayList.ToArray();
-                            if (relayDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(RelayEntityList);
-                                foreach (var relay in relayDescriptions)
-                                {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, relay);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
-                                }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var eventHubDescriptions = eventHubList as EventHubDescription[] ?? eventHubList.ToArray();
-                            if (eventHubDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(EventHubEntityList);
-                                foreach (var eventHub in eventHubDescriptions)
-                                {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, eventHub);
+                                        SerializeEntity(serviceBusHelper, xmlWriter, topic);
                                     }
                                     catch (Exception ex)
                                     {
@@ -269,7 +206,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 {
                                     try
                                     {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, notificationHub);
+                                        SerializeEntity(serviceBusHelper, xmlWriter, notificationHub);
                                     }
                                     catch (Exception ex)
                                     {
@@ -306,8 +243,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var root = XElement.Load(xmlReader);
                     CreateQueues(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, QueueEntity)));
                     CreateTopics(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, TopicEntity)));
-                    CreateRelays(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, RelayEntity)));
-                    CreateEventHubs(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, EventHubEntity)));
                     CreateNotificationHubs(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, NotificationHubEntity)));
                 }
             }
@@ -340,7 +275,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return;
             }
             var propertyDictionary = propertyArray.
-                Where(p => p.Name == RelayType || (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime))).
+                Where(p => p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData).
                 ToDictionary(p => p.Name);
             propertyCache[fullName] = propertyDictionary;
         }
@@ -411,11 +346,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 propertyValue[name] = xmlReader.ReadElementContentAsDateTime();
                 return;
             }
-            if (property.PropertyType == typeof(RelayType))
-            {
-                propertyValue[name] = Enum.Parse(typeof(RelayType), xmlReader.ReadElementContentAsString(), true);
-                return;
-            }
             if (property.PropertyType == typeof(TimeSpan))
             {
                 TimeSpan timeSpan;
@@ -466,18 +396,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return QueueEntity;
                 case TopicDescriptionClass:
                     return TopicEntity;
-                case RelayDescriptionClass:
-                    return RelayEntity;
                 case SubscriptionDescriptionClass:
                     return SubscriptionEntity;
                 case RuleDescriptionClass:
                     return RuleEntity;
-                case EventHubDescriptionClass:
-                    return EventHubEntity;
-                case ConsumerGroupDescriptionClass:
-                    return ConsumerGroupEntity;
-                case PartitionDescriptionClass:
-                    return PartitionEntity;
                 case NotificationHubDescriptionClass:
                     return NotificationHubEntity;
                 default:
@@ -492,7 +414,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// <param name="xmlWriter">The XmlWriter object to use.</param>
         /// <param name="entity">The entity to serialize.</param>
         /// <returns>A XML string.</returns>
-        private async static Task SerializeEntity(ServiceBusHelper serviceBusHelper, XmlWriter xmlWriter, object entity)
+        private static void SerializeEntity(ServiceBusHelper serviceBusHelper, XmlWriter xmlWriter, object entity)
         {
             if (xmlWriter == null ||
                 entity == null)
@@ -541,7 +463,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 xmlWriter.WriteStartElement(keyValuePair.Value.Name);
                 if (value is Filter || value is RuleAction || value is ApnsCredential || value is WnsCredential)
                 {
-                    await SerializeEntity(serviceBusHelper, xmlWriter, value);
+                    SerializeEntity(serviceBusHelper, xmlWriter, value);
                 }
                 else
                 {
@@ -557,7 +479,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     xmlWriter.WriteStartElement(AuthorizationRuleList);
                     foreach (var rule in queue.Authorization)
                     {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, rule);
+                        SerializeEntity(serviceBusHelper, xmlWriter, rule);
                     }
                     xmlWriter.WriteEndElement();
                 }
@@ -570,7 +492,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     xmlWriter.WriteStartElement(AuthorizationRuleList);
                     foreach (var rule in topic.Authorization)
                     {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, rule);
+                        SerializeEntity(serviceBusHelper, xmlWriter, rule);
                     }
                     xmlWriter.WriteEndElement();
                 }
@@ -581,44 +503,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     xmlWriter.WriteStartElement(SubscriptionEntityList);
                     foreach (var subscription in subscriptionDescriptions)
                     {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, subscription);
-                    }
-                    xmlWriter.WriteEndElement();
-                }
-            }
-            if (entity is RelayDescription)
-            {
-                var relay = entity as RelayDescription;
-                if (relay.Authorization.Any())
-                {
-                    xmlWriter.WriteStartElement(AuthorizationRuleList);
-                    foreach (var rule in relay.Authorization)
-                    {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, rule);
-                    }
-                    xmlWriter.WriteEndElement();
-                }
-            }
-            if (entity is EventHubDescription)
-            {
-                var eventHub = entity as EventHubDescription;
-                if (eventHub.Authorization.Any())
-                {
-                    xmlWriter.WriteStartElement(AuthorizationRuleList);
-                    foreach (var rule in eventHub.Authorization)
-                    {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, rule);
-                    }
-                    xmlWriter.WriteEndElement();
-                }
-                var consumerGroupList = serviceBusHelper.GetConsumerGroups(eventHub.Path);
-                var consumerGroupDescriptions = consumerGroupList as ConsumerGroupDescription[] ?? consumerGroupList.ToArray();
-                if (consumerGroupDescriptions.Any())
-                {
-                    xmlWriter.WriteStartElement(ConsumerGroupEntityList);
-                    foreach (var consumerGroup in consumerGroupDescriptions)
-                    {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, consumerGroup);
+                        SerializeEntity(serviceBusHelper, xmlWriter, subscription);
                     }
                     xmlWriter.WriteEndElement();
                 }
@@ -633,7 +518,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     xmlWriter.WriteStartElement(RuleEntityList);
                     foreach (var rule in ruleDescriptions)
                     {
-                        await SerializeEntity(serviceBusHelper, xmlWriter, rule);
+                        SerializeEntity(serviceBusHelper, xmlWriter, rule);
                     }
                     xmlWriter.WriteEndElement();
                 }
@@ -655,13 +540,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         MainForm.StaticWriteToLog(string.Format(TopicExported, topicDescription.Path));
                     }
                     break;
-                case RelayDescriptionClass:
-                    var relayDescription = entity as RelayDescription;
-                    if (relayDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(RelayExported, relayDescription.Path));
-                    }
-                    break;
                 case SubscriptionDescriptionClass:
                     var subscriptionDescription = entity as SubscriptionDescription;
                     if (subscriptionDescription != null)
@@ -677,20 +555,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         MainForm.StaticWriteToLog(string.Format(RuleExported,
                                                       ruleDescription.Name));
-                    }
-                    break;
-                case EventHubDescriptionClass:
-                    var eventHubDescription = entity as EventHubDescription;
-                    if (eventHubDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(EventHubExported, eventHubDescription.Path));
-                    }
-                    break;
-                case ConsumerGroupDescriptionClass:
-                    var consumerGroupDescription = entity as ConsumerGroupDescription;
-                    if (consumerGroupDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(ConsumerGroupExported, consumerGroupDescription.Name));
                     }
                     break;
                 case NotificationHubDescriptionClass:
@@ -853,221 +717,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     catch (Exception ex)
                     {
                         HandleException(ex);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Creates the relays which xml definition is contained in the collection passed as a parameter.
-        /// </summary>
-        /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="relays">The IEnumerable<XElement/> collection containing the xml definition of the relays to create.</param>
-        private static void CreateRelays(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> relays)
-        {
-            try
-            {
-                if (serviceBusHelper == null ||
-                    relays == null)
-                {
-                    return;
-                }
-                var fullName = typeof(RelayDescription).FullName;
-                if (string.IsNullOrWhiteSpace(fullName) ||
-                    !propertyCache.ContainsKey(fullName))
-                {
-                    return;
-                }
-                var propertyDictionary = propertyCache[fullName];
-                var rulesName = string.Format(NodeNameFormat, Namespace, AuthorizationRuleList);
-                foreach (var relay in relays)
-                {
-                    try
-                    {
-                        var propertyValue = new Dictionary<string, object>();
-                        var properties = relay.Elements();
-                        IEnumerable<XElement> authorizationRules = null;
-                        foreach (var property in properties)
-                        {
-                            if (property.Name.ToString() == rulesName)
-                            {
-                                authorizationRules = property.Descendants();
-                            }
-                            else
-                            {
-                                var xmlReader = property.CreateReader();
-                                GetPropertyValue(propertyDictionary,
-                                                 propertyValue,
-                                                 xmlReader);
-                            }
-                        }
-                        if (!propertyValue.ContainsKey(Path))
-                        {
-                            continue;
-                        }
-                        var relayDescription = new RelayDescription(propertyValue[Path] as string, (RelayType)propertyValue[RelayType]);
-                        SetPropertyValue(propertyDictionary,
-                                         propertyValue,
-                                         relayDescription);
-                        var rules = CreateAuthorizationRules(authorizationRules, serviceBusHelper.IsCloudNamespace);
-                        if (rules != null &&
-                            rules.Count > 0)
-                        {
-                            foreach (var authorizationRule in rules)
-                            {
-                                relayDescription.Authorization.Add(authorizationRule);
-                            }
-                        }
-                        serviceBusHelper.CreateRelay(relayDescription);
-                    }
-                    catch (Exception ex)
-                    {
-                        HandleException(ex);
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Creates the event hubs which xml definition is contained in the collection passed as a parameter.
-        /// </summary>
-        /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="eventHubs">The IEnumerable<XElement/> collection containing the xml definition of the event hubs to create.</param>
-        private static void CreateEventHubs(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> eventHubs)
-        {
-            try
-            {
-                if (serviceBusHelper == null ||
-                    eventHubs == null)
-                {
-                    return;
-                }
-                var fullName = typeof(EventHubDescription).FullName;
-                if (string.IsNullOrWhiteSpace(fullName) ||
-                    !propertyCache.ContainsKey(fullName))
-                {
-                    return;
-                }
-                var propertyDictionary = propertyCache[fullName];
-                var consumerGroupName = string.Format(NodeNameFormat, Namespace, ConsumerGroupEntity);
-                var consumerGroupsName = string.Format(NodeNameFormat, Namespace, ConsumerGroupEntityList);
-                var rulesName = string.Format(NodeNameFormat, Namespace, AuthorizationRuleList);
-                foreach (var eventHub in eventHubs)
-                {
-                    try
-                    {
-                        var propertyValue = new Dictionary<string, object>();
-                        var properties = eventHub.Elements();
-                        IEnumerable<XElement> authorizationRules = null;
-                        IEnumerable<XElement> consumerGroups = null;
-                        foreach (var property in properties)
-                        {
-                            if (property.Name == rulesName)
-                            {
-                                authorizationRules = property.Descendants();
-                            }
-                            else
-                                if (property.Name == consumerGroupsName)
-                                {
-                                    consumerGroups = property.Descendants(consumerGroupName);
-                                }
-                                else
-                                {
-                                    var xmlReader = property.CreateReader();
-                                    GetPropertyValue(propertyDictionary,
-                                                     propertyValue,
-                                                     xmlReader);
-                                }
-                        }
-
-                        if (!propertyValue.ContainsKey(Path))
-                        {
-                            continue;
-                        }
-                        var eventHubDescription = new EventHubDescription(propertyValue[Path] as string);
-                        SetPropertyValue(propertyDictionary,
-                                         propertyValue,
-                                         eventHubDescription);
-                        var rules = CreateAuthorizationRules(authorizationRules, serviceBusHelper.IsCloudNamespace);
-                        if (rules != null &&
-                            rules.Count > 0)
-                        {
-                            foreach (var authorizationRule in rules)
-                            {
-                                eventHubDescription.Authorization.Add(authorizationRule);
-                            }
-                        }
-                        serviceBusHelper.CreateEventHub(eventHubDescription);
-                        CreateConsumerGroups(serviceBusHelper, consumerGroups);
-                    }
-                    catch (Exception ex)
-                    {
-                        HandleException(ex);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Creates the consumer groups which xml definition is contained in the collection passed as a parameter.
-        /// </summary>
-        /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="consumerGroups">The IEnumerable<XElement/> collection containing the xml definition of the consumer groups to create.</param>
-        private static void CreateConsumerGroups(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> consumerGroups)
-        {
-            try
-            {
-                if (serviceBusHelper == null ||
-                    consumerGroups == null)
-                {
-                    return;
-                }
-                var fullName = typeof(ConsumerGroupDescription).FullName;
-                if (string.IsNullOrWhiteSpace(fullName) ||
-                    !propertyCache.ContainsKey(fullName))
-                {
-                    return;
-                }
-                var propertyDictionary = propertyCache[fullName];
-                foreach (var consumerGroup in consumerGroups)
-                {
-                    var propertyValue = new Dictionary<string, object>();
-                    var properties = consumerGroup.Elements();
-                    foreach (var property in properties)
-                    {
-                        var xmlReader = property.CreateReader();
-                        GetPropertyValue(propertyDictionary,
-                                         propertyValue,
-                                         xmlReader);
-                    }
-
-                    if (propertyValue.ContainsKey(Name) &&
-                        propertyValue.ContainsKey(EventHubPath))
-                    {
-                        var eventHubName = propertyValue[EventHubPath] as string;
-                        var name = propertyValue[Name] as string;
-                        if (string.Compare(name, DefaultConsumerGroupName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                        {
-                            continue;
-                        }
-                        var consumerGroupDescription = new ConsumerGroupDescription(eventHubName, name);
-                        SetPropertyValue(propertyDictionary,
-                                         propertyValue,
-                                         consumerGroupDescription);
-                        serviceBusHelper.CreateConsumerGroup(consumerGroupDescription);
                     }
                 }
             }

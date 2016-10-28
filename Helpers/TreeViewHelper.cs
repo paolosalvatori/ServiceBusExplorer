@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -37,11 +33,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         //***************************
         private const string QueueEntities = "Queues";
         private const string TopicEntities = "Topics";
-        private const string EventHubsEntities = "Event Hubs";
         private const string NotificationHubsEntities = "Notification Hubs";
-        private const string RelayEntities = "Relays";
-        private const string PartitionEntities = "Partitions";
-        private const string ConsumerGroupEntities = "Consumer Groups";
+        private const string RelayServiceEntities = "Relay Services";
         #endregion
 
         #region IComparer Methods
@@ -66,30 +59,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return rightNode.Name == QueueEntities ? 1 : -1;
             }
 
-            if (leftNode.Name.StartsWith(EventHubsEntities))
-            {
-                return rightNode.Name == QueueEntities || 
-                       rightNode.Name == TopicEntities ? 1 : -1;
-            }
-
             if (leftNode.Name.StartsWith(NotificationHubsEntities))
             {
-                return rightNode.Name == QueueEntities ||
-                       rightNode.Name == TopicEntities ||
-                       rightNode.Name == EventHubsEntities ? 1 : -1;
+                return rightNode.Name == QueueEntities || rightNode.Name == TopicEntities ? 1 : -1;
             }
 
-            if (leftNode.Name.StartsWith(ConsumerGroupEntities))
-            {
-                return rightNode.Name == PartitionEntities ? 1 : -1;
-            }
-
-            if (leftNode.Name.StartsWith(PartitionEntities))
-            {
-                return -1;
-            }
-
-            if (leftNode.Name.StartsWith(RelayEntities))
+            if (leftNode.Name.StartsWith(RelayServiceEntities))
             {
                 return 1;
             }

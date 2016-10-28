@@ -124,37 +124,34 @@
   <data name="MicrosoftAzureLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\MicrosoftAzureLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Green" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\Green.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AzureLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\AzureLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SmallWorld" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\SmallWorld.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Clouds" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\Clouds.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Green" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\Green.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="WhiteLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\WhiteLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FindExtension" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\FindExtension.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Yellow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\Yellow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SmallWorld" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\SmallWorld.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="WindowsAzureLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\WindowsAzureLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FindExtensionRaised" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\FindExtensionRaised.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Yellow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\Yellow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AzureLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\AzureLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WindowsAzureLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\WindowsAzureLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FindExtension" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\FindExtension.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="MicrosoftAzureWhiteLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\MicrosoftAzureWhiteLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PaoloAnja" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\PaoloAnja.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

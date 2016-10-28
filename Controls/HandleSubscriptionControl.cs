@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -28,9 +24,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 #endregion
 
@@ -67,6 +61,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string CancelText = "Cancel";
         private const string EnableText = "Enable";
         private const string DisableText = "Disable";
+        private const string SubscriptionEntity = "SubscriptionDescription";
         private const string FilterExpression = "Filter Expression";
         private const string ActionExpression = "Action Expression";
         private const string UserMetadata = "User Metadata";
@@ -111,8 +106,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string MessagesReceivedFromTheSubscription = "[{0}] messages received from the subscription [{1}].";
         private const string MessagesReceivedFromTheDeadletterQueue = "[{0}] messages received from the deadletter queue of the subscription [{1}].";
         private const string SessionsGotFromTheSubscription = "[{0}] sessions retrieved for the subscription [{1}].";
-        private const string NoMessageReceivedFromTheSubscription = "The timeout  of [{0}] seconds has expired and no message was retrieved from the subscription [{1}].";
-        private const string NoMessageReceivedFromTheDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the subscription [{1}].";
 
         private const string RetrieveMessagesFromSubscription = "Retrieve messages from subscription";
         private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from deadletter queue";
@@ -141,8 +134,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string UserMetadataTooltip = "Gets or sets the user metadata.";
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string ForwardToTooltip = "Gets or sets the path to the recipient to which the message is forwarded.";
-        private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead lettered message is forwarded.";
-        private const string DeleteTooltip = "Delete the row.";
 
         //***************************
         // Property Labels
@@ -157,12 +148,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string ScheduledMessageCount = "Scheduled Message Count";
         private const string TransferMessageCount = "Transfer Message Count";
         private const string TransferDeadLetterMessageCount = "Transfer DL Message Count";
-        private const string IsReadOnly = "Is ReadOnly";
-
-        //***************************
-        // Constants
-        //***************************
-        private const int GrouperMessagePropertiesWith = 312;
+        private const string IsReadOnly = "IsReadOnly";
 
         //***************************
         // Pages
@@ -171,10 +157,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SessionsTabPage = "tabPageSessions";
         private const string DeadletterTabPage = "tabPageDeadletter";
         private const string MetricsTabPage = "tabPageMetrics";
-        private const string SaveAsTitle = "Save File As";
-        private const string JsonExtension = "json";
-        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
-        private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
 
         //***************************
         // Metrics Formats
@@ -193,12 +175,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string TimeFilterOperator2Name = "FilterOperator2";
         private const string TimeFilterValue1Name = "FilterValue1";
         private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "DisplayName";
+        private const string FriendlyNameProperty = "FriendlyName";
         private const string NameProperty = "Name";
-        private const string SubscriptionEntity = "Subscription";
+        private const string MetricsSubscriptionEntity = "Subscription";
         private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
         private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
         #endregion
 
         #region Private Fields
@@ -208,8 +189,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private BrokeredMessage brokeredMessage;
         private BrokeredMessage deadletterMessage;
+        private int messagesSplitContainerSplitterDistance;
+        private int sessionsSplitContainerSplitterDistance;
+        private int deadletterSplitContainerSplitterDistance;
+        private int grouperMessageCustomPropertiesWidth;
+        private int grouperDeadletterCustomPropertiesWidth;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
+        private int tabIndex;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
         private bool sorting;
@@ -218,8 +205,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -241,7 +226,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             };
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -264,53 +249,193 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        public void GetMessages()
+        public void GetMessages(bool peek, bool all, int count)
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromSubscription, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            try
             {
-                if (receiveModeForm.ShowDialog() == DialogResult.OK)
+                mainTabControl.SuspendDrawing();
+                mainTabControl.SuspendLayout();
+                tabPageMessages.SuspendDrawing();
+                tabPageMessages.SuspendLayout();
+
+                Cursor.Current = Cursors.WaitCursor;
+                var brokeredMessages = new List<BrokeredMessage>();
+                if (peek)
                 {
-                    txtMessageText.Text = string.Empty;
-                    messagePropertyListView.Items.Clear();
-                    messagePropertyGrid.SelectedObject = null;
-                    var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                           serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                                           null;
-                    if (subscriptionWrapper.TopicDescription.EnablePartitioning)
+                    var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                                                 subscriptionWrapper.SubscriptionDescription.Name,
+                                                                                                 ReceiveMode.PeekLock);
+
+                    var messageEnumerable = subscriptionClient.PeekBatch(count);
+                    if (messageEnumerable == null)
                     {
-                        ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        return;
+                    }
+                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
+                    brokeredMessages = new List<BrokeredMessage>(messageArray);
+                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
+                }
+                else
+                {
+                    MessageReceiver messageReceiver;
+                    if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
+                    {
+                        var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                                           subscriptionWrapper.SubscriptionDescription.Name,
+                                                                                           ReceiveMode.ReceiveAndDelete);
+                        messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout));
                     }
                     else
                     {
-                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                                                                                            subscriptionWrapper.SubscriptionDescription.Name),
+                                                                                                  ReceiveMode.ReceiveAndDelete);
+                    }
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
+                    {
+                        var messages = messageReceiver.ReceiveBatch(all ?
+                                                                MainForm.SingletonMainForm.TopCount :
+                                                                count - totalRetrieved,
+                                                                TimeSpan.FromSeconds(1));
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Count();
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(enumerable);
+                    }
+                    while (retrieved > 0 && (all || count > totalRetrieved));
+                    writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
+                }
+                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                messagesBindingSource.DataSource = messageBindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
+                messagesSplitContainer.SplitterDistance = messagesSplitContainerSplitterDistance;
+                if (!peek)
+                {
+                    if (OnRefresh != null)
+                    {
+                        OnRefresh();
                     }
                 }
+                if (mainTabControl.TabPages[MessagesTabPage] == null)
+                {
+                    EnablePage(MessagesTabPage);
+                }
+                if (mainTabControl.TabPages[MessagesTabPage] != null)
+                {
+                    mainTabControl.SelectTab(MessagesTabPage);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                mainTabControl.ResumeLayout();
+                mainTabControl.ResumeDrawing();
+                tabPageMessages.ResumeLayout();
+                tabPageMessages.ResumeDrawing();
+                Cursor.Current = Cursors.Default;
             }
         }
 
-        public void GetDeadletterMessages()
+        public void GetDeadletterMessages(bool peek, bool all, int count)
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            try
             {
-                if (receiveModeForm.ShowDialog() == DialogResult.OK)
+                mainTabControl.SuspendDrawing();
+                mainTabControl.SuspendLayout();
+                tabPageDeadletter.SuspendDrawing();
+                tabPageDeadletter.SuspendLayout();
+
+                Cursor.Current = Cursors.WaitCursor;
+                var brokeredMessages = new List<BrokeredMessage>();
+                var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
+                                                                                              ReceiveMode.PeekLock);
+                if (peek)
                 {
-                    txtDeadletterText.Text = string.Empty;
-                    deadletterPropertyListView.Items.Clear();
-                    deadletterPropertyGrid.SelectedObject = null;
-                    var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                           serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                                           null;
-                    if (subscriptionWrapper.TopicDescription.EnablePartitioning)
+                    var messageEnumerable = messageReceiver.PeekBatch(count);
+                    if (messageEnumerable == null)
                     {
-                        ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        return;
                     }
-                    else
+                    var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
+                    brokeredMessages = new List<BrokeredMessage>(messageArray);
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
+                }
+                else
+                {
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
                     {
-                        GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        var messages = messageReceiver.ReceiveBatch(all ?
+                                                                    MainForm.SingletonMainForm.TopCount :
+                                                                    count - totalRetrieved,
+                                                                    TimeSpan.FromSeconds(1));
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Count();
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(enumerable);
+                    }
+                    while (retrieved > 0 && (all || count > totalRetrieved));
+                    messageReceiver.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
+                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
+                }
+
+                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+
+                deadletterBindingSource.DataSource = deadletterBindingList;
+                deadletterDataGridView.DataSource = deadletterBindingSource;
+                deadletterSplitContainer.SplitterDistance = deadletterSplitContainerSplitterDistance;
+                if (!peek)
+                {
+                    if (OnRefresh != null)
+                    {
+                        OnRefresh();
                     }
                 }
+                if (mainTabControl.TabPages[DeadletterTabPage] == null)
+                {
+                    EnablePage(DeadletterTabPage);
+                }
+                if (mainTabControl.TabPages[DeadletterTabPage] != null)
+                {
+                    mainTabControl.SelectTab(DeadletterTabPage);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                mainTabControl.ResumeLayout();
+                mainTabControl.ResumeDrawing();
+                tabPageDeadletter.ResumeLayout();
+                tabPageDeadletter.ResumeDrawing();
+                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -323,11 +448,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 tabPageSessions.SuspendDrawing();
                 tabPageSessions.SuspendLayout();
 
-                var subscriptionClient =
-                    serviceBusHelper.MessagingFactory.CreateSubscriptionClient(
-                        subscriptionWrapper.SubscriptionDescription.TopicPath,
-                        subscriptionWrapper.SubscriptionDescription.Name,
-                        ReceiveMode.PeekLock);
+                var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                                             subscriptionWrapper.SubscriptionDescription.Name,
+                                                                                             ReceiveMode.PeekLock);
                 var sessionEnumerable = subscriptionClient.GetMessageSessions();
                 if (sessionEnumerable == null)
                 {
@@ -345,17 +468,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     AllowNew = false,
                     AllowRemove = false
                 };
-                writeToLog(string.Format(SessionsGotFromTheSubscription, sessionBindingList.Count,
-                    subscriptionWrapper.SubscriptionDescription.Name));
+                writeToLog(string.Format(SessionsGotFromTheSubscription, sessionBindingList.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 sessionsBindingSource.DataSource = sessionBindingList;
                 sessionsDataGridView.DataSource = sessionsBindingSource;
-
-                sessionsSplitContainer.SplitterDistance = sessionsSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          sessionsSplitContainer.SplitterWidth;
-                sessionListTextPropertiesSplitContainer.SplitterDistance =
-                    sessionListTextPropertiesSplitContainer.Size.Height/2 - 8;
-
+                sessionsSplitContainer.SplitterDistance = sessionsSplitContainerSplitterDistance;
                 if (mainTabControl.TabPages[SessionsTabPage] != null)
                 {
                     mainTabControl.SelectTab(SessionsTabPage);
@@ -424,100 +540,76 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             dataPointDataGridView.DataSource = dataPointBindingSource;
             dataPointDataGridView.ForeColor = SystemColors.WindowText;
 
-            if (subscriptionWrapper != null && subscriptionWrapper.SubscriptionDescription != null)
-            {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
-                                             SubscriptionEntity,
-                                             string.Format(SubscriptionPathFormat,
-                                                           subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                           subscriptionWrapper.SubscriptionDescription.Name)).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
             if (dataPointDataGridView.Columns.Count == 0)
             {
                 // Create the Metric column
                 var metricColumn = new DataGridViewComboBoxColumn
-                    {
-                        DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity) ?
-                                 MetricInfo.EntityMetricDictionary[SubscriptionEntity] :
-                                 null,
-                        DataPropertyName = MetricProperty,
-                        DisplayMember = FriendlyNameProperty,
-                        ValueMember = NameProperty,
-                        Name = MetricProperty,
-                        Width = 144,
-                        DropDownWidth = 250,
-                        FlatStyle = FlatStyle.Flat,
-                        DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
-                    };
+                {
+                    DataSource = MetricInfo.MetricInfos,
+                    DataPropertyName = MetricProperty,
+                    DisplayMember = FriendlyNameProperty,
+                    ValueMember = NameProperty,
+                    Name = MetricProperty,
+                    Width = 144,
+                    FlatStyle = FlatStyle.Flat,
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
+                };
                 dataPointDataGridView.Columns.Add(metricColumn);
 
                 // Create the Time Granularity column
                 var timeGranularityColumn = new DataGridViewComboBoxColumn
-                    {
-                        DataSource = timeGranularityList,
-                        DataPropertyName = GranularityProperty,
-                        Name = GranularityProperty,
-                        Width = 72,
-                        FlatStyle = FlatStyle.Flat
-                    };
+                {
+                    DataSource = timeGranularityList,
+                    DataPropertyName = GranularityProperty,
+                    Name = GranularityProperty,
+                    Width = 72,
+                    FlatStyle = FlatStyle.Flat
+                };
                 dataPointDataGridView.Columns.Add(timeGranularityColumn);
 
                 // Create the Time Operator 1 column
                 var operator1Column = new DataGridViewComboBoxColumn
-                    {
-                        DataSource = operators,
-                        DataPropertyName = TimeFilterOperator1Name,
-                        HeaderText = TimeFilterOperator,
-                        Name = TimeFilterOperator1Name,
-                        Width = 72,
-                        FlatStyle = FlatStyle.Flat
-                    };
+                {
+                    DataSource = operators,
+                    DataPropertyName = TimeFilterOperator1Name,
+                    HeaderText = TimeFilterOperator,
+                    Name = TimeFilterOperator1Name,
+                    Width = 72,
+                    FlatStyle = FlatStyle.Flat
+                };
                 dataPointDataGridView.Columns.Add(operator1Column);
 
                 // Create the Time Value 1 column
                 var value1Column = new DataGridViewDateTimePickerColumn
-                    {
-                        DataPropertyName = TimeFilterValue1Name,
-                        HeaderText = TimeFilterValue,
-                        Name = TimeFilterValue1Name,
-                        Width = 136
-                    };
+                {
+                    DataPropertyName = TimeFilterValue1Name,
+                    HeaderText = TimeFilterValue,
+                    Name = TimeFilterValue1Name,
+                    Width = 136
+                };
                 dataPointDataGridView.Columns.Add(value1Column);
 
                 // Create the Time Operator 1 column
                 var operator2Column = new DataGridViewComboBoxColumn
-                    {
-                        DataSource = operators,
-                        DataPropertyName = TimeFilterOperator2Name,
-                        HeaderText = TimeFilterOperator,
-                        Name = TimeFilterOperator2Name,
-                        Width = 72,
-                        FlatStyle = FlatStyle.Flat
-                    };
+                {
+                    DataSource = operators,
+                    DataPropertyName = TimeFilterOperator2Name,
+                    HeaderText = TimeFilterOperator,
+                    Name = TimeFilterOperator2Name,
+                    Width = 72,
+                    FlatStyle = FlatStyle.Flat
+                };
                 dataPointDataGridView.Columns.Add(operator2Column);
 
                 // Create the Time Value 1 column
                 var value2Column = new DataGridViewDateTimePickerColumn
-                    {
-                        DataPropertyName = TimeFilterValue2Name,
-                        HeaderText = TimeFilterValue,
-                        Name = TimeFilterValue2Name,
-                        Width = 136
-                    };
-                dataPointDataGridView.Columns.Add(value2Column);
-
-                // Create delete column
-                var deleteButtonColumn = new DataGridViewButtonColumn
                 {
-                    Name = DeleteName,
-                    CellTemplate = new DataGridViewDeleteButtonCell(),
-                    HeaderText = string.Empty,
-                    Width = 22
+                    DataPropertyName = TimeFilterValue2Name,
+                    HeaderText = TimeFilterValue,
+                    Name = TimeFilterValue2Name,
+                    Width = 136
                 };
-                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
-                deleteButtonColumn.UseColumnTextForButtonValue = true;
-                dataPointDataGridView.Columns.Add(deleteButtonColumn);
+                dataPointDataGridView.Columns.Add(value2Column);
             }
 
             if (subscriptionWrapper != null &&
@@ -790,12 +882,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                messagesSplitContainerSplitterDistance = messagesSplitContainer.SplitterDistance;
+                sessionsSplitContainerSplitterDistance = sessionsSplitContainer.SplitterDistance;
+                deadletterSplitContainerSplitterDistance = deadletterSplitContainer.SplitterDistance;
+                grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Size.Width;
+                grouperDeadletterCustomPropertiesWidth = grouperDeadletterCustomProperties.Size.Width;
+
                 checkedListBox.ItemCheck += checkedListBox_ItemCheck;
 
                 toolTip.SetToolTip(txtName, NameTooltip);
                 toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
                 toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
-                toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
                 toolTip.SetToolTip(txtDefaultMessageTimeToLiveDays, DefaultMessageTimeToLiveTooltip);
                 toolTip.SetToolTip(txtDefaultMessageTimeToLiveHours, DefaultMessageTimeToLiveTooltip);
                 toolTip.SetToolTip(txtDefaultMessageTimeToLiveMinutes, DefaultMessageTimeToLiveTooltip);
@@ -829,7 +926,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnSessions.Visible = false;
                 btnDeadletter.Visible = false;
                 btnMetrics.Visible = false;
-                btnCloseTabs.Visible = false;
                 txtName.Focus();
             }
         }
@@ -845,25 +941,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             btnMessages.Visible = true;
             btnSessions.Visible = subscriptionWrapper.SubscriptionDescription.RequiresSession;
             btnMessages.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo);
-            btnDeadletter.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo);
-
             if (!btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnCloseTabs.Location;
-                btnCloseTabs.Location = btnMessages.Location;
+                btnMetrics.Location = btnMessages.Location;
             }
             if (!btnMessages.Visible && btnSessions.Visible)
             {
-                btnMetrics.Location = btnCloseTabs.Location;
-                btnCloseTabs.Location = btnSessions.Location;
+                btnMetrics.Location = btnSessions.Location;
                 btnSessions.Location = btnMessages.Location;
             }
             if (btnMessages.Visible && !btnSessions.Visible)
             {
-                btnMetrics.Location = btnCloseTabs.Location;
-                btnCloseTabs.Location = btnSessions.Location;
+                btnMetrics.Location = btnSessions.Location;
             }
-
             btnMetrics.Visible = serviceBusHelper.IsCloudNamespace;
             btnDeadletter.Visible = true;
             btnOpenFilterForm.Enabled = false;
@@ -913,17 +1003,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     subscriptionWrapper.SubscriptionDescription.ForwardTo;
             }
 
-            // ForwardDeadLetteredMessagesTo
-            if (!string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo))
-            {
-                int i;
-                txtForwardDeadLetteredMessagesTo.Text = !string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo) &&
-                                    (i = subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.IndexOf('/')) > 0 &&
-                                    i < subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Length - 1 ?
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Substring(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1) :
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo;
-            }
-
             // MaxDeliveryCount
             txtMaxDeliveryCount.Text = subscriptionWrapper.SubscriptionDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
 
@@ -965,441 +1044,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                           subscriptionWrapper.SubscriptionDescription.RequiresSession);
         }
 
-        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
-        {
-            try
-            {
-                mainTabControl.SuspendDrawing();
-                mainTabControl.SuspendLayout();
-                tabPageMessages.SuspendDrawing();
-                tabPageMessages.SuspendLayout();
-
-                Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
-                if (peek)
-                {
-                    var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                        subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                        ReceiveMode.PeekLock);
-                    var totalRetrieved = 0;
-                    while (totalRetrieved < count)
-                    {
-                        var messageEnumerable = subscriptionClient.PeekBatch(count);
-                        if (messageEnumerable == null)
-                        {
-                            break;
-                        }
-                        var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                        var partialList = messageInspector != null ?
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
-                                       new List<BrokeredMessage>(messageArray);
-                        brokeredMessages.AddRange(partialList);
-                        totalRetrieved += partialList.Count;
-                        if (partialList.Count == 0)
-                        {
-                            break;
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    MessageReceiver messageReceiver;
-                    if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                    {
-                        var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                            subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                            ReceiveMode.ReceiveAndDelete);
-                        messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(
-                                                                                                  subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                  subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    }
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var messages = messageReceiver.ReceiveBatch(all
-                            ? MainForm.SingletonMainForm.TopCount
-                            : count - totalRetrieved,
-                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
-                    } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                messagesBindingSource.DataSource = messageBindingList;
-                messagesDataGridView.DataSource = messagesBindingSource;
-
-                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          messagesSplitContainer.SplitterWidth;
-                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] == null)
-                {
-                    EnablePage(MessagesTabPage);
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] != null)
-                {
-                    mainTabControl.SelectTab(MessagesTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheSubscription, 
-                                         MainForm.SingletonMainForm.ReceiveTimeout,  
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (NotSupportedException)
-            {
-                ReadMessagesOneAtTheTime(peek, all, count, messageInspector);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
-                tabPageMessages.ResumeLayout();
-                tabPageMessages.ResumeDrawing();
-                Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
-        {
-            try
-            {
-                var brokeredMessages = new List<BrokeredMessage>();
-                if (peek)
-                {
-                    var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                 subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                 ReceiveMode.PeekLock);
-                    for (var i = 0; i < count; i++)
-                    {
-                        var message = subscriptionClient.Peek();
-                        if (message != null)
-                        {
-                            if (messageInspector != null)
-                            {
-                                message = messageInspector.AfterReceiveMessage(message);
-                            }
-                            brokeredMessages.Add(message);
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    MessageReceiver messageReceiver;
-                    if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                    {
-                        var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                           subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                           ReceiveMode.ReceiveAndDelete);
-                        messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                                            subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    }
-
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        retrieved = message != null ? 1 : 0;
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.Add(messageInspector != null ? messageInspector.AfterReceiveMessage(message) : message);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                messagesBindingSource.DataSource = messageBindingList;
-                messagesDataGridView.DataSource = messagesBindingSource;
-
-                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          messagesSplitContainer.SplitterWidth;
-                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] == null)
-                {
-                    EnablePage(MessagesTabPage);
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] != null)
-                {
-                    mainTabControl.SelectTab(MessagesTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheSubscription,
-                                         MainForm.SingletonMainForm.ReceiveTimeout,
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (Exception e)
-            {
-                HandleException(e);
-            }
-        }
-
-        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
-        {
-            try
-            {
-                mainTabControl.SuspendDrawing();
-                mainTabControl.SuspendLayout();
-                tabPageDeadletter.SuspendDrawing();
-                tabPageDeadletter.SuspendLayout();
-
-                Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
-
-                if (peek)
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                              ReceiveMode.PeekLock);
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var messages = messageReceiver.PeekBatch(all ?
-                                                                    MainForm.SingletonMainForm.TopCount :
-                                                                    count - totalRetrieved);
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                              ReceiveMode.ReceiveAndDelete);
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var messages = messageReceiver.ReceiveBatch(all ?
-                                                                    MainForm.SingletonMainForm.TopCount :
-                                                                    count - totalRetrieved,
-                                                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-
-                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-
-                deadletterBindingSource.DataSource = deadletterBindingList;
-                deadletterDataGridView.DataSource = deadletterBindingSource;
-
-                deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          deadletterSplitContainer.SplitterWidth;
-                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] == null)
-                {
-                    EnablePage(DeadletterTabPage);
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] != null)
-                {
-                    mainTabControl.SelectTab(DeadletterTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
-                                         MainForm.SingletonMainForm.ReceiveTimeout,
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (NotSupportedException)
-            {
-                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
-                tabPageDeadletter.ResumeLayout();
-                tabPageDeadletter.ResumeDrawing();
-                Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
-        {
-            try
-            {
-                var brokeredMessages = new List<BrokeredMessage>();
-
-                if (peek)
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.PeekLock);
-                    for (var i = 0; i < count; i++)
-                    {
-                        var message = messageReceiver.Peek();
-                        if (message != null)
-                        {
-                            if (messageInspector != null)
-                            {
-                                message = messageInspector.AfterReceiveMessage(message);
-                            }
-                            brokeredMessages.Add(message);
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        retrieved = message != null ? 1 : 0;
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.Add(messageInspector != null ? messageInspector.AfterReceiveMessage(message) : message);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                deadletterBindingSource.DataSource = deadletterBindingList;
-                deadletterDataGridView.DataSource = deadletterBindingSource;
-
-                deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          deadletterSplitContainer.SplitterWidth;
-                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] == null)
-                {
-                    EnablePage(DeadletterTabPage);
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] != null)
-                {
-                    mainTabControl.SelectTab(DeadletterTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
-                                         MainForm.SingletonMainForm.ReceiveTimeout,
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (Exception e)
-            {
-                HandleException(e);
-            }
-        }
-
         private void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
@@ -1430,19 +1074,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         writeToLog(NameCannotBeNull);
                         return;
                     }
-                    var subscriptionDescription = new SubscriptionDescription(subscriptionWrapper.TopicDescription.Path, txtName.Text);
-                    if (!string.IsNullOrWhiteSpace(txtUserMetadata.Text))
+                    var subscriptionDescription = new SubscriptionDescription(subscriptionWrapper.TopicDescription.Path,
+                                                                              txtName.Text)
                     {
-                        subscriptionDescription.UserMetadata = txtUserMetadata.Text;
-                    }
-                    if (!string.IsNullOrWhiteSpace(txtForwardTo.Text))
-                    {
-                        subscriptionDescription.ForwardTo = txtForwardTo.Text;
-                    }
-                    if (!string.IsNullOrWhiteSpace(txtForwardDeadLetteredMessagesTo.Text))
-                    {
-                        subscriptionDescription.ForwardDeadLetteredMessagesTo = txtForwardDeadLetteredMessagesTo.Text;
-                    }
+                        UserMetadata = txtUserMetadata.Text,
+                        ForwardTo = txtForwardTo.Text
+                    };
+
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
                         int value;
@@ -1638,8 +1276,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         ruleDescription.Action = new SqlRuleAction(txtAction.Text);
                     }
 
-                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.CreateSubscription(subscriptionWrapper.TopicDescription, 
-                                                                                          subscriptionDescription, 
+                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.CreateSubscription(subscriptionWrapper.TopicDescription,
+                                                                                          subscriptionDescription,
                                                                                           ruleDescription);
                     InitializeData();
                 }
@@ -1698,8 +1336,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 try
                 {
                     subscriptionWrapper.SubscriptionDescription.UserMetadata = txtUserMetadata.Text;
-                    subscriptionWrapper.SubscriptionDescription.ForwardTo = string.IsNullOrWhiteSpace(txtForwardTo.Text) ? null : txtForwardTo.Text;
-                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo = string.IsNullOrWhiteSpace(txtForwardDeadLetteredMessagesTo.Text) ? null : txtForwardDeadLetteredMessagesTo.Text;
+                    subscriptionWrapper.SubscriptionDescription.ForwardTo = txtForwardTo.Text;
 
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
@@ -1885,7 +1522,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                         if (!timeSpan.IsMaxValue())
                         {
-                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = timeSpan;   
+                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = timeSpan;
                         }
                     }
 
@@ -1985,17 +1622,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     txtForwardTo.Text = form.Path;
-                }
-            }
-        }
-
-        private void btnOpenForwardDeadLetteredMessagesToForm_Click(object sender, EventArgs e)
-        {
-            using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
-            {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    txtForwardDeadLetteredMessagesTo.Text = form.Path;
                 }
             }
         }
@@ -2223,7 +1849,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     var columnWidth = width / 4;
                     dataGridView.Columns[0].Width = columnWidth - 20;
                     dataGridView.Columns[3].Width = columnWidth;
-                    dataGridView.Columns[4].Width = columnWidth +(width - (columnWidth * 4)) + 10;
+                    dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
                 if (dataGridView == sessionsDataGridView)
@@ -2252,7 +1878,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void btnMessages_Click(object sender, EventArgs e)
         {
-            GetMessages();
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromSubscription, MainForm.SingletonMainForm.TopCount))
+            {
+                if (receiveModeForm.ShowDialog() == DialogResult.OK)
+                {
+                    txtMessageText.Text = string.Empty;
+                    messagePropertyListView.Items.Clear();
+                    messagePropertyGrid.SelectedObject = null;
+                    GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count);
+                }
+            }
         }
 
         private void btnSessions_Click(object sender, EventArgs e)
@@ -2282,6 +1917,23 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void tabPageMessages_Resize(object sender, EventArgs e)
         {
+            try
+            {
+                messagesSplitContainer.SuspendDrawing();
+                messagesSplitContainer.SuspendLayout();
+                grouperMessageCustomProperties.Size = new Size(grouperMessageCustomProperties.Size.Width, messageListTextPropertiesSplitContainer.Panel2.Size.Height);
+                messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - 32, messagePropertyGrid.Size.Height);
+                messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - 32, messagePropertyListView.Size.Height);
+                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Width -
+                                                                            grouperMessageCustomPropertiesWidth -
+                                                                            messagesCustomPropertiesSplitContainer.SplitterWidth;
+                grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Width;
+            }
+            finally
+            {
+                messagesSplitContainer.ResumeDrawing();
+                messagesSplitContainer.ResumeLayout();
+            }
         }
 
         private void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -2347,11 +1999,37 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void deadletterTabPage_Resize(object sender, EventArgs e)
         {
+            try
+            {
+                deadletterSplitContainer.SuspendDrawing();
+                deadletterSplitContainer.SuspendLayout();
+                grouperDeadletterCustomProperties.Size = new Size(grouperDeadletterCustomProperties.Size.Width, deadletterListTextPropertiesSplitContainer.Panel2.Size.Height);
+                deadletterPropertyGrid.Size = new Size(grouperDeadletterProperties.Size.Width - 32, deadletterPropertyGrid.Size.Height);
+                deadletterPropertyListView.Size = new Size(grouperDeadletterCustomProperties.Size.Width - 32, deadletterPropertyListView.Size.Height);
+                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Width -
+                                                                            grouperDeadletterCustomPropertiesWidth -
+                                                                            deadletterCustomPropertiesSplitContainer.SplitterWidth;
+                grouperDeadletterCustomPropertiesWidth = grouperDeadletterCustomProperties.Width;
+            }
+            finally
+            {
+                deadletterSplitContainer.ResumeDrawing();
+                deadletterSplitContainer.ResumeLayout();
+            }
         }
 
         private void btnDeadletter_Click(object sender, EventArgs e)
         {
-            GetDeadletterMessages();
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount))
+            {
+                if (receiveModeForm.ShowDialog() == DialogResult.OK)
+                {
+                    txtDeadletterText.Text = string.Empty;
+                    deadletterPropertyListView.Items.Clear();
+                    deadletterPropertyGrid.SelectedObject = null;
+                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count);
+                }
+            }
         }
 
         private void deadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -2462,15 +2140,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
-            if (dataGridViewColumn != null &&
-                e.ColumnIndex == dataGridViewColumn.Index &&
-                e.RowIndex > -1 &&
-               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
-            {
-                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
-                return;
-            }
             dataPointDataGridView.NotifyCurrentCellDirty(true);
         }
 
@@ -2501,18 +2170,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                if (!MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity))
-                {
-                    return;
-                }
-                if (metricTabPageIndexList.Count > 0)
-                {
-                    for (var i = 0; i < metricTabPageIndexList.Count; i++)
-                    {
-                        mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-                    }
-                    metricTabPageIndexList.Clear();
-                }
                 Cursor.Current = Cursors.WaitCursor;
                 if (dataPointBindingList.Count == 0)
                 {
@@ -2523,47 +2180,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     item.Entity = string.Format(SubscriptionPathFormat,
                                                 subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                 subscriptionWrapper.SubscriptionDescription.Name);
-                    item.Type = SubscriptionEntity;
-                }
-                BindingList<MetricDataPoint> pointBindingList;
-                var allDataPoint = dataPointBindingList.FirstOrDefault(m => string.Compare(m.Metric, "all", StringComparison.OrdinalIgnoreCase) == 0);
-                if (allDataPoint != null)
-                {
-                    pointBindingList = new BindingList<MetricDataPoint>();
-                    foreach (var item in MetricInfo.EntityMetricDictionary[SubscriptionEntity])
-                    {
-                        if (string.Compare(item.Name, "all", StringComparison.OrdinalIgnoreCase) == 0)
-                        {
-                            continue;
-                        }
-                        pointBindingList.Add(new MetricDataPoint
-                        {
-                            Entity = allDataPoint.Entity,
-                            FilterOperator1 = allDataPoint.FilterOperator1,
-                            FilterOperator2 = allDataPoint.FilterOperator2,
-                            FilterValue1 = allDataPoint.FilterValue1,
-                            FilterValue2 = allDataPoint.FilterValue2,
-                            Granularity = allDataPoint.Granularity,
-                            Graph = allDataPoint.Graph,
-                            Metric = item.Name,
-                            Type = allDataPoint.Type
-                        });
-                    }
-                }
-                else
-                {
-                    pointBindingList = dataPointBindingList;
+                    item.Type = MetricsSubscriptionEntity;
                 }
                 var uris = MetricHelper.BuildUriListForDataPointMetricQueries(MainForm.SingletonMainForm.SubscriptionId,
-                    serviceBusHelper.Namespace,
-                    pointBindingList);
+                                                                              serviceBusHelper.Namespace,
+                                                                              dataPointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
                 if (uris == null || !uriList.Any())
                 {
                     return;
                 }
-                var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList,
-                    MainForm.SingletonMainForm.CertificateThumbprint);
+                var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList, MainForm.SingletonMainForm.CertificateThumbprint);
                 var metricList = metricData as IList<IEnumerable<MetricValue>> ?? metricData.ToList();
                 if (metricData == null && metricList.Count == 0)
                 {
@@ -2571,31 +2198,29 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 for (var i = 0; i < metricList.Count; i++)
                 {
-                    if (metricList[i] == null || !metricList[i].Any())
+                    if (metricList[i] == null)
                     {
                         continue;
                     }
-                    var key = string.Format(MetricTabPageKeyFormat, i);
-                    var metricInfo = MetricInfo.EntityMetricDictionary[SubscriptionEntity].FirstOrDefault(m => m.Name == pointBindingList[i].Metric);
-                    var friendlyName = metricInfo != null ? metricInfo.DisplayName : pointBindingList[i].Metric;
+                    var key = string.Format(MetricTabPageKeyFormat, tabIndex++);
+                    var metricInfo = MetricInfo.MetricInfos.FirstOrDefault(m => m.Name == dataPointBindingList[i].Metric);
+                    var friendlyName = metricInfo != null ? metricInfo.FriendlyName : dataPointBindingList[i].Metric;
                     var unit = metricInfo != null ? metricInfo.Unit : Unknown;
                     mainTabControl.TabPages.Add(key, friendlyName);
-                    metricTabPageIndexList.Add(key);
                     var tabPage = mainTabControl.TabPages[key];
                     tabPage.BackColor = Color.FromArgb(215, 228, 242);
                     tabPage.ForeColor = SystemColors.ControlText;
                     var control = new MetricValueControl(writeToLog,
-                        () => mainTabControl.TabPages.RemoveByKey(key),
-                        metricList[i],
-                        pointBindingList[i],
-                        metricInfo)
+                                                    () => mainTabControl.TabPages.RemoveByKey(key),
+                                                    metricList[i],
+                                                    dataPointBindingList[i],
+                                                    metricInfo)
                     {
                         Location = new Point(0, 0),
                         Dock = DockStyle.Fill,
                         Tag = string.Format(GrouperFormat, friendlyName, unit)
                     };
                     mainTabControl.TabPages[key].Controls.Add(control);
-                    btnCloseTabs.Enabled = true;
                 }
             }
             catch (Exception ex)
@@ -2711,9 +2336,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -2749,7 +2372,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     BodyType bodyType;
                     var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out bodyType);
+                    var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
                     if (bodyType == BodyType.Wcf)
                     {
                         var wcfUri = serviceBusHelper.IsCloudNamespace ?
@@ -2764,15 +2387,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                             0,
                                                                             false,
                                                                             false,
+                                                                            messageText,
                                                                             wcfUri);
                     }
                     return serviceBusHelper.CreateMessageForApiReceiver(message,
                                                                         0,
                                                                         false,
                                                                         false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
+                                                                        messageText,
+                                                                        bodyType);
                 });
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
                 if (brokeredMessages.Any())
@@ -2797,9 +2420,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             deadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -2835,7 +2456,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     BodyType bodyType;
                     var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out bodyType);
+                    var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
                     if (bodyType == BodyType.Wcf)
                     {
                         var wcfUri = serviceBusHelper.IsCloudNamespace ?
@@ -2850,15 +2471,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                             0,
                                                                             false,
                                                                             false,
+                                                                            messageText,
                                                                             wcfUri);
                     }
                     return serviceBusHelper.CreateMessageForApiReceiver(message,
                                                                         0,
                                                                         false,
                                                                         false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
+                                                                        messageText,
+                                                                        bodyType);
                 });
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
                 if (brokeredMessages.Any())
@@ -3027,250 +2648,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private void dataGridView_Sorted(object sender, EventArgs e)
         {
             sorting = false;
-        }
-
-        private void messagesDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void deadletterDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void sessionsDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing && (components != null))
-                {
-                    components.Dispose();
-                }
-
-
-                for (var i = 0; i < Controls.Count; i++)
-                {
-                    Controls[i].Dispose();
-                }
-
-                base.Dispose(disposing);
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch
-            {
-            }
-        }
-
-        private void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (currentMessageRowIndex < 0)
-                {
-                    return;
-                }
-                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
-                {
-                    return;
-                }
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (messagesDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (currentDeadletterMessageRowIndex < 0)
-                {
-                    return;
-                }
-                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
-                {
-                    return;
-                }
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentDeadletterMessageRowIndex], txtDeadletterText.Text));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void saveSelectedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private string CreateFileName()
-        {
-            return string.Format(MessageFileFormat,
-                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
-                                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
-        }
-
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
-        }
-
-        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
-        {
-            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
-            {
-                return;
-            }
-            Task.Run(() =>
-            {
-                metricsManualResetEvent.WaitOne();
-                var dataGridViewComboBoxColumn = (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
-                if (dataGridViewComboBoxColumn != null)
-                {
-                    dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(SubscriptionEntity)
-                        ? MetricInfo.EntityMetricDictionary[SubscriptionEntity]
-                        : null;
-                }
-            });
         }
         #endregion
     }

@@ -1,29 +1,24 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
 #region Using Directives
 using System;
 using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Web.Script.Serialization;  
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -34,16 +29,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// Serialize an object using the DataContractJsonSerializer.
         /// </summary>
         /// <param name="item">The object that must be serialized</param>
-        /// <param name="formatting">Indicates out the output is formatted</param>
         /// <returns>A Json representation of the object passed as an argument.</returns>
-        public static string Serialize(object item, Formatting formatting = default(Formatting))
+        public static string Serialize(object item)
         {
             if (item == null)
             {
                 throw new ArgumentException("The item argument cannot be null.");
             }
 
-            var json = JsonConvert.SerializeObject(item, formatting);
+            var javaScriptSerializer = new JavaScriptSerializer();
+            var json = javaScriptSerializer.Serialize(item);
             return json;
         }
 
@@ -51,34 +46,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// Deserialize a JSON string into an object using the JavaScriptSerializer.
         /// </summary>
         /// <param name="item">The string that must be deserialized.</param>
+        /// <param name="type">The type of the serialized object.</param>
         /// <returns>The object deserialized.</returns>
-        public static T Deserialize<T>(string item)
+        public static object Deserialize(string item, Type type)
         {
             if (item == null)
             {
                 throw new ArgumentException("The item argument cannot be null.");
             }
-            return JsonConvert.DeserializeObject<T>(item);
-        }
 
-        /// <summary>
-        /// Deserialize an Json string into an object using the JavaScriptSerializer.
-        /// </summary>
-        /// <param name="stream">The stream that must be deserialized.</param>
-        /// <returns>The object deserialized.</returns>
-        public static T Deserialize<T>(Stream stream)
-        {
-            if (stream == null)
+            if (type == null)
             {
-                throw new ArgumentException("The stream argument cannot be null.");
+                throw new ArgumentException("The type argument cannot be null.");
             }
 
-            string item;
-            using (var reader = new StreamReader(stream))
-            {
-                item = reader.ReadToEnd();
-            }
-            return Deserialize<T>(item);
+            var serializer = new JavaScriptSerializer();
+            return serializer.Deserialize(item, type);
         }
 
         /// <summary>
@@ -94,13 +77,40 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             try
             {
-                var obj = JToken.Parse(item);
+                var serializer = new JavaScriptSerializer();
+                var obj = serializer.DeserializeObject(item);
                 return obj != null;
             }
             catch (Exception)
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Deserialize an Json string into an object using the JavaScriptSerializer.
+        /// </summary>
+        /// <param name="stream">The stream that must be deserialized.</param>
+        /// <param name="type">The type of the serialized object.</param>
+        /// <returns>The object deserialized.</returns>
+        public static object Deserialize(Stream stream, Type type)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentException("The stream argument cannot be null.");
+            }
+
+            if (type == null)
+            {
+                throw new ArgumentException("The type argument cannot be null.");
+            }           
+                        
+            string item;
+            using (var reader = new StreamReader(stream))
+            {
+                item = reader.ReadToEnd();
+            }
+            return Deserialize(item, type);
         }
     }
 }

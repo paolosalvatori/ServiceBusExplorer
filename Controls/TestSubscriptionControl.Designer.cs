@@ -7,6 +7,19 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         #region Component Designer generated code
 
         /// <summary> 
@@ -21,14 +34,12 @@
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.btnCreateDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.mainTabReceiverPage = new System.Windows.Forms.TabPage();
             this.grouperReceiver = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
-            this.cboReceiverInspector = new System.Windows.Forms.ComboBox();
-            this.lblReceiverInspector = new System.Windows.Forms.Label();
             this.txtReceiverThinkTime = new System.Windows.Forms.TextBox();
             this.lblReceiverThinkTime = new System.Windows.Forms.Label();
             this.checkBoxReceiverThinkTime = new System.Windows.Forms.CheckBox();
@@ -94,24 +105,24 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
             // 
-            // btnStart
+            // btnCreateDelete
             // 
-            this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnStart.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnStart.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStart.Location = new System.Drawing.Point(840, 438);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(72, 24);
-            this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "Start";
-            this.btnStart.UseVisualStyleBackColor = false;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            this.btnStart.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnStart.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnCreateDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCreateDelete.Location = new System.Drawing.Point(840, 392);
+            this.btnCreateDelete.Name = "btnCreateDelete";
+            this.btnCreateDelete.Size = new System.Drawing.Size(72, 24);
+            this.btnCreateDelete.TabIndex = 0;
+            this.btnCreateDelete.Text = "Start";
+            this.btnCreateDelete.UseVisualStyleBackColor = false;
+            this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
+            this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // btnCancel
             // 
@@ -122,7 +133,7 @@
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCancel.Location = new System.Drawing.Point(920, 438);
+            this.btnCancel.Location = new System.Drawing.Point(920, 392);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 1;
@@ -144,7 +155,7 @@
             this.mainTabControl.Location = new System.Drawing.Point(16, 16);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
-            this.mainTabControl.Size = new System.Drawing.Size(976, 414);
+            this.mainTabControl.Size = new System.Drawing.Size(976, 368);
             this.mainTabControl.TabIndex = 9;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
@@ -153,9 +164,9 @@
             this.mainTabReceiverPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.mainTabReceiverPage.Controls.Add(this.grouperReceiver);
             this.mainTabReceiverPage.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.mainTabReceiverPage.Location = new System.Drawing.Point(4, 24);
+            this.mainTabReceiverPage.Location = new System.Drawing.Point(4, 22);
             this.mainTabReceiverPage.Name = "mainTabReceiverPage";
-            this.mainTabReceiverPage.Size = new System.Drawing.Size(968, 386);
+            this.mainTabReceiverPage.Size = new System.Drawing.Size(968, 342);
             this.mainTabReceiverPage.TabIndex = 2;
             this.mainTabReceiverPage.Text = "Receiver";
             // 
@@ -169,8 +180,6 @@
             this.grouperReceiver.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
             this.grouperReceiver.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperReceiver.BorderThickness = 1F;
-            this.grouperReceiver.Controls.Add(this.cboReceiverInspector);
-            this.grouperReceiver.Controls.Add(this.lblReceiverInspector);
             this.grouperReceiver.Controls.Add(this.txtReceiverThinkTime);
             this.grouperReceiver.Controls.Add(this.lblReceiverThinkTime);
             this.grouperReceiver.Controls.Add(this.checkBoxReceiverThinkTime);
@@ -212,31 +221,9 @@
             this.grouperReceiver.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperReceiver.ShadowControl = false;
             this.grouperReceiver.ShadowThickness = 1;
-            this.grouperReceiver.Size = new System.Drawing.Size(936, 350);
+            this.grouperReceiver.Size = new System.Drawing.Size(936, 304);
             this.grouperReceiver.TabIndex = 16;
             this.grouperReceiver.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperReceiver_CustomPaint);
-            // 
-            // cboReceiverInspector
-            // 
-            this.cboReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cboReceiverInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboReceiverInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboReceiverInspector.FormattingEnabled = true;
-            this.cboReceiverInspector.Location = new System.Drawing.Point(704, 264);
-            this.cboReceiverInspector.Name = "cboReceiverInspector";
-            this.cboReceiverInspector.Size = new System.Drawing.Size(216, 21);
-            this.cboReceiverInspector.TabIndex = 151;
-            // 
-            // lblReceiverInspector
-            // 
-            this.lblReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblReceiverInspector.AutoSize = true;
-            this.lblReceiverInspector.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiverInspector.Location = new System.Drawing.Point(624, 268);
-            this.lblReceiverInspector.Name = "lblReceiverInspector";
-            this.lblReceiverInspector.Size = new System.Drawing.Size(77, 13);
-            this.lblReceiverInspector.TabIndex = 150;
-            this.lblReceiverInspector.Text = "Msg Inspector:";
             // 
             // txtReceiverThinkTime
             // 
@@ -356,7 +343,7 @@
             this.txtFilterExpression.Multiline = true;
             this.txtFilterExpression.Name = "txtFilterExpression";
             this.txtFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtFilterExpression.Size = new System.Drawing.Size(520, 230);
+            this.txtFilterExpression.Size = new System.Drawing.Size(520, 184);
             this.txtFilterExpression.TabIndex = 6;
             this.txtFilterExpression.Text = "1=1";
             // 
@@ -569,10 +556,10 @@
             this.tabPageGraph.Controls.Add(this.grouperReceiverStatistics);
             this.tabPageGraph.Controls.Add(this.chart);
             this.tabPageGraph.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tabPageGraph.Location = new System.Drawing.Point(4, 24);
+            this.tabPageGraph.Location = new System.Drawing.Point(4, 22);
             this.tabPageGraph.Name = "tabPageGraph";
             this.tabPageGraph.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGraph.Size = new System.Drawing.Size(968, 386);
+            this.tabPageGraph.Size = new System.Drawing.Size(968, 342);
             this.tabPageGraph.TabIndex = 5;
             this.tabPageGraph.Text = "Graph";
             // 
@@ -960,9 +947,9 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.btnCreateDelete);
             this.Name = "TestSubscriptionControl";
-            this.Size = new System.Drawing.Size(1008, 478);
+            this.Size = new System.Drawing.Size(1008, 432);
             this.mainTabControl.ResumeLayout(false);
             this.mainTabReceiverPage.ResumeLayout(false);
             this.grouperReceiver.ResumeLayout(false);
@@ -983,7 +970,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnCreateDelete;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.TabPage mainTabReceiverPage;
         private System.Windows.Forms.TabPage tabPageGraph;
@@ -1039,7 +1026,5 @@
         private System.Windows.Forms.TextBox txtReceiverThinkTime;
         private System.Windows.Forms.Label lblReceiverThinkTime;
         private System.Windows.Forms.CheckBox checkBoxReceiverThinkTime;
-        private System.Windows.Forms.ComboBox cboReceiverInspector;
-        private System.Windows.Forms.Label lblReceiverInspector;
     }
 }

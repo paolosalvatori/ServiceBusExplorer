@@ -7,6 +7,19 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         #region Component Designer generated code
 
         /// <summary> 
@@ -115,7 +128,6 @@
             this.metricDataGridView.RowHeadersWidth = 24;
             this.metricDataGridView.Size = new System.Drawing.Size(428, 328);
             this.metricDataGridView.TabIndex = 28;
-            this.metricDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.metricDataGridView_DataError);
             this.metricDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.metricDataGridView_RowsAdded);
             this.metricDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.metricDataGridView_RowsRemoved);
             this.metricDataGridView.Resize += new System.EventHandler(this.metricDataGridView_Resize);
@@ -133,7 +145,7 @@
             "ReceiveDelete"});
             this.cboChartType.Location = new System.Drawing.Point(8, 336);
             this.cboChartType.Name = "cboChartType";
-            this.cboChartType.Size = new System.Drawing.Size(408, 21);
+            this.cboChartType.Size = new System.Drawing.Size(420, 21);
             this.cboChartType.TabIndex = 133;
             this.cboChartType.SelectedIndexChanged += new System.EventHandler(this.cboChartType_SelectedIndexChanged);
             // 
@@ -196,7 +208,7 @@
             this.chart.Legends.Add(legend1);
             this.chart.Location = new System.Drawing.Point(0, 8);
             this.chart.Name = "chart";
-            this.chart.Size = new System.Drawing.Size(396, 320);
+            this.chart.Size = new System.Drawing.Size(408, 320);
             this.chart.TabIndex = 127;
             title1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             title1.Name = "Title";

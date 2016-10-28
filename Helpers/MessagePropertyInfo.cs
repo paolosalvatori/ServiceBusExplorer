@@ -1,44 +1,30 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
 #region Using Directives
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using Newtonsoft.Json;
+using System.Linq;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    [XmlType(TypeName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-    [XmlRoot(ElementName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer", IsNullable = false)]
-    [DataContract(Name = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-    [JsonObject(MemberSerialization.OptIn)]
     public class MessagePropertyInfo
     {
-        #region Private Fields
-        private object internalValue;
-        #endregion
-
         #region Public Constructors
         public MessagePropertyInfo()
         {
@@ -68,40 +54,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Public Instance Properties
-        [XmlElement(ElementName = "key", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "key", Order = 1, Required = Required.Always)]
         public string Key { get; set; }
-
-        [XmlElement(ElementName = "type", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "type", Order = 2, Required = Required.Always)]
         public string Type { get; set; }
-
-        [XmlIgnore]
-        public object Value
-        {
-            get
-            {
-                return internalValue;
-            }
-            set
-            {
-                internalValue = value;
-            }
-        }
-
-        [XmlElement(ElementName = "value", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "value", Order = 3)]
-        public string ValueAsString 
-        {
-            get
-            {
-                return Convert.ToString(internalValue);
-            }
-            set
-            {
-                internalValue = value;
-            }
-        }
+        public object Value { get; set; }
         #endregion
 
         #region Public Static Properties

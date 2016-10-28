@@ -7,6 +7,19 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         #region Component Designer generated code
 
         /// <summary> 
@@ -246,7 +259,6 @@
             this.monitorRuleDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.monitorRuleDataGridView_CellClick);
             this.monitorRuleDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.monitorRuleDataGridView_CellFormatting);
             this.monitorRuleDataGridView.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.monitorRuleDataGridView_CellValidated);
-            this.monitorRuleDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.monitorRuleDataGridView_DataError);
             this.monitorRuleDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.monitorRuleDataGridView_EditingControlShowing);
             this.monitorRuleDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.monitorRuleDataGridView_RowsAdded);
             this.monitorRuleDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.monitorRuleDataGridView_RowsRemoved);

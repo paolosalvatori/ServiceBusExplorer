@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team 
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -25,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions; 
+using System.Text.RegularExpressions;
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -56,7 +52,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public string Property { get; set; }
         public Operator Operator { get; set; }
         public object Value { get; set; }
-        public LogicalOperator LogicalOperator { get; set; } 
+        public LogicalOperator LogicalOperator { get; set; }
         #endregion
     }
 
@@ -80,7 +76,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string Filter2Argument = "filter2";
         private const string NullValue = "null";
         private const string AndOperator = "and";
-        private const string OrOperator = "or"; 
+        private const string OrOperator = "or";
 
         //***************************
         // Messages
@@ -102,7 +98,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly MethodInfo containsMethod = typeof(string).GetMethod("Contains");
         private readonly MethodInfo startsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         private readonly MethodInfo endsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
-        private readonly MethodInfo getValueOrDefault = typeof (DateTime?).GetMethod("GetValueOrDefault", new Type[]{});
+        private readonly MethodInfo getValueOrDefault = typeof(DateTime?).GetMethod("GetValueOrDefault", new Type[] { });
         private readonly List<PropertyInfo> propertyList;
         #endregion
         #region Public Constructor
@@ -110,7 +106,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             var type = typeof(T);
             propertyList = new List<PropertyInfo>(type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-        } 
+        }
         #endregion
 
         #region Public Properties
@@ -249,7 +245,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
 
             return exp != null ? Expression.Lambda<Func<T, bool>>(exp, param) : null;
-        } 
+        }
         #endregion
 
         private Expression GetExpression(ParameterExpression param, ExpressionFilter filter)
@@ -343,7 +339,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 default:
                     return Operator.Unkwnon;
             }
-        } 
+        }
         #endregion
 
         #region Private Static Methods
@@ -379,7 +375,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 return value.Length == 2 ? string.Empty : value.Substring(1, value.Length - 2);
             }
             return value;
-        } 
+        }
         #endregion
     }
 }

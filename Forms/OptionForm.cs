@@ -1,31 +1,24 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team 
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
 #region Using Directives
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.ServiceBus;
@@ -61,10 +54,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                           int top,
                           bool showMessageCount,
                           bool saveMessageToFile,
-                          bool savePropertiesToFile,
-                          bool saveCheckpointsToFile,
-                          IEnumerable<string> entities,
-                          IEnumerable<string> selectedEntities)
+                          bool savePropertiesToFile)
         {
             InitializeComponent();
 
@@ -101,32 +91,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             monitorRefreshIntervalNumericUpDown.Value = monitorRefreshInterval;
             prefetchCountNumericUpDown.Value = prefetchCount;
             topNumericUpDown.Value = top;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
-            savePropertiesToFileCheckBox.Checked = savePropertiesToFile;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
-            saveCheckpointsToFileCheckBox.Checked = saveCheckpointsToFile;
 
             var connectivityMode = ServiceBusHelper.ConnectivityMode;
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
             cboConnectivityMode.SelectedItem = connectivityMode;
 
-            var encodingType = ServiceBusHelper.EncodingType;
+            var encodingType = ServiceBusHelper.EncodingTypeType;
             cboEncodingType.DataSource = Enum.GetValues(typeof(EncodingType));
             cboEncodingType.SelectedItem = encodingType;
 
             ShowMessageCount = showMessageCount;
             SaveMessageToFile = saveMessageToFile;
             SavePropertiesToFile = savePropertiesToFile;
-            SaveCheckpointsToFile = saveCheckpointsToFile;
-
-            foreach (var item in entities)
-            {
-                cboSelectedEntities.Items.Add(item);
-            }
-            foreach (var item in selectedEntities)
-            {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
-            }
         }
         #endregion
 
@@ -145,19 +121,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         public bool ShowMessageCount { get; private set; }
         public bool SaveMessageToFile { get; private set; }
         public bool SavePropertiesToFile { get; private set; }
-        public bool SaveCheckpointsToFile { get; private set; }
         public string CertificateThumbprint { get; private set; }
         public string SubscriptionId { get; private set; }
         public string Label { get; private set; }
         public string MessageFile { get; private set; }
         public string MessageText { get; private set; }
-        public List<string> SelectedEntities
-        {
-            get
-            {
-                return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
-            }
-        }
         #endregion
 
         #region Event Handlers
@@ -226,16 +194,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
-            SaveCheckpointsToFile = true;
-
             saveMessageToFileCheckBox.Checked = true;
             savePropertiesToFileCheckBox.Checked = true;
-            saveCheckpointsToFileCheckBox.Checked = true;
-
-            foreach (var item in MainForm.SingletonMainForm.Entities)
-            {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
-            }
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -282,11 +242,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
         }
 
-        private void saveCheckpointsToFileCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
-        }
-
         private void button_MouseEnter(object sender, EventArgs e)
         {
             var control = sender as Control;
@@ -317,11 +272,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                    cboEncodingType.Location.Y - 1,
                                    cboEncodingType.Size.Width + 1,
                                    cboEncodingType.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboSelectedEntities.Location.X - 1,
-                                    cboSelectedEntities.Location.Y - 1,
-                                    cboSelectedEntities.Size.Width + 1,
-                                    cboSelectedEntities.Size.Height + 1);
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
@@ -416,14 +366,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             else
             {
                 configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter].Value = SavePropertiesToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SaveCheckpointsToFileParameter, SaveCheckpointsToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter].Value = SaveCheckpointsToFile.ToString();
             }
             if (configuration.AppSettings.Settings[ConfigurationParameters.RetryCountParameter] == null)
             {
@@ -557,20 +499,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             if (configuration.AppSettings.Settings[ConfigurationParameters.Encoding] == null)
             {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.Encoding, ServiceBusHelper.EncodingType.ToString());
+                configuration.AppSettings.Settings.Add(ConfigurationParameters.Encoding, ServiceBusHelper.EncodingTypeType.ToString());
             }
             else
             {
-                configuration.AppSettings.Settings[ConfigurationParameters.Encoding].Value = ServiceBusHelper.EncodingType.ToString();
+                configuration.AppSettings.Settings[ConfigurationParameters.Encoding].Value = ServiceBusHelper.EncodingTypeType.ToString();
             }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SelectedEntitiesParameter, cboSelectedEntities.Text);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter].Value = cboSelectedEntities.Text;
-            }
+
             configuration.Save(ConfigurationSaveMode.Minimal);
         }
 
@@ -589,7 +524,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             if (cboEncodingType.SelectedItem is EncodingType)
             {
-                ServiceBusHelper.EncodingType = (EncodingType) cboEncodingType.SelectedItem;
+                ServiceBusHelper.EncodingTypeType = (EncodingType) cboEncodingType.SelectedItem;
             }
         }
         #endregion

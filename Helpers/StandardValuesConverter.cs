@@ -1,24 +1,3 @@
-#region Copyright
-//=======================================================================================
-// Microsoft Azure Customer Advisory Team 
-//
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
-// Author: Paolo Salvatori
-//=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
-//=======================================================================================
-#endregion
-
 #region Using Directives
 using System;
 using System.Collections;
@@ -35,9 +14,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     internal class StandardValuesConverter : TypeConverter
     {
-        #region Private Static Fields
-        private static int count; 
-        #endregion
 
         #region Public Methods
         public override bool GetPropertiesSupported(ITypeDescriptorContext context)
@@ -163,7 +139,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (propType.IsEnum)
                 {
                     var sInpuValue = value as string;
-                    string[] arrDispName = sInpuValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] arrDispName = sInpuValue.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                     var sb = new StringBuilder(1000);
                     foreach (string sDispName in arrDispName)
@@ -171,14 +147,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         string sTrimValue = sDispName.Trim();
                         foreach (StandardValueAttribute sva in col)
                         {
-                            if (String.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
-                                String.Compare(sva.DisplayName, sTrimValue, true) == 0)
+                            if (string.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
+                                string.Compare(sva.DisplayName, sTrimValue, true) == 0)
                             {
                                 if (sb.Length > 0)
                                 {
                                     sb.Append(",");
                                 }
-                                sb.Append(sva.Value.ToString());
+                                sb.Append(sva.Value);
                             }
                         }
 
@@ -236,26 +212,30 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 col = cpd.StandardValues;
                 propType = cpd.PropertyType;
             }
+
             if (value == null)
             {
                 return null;
             }
-            else if (value is string)
+
+            if (value is string)
             {
                 if (destinationType == typeof(string))
                 {
                     return value;
                 }
-                else if (destinationType == propType)
+
+                if (destinationType == propType)
                 {
                     return ConvertFrom(context, culture, value);
                 }
-                else if (destinationType == typeof(StandardValueAttribute))
+
+                if (destinationType == typeof(StandardValueAttribute))
                 {
                     foreach (StandardValueAttribute sva in col)
                     {
-                        if (String.Compare(value.ToString(), sva.DisplayName, true, culture) == 0 ||
-                            String.Compare(value.ToString(), sva.Value.ToString(), true, culture) == 0)
+                        if (string.Compare(value.ToString(), sva.DisplayName, true, culture) == 0 ||
+                            string.Compare(value.ToString(), sva.Value.ToString(), true, culture) == 0)
                         {
                             return sva;
                         }
@@ -269,7 +249,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     if (propType.IsEnum)
                     {
                         var sDelimitedValues = Enum.Format(propType, value, "G");
-                        var arrValue = sDelimitedValues.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        var arrValue = sDelimitedValues.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                         var sb = new StringBuilder(1000);
                         foreach (string sDispName in arrValue)
@@ -277,8 +257,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             string sTrimValue = sDispName.Trim();
                             foreach (StandardValueAttribute sva in col)
                             {
-                                if (String.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
-                                    String.Compare(sva.DisplayName, sTrimValue, true) == 0)
+                                if (string.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
+                                    string.Compare(sva.DisplayName, sTrimValue, true) == 0)
                                 {
                                     if (sb.Length > 0)
                                     {
@@ -338,11 +318,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return (value as StandardValueAttribute).DisplayName;
                 }
-                else if (destinationType == typeof(StandardValueAttribute))
+                if (destinationType == typeof(StandardValueAttribute))
                 {
                     return value;
                 }
-                else if (destinationType == propType)
+                if (destinationType == propType)
                 {
                     return (value as StandardValueAttribute).Value;
                 }
@@ -391,16 +371,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             string prefix = String.Empty;
             ResourceManager rm = null;
-            StandardValueAttribute sva = null;
+            StandardValueAttribute sva;
 
-            sva = cpd.StandardValues.FirstOrDefault() as StandardValueAttribute;
+            sva = cpd.StandardValues.FirstOrDefault();
 
             // first try property itself
             if (cpd.ResourceManager != null)
             {
-                string keyName = cpd.KeyPrefix + cpd.Name + "_" + sva.Value.ToString() + "_Name";
+                string keyName = cpd.KeyPrefix + cpd.Name + "_" + sva?.Value + "_Name";
                 string valueName = cpd.ResourceManager.GetString(keyName);
-                if (!String.IsNullOrWhiteSpace(valueName))
+                if (!string.IsNullOrWhiteSpace(valueName))
                 {
                     rm = cpd.ResourceManager;
                     prefix = cpd.KeyPrefix + cpd.Name;
@@ -410,9 +390,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // now try class level
             if (rm == null && cpd.ResourceManager != null)
             {
-                string keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva.Value.ToString() + "_Name";
+                string keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva?.Value + "_Name";
                 string valueName = cpd.ResourceManager.GetString(keyName);
-                if (!String.IsNullOrWhiteSpace(valueName))
+                if (!string.IsNullOrWhiteSpace(valueName))
                 {
                     rm = cpd.ResourceManager;
                     prefix = cpd.KeyPrefix + cpd.PropertyType.Name;
@@ -448,10 +428,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 foreach (StandardValueAttribute sv in cpd.StandardValues)
                 {
-                    string keyName = prefix + "_" + sv.Value.ToString() + "_Name";  // display name
-                    string keyDesc = prefix + "_" + sv.Value.ToString() + "_Desc"; // description
-                    string dispName = String.Empty;
-                    string description = String.Empty;
+                    string keyName = prefix + "_" + sv.Value + "_Name";  // display name
+                    string keyDesc = prefix + "_" + sv.Value + "_Desc"; // description
+                    string dispName = string.Empty;
+                    string description = string.Empty;
 
                     try
                     {
@@ -462,7 +442,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    if (String.IsNullOrWhiteSpace(dispName) == false)
+                    if (string.IsNullOrWhiteSpace(dispName) == false)
                     {
                         sv.DisplayName = dispName;
                     }
@@ -484,39 +464,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void WriteContext(string prefix, ITypeDescriptorContext ctx, object value, Type destinationType)
-        {
-            count++;
-            var sb = new StringBuilder(1024);
-
-            if (ctx != null)
-            {
-                if (ctx.Instance != null)
-                {
-                    sb.Append("ctx.Instance is " + ctx.Instance.ToString() + ". ");
-                }
-
-                if (ctx.PropertyDescriptor != null)
-                {
-                    sb.Append("ctx.PropertyDescriptor is " + ctx.PropertyDescriptor.ToString() + ". ");
-                }
-            }
-            else
-            {
-                sb.Append("ctx is null. ");
-            }
-
-            if (value == null)
-            {
-                sb.AppendLine("Value is null. ");
-            }
-            else
-            {
-                sb.AppendLine("Value is " + value.ToString() + ", " + value.GetType().ToString() + ". ");
-            }
-            sb.AppendLine(destinationType.ToString());
-            Console.WriteLine(count.ToString() + " " + prefix + ": " + sb.ToString());
-        } 
         #endregion
     }
 }

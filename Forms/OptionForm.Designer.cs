@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team 
 //
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -51,17 +47,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         private void InitializeComponent()
         {
-            Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxProperties checkBoxProperties1 = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
-            this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.cboSelectedEntities = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxComboBox();
-            this.lblSelectedEntities = new System.Windows.Forms.Label();
-            this.lblShowMessageCount = new System.Windows.Forms.Label();
-            this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
             this.lblEncoding = new System.Windows.Forms.Label();
             this.cboEncodingType = new System.Windows.Forms.ComboBox();
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
@@ -105,6 +94,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblLogFontSize = new System.Windows.Forms.Label();
             this.btnDefault = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
+            this.lblShowMessageCount = new System.Windows.Forms.Label();
+            this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).BeginInit();
@@ -127,7 +118,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(392, 520);
+            this.btnOk.Location = new System.Drawing.Point(392, 488);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 2;
@@ -145,7 +136,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(472, 520);
+            this.btnCancel.Location = new System.Drawing.Point(472, 488);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 3;
@@ -161,12 +152,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.mainPanel.Controls.Add(this.lblSaveCheckpointsOnExit);
-            this.mainPanel.Controls.Add(this.saveCheckpointsToFileCheckBox);
-            this.mainPanel.Controls.Add(this.cboSelectedEntities);
-            this.mainPanel.Controls.Add(this.lblSelectedEntities);
-            this.mainPanel.Controls.Add(this.lblShowMessageCount);
-            this.mainPanel.Controls.Add(this.showMessageCountCheckBox);
             this.mainPanel.Controls.Add(this.lblEncoding);
             this.mainPanel.Controls.Add(this.cboEncodingType);
             this.mainPanel.Controls.Add(this.cboConnectivityMode);
@@ -210,76 +195,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.mainPanel.Controls.Add(this.lblLogFontSize);
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(560, 505);
+            this.mainPanel.Size = new System.Drawing.Size(560, 473);
             this.mainPanel.TabIndex = 33;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
-            // 
-            // lblSaveCheckpointsOnExit
-            // 
-            this.lblSaveCheckpointsOnExit.AutoSize = true;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(248, 244);
-            this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
-            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(258, 13);
-            this.lblSaveCheckpointsOnExit.TabIndex = 86;
-            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints to File on Exit:";
-            // 
-            // saveCheckpointsToFileCheckBox
-            // 
-            this.saveCheckpointsToFileCheckBox.AutoSize = true;
-            this.saveCheckpointsToFileCheckBox.Checked = true;
-            this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(528, 244);
-            this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
-            this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveCheckpointsToFileCheckBox.TabIndex = 87;
-            this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
-            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
-            // 
-            // cboSelectedEntities
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
-            this.cboSelectedEntities.DisplayMemberSingleItem = "";
-            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(184, 464);
-            this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(360, 21);
-            this.cboSelectedEntities.TabIndex = 85;
-            // 
-            // lblSelectedEntities
-            // 
-            this.lblSelectedEntities.AutoSize = true;
-            this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(8, 468);
-            this.lblSelectedEntities.Name = "lblSelectedEntities";
-            this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
-            this.lblSelectedEntities.TabIndex = 84;
-            this.lblSelectedEntities.Text = "Selected Entities:";
-            // 
-            // lblShowMessageCount
-            // 
-            this.lblShowMessageCount.AutoSize = true;
-            this.lblShowMessageCount.Location = new System.Drawing.Point(8, 244);
-            this.lblShowMessageCount.Name = "lblShowMessageCount";
-            this.lblShowMessageCount.Size = new System.Drawing.Size(114, 13);
-            this.lblShowMessageCount.TabIndex = 82;
-            this.lblShowMessageCount.Text = "Show Message Count:";
-            // 
-            // showMessageCountCheckBox
-            // 
-            this.showMessageCountCheckBox.AutoSize = true;
-            this.showMessageCountCheckBox.Checked = true;
-            this.showMessageCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showMessageCountCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.showMessageCountCheckBox.Location = new System.Drawing.Point(184, 244);
-            this.showMessageCountCheckBox.Name = "showMessageCountCheckBox";
-            this.showMessageCountCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.showMessageCountCheckBox.TabIndex = 83;
-            this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
-            this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
             // 
             // lblEncoding
             // 
@@ -542,20 +460,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // lblSavePropertiesOnExit
             // 
             this.lblSavePropertiesOnExit.AutoSize = true;
-            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(248, 276);
+            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(352, 276);
             this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
-            this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(197, 13);
+            this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(151, 13);
             this.lblSavePropertiesOnExit.TabIndex = 11;
-            this.lblSavePropertiesOnExit.Text = "Save Message Properties to File on Exit:";
+            this.lblSavePropertiesOnExit.Text = "Save Properties to File on Exit:";
             // 
             // lblSaveMessageOnExit
             // 
             this.lblSaveMessageOnExit.AutoSize = true;
             this.lblSaveMessageOnExit.Location = new System.Drawing.Point(8, 276);
             this.lblSaveMessageOnExit.Name = "lblSaveMessageOnExit";
-            this.lblSaveMessageOnExit.Size = new System.Drawing.Size(174, 13);
+            this.lblSaveMessageOnExit.Size = new System.Drawing.Size(147, 13);
             this.lblSaveMessageOnExit.TabIndex = 10;
-            this.lblSaveMessageOnExit.Text = "Save Message Body to File on Exit:";
+            this.lblSaveMessageOnExit.Text = "Save Message to File on Exit:";
             // 
             // savePropertiesToFileCheckBox
             // 
@@ -804,7 +722,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnDefault.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDefault.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDefault.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDefault.Location = new System.Drawing.Point(312, 520);
+            this.btnDefault.Location = new System.Drawing.Point(312, 488);
             this.btnDefault.Name = "btnDefault";
             this.btnDefault.Size = new System.Drawing.Size(72, 24);
             this.btnDefault.TabIndex = 1;
@@ -822,7 +740,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(232, 520);
+            this.btnSave.Location = new System.Drawing.Point(232, 488);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 0;
@@ -830,12 +748,36 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // lblShowMessageCount
+            // 
+            this.lblShowMessageCount.AutoSize = true;
+            this.lblShowMessageCount.Location = new System.Drawing.Point(8, 244);
+            this.lblShowMessageCount.Name = "lblShowMessageCount";
+            this.lblShowMessageCount.Size = new System.Drawing.Size(114, 13);
+            this.lblShowMessageCount.TabIndex = 84;
+            this.lblShowMessageCount.Text = "Show Message Count:";
+            // 
+            // showMessageCountCheckBox
+            // 
+            this.showMessageCountCheckBox.AutoSize = true;
+            this.showMessageCountCheckBox.Checked = true;
+            this.showMessageCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showMessageCountCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.showMessageCountCheckBox.Location = new System.Drawing.Point(184, 244);
+            this.showMessageCountCheckBox.Name = "showMessageCountCheckBox";
+            this.showMessageCountCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.showMessageCountCheckBox.TabIndex = 85;
+            this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
+            this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
+            // 
             // OptionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(560, 553);
+            this.ClientSize = new System.Drawing.Size(560, 521);
+            this.Controls.Add(this.lblShowMessageCount);
+            this.Controls.Add(this.showMessageCountCheckBox);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnDefault);
             this.Controls.Add(this.mainPanel);
@@ -864,6 +806,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -917,9 +860,5 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private System.Windows.Forms.ComboBox cboEncodingType;
         private System.Windows.Forms.Label lblShowMessageCount;
         private System.Windows.Forms.CheckBox showMessageCountCheckBox;
-        private System.Windows.Forms.Label lblSelectedEntities;
-        private CheckBoxComboBox cboSelectedEntities;
-        private System.Windows.Forms.Label lblSaveCheckpointsOnExit;
-        private System.Windows.Forms.CheckBox saveCheckpointsToFileCheckBox;
     }
 }

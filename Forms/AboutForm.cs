@@ -1,21 +1,17 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Windows Azure Customer Advisory Team  
 //
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
+// This sample is supplemental to the technical guidance published on the community
+// blog at http://www.appfabriccat.com/. 
 // 
 // Author: Paolo Salvatori
 //=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright © 2011 Microsoft Corporation. All rights reserved.
 // 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER 
+// EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF 
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. YOU BEAR THE RISK OF USING IT.
 //=======================================================================================
 #endregion
 
@@ -37,7 +33,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Private Fields
         private readonly Bitmap whiteLogoBitmap = new Bitmap(Resources.WhiteLogo);
         private readonly Bitmap azureLogoBitmap = new Bitmap(Resources.AzureLogo);
-        private readonly Bitmap heartBitmap = new Bitmap(Resources.PaoloAnja, new Size(100, 100));
         /// <summary>
         /// A collection of Shape based objects
         /// </summary>
@@ -78,7 +73,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     BackColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
                                     ForeColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
                                     RotationDelta = random.Next(20),
-                                    Transparency = (float)random.NextDouble(),
+                                    Transparency = (float) random.NextDouble(),
                                     LineThickness = random.Next(10),
                                     Vector = new Size(-10 + random.Next(20), -10 + random.Next(20))
                                 };
@@ -116,6 +111,17 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Event Handlers
+        private void btnOk_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void mainGroupBox_Paint(object sender, PaintEventArgs e)
+        {
+            var borderRectangle = new Rectangle(12, 20, 456, 288);
+            ControlPaint.DrawBorder3D(e.Graphics, borderRectangle, Border3DStyle.Raised, Border3DSide.All);
+        }
+
         private void timer_Tick(object sender, EventArgs e)
         {
             foreach (Shape shape in shapes)
@@ -152,6 +158,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             base.OnSizeChanged(e);
         }
+        #endregion
 
         private void mailLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -167,42 +174,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             Process.Start("https://twitter.com/babosbird");
         }
-
-        private void AboutForm_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar != 'a')
-            {
-                return;
-            }
-
-            // Clear shapes collection
-            shapes.Clear();
-
-            //A random number generator for the initial setup
-            var random = new Random();
-            const int count = 15;
-
-            for (var i = 0; i < count; i++)
-            {
-                var shape = new Picture(heartBitmap)
-                {
-                    Limits = ClientRectangle,
-                    Location = new Point(random.Next(ClientRectangle.Width + 16),
-                        random.Next(ClientRectangle.Height + 16)),
-                    Size = new Size(1 + random.Next(100), 1 + random.Next(100)),
-                    BackColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
-                    ForeColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
-                    RotationDelta = random.Next(20),
-                    Transparency = (float)random.NextDouble(),
-                    LineThickness = random.Next(10),
-                    Vector = new Size(-10 + random.Next(20), -10 + random.Next(20))
-                };
-
-                //and added to the list of shapes
-                shapes.Add(shape);
-            }
-        }
-        #endregion
     }
 
     public class Shape

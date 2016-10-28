@@ -1,24 +1,3 @@
-#region Copyright
-//=======================================================================================
-// Microsoft Azure Customer Advisory Team 
-//
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
-// Author: Paolo Salvatori
-//=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
-//=======================================================================================
-#endregion
-
 #region Using Directives
 using System;
 using System.ComponentModel;
@@ -187,7 +166,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				ControlStyles.SupportsTransparentBackColor,
 				true);
 
-			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
+			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			ForeColor = Color.FromArgb(123, 125, 123);
 			BackColor = Color.Transparent;
 
@@ -251,7 +230,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				if(autoSize != value)
 				{
 					autoSize = value;
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 				}
 			}
@@ -405,7 +384,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(tickHeight < 1)
 						tickHeight = 1;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -432,7 +411,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(indentHeight < 0)
 						indentHeight = 0;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -460,7 +439,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(indentWidth < 0)
 						indentWidth = 0;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -488,7 +467,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(trackerSize.Width > trackerSize.Height)
 						trackerSize.Height = trackerSize.Width;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -517,7 +496,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				{
 					textTickStyle = value;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -546,7 +525,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				{
 					tickStyle = value;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -635,7 +614,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				if (minimum > value)
 					value = minimum;
 
-				if(autoSize == true)
+				if(autoSize)
 					Size = FitSize;
 				Invalidate();
 			}
@@ -663,7 +642,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 				if (maximum < minimum)
 					minimum = maximum;
 
-				if(autoSize == true)
+				if(autoSize)
 					Size = FitSize;
 				Invalidate();
 			}
@@ -808,108 +787,15 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 		private Size FitSize
 		{
 			get 
-			{
-			    try
-			    {
-                    Size fitSize;
-                    float textAreaSize;
-
-                    // Create a Graphics object for the Control.
-                    Graphics g = CreateGraphics();
-
-                    Rectangle workingRect = Rectangle.Inflate(ClientRectangle, -indentWidth, -indentHeight);
-                    float currentUsedPos = 0;
-
-                    if (orientation == Orientation.Horizontal)
-                    {
-                        currentUsedPos = indentHeight;
-                        //==========================================================================
-
-                        // Get Height of Text Area
-                        textAreaSize = g.MeasureString(maximum.ToString(), Font).Height;
-
-                        if (textTickStyle == TickStyle.TopLeft || textTickStyle == TickStyle.Both)
-                            currentUsedPos += textAreaSize;
-
-                        if (tickStyle == TickStyle.TopLeft || tickStyle == TickStyle.Both)
-                            currentUsedPos += tickHeight + 1;
-
-                        currentUsedPos += trackerSize.Height;
-
-                        if (tickStyle == TickStyle.BottomRight || tickStyle == TickStyle.Both)
-                        {
-                            currentUsedPos += 1;
-                            currentUsedPos += tickHeight;
-                        }
-
-                        if (textTickStyle == TickStyle.BottomRight || textTickStyle == TickStyle.Both)
-                            currentUsedPos += textAreaSize;
-
-                        currentUsedPos += indentHeight;
-
-                        fitSize = new Size(ClientRectangle.Width, (int)currentUsedPos);
-                    }
-                    else //_orientation == Orientation.Vertical
-                    {
-                        currentUsedPos = indentWidth;
-                        //==========================================================================
-
-                        // Get Width of Text Area
-                        textAreaSize = g.MeasureString(maximum.ToString(), Font).Width;
-
-                        if (textTickStyle == TickStyle.TopLeft || textTickStyle == TickStyle.Both)
-                            currentUsedPos += textAreaSize;
-
-                        if (tickStyle == TickStyle.TopLeft || tickStyle == TickStyle.Both)
-                            currentUsedPos += tickHeight + 1;
-
-                        currentUsedPos += trackerSize.Height;
-
-                        if (tickStyle == TickStyle.BottomRight || tickStyle == TickStyle.Both)
-                        {
-                            currentUsedPos += 1;
-                            currentUsedPos += tickHeight;
-                        }
-
-                        if (textTickStyle == TickStyle.BottomRight || textTickStyle == TickStyle.Both)
-                            currentUsedPos += textAreaSize;
-
-                        currentUsedPos += indentWidth;
-
-                        fitSize = new Size((int)currentUsedPos, ClientRectangle.Height);
-
-                    }
-
-                    // Clean up the Graphics object.
-                    g.Dispose();
-
-                    return fitSize;
-			    }
-                // ReSharper disable once EmptyGeneralCatchClause
-			    catch (Exception)
-			    {
-			    }
-				return new Size(0,0);
-			}
-		}	
-
-
-		/// <summary>
-		/// Gets the rectangle containing the tracker.
-		/// </summary>
-		[Description("Gets the rectangle containing the tracker.")]
-		private RectangleF TrackerRect
-		{
-			get 
 			{ 
-				RectangleF trackerRect;
+				Size fitSize;
 				float textAreaSize;
 
 				// Create a Graphics object for the Control.
 				Graphics g = CreateGraphics();
 
-				Rectangle workingRect = Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
-				float currentUsedPos = 0;
+				Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
+				float currentUsedPos;
 
 				if(orientation == Orientation.Horizontal)
 				{
@@ -925,17 +811,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(tickStyle == TickStyle.TopLeft  || tickStyle == TickStyle.Both)
 						currentUsedPos += tickHeight + 1;
 
+					currentUsedPos += trackerSize.Height;
 
-					//==========================================================================
-					// Caculate the Tracker's rectangle
-					//==========================================================================
-					float currentTrackerPos;
-					if (maximum == minimum)
-						currentTrackerPos = workingRect.Left;
-					else
-						currentTrackerPos = (workingRect.Width - trackerSize.Width) * (value - minimum)/(maximum - minimum)  + workingRect.Left;
-					trackerRect = new RectangleF(currentTrackerPos,currentUsedPos,trackerSize.Width, trackerSize.Height);// Remember this for drawing the Tracker later
-					trackerRect.Inflate(0,-1);
+					if(tickStyle == TickStyle.BottomRight  || tickStyle == TickStyle.Both)
+					{
+						currentUsedPos += 1;
+						currentUsedPos += tickHeight;
+					}
+
+					if(textTickStyle == TickStyle.BottomRight || textTickStyle == TickStyle.Both)
+						currentUsedPos += textAreaSize;
+
+					currentUsedPos += indentHeight;
+
+					fitSize = new Size(ClientRectangle.Width,(int) currentUsedPos);
 				}
 				else //_orientation == Orientation.Vertical
 				{
@@ -951,29 +840,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 					if(tickStyle == TickStyle.TopLeft || tickStyle == TickStyle.Both)
 						currentUsedPos += tickHeight + 1;
 
-					//==========================================================================
-					// Caculate the Tracker's rectangle
-					//==========================================================================
-					float currentTrackerPos;
-					if (maximum == minimum)
-						currentTrackerPos = workingRect.Top;
-					else
-						currentTrackerPos = (workingRect.Height - trackerSize.Width) * (value - minimum)/(maximum - minimum);
+					currentUsedPos += trackerSize.Height;
 
-					trackerRect = new RectangleF(currentUsedPos, workingRect.Bottom - currentTrackerPos - trackerSize.Width, trackerSize.Height, trackerSize.Width);// Remember this for drawing the Tracker later
-					trackerRect.Inflate(-1,0);
+					if(tickStyle == TickStyle.BottomRight  || tickStyle == TickStyle.Both)
+					{
+						currentUsedPos += 1;
+						currentUsedPos += tickHeight;
+					}
 
+					if(textTickStyle == TickStyle.BottomRight || textTickStyle == TickStyle.Both)
+						currentUsedPos += textAreaSize;
+
+					currentUsedPos += indentWidth;
+
+					fitSize = new Size((int) currentUsedPos, ClientRectangle.Height);
 
 				}
 
 				// Clean up the Graphics object.
 				g.Dispose();
 
-				return trackerRect;
+				return fitSize;
 			}
-		}	
+		}
 
-		#endregion
+	    #endregion
 
 
 		#region Public Methods

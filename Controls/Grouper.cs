@@ -1,26 +1,23 @@
-#region Copyright
-//=======================================================================================
-// [PLEASE DO NOT MODIFY THIS HEADER INFORMATION]---------------------
-// Title: Grouper
-// Description: A rounded groupbox with special painting features. 
-// Date Created: December 17, 2005
-// Author: Adam Smith
-// Author Email: ibulwark@hotmail.com
-// Websites: http://www.ebadgeman.com | http://www.codevendor.com
-//  
-// Version History:
-// 1.0a - Beta Version - Release Date: December 17, 2005 
-//=======================================================================================
-#endregion
+/*
+ [PLEASE DO NOT MODIFY THIS HEADER INFORMATION]---------------------
+ Title: Grouper
+ Description: A rounded groupbox with special painting features. 
+ Date Created: December 17, 2005
+ Author: Adam Smith
+ Author Email: ibulwark@hotmail.com
+ Websites: http://www.ebadgeman.com | http://www.codevendor.com
+ 
+ Version History:
+ 1.0a - Beta Version - Release Date: December 17, 2005 
+ -------------------------------------------------------------------
+ */
 
-#region Using Directives
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms; 
-#endregion
+using System.Windows.Forms;
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
@@ -228,7 +225,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 		private void InitializeGroupBox()
 		{
 			components = new System.ComponentModel.Container();
-			this.Resize+=new EventHandler(GroupBox_Resize);
+			this.Resize+=GroupBox_Resize;
 			this.DockPadding.All = 20;
 			this.Name = "GroupBox";
 			this.Size = new Size(368, 288);

@@ -21,14 +21,27 @@ using System;
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    public class MetricValue
+    /// <summary>
+    /// This class contains the information of a Relay Service
+    /// </summary>
+    public class RelayServiceWrapper
     {
-        #region Public Propeties
-        public long Min { get; set; }
-        public long Max { get; set; }
-        public long Total { get; set; }
-        public double Average { get; set; }
-        public DateTime Timestamp { get; set; }
+        #region Public Constructors
+        /// <summary>
+        /// Initializes a new instance of the RelayServiceWrapper class.
+        /// </summary>
+        /// <param name="name">The service name.</param>
+        /// <param name="uri">The service uri.</param>
+        public RelayServiceWrapper(string name, Uri uri)
+        {
+            Name = name;
+            Uri = uri;
+        }
+        #endregion
+
+        #region Public Properties
+        public string Name { get; set; }
+        public Uri Uri { get; set; }
         #endregion
     }
 }

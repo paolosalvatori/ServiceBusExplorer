@@ -1,23 +1,4 @@
-﻿#region Copyright
-//=======================================================================================
-// Microsoft Azure Customer Advisory Team 
-//
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
-// Author: Paolo Salvatori
-//=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
-//=======================================================================================
-#endregion
+﻿
 
 #region Using Directives
 using System;
@@ -26,7 +7,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Threading;
@@ -72,7 +52,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string NoMoreSessionsToAccept = "Receiver[{0}]: No more sessions to accept.";
         private const string FilterExpressionIsNotValid = "The filter expression is not valid.";
         private const string NoSubscriptionSelected = "No subscription has been selected.";
-        private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
 
         //***************************
         // Tooltips
@@ -94,8 +73,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly MainForm mainForm;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly SubscriptionWrapper subscriptionWrapper;
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
@@ -116,21 +93,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private int receiverThinkTime;
         private Filter filter;
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
-        private IBrokeredMessageInspector receiverBrokeredMessageInspector;
         #endregion
 
         #region Public Constructors
         public TestSubscriptionControl(MainForm mainForm,
                                        WriteToLogDelegate writeToLog,
-                                       Func<Task> stopLog,
-                                       Action startLog,
                                        ServiceBusHelper serviceBusHelper, 
                                        SubscriptionWrapper subscriptionWrapper)
         {
             this.mainForm = mainForm;
             this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
@@ -147,21 +119,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                // Get Brokered Message Generator and Inspector classes
-                cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
-                cboReceiverInspector.SelectedIndex = 0;
-
-                if (serviceBusHelper != null)
-                {
-                    if (serviceBusHelper.BrokeredMessageInspectors != null)
-                    {
-                        foreach (var key in serviceBusHelper.BrokeredMessageInspectors.Keys)
-                        {
-                            cboReceiverInspector.Items.Add(key);
-                        }
-                    }
-                }
-
                 // Set Think Time
                 txtReceiverThinkTime.Text = mainForm.ReceiverThinkTime.ToString(CultureInfo.InvariantCulture);
                 receiverThinkTime = mainForm.ReceiverThinkTime;
@@ -266,25 +223,21 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             return true;
         }
 
-        private async void btnStart_Click(object sender, EventArgs e)
+        private void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
             {
-                if (btnStart.Text == StopCaption)
+                if (btnCreateDelete.Text == StopCaption)
                 {
-                    await CancelActions();
-                    btnStart.Text = StartCaption;
+                    CancelActions();
+                    btnCreateDelete.Text = StartCaption;
                     return;
                 }
 
                 if (serviceBusHelper != null &&
                     ValidateParameters())
                 {
-                    if (startLog != null)
-                    {
-                        startLog();
-                    }
-                    btnStart.Enabled = false;
+                    btnCreateDelete.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
                     //                                   Retrieve Messaging Factory
@@ -321,7 +274,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker)delegate { btnCreateDelete.Text = StartCaption; });
                         }
                     };
 
@@ -403,11 +356,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     try
                     {
                         receiverCancellationTokenSource = new CancellationTokenSource();
-                        receiverCancellationTokenSource = new CancellationTokenSource();
-                        receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
-                                                      ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
-                                                      : null;
-
                         Action<int> receiverAction = taskId =>
                         {
                             var allSessionsAccepted = false;
@@ -460,7 +408,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                              receiverBatchSize,
                                                                              checkBoxReceiverThinkTime.Checked,
                                                                              receiverThinkTime,
-                                                                             receiverBrokeredMessageInspector,
                                                                              UpdateStatistics,
                                                                              receiverCancellationTokenSource,
                                                                              out traceMessage);
@@ -493,7 +440,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                          receiverBatchSize,
                                                                          checkBoxReceiverThinkTime.Checked,
                                                                          receiverThinkTime,
-                                                                         receiverBrokeredMessageInspector,
                                                                          UpdateStatistics,
                                                                          receiverCancellationTokenSource,
                                                                          out traceMessage);
@@ -555,7 +501,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         graphCancellationTokenSource = new CancellationTokenSource();
                         updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
                         Interlocked.Increment(ref actionCount);
-                        btnStart.Text = StopCaption;
+                        btnCreateDelete.Text = StopCaption;
                     }
                 }
             }
@@ -565,7 +511,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
             finally
             {
-                btnStart.Enabled = true;
+                btnCreateDelete.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -682,12 +628,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal async Task CancelActions()
+        internal void CancelActions()
         {
-            if (stopLog != null)
-            {
-                await stopLog();
-            }
             if (managerCancellationTokenSource != null)
             {
                 managerCancellationTokenSource.Cancel();
@@ -702,9 +644,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        internal async void btnCancel_Click(object sender, EventArgs e)
+        internal void btnCancel_Click(object sender, EventArgs e)
         {
-            await CancelActions();
+            CancelActions();
             OnCancel();
         }
 
@@ -857,11 +799,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                     cboReceivedMode.Location.Y - 1,
                                     cboReceivedMode.Size.Width + 1,
                                     cboReceivedMode.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboReceiverInspector.Location.X - 1,
-                                    cboReceiverInspector.Location.Y - 1,
-                                    cboReceiverInspector.Size.Width + 1,
-                                    cboReceiverInspector.Size.Height + 1);
         }
 
         private void checkBoxReceiverThinkTime_CheckedChanged(object sender, EventArgs e)
@@ -901,66 +838,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 // Swallow this invalid key and beep
                 e.Handled = true;
-            }
-        }
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing && (components != null))
-                {
-                    components.Dispose();
-                }
-
-                if (receiverCancellationTokenSource != null)
-                {
-                    receiverCancellationTokenSource.Dispose();
-                }
-
-                if (managerCancellationTokenSource != null)
-                {
-                    managerCancellationTokenSource.Dispose();
-                }
-
-                if (graphCancellationTokenSource != null)
-                {
-                    graphCancellationTokenSource.Dispose();
-                }
-
-                if (managerResetEvent != null)
-                {
-                    managerResetEvent.Dispose();
-                }
-
-                if (blockingCollection != null)
-                {
-                    blockingCollection.Dispose();
-                }
-
-                if (receiverBrokeredMessageInspector != null)
-                {
-                    var disposable = receiverBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
-                }
-
-                for (var i = 0; i < Controls.Count; i++)
-                {
-                    Controls[i].Dispose();
-                }
-                
-                base.Dispose(disposing);
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch
-            {
             }
         }
         #endregion

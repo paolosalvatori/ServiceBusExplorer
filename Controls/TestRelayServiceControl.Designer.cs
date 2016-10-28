@@ -1,11 +1,24 @@
 ﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
-    partial class TestRelayControl
+    partial class TestRelayServiceControl
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
         #region Component Designer generated code
 
@@ -16,13 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestRelayControl));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestRelayServiceControl));
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.btnCreateDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.mainTabControl = new System.Windows.Forms.TabControl();
@@ -102,24 +115,24 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
             // 
-            // btnStart
+            // btnCreateDelete
             // 
-            this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnStart.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnStart.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStart.Location = new System.Drawing.Point(648, 304);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(72, 24);
-            this.btnStart.TabIndex = 1;
-            this.btnStart.Text = "Start";
-            this.btnStart.UseVisualStyleBackColor = false;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            this.btnStart.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnStart.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnCreateDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCreateDelete.Location = new System.Drawing.Point(648, 304);
+            this.btnCreateDelete.Name = "btnCreateDelete";
+            this.btnCreateDelete.Size = new System.Drawing.Size(72, 24);
+            this.btnCreateDelete.TabIndex = 1;
+            this.btnCreateDelete.Text = "Start";
+            this.btnCreateDelete.UseVisualStyleBackColor = false;
+            this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
+            this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // btnCancel
             // 
@@ -220,7 +233,6 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageText.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMessageText.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
             this.txtMessageText.Multiline = true;
             this.txtMessageText.Name = "txtMessageText";
@@ -269,7 +281,6 @@
             this.headersDataGridView.RowHeadersWidth = 20;
             this.headersDataGridView.Size = new System.Drawing.Size(332, 184);
             this.headersDataGridView.TabIndex = 10;
-            this.headersDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.headersDataGridView_DataError);
             this.headersDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.headersDataGridView_RowsAdded);
             this.headersDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.headersDataGridView_RowsRemoved);
             this.headersDataGridView.Resize += new System.EventHandler(this.headersDataGridView_Resize);
@@ -930,7 +941,7 @@
             this.btnOpenFile.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnOpenFile.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // TestRelayControl
+            // TestRelayServiceControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -938,8 +949,8 @@
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnStart);
-            this.Name = "TestRelayControl";
+            this.Controls.Add(this.btnCreateDelete);
+            this.Name = "TestRelayServiceControl";
             this.Size = new System.Drawing.Size(816, 344);
             this.mainTabControl.ResumeLayout(false);
             this.mainTabMessagePage.ResumeLayout(false);
@@ -975,7 +986,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnCreateDelete;
+        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.TabControl mainTabControl;
         private System.Windows.Forms.TabPage mainTabMessagePage;
@@ -1026,6 +1038,5 @@
         private System.Windows.Forms.SplitContainer bindingSplitContainer;
         private System.Windows.Forms.TreeView bindingTreeView;
         private System.Windows.Forms.PropertyGrid bindingPropertyGrid;
-        public System.Windows.Forms.Button btnCancel;
     }
 }
