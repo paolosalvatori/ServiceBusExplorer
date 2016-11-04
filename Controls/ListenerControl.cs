@@ -156,6 +156,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private ContainerForm containerForm;
         private bool autoComplete;
         private bool stopping;
+        private bool logStopped;
         private bool logging;
         private bool verbose;
         private bool tracking;
@@ -175,6 +176,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                ServiceBusHelper serviceBusHelper, 
                                EntityDescription entityDescription)
         {
+            this.logStopped = false;
             Task.Factory.StartNew(AsyncTrackMessage).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
@@ -1227,7 +1229,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                while (true)
+                while (!logStopped)
                 {
                     try
                     {
@@ -1643,6 +1645,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Controls[i].Dispose();
                 }
+
+
+                this.logStopped = true;
 
                 base.Dispose(disposing);
             }
