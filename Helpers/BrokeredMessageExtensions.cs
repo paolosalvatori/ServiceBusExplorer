@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.ServiceBus.Messaging;
 #endregion
 
@@ -71,6 +72,31 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             var clone = message.Clone();
             bodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
+        }
+
+        public static BrokeredMessage CloneWithByteArrayBodyType(this BrokeredMessage originalMessage, string text)
+        {
+            var bytes = Encoding.UTF8.GetBytes(text);
+            var message = new BrokeredMessage(bytes);
+
+            // Copy all custom properties
+            foreach (var header in originalMessage.Properties)
+            {
+                // Recovery header should not be included
+                if (header.Key != "NServiceBus.Transport.Recovery")
+                {
+                    message.Properties[header.Key] = header.Value;
+                }
+            }
+
+            // Required standard properties
+            message.CorrelationId = originalMessage.CorrelationId;
+            message.ReplyTo = originalMessage.ReplyTo;
+            message.TimeToLive = originalMessage.TimeToLive;
+            message.ScheduledEnqueueTimeUtc = originalMessage.ScheduledEnqueueTimeUtc;
+            message.ViaPartitionKey = originalMessage.ViaPartitionKey;
+
+            return message;
         }
 
         public static Stream GetBodyStream(this BrokeredMessage message)

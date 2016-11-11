@@ -315,7 +315,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.cboBodyType.Items.AddRange(new object[] {
             "Stream",
             "String",
-            "WCF"});
+            "WCF",
+            "ByteArray"});
             this.cboBodyType.Location = new System.Drawing.Point(536, 509);
             this.cboBodyType.Name = "cboBodyType";
             this.cboBodyType.Size = new System.Drawing.Size(88, 21);

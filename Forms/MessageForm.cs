@@ -285,7 +285,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     else
                     {
-                        outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(brokeredMessage.Clone(txtMessageText.Text),
+                        BrokeredMessage message;
+                        // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                        if (bodyType == BodyType.ByteArray)
+                        {
+                            message = brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text);
+                        }
+                        else
+                        {
+                            message = brokeredMessage.Clone(txtMessageText.Text);
+                        }
+
+                        outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(message,
                                                                                        0,
                                                                                        false,
                                                                                        false,
