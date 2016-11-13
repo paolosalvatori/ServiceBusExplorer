@@ -3549,7 +3549,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             outboundMessage.MessageId = updateMessageId ? Guid.NewGuid().ToString() : messageTemplate.MessageId;
             outboundMessage.SessionId = oneSessionPerTask ? taskId.ToString(CultureInfo.InvariantCulture) : messageTemplate.SessionId;
             
-            if (bodyType == BodyType.String)
+            if (bodyType == BodyType.String || bodyType == BodyType.ByteArray || bodyType == BodyType.Stream)
             {
                 if (!string.IsNullOrWhiteSpace(messageTemplate.Label))
                 {
@@ -3577,7 +3577,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 foreach (var property in messageTemplate.Properties)
                 {
-                    outboundMessage.Properties.Add(property.Key, property.Value);
+                    outboundMessage.Properties[property.Key] = property.Value;
                 }
                 outboundMessage.TimeToLive = messageTemplate.TimeToLive;
                 outboundMessage.ScheduledEnqueueTimeUtc = messageTemplate.ScheduledEnqueueTimeUtc;
