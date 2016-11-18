@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/x5niu29yhun36hda/branch/master?svg=true)](https://ci.appveyor.com/project/seanfeldman/servicebusexplorer/branch/master)
 <ul>
 </ul>
 <div><strong>Author: </strong>Paolo Salvatori (@babosbird)</div>
