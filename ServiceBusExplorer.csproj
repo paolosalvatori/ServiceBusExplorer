@@ -1,0 +1,579 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.WindowsAzure.CAT.ServiceBusExplorer</RootNamespace>
+    <AssemblyName>ServiceBusExplorer</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icons\ServiceBusExplorerLogo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="Microsoft.ServiceBus, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAzure.ServiceBus.2.1.3.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\HandleNotificationHubControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleNotificationHubControl.designer.cs">
+      <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ListenerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ListenerControl.designer.cs">
+      <DependentUpon>ListenerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MetricValueControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MetricValueControl.Designer.cs">
+      <DependentUpon>MetricValueControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MetricGraphControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MetricGraphControl.Designer.cs">
+      <DependentUpon>MetricGraphControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MetricMonitorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MetricMonitorControl.Designer.cs">
+      <DependentUpon>MetricMonitorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DataGridViewDateTimePickerColumn.cs" />
+    <Compile Include="Controls\Grouper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\NumericTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ReadOnlyPropertyGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackBarDesigner.cs" />
+    <Compile Include="Controls\StandardValueEditorUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\StandardValueEditorUI.designer.cs">
+      <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TestRelayServiceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TestRelayServiceControl.Designer.cs">
+      <DependentUpon>TestRelayServiceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TestSubscriptionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TestSubscriptionControl.Designer.cs">
+      <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TestQueueControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TestQueueControl.Designer.cs">
+      <DependentUpon>TestQueueControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TestTopicControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TestTopicControl.Designer.cs">
+      <DependentUpon>TestTopicControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HandleRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleRuleControl.Designer.cs">
+      <DependentUpon>HandleRuleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HandleSubscriptionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleSubscriptionControl.Designer.cs">
+      <DependentUpon>HandleSubscriptionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HandleTopicControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleTopicControl.Designer.cs">
+      <DependentUpon>HandleTopicControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HeaderPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\HeaderPanel.designer.cs">
+      <DependentUpon>HeaderPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HandleQueueControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HandleQueueControl.Designer.cs">
+      <DependentUpon>HandleQueueControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ConnectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ConnectForm.designer.cs">
+      <DependentUpon>ConnectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ClipboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ClipboardForm.Designer.cs">
+      <DependentUpon>ClipboardForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ContainerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ContainerForm.Designer.cs">
+      <DependentUpon>ContainerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChangeStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChangeStatusForm.Designer.cs">
+      <DependentUpon>ChangeStatusForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CollectionEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CollectionEditorForm.Designer.cs">
+      <DependentUpon>CollectionEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RegistrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RegistrationForm.Designer.cs">
+      <DependentUpon>RegistrationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UploadCertificateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UploadCertificateForm.Designer.cs">
+      <DependentUpon>UploadCertificateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MessageForm.Designer.cs">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReceiveModeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReceiveModeForm.Designer.cs">
+      <DependentUpon>ReceiveModeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DateTimeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DateTimeForm.Designer.cs">
+      <DependentUpon>DateTimeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FilterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FilterForm.Designer.cs">
+      <DependentUpon>FilterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RegistrationsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RegistrationsForm.Designer.cs">
+      <DependentUpon>RegistrationsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SelectEntityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SelectEntityForm.Designer.cs">
+      <DependentUpon>SelectEntityForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TextForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TextForm.Designer.cs">
+      <DependentUpon>TextForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptionForm.Designer.cs">
+      <DependentUpon>OptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DeleteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DeleteForm.Designer.cs">
+      <DependentUpon>DeleteForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\AttributeList.cs" />
+    <Compile Include="Helpers\CategorySorter.cs" />
+    <Compile Include="Helpers\CircularList.cs" />
+    <Compile Include="Helpers\ClassResourceAttribute.cs" />
+    <Compile Include="Helpers\Constants.cs" />
+    <Compile Include="Helpers\ControlHelper.cs" />
+    <Compile Include="Forms\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Helpers\CustomCollectionEditor.cs" />
+    <Compile Include="Helpers\CustomTextEditor.cs" />
+    <Compile Include="Helpers\ExpressionBuilder.cs" />
+    <Compile Include="Helpers\GenericCopier.cs" />
+    <Compile Include="Helpers\PropertyComparer.cs" />
+    <Compile Include="Helpers\ReadOnlyEditor.cs" />
+    <Compile Include="Helpers\ReadOnlyList.cs" />
+    <Compile Include="Helpers\RegistrationInfo.cs" />
+    <Compile Include="Helpers\ScrollBarHelper.cs" />
+    <Compile Include="Helpers\SortableBindingList.cs" />
+    <Compile Include="Helpers\StringBodyWriter.cs" />
+    <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
+    <Compile Include="Helpers\MonitorRuleList.cs" />
+    <Compile Include="Helpers\MonitorInfo.cs" />
+    <Compile Include="Helpers\CustomColorHelper.cs" />
+    <Compile Include="Helpers\CustomComponentModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\CustomDataContractBinarySerializer.cs" />
+    <Compile Include="Helpers\CustomMessageHeaderInfo.cs" />
+    <Compile Include="Helpers\CustomObject.cs" />
+    <Compile Include="Helpers\CustomPropertyDescriptor.cs" />
+    <Compile Include="Helpers\CustomSortOrder.cs" />
+    <Compile Include="Helpers\CustomStyleHelper.cs" />
+    <Compile Include="Helpers\CustomTypeDescriptionProvider.cs" />
+    <Compile Include="Helpers\JsonSerializerHelper.cs" />
+    <Compile Include="Helpers\JsonTimestampHelper.cs" />
+    <Compile Include="Helpers\DynamicCustomTypeDescriptor.cs" />
+    <Compile Include="Helpers\FilterExpressionHelper.cs" />
+    <Compile Include="Helpers\MessageAndPropertiesHelper.cs" />
+    <Compile Include="Helpers\MetricDataPoint.cs" />
+    <Compile Include="Helpers\MetricDataPointList.cs" />
+    <Compile Include="Helpers\MetricInfo.cs" />
+    <Compile Include="Helpers\MonitorRule.cs" />
+    <Compile Include="Helpers\NotificationInfo.cs" />
+    <Compile Include="Helpers\ConfigurationParameters.cs" />
+    <Compile Include="Helpers\PropertyFlags.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\EnumResourceAttribute.cs" />
+    <Compile Include="Helpers\IdAttribute.cs" />
+    <Compile Include="Helpers\IMessageDeferProvider.cs" />
+    <Compile Include="Helpers\InMemoryMessageDeferProvider.cs" />
+    <Compile Include="Helpers\IResourceAttribute.cs" />
+    <Compile Include="Helpers\MessagePropertyInfo.cs" />
+    <Compile Include="Helpers\PropertyDescriptorList.cs" />
+    <Compile Include="Helpers\PropertyResourceAttribute.cs" />
+    <Compile Include="Helpers\PropertySorter.cs" />
+    <Compile Include="Helpers\PropertyStateFlagsAttribute.cs" />
+    <Compile Include="Helpers\PropertyValuePaintEditor.cs" />
+    <Compile Include="Helpers\ProviderInstaller.cs" />
+    <Compile Include="Helpers\RelayServiceWrapper.cs" />
+    <Compile Include="Helpers\RetryHelper.cs" />
+    <Compile Include="Helpers\RuleWrapper.cs" />
+    <Compile Include="Helpers\ImportExportHelper.cs" />
+    <Compile Include="Helpers\ServiceBusBindingHelper.cs" />
+    <Compile Include="Helpers\AuthorizationRuleWrapper.cs" />
+    <Compile Include="Helpers\SimpleSite.cs" />
+    <Compile Include="Helpers\StandardValueAttribute.cs" />
+    <Compile Include="Helpers\StandardValueEditor.cs" />
+    <Compile Include="Helpers\StandardValuesConverter.cs" />
+    <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="Helpers\SubscriptionWrapper.cs" />
+    <Compile Include="Helpers\LogTraceListener.cs" />
+    <Compile Include="Helpers\ServiceBusHelperEventArgs.cs" />
+    <Compile Include="Helpers\ServiceBusNamespace.cs" />
+    <Compile Include="Helpers\ServiceBusHelper.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\MetricValue.cs" />
+    <Compile Include="Helpers\MetricHelper.cs" />
+    <Compile Include="Helpers\TextBoxHelper.cs" />
+    <Compile Include="Helpers\TimeFilterInfo.cs" />
+    <Compile Include="Helpers\TimeSpanExtensions.cs" />
+    <Compile Include="Helpers\TreeViewHelper.cs" />
+    <Compile Include="Helpers\UrlSegmentWrapper.cs" />
+    <Compile Include="Helpers\WindowsNotificationXmlBuilder.cs" />
+    <Compile Include="Helpers\XmlHelper.cs" />
+    <Compile Include="Helpers\XmlSerializerHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\HandleNotificationHubControl.resx">
+      <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ListenerControl.resx">
+      <DependentUpon>ListenerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MetricValueControl.resx">
+      <DependentUpon>MetricValueControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MetricGraphControl.resx">
+      <DependentUpon>MetricGraphControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MetricMonitorControl.resx">
+      <DependentUpon>MetricMonitorControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Grouper.resx">
+      <DependentUpon>Grouper.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TrackBar.resx" />
+    <EmbeddedResource Include="Controls\StandardValueEditorUI.resx">
+      <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TestRelayServiceControl.resx">
+      <DependentUpon>TestRelayServiceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TestSubscriptionControl.resx">
+      <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TestQueueControl.resx">
+      <DependentUpon>TestQueueControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TestTopicControl.resx">
+      <DependentUpon>TestTopicControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HandleRuleControl.resx">
+      <DependentUpon>HandleRuleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HandleSubscriptionControl.resx">
+      <DependentUpon>HandleSubscriptionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HandleTopicControl.resx">
+      <DependentUpon>HandleTopicControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HeaderPanel.resx">
+      <DependentUpon>HeaderPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HandleQueueControl.resx">
+      <DependentUpon>HandleQueueControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ClipboardForm.resx">
+      <DependentUpon>ClipboardForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ContainerForm.resx">
+      <DependentUpon>ContainerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChangeStatusForm.resx">
+      <DependentUpon>ChangeStatusForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CollectionEditorForm.resx">
+      <DependentUpon>CollectionEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RegistrationForm.resx">
+      <DependentUpon>RegistrationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UploadCertificateForm.resx">
+      <DependentUpon>UploadCertificateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MessageForm.resx">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ReceiveModeForm.resx">
+      <DependentUpon>ReceiveModeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DateTimeForm.resx">
+      <DependentUpon>DateTimeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FilterForm.resx">
+      <DependentUpon>FilterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RegistrationsForm.resx">
+      <DependentUpon>RegistrationsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectEntityForm.resx">
+      <DependentUpon>SelectEntityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TextForm.resx">
+      <DependentUpon>TextForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptionForm.resx">
+      <DependentUpon>OptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DeleteForm.resx">
+      <DependentUpon>DeleteForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ConnectForm.resx">
+      <DependentUpon>ConnectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icons\Add.ico" />
+    <Content Include="Icons\Arrow.ico" />
+    <Content Include="Icons\Azure.ico" />
+    <Content Include="Icons\AzureLogo.ico" />
+    <Content Include="Icons\Chart.ico" />
+    <Content Include="Icons\Class.ico" />
+    <Content Include="Icons\Configure.ico" />
+    <Content Include="Icons\Contact.ico" />
+    <Content Include="Icons\Delete.ico" />
+    <Content Include="Icons\exec.ico" />
+    <Content Include="Icons\folder_web.ico" />
+    <Content Include="Icons\GreyChart.ico" />
+    <Content Include="Icons\GreyClass.ico" />
+    <Content Include="Icons\GreyUserInfo.ico" />
+    <Content Include="Icons\Queue.ico" />
+    <Content Include="Icons\RectangleBlue.ico" />
+    <Content Include="Icons\RectangleGreen.ico" />
+    <Content Include="Icons\ServiceBusExplorerLogo.ico" />
+    <Content Include="Icons\TextFile.ico" />
+    <Content Include="Icons\Topic.ico" />
+    <None Include="Images\Yellow.png" />
+    <None Include="Images\WarningState.png" />
+    <None Include="Images\WindowsAzureLogo.png" />
+    <None Include="Images\WhiteLogo.png" />
+    <None Include="Images\SmallWorld.png" />
+    <Content Include="Icons\UserInfo.ico" />
+    <Content Include="Icons\Web.ico" />
+    <Content Include="Icons\WhiteLogo.ico" />
+    <Content Include="Icons\WindowsAzureLogo.ico" />
+    <None Include="Images\SmallDelete.png" />
+    <None Include="Images\Clouds.png" />
+    <None Include="Images\AzureLogo.png" />
+    <None Include="Images\CriticalState.png" />
+    <None Include="Images\NormalState.png" />
+    <None Include="Images\Green.png" />
+    <None Include="Images\Red.png" />
+    <None Include="Images\Clouds.jpg" />
+    <None Include="Images\Delete.png" />
+    <None Include="Images\DeleteGrey.png" />
+    <None Include="Images\email_32.png" />
+    <None Include="Images\blogger_32.png" />
+    <None Include="Images\ButtonLast.png" />
+    <None Include="Images\FindExtensionRaised.png" />
+    <None Include="Images\FindExtension.png" />
+    <None Include="Images\MicrosoftAzureLogo.png" />
+    <None Include="Images\MicrosoftAzureWhiteLogo.png" />
+    <Content Include="Images\Warning.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
