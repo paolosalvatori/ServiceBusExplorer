@@ -3969,18 +3969,16 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SelectedEntitiesParameter];
             if (!string.IsNullOrEmpty(parameter))
             {
-                var items = parameter.Split(',');
-                if (items.Length == 0)
+                var items = parameter.Split(',').Select(item => item.Trim()).ToList();
+                if (items.Count == 0)
                 {
                     GetDefaultSelectedEntities();
                 }
                 else
                 {
-                    var lowerCaseEntities = entities.Select(e => e.ToLower());
-                    var list = lowerCaseEntities as IList<string> ?? lowerCaseEntities.ToList();
                     foreach (var item in items)
                     {
-                        if (list.Contains(item.ToLower()))
+                        if (entities.Contains(item, StringComparer.OrdinalIgnoreCase))
                         {
                             selectedEntites.Add(item);
                         }
