@@ -1,2 +1,5 @@
 before_build:
   - nuget restore
+
+build:
+  project: ServiceBusExplorer.csproj
