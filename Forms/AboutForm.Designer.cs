@@ -93,7 +93,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 42;
-            this.label3.Text = "Version: 3.4.0";
+            this.label3.Text = "Version: 3.4.2";
             // 
             // label2
             // 
@@ -201,7 +201,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " About Service Bus Explorer 3.4.0";
+            this.Text = " About Service Bus Explorer 3.4.2";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AboutForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
