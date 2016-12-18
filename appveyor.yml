@@ -53,7 +53,7 @@ artifacts:
 deploy:
   - provider: GitHub
     auth_token:
-      secure: add_github_ deployment_token_secured_via_appveyor # your encrypted token from GitHub
+      secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
     draft: false
     prerelease: false
