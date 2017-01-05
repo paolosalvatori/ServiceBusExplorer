@@ -123,7 +123,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 case "Decimal":
                     return Convert.ChangeType(value, typeof(decimal));
                 case "Guid":
-                    return new Guid(value as string);
+                    return new Guid(value.ToString());
             }
             throw new NotSupportedException(string.Format(TypeNotSupported, type));
         }
