@@ -1,5 +1,61 @@
+#---------------------------------#
+#       restore nuget packages    #
+#---------------------------------#
 before_build:
   - nuget restore
+  
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: Any CPU
+
+# to add several platforms to build matrix:
+#platform:
+#  - x86
+#  - Any CPU
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+# to add several configurations to build matrix:
+#configuration:
+#  - Debug
+#  - Release
 
 build:
-  project: ServiceBusExplorer.csproj
+  parallel: true                     # enable MSBuild parallel builds
+  project: ServiceBusExplorer.csproj # path to Visual Studio project
+
+  # MSBuild verbosity level
+  verbosity: normal                  # quiet|minimal|normal|detailed
+
+#---------------------------------#
+#      after build - create zip   #
+#---------------------------------#
+
+after_build:
+  7z a ServiceBusExplorer.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*.*
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+  - path: ServiceBusExplorer.zip  # bin\$(configuration)\*.*
+    name: ServiceBusExplorer
+
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+deploy:
+  - provider: GitHub
+    auth_token:
+      secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
+    artifact: /.*\.*/           # upload all NuGet packages to release assets
+    draft: false
+    prerelease: false
+    on:
+      branch: master                # release from master branch only
