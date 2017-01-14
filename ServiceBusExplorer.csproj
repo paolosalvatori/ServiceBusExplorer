@@ -419,6 +419,7 @@
     <Compile Include="Helpers\OnOffDeviceEventDataGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceEventDataGenerator.cs" />
+    <Compile Include="Helpers\VersionProvider.cs" />
     <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
     <Compile Include="Helpers\MonitorRuleList.cs" />
     <Compile Include="Helpers\MonitorInfo.cs" />
