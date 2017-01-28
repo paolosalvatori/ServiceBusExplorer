@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>AzureServiceBusExplorer</id>
+        <version>2.6.1.0</version>
+        <authors>paolosalvatori</authors>
+        <owners>LCHarold</owners>
+        <licenseUrl>https://github.com/paolosalvatori/ServiceBusExplorer/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/paolosalvatori/ServiceBusExplorer</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The Azure Service Bus Explorer allows users to connect to an Azure Service Bus namespace and administer messaging entities in an easy manner. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.</description>
+        <summary>GUI for Azure Service Bus</summary>
+        <tags>azure service bus explorer</tags>
+    </metadata>
+    <files>
+        <file src="tools\chocolateyInstall.ps1" target="tools\chocolateyInstall.ps1" />
+    </files>
+</package>
