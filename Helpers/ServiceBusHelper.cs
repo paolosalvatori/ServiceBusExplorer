@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
@@ -5311,6 +5312,18 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 receiverList.Add(messageReceiver);
                 ReceiveNextMessage(messageCount, 0, messageReceiver, encoder, complete, receiveTimeout);
             }
+        }
+
+        public string GetHostWithoutNamespace()
+        {
+            if (namespaceUri == null || 
+                string.IsNullOrWhiteSpace(namespaceUri.Host))
+            {
+                return null;
+            }
+            var host = namespaceUri.Host;
+            var index = host.IndexOf('.');
+            return host.Substring(index);
         }
         #endregion
 

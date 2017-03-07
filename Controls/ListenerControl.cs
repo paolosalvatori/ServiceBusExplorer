@@ -1229,7 +1229,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                while (!logStopped)
+                while (!cancellationTokenSource.IsCancellationRequested && !logStopped)
                 {
                     try
                     {

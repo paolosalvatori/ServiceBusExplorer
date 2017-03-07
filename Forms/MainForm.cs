@@ -1313,6 +1313,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                      connectForm.TransportType);
                         }
                     }
+                    // Set Relay Host Name
+                    //var assembly = Assembly.GetAssembly(typeof(ServiceBus.ServiceBusEnvironment));
+                    //var type = assembly.GetType("Microsoft.ServiceBus.RelayEnvironment");
+                    //if (type != null)
+                    //{
+                    //    var property = type.GetProperty("RelayHostRootName",
+                    //                                    BindingFlags.Static |
+                    //                                    BindingFlags.Public);
+                    //    if (property != null && serviceBusHelper.NamespaceUri != null)
+                    //    {
+                    //        property.SetValue(null, serviceBusHelper.GetHostWithoutNamespace());
+                    //    }
+                    //}
                     foreach (var userControl in panelMain.Controls.OfType<UserControl>())
                     {
                         userControl.Dispose();
