@@ -21,12 +21,10 @@
 
 #region Using Directives
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.ServiceBus;
@@ -378,11 +376,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private void btnSave_Click(object sender, EventArgs e)
         {
             var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            //var section = ConfigurationManager.GetSection("serviceBusNamespaces") as Hashtable;
-            
-            //section.Add("xxxxxxxx", "yyyyyyyyyyyyyyyyyy");
-            //configuration.Save();
-            //return;
             if (configuration.AppSettings.Settings[ConfigurationParameters.LogFontSize] == null)
             {
                 configuration.AppSettings.Settings.Add(ConfigurationParameters.LogFontSize, LogFontSize.ToString(CultureInfo.InvariantCulture));

@@ -89,6 +89,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblNamespace = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
+            this.btnSave = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.grouperFilters.SuspendLayout();
             this.grouperServiceBusNamespaceSettings.SuspendLayout();
@@ -103,7 +104,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(614, 368);
+            this.btnOk.Location = new System.Drawing.Point(616, 368);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 3;
@@ -121,7 +122,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(694, 368);
+            this.btnCancel.Location = new System.Drawing.Point(696, 368);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 4;
@@ -613,12 +614,32 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.cboServiceBusNamespace.TabIndex = 0;
             this.cboServiceBusNamespace.SelectedIndexChanged += new System.EventHandler(this.cboServiceBusNamespace_SelectedIndexChanged);
             // 
+            // btnSave
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSave.Location = new System.Drawing.Point(536, 368);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(72, 24);
+            this.btnSave.TabIndex = 36;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Visible = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnSave.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnSave.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
             // ConnectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.ClientSize = new System.Drawing.Size(784, 401);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.grouperFilters);
             this.Controls.Add(this.logoPictureBox);
@@ -682,5 +703,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label lblSelectedEntities;
         private CheckBoxComboBox cboSelectedEntities;
+        private System.Windows.Forms.Button btnSave;
     }
 }

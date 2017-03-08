@@ -2889,12 +2889,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #region Public Methods
         public void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
             WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 WriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
@@ -3269,12 +3269,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private ServiceBusNamespace GetServiceBusNamespace(string key, string connectionString)
+        public static ServiceBusNamespace GetServiceBusNamespace(string key, string connectionString)
         {
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsNullOrEmpty, key));
+                StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsNullOrEmpty, key));
                 return null;
             }
 
@@ -3287,7 +3287,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 if (parameters.Count < 3)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
                     return null;
                 }
                 var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
@@ -3296,7 +3296,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(endpoint))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3311,20 +3311,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 catch (Exception)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
                     return null;
                 }
                 var ns = uri.Host.Split('.')[0];
 
                 if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
                 }
                 var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
 
                 if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
                 }
                 var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
 
@@ -3360,7 +3360,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(endpoint))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3371,7 +3371,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 catch (Exception)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
                     return null;
                 }
                 var ns = uri.Host.Split('.')[0];
@@ -3382,7 +3382,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(stsEndpoint))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceStsEndpointIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceStsEndpointIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3392,7 +3392,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(runtimePort))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceRuntimePortIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceRuntimePortIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3402,7 +3402,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(managementPort))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceManagementPortIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceManagementPortIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3432,7 +3432,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 if (parameters.Count < 3)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
                     return null;
                 }
 
@@ -3442,7 +3442,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(endpoint))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
                     return null;
                 }
 
@@ -3457,7 +3457,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 catch (Exception)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
                     return null;
                 }
                 var ns = uri.Host.Split('.')[0];
@@ -3468,7 +3468,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (!parameters.ContainsKey(ConnectionStringSharedSecretValue) ||
                     string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedSecretValue]))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
                     return null;
 
                 }
@@ -3487,7 +3487,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             {
                 if (parameters.Count < 4)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
                     return null;
                 }
 
@@ -3497,7 +3497,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (string.IsNullOrWhiteSpace(uriString) && !parameters.ContainsKey(ConnectionStringNameSpace))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
                     return null;
                 }
 
@@ -3509,7 +3509,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
                 if (!parameters.ContainsKey(ConnectionStringIssuerName))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
                     return null;
                 }
                 var issuerName = parameters.ContainsKey(ConnectionStringIssuerName) ?
@@ -3519,7 +3519,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (!parameters.ContainsKey(ConnectionStringIssuerSecret) ||
                     string.IsNullOrWhiteSpace(parameters[ConnectionStringIssuerSecret]))
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
+                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
                     return null;
 
                 }
@@ -3563,10 +3563,10 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     {
                         continue;
                     }
-                    var serviceBusNamespace = GetServiceBusNamespace(e.Key as string, e.Value as string);
+                    var serviceBusNamespace = GetServiceBusNamespace((string) e.Key, (string) e.Value);
                     if (serviceBusNamespace != null)
                     {
-                        serviceBusHelper.ServiceBusNamespaces.Add(e.Key as string, serviceBusNamespace);
+                        serviceBusHelper.ServiceBusNamespaces.Add((string) e.Key, serviceBusNamespace);
                     }
                 }
                 microsoftServiceBusConnectionString = ConfigurationManager.AppSettings[ConfigurationParameters.MicrosoftServiceBusConnectionString];
@@ -5711,7 +5711,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // Return char and concat substring.
             var parts = text.Split('.');
 
-            return string.Format("{0}.{1}", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].Replace(' ', '_').Replace('/', '_')), parts[1]);
+            return $"{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0].Replace(' ', '_').Replace('/', '_'))}.{parts[1]}";
         }
 
         private void DeleteNode(string path, TreeNode node)
@@ -6692,10 +6692,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
                 {
                     var control = panelMain.Controls[0] as HandleConsumerGroupControl;
-                    if (control != null)
-                    {
-                        control.GetPartitions();
-                    }
+                    control?.GetPartitions();
                 }
             }
             catch (Exception ex)
@@ -6709,9 +6706,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             try
             {
                 using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group", 
-                                                             new List<string> {"IoT Hub Connection String", "Consumer Group"}, 
-                                                             new List<string>{null, "$Default"},
-                                                             new List<bool>{false, false}))
+                                                             new List<string> {"IoT Hub Connection String", "Endpoint", "Consumer Group"}, 
+                                                             new List<string>{null, "messages/events", "$Default" },
+                                                             new List<bool>{false, false, false}))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
                     {
@@ -6724,10 +6721,19 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[1]))
                     {
+                        WriteToLog("The Endpoint parameter cannot be null.");
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[2]))
+                    {
                         WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
-                    var form = new ContainerForm(this, parameterForm.ParameterValues[0], "messages/events", parameterForm.ParameterValues[1], true);
+                    var form = new ContainerForm(this, 
+                                                 parameterForm.ParameterValues[0], 
+                                                 parameterForm.ParameterValues[1], 
+                                                 parameterForm.ParameterValues[2], 
+                                                 true);
                     form.Show();
                 }
             }

@@ -34,6 +34,7 @@ using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
 #endregion
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 {
     public partial class HandleQueueControl : UserControl
@@ -235,7 +236,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         #region Private Static Fields
 
-        private static readonly List<string> claimTypes = new List<string>
+        private static readonly List<string> ClaimTypes = new List<string>
         {
             "NameIdentifier",
             "Upn",
@@ -243,8 +244,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             "SharedAccessKey"
         };
 
-        private static readonly List<string> operators = new List<string> {"ge", "gt", "le", "lt", "eq", "ne"};
-        private static readonly List<string> timeGranularityList = new List<string> {"PT5M", "PT1H", "P1D", "P7D"};
+        private static readonly List<string> Operators = new List<string> {"ge", "gt", "le", "lt", "eq", "ne"};
+        private static readonly List<string> TimeGranularityList = new List<string> {"PT5M", "PT1H", "P1D", "P7D"};
 
         #endregion
 
@@ -477,7 +478,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     Name = "ClaimType",
                     DataPropertyName = "ClaimType",
-                    DataSource = claimTypes,
+                    DataSource = ClaimTypes,
                     FlatStyle = FlatStyle.Flat
                 });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -600,7 +601,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create the Time Granularity column
                 var timeGranularityColumn = new DataGridViewComboBoxColumn
                 {
-                    DataSource = timeGranularityList,
+                    DataSource = TimeGranularityList,
                     DataPropertyName = GranularityProperty,
                     Name = GranularityProperty,
                     Width = 72,
@@ -611,7 +612,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create the Time Operator 1 column
                 var operator1Column = new DataGridViewComboBoxColumn
                 {
-                    DataSource = operators,
+                    DataSource = Operators,
                     DataPropertyName = TimeFilterOperator1Name,
                     HeaderText = TimeFilterOperator,
                     Name = TimeFilterOperator1Name,
@@ -633,7 +634,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Create the Time Operator 1 column
                 var operator2Column = new DataGridViewComboBoxColumn
                 {
-                    DataSource = operators,
+                    DataSource = Operators,
                     DataPropertyName = TimeFilterOperator2Name,
                     HeaderText = TimeFilterOperator,
                     Name = TimeFilterOperator2Name,
@@ -2990,7 +2991,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
@@ -3261,17 +3262,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     serviceBusHelper.Namespace,
                     pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
-                if (uris == null || !uriList.Any())
+                if (!uriList.Any())
                 {
                     return;
                 }
                 var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList,
                     MainForm.SingletonMainForm.CertificateThumbprint);
                 var metricList = metricData as IList<IEnumerable<MetricValue>> ?? metricData.ToList();
-                if (metricData == null && metricList.Count == 0)
-                {
-                    return;
-                }
                 for (var i = 0; i < metricList.Count; i++)
                 {
                     if (metricList[i] == null || !metricList[i].Any())
