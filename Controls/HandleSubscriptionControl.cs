@@ -2722,7 +2722,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagesDataGridView_CellDoubleClick(messagesDataGridView, new DataGridViewCellEventArgs(0, currentMessageRowIndex));
         }
 
-        private async void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2730,57 +2730,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                string entityPath;
-                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
+                using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
-                    if (form.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    if (string.IsNullOrWhiteSpace(form.Path))
-                    {
-                        return;
-                    }
-                    entityPath = form.Path;
+                    form.ShowDialog();
                 }
-                var sent = 0;
-                var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
-                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
-                {
-                    BodyType bodyType;
-                    var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out bodyType);
-                    if (bodyType == BodyType.Wcf)
-                    {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                         new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                         new UriBuilder
-                                         {
-                                             Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = string.Format("{0}/{1}", serviceBusHelper.NamespaceUri.AbsolutePath, messageSender.Path),
-                                             Scheme = "sb"
-                                         }.Uri;
-                        return serviceBusHelper.CreateMessageForWcfReceiver(message,
-                                                                            0,
-                                                                            false,
-                                                                            false,
-                                                                            wcfUri);
-                    }
-                    return serviceBusHelper.CreateMessageForApiReceiver(message,
-                                                                        0,
-                                                                        false,
-                                                                        false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
-                });
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
-                if (brokeredMessages.Any())
-                {
-                    sent = brokeredMessages.Count();
-                    await messageSender.SendBatchAsync(brokeredMessages);
-                }
-                writeToLog(string.Format(MessageSentMessage, sent, entityPath));
             }
             catch (Exception ex)
             {
@@ -2808,7 +2762,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             deadletterDataGridView_CellDoubleClick(deadletterDataGridView, new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
         }
 
-        private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2816,57 +2770,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                string entityPath;
-                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
+                using (var form = new MessageForm(deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
-                    if (form.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    if (string.IsNullOrWhiteSpace(form.Path))
-                    {
-                        return;
-                    }
-                    entityPath = form.Path;
+                    form.ShowDialog();
                 }
-                var sent = 0;
-                var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
-                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
-                {
-                    BodyType bodyType;
-                    var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out bodyType);
-                    if (bodyType == BodyType.Wcf)
-                    {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                         new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                         new UriBuilder
-                                         {
-                                             Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = string.Format("{0}/{1}", serviceBusHelper.NamespaceUri.AbsolutePath, messageSender.Path),
-                                             Scheme = "sb"
-                                         }.Uri;
-                        return serviceBusHelper.CreateMessageForWcfReceiver(message,
-                                                                            0,
-                                                                            false,
-                                                                            false,
-                                                                            wcfUri);
-                    }
-                    return serviceBusHelper.CreateMessageForApiReceiver(message,
-                                                                        0,
-                                                                        false,
-                                                                        false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
-                });
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
-                if (brokeredMessages.Any())
-                {
-                    sent = brokeredMessages.Count();
-                    await messageSender.SendBatchAsync(brokeredMessages);
-                }
-                writeToLog(string.Format(MessageSentMessage, sent, entityPath));
             }
             catch (Exception ex)
             {

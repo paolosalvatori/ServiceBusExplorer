@@ -3474,7 +3474,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                
                 if (deadletterDataGridView.SelectedRows.Count <= 0)
                 {
                     return;
