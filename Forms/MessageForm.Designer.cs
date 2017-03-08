@@ -54,7 +54,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageForm));
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
-            this.btnSubmit = new System.Windows.Forms.Button();
             this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperMessageText = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
@@ -68,6 +67,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.cboSenderInspector = new System.Windows.Forms.ComboBox();
             this.lblReceiverInspector = new System.Windows.Forms.Label();
+            this.btnSubmit = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).BeginInit();
             this.messagesSplitContainer.Panel1.SuspendLayout();
             this.messagesSplitContainer.Panel2.SuspendLayout();
@@ -116,22 +116,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // btnSubmit
-            // 
-            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSubmit.Location = new System.Drawing.Point(720, 508);
-            this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(72, 24);
-            this.btnSubmit.TabIndex = 0;
-            this.btnSubmit.Text = "Submit";
-            this.btnSubmit.UseVisualStyleBackColor = false;
-            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
-            // 
             // messagesSplitContainer
             // 
             this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -148,7 +132,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // 
             this.messagesSplitContainer.Panel2.Controls.Add(this.grouperMessageProperties);
             this.messagesSplitContainer.Size = new System.Drawing.Size(936, 474);
-            this.messagesSplitContainer.SplitterDistance = 608;
+            this.messagesSplitContainer.SplitterDistance = 666;
             this.messagesSplitContainer.SplitterWidth = 16;
             this.messagesSplitContainer.TabIndex = 4;
             // 
@@ -166,7 +150,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // messageListTextPropertiesSplitContainer.Panel2
             // 
             this.messageListTextPropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
-            this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(608, 474);
+            this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(666, 474);
             this.messageListTextPropertiesSplitContainer.SplitterDistance = 226;
             this.messageListTextPropertiesSplitContainer.SplitterWidth = 8;
             this.messageListTextPropertiesSplitContainer.TabIndex = 0;
@@ -193,7 +177,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(608, 226);
+            this.grouperMessageText.Size = new System.Drawing.Size(666, 226);
             this.grouperMessageText.TabIndex = 26;
             // 
             // txtMessageText
@@ -207,7 +191,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.txtMessageText.Multiline = true;
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtMessageText.Size = new System.Drawing.Size(576, 178);
+            this.txtMessageText.Size = new System.Drawing.Size(666, 178);
             this.txtMessageText.TabIndex = 0;
             // 
             // grouperMessageCustomProperties
@@ -232,7 +216,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageCustomProperties.ShadowControl = false;
             this.grouperMessageCustomProperties.ShadowThickness = 1;
-            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(608, 240);
+            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(666, 240);
             this.grouperMessageCustomProperties.TabIndex = 27;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
@@ -248,7 +232,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.propertiesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.propertiesDataGridView.Location = new System.Drawing.Point(16, 32);
             this.propertiesDataGridView.Name = "propertiesDataGridView";
-            this.propertiesDataGridView.Size = new System.Drawing.Size(576, 192);
+            this.propertiesDataGridView.Size = new System.Drawing.Size(666, 192);
             this.propertiesDataGridView.TabIndex = 0;
             this.propertiesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.propertiesDataGridView_DataError);
             this.propertiesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.propertiesDataGridView_RowsAdded);
@@ -277,7 +261,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.grouperMessageProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
-            this.grouperMessageProperties.Size = new System.Drawing.Size(312, 474);
+            this.grouperMessageProperties.Size = new System.Drawing.Size(254, 474);
             this.grouperMessageProperties.TabIndex = 19;
             // 
             // messagePropertyGrid
@@ -291,7 +275,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.messagePropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.messagePropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyGrid.Name = "messagePropertyGrid";
-            this.messagePropertyGrid.Size = new System.Drawing.Size(280, 428);
+            this.messagePropertyGrid.Size = new System.Drawing.Size(275, 428);
             this.messagePropertyGrid.TabIndex = 0;
             this.messagePropertyGrid.ToolbarVisible = false;
             // 
@@ -319,7 +303,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             "ByteArray"});
             this.cboBodyType.Location = new System.Drawing.Point(536, 509);
             this.cboBodyType.Name = "cboBodyType";
-            this.cboBodyType.Size = new System.Drawing.Size(88, 21);
+            this.cboBodyType.Size = new System.Drawing.Size(144, 21);
             this.cboBodyType.TabIndex = 76;
             // 
             // cboSenderInspector
@@ -344,6 +328,22 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.lblReceiverInspector.Size = new System.Drawing.Size(100, 13);
             this.lblReceiverInspector.TabIndex = 151;
             this.lblReceiverInspector.Text = "Message Inspector:";
+            // 
+            // btnSubmit
+            // 
+            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSubmit.Location = new System.Drawing.Point(720, 508);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(72, 24);
+            this.btnSubmit.TabIndex = 0;
+            this.btnSubmit.Text = "Submit";
+            this.btnSubmit.UseVisualStyleBackColor = false;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
             // 
             // MessageForm
             // 
@@ -387,7 +387,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnSubmit;
         private System.Windows.Forms.SplitContainer messagesSplitContainer;
         private System.Windows.Forms.SplitContainer messageListTextPropertiesSplitContainer;
         private Grouper grouperMessageProperties;
@@ -401,5 +400,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.ComboBox cboSenderInspector;
         private System.Windows.Forms.Label lblReceiverInspector;
+        private System.Windows.Forms.Button btnSubmit;
     }
 }

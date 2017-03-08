@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
         private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
+        private const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
 
         //***************************
         // Constants
@@ -74,6 +76,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Instance Fields
+        private readonly IEnumerable<BrokeredMessage> brokeredMessages;
         private readonly BrokeredMessage brokeredMessage;
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
@@ -81,7 +84,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
         #endregion
 
         #region Public Constructor
@@ -97,7 +100,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
             BodyType bodyType;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
+            txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType)));
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
@@ -120,7 +123,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // Create the Type column
             var comboBoxColumn = new DataGridViewComboBoxColumn
             {
-                DataSource = types,
+                DataSource = Types,
                 DataPropertyName = PropertyType,
                 Name = PropertyType,
                 Width = 90,
@@ -174,9 +177,39 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 cboSenderInspector.Items.Add(key);
             }
         }
+
+        public MessageForm(IEnumerable<BrokeredMessage> brokeredMessages, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
+        {
+            this.brokeredMessages = brokeredMessages;
+            this.serviceBusHelper = serviceBusHelper;
+            this.writeToLog = writeToLog;
+            InitializeComponent();
+            messagesSplitContainer.Visible = false;
+            btnSave.Visible = false;
+            btnSubmit.Location = btnSave.Location;
+            cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Size = new Size(Size.Width - 104, 80);
+            cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            cboBodyType.SelectedIndex = 0;
+
+            // Get Brokered Message Inspector classes
+            cboSenderInspector.Items.Add(SelectBrokeredMessageInspector);
+            cboSenderInspector.SelectedIndex = 0;
+
+            if (serviceBusHelper.BrokeredMessageInspectors == null)
+            {
+                return;
+            }
+            foreach (var key in serviceBusHelper.BrokeredMessageInspectors.Keys)
+            {
+                cboSenderInspector.Items.Add(key);
+            }
+        }
+
         #endregion
 
-        #region Event Handlers
+            #region Event Handlers
         private void btnClose_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -246,7 +279,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             }
         }
 
-        private void btnSubmit_Click(object sender, EventArgs e)
+        private async void btnSubmit_Click(object sender, EventArgs e)
         {
             try
             {
@@ -266,76 +299,98 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         bodyType = BodyType.Stream;
                     }
                     var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
-                    BrokeredMessage outboundMessage;
-                    if (bodyType == BodyType.Wcf)
+                    var messages = brokeredMessages != null ? 
+                                    new List<BrokeredMessage>(brokeredMessages) :
+                                    new List<BrokeredMessage>(new []{ brokeredMessage});
+                    var outboundMessages = new List<BrokeredMessage>();
+                    foreach (var message in messages)
                     {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                         new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                         new UriBuilder
-                                         {
-                                             Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = string.Format("{0}/{1}", serviceBusHelper.NamespaceUri.AbsolutePath, messageSender.Path),
-                                             Scheme = "sb"
-                                         }.Uri;
-                        outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(brokeredMessage.Clone(txtMessageText.Text),
-                                                                                       0,
-                                                                                       false,
-                                                                                       false,
-                                                                                       wcfUri);
-                    }
-                    else
-                    {
-                        BrokeredMessage message;
-                        // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                        if (bodyType == BodyType.ByteArray)
+                        BrokeredMessage outboundMessage;
+                        if (bodyType == BodyType.Wcf)
                         {
-                            message = brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text);
+                            var wcfUri = serviceBusHelper.IsCloudNamespace ?
+                                             new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
+                                             new UriBuilder
+                                             {
+                                                 Host = serviceBusHelper.NamespaceUri.Host,
+                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
+                                                 Scheme = "sb"
+                                             }.Uri;
+                            outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text),
+                                                                                           0,
+                                                                                           false,
+                                                                                           false,
+                                                                                           wcfUri);
                         }
                         else
                         {
-                            message = brokeredMessage.Clone(txtMessageText.Text);
-                        }
-
-                        outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(message,
-                                                                                       0,
-                                                                                       false,
-                                                                                       false,
-                                                                                       false,
-                                                                                       bodyType,
-                                                                                       cboSenderInspector.SelectedIndex > 0 ?
-                                                                                       Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                                                                       null);
-                    }
-                    outboundMessage.Properties.Clear();
-                    var warningCollection = new ConcurrentBag<string>();
-                    foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
-                    {
-                        try
-                        {
-                            messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
-                            if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
+                            if (brokeredMessage != null)
                             {
-                                warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
+                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                outboundMessage = bodyType == BodyType.ByteArray ?
+                                                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
+                                                  brokeredMessage.Clone(txtMessageText.Text);
                             }
                             else
                             {
-                                if (outboundMessage.Properties.ContainsKey(messagePropertyInfo.Key))
+                                var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
+
+                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                outboundMessage = bodyType == BodyType.ByteArray ?
+                                                  message.CloneWithByteArrayBodyType(messageText) :
+                                                  message.Clone(messageText);
+                            }
+                            
+                            outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
+                                                                                           0,
+                                                                                           false,
+                                                                                           false,
+                                                                                           false,
+                                                                                           bodyType,
+                                                                                           cboSenderInspector.SelectedIndex > 0 ?
+                                                                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
+                                                                                           null);
+                        }
+                        outboundMessage.Properties.Clear();
+                        var warningCollection = new ConcurrentBag<string>();
+                        foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
+                        {
+                            try
+                            {
+                                if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
+                                    StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                                string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
+                                    StringComparison.InvariantCultureIgnoreCase) == 0)
                                 {
-                                    outboundMessage.Properties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
+                                    continue;
+                                }
+                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
+                                if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
+                                {
+                                    warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
                                 }
                                 else
                                 {
-                                    outboundMessage.Properties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
+                                    if (outboundMessage.Properties.ContainsKey(messagePropertyInfo.Key))
+                                    {
+                                        outboundMessage.Properties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
+                                    }
+                                    else
+                                    {
+                                        outboundMessage.Properties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
+                                    }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyConversionError, messagePropertyInfo.Key, ex.Message));
+                            }
                         }
-                        catch (Exception ex)
+                        if (warningCollection.Count <= 0)
                         {
-                            warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyConversionError, messagePropertyInfo.Key, ex.Message));
+                            outboundMessages.Add(outboundMessage);
+                            continue;
                         }
-                    }
-                    if (warningCollection.Count > 0)
-                    {
                         var builder = new StringBuilder(WarningHeader);
                         var warnings = warningCollection.ToArray<string>();
                         for (var i = 0; i < warningCollection.Count; i++)
@@ -344,16 +399,20 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         writeToLog(builder.ToString());
                     }
-
-                    long elapsedMilliseconds;
-                    serviceBusHelper.SendMessage(messageSender,
-                                                 outboundMessage,
-                                                 0,
-                                                 bodyType == BodyType.Wcf,
-                                                 false,
-                                                 true,
-                                                 true,
-                                                 out elapsedMilliseconds);
+                    if (!outboundMessages.Any())
+                    {
+                        return;
+                    }
+                    var sent = outboundMessages.Count;
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    await messageSender.SendBatchAsync(outboundMessages);
+                    stopwatch.Stop();
+                    writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+                    if (brokeredMessages != null)
+                    {
+                        Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -364,12 +423,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
