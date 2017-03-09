@@ -600,7 +600,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker) delegate
+                            {
+                                btnStart.Text = StartCaption;
+                                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                            });
                         }
                     };
 

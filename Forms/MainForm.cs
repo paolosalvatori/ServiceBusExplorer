@@ -1586,7 +1586,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         }
 
         // ReSharper disable once FunctionComplexityOverflow
-        private void refreshEntity_Click(object sender, EventArgs e)
+        public void refreshEntity_Click(object sender, EventArgs e)
         {
             try
             {
@@ -4229,13 +4229,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         #endregion
 
         #region Public Static Properties
-        public static MainForm SingletonMainForm
-        {
-            get
-            {
-                return mainSingletonMainForm;
-            }
-        }
+        public static MainForm SingletonMainForm => mainSingletonMainForm;
+
         #endregion
 
         #region Private Methods
@@ -6779,6 +6774,87 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+        }
+        
+
+        private async void purgeMessages_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Application.UseWaitCursor = true;
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                // Queue Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    if (control != null)
+                    {
+                        await control.PurgeMessagesAsync();
+                    }
+                }
+
+                // Subscription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var control = panelMain.Controls[0] as HandleSubscriptionControl;
+                    if (control != null)
+                    {
+                        await control.PurgeMessagesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
+        }
+
+        private async void purgeDeadletterQueueMessages_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Application.UseWaitCursor = true;
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                // Queue Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    if (control != null)
+                    {
+                        await control.PurgeDeadletterQueueMessagesAsync();
+                    }
+                }
+
+                // Subscription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var control = panelMain.Controls[0] as HandleSubscriptionControl;
+                    if (control != null)
+                    {
+                        await control.PurgeDeadletterQueueMessagesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
             }
         }
         #endregion

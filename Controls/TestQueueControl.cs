@@ -561,10 +561,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusHelper != null &&
                     ValidateParameters())
                 {
-                    if (startLog != null)
-                    {
-                        startLog();
-                    }
+                    startLog?.Invoke();
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
 
@@ -620,7 +617,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker) delegate
+                            {
+                                btnStart.Text = StartCaption;
+                                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                            });
                         }
                     };
 
@@ -664,10 +665,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 var sendTuple = new Tuple<long, long, DirectionType>(sendMessageNumber, sendTotalTime, DirectionType.Send);
                                 if (InvokeRequired)
                                 {
-                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
-                                           new object[] { sendTuple.Item1, 
-                                                          sendTuple.Item2, 
-                                                          sendTuple.Item3 });
+                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), sendTuple.Item1, sendTuple.Item2, sendTuple.Item3);
                                 }
                                 else
                                 {
@@ -681,10 +679,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                 var receiveTuple = new Tuple<long, long, DirectionType>(receiveMessageNumber, receiveTotalTime, DirectionType.Receive);
                                 if (InvokeRequired)
                                 {
-                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
-                                           new object[] { receiveTuple.Item1, 
-                                                          receiveTuple.Item2, 
-                                                          receiveTuple.Item3 });
+                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), receiveTuple.Item1, receiveTuple.Item2, receiveTuple.Item3);
                                 }
                                 else
                                 {
@@ -703,13 +698,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     AsyncCallback updateGraphCallback = a =>
                     {
                         var action = a.AsyncState as Action;
-                        if (action != null)
+                        if (action == null)
                         {
-                            action.EndInvoke(a);
-                            if (Interlocked.Decrement(ref actionCount) == 0)
-                            {
-                                managerResetEvent.Set();
-                            }
+                            return;
+                        }
+                        action.EndInvoke(a);
+                        if (Interlocked.Decrement(ref actionCount) == 0)
+                        {
+                            managerResetEvent.Set();
                         }
                     };
 
@@ -752,7 +748,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         {
                             bodyType = BodyType.Stream;
                         }
-                        bool isBinary = false;
+                        var isBinary = false;
                         // Create outbound message template list
                         var messageTemplateList = new List<BrokeredMessage>();
                         var messageTextList = new List<string>();
@@ -1239,12 +1235,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }

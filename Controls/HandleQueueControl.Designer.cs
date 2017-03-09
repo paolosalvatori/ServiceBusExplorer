@@ -158,6 +158,8 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.btnMetrics = new System.Windows.Forms.Button();
             this.btnCloseTabs = new System.Windows.Forms.Button();
+            this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
+            this.btnPurgeMessages = new System.Windows.Forms.Button();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperAutoDeleteOnIdle.SuspendLayout();
@@ -2281,11 +2283,51 @@
             this.btnCloseTabs.UseVisualStyleBackColor = false;
             this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
             // 
+            // btnPurgeDeadletterQueueMessages
+            // 
+            this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(200, 504);
+            this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
+            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(72, 24);
+            this.btnPurgeDeadletterQueueMessages.TabIndex = 14;
+            this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
+            this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
+            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
+            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // btnPurgeMessages
+            // 
+            this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPurgeMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnPurgeMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPurgeMessages.Location = new System.Drawing.Point(120, 504);
+            this.btnPurgeMessages.Name = "btnPurgeMessages";
+            this.btnPurgeMessages.Size = new System.Drawing.Size(72, 24);
+            this.btnPurgeMessages.TabIndex = 15;
+            this.btnPurgeMessages.Text = "Purge";
+            this.btnPurgeMessages.UseVisualStyleBackColor = false;
+            this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
+            this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
             // HandleQueueControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.Controls.Add(this.btnPurgeMessages);
+            this.Controls.Add(this.btnPurgeDeadletterQueueMessages);
             this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.btnMetrics);
             this.Controls.Add(this.btnDeadletter);
@@ -2528,5 +2570,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessagesToolStripMenuItem;
         private System.Windows.Forms.Button btnMetrics;
         private System.Windows.Forms.Button btnCloseTabs;
+        private System.Windows.Forms.Button btnPurgeDeadletterQueueMessages;
+        private System.Windows.Forms.Button btnPurgeMessages;
     }
 }

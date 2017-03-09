@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -32,6 +33,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
+using static System.Char;
+
 #endregion
 
 namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
@@ -220,6 +223,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private SortableBindingList<MessageSession> sessionBindingList;
         private readonly List<string> metricTabPageIndexList = new List<string>();
         private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
+        private bool buttonsMoved;
         #endregion
 
         #region Private Static Fields
@@ -373,6 +377,96 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 tabPageSessions.ResumeDrawing();
                 Cursor.Current = Cursors.Default;
             }
+        }
+
+        public async Task<long> PurgeMessagesAsync()
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                       subscriptionWrapper.SubscriptionDescription.Name);
+            var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
+            var count = 0;
+            while (true)
+            {
+                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (messages.Any())
+                {
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    count += messages.Count();
+                }
+                else
+                {
+                    if (subscriptionWrapper.TopicDescription.EnablePartitioning)
+                    {
+                        while (true)
+                        {
+                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
+                            if (message != null)
+                            {
+                                count++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            stopwatch.Stop();
+            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+            writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+            return count;
+        }
+
+        public async Task<long> PurgeDeadletterQueueMessagesAsync()
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var entityPath = SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                     subscriptionWrapper.SubscriptionDescription.Name);
+            var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
+            var count = 0;
+            while (true)
+            {
+                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (messages.Any())
+                {
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    count += messages.Count();
+                }
+                else
+                {
+                    if (subscriptionWrapper.TopicDescription.EnablePartitioning)
+                    {
+                        while (true)
+                        {
+                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
+                            if (message != null)
+                            {
+                                count++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            stopwatch.Stop();
+            entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                                                                       subscriptionWrapper.SubscriptionDescription.Name);
+            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+            writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+            return count;
         }
         #endregion
 
@@ -830,6 +924,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 btnDeadletter.Visible = false;
                 btnMetrics.Visible = false;
                 btnCloseTabs.Visible = false;
+                btnPurgeMessages.Visible = false;
+                btnPurgeDeadletterQueueMessages.Visible = false;
                 txtName.Focus();
             }
         }
@@ -847,21 +943,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             btnMessages.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo);
             btnDeadletter.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo);
 
-            if (!btnMessages.Visible && !btnSessions.Visible)
+            if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
-                btnMetrics.Location = btnCloseTabs.Location;
-                btnCloseTabs.Location = btnMessages.Location;
-            }
-            if (!btnMessages.Visible && btnSessions.Visible)
-            {
+                btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
+                btnPurgeDeadletterQueueMessages.Location = btnMetrics.Location;
                 btnMetrics.Location = btnCloseTabs.Location;
                 btnCloseTabs.Location = btnSessions.Location;
-                btnSessions.Location = btnMessages.Location;
-            }
-            if (btnMessages.Visible && !btnSessions.Visible)
-            {
-                btnMetrics.Location = btnCloseTabs.Location;
-                btnCloseTabs.Location = btnSessions.Location;
+                buttonsMoved = true;
             }
 
             btnMetrics.Visible = serviceBusHelper.IsCloudNamespace;
@@ -2398,7 +2486,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
@@ -2407,7 +2495,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
 
-            if (Char.IsDigit(e.KeyChar))
+            if (IsDigit(e.KeyChar))
             {
                 // Digits are OK
             }
@@ -2558,17 +2646,13 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     serviceBusHelper.Namespace,
                     pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
-                if (uris == null || !uriList.Any())
+                if (!uriList.Any())
                 {
                     return;
                 }
                 var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList,
                     MainForm.SingletonMainForm.CertificateThumbprint);
                 var metricList = metricData as IList<IEnumerable<MetricValue>> ?? metricData.ToList();
-                if (metricData == null && metricList.Count == 0)
-                {
-                    return;
-                }
                 for (var i = 0; i < metricList.Count; i++)
                 {
                     if (metricList[i] == null || !metricList[i].Any())
@@ -3179,6 +3263,32 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         : null;
                 }
             });
+        }
+
+        private async void btnPurgeMessages_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Application.UseWaitCursor = true;
+                await PurgeMessagesAsync();
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
+        }
+
+        private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Application.UseWaitCursor = true;
+                await PurgeDeadletterQueueMessagesAsync();
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
         }
         #endregion
     }

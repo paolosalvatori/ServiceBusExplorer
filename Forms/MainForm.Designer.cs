@@ -127,8 +127,10 @@
             this.createSubscriptionListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator46 = new System.Windows.Forms.ToolStripSeparator();
             this.subReceiveMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.subReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.subReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.subscriptionPurgeMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getSubscriptionMessageSessionsSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.getSubscriptionMessageSessionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topicContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -167,8 +169,10 @@
             this.createQueueListenerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator31 = new System.Windows.Forms.ToolStripSeparator();
             this.queueReceiveMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.queueReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.queueReceiveDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.queueReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.queuePurgeMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.queuePurgeDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getQueueMessageSessionsSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.getQueueMessageSessionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topicsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -1080,12 +1084,14 @@
             this.createSubscriptionListenerMenuItem,
             this.toolStripSeparator46,
             this.subReceiveMessagesMenuItem,
-            this.subReceiveToolStripSeparator,
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem,
+            this.subReceiveToolStripSeparator,
+            this.subscriptionPurgeMessagesMenuItem,
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem,
             this.getSubscriptionMessageSessionsSeparator,
             this.getSubscriptionMessageSessionsMenuItem});
             this.subscriptionContextMenuStrip.Name = "subscriptionContextMenuStrip";
-            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(264, 360);
+            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(264, 426);
             // 
             // removeSubscriptionMenuItem
             // 
@@ -1213,11 +1219,6 @@
             this.subReceiveMessagesMenuItem.ToolTipText = "Receive messages from the current queue.";
             this.subReceiveMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
             // 
-            // subReceiveToolStripSeparator
-            // 
-            this.subReceiveToolStripSeparator.Name = "subReceiveToolStripSeparator";
-            this.subReceiveToolStripSeparator.Size = new System.Drawing.Size(260, 6);
-            // 
             // subscriptionReceiveDeadletterQueueMessagesMenuItem
             // 
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Name = "subscriptionReceiveDeadletterQueueMessagesMenuItem";
@@ -1225,6 +1226,25 @@
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Text = "Receive Deadletter Queue Messages";
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.ToolTipText = "Receive messages from the deadletter queue.";
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
+            // 
+            // subReceiveToolStripSeparator
+            // 
+            this.subReceiveToolStripSeparator.Name = "subReceiveToolStripSeparator";
+            this.subReceiveToolStripSeparator.Size = new System.Drawing.Size(260, 6);
+            // 
+            // subscriptionPurgeMessagesMenuItem
+            // 
+            this.subscriptionPurgeMessagesMenuItem.Name = "subscriptionPurgeMessagesMenuItem";
+            this.subscriptionPurgeMessagesMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.subscriptionPurgeMessagesMenuItem.Text = "Purge Messages";
+            this.subscriptionPurgeMessagesMenuItem.Click += new System.EventHandler(this.purgeMessages_Click);
+            // 
+            // subscriptionPurgeDeadletterQueueMessagesMenuItem
+            // 
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Name = "subscriptionPurgeDeadletterQueueMessagesMenuItem";
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Text = "Purge Deadletter Queue Messages";
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
             // 
             // getSubscriptionMessageSessionsSeparator
             // 
@@ -1409,12 +1429,14 @@
             this.createQueueListenerMenuItem,
             this.toolStripSeparator31,
             this.queueReceiveMessagesMenuItem,
-            this.queueReceiveToolStripSeparator,
             this.queueReceiveDeadletterQueueMessagesMenuItem,
+            this.queueReceiveToolStripSeparator,
+            this.queuePurgeMessagesMenuItem,
+            this.queuePurgeDeadletterQueueMessagesMenuItem,
             this.getQueueMessageSessionsSeparator,
             this.getQueueMessageSessionsMenuItem});
             this.queueContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.queueContextMenuStrip.Size = new System.Drawing.Size(264, 332);
+            this.queueContextMenuStrip.Size = new System.Drawing.Size(264, 376);
             // 
             // changeStatusQueueMenuItem
             // 
@@ -1529,11 +1551,6 @@
             this.queueReceiveMessagesMenuItem.ToolTipText = "Receive messages from the current queue.";
             this.queueReceiveMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
             // 
-            // queueReceiveToolStripSeparator
-            // 
-            this.queueReceiveToolStripSeparator.Name = "queueReceiveToolStripSeparator";
-            this.queueReceiveToolStripSeparator.Size = new System.Drawing.Size(260, 6);
-            // 
             // queueReceiveDeadletterQueueMessagesMenuItem
             // 
             this.queueReceiveDeadletterQueueMessagesMenuItem.Name = "queueReceiveDeadletterQueueMessagesMenuItem";
@@ -1541,6 +1558,25 @@
             this.queueReceiveDeadletterQueueMessagesMenuItem.Text = "Receive Deadletter Queue Messages";
             this.queueReceiveDeadletterQueueMessagesMenuItem.ToolTipText = "Receive messages from the deadletter queue.";
             this.queueReceiveDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
+            // 
+            // queueReceiveToolStripSeparator
+            // 
+            this.queueReceiveToolStripSeparator.Name = "queueReceiveToolStripSeparator";
+            this.queueReceiveToolStripSeparator.Size = new System.Drawing.Size(260, 6);
+            // 
+            // queuePurgeMessagesMenuItem
+            // 
+            this.queuePurgeMessagesMenuItem.Name = "queuePurgeMessagesMenuItem";
+            this.queuePurgeMessagesMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.queuePurgeMessagesMenuItem.Text = "Purge Messages";
+            this.queuePurgeMessagesMenuItem.Click += new System.EventHandler(this.purgeMessages_Click);
+            // 
+            // queuePurgeDeadletterQueueMessagesMenuItem
+            // 
+            this.queuePurgeDeadletterQueueMessagesMenuItem.Name = "queuePurgeDeadletterQueueMessagesMenuItem";
+            this.queuePurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.queuePurgeDeadletterQueueMessagesMenuItem.Text = "Purge Deadletter Queue Messages";
+            this.queuePurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
             // 
             // getQueueMessageSessionsSeparator
             // 
@@ -2855,7 +2891,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator21;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem queueReceiveMessagesMenuItem;
-        private System.Windows.Forms.ToolStripSeparator queueReceiveToolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem queueReceiveDeadletterQueueMessagesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator28;
         private System.Windows.Forms.ToolStripMenuItem subReceiveMessagesMenuItem;
@@ -3007,6 +3042,11 @@
         private System.Windows.Forms.ToolStripMenuItem createIoTHubListenerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createEventHubListenerMenuItem;
         private System.Windows.Forms.TreeView serviceBusTreeView;
+        private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeMessagesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeDeadletterQueueMessagesMenuItem;
+        private System.Windows.Forms.ToolStripSeparator queueReceiveToolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem queuePurgeMessagesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem queuePurgeDeadletterQueueMessagesMenuItem;
     }
 }
 

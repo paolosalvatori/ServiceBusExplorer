@@ -280,10 +280,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 if (serviceBusHelper != null &&
                     ValidateParameters())
                 {
-                    if (startLog != null)
-                    {
-                        startLog();
-                    }
+                    startLog?.Invoke();
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
@@ -321,7 +318,11 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker) delegate
+                            {
+                                btnStart.Text = StartCaption;
+                                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                            });
                         }
                     };
 
