@@ -1,4 +1,6 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
+
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     partial class MainForm
     {
