@@ -20,14 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Drawing; 
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
 
   internal partial class StandardValueEditorUI : UserControl

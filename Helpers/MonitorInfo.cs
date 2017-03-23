@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
+
 using System.ComponentModel;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class MonitorInfo
     {

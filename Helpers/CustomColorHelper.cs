@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Drawing;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
 	/// <summary>
 	/// Summary description for ColorHelper.

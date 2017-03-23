@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class HandleRelayControl
     {
@@ -21,27 +21,27 @@
             this.sessionsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPageDescription = new System.Windows.Forms.TabPage();
-            this.grouperRelaySettings = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperRelaySettings = new Grouper();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
-            this.grouperPath = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperPath = new Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
-            this.grouperRelayProperties = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperRelayProperties = new Grouper();
             this.cboRelayType = new System.Windows.Forms.ComboBox();
             this.lblRelayType = new System.Windows.Forms.Label();
             this.txtUserMetadata = new System.Windows.Forms.TextBox();
             this.lblUserMetadata = new System.Windows.Forms.Label();
             this.btnOpenDescriptionForm = new System.Windows.Forms.Button();
-            this.grouperRelayInformation = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperRelayInformation = new Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageAuthorization = new System.Windows.Forms.TabPage();
-            this.grouperAuthorizationRuleList = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAuthorizationRuleList = new Grouper();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageMetrics = new System.Windows.Forms.TabPage();
-            this.grouperDatapoints = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperDatapoints = new Grouper();
             this.dataPointDataGridView = new System.Windows.Forms.DataGridView();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnCancelUpdate = new System.Windows.Forms.Button();
@@ -88,7 +88,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperRelaySettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperRelaySettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperRelaySettings.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperRelaySettings.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperRelaySettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperRelaySettings.BorderThickness = 1F;
             this.grouperRelaySettings.Controls.Add(this.checkedListBox);
@@ -131,7 +131,7 @@
             // 
             this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperPath.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperPath.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperPath.BorderThickness = 1F;
             this.grouperPath.Controls.Add(this.lblRelativeURI);
@@ -179,7 +179,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperRelayProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperRelayProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperRelayProperties.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperRelayProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperRelayProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperRelayProperties.BorderThickness = 1F;
             this.grouperRelayProperties.Controls.Add(this.cboRelayType);
@@ -276,7 +276,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperRelayInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperRelayInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperRelayInformation.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperRelayInformation.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperRelayInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperRelayInformation.BorderThickness = 1F;
             this.grouperRelayInformation.Controls.Add(this.propertyListView);
@@ -362,7 +362,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAuthorizationRuleList.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAuthorizationRuleList.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAuthorizationRuleList.BorderThickness = 1F;
             this.grouperAuthorizationRuleList.Controls.Add(this.authorizationRulesDataGridView);
@@ -429,7 +429,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperDatapoints.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperDatapoints.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperDatapoints.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperDatapoints.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperDatapoints.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDatapoints.BorderThickness = 1F;
             this.grouperDatapoints.Controls.Add(this.dataPointDataGridView);

@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.Collections.Generic;
 using System.Xml.Serialization;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [XmlRoot(ElementName = "MetricDataPoints", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
     [XmlType(TypeName = "MetricDataPoints", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

@@ -1,8 +1,12 @@
-﻿using System;
-using Microsoft.WindowsAzure.CAT.ServiceBusExplorer;
+﻿#region Using Directives
+
+using System;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using NUnit.Framework;
 
-namespace ServiceBusExplorer.Tests
+#endregion
+
+namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 {
     [TestFixture]
     public class ConversionHelperTests

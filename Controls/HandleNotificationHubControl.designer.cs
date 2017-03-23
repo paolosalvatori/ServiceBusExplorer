@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class HandleNotificationHubControl
     {
@@ -21,40 +21,40 @@
             this.btnSend = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageDescription = new System.Windows.Forms.TabPage();
-            this.grouperNotificationHubInformation = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperNotificationHubInformation = new Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperUserMetadata = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperUserMetadata = new Grouper();
             this.txtUserMetadata = new System.Windows.Forms.TextBox();
             this.lblUserMetadata = new System.Windows.Forms.Label();
             this.btnOpenDescriptionForm = new System.Windows.Forms.Button();
-            this.grouperGoogleCloudMessaggingSettings = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperGoogleCloudMessaggingSettings = new Grouper();
             this.btnClearGcmNotification = new System.Windows.Forms.Button();
             this.txtGcmEndpoint = new System.Windows.Forms.TextBox();
             this.lblGcmEndpoint = new System.Windows.Forms.Label();
             this.lblGcmApiKey = new System.Windows.Forms.Label();
             this.txtGcmApiKey = new System.Windows.Forms.TextBox();
-            this.grouperWindowsPhoneNotificationSettings = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWindowsPhoneNotificationSettings = new Grouper();
             this.btnClearMpnsNotification = new System.Windows.Forms.Button();
             this.checkBoxEnableUnauthenticatedMpns = new System.Windows.Forms.CheckBox();
             this.btnMpnsCredentialUploadCertificate = new System.Windows.Forms.Button();
             this.lblMpnsCredentialCertificateThumbprint = new System.Windows.Forms.Label();
             this.txtMpnsCredentialCertificateThumbprint = new System.Windows.Forms.TextBox();
-            this.grouperAppleNotificationSettings = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAppleNotificationSettings = new Grouper();
             this.btnClearApnsNotification = new System.Windows.Forms.Button();
             this.txtApnsEndpoint = new System.Windows.Forms.TextBox();
             this.lblApnsEndpoint = new System.Windows.Forms.Label();
             this.btnApnsCredentialUploadCertificate = new System.Windows.Forms.Button();
             this.lblApnsCredentialCertificateThumbprint = new System.Windows.Forms.Label();
             this.txtApnsCredentialCertificateThumbprint = new System.Windows.Forms.TextBox();
-            this.grouperWindowsNotificationSettings = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWindowsNotificationSettings = new Grouper();
             this.btnClearWnsNotification = new System.Windows.Forms.Button();
             this.txtClientSecret = new System.Windows.Forms.TextBox();
             this.lblClientSecret = new System.Windows.Forms.Label();
             this.lblPackageSid = new System.Windows.Forms.Label();
             this.txtPackageSid = new System.Windows.Forms.TextBox();
-            this.grouperDuplicateDetectionHistoryTimeWindow = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperDuplicateDetectionHistoryTimeWindow = new Grouper();
             this.lblDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.Label();
             this.txtRegistrationTimeToLiveWindowMilliseconds = new System.Windows.Forms.TextBox();
             this.lblDuplicateDetectionHistoryTimeWindowSeconds = new System.Windows.Forms.Label();
@@ -65,18 +65,18 @@
             this.lblDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.Label();
             this.txtRegistrationTimeToLiveWindowHours = new System.Windows.Forms.TextBox();
             this.txtRegistrationTimeToLiveWindowDays = new System.Windows.Forms.TextBox();
-            this.grouperPath = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperPath = new Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.tabPageAuthorization = new System.Windows.Forms.TabPage();
-            this.grouperAuthorizationRuleList = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAuthorizationRuleList = new Grouper();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageMetrics = new System.Windows.Forms.TabPage();
-            this.grouperDatapoints = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperDatapoints = new Grouper();
             this.dataPointDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageRegistrations = new System.Windows.Forms.TabPage();
             this.registrationsSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperRegistrations = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperRegistrations = new Grouper();
             this.pictFindRegistrations = new System.Windows.Forms.PictureBox();
             this.txtCurrentRegistrationPage = new System.Windows.Forms.TextBox();
             this.btnPreviousRegistrationPage = new System.Windows.Forms.Button();
@@ -85,7 +85,7 @@
             this.btnLastRegistrationPage = new System.Windows.Forms.Button();
             this.btnNextRegistrationPage = new System.Windows.Forms.Button();
             this.registrationsDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperRegistrationProperties = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperRegistrationProperties = new Grouper();
             this.btnRefreshRegistrations = new System.Windows.Forms.Button();
             this.btnCreateRegistration = new System.Windows.Forms.Button();
             this.btnDeleteRegistration = new System.Windows.Forms.Button();
@@ -94,80 +94,80 @@
             this.tabPageTemplateNotification = new System.Windows.Forms.TabPage();
             this.templateSplitContainer = new System.Windows.Forms.SplitContainer();
             this.templateSplitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.grouperBody = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperBody = new Grouper();
             this.txtTemplatePayload = new System.Windows.Forms.TextBox();
             this.templateTagsTabControl = new System.Windows.Forms.TabControl();
             this.tabTemplateTagExpression = new System.Windows.Forms.TabPage();
-            this.grouperTemplateTagExpression = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperTemplateTagExpression = new Grouper();
             this.txtTemplateTagExpression = new System.Windows.Forms.TextBox();
             this.tabTemplateNotificationTags = new System.Windows.Forms.TabPage();
-            this.grouperTemplateTags = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperTemplateTags = new Grouper();
             this.templateTagsDataGridView = new System.Windows.Forms.DataGridView();
             this.templatePropertiesTabControl = new System.Windows.Forms.TabControl();
             this.tabTemplateNotificationProperties = new System.Windows.Forms.TabPage();
-            this.grouperTemplateNotificationProperties = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperTemplateNotificationProperties = new Grouper();
             this.templateNotificationDataGridView = new System.Windows.Forms.DataGridView();
             this.tabTemplateAdditionalHeaders = new System.Windows.Forms.TabPage();
-            this.grouperTemplateAdditionalHeaders = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperTemplateAdditionalHeaders = new Grouper();
             this.templateHeadersDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageMpnsNativeNotification = new System.Windows.Forms.TabPage();
             this.mpnsSplitContainer = new System.Windows.Forms.SplitContainer();
             this.mpnsSplitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.grouperMpnsTemplate = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMpnsTemplate = new Grouper();
             this.txtMpnsPayload = new System.Windows.Forms.TextBox();
             this.mpnsTagsTabControl = new System.Windows.Forms.TabControl();
             this.tabMpnsTagExpression = new System.Windows.Forms.TabPage();
-            this.grouperMpnsTagExpression = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMpnsTagExpression = new Grouper();
             this.txtMpnsTagExpression = new System.Windows.Forms.TextBox();
             this.tabMpnsNotificationTags = new System.Windows.Forms.TabPage();
-            this.grouperMpnsTags = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMpnsTags = new Grouper();
             this.mpnsTagsDataGridView = new System.Windows.Forms.DataGridView();
             this.mpnsTemplateTabControl = new System.Windows.Forms.TabControl();
             this.tabMpnsNotificationTemplate = new System.Windows.Forms.TabPage();
-            this.grouperMpnsNotificationTemplate = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMpnsNotificationTemplate = new Grouper();
             this.cboMpnsNotificationTemplate = new System.Windows.Forms.ComboBox();
             this.mpnsTemplatePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabMpnsAdditionalHeaders = new System.Windows.Forms.TabPage();
-            this.grouperMpnsAdditionalHeaders = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMpnsAdditionalHeaders = new Grouper();
             this.mpnsHeadersDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageWnsNativeNotification = new System.Windows.Forms.TabPage();
             this.wnsSplitContainer = new System.Windows.Forms.SplitContainer();
             this.wnsSplitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.grouperWnsTemplate = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWnsTemplate = new Grouper();
             this.txtWnsPayload = new System.Windows.Forms.TextBox();
             this.wnsTagsTabControl = new System.Windows.Forms.TabControl();
             this.tabWnsTagExpression = new System.Windows.Forms.TabPage();
-            this.grouperWnsTagExpression = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWnsTagExpression = new Grouper();
             this.txtWnsTagExpression = new System.Windows.Forms.TextBox();
             this.tabWnsNotificationTags = new System.Windows.Forms.TabPage();
-            this.grouperWnsTags = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWnsTags = new Grouper();
             this.wnsTagsDataGridView = new System.Windows.Forms.DataGridView();
             this.wnsTemplateTabControl = new System.Windows.Forms.TabControl();
             this.tabWnsTemplate = new System.Windows.Forms.TabPage();
-            this.grouperWnsNotificationTemplate = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWnsNotificationTemplate = new Grouper();
             this.cboWnsNotificationTemplate = new System.Windows.Forms.ComboBox();
             this.wnsTemplatePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabWnsAdditionalHeaders = new System.Windows.Forms.TabPage();
-            this.grouperWnsAdditionalHeaders = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperWnsAdditionalHeaders = new Grouper();
             this.wnsHeadersDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPageAppleNativeNotification = new System.Windows.Forms.TabPage();
             this.appleSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperJsonPayload = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperJsonPayload = new Grouper();
             this.txtApnsJsonPayload = new System.Windows.Forms.TextBox();
             this.appleLowerSplitContainer = new System.Windows.Forms.SplitContainer();
             this.appleTagsTabControl = new System.Windows.Forms.TabControl();
             this.tabAppleTagExpression = new System.Windows.Forms.TabPage();
-            this.grouperAppleTagExpression = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAppleTagExpression = new Grouper();
             this.txtAppleTagExpression = new System.Windows.Forms.TextBox();
             this.tabAppleNotificationTags = new System.Windows.Forms.TabPage();
-            this.grouperAppleTags = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAppleTags = new Grouper();
             this.appleTagsDataGridView = new System.Windows.Forms.DataGridView();
             this.appleAdditionalHeadersTabControl = new System.Windows.Forms.TabControl();
             this.tabAppleAdditionalHeaders = new System.Windows.Forms.TabPage();
-            this.grouperAppleAdditionalHeaders = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAppleAdditionalHeaders = new Grouper();
             this.appleHeadersDataGridView = new System.Windows.Forms.DataGridView();
             this.tabAppleNotificationExpiry = new System.Windows.Forms.TabPage();
-            this.grouperApnsExpiry = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperApnsExpiry = new Grouper();
             this.label1 = new System.Windows.Forms.Label();
             this.txtApnsExpiryMilliseconds = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -178,25 +178,25 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtApnsExpiryHours = new System.Windows.Forms.TextBox();
             this.txtApnsExpiryDays = new System.Windows.Forms.TextBox();
-            this.grouperExpiry = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperExpiry = new Grouper();
             this.expiryDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.tabPageGoogleNativeNotification = new System.Windows.Forms.TabPage();
             this.gcmSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouper1 = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouper1 = new Grouper();
             this.txtGcmJsonPayload = new System.Windows.Forms.TextBox();
             this.gcmLowerSplitContainer = new System.Windows.Forms.SplitContainer();
             this.gcmTagsTabControl = new System.Windows.Forms.TabControl();
             this.tabGcmTagExpression = new System.Windows.Forms.TabPage();
-            this.grouperGcmTagExpression = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperGcmTagExpression = new Grouper();
             this.txtGcmTagExpression = new System.Windows.Forms.TextBox();
             this.tabGcmNotificationTags = new System.Windows.Forms.TabPage();
-            this.grouperGcmTags = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperGcmTags = new Grouper();
             this.gcmTagsDataGridView = new System.Windows.Forms.DataGridView();
             this.gcmAdditionalHeadersTabControl = new System.Windows.Forms.TabControl();
             this.tabGcmAdditionalHeaders = new System.Windows.Forms.TabPage();
-            this.grouperGcmAdditionalHeaders = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperGcmAdditionalHeaders = new Grouper();
             this.gcmHeadersDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouper4 = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouper4 = new Grouper();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnCancelUpdate = new System.Windows.Forms.Button();
@@ -443,7 +443,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperNotificationHubInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperNotificationHubInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperNotificationHubInformation.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperNotificationHubInformation.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperNotificationHubInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperNotificationHubInformation.BorderThickness = 1F;
             this.grouperNotificationHubInformation.Controls.Add(this.propertyListView);
@@ -498,7 +498,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperUserMetadata.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperUserMetadata.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperUserMetadata.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperUserMetadata.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperUserMetadata.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperUserMetadata.BorderThickness = 1F;
             this.grouperUserMetadata.Controls.Add(this.txtUserMetadata);
@@ -564,7 +564,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperGoogleCloudMessaggingSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperGoogleCloudMessaggingSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperGoogleCloudMessaggingSettings.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperGoogleCloudMessaggingSettings.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperGoogleCloudMessaggingSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGoogleCloudMessaggingSettings.BorderThickness = 1F;
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.btnClearGcmNotification);
@@ -654,7 +654,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWindowsPhoneNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWindowsPhoneNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWindowsPhoneNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWindowsPhoneNotificationSettings.BorderThickness = 1F;
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnClearMpnsNotification);
@@ -753,7 +753,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAppleNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAppleNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAppleNotificationSettings.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAppleNotificationSettings.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAppleNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAppleNotificationSettings.BorderThickness = 1F;
             this.grouperAppleNotificationSettings.Controls.Add(this.btnClearApnsNotification);
@@ -862,7 +862,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWindowsNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWindowsNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWindowsNotificationSettings.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWindowsNotificationSettings.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWindowsNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWindowsNotificationSettings.BorderThickness = 1F;
             this.grouperWindowsNotificationSettings.Controls.Add(this.btnClearWnsNotification);
@@ -949,7 +949,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.lblDuplicateDetectionHistoryTimeWindowMilliseconds);
@@ -1079,7 +1079,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperPath.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperPath.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperPath.BorderThickness = 1F;
             this.grouperPath.Controls.Add(this.lblRelativeURI);
@@ -1139,7 +1139,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAuthorizationRuleList.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAuthorizationRuleList.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAuthorizationRuleList.BorderThickness = 1F;
             this.grouperAuthorizationRuleList.Controls.Add(this.authorizationRulesDataGridView);
@@ -1206,7 +1206,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperDatapoints.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperDatapoints.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperDatapoints.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperDatapoints.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperDatapoints.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDatapoints.BorderThickness = 1F;
             this.grouperDatapoints.Controls.Add(this.dataPointDataGridView);
@@ -1284,7 +1284,7 @@
             // 
             this.grouperRegistrations.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperRegistrations.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperRegistrations.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperRegistrations.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperRegistrations.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperRegistrations.BorderThickness = 1F;
             this.grouperRegistrations.Controls.Add(this.pictFindRegistrations);
@@ -1314,7 +1314,7 @@
             // 
             // pictFindRegistrations
             // 
-            this.pictFindRegistrations.Image = global::Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Properties.Resources.FindExtension;
+            this.pictFindRegistrations.Image = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.FindExtension;
             this.pictFindRegistrations.Location = new System.Drawing.Point(115, 0);
             this.pictFindRegistrations.Name = "pictFindRegistrations";
             this.pictFindRegistrations.Size = new System.Drawing.Size(24, 24);
@@ -1451,7 +1451,7 @@
             // 
             this.grouperRegistrationProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperRegistrationProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperRegistrationProperties.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperRegistrationProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperRegistrationProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperRegistrationProperties.BorderThickness = 1F;
             this.grouperRegistrationProperties.Controls.Add(this.btnRefreshRegistrations);
@@ -1623,7 +1623,7 @@
             // 
             this.grouperBody.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperBody.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperBody.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperBody.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperBody.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperBody.BorderThickness = 1F;
             this.grouperBody.Controls.Add(this.txtTemplatePayload);
@@ -1691,7 +1691,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTemplateTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTemplateTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTemplateTagExpression.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperTemplateTagExpression.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperTemplateTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTemplateTagExpression.BorderThickness = 1F;
             this.grouperTemplateTagExpression.Controls.Add(this.txtTemplateTagExpression);
@@ -1744,7 +1744,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTemplateTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTemplateTags.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTemplateTags.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperTemplateTags.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperTemplateTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTemplateTags.BorderThickness = 1F;
             this.grouperTemplateTags.Controls.Add(this.templateTagsDataGridView);
@@ -1816,7 +1816,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTemplateNotificationProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTemplateNotificationProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTemplateNotificationProperties.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperTemplateNotificationProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperTemplateNotificationProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTemplateNotificationProperties.BorderThickness = 1F;
             this.grouperTemplateNotificationProperties.Controls.Add(this.templateNotificationDataGridView);
@@ -1877,7 +1877,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTemplateAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTemplateAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTemplateAdditionalHeaders.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperTemplateAdditionalHeaders.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperTemplateAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTemplateAdditionalHeaders.BorderThickness = 1F;
             this.grouperTemplateAdditionalHeaders.Controls.Add(this.templateHeadersDataGridView);
@@ -1972,7 +1972,7 @@
             // 
             this.grouperMpnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMpnsTemplate.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMpnsTemplate.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMpnsTemplate.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMpnsTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMpnsTemplate.BorderThickness = 1F;
             this.grouperMpnsTemplate.Controls.Add(this.txtMpnsPayload);
@@ -2041,7 +2041,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMpnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMpnsTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMpnsTagExpression.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMpnsTagExpression.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMpnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMpnsTagExpression.BorderThickness = 1F;
             this.grouperMpnsTagExpression.Controls.Add(this.txtMpnsTagExpression);
@@ -2094,7 +2094,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMpnsTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMpnsTags.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMpnsTags.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMpnsTags.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMpnsTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMpnsTags.BorderThickness = 1F;
             this.grouperMpnsTags.Controls.Add(this.mpnsTagsDataGridView);
@@ -2166,7 +2166,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMpnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMpnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMpnsNotificationTemplate.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMpnsNotificationTemplate.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMpnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMpnsNotificationTemplate.BorderThickness = 1F;
             this.grouperMpnsNotificationTemplate.Controls.Add(this.cboMpnsNotificationTemplate);
@@ -2233,7 +2233,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMpnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMpnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMpnsAdditionalHeaders.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMpnsAdditionalHeaders.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMpnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMpnsAdditionalHeaders.BorderThickness = 1F;
             this.grouperMpnsAdditionalHeaders.Controls.Add(this.mpnsHeadersDataGridView);
@@ -2328,7 +2328,7 @@
             // 
             this.grouperWnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWnsTemplate.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWnsTemplate.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWnsTemplate.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWnsTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWnsTemplate.BorderThickness = 1F;
             this.grouperWnsTemplate.Controls.Add(this.txtWnsPayload);
@@ -2397,7 +2397,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWnsTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWnsTagExpression.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWnsTagExpression.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWnsTagExpression.BorderThickness = 1F;
             this.grouperWnsTagExpression.Controls.Add(this.txtWnsTagExpression);
@@ -2450,7 +2450,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWnsTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWnsTags.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWnsTags.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWnsTags.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWnsTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWnsTags.BorderThickness = 1F;
             this.grouperWnsTags.Controls.Add(this.wnsTagsDataGridView);
@@ -2522,7 +2522,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWnsNotificationTemplate.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWnsNotificationTemplate.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWnsNotificationTemplate.BorderThickness = 1F;
             this.grouperWnsNotificationTemplate.Controls.Add(this.cboWnsNotificationTemplate);
@@ -2589,7 +2589,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWnsAdditionalHeaders.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperWnsAdditionalHeaders.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperWnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperWnsAdditionalHeaders.BorderThickness = 1F;
             this.grouperWnsAdditionalHeaders.Controls.Add(this.wnsHeadersDataGridView);
@@ -2667,7 +2667,7 @@
             // 
             this.grouperJsonPayload.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperJsonPayload.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperJsonPayload.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperJsonPayload.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperJsonPayload.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperJsonPayload.BorderThickness = 1F;
             this.grouperJsonPayload.Controls.Add(this.txtApnsJsonPayload);
@@ -2754,7 +2754,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAppleTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAppleTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAppleTagExpression.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAppleTagExpression.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAppleTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAppleTagExpression.BorderThickness = 1F;
             this.grouperAppleTagExpression.Controls.Add(this.txtAppleTagExpression);
@@ -2807,7 +2807,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAppleTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAppleTags.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAppleTags.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAppleTags.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAppleTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAppleTags.BorderThickness = 1F;
             this.grouperAppleTags.Controls.Add(this.appleTagsDataGridView);
@@ -2879,7 +2879,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAppleAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAppleAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAppleAdditionalHeaders.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAppleAdditionalHeaders.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAppleAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAppleAdditionalHeaders.BorderThickness = 1F;
             this.grouperAppleAdditionalHeaders.Controls.Add(this.appleHeadersDataGridView);
@@ -2939,7 +2939,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperApnsExpiry.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperApnsExpiry.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperApnsExpiry.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperApnsExpiry.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperApnsExpiry.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperApnsExpiry.BorderThickness = 1F;
             this.grouperApnsExpiry.Controls.Add(this.label1);
@@ -3064,7 +3064,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperExpiry.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperExpiry.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperExpiry.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperExpiry.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperExpiry.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperExpiry.BorderThickness = 1F;
             this.grouperExpiry.Controls.Add(this.expiryDateTimePicker);
@@ -3134,7 +3134,7 @@
             // 
             this.grouper1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouper1.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouper1.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouper1.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouper1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouper1.BorderThickness = 1F;
             this.grouper1.Controls.Add(this.txtGcmJsonPayload);
@@ -3220,7 +3220,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperGcmTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperGcmTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperGcmTagExpression.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperGcmTagExpression.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperGcmTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTagExpression.BorderThickness = 1F;
             this.grouperGcmTagExpression.Controls.Add(this.txtGcmTagExpression);
@@ -3273,7 +3273,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperGcmTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperGcmTags.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperGcmTags.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperGcmTags.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperGcmTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTags.BorderThickness = 1F;
             this.grouperGcmTags.Controls.Add(this.gcmTagsDataGridView);
@@ -3344,7 +3344,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperGcmAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperGcmAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperGcmAdditionalHeaders.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperGcmAdditionalHeaders.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperGcmAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmAdditionalHeaders.BorderThickness = 1F;
             this.grouperGcmAdditionalHeaders.Controls.Add(this.gcmHeadersDataGridView);
@@ -3391,7 +3391,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouper4.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouper4.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouper4.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouper4.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouper4.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouper4.BorderThickness = 1F;
             this.grouper4.Controls.Add(this.dateTimePicker1);

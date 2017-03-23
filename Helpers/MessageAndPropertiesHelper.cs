@@ -20,16 +20,18 @@
 #endregion
 
 #region Using Directives
+
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.IO;
-using System.Text;
-using System.Collections.Generic;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class MessageAndPropertiesHelper
     {

@@ -25,9 +25,10 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class ZipEventDataInspector : IEventDataInspector, IDisposable
     {

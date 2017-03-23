@@ -20,20 +20,24 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Concurrent;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
-using System.Threading;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class TestSubscriptionControl : UserControl
     {

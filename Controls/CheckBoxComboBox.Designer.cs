@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class CheckBoxComboBox
     {

@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,14 +31,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
-using static System.Char;
 
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleSubscriptionControl : UserControl
     {
@@ -2495,7 +2497,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
             var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
 
-            if (IsDigit(e.KeyChar))
+            if (Char.IsDigit(e.KeyChar))
             {
                 // Digits are OK
             }

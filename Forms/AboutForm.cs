@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -27,10 +28,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Properties;
+using Microsoft.Azure.ServiceBusExplorer.Properties;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class AboutForm : Form
     {

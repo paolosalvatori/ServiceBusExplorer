@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class MetricValueControl
     {
@@ -22,7 +22,7 @@
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.lblClose = new System.Windows.Forms.Label();
             this.sessionsSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMetric = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMetric = new Grouper();
             this.metricDataGridView = new System.Windows.Forms.DataGridView();
             this.cboChartType = new System.Windows.Forms.ComboBox();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -75,7 +75,7 @@
             // 
             this.grouperMetric.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMetric.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMetric.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMetric.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMetric.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMetric.BorderThickness = 1F;
             this.grouperMetric.Controls.Add(this.metricDataGridView);

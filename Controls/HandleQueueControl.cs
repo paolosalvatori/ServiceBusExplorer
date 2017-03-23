@@ -36,12 +36,14 @@ using System.Linq;
 using System.Threading;
 using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 #endregion
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleQueueControl : UserControl
     {
@@ -187,7 +189,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         private const string SelectEntityLabelText = "Target Queue or Topic:";
         private const string KeyNameCannotBeNull = "Authorization Rule [{0}]: the KeyName cannot be null";
         private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
-        private const string MessageSentMessage = "[{0}] messages where sent to [{1}]";
         private const string FilterExpressionTitle = "Define Filter Expression";
         private const string FilterExpressionLabel = "Filter Expression";
         private const string FilterExpressionNotValidMessage = "The filter expression [{0}] is not valid: {1}";
@@ -543,9 +544,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                mainTabControl.SuspendDrawing();
+                ControlHelper.SuspendDrawing(mainTabControl);
                 mainTabControl.SuspendLayout();
-                tabPageSessions.SuspendDrawing();
+                ControlHelper.SuspendDrawing(tabPageSessions);
                 tabPageSessions.SuspendLayout();
 
                 var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
@@ -590,9 +591,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
+                ControlHelper.ResumeDrawing(mainTabControl);
                 tabPageSessions.ResumeLayout();
-                tabPageSessions.ResumeDrawing();
+                ControlHelper.ResumeDrawing(tabPageSessions);
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -1431,9 +1432,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                mainTabControl.SuspendDrawing();
+                ControlHelper.SuspendDrawing(mainTabControl);
                 mainTabControl.SuspendLayout();
-                tabPageMessages.SuspendDrawing();
+                ControlHelper.SuspendDrawing(tabPageMessages);
                 tabPageMessages.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
@@ -1551,9 +1552,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
+                ControlHelper.ResumeDrawing(mainTabControl);
                 tabPageMessages.ResumeLayout();
-                tabPageMessages.ResumeDrawing();
+                ControlHelper.ResumeDrawing(tabPageMessages);
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -1663,9 +1664,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                mainTabControl.SuspendDrawing();
+                ControlHelper.SuspendDrawing(mainTabControl);
                 mainTabControl.SuspendLayout();
-                tabPageDeadletter.SuspendDrawing();
+                ControlHelper.SuspendDrawing(tabPageDeadletter);
                 tabPageDeadletter.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
@@ -1789,9 +1790,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
+                ControlHelper.ResumeDrawing(mainTabControl);
                 tabPageDeadletter.ResumeLayout();
-                tabPageDeadletter.ResumeDrawing();
+                ControlHelper.ResumeDrawing(tabPageDeadletter);
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -3252,7 +3253,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                authorizationRulesDataGridView.SuspendDrawing();
+                ControlHelper.SuspendDrawing(authorizationRulesDataGridView);
                 authorizationRulesDataGridView.SuspendLayout();
                 if (authorizationRulesDataGridView.Columns["IssuerName"] == null ||
                     authorizationRulesDataGridView.Columns["ClaimType"] == null ||
@@ -3272,7 +3273,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             authorizationRulesDataGridView.Columns["Listen"].Width -
                             authorizationRulesDataGridView.Columns["Revision"].Width -
                             authorizationRulesDataGridView.RowHeadersWidth;
-                var verticalScrollbar = authorizationRulesDataGridView.Controls.OfType<VScrollBar>().First();
+                var verticalScrollbar = Enumerable.OfType<VScrollBar>(authorizationRulesDataGridView.Controls).First();
                 if (verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
@@ -3304,7 +3305,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 authorizationRulesDataGridView.ResumeLayout();
-                authorizationRulesDataGridView.ResumeDrawing();
+                ControlHelper.ResumeDrawing(authorizationRulesDataGridView);
             }
         }
 
@@ -3373,7 +3374,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 otherColumnsWidth += dataPointDataGridView.Columns[i].Width;
             }
             var width = dataPointDataGridView.Width - dataPointDataGridView.RowHeadersWidth - otherColumnsWidth;
-            var verticalScrollbar = dataPointDataGridView.Controls.OfType<VScrollBar>().First();
+            var verticalScrollbar = Enumerable.OfType<VScrollBar>(dataPointDataGridView.Controls).First();
             if (verticalScrollbar.Visible)
             {
                 width -= verticalScrollbar.Width;
@@ -3667,7 +3668,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(Enumerable.Cast<DataGridViewRow>(messagesDataGridView.SelectedRows)
                     .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3709,7 +3710,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 {
                     return;
                 }
-                using (var form = new MessageForm(deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(Enumerable.Cast<DataGridViewRow>(deadletterDataGridView.SelectedRows)
                     .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3725,7 +3726,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                messagesDataGridView.SuspendDrawing();
+                ControlHelper.SuspendDrawing(messagesDataGridView);
                 messagesDataGridView.SuspendLayout();
                 if (messageBindingList == null)
                 {
@@ -3781,7 +3782,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 messagesDataGridView.ResumeLayout();
-                messagesDataGridView.ResumeDrawing();
+                ControlHelper.ResumeDrawing(messagesDataGridView);
             }
         }
 
@@ -3789,7 +3790,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         {
             try
             {
-                deadletterDataGridView.SuspendDrawing();
+                ControlHelper.SuspendDrawing(deadletterDataGridView);
                 deadletterDataGridView.SuspendLayout();
                 if (deadletterBindingList == null)
                 {
@@ -3846,7 +3847,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             finally
             {
                 deadletterDataGridView.ResumeLayout();
-                deadletterDataGridView.ResumeDrawing();
+                ControlHelper.ResumeDrawing(deadletterDataGridView);
             }
         }
 
@@ -3978,7 +3979,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return;
                 }
                 var messages =
-                    messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                    Enumerable.Cast<DataGridViewRow>(messagesDataGridView.SelectedRows)
                         .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())
@@ -4062,7 +4063,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     return;
                 }
                 var messages =
-                    deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                    Enumerable.Cast<DataGridViewRow>(deadletterDataGridView.SelectedRows)
                         .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())

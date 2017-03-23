@@ -20,15 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using System.Drawing;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class ReceiveModeForm : Form
     {

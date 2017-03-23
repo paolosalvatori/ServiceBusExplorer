@@ -19,7 +19,9 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     sealed partial class ContainerForm
     {
@@ -54,8 +56,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContainerForm));
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.panelMain = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.HeaderPanel();
-            this.panelLog = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.HeaderPanel();
+            this.panelMain = new HeaderPanel();
+            this.panelLog = new HeaderPanel();
             this.lstLog = new System.Windows.Forms.ListBox();
             this.logContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -132,7 +134,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelMain.HeaderHeight = 24;
             this.panelMain.HeaderText = "Entity";
-            this.panelMain.Icon = global::Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Properties.Resources.SmallWorld;
+            this.panelMain.Icon = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.SmallWorld;
             this.panelMain.IconTransparentColor = System.Drawing.Color.White;
             this.panelMain.Location = new System.Drawing.Point(0, 0);
             this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
@@ -431,7 +433,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             // logoPictureBox
             // 
             this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.logoPictureBox.BackgroundImage = global::Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
+            this.logoPictureBox.BackgroundImage = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.logoPictureBox.Location = new System.Drawing.Point(914, 13);
             this.logoPictureBox.Name = "logoPictureBox";

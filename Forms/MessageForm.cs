@@ -20,21 +20,24 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class MessageForm : Form
     {
@@ -351,7 +354,6 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                                                                                            Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
                                                                                            null);
                         }
-                        outboundMessage.Properties.Clear();
                         var warningCollection = new ConcurrentBag<string>();
                         foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
                         {
@@ -359,7 +361,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             {
                                 if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
                                     StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                                string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
+                                    string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
                                     StringComparison.InvariantCultureIgnoreCase) == 0)
                                 {
                                     continue;

@@ -31,7 +31,7 @@ using Newtonsoft.Json.Linq;
 
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class MessageSerializationHelper
     {

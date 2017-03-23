@@ -20,12 +20,14 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     class ScrollBarHelper
     {

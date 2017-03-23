@@ -20,18 +20,20 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Design;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Drawing;
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class RegistrationForm : Form
     {

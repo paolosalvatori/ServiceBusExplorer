@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
+
 using System;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class TimeSpanExtensions
     {

@@ -19,7 +19,9 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     partial class OptionForm
     {
@@ -51,14 +53,14 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
         /// </summary>
         private void InitializeComponent()
         {
-            Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxProperties checkBoxProperties1 = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxProperties();
+            CheckBoxProperties checkBoxProperties1 = new CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
             this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.cboSelectedEntities = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.CheckBoxComboBox();
+            this.cboSelectedEntities = new CheckBoxComboBox();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.lblShowMessageCount = new System.Windows.Forms.Label();
             this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();

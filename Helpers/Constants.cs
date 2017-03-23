@@ -20,12 +20,14 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
-using Microsoft.ServiceBus.Messaging; 
+using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class Constants
     {

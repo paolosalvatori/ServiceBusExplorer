@@ -20,14 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class CustomCollectionEditor : UITypeEditor
     {

@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
+
 using System;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     /// <summary>
     /// This class contains the information of a Relay

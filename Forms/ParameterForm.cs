@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class ParameterForm : Form
     {

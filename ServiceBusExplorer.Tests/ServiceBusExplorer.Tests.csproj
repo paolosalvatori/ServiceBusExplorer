@@ -7,8 +7,8 @@
     <ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServiceBusExplorer.Tests</RootNamespace>
-    <AssemblyName>ServiceBusExplorer.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Azure.ServiceBusExplorer.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Azure.ServiceBusExplorer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

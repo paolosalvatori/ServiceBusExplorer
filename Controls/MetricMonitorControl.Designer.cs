@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class MetricMonitorControl
     {
@@ -20,15 +20,15 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.tabPageDescription = new System.Windows.Forms.TabPage();
-            this.grouperMetricRules = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMetricRules = new Grouper();
             this.dataPointDataGridView = new System.Windows.Forms.DataGridView();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageMonitor = new System.Windows.Forms.TabPage();
             this.metricMonitorRuleSplitContainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.grouperMonitorRules = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperMonitorRules = new Grouper();
             this.monitorRuleDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperEvents = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperEvents = new Grouper();
             this.eventListView = new System.Windows.Forms.ListView();
             this.stateColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.entityColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -48,7 +48,7 @@
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.btnSet = new System.Windows.Forms.Button();
             this.btnClearData = new System.Windows.Forms.Button();
-            this.txtMonitorRefreshTimeout = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
+            this.txtMonitorRefreshTimeout = new NumericTextBox();
             this.tabPageDescription.SuspendLayout();
             this.grouperMetricRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataPointDataGridView)).BeginInit();
@@ -87,7 +87,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMetricRules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMetricRules.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMetricRules.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMetricRules.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMetricRules.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMetricRules.BorderThickness = 1F;
             this.grouperMetricRules.Controls.Add(this.dataPointDataGridView);
@@ -205,7 +205,7 @@
             // 
             this.grouperMonitorRules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMonitorRules.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMonitorRules.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperMonitorRules.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperMonitorRules.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMonitorRules.BorderThickness = 1F;
             this.grouperMonitorRules.Controls.Add(this.monitorRuleDataGridView);
@@ -258,7 +258,7 @@
             // 
             this.grouperEvents.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperEvents.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperEvents.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperEvents.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperEvents.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperEvents.BorderThickness = 1F;
             this.grouperEvents.Controls.Add(this.eventListView);

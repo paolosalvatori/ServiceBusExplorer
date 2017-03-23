@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Drawing.Design;
 using System.Collections;
-using System.ComponentModel; 
+using System.ComponentModel;
+using System.Drawing.Design;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
   internal class PropertyValueUIService : IPropertyValueUIService
   {

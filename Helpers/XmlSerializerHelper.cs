@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.IO;
 using System.Text;
-using System.Xml.Serialization; 
+using System.Xml.Serialization;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class XmlSerializerHelper
     {

@@ -20,13 +20,16 @@
 #endregion
 
 #region Using Directives
+
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using System.Drawing;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public enum GetRegistrationsMethod
     {

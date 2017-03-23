@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class PropertyComparer<T> : IComparer<T>
     {

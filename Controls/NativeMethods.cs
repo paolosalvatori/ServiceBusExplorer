@@ -20,12 +20,14 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices; 
+using System.Runtime.InteropServices;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     internal static class NativeMethods
     {

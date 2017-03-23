@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.Collections.Generic;
 using System.Xml.Serialization;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [XmlRoot(ElementName = "MonitorRules", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
     [XmlType(TypeName = "MonitorRules", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

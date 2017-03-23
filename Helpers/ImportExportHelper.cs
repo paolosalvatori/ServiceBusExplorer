@@ -20,6 +20,7 @@
 #endregion
 
 #region References
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,11 +34,13 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     /// <summary>
     ///  This class is used to serialize and deserialize XML request.

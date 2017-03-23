@@ -20,16 +20,19 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Drawing;
-using System.Linq;
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Design;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class CustomTextEditor : UITypeEditor
     {

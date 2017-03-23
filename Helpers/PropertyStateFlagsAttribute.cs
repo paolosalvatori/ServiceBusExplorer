@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
-using System; 
+
+using System;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class PropertyStateFlagsAttribute : Attribute

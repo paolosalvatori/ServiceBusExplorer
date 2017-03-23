@@ -19,7 +19,9 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     partial class RegistrationForm
     {
@@ -54,7 +56,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegistrationForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grouperCaption = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperCaption = new Grouper();
             this.lblRegistration = new System.Windows.Forms.Label();
             this.registrationPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.cboRegistrationType = new System.Windows.Forms.ComboBox();
@@ -105,7 +107,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCaption.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperCaption.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCaption.BorderThickness = 1F;
             this.grouperCaption.Controls.Add(this.lblRegistration);

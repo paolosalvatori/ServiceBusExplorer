@@ -20,14 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Text; 
+using System.Drawing.Text;
+using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
 
 	#region Declaration

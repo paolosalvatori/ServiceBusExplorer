@@ -25,7 +25,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Controls
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public class ReadOnlyPropertyGrid : PropertyGrid
     {

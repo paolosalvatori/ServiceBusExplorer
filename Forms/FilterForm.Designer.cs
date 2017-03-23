@@ -19,7 +19,9 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     partial class FilterForm
     {
@@ -57,9 +59,9 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             this.btnCancel = new System.Windows.Forms.Button();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.btnClear = new System.Windows.Forms.Button();
-            this.grouperFilter = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperFilter = new Grouper();
             this.cboMessageCountOperator = new System.Windows.Forms.ComboBox();
-            this.txtMessageCount = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.NumericTextBox();
+            this.txtMessageCount = new NumericTextBox();
             this.lblMessageCount = new System.Windows.Forms.Label();
             this.lblTimeFilters = new System.Windows.Forms.Label();
             this.txtStartsWith = new System.Windows.Forms.TextBox();
@@ -150,7 +152,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilter.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilter.BorderThickness = 1F;
             this.grouperFilter.Controls.Add(this.cboMessageCountOperator);

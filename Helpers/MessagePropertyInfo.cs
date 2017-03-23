@@ -20,14 +20,16 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [XmlType(TypeName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
     [XmlRoot(ElementName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer", IsNullable = false)]

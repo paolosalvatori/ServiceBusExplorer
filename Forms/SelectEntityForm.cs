@@ -20,14 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class SelectEntityForm : Form
     {

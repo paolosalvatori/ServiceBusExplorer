@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
-using System.Collections.Generic; 
+
+using System.Collections.Generic;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     internal class PropertyDescriptorList : List<CustomPropertyDescriptor>
     {

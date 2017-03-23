@@ -1,4 +1,4 @@
-﻿namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class HandleRuleControl
     {
@@ -19,15 +19,15 @@
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.grouperName = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperName = new Grouper();
             this.txtName = new System.Windows.Forms.TextBox();
-            this.grouperFilter = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperFilter = new Grouper();
             this.txtSqlFilterExpression = new System.Windows.Forms.TextBox();
-            this.grouperAction = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperAction = new Grouper();
             this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
-            this.grouperIsDefault = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperIsDefault = new Grouper();
             this.checkBoxDefault = new System.Windows.Forms.CheckBox();
-            this.grouperCreatedAt = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperCreatedAt = new Grouper();
             this.txtCreatedAt = new System.Windows.Forms.TextBox();
             this.grouperName.SuspendLayout();
             this.grouperFilter.SuspendLayout();
@@ -80,7 +80,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperName.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperName.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperName.BorderThickness = 1F;
             this.grouperName.Controls.Add(this.txtName);
@@ -117,7 +117,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilter.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilter.BorderThickness = 1F;
             this.grouperFilter.Controls.Add(this.txtSqlFilterExpression);
@@ -157,7 +157,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAction.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAction.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperAction.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperAction.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAction.BorderThickness = 1F;
             this.grouperAction.Controls.Add(this.txtSqlFilterAction);
@@ -195,7 +195,7 @@
             this.grouperIsDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperIsDefault.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperIsDefault.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperIsDefault.BorderThickness = 1F;
             this.grouperIsDefault.Controls.Add(this.checkBoxDefault);
@@ -233,7 +233,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCreatedAt.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperCreatedAt.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCreatedAt.BorderThickness = 1F;
             this.grouperCreatedAt.Controls.Add(this.txtCreatedAt);

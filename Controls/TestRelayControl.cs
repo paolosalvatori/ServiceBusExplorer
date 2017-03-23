@@ -20,27 +20,30 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.IO;
-using System.ServiceModel.Web;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Drawing;
-using System.Text;
-using System.Globalization;
-using System.Linq;
 using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Threading;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Web;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class TestRelayControl : UserControl
     {

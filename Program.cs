@@ -24,9 +24,12 @@ using System;
 using System.Threading;
 using System.Globalization;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer
 {
     static class Program
     {

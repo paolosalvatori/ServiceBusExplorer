@@ -14,15 +14,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms; 
+using System.Windows.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
 	/// <summary>A special custom rounding GroupBox with many painting features.</summary>
 	[ToolboxBitmap(typeof(Grouper), "CodeVendor.Controls.Grouper.bmp")]

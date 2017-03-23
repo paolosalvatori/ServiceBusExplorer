@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,10 +30,11 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
-using System.Resources; 
+using System.Resources;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class CustomPropertyDescriptor : PropertyDescriptor
     {

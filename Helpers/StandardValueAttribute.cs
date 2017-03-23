@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection; 
+using System.Reflection;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class StandardValueAttribute : Attribute

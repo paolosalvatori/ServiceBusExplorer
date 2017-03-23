@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging; 
+using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class EventProcessorCheckpointManager : ICheckpointManager
     {

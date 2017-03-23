@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Xml; 
+using System.Xml;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class CustomDataContractBinarySerializer : XmlObjectSerializer
     {

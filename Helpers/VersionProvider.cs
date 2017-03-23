@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     static class VersionProvider
     {

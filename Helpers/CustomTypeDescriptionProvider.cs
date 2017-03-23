@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.ComponentModel; 
+using System.ComponentModel;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     internal class CustomTypeDescriptionProvider : TypeDescriptionProvider
     {

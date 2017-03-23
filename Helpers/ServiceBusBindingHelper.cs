@@ -20,15 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel.Channels;
 using Microsoft.ServiceBus;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class ServiceBusBindingHelper
     {

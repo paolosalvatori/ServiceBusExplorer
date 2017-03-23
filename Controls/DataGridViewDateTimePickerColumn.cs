@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Windows.Forms; 
+using System.Windows.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     class DataGridViewDateTimePickerColumn : DataGridViewColumn
     {

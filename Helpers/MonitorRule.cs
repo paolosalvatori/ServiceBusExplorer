@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Xml.Serialization;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public enum MonitorState
     {

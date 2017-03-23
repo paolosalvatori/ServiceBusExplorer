@@ -20,13 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using Microsoft.Azure.NotificationHubs.Messaging;
 using System.Linq;
+using Microsoft.Azure.NotificationHubs.Messaging;
+
 #endregion
 
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class NotificationHubAuthorizationRuleWrapper
     {

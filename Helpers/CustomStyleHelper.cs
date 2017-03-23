@@ -20,12 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
 	/// <summary>
 	/// Summary description for DrawCustomStyleHelper.

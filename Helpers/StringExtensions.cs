@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
-using System.Text;
+
 using System.IO;
+using System.Text;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class StringExtensions
     {

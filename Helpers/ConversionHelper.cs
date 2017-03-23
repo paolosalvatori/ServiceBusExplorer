@@ -20,14 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
-using System.Xml;
-using System.IO;
 using System.Collections.Generic;
+using System.Xml;
+
 #endregion
 
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class ConversionHelper
     {

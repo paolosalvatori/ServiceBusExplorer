@@ -1147,7 +1147,7 @@
 <div class="title"><span>C#</span></div>
 <div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">csharp</span>
-<pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+<pre class="hidden">namespace Microsoft.Azure.ServiceBusExplorer
 {
     public interface IBrokeredMessageGenerator
     {
@@ -1156,7 +1156,7 @@
     }
 }</pre>
 <div class="preview">
-<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.WindowsAzure.CAT.ServiceBusExplorer&nbsp;
+<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.Azure.ServiceBusExplorer&nbsp;
 {&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs__keyword">public</span>&nbsp;<span class="cs__keyword">interface</span>&nbsp;IBrokeredMessageGenerator&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;
@@ -1182,9 +1182,9 @@
   ...
   &lt;brokeredMessageGenerators&gt;
     &lt;add key="OnOffDeviceBrokeredMessageGenerator" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.OnOffDeviceBrokeredMessageGenerator,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.OnOffDeviceBrokeredMessageGenerator,ServiceBusExplorer" /&gt;
     &lt;add key="ThresholdDeviceBrokeredMessageGenerator" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ThresholdDeviceBrokeredMessageGenerator,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.ThresholdDeviceBrokeredMessageGenerator,ServiceBusExplorer" /&gt;
   &lt;/brokeredMessageGenerators&gt;
   ...
 &lt;/configuration&gt;</pre>
@@ -1194,9 +1194,9 @@
 </span>&nbsp;&nbsp;...&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_start">&lt;brokeredMessageGenerators</span><span class="xml__tag_start">&gt;&nbsp;
 </span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"OnOffDeviceBrokeredMessageGenerator"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.OnOffDeviceBrokeredMessageGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.OnOffDeviceBrokeredMessageGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"ThresholdDeviceBrokeredMessageGenerator"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ThresholdDeviceBrokeredMessageGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.ThresholdDeviceBrokeredMessageGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_end">&lt;/brokeredMessageGenerators&gt;</span>&nbsp;
 &nbsp;&nbsp;...&nbsp;
 <span class="xml__tag_end">&lt;/configuration&gt;</span></pre>
@@ -1281,7 +1281,7 @@ Properties:&nbsp;
 <div class="title"><span>C#</span></div>
 <div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">csharp</span>
-<pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+<pre class="hidden">namespace Microsoft.Azure.ServiceBusExplorer
 {
     public interface IBrokeredMessageInspector
     {
@@ -1292,7 +1292,7 @@ Properties:&nbsp;
     }
 }</pre>
 <div class="preview">
-<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.WindowsAzure.CAT.ServiceBusExplorer&nbsp;
+<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.Azure.ServiceBusExplorer&nbsp;
 {&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs__keyword">public</span>&nbsp;<span class="cs__keyword">interface</span>&nbsp;IBrokeredMessageInspector&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;
@@ -1319,9 +1319,9 @@ Properties:&nbsp;
   ...
   &lt;brokeredMessageInspectors&gt;
     &lt;add key="LogBrokeredMessageInspector" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.LogBrokeredMessageInspector,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.LogBrokeredMessageInspector,ServiceBusExplorer" /&gt;
     &lt;add key="ZipBrokeredMessageInspector" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ZipBrokeredMessageInspector,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.ZipBrokeredMessageInspector,ServiceBusExplorer" /&gt;
   &lt;/brokeredMessageInspectors&gt;
  ...
 &lt;/configuration&gt;</pre>
@@ -1331,9 +1331,9 @@ Properties:&nbsp;
 </span>&nbsp;&nbsp;...&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_start">&lt;brokeredMessageInspectors</span><span class="xml__tag_start">&gt;&nbsp;
 </span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"LogBrokeredMessageInspector"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.LogBrokeredMessageInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.LogBrokeredMessageInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"ZipBrokeredMessageInspector"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ZipBrokeredMessageInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.ZipBrokeredMessageInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_end">&lt;/brokeredMessageInspectors&gt;</span>&nbsp;
 &nbsp;...&nbsp;
 <span class="xml__tag_end">&lt;/configuration&gt;</span></pre>
@@ -1378,7 +1378,7 @@ Properties:&nbsp;
 <div class="title"><span>C#</span></div>
 <div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">csharp</span>
-<pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+<pre class="hidden">namespace Microsoft.Azure.ServiceBusExplorer
 {
     public interface IEventDataGenerator
     {
@@ -1387,7 +1387,7 @@ Properties:&nbsp;
     }
 }</pre>
 <div class="preview">
-<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.WindowsAzure.CAT.ServiceBusExplorer&nbsp;
+<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.Azure.ServiceBusExplorer&nbsp;
 {&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs__keyword">public</span>&nbsp;<span class="cs__keyword">interface</span>&nbsp;IEventDataGenerator&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;
@@ -1412,9 +1412,9 @@ Properties:&nbsp;
   ...
   &lt;eventDataInspectors&gt;
     &lt;add key="LogEventDataInspector" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.LogEventDataInspector,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.LogEventDataInspector,ServiceBusExplorer" /&gt;
     &lt;add key="ZipEventDataInspector" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ZipEventDataInspector,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.ZipEventDataInspector,ServiceBusExplorer" /&gt;
   &lt;/eventDataInspectors&gt;
   ...
 &lt;/configuration&gt;</pre>
@@ -1424,9 +1424,9 @@ Properties:&nbsp;
 </span>&nbsp;&nbsp;...&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_start">&lt;eventDataInspectors</span><span class="xml__tag_start">&gt;&nbsp;
 </span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"LogEventDataInspector"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.LogEventDataInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.LogEventDataInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"ZipEventDataInspector"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ZipEventDataInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.ZipEventDataInspector,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_end">&lt;/eventDataInspectors&gt;</span>&nbsp;
 &nbsp;&nbsp;...&nbsp;
 <span class="xml__tag_end">&lt;/configuration&gt;</span></pre>
@@ -1507,7 +1507,7 @@ Properties:&nbsp;
 <div class="title"><span>C#</span></div>
 <div class="pluginLinkHolder"><span class="pluginEditHolderLink">Edit</span>|<span class="pluginRemoveHolderLink">Remove</span></div>
 <span class="hidden">csharp</span>
-<pre class="hidden">namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+<pre class="hidden">namespace Microsoft.Azure.ServiceBusExplorer
 {
     public interface IEventDataInspector
     {
@@ -1518,7 +1518,7 @@ Properties:&nbsp;
     }
 }</pre>
 <div class="preview">
-<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.WindowsAzure.CAT.ServiceBusExplorer&nbsp;
+<pre class="csharp"><span class="cs__keyword">namespace</span>&nbsp;Microsoft.Azure.ServiceBusExplorer&nbsp;
 {&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs__keyword">public</span>&nbsp;<span class="cs__keyword">interface</span>&nbsp;IEventDataInspector&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;
@@ -1548,9 +1548,9 @@ Properties:&nbsp;
   ...
   &lt;eventDataGenerators&gt;
     &lt;add key="OnOffDeviceEventDataGenerator" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.OnOffDeviceEventDataGenerator,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.OnOffDeviceEventDataGenerator,ServiceBusExplorer" /&gt;
     &lt;add key="ThresholdDeviceEventDataGenerator" 
-         value="Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ThresholdDeviceEventDataGenerator,ServiceBusExplorer" /&gt;
+         value="Microsoft.Azure.ServiceBusExplorer.ThresholdDeviceEventDataGenerator,ServiceBusExplorer" /&gt;
   &lt;/eventDataGenerators&gt;
   ...
 &lt;/configuration&gt;</pre>
@@ -1560,9 +1560,9 @@ Properties:&nbsp;
 </span>&nbsp;&nbsp;...&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_start">&lt;eventDataGenerators</span><span class="xml__tag_start">&gt;&nbsp;
 </span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"OnOffDeviceEventDataGenerator"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.OnOffDeviceEventDataGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.OnOffDeviceEventDataGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__tag_start">&lt;add</span>&nbsp;<span class="xml__attr_name">key</span>=<span class="xml__attr_value">"ThresholdDeviceEventDataGenerator"</span>&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.WindowsAzure.CAT.ServiceBusExplorer.ThresholdDeviceEventDataGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml__attr_name">value</span>=<span class="xml__attr_value">"Microsoft.Azure.ServiceBusExplorer.ThresholdDeviceEventDataGenerator,ServiceBusExplorer"</span>&nbsp;<span class="xml__tag_start">/&gt;</span>&nbsp;
 &nbsp;&nbsp;<span class="xml__tag_end">&lt;/eventDataGenerators&gt;</span>&nbsp;
 &nbsp;&nbsp;...&nbsp;
 <span class="xml__tag_end">&lt;/configuration&gt;</span></pre>

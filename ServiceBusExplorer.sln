@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B59933A5-4AE0-4340-9102-578619A93341}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ServiceBusExplorer.Setup", "ServiceBusExplorer.Setup\ServiceBusExplorer.Setup.vdproj", "{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}"

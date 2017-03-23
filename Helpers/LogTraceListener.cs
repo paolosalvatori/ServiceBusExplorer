@@ -20,10 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.Diagnostics;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     #region Delegates
     public delegate void WriteToLogDelegate(string message, bool async = true);

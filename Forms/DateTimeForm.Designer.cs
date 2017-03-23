@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Controls;
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     partial class DateTimeForm
     {
@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DateTimeForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grouperCaption = new Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper();
+            this.grouperCaption = new Grouper();
             this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.grouperCaption.SuspendLayout();
             this.SuspendLayout();
@@ -104,7 +104,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCaption.BackgroundGradientMode = Microsoft.WindowsAzure.CAT.ServiceBusExplorer.Grouper.GroupBoxGradientMode.None;
+            this.grouperCaption.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCaption.BorderThickness = 1F;
             this.grouperCaption.Controls.Add(this.dateTimePicker);

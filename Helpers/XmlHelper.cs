@@ -25,9 +25,10 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     static class XmlHelper
     {

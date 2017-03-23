@@ -20,15 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [Serializable]
     [XmlType(TypeName = "eventData", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

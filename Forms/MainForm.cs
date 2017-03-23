@@ -40,11 +40,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using ConnectivityMode = Microsoft.ServiceBus.ConnectivityMode;
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class MainForm : Form
     {
@@ -1649,7 +1651,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                             serviceBusTreeView.SelectedNode.SelectedImageIndex = GreyQueueIconIndex;
                         }
                         serviceBusTreeView.SelectedNode.Tag = queueDescription;
-                        var control = panelMain.Controls[0] as HandleQueueControl;
+                        var control = panelMain.Controls[0] as Controls.HandleQueueControl;
                         if (control != null)
                         {
                             control.RefreshData(queueDescription);
@@ -4944,7 +4946,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         private void ShowQueue(QueueDescription queue, string path)
         {
-            HandleQueueControl queueControl = null;
+            Controls.HandleQueueControl queueControl = null;
 
             try
             {
@@ -4955,8 +4957,8 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path);
-                queueControl.SuspendDrawing();
+                queueControl = new Controls.HandleQueueControl(WriteToLog, serviceBusHelper, queue, path);
+                ControlHelper.SuspendDrawing(queueControl);
                 queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(queueControl);
                 SetControlSize(queueControl);
@@ -4973,7 +4975,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 panelMain.ResumeDrawing();
                 if (queueControl != null)
                 {
-                    queueControl.ResumeDrawing();
+                    ControlHelper.ResumeDrawing(queueControl);
                 }
             }
         }
@@ -6178,7 +6180,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     // queue purge was requested
                     if (sender is TreeView)
                     {
-                        var queueControl = panelMain.Controls[0] as HandleQueueControl;
+                        var queueControl = panelMain.Controls[0] as Controls.HandleQueueControl;
                         if (queueControl != null)
                         {
                             var queueDescription = ((TreeView) sender).SelectedNode.Tag as QueueDescription;
@@ -6194,7 +6196,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     // Queue Node
                     if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                     {
-                        var control = panelMain.Controls[0] as HandleQueueControl;
+                        var control = panelMain.Controls[0] as Controls.HandleQueueControl;
                         if (control != null)
                         {
                             if (deadletter)
@@ -6410,7 +6412,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Queue Node
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
-                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    var control = panelMain.Controls[0] as Controls.HandleQueueControl;
                     if (control != null)
                     {
                         control.GetMessageSessions();
@@ -6791,7 +6793,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Queue Node
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
-                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    var control = panelMain.Controls[0] as Controls.HandleQueueControl;
                     if (control != null)
                     {
                         await control.PurgeMessagesAsync();
@@ -6831,7 +6833,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                 // Queue Node
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
-                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    var control = panelMain.Controls[0] as Controls.HandleQueueControl;
                     if (control != null)
                     {
                         await control.PurgeDeadletterQueueMessagesAsync();

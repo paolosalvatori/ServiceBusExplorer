@@ -20,10 +20,12 @@
 #endregion
 
 #region Using Directives
-using System.Drawing; 
+
+using System.Drawing;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     internal struct GripBounds
     {

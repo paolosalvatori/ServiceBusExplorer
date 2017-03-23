@@ -20,14 +20,16 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     /// <summary>
     /// This class contains a methods to implement retry logic

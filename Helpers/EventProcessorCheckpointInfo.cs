@@ -20,14 +20,15 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.ServiceBus.Messaging;
-using Newtonsoft.Json; 
+using Newtonsoft.Json;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [Serializable]
     public class EventProcessorCheckpointInfo

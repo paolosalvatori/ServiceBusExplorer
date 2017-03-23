@@ -20,15 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Azure.NotificationHubs;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class RegistrationInfo : INotifyPropertyChanged
     {

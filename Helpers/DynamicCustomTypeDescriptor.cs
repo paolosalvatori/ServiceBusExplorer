@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,10 +28,11 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Linq;
 using System.Reflection;
-using System.Resources; 
+using System.Resources;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class DynamicCustomTypeDescriptor : CustomTypeDescriptor
     {

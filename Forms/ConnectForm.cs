@@ -32,6 +32,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -39,7 +41,7 @@ using Microsoft.ServiceBus.Messaging;
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class ConnectForm : Form
     {
@@ -161,7 +163,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
 
         public List<string> SelectedEntities
         {
-            get { return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList(); }
+            get { return Enumerable.Where<CheckBoxComboBoxItem>(cboSelectedEntities.CheckBoxItems, i => i.Checked).Select(i => i.Text).ToList(); }
         }
 
         #endregion
@@ -263,8 +265,7 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     cn = cn.Substring(0, cn.Length - 1);
                 }
                 var parameters =
-                    cn.Split(';')
-                        .Where(p => p.Contains('='))
+                    Enumerable.Where<string>(cn.Split(';'), p => Enumerable.Contains(p, '='))
                         .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
                             s => s.Substring(s.IndexOf('=') + 1));
                 if (!parameters.ContainsKey(ConnectionStringTransportType))
@@ -378,13 +379,12 @@ namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
                     cn = cn.Substring(0, cn.Length - 1);
                 }
                 var parameters =
-                    cn.Split(';')
-                        .Where(p => p.Contains('='))
+                    Enumerable.Where<string>(cn.Split(';'), p => Enumerable.Contains(p, '='))
                         .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
                             s => s.Substring(s.IndexOf('=') + 1));
                 var value = parameters.ContainsKey(ConnectionStringTransportType)
                     ? cn.Replace(parameters[ConnectionStringTransportType], cboTransportType.SelectedItem.ToString())
-                    : cn + string.Format(ConnectionStringTransportTypeFormat, cboTransportType.SelectedItem);
+                    : cn + string.Format((string) ConnectionStringTransportTypeFormat, (object) cboTransportType.SelectedItem);
                 if (parameters.ContainsKey(ConnectionStringRuntimePort))
                 {
                     if (!(cboTransportType.SelectedItem is TransportType))

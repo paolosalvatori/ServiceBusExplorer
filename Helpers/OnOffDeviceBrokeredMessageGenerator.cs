@@ -29,9 +29,10 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     [Serializable]
     [XmlType(TypeName = "event", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

@@ -20,12 +20,14 @@
 #endregion
 
 #region Using Directives
+
 using System.Collections;
 using System.Windows.Forms;
-using System.Windows.Forms.Design; 
+using System.Windows.Forms.Design;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
 	/// <summary>
 	/// The Designer for the <see cref="CustomTrackBar"/>.

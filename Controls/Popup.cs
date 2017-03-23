@@ -20,16 +20,17 @@
 #endregion
 
 #region Using Directives
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Security.Permissions;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Windows.Forms;
 using VS = System.Windows.Forms.VisualStyles; 
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     /// <summary>
     /// Represents a pop-up window.

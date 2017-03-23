@@ -20,12 +20,14 @@
 #endregion
 
 #region Using Directives
+
 using System.Globalization;
 using System.Text;
 using System.Xml;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class WindowsPhoneNotificationXmlBuilder
     {

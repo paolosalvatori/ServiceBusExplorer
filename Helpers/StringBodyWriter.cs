@@ -20,11 +20,13 @@
 #endregion
 
 #region Using Directives
+
 using System.ServiceModel.Channels;
 using System.Xml;
+
 #endregion
 
-namespace Microsoft.WindowsAzure.CAT.ServiceBusExplorer
+namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     class StringBodyWriter : BodyWriter
     {
