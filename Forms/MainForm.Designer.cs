@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -2714,7 +2715,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.KeyPreview = true;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Service Bus Explorer 3.4.6";
+            this.Text = "Service Bus Explorer " + VersionProvider.GetVersion(); 
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
