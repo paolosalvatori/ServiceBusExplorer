@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -63,9 +63,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
+            //
             // lblCorporation
-            // 
+            //
             this.lblCorporation.AutoSize = true;
             this.lblCorporation.BackColor = System.Drawing.Color.Transparent;
             this.lblCorporation.Location = new System.Drawing.Point(368, 360);
@@ -73,9 +73,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblCorporation.Size = new System.Drawing.Size(107, 13);
             this.lblCorporation.TabIndex = 39;
             this.lblCorporation.Text = "Microsoft Corporation";
-            // 
+            //
             // lblName
-            // 
+            //
             this.lblName.AutoSize = true;
             this.lblName.BackColor = System.Drawing.Color.Transparent;
             this.lblName.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -84,19 +84,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblName.Size = new System.Drawing.Size(117, 16);
             this.lblName.TabIndex = 37;
             this.lblName.Text = "Paolo Salvatori";
-            // 
+            //
             // label3
-            // 
+            //
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Location = new System.Drawing.Point(368, 320);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 42;
-            this.label3.Text = "Version: 4.0.0";
+            this.label3.Text = "Version: 3.4.6";
             // 
             // label2
-            // 
+            //
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -105,9 +105,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label2.Size = new System.Drawing.Size(158, 16);
             this.label2.TabIndex = 41;
             this.label2.Text = "Service Bus Explorer";
-            // 
+            //
             // mailLinkLabel
-            // 
+            //
             this.mailLinkLabel.AutoSize = true;
             this.mailLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.mailLinkLabel.Location = new System.Drawing.Point(424, 385);
@@ -117,9 +117,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mailLinkLabel.TabStop = true;
             this.mailLinkLabel.Text = "paolos@microsoft.com";
             this.mailLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.mailLinkLabel_LinkClicked);
-            // 
+            //
             // blogLinkLabel
-            // 
+            //
             this.blogLinkLabel.AutoSize = true;
             this.blogLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.blogLinkLabel.Location = new System.Drawing.Point(424, 401);
@@ -129,9 +129,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.blogLinkLabel.TabStop = true;
             this.blogLinkLabel.Text = "http://blogs.msdn.com/paolos";
             this.blogLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.blogLinkLabel_LinkClicked);
-            // 
+            //
             // twitterLinkLabel
-            // 
+            //
             this.twitterLinkLabel.AutoSize = true;
             this.twitterLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.twitterLinkLabel.Location = new System.Drawing.Point(424, 417);
@@ -141,9 +141,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.twitterLinkLabel.TabStop = true;
             this.twitterLinkLabel.Text = "https://twitter.com/babosbird";
             this.twitterLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.twitterLinkLabel_LinkClicked);
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -152,9 +152,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 46;
             this.label1.Text = "Email:";
-            // 
+            //
             // label4
-            // 
+            //
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -163,9 +163,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label4.Size = new System.Drawing.Size(39, 13);
             this.label4.TabIndex = 47;
             this.label4.Text = "Blog:";
-            // 
+            //
             // label5
-            // 
+            //
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -174,9 +174,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 48;
             this.label5.Text = "Twitter:";
-            // 
+            //
             // AboutForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -201,7 +201,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " About Service Bus Explorer 4.0.0";
+            this.Text = " About Service Bus Explorer 3.4.6";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AboutForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
