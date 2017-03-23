@@ -20,7 +20,7 @@ platform: Any CPU
 configuration: Release
 
 # versioning
-version: '3.4.{build}'
+version: '4.0.{build}'
 
 assembly_info:
   patch: true
