@@ -383,10 +383,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public async Task<long> PurgeMessagesAsync()
         {
+            var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
+            var result = MessageBox.Show(this, $"Would you like to purge {entityPath}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+            if (result != DialogResult.Yes)
+            {
+                return 0;
+            }
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                       subscriptionWrapper.SubscriptionDescription.Name);
+            
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
             var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
             var count = 0;
@@ -427,10 +433,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
+            var entityPath = SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
+            var result = MessageBox.Show(this, $"Would you like to purge {entityPath}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+            if (result != DialogResult.Yes)
+            {
+                return 0;
+            }
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var entityPath = SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                     subscriptionWrapper.SubscriptionDescription.Name);
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
             var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
             var count = 0;
