@@ -6227,7 +6227,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deadletter)
                             {
-                                control.GetDeadletterMessages();
+                                control.GetDeadletterMessages(false);
                             }
                             else
                             {

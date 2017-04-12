@@ -9,7 +9,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             var asm = Assembly.GetExecutingAssembly();
             var versionInfo = FileVersionInfo.GetVersionInfo(asm.Location);
-            return $"{versionInfo.ProductMajorPart}.{versionInfo.ProductMinorPart}.{versionInfo.ProductBuildPart}";
+            return $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
         }
     }
 }
