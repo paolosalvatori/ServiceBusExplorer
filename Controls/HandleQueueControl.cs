@@ -408,6 +408,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public async Task<long> PurgeMessagesAsync()
         {
+            var result = MessageBox.Show(this, $"Would you like to purge {queueDescription.Path}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+            if (result != DialogResult.Yes)
+            {
+                return 0;
+            }
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
@@ -445,20 +451,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             stopwatch.Stop();
             MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-            writeToLog(
-                $"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+            writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
             return count;
         }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
+            var dlqPath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
+            var result = MessageBox.Show(this, $"Would you like to purge {dlqPath}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+            if (result != DialogResult.Yes)
+            {
+                return 0;
+            }
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-            var receiver =
-                await
-                    messagingFactory.CreateMessageReceiverAsync(
-                        QueueClient.FormatDeadLetterPath(queueDescription.Path), ReceiveMode.ReceiveAndDelete);
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete);
             var count = 0;
             while (true)
             {
@@ -491,8 +500,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             stopwatch.Stop();
             MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-            writeToLog(
-                $"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+            writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
             return count;
         }
 
