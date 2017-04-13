@@ -3035,9 +3035,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 var eventHubListNode = FindNode(EventHubEntities, rootNode);
                 var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
                 var relayServiceListNode = FindNode(RelayEntities, rootNode);
-                var menuItem = createIoTHubListenerMenuItem;
                 actionsToolStripMenuItem.DropDownItems.Clear();
-                actionsToolStripMenuItem.DropDownItems.Add(menuItem);
+                actionsToolStripMenuItem.DropDownItems.Add(createIoTHubListenerMenuItem);
+                actionsToolStripMenuItem.DropDownItems.Add(createEventHubListenerMenuItem);
                 // Root Node
                 if (node == rootNode)
                 {
@@ -5660,45 +5660,47 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private List<ToolStripItem> CloneItems(ToolStripItemCollection collection)
         {
             var list = new List<ToolStripItem>();
-            if (collection != null)
+            if (collection == null)
             {
-                list.Add(new ToolStripSeparator());
-                var enumerable = collection.Cast<ToolStripItem>();
-                foreach (var toolStripItem in enumerable)
+                return list;
+            }
+            list.Add(new ToolStripSeparator());
+            var enumerable = collection.Cast<ToolStripItem>();
+            foreach (var toolStripItem in enumerable)
+            {
+                if (toolStripItem is ToolStripSeparator)
                 {
-                    if (toolStripItem is ToolStripSeparator)
+                    list.Add(new ToolStripSeparator());
+                }
+                else
+                {
+                    var toolStripMenuItem = toolStripItem as ToolStripMenuItem;
+                    if (toolStripMenuItem == null)
                     {
-                        list.Add(new ToolStripSeparator());
+                        continue;
                     }
-                    else
+                    var item = new ToolStripMenuItem
                     {
-                        var toolStripMenuItem = toolStripItem as ToolStripMenuItem;
-                        if (toolStripMenuItem != null)
-                        {
-                            var item = new ToolStripMenuItem
-                            {
-                                Name = toolStripMenuItem.Name,
-                                Size = toolStripMenuItem.Size,
-                                Text = toolStripMenuItem.Text,
-                                ToolTipText = toolStripMenuItem.ToolTipText,
-                                ShortcutKeys = toolStripMenuItem.ShortcutKeys,
-                                ShortcutKeyDisplayString = toolStripMenuItem.ShortcutKeyDisplayString,
-                                ShowShortcutKeys = toolStripMenuItem.ShowShortcutKeys
-                            };
-                            var events = (EventHandlerList)eventsPropertyInfo.GetValue(toolStripMenuItem, null);
-                            var secret = eventClickFieldInfo.GetValue(null);
-                            var handlers = events[secret];
-                            events = (EventHandlerList)eventsPropertyInfo.GetValue(item, null);
-                            events.AddHandler(secret, handlers);
-                            list.Add(item);
-                        }
-                    }
+                        Name = toolStripMenuItem.Name,
+                        Size = toolStripMenuItem.Size,
+                        Text = toolStripMenuItem.Text,
+                        ToolTipText = toolStripMenuItem.ToolTipText,
+                        ShortcutKeys = toolStripMenuItem.ShortcutKeys,
+                        ShortcutKeyDisplayString = toolStripMenuItem.ShortcutKeyDisplayString,
+                        ShowShortcutKeys = toolStripMenuItem.ShowShortcutKeys
+                    };
+                    var events = (EventHandlerList)eventsPropertyInfo.GetValue(toolStripMenuItem, null);
+                    var secret = eventClickFieldInfo.GetValue(null);
+                    var handlers = events[secret];
+                    events = (EventHandlerList)eventsPropertyInfo.GetValue(item, null);
+                    events.AddHandler(secret, handlers);
+                    list.Add(item);
                 }
             }
             return list;
         }
 
-        private void AddImportAndSeparatorMenuItems(List<ToolStripItem> list)
+        private void AddImportAndSeparatorMenuItems(ICollection<ToolStripItem> list)
         {
             if (list == null)
             {
@@ -6197,59 +6199,71 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                if (serviceBusTreeView.SelectedNode != null)
+                if (serviceBusTreeView.SelectedNode == null)
                 {
-                    // queue purge was requested
-                    var view = sender as TreeView;
-                    if (view != null)
+                    return;
+                }
+                // queue purge was requested
+                var view = sender as TreeView;
+                if (view != null)
+                {
+                    var queueControl = panelMain.Controls[0] as HandleQueueControl;
+                    if (queueControl != null)
                     {
-                        var queueControl = panelMain.Controls[0] as HandleQueueControl;
-                        if (queueControl != null)
+                        var queueDescription = view.SelectedNode.Tag as QueueDescription;
+                        if (queueDescription != null)
                         {
-                            var queueDescription = view.SelectedNode.Tag as QueueDescription;
-                            if (queueDescription != null)
-                            {
-                                queueControl.PurgeMessages(Convert.ToInt32(queueDescription.MessageCount));
-                            }
-                            return;
+                            queueControl.PurgeMessages(Convert.ToInt32(queueDescription.MessageCount));
+                        }
+                        return;
+                    }
+                }
+
+                var text = ((ToolStripMenuItem)sender).Text;
+                var deadletter = string.Compare(text, queueReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0 ||
+                                 string.Compare(text, subscriptionReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0;
+
+                var transferDeadletter = string.Compare(text, queueReceiveTransferDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0 ||
+                                         string.Compare(text, subscriptionReceiveTransferDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0;
+
+                // Queue Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    if (control != null)
+                    {
+                        if (deadletter)
+                        {
+                            control.GetDeadletterMessages();
+                        }
+                        else if (transferDeadletter)
+                        {
+                            control.GetTransferDeadletterMessages();
+                        }
+                        else
+                        {
+                            control.GetMessages();
                         }
                     }
+                }
 
-                    var text = ((ToolStripMenuItem)sender).Text;
-                    var deadletter = string.Compare(text, queueReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0 ||
-                                     string.Compare(text, subscriptionReceiveDeadletterQueueMessagesMenuItem.Text, StringComparison.OrdinalIgnoreCase) == 0;
-
-                    // Queue Node
-                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                // Subscription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var control = panelMain.Controls[0] as HandleSubscriptionControl;
+                    if (control != null)
                     {
-                        var control = panelMain.Controls[0] as HandleQueueControl;
-                        if (control != null)
+                        if (deadletter)
                         {
-                            if (deadletter)
-                            {
-                                control.GetDeadletterMessages(false);
-                            }
-                            else
-                            {
-                                control.GetMessages();
-                            }
+                            control.GetDeadletterMessages();
                         }
-                    }
-
-                    // Subscription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                    {
-                        var control = panelMain.Controls[0] as HandleSubscriptionControl;
-                        if (control != null)
+                        else if (transferDeadletter)
                         {
-                            if (deadletter)
-                            {
-                                control.GetDeadletterMessages();
-                            }
-                            else
-                            {
-                                control.GetMessages();
-                            }
+                            control.GetTransferDeadletterMessages();
+                        }
+                        else
+                        {
+                            control.GetMessages();
                         }
                     }
                 }
@@ -6804,7 +6818,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                Application.UseWaitCursor = true;
                 if (serviceBusTreeView.SelectedNode == null)
                 {
                     return;
@@ -6833,10 +6846,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
             }
         }
 
@@ -6844,7 +6853,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                Application.UseWaitCursor = true;
                 if (serviceBusTreeView.SelectedNode == null)
                 {
                     return;
@@ -6873,10 +6881,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
             }
         }
         #endregion

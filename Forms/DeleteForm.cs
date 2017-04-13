@@ -44,7 +44,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             InitializeComponent();
             lblMessage.Text = string.Format(message);
-            Width = lblMessage.Width + 72;
+            Width = lblMessage.Width + 88;
         }
 
         public DeleteForm(string entityName, string entityType)
@@ -53,7 +53,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             lblMessage.Text = string.Format(MessageFormat,
                                             entityType ?? Unknown,
                                             entityName ?? Unknown);
-            Width = lblMessage.Width + 72;
+            Width = lblMessage.Width + 88;
         }
         #endregion
 

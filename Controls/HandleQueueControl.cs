@@ -172,18 +172,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private const string MessagesPeekedFromTheQueue = "[{0}] messages peeked from the queue [{1}].";
 
-        private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the deadletter queue of the queue [{1}].";
-        private const string MessagesPeekedFromTheTransferDeadletterQueue = "[{0}] messages peeked from the transfer deadletter queue of the queue [{1}].";
+        private const string MessagesPeekedFromTheDeadletterQueue =
+            "[{0}] messages peeked from the deadletter queue of the queue [{1}].";
+
+        private const string MessagesPeekedFromTheTransferDeadletterQueue =
+            "[{0}] messages peeked from the transfer deadletter queue of the queue [{1}].";
 
         private const string MessagesReceivedFromTheQueue = "[{0}] messages received from the queue [{1}].";
 
-        private const string MessagesReceivedFromTheDeadletterQueue = "[{0}] messages received from the deadletter queue of the queue [{1}].";
-        private const string MessagesReceivedFromTheTransferDeadletterQueue = "[{0}] messages received from the transfer deadletter queue of the queue [{1}].";
+        private const string MessagesReceivedFromTheDeadletterQueue =
+            "[{0}] messages received from the deadletter queue of the queue [{1}].";
+
+        private const string MessagesReceivedFromTheTransferDeadletterQueue =
+            "[{0}] messages received from the transfer deadletter queue of the queue [{1}].";
 
         private const string SessionsGotFromTheQueue = "[{0}] sessions retrieved for the queue [{1}].";
         private const string RetrieveMessagesFromQueue = "Retrieve messages from queue";
         private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from deadletter queue";
-        private const string RetrieveMessagesFromTransferDeadletterQueue = "Retrieve messages from transfer deadletter queue";
+
+        private const string RetrieveMessagesFromTransferDeadletterQueue =
+            "Retrieve messages from transfer deadletter queue";
+
         private const string AuthorizationRuleDeleteMessage = "The Authorization Rule will be permanently deleted";
         private const string SelectEntityDialogTitle = "Select a target Queue or Topic";
         private const string SelectEntityGrouperTitle = "Forward To";
@@ -202,8 +211,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string NoMessageReceivedFromTheQueue =
             "The timeout  of [{0}] seconds has expired and no message was retrieved from the queue [{1}].";
 
-        private const string NoMessageReceivedFromTheDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the queue [{1}].";
-        private const string NoMessageReceivedFromTheTransferDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the transfer deadletter queue of the queue [{1}].";
+        private const string NoMessageReceivedFromTheDeadletterQueue =
+            "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the queue [{1}].";
+
+        private const string NoMessageReceivedFromTheTransferDeadletterQueue =
+            "The timeout  of [{0}] seconds has expired and no message was retrieved from the transfer deadletter queue of the queue [{1}].";
 
         //***************************
         // Tooltips
@@ -267,6 +279,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string MessagesTabPage = "tabPageMessages";
         private const string SessionsTabPage = "tabPageSessions";
         private const string DeadletterTabPage = "tabPageDeadletter";
+        private const string TransferDeadletterTabPage = "tabPageTransferDeadletter";
         private const string MetricsTabPage = "tabPageMetrics";
 
         //***************************
@@ -303,15 +316,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private BrokeredMessage brokeredMessage;
         private BrokeredMessage deadletterMessage;
+        private BrokeredMessage transferDeadletterMessage;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
+        private int currentTransferDeadletterMessageRowIndex;
         private bool sorting;
         private string messagesFilterExpression;
         private string deadletterFilterExpression;
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
+        private SortableBindingList<BrokeredMessage> transferDeadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
         private readonly List<string> metricTabPageIndexList = new List<string>();
         private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
@@ -409,123 +425,166 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public async Task<long> PurgeMessagesAsync()
         {
-            var result = MessageBox.Show(this, $"Would you like to purge {queueDescription.Path}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-            if (result != DialogResult.Yes)
+            using (var deleteForm = new DeleteForm($"Would you like to purge the {queueDescription.Path} queue?"))
             {
-                return 0;
-            }
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-            var receiver =
-                await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
-            var count = 0;
-            while (true)
-            {
-                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                // ReSharper disable once PossibleMultipleEnumeration
-                if (messages.Any())
+                if (deleteForm.ShowDialog() != DialogResult.OK)
                 {
-                    // ReSharper disable once PossibleMultipleEnumeration
-                    count += messages.Count();
+                    return 0;
                 }
-                else
+            }
+            try
+            {
+                Application.UseWaitCursor = true;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
+                var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
+                var count = 0;
+                while (true)
                 {
-                    if (queueDescription.EnablePartitioning)
+                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    if (messages.Any())
                     {
-                        while (true)
+                        // ReSharper disable once PossibleMultipleEnumeration
+                        count += messages.Count();
+                    }
+                    else
+                    {
+                        if (queueDescription.EnablePartitioning)
                         {
-                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                            if (message != null)
+                            while (true)
                             {
-                                count++;
-                            }
-                            else
-                            {
-                                break;
+                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
+                                if (message != null)
+                                {
+                                    count++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
+                stopwatch.Stop();
+                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+                return count;
             }
-            stopwatch.Stop();
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-            writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
-            return count;
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
         }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
             var dlqPath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
-            var result = MessageBox.Show(this, $"Would you like to purge {dlqPath}?", "Purge messages", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-            if (result != DialogResult.Yes)
+            using (var deleteForm = new DeleteForm($"Would you like to purge the deadletter queue of the {queueDescription.Path} queue?"))
             {
-                return 0;
+                if (deleteForm.ShowDialog() != DialogResult.OK)
+                {
+                    return 0;
+                }
             }
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-            var receiver = await messagingFactory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete);
-            var count = 0;
-            while (true)
+            try
             {
-                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                // ReSharper disable once PossibleMultipleEnumeration
-                if (messages.Any())
+                Application.UseWaitCursor = true;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
+                var receiver = await messagingFactory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete);
+                var count = 0;
+                while (true)
                 {
+                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
                     // ReSharper disable once PossibleMultipleEnumeration
-                    count += messages.Count();
-                }
-                else
-                {
-                    if (queueDescription.EnablePartitioning)
+                    if (messages.Any())
                     {
-                        while (true)
-                        {
-                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                            if (message != null)
-                            {
-                                count++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-            stopwatch.Stop();
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-            writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
-            return count;
-        }
-
-        public void GetDeadletterMessages(bool fromTransferDeadletter)
-        {
-            var message = fromTransferDeadletter ? RetrieveMessagesFromTransferDeadletterQueue : RetrieveMessagesFromDeadletterQueue;
-            using (var receiveModeForm = new ReceiveModeForm(message, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
-            {
-                if (receiveModeForm.ShowDialog() == DialogResult.OK)
-                {
-                    txtDeadletterText.Text = string.Empty;
-                    deadletterPropertyListView.Items.Clear();
-                    deadletterPropertyGrid.SelectedObject = null;
-                    var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
-                        ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
-                        : null;
-                    if (queueDescription.EnablePartitioning)
-                    {
-                        ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, fromTransferDeadletter);
+                        // ReSharper disable once PossibleMultipleEnumeration
+                        count += messages.Count();
                     }
                     else
                     {
-                        GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, fromTransferDeadletter);
+                        if (queueDescription.EnablePartitioning)
+                        {
+                            while (true)
+                            {
+                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
+                                if (message != null)
+                                {
+                                    count++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        break;
                     }
+                }
+                stopwatch.Stop();
+                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
+                return count;
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
+        }
+
+        public void GetDeadletterMessages()
+        {
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            {
+                if (receiveModeForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                txtDeadletterText.Text = string.Empty;
+                deadletterPropertyListView.Items.Clear();
+                deadletterPropertyGrid.SelectedObject = null;
+                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
+                    : null;
+                if (queueDescription.EnablePartitioning)
+                {
+                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                }
+                else
+                {
+                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                }
+            }
+        }
+
+        public void GetTransferDeadletterMessages()
+        {
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromTransferDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            {
+                if (receiveModeForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                txtTransferDeadletterText.Text = string.Empty;
+                transferDeadletterPropertyListView.Items.Clear();
+                transferDeadletterPropertyGrid.SelectedObject = null;
+                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
+                    : null;
+                if (queueDescription.EnablePartitioning)
+                {
+                    ReadTransferDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                }
+                else
+                {
+                    GetTransferDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
                 }
             }
         }
@@ -613,16 +672,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             messagesSplitContainer.SplitterWidth = 16;
             sessionsSplitContainer.SplitterWidth = 16;
             deadletterSplitContainer.SplitterWidth = 16;
+            transferDeadletterSplitContainer.SplitterWidth = 16;
             messagesCustomPropertiesSplitContainer.SplitterWidth = 16;
             deadletterCustomPropertiesSplitContainer.SplitterWidth = 16;
+            transferDeadletterCustomPropertiesSplitContainer.SplitterWidth = 16;
             messageListTextPropertiesSplitContainer.SplitterWidth = 8;
             sessionListTextPropertiesSplitContainer.SplitterWidth = 8;
-            deadletterListTextPropertiesSplitContainer.SplitterWidth = 8;
+            transferDeadletterListTextPropertiesSplitContainer.SplitterWidth = 8;
 
             // Tab pages
             DisablePage(MessagesTabPage);
             DisablePage(SessionsTabPage);
             DisablePage(DeadletterTabPage);
+            DisablePage(TransferDeadletterTabPage);
 
             // IsAnonymousAccessible
             if (serviceBusHelper.IsCloudNamespace)
@@ -1114,6 +1176,86 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                // Set Grid style
+                transferDeadletterDataGridView.EnableHeadersVisualStyles = false;
+                transferDeadletterDataGridView.AutoGenerateColumns = false;
+                transferDeadletterDataGridView.AutoSize = true;
+
+                // Create the MessageId column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = MessageId,
+                    Name = MessageId,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the SequenceNumber column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = SequenceNumberValue,
+                    Name = SequenceNumberName,
+                    Width = 52
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the Size column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = MessageSize,
+                    Name = MessageSize,
+                    Width = 52
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the Label column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = Label,
+                    Name = Label,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the EnqueuedTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = EnqueuedTimeUtc,
+                    Name = EnqueuedTimeUtc,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the ExpiresAtUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ExpiresAtUtc,
+                    Name = ExpiresAtUtc,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Set the selection background color for all the cells.
+                transferDeadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+                transferDeadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+                // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+                // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+                // Set the background color for all rows and for alternating rows.  
+                // The value for alternating rows overrides the value for all rows. 
+                transferDeadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                transferDeadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                //transferDeadletterDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+                //transferDeadletterDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                // Set the row and column header styles.
+                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+                transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
                 checkedListBox.ItemCheck += checkedListBox_ItemCheck;
 
                 toolTip.SetToolTip(txtPath, PathTooltip);
@@ -1165,6 +1307,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnCloseTabs.Visible = false;
                 btnPurgeMessages.Visible = false;
                 btnPurgeDeadletterQueueMessages.Visible = false;
+                btnTransferDeadletterQueue.Visible = false;
 
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
@@ -1663,19 +1806,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, bool fromTransferDeadletter)
+        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
         {
             try
             {
-                ControlHelper.SuspendDrawing(mainTabControl);
+                mainTabControl.SuspendDrawing();
                 mainTabControl.SuspendLayout();
-                ControlHelper.SuspendDrawing(tabPageDeadletter);
+                tabPageDeadletter.SuspendDrawing();
                 tabPageDeadletter.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<BrokeredMessage>();
 
-                var queuePath = fromTransferDeadletter ? QueueClient.FormatTransferDeadLetterPath(queueDescription.Path) : QueueClient.FormatDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
                 if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
@@ -1697,7 +1840,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format($"{(fromTransferDeadletter ? MessagesPeekedFromTheTransferDeadletterQueue : MessagesPeekedFromTheDeadletterQueue)}", brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
                 {
@@ -1734,7 +1877,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
                     //    }
                     //}
-                    writeToLog(string.Format($"{(fromTransferDeadletter ? MessagesReceivedFromTheTransferDeadletterQueue : MessagesReceivedFromTheDeadletterQueue)}", brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
 
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
@@ -1757,10 +1900,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 if (!peek)
                 {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
+                    OnRefresh?.Invoke();
                 }
                 if (mainTabControl.TabPages[DeadletterTabPage] == null)
                 {
@@ -1773,11 +1913,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format($"{(fromTransferDeadletter ? NoMessageReceivedFromTheTransferDeadletterQueue : NoMessageReceivedFromTheDeadletterQueue)}", MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
             catch (NotSupportedException)
             {
-                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromTransferDeadletter);
+                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector);
             }
             catch (Exception ex)
             {
@@ -1786,19 +1926,144 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             finally
             {
                 mainTabControl.ResumeLayout();
-                ControlHelper.ResumeDrawing(mainTabControl);
+                mainTabControl.ResumeDrawing();
                 tabPageDeadletter.ResumeLayout();
-                ControlHelper.ResumeDrawing(tabPageDeadletter);
+                tabPageDeadletter.ResumeDrawing();
                 Cursor.Current = Cursors.Default;
             }
         }
 
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, bool fromTransferQueue)
+        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        {
+            try
+            {
+                mainTabControl.SuspendDrawing();
+                mainTabControl.SuspendLayout();
+                tabPageTransferDeadletter.SuspendDrawing();
+                tabPageTransferDeadletter.SuspendLayout();
+
+                Cursor.Current = Cursors.WaitCursor;
+                var brokeredMessages = new List<BrokeredMessage>();
+
+                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
+                if (peek)
+                {
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
+                    {
+                        var messages = queueClient.PeekBatch(all
+                            ? MainForm.SingletonMainForm.TopCount
+                            : count - totalRetrieved);
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Length;
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(messageInspector != null
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            : enumerable);
+                    } while (retrieved > 0 && (all || count > totalRetrieved));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                }
+                else
+                {
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
+                    {
+                        var messages = queueClient.ReceiveBatch(all
+                                ? MainForm.SingletonMainForm.TopCount
+                                : count - totalRetrieved,
+                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Count();
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(messageInspector != null
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            : enumerable);
+                    } while (retrieved > 0 && (all || count > totalRetrieved));
+                    //if (!queueDescription.EnablePartitioning)
+                    //{
+                    //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
+                    //}
+                    //else
+                    //{
+                    //    foreach (var partitionKey in brokeredMessages.Select(bm => bm.PartitionKey).Distinct())
+                    //    {
+                    //        var key = partitionKey;
+                    //        queueClient.CompleteBatch(
+                    //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
+                    //    }
+                    //}
+                    writeToLog(string.Format(MessagesReceivedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                }
+
+                transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+
+                transferDeadletterBindingSource.DataSource = transferDeadletterBindingList;
+                transferDeadletterDataGridView.DataSource = transferDeadletterBindingSource;
+
+                transferDeadletterSplitContainer.SplitterDistance = transferDeadletterSplitContainer.Width -
+                                                            GrouperMessagePropertiesWith -
+                                                            transferDeadletterSplitContainer.SplitterWidth;
+                transferDeadletterListTextPropertiesSplitContainer.SplitterDistance = transferDeadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+                transferDeadletterCustomPropertiesSplitContainer.SplitterDistance = transferDeadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+
+                if (!peek)
+                {
+                    OnRefresh?.Invoke();
+                }
+                if (mainTabControl.TabPages[TransferDeadletterTabPage] == null)
+                {
+                    EnablePage(TransferDeadletterTabPage);
+                }
+                if (mainTabControl.TabPages[TransferDeadletterTabPage] != null)
+                {
+                    mainTabControl.SelectTab(TransferDeadletterTabPage);
+                }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+            }
+            catch (NotSupportedException)
+            {
+                ReadTransferDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                mainTabControl.ResumeLayout();
+                mainTabControl.ResumeDrawing();
+                tabPageTransferDeadletter.ResumeLayout();
+                tabPageTransferDeadletter.ResumeDrawing();
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
         {
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
-                var queuePath = fromTransferQueue ? QueueClient.FormatTransferDeadLetterPath(queueDescription.Path) : QueueClient.FormatDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
 
                 if (peek)
                 {
@@ -1806,16 +2071,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     for (var i = 0; i < count; i++)
                     {
                         var message = queueClient.Peek();
-                        if (message != null)
+                        if (message == null)
                         {
-                            if (messageInspector != null)
-                            {
-                                message = messageInspector.AfterReceiveMessage(message);
-                            }
-                            brokeredMessages.Add(message);
+                            continue;
                         }
+                        if (messageInspector != null)
+                        {
+                            message = messageInspector.AfterReceiveMessage(message);
+                        }
+                        brokeredMessages.Add(message);
                     }
-                    writeToLog(string.Format($"{(fromTransferQueue ? MessagesPeekedFromTheTransferDeadletterQueue : MessagesPeekedFromTheDeadletterQueue)}", brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
                 {
@@ -1835,7 +2101,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             ? messageInspector.AfterReceiveMessage(message)
                             : message);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format($"{(fromTransferQueue ? MessagesPeekedFromTheTransferDeadletterQueue : MessagesPeekedFromTheDeadletterQueue)}", brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1849,17 +2115,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
                                                             GrouperMessagePropertiesWith -
                                                             deadletterSplitContainer.SplitterWidth;
-                messageListTextPropertiesSplitContainer.SplitterDistance =
-                    messageListTextPropertiesSplitContainer.Size.Height/2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance =
-                    deadletterCustomPropertiesSplitContainer.Size.Width/2 - 8;
+                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width/2 - 8;
 
                 if (!peek)
                 {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
+                    OnRefresh?.Invoke();
                 }
                 if (mainTabControl.TabPages[DeadletterTabPage] == null)
                 {
@@ -1872,7 +2133,90 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format($"{(fromTransferQueue ? NoMessageReceivedFromTheTransferDeadletterQueue : NoMessageReceivedFromTheDeadletterQueue)}", MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
+        }
+
+        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        {
+            try
+            {
+                var brokeredMessages = new List<BrokeredMessage>();
+                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
+
+                if (peek)
+                {
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    for (var i = 0; i < count; i++)
+                    {
+                        var message = queueClient.Peek();
+                        if (message == null)
+                        {
+                            continue;
+                        }
+                        if (messageInspector != null)
+                        {
+                            message = messageInspector.AfterReceiveMessage(message);
+                        }
+                        brokeredMessages.Add(message);
+                    }
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                }
+                else
+                {
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
+                    {
+                        var message = queueClient.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        retrieved = message != null ? 1 : 0;
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.Add(messageInspector != null
+                            ? messageInspector.AfterReceiveMessage(message)
+                            : message);
+                    } while (retrieved > 0 && (all || count > totalRetrieved));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                }
+                transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                transferDeadletterBindingSource.DataSource = transferDeadletterBindingList;
+                transferDeadletterDataGridView.DataSource = transferDeadletterBindingSource;
+
+                transferDeadletterSplitContainer.SplitterDistance = transferDeadletterSplitContainer.Width -
+                                                            GrouperMessagePropertiesWith -
+                                                            transferDeadletterSplitContainer.SplitterWidth;
+                transferDeadletterCustomPropertiesSplitContainer.SplitterDistance = transferDeadletterCustomPropertiesSplitContainer.Size.Height / 2 - 8;
+                transferDeadletterCustomPropertiesSplitContainer.SplitterDistance = transferDeadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+
+                if (!peek)
+                {
+                    OnRefresh?.Invoke();
+                }
+                if (mainTabControl.TabPages[TransferDeadletterTabPage] == null)
+                {
+                    EnablePage(TransferDeadletterTabPage);
+                }
+                if (mainTabControl.TabPages[TransferDeadletterTabPage] != null)
+                {
+                    mainTabControl.SelectTab(TransferDeadletterTabPage);
+                }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
             catch (Exception e)
             {
@@ -2677,18 +3021,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            if (OnRefresh != null)
-            {
-                OnRefresh();
-            }
+            OnRefresh?.Invoke();
         }
 
         private void btnChangeStatus_Click(object sender, EventArgs e)
         {
-            if (OnChangeStatus != null)
-            {
-                OnChangeStatus();
-            }
+            OnChangeStatus?.Invoke();
         }
 
         private void button_MouseEnter(object sender, EventArgs e)
@@ -3004,7 +3342,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     dataGridView.Columns[1].Width = width;
                 }
                 if (dataGridView == messagesDataGridView ||
-                    dataGridView == deadletterDataGridView)
+                    dataGridView == deadletterDataGridView ||
+                    dataGridView == transferDeadletterDataGridView)
                 {
                     var width = dataGridView.Width -
                                 dataGridView.RowHeadersWidth -
@@ -3072,7 +3411,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 brokeredMessage = bindingList[e.RowIndex];
 
                 BodyType bodyType;
-                txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
+                txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType)));
                 var listViewItems =
                     brokeredMessage.Properties.Select(p => new ListViewItem(new[] {p.Key, Convert.ToString(p.Value)}))
                         .ToArray();
@@ -3141,14 +3480,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperDeadletterList_CustomPaint(PaintEventArgs e)
         {
             deadletterDataGridView.Size =
-                new Size(grouperDeadletterList.Size.Width - (messagesDataGridView.Location.X*2 + 2),
-                    grouperDeadletterList.Size.Height - messagesDataGridView.Location.Y -
-                    messagesDataGridView.Location.X - 2);
+                new Size(grouperDeadletterList.Size.Width - (deadletterDataGridView.Location.X*2 + 2),
+                    grouperDeadletterList.Size.Height - deadletterDataGridView.Location.Y -
+                    deadletterDataGridView.Location.X - 2);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                 deadletterDataGridView.Location.X - 1,
                 deadletterDataGridView.Location.Y - 1,
                 deadletterDataGridView.Size.Width + 1,
                 deadletterDataGridView.Size.Height + 1);
+        }
+
+        private void grouperTransferDeadletterList_CustomPaint(PaintEventArgs e)
+        {
+            transferDeadletterDataGridView.Size =
+                new Size(grouperTransferDeadletterList.Size.Width - (transferDeadletterDataGridView.Location.X * 2 + 2),
+                    grouperTransferDeadletterList.Size.Height - transferDeadletterDataGridView.Location.Y -
+                    transferDeadletterDataGridView.Location.X - 2);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                transferDeadletterDataGridView.Location.X - 1,
+                transferDeadletterDataGridView.Location.Y - 1,
+                transferDeadletterDataGridView.Size.Width + 1,
+                transferDeadletterDataGridView.Size.Height + 1);
         }
 
         private void grouperAuthorizationRuleList_CustomPaint(PaintEventArgs e)
@@ -3173,12 +3525,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnDeadletter_Click(object sender, EventArgs e)
         {
-            GetDeadletterMessages(false);
+            GetDeadletterMessages();
         }
 
         private void btnTransferDlq_Click(object sender, EventArgs e)
         {
-            GetDeadletterMessages(true);
+            GetTransferDeadletterMessages();
         }
 
         private void deadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -3196,12 +3548,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             deadletterMessage = bindingList[e.RowIndex];
             deadletterPropertyGrid.SelectedObject = deadletterMessage;
             BodyType bodyType;
-            txtDeadletterText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out bodyType));
-            var listViewItems =
-                deadletterMessage.Properties.Select(p => new ListViewItem(new[] {p.Key, Convert.ToString(p.Value)}))
-                    .ToArray();
+            txtDeadletterText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out bodyType)));
+            var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] {p.Key, Convert.ToString(p.Value)})).ToArray();
             deadletterPropertyListView.Items.Clear();
             deadletterPropertyListView.Items.AddRange(listViewItems);
+        }
+
+        private void transferDeadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            currentTransferDeadletterMessageRowIndex = e.RowIndex;
+            if (bindingList == null)
+            {
+                return;
+            }
+            if (transferDeadletterMessage == bindingList[e.RowIndex])
+            {
+                return;
+            }
+            transferDeadletterMessage = bindingList[e.RowIndex];
+            transferDeadletterPropertyGrid.SelectedObject = transferDeadletterMessage;
+            BodyType bodyType;
+            txtTransferDeadletterText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(transferDeadletterMessage, out bodyType)));
+            var listViewItems = transferDeadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
+            transferDeadletterPropertyListView.Items.Clear();
+            transferDeadletterPropertyListView.Items.AddRange(listViewItems);
         }
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -3561,6 +3932,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
+        private void transferDeadletterDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            if (bindingList == null)
+            {
+                return;
+            }
+            using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            {
+                messageForm.ShowDialog();
+            }
+        }
+
         private void messagesDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             var cell = messagesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
@@ -3573,6 +3961,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             cell.ToolTipText = DoubleClickMessage;
         }
 
+        private void transferDeadletterDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            var cell = transferDeadletterDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            cell.ToolTipText = DoubleClickMessage;
+        }
+
         private void grouperMessageText_CustomPaint(PaintEventArgs obj)
         {
             txtMessageText.Size = new Size(grouperMessageText.Size.Width - (txtMessageText.Location.X*2),
@@ -3581,29 +3975,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size =
-                new Size(grouperMessageCustomProperties.Size.Width - (messagePropertyListView.Location.X*2),
-                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
-                    messagePropertyListView.Location.X);
+            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - messagePropertyListView.Location.X*2,
+                                                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
+                                                    messagePropertyListView.Location.X);
         }
 
         private void grouperMessageProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyGrid.Size = new Size(
-                grouperMessageProperties.Size.Width - (messagePropertyGrid.Location.X*2),
-                grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
+            messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - messagePropertyGrid.Location.X*2,
+                                                grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
         }
 
         private void grouperDeadletterText_CustomPaint(PaintEventArgs obj)
         {
-            txtDeadletterText.Size = new Size(grouperDeadletterText.Size.Width - (txtDeadletterText.Location.X*2),
+            txtDeadletterText.Size = new Size(grouperDeadletterText.Size.Width - txtDeadletterText.Location.X*2,
                 grouperDeadletterText.Size.Height - txtDeadletterText.Location.Y - txtDeadletterText.Location.X);
         }
 
         private void grouperDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
         {
             deadletterPropertyListView.Size =
-                new Size(grouperDeadletterCustomProperties.Size.Width - (deadletterPropertyListView.Location.X*2),
+                new Size(grouperDeadletterCustomProperties.Size.Width - deadletterPropertyListView.Location.X*2,
                     grouperDeadletterCustomProperties.Size.Height - deadletterPropertyListView.Location.Y -
                     deadletterPropertyListView.Location.X);
         }
@@ -3611,9 +4003,32 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperDeadletterProperties_CustomPaint(PaintEventArgs obj)
         {
             deadletterPropertyGrid.Size =
-                new Size(grouperDeadletterProperties.Size.Width - (deadletterPropertyGrid.Location.X*2),
+                new Size(grouperDeadletterProperties.Size.Width - deadletterPropertyGrid.Location.X*2,
                     grouperDeadletterProperties.Size.Height - deadletterPropertyGrid.Location.Y -
                     deadletterPropertyGrid.Location.X);
+        }
+
+
+        private void grouperTransferDeadletterText_CustomPaint(PaintEventArgs obj)
+        {
+            txtTransferDeadletterText.Size = new Size(grouperTransferDeadletterText.Size.Width - txtTransferDeadletterText.Location.X * 2,
+                grouperTransferDeadletterText.Size.Height - txtTransferDeadletterText.Location.Y - txtTransferDeadletterText.Location.X);
+        }
+
+        private void grouperTransferDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
+        {
+            transferDeadletterPropertyListView.Size =
+                new Size(grouperTransferDeadletterCustomProperties.Size.Width - transferDeadletterPropertyListView.Location.X * 2,
+                    grouperTransferDeadletterCustomProperties.Size.Height - transferDeadletterPropertyListView.Location.Y -
+                    transferDeadletterPropertyListView.Location.X);
+        }
+
+        private void grouperTransferDeadletterProperties_CustomPaint(PaintEventArgs obj)
+        {
+            transferDeadletterPropertyGrid.Size =
+                new Size(grouperTransferDeadletterProperties.Size.Width - transferDeadletterPropertyGrid.Location.X * 2,
+                    grouperTransferDeadletterProperties.Size.Height - transferDeadletterPropertyGrid.Location.Y -
+                    transferDeadletterPropertyGrid.Location.X);
         }
 
         private void grouperSessionState_CustomPaint(PaintEventArgs obj)
@@ -3685,6 +4100,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
+        private void transferDeadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || e.RowIndex == -1)
+            {
+                return;
+            }
+            transferDeadletterDataGridView.Rows[e.RowIndex].Selected = true;
+            var multipleSelectedRows = transferDeadletterDataGridView.SelectedRows.Count > 1;
+            repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            transferDeadletterContextMenuStrip.Show(Cursor.Position);
+        }
+
         private void repairAndResubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deadletterDataGridView_CellDoubleClick(deadletterDataGridView,
@@ -3700,8 +4130,35 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(Enumerable.Cast<DataGridViewRow>(deadletterDataGridView.SelectedRows)
+                using (var form = new MessageForm(deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                     .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
+                {
+                    form.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void repairAndResubmitTransferDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            transferDeadletterDataGridView_CellDoubleClick(transferDeadletterDataGridView,
+                new DataGridViewCellEventArgs(0, currentTransferDeadletterMessageRowIndex));
+        }
+
+        private void resubmitSelectedTransferDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
+            EventArgs e)
+        {
+            try
+            {
+                if (transferDeadletterDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                using (var form = new MessageForm(transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -3716,7 +4173,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                ControlHelper.SuspendDrawing(messagesDataGridView);
+                messagesDataGridView.SuspendDrawing();
                 messagesDataGridView.SuspendLayout();
                 if (messageBindingList == null)
                 {
@@ -3887,6 +4344,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             e.Cancel = true;
         }
 
+        private void transferDeadletterDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
         private void sessionsDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;
@@ -4052,8 +4514,90 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var messages =
-                    Enumerable.Cast<DataGridViewRow>(deadletterDataGridView.SelectedRows)
+                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                        .Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    BodyType bodyType;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedTransferDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentTransferDeadletterMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtTransferDeadletterText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = JsonExtension;
+                saveFileDialog.Filter = JsonFilter;
+                saveFileDialog.FileName = CreateFileName();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentTransferDeadletterMessageRowIndex],
+                        txtTransferDeadletterText.Text));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedTransferDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (transferDeadletterDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                         .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())

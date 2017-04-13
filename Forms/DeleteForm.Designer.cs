@@ -113,7 +113,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblMessage
             // 
             this.lblMessage.AutoSize = true;
-            this.lblMessage.Location = new System.Drawing.Point(56, 24);
+            this.lblMessage.Location = new System.Drawing.Point(60, 24);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(33, 13);
             this.lblMessage.TabIndex = 34;
