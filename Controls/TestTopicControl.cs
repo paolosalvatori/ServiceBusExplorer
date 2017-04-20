@@ -63,9 +63,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DefaulReceiveBatchSize = "10";
         private const string DefaultSenderTaskCount = "1";
         private const string DefaultReceiverTaskCount = "1";
-        private const string DefaultReceiveTimeout = "1";
-        private const string DefaultSessionTimeout = "3";
-        private const string DefaultPrefetchCount = "0";
         private const string PeekLock = "PeekLock";
         private const string StartCaption = "Start";
         private const string StopCaption = "Stop";
@@ -197,12 +194,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private IBrokeredMessageGenerator brokeredMessageGenerator;
         private IBrokeredMessageInspector senderBrokeredMessageInspector;
         private IBrokeredMessageInspector receiverBrokeredMessageInspector;
-        private List<MessagingFactory> senderFactories = new List<MessagingFactory>();
-        private List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
+        private readonly List<MessagingFactory> senderFactories = new List<MessagingFactory>();
+        private readonly List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
         #endregion
 
         #region Public Constructors
@@ -307,7 +304,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 // Create the Type column
                 var comboBoxColumn = new DataGridViewComboBoxColumn
                 {
-                    DataSource = types,
+                    DataSource = Types,
                     DataPropertyName = PropertyType,
                     Name = PropertyType,
                     Width = 90,
@@ -348,12 +345,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                txtMessageText.Text = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
+                txtMessageText.Text = !string.IsNullOrWhiteSpace(mainForm?.MessageText) ?
+                                      JsonSerializerHelper.Indent(XmlHelper.Indent(mainForm.MessageText)) :
                                       DefaultMessageText;
-                txtLabel.Text = mainForm != null &&
-                                !string.IsNullOrWhiteSpace(mainForm.Label) ?
+                txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
                                 mainForm.Label :
                                 DefaultMessageText;
                 txtMessageId.Text = Guid.NewGuid().ToString();
@@ -363,15 +358,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
-                txtReceiveTimeout.Text = mainForm != null ?
-                                         mainForm.ReceiveTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultReceiveTimeout;
-                txtServerTimeout.Text = mainForm != null ?
-                                         mainForm.ServerTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultSessionTimeout;
-                txtPrefetchCount.Text = mainForm != null ?
-                                        mainForm.PrefetchCount.ToString(CultureInfo.InvariantCulture) :
-                                        DefaultPrefetchCount;
+                txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
+                txtServerTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
+                txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
                 if (subscriptionList != null &&
                     subscriptionList.Count > 0)
                 {
@@ -556,353 +545,330 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-                if (serviceBusHelper != null &&
-                    ValidateParameters())
+                if (serviceBusHelper == null || !ValidateParameters())
                 {
-                    if (startLog != null)
-                    {
-                        startLog();
-                    }
-                    btnStart.Enabled = false;
-                    Cursor.Current = Cursors.WaitCursor;
+                    return;
+                }
 
-                    //*****************************************************************************************************
-                    //                                   Initialize Statistics and Manager Action
-                    //*****************************************************************************************************
-                    actionCount = 0;
-                    senderMessageNumber = 0;
-                    senderMessagesPerSecond = 0;
-                    senderMinimumTime = long.MaxValue;
-                    senderMaximumTime = 0;
-                    senderAverageTime = 0;
-                    senderTotalTime = 0;
-                    receiverMessageNumber = 0;
-                    receiverMessagesPerSecond = 0;
-                    receiverMinimumTime = long.MaxValue;
-                    receiverMaximumTime = 0;
-                    receiverAverageTime = 0;
-                    receiverTotalTime = 0;
-                    if (checkBoxSenderEnableGraph.Checked ||
-                        checkBoxReceiverEnableGraph.Checked)
-                    {
-                        chart.Series.ToList().ForEach(s => s.Points.Clear());
-                    }
-                    managerResetEvent = new ManualResetEventSlim(false);
-                    Action<CancellationTokenSource> managerAction = cts =>
-                    {
-                        if (cts == null)
-                        {
-                            return;
-                        }
-                        try
-                        {
-                            managerResetEvent.Wait(cts.Token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                        }
-                        if (!cts.IsCancellationRequested)
-                        {
-                            Invoke((MethodInvoker) delegate
-                            {
-                                btnStart.Text = StartCaption;
-                                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-                            });
-                        }
-                    };
+                startLog?.Invoke();
+                btnStart.Enabled = false;
+                Cursor.Current = Cursors.WaitCursor;
 
-                    Action updateGraphAction = () =>
+                //*****************************************************************************************************
+                //                                   Initialize Statistics and Manager Action
+                //*****************************************************************************************************
+                actionCount = 0;
+                senderMessageNumber = 0;
+                senderMessagesPerSecond = 0;
+                senderMinimumTime = long.MaxValue;
+                senderMaximumTime = 0;
+                senderAverageTime = 0;
+                senderTotalTime = 0;
+                receiverMessageNumber = 0;
+                receiverMessagesPerSecond = 0;
+                receiverMinimumTime = long.MaxValue;
+                receiverMaximumTime = 0;
+                receiverAverageTime = 0;
+                receiverTotalTime = 0;
+                if (checkBoxSenderEnableGraph.Checked ||
+                    checkBoxReceiverEnableGraph.Checked)
+                {
+                    chart.Series.ToList().ForEach(s => s.Points.Clear());
+                }
+                managerResetEvent = new ManualResetEventSlim(false);
+                Action<CancellationTokenSource> managerAction = cts =>
+                {
+                    if (cts == null)
                     {
-                        var ok = true;
-                        long max = 10;
-                        while (!graphCancellationTokenSource.IsCancellationRequested && (actionCount > 1 || ok))
+                        return;
+                    }
+                    try
+                    {
+                        managerResetEvent.Wait(cts.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                    if (!cts.IsCancellationRequested)
+                    {
+                        Invoke((MethodInvoker) delegate
                         {
-                            ok = true;
-                            long sendMessageNumber = 0;
-                            long receiveMessageNumber = 0;
-                            long sendTotalTime = 0;
-                            long receiveTotalTime = 0;
-                            while (ok && sendMessageNumber < max && receiveMessageNumber < max)
+                            btnStart.Text = StartCaption;
+                            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                        });
+                    }
+                };
+
+                Action updateGraphAction = () =>
+                {
+                    var ok = true;
+                    long max = 10;
+                    while (!graphCancellationTokenSource.IsCancellationRequested && (actionCount > 1 || ok))
+                    {
+                        ok = true;
+                        long sendMessageNumber = 0;
+                        long receiveMessageNumber = 0;
+                        long sendTotalTime = 0;
+                        long receiveTotalTime = 0;
+                        while (ok && sendMessageNumber < max && receiveMessageNumber < max)
+                        {
+                            Tuple<long, long, DirectionType> tuple;
+                            ok = blockingCollection.TryTake(out tuple, 10);
+                            if (ok)
                             {
-                                Tuple<long, long, DirectionType> tuple;
-                                ok = blockingCollection.TryTake(out tuple, 10);
-                                if (ok)
+                                if (tuple.Item3 == DirectionType.Send)
                                 {
-                                    if (tuple.Item3 == DirectionType.Send)
+                                    sendMessageNumber += tuple.Item1;
+                                    sendTotalTime += tuple.Item2;
+                                    if (sendMessageNumber > max)
                                     {
-                                        sendMessageNumber += tuple.Item1;
-                                        sendTotalTime += tuple.Item2;
-                                        if (sendMessageNumber > max)
-                                        {
-                                            max = sendMessageNumber;
-                                        }
-                                        continue;
+                                        max = sendMessageNumber;
                                     }
-                                    receiveMessageNumber += tuple.Item1;
-                                    receiveTotalTime += tuple.Item2;
-                                    if (receiveMessageNumber > max)
-                                    {
-                                        max = receiveMessageNumber;
-                                    }
+                                    continue;
                                 }
-                            }
-                            if (sendMessageNumber > 0)
-                            {
-                                var sendTuple = new Tuple<long, long, DirectionType>(sendMessageNumber, sendTotalTime, DirectionType.Send);
-                                if (InvokeRequired)
+                                receiveMessageNumber += tuple.Item1;
+                                receiveTotalTime += tuple.Item2;
+                                if (receiveMessageNumber > max)
                                 {
-                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
-                                           new object[] { sendTuple.Item1, 
-                                                          sendTuple.Item2, 
-                                                          sendTuple.Item3 });
-                                }
-                                else
-                                {
-                                    InternalUpdateStatistics(sendTuple.Item1,
-                                                             sendTuple.Item2,
-                                                             sendTuple.Item3);
-                                }
-                            }
-                            if (receiveMessageNumber > 0)
-                            {
-                                var receiveTuple = new Tuple<long, long, DirectionType>(receiveMessageNumber, receiveTotalTime, DirectionType.Receive);
-                                if (InvokeRequired)
-                                {
-                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
-                                           new object[] { receiveTuple.Item1, 
-                                                          receiveTuple.Item2, 
-                                                          receiveTuple.Item3 });
-                                }
-                                else
-                                {
-                                    InternalUpdateStatistics(receiveTuple.Item1,
-                                                             receiveTuple.Item2,
-                                                             receiveTuple.Item3);
+                                    max = receiveMessageNumber;
                                 }
                             }
                         }
+                        if (sendMessageNumber > 0)
+                        {
+                            var sendTuple = new Tuple<long, long, DirectionType>(sendMessageNumber, sendTotalTime, DirectionType.Send);
+                            if (InvokeRequired)
+                            {
+                                Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), sendTuple.Item1, sendTuple.Item2, sendTuple.Item3);
+                            }
+                            else
+                            {
+                                InternalUpdateStatistics(sendTuple.Item1,
+                                    sendTuple.Item2,
+                                    sendTuple.Item3);
+                            }
+                        }
+                        if (receiveMessageNumber > 0)
+                        {
+                            var receiveTuple = new Tuple<long, long, DirectionType>(receiveMessageNumber, receiveTotalTime, DirectionType.Receive);
+                            if (InvokeRequired)
+                            {
+                                Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), receiveTuple.Item1, receiveTuple.Item2, receiveTuple.Item3);
+                            }
+                            else
+                            {
+                                InternalUpdateStatistics(receiveTuple.Item1,
+                                    receiveTuple.Item2,
+                                    receiveTuple.Item3);
+                            }
+                        }
+                    }
+                    if (Interlocked.Decrement(ref actionCount) == 0)
+                    {
+                        managerResetEvent.Set();
+                    }
+                };
+
+                AsyncCallback updateGraphCallback = a =>
+                {
+                    var action = a.AsyncState as Action;
+                    if (action != null)
+                    {
+                        action.EndInvoke(a);
                         if (Interlocked.Decrement(ref actionCount) == 0)
                         {
                             managerResetEvent.Set();
                         }
-                    };
+                    }
+                };
 
-                    AsyncCallback updateGraphCallback = a =>
+                blockingCollection = new BlockingCollection<Tuple<long, long, DirectionType>>();
+                //*****************************************************************************************************
+                //                                   Sending messages to a Topic
+                //*****************************************************************************************************
+
+                if (senderEnabledCheckBox.Checked && messageCount > 0)
+                {
+                    // Create message senders. They are cached for later usage to improve performance.
+                    if (isSenderFaulted ||
+                        messageSenderCollection == null ||
+                        messageSenderCollection.Count == 0 ||
+                        messageSenderCollection.Count < senderTaskCount ||
+                        checkBoxSendNewFactory.Checked)
                     {
-                        var action = a.AsyncState as Action;
-                        if (action != null)
+                        messageSenderCollection = new List<MessageSender>(senderTaskCount);
+                        for (var i = 0; i < senderTaskCount; i++)
                         {
-                            action.EndInvoke(a);
-                            if (Interlocked.Decrement(ref actionCount) == 0)
+                            if (checkBoxSendNewFactory.Checked)
                             {
-                                managerResetEvent.Set();
+                                var factory = serviceBusHelper.CreateMessagingFactory();
+                                senderFactories.Add(factory);
+                                messageSenderCollection.Add(factory.CreateMessageSender(topic.Path));
+                            }
+                            else
+                            {
+                                messageSenderCollection.Add(serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path));
                             }
                         }
-                    };
+                        isSenderFaulted = false;
+                    }
 
-                    blockingCollection = new BlockingCollection<Tuple<long, long, DirectionType>>();
-                    //*****************************************************************************************************
-                    //                                   Sending messages to a Topic
-                    //*****************************************************************************************************
-
-                    if (senderEnabledCheckBox.Checked && messageCount > 0)
+                    // Get Body Type
+                    BodyType bodyType;
+                    if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
                     {
-                        // Create message senders. They are cached for later usage to improve performance.
-                        if (isSenderFaulted ||
-                            messageSenderCollection == null ||
-                            messageSenderCollection.Count == 0 ||
-                            messageSenderCollection.Count < senderTaskCount ||
-                            checkBoxSendNewFactory.Checked)
+                        bodyType = BodyType.Stream;
+                    }
+                    bool isBinary = false;
+                    // Create outbound message template list
+                    var messageTemplateList = new List<BrokeredMessage>();
+                    var messageTextList = new List<string>();
+                    var partitionKey = checkBoxSenderUseTransaction.Checked ? Guid.NewGuid().ToString() : null;
+                    if (messageTabControl.SelectedIndex == MessageTabPage)
+                    {
+                        messageTemplateList.Add(serviceBusHelper.CreateBrokeredMessageTemplate(txtMessageText.Text,
+                            txtLabel.Text,
+                            txtContentType.Text,
+                            GetMessageId(),
+                            txtSessionId.Text,
+                            txtCorrelationId.Text,
+                            partitionKey,
+                            txtTo.Text,
+                            txtReplyTo.Text,
+                            txtReplyToSessionId.Text,
+                            txtTimeToLive.Text,
+                            txtScheduledEnqueueTimeUtc.Text,
+                            checkBoxForcePersistence.Checked,
+                            bindingSource.Cast<MessagePropertyInfo>()));
+                        messageTextList.Add(txtMessageText.Text);
+                    }
+                    else if (messageTabControl.SelectedIndex == FilesTabPage)
+                    {
+                        var fileList = messageFileListView.Items.Cast<ListViewItem>()
+                            .Where(i => i.Checked)
+                            .Select(i => i.Text)
+                            .ToList();
+                        if (fileList.Count == 0)
                         {
-                            messageSenderCollection = new List<MessageSender>(senderTaskCount);
-                            for (var i = 0; i < senderTaskCount; i++)
-                            {
-                                if (checkBoxSendNewFactory.Checked)
-                                {
-                                    var factory = serviceBusHelper.CreateMessagingFactory();
-                                    senderFactories.Add(factory);
-                                    messageSenderCollection.Add(factory.CreateMessageSender(topic.Path));
-                                }
-                                else
-                                {
-                                    messageSenderCollection.Add(serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path));
-                                }
-                            }
-                            isSenderFaulted = false;
+                            writeToLog(NoMessageSelected);
+                            return;
                         }
-
-                        // Get Body Type
-                        BodyType bodyType;
-                        if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
-                        {
-                            bodyType = BodyType.Stream;
-                        }
-                        bool isBinary = false;
-                        // Create outbound message template list
-                        var messageTemplateList = new List<BrokeredMessage>();
-                        var messageTextList = new List<string>();
-                        var partitionKey = checkBoxSenderUseTransaction.Checked ? Guid.NewGuid().ToString() : null;
-                        if (messageTabControl.SelectedIndex == MessageTabPage)
-                        {
-                            messageTemplateList.Add(serviceBusHelper.CreateBrokeredMessageTemplate(txtMessageText.Text,
-                                                                                   txtLabel.Text,
-                                                                                   txtContentType.Text,
-                                                                                   GetMessageId(),
-                                                                                   txtSessionId.Text,
-                                                                                   txtCorrelationId.Text,
-                                                                                   partitionKey,
-                                                                                   txtTo.Text,
-                                                                                   txtReplyTo.Text,
-                                                                                   txtReplyToSessionId.Text,
-                                                                                   txtTimeToLive.Text,
-                                                                                   txtScheduledEnqueueTimeUtc.Text,
-                                                                                   checkBoxForcePersistence.Checked,
-                                                                                   bindingSource.Cast<MessagePropertyInfo>()));
-                            messageTextList.Add(txtMessageText.Text);
-                        }
-                        else if (messageTabControl.SelectedIndex == FilesTabPage)
-                        {
-                            var fileList = messageFileListView.Items.Cast<ListViewItem>()
-                                .Where(i => i.Checked)
-                                .Select(i => i.Text)
-                                .ToList();
-                            if (fileList.Count == 0)
-                            {
-                                writeToLog(NoMessageSelected);
-                                return;
-                            }
-                            foreach (var fileName in fileList)
-                            {
-                                try
-                                {
-                                    BrokeredMessage template;
-                                    if (radioButtonBinaryFile.Checked)
-                                    {
-                                        using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-                                        {
-                                            using (var binaryReader = new BinaryReader(fileStream))
-                                            {
-                                                var bytes = binaryReader.ReadBytes((int)fileStream.Length);
-                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(new MemoryStream(bytes),
-                                                                                                          txtLabel.Text,
-                                                                                                          txtContentType.Text,
-                                                                                                          GetMessageId(),
-                                                                                                          txtSessionId.Text,
-                                                                                                          txtCorrelationId.Text,
-                                                                                                          partitionKey,
-                                                                                                          txtTo.Text,
-                                                                                                          txtReplyTo.Text,
-                                                                                                          txtReplyToSessionId.Text,
-                                                                                                          txtTimeToLive.Text,
-                                                                                                          txtScheduledEnqueueTimeUtc.Text,
-                                                                                                          checkBoxForcePersistence.Checked,
-                                                                                                          bindingSource.Cast<MessagePropertyInfo>());
-                                                messageTextList.Add(BitConverter.ToString(bytes).Replace('-', ' '));
-                                                bodyType = BodyType.Stream;
-                                                isBinary = true;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        using (var streamReader = new StreamReader(fileName))
-                                        {
-                                            var text = await streamReader.ReadToEndAsync();
-                                            if (radioButtonTextFile.Checked)
-                                            {
-                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
-                                                                                                          txtLabel.Text,
-                                                                                                          txtContentType.Text,
-                                                                                                          GetMessageId(),
-                                                                                                          txtSessionId.Text,
-                                                                                                          txtCorrelationId.Text,
-                                                                                                          partitionKey,
-                                                                                                          txtTo.Text,
-                                                                                                          txtReplyTo.Text,
-                                                                                                          txtReplyToSessionId.Text,
-                                                                                                          txtTimeToLive.Text,
-                                                                                                          txtScheduledEnqueueTimeUtc.Text,
-                                                                                                          checkBoxForcePersistence.Checked,
-                                                                                                          bindingSource.Cast<MessagePropertyInfo>());
-                                                messageTextList.Add(text);
-                                            }
-                                            else if (radioButtonJsonTemplate.Checked)
-                                            {
-                                                try
-                                                {
-                                                    var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
-                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
-                                                    messageTextList.Add(brokeredMessageTemplate.Message);
-                                                }
-                                                catch (Exception)
-                                                {
-                                                    writeToLog(string.Format(InvalidJsonTemplate, fileName));
-                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
-                                                                                                           txtLabel.Text,
-                                                                                                           txtContentType.Text,
-                                                                                                           GetMessageId(),
-                                                                                                           txtSessionId.Text,
-                                                                                                           txtCorrelationId.Text,
-                                                                                                           partitionKey,
-                                                                                                           txtTo.Text,
-                                                                                                           txtReplyTo.Text,
-                                                                                                           txtReplyToSessionId.Text,
-                                                                                                           txtTimeToLive.Text,
-                                                                                                           txtScheduledEnqueueTimeUtc.Text,
-                                                                                                           checkBoxForcePersistence.Checked,
-                                                                                                           bindingSource.Cast<MessagePropertyInfo>());
-                                                    messageTextList.Add(text);
-                                                }
-                                            }
-                                            else // XML Template
-                                            {
-                                                try
-                                                {
-                                                    var brokeredMessageTemplate = XmlSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
-                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
-                                                    messageTextList.Add(brokeredMessageTemplate.Message);
-                                                }
-                                                catch (Exception)
-                                                {
-                                                    writeToLog(string.Format(InvalidXmlTemplate, fileName));
-                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
-                                                                                                            txtLabel.Text,
-                                                                                                            txtContentType.Text,
-                                                                                                            GetMessageId(),
-                                                                                                            txtSessionId.Text,
-                                                                                                            txtCorrelationId.Text,
-                                                                                                            partitionKey,
-                                                                                                            txtTo.Text,
-                                                                                                            txtReplyTo.Text,
-                                                                                                            txtReplyToSessionId.Text,
-                                                                                                            txtTimeToLive.Text,
-                                                                                                            txtScheduledEnqueueTimeUtc.Text,
-                                                                                                            checkBoxForcePersistence.Checked,
-                                                                                                            bindingSource.Cast<MessagePropertyInfo>());
-                                                    messageTextList.Add(text);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (template != null)
-                                    {
-                                        messageTemplateList.Add(template);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    HandleException(ex);
-                                }
-                            }
-                        }
-                        else // Brokered Message Generator Tab
+                        foreach (var fileName in fileList)
                         {
                             try
                             {
-                                brokeredMessageGenerator = brokeredMessageGeneratorPropertyGrid.SelectedObject as IBrokeredMessageGenerator;
-                                if (brokeredMessageGenerator != null)
+                                BrokeredMessage template;
+                                if (radioButtonBinaryFile.Checked)
                                 {
-                                    messageTemplateList = new List<BrokeredMessage>(brokeredMessageGenerator.GenerateBrokeredMessageCollection(txtMessageCount.IntegerValue, writeToLog));
+                                    using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                                    {
+                                        using (var binaryReader = new BinaryReader(fileStream))
+                                        {
+                                            var bytes = binaryReader.ReadBytes((int)fileStream.Length);
+                                            template = serviceBusHelper.CreateBrokeredMessageTemplate(new MemoryStream(bytes),
+                                                txtLabel.Text,
+                                                txtContentType.Text,
+                                                GetMessageId(),
+                                                txtSessionId.Text,
+                                                txtCorrelationId.Text,
+                                                partitionKey,
+                                                txtTo.Text,
+                                                txtReplyTo.Text,
+                                                txtReplyToSessionId.Text,
+                                                txtTimeToLive.Text,
+                                                txtScheduledEnqueueTimeUtc.Text,
+                                                checkBoxForcePersistence.Checked,
+                                                bindingSource.Cast<MessagePropertyInfo>());
+                                            messageTextList.Add(BitConverter.ToString(bytes).Replace('-', ' '));
+                                            bodyType = BodyType.Stream;
+                                            isBinary = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    using (var streamReader = new StreamReader(fileName))
+                                    {
+                                        var text = await streamReader.ReadToEndAsync();
+                                        if (radioButtonTextFile.Checked)
+                                        {
+                                            template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
+                                                txtLabel.Text,
+                                                txtContentType.Text,
+                                                GetMessageId(),
+                                                txtSessionId.Text,
+                                                txtCorrelationId.Text,
+                                                partitionKey,
+                                                txtTo.Text,
+                                                txtReplyTo.Text,
+                                                txtReplyToSessionId.Text,
+                                                txtTimeToLive.Text,
+                                                txtScheduledEnqueueTimeUtc.Text,
+                                                checkBoxForcePersistence.Checked,
+                                                bindingSource.Cast<MessagePropertyInfo>());
+                                            messageTextList.Add(text);
+                                        }
+                                        else if (radioButtonJsonTemplate.Checked)
+                                        {
+                                            try
+                                            {
+                                                var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
+                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
+                                                messageTextList.Add(brokeredMessageTemplate.Message);
+                                            }
+                                            catch (Exception)
+                                            {
+                                                writeToLog(string.Format(InvalidJsonTemplate, fileName));
+                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
+                                                    txtLabel.Text,
+                                                    txtContentType.Text,
+                                                    GetMessageId(),
+                                                    txtSessionId.Text,
+                                                    txtCorrelationId.Text,
+                                                    partitionKey,
+                                                    txtTo.Text,
+                                                    txtReplyTo.Text,
+                                                    txtReplyToSessionId.Text,
+                                                    txtTimeToLive.Text,
+                                                    txtScheduledEnqueueTimeUtc.Text,
+                                                    checkBoxForcePersistence.Checked,
+                                                    bindingSource.Cast<MessagePropertyInfo>());
+                                                messageTextList.Add(text);
+                                            }
+                                        }
+                                        else // XML Template
+                                        {
+                                            try
+                                            {
+                                                var brokeredMessageTemplate = XmlSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
+                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
+                                                messageTextList.Add(brokeredMessageTemplate.Message);
+                                            }
+                                            catch (Exception)
+                                            {
+                                                writeToLog(string.Format(InvalidXmlTemplate, fileName));
+                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(text,
+                                                    txtLabel.Text,
+                                                    txtContentType.Text,
+                                                    GetMessageId(),
+                                                    txtSessionId.Text,
+                                                    txtCorrelationId.Text,
+                                                    partitionKey,
+                                                    txtTo.Text,
+                                                    txtReplyTo.Text,
+                                                    txtReplyToSessionId.Text,
+                                                    txtTimeToLive.Text,
+                                                    txtScheduledEnqueueTimeUtc.Text,
+                                                    checkBoxForcePersistence.Checked,
+                                                    bindingSource.Cast<MessagePropertyInfo>());
+                                                messageTextList.Add(text);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (template != null)
+                                {
+                                    messageTemplateList.Add(template);
                                 }
                             }
                             catch (Exception ex)
@@ -910,55 +876,229 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 HandleException(ex);
                             }
                         }
+                    }
+                    else // Brokered Message Generator Tab
+                    {
                         try
                         {
-                            senderCancellationTokenSource = new CancellationTokenSource();
-                            currentIndex = 0;
-                            senderBrokeredMessageInspector = cboSenderInspector.SelectedIndex > 0
-                                                            ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector
-                                                            : null;
-
-                            Func<long> getMessageNumber = () =>
+                            brokeredMessageGenerator = brokeredMessageGeneratorPropertyGrid.SelectedObject as IBrokeredMessageGenerator;
+                            if (brokeredMessageGenerator != null)
                             {
-                                lock (this)
+                                messageTemplateList = new List<BrokeredMessage>(brokeredMessageGenerator.GenerateBrokeredMessageCollection(txtMessageCount.IntegerValue, writeToLog));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            HandleException(ex);
+                        }
+                    }
+                    try
+                    {
+                        senderCancellationTokenSource = new CancellationTokenSource();
+                        currentIndex = 0;
+                        senderBrokeredMessageInspector = cboSenderInspector.SelectedIndex > 0
+                            ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector
+                            : null;
+
+                        Func<long> getMessageNumber = () =>
+                        {
+                            lock (this)
+                            {
+                                return currentIndex++;
+                            }
+                        };
+                        Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>> senderAction = (taskId, messageTemplateEnumerable, messageTextEnumerable) =>
+                        {
+                            try
+                            {
+                                string traceMessage;
+                                bool ok;
+
+                                if (checkBoxSenderUseTransaction.Checked)
                                 {
-                                    return currentIndex++;
+                                    using (var scope = new TransactionScope())
+                                    {
+                                        ok = serviceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                            messageTemplateEnumerable,
+                                            getMessageNumber,
+                                            messageCount,
+                                            taskId,
+                                            checkBoxUpdateMessageId.Checked,
+                                            checkBoxAddMessageNumber.Checked,
+                                            checkBoxOneSessionPerTask.Checked,
+                                            checkBoxEnableSenderLogging.Checked,
+                                            checkBoxSenderVerboseLogging.Checked,
+                                            checkBoxSenderEnableStatistics.Checked,
+                                            checkBoxSendBatch.Checked,
+                                            isBinary,
+                                            senderBatchSize,
+                                            checkBoxSenderThinkTime.Checked,
+                                            senderThinkTime,
+                                            bodyType,
+                                            senderBrokeredMessageInspector,
+                                            UpdateStatistics,
+                                            senderCancellationTokenSource,
+                                            out traceMessage);
+                                        var builder = new StringBuilder(traceMessage);
+                                        if (checkBoxSenderCommitTransaction.Checked)
+                                        {
+                                            scope.Complete();
+                                            builder.AppendLine(TransactionCommitted);
+                                        }
+                                        else
+                                        {
+                                            builder.AppendLine(TransactionAborted);
+                                        }
+                                        traceMessage = builder.ToString();
+                                    }
                                 }
-                            };
-                            Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>> senderAction = (taskId, messageTemplateEnumerable, messageTextEnumerable) =>
+                                else
+                                {
+                                    ok = serviceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                        messageTemplateEnumerable,
+                                        getMessageNumber,
+                                        messageCount,
+                                        taskId,
+                                        checkBoxUpdateMessageId.Checked,
+                                        checkBoxAddMessageNumber.Checked,
+                                        checkBoxOneSessionPerTask.Checked,
+                                        checkBoxEnableSenderLogging.Checked,
+                                        checkBoxSenderVerboseLogging.Checked,
+                                        checkBoxSenderEnableStatistics.Checked,
+                                        checkBoxSendBatch.Checked,
+                                        isBinary,
+                                        senderBatchSize,
+                                        checkBoxSenderThinkTime.Checked,
+                                        senderThinkTime,
+                                        bodyType,
+                                        senderBrokeredMessageInspector,
+                                        UpdateStatistics,
+                                        senderCancellationTokenSource,
+                                        out traceMessage);
+                                }
+                                if (!string.IsNullOrWhiteSpace(traceMessage))
+                                {
+                                    writeToLog(traceMessage.Substring(0,
+                                        traceMessage.
+                                            Length - 1));
+                                }
+                                isSenderFaulted = !ok;
+                            }
+                            catch (Exception ex)
+                            {
+                                isSenderFaulted = true;
+                                HandleException(ex);
+                            }
+                        };
+
+                        // Define Sender AsyncCallback
+                        AsyncCallback senderCallback = a =>
+                        {
+                            var action = a.AsyncState as Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>>;
+                            if (action != null)
+                            {
+                                action.EndInvoke(a);
+                                if (Interlocked.Decrement(ref actionCount) == 0)
+                                {
+                                    managerResetEvent.Set();
+                                }
+                            }
+                        };
+
+                        // Start Sender Actions
+                        for (var i = 0; i < Math.Min(messageCount, senderTaskCount); i++)
+                        {
+                            senderAction.BeginInvoke(i, messageTemplateList, messageTextList, senderCallback, senderAction);
+                            Interlocked.Increment(ref actionCount);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
+                }
+
+                //*****************************************************************************************************
+                //                                   Receiving messages from a Subscription
+                //*****************************************************************************************************
+                if (receiverEnabledCheckBox.Checked)
+                {
+                    var currentSubscription = subscriptionList.SingleOrDefault(s => s.Name == cboSubscriptions.Text);
+                    if (currentSubscription == null)
+                    {
+                        throw new ArgumentException(NoSubscriptionSelected);
+                    }
+                    var currentReceiveMode = cboReceivedMode.Text == PeekLock ?
+                        ReceiveMode.PeekLock :
+                        ReceiveMode.ReceiveAndDelete;
+                    var currentMoveToDeadLetterQueue = checkBoxMoveToDeadLetter.Checked;
+                    var currentReadFromDeadLetterQueue = checkBoxReadFromDeadLetter.Checked;
+
+                    try
+                    {
+                        receiverCancellationTokenSource = new CancellationTokenSource();
+                        receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
+                            ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
+                            : null;
+
+                        Action<int, MessagingFactory> receiverAction = (taskId, messagingFactory) =>
+                        {
+                            var allSessionsAccepted = false;
+
+                            while (!allSessionsAccepted)
                             {
                                 try
                                 {
+                                    MessageReceiver messageReceiver;
+                                    if (currentReadFromDeadLetterQueue)
+                                    {
+                                        messageReceiver =
+                                            messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath,
+                                                    currentSubscription.Name),
+                                                currentReceiveMode);
+                                    }
+                                    else
+                                    {
+                                        if (currentSubscription.RequiresSession)
+                                        {
+                                            var subscriptionClient = messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath,
+                                                currentSubscription.Name,
+                                                currentReceiveMode);
+                                            messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
+                                        }
+                                        else
+                                        {
+                                            messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(currentSubscription.TopicPath,
+                                                    currentSubscription.Name),
+                                                currentReceiveMode);
+                                        }
+                                    }
+                                    messageReceiver.PrefetchCount = prefetchCount;
                                     string traceMessage;
-                                    bool ok;
-
-                                    if (checkBoxSenderUseTransaction.Checked)
+                                    if (checkBoxReceiverUseTransaction.Checked)
                                     {
                                         using (var scope = new TransactionScope())
                                         {
-                                            ok = serviceBusHelper.SendMessages(messageSenderCollection[taskId],
-                                                                               messageTemplateEnumerable,
-                                                                               getMessageNumber,
-                                                                               messageCount,
-                                                                               taskId,
-                                                                               checkBoxUpdateMessageId.Checked,
-                                                                               checkBoxAddMessageNumber.Checked,
-                                                                               checkBoxOneSessionPerTask.Checked,
-                                                                               checkBoxEnableSenderLogging.Checked,
-                                                                               checkBoxSenderVerboseLogging.Checked,
-                                                                               checkBoxSenderEnableStatistics.Checked,
-                                                                               checkBoxSendBatch.Checked,
-                                                                               isBinary,
-                                                                               senderBatchSize,
-                                                                               checkBoxSenderThinkTime.Checked,
-                                                                               senderThinkTime,
-                                                                               bodyType,
-                                                                               senderBrokeredMessageInspector,
-                                                                               UpdateStatistics,
-                                                                               senderCancellationTokenSource,
-                                                                               out traceMessage);
+                                            serviceBusHelper.ReceiveMessages(messageReceiver,
+                                                taskId,
+                                                receiveTimeout,
+                                                filter,
+                                                currentMoveToDeadLetterQueue,
+                                                checkBoxCompleteReceive.Checked,
+                                                checkBoxDeferMessage.Checked,
+                                                checkBoxEnableReceiverLogging.Checked,
+                                                checkBoxReceiverVerboseLogging.Checked,
+                                                checkBoxReceiverEnableStatistics.Checked,
+                                                checkBoxReceiveBatch.Checked,
+                                                receiverBatchSize,
+                                                checkBoxReceiverThinkTime.Checked,
+                                                receiverThinkTime,
+                                                receiverBrokeredMessageInspector,
+                                                UpdateStatistics,
+                                                receiverCancellationTokenSource,
+                                                out traceMessage);
                                             var builder = new StringBuilder(traceMessage);
-                                            if (checkBoxSenderCommitTransaction.Checked)
+                                            if (checkBoxReceiverCommitTransaction.Checked)
                                             {
                                                 scope.Complete();
                                                 builder.AppendLine(TransactionCommitted);
@@ -972,254 +1112,95 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                     }
                                     else
                                     {
-                                        ok = serviceBusHelper.SendMessages(messageSenderCollection[taskId],
-                                                                           messageTemplateEnumerable,
-                                                                           getMessageNumber,
-                                                                           messageCount,
-                                                                           taskId,
-                                                                           checkBoxUpdateMessageId.Checked,
-                                                                           checkBoxAddMessageNumber.Checked,
-                                                                           checkBoxOneSessionPerTask.Checked,
-                                                                           checkBoxEnableSenderLogging.Checked,
-                                                                           checkBoxSenderVerboseLogging.Checked,
-                                                                           checkBoxSenderEnableStatistics.Checked,
-                                                                           checkBoxSendBatch.Checked,
-                                                                           isBinary,
-                                                                           senderBatchSize,
-                                                                           checkBoxSenderThinkTime.Checked,
-                                                                           senderThinkTime,
-                                                                           bodyType,
-                                                                           senderBrokeredMessageInspector,
-                                                                           UpdateStatistics,
-                                                                           senderCancellationTokenSource,
-                                                                           out traceMessage);
+                                        serviceBusHelper.ReceiveMessages(messageReceiver,
+                                            taskId,
+                                            receiveTimeout,
+                                            filter,
+                                            currentMoveToDeadLetterQueue,
+                                            checkBoxCompleteReceive.Checked,
+                                            checkBoxDeferMessage.Checked,
+                                            checkBoxEnableReceiverLogging.Checked,
+                                            checkBoxReceiverVerboseLogging.Checked,
+                                            checkBoxReceiverEnableStatistics.Checked,
+                                            checkBoxReceiveBatch.Checked,
+                                            receiverBatchSize,
+                                            checkBoxReceiverThinkTime.Checked,
+                                            receiverThinkTime,
+                                            receiverBrokeredMessageInspector,
+                                            UpdateStatistics,
+                                            receiverCancellationTokenSource,
+                                            out traceMessage);
                                     }
                                     if (!string.IsNullOrWhiteSpace(traceMessage))
                                     {
-                                        writeToLog(traceMessage.Substring(0,
-                                                                               traceMessage.
-                                                                                   Length - 1));
+                                        writeToLog(traceMessage.Substring(0, traceMessage.Length - 1));
                                     }
-                                    isSenderFaulted = !ok;
+                                    allSessionsAccepted = !currentSubscription.RequiresSession;
                                 }
-                                catch (Exception ex)
+                                catch (TimeoutException ex)
                                 {
-                                    isSenderFaulted = true;
-                                    HandleException(ex);
-                                }
-                            };
-
-                            // Define Sender AsyncCallback
-                            AsyncCallback senderCallback = a =>
-                            {
-                                var action = a.AsyncState as Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>>;
-                                if (action != null)
-                                {
-                                    action.EndInvoke(a);
-                                    if (Interlocked.Decrement(ref actionCount) == 0)
+                                    if (currentSubscription.RequiresSession)
                                     {
-                                        managerResetEvent.Set();
+                                        writeToLog(string.Format(NoMoreSessionsToAccept, taskId));
+                                        allSessionsAccepted = true;
                                     }
-                                }
-                            };
-
-                            // Start Sender Actions
-                            for (var i = 0; i < Math.Min(messageCount, senderTaskCount); i++)
-                            {
-                                senderAction.BeginInvoke(i, messageTemplateList, messageTextList, senderCallback, senderAction);
-                                Interlocked.Increment(ref actionCount);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            HandleException(ex);
-                        }
-                    }
-
-                    //*****************************************************************************************************
-                    //                                   Receiving messages from a Subscription
-                    //*****************************************************************************************************
-                    if (receiverEnabledCheckBox.Checked)
-                    {
-                        var currentSubscription = subscriptionList.SingleOrDefault(s => s.Name == cboSubscriptions.Text);
-                        if (currentSubscription == null)
-                        {
-                            throw new ArgumentException(NoSubscriptionSelected);
-                        }
-                        var currentReceiveMode = cboReceivedMode.Text == PeekLock ?
-                                                                         ReceiveMode.PeekLock :
-                                                                         ReceiveMode.ReceiveAndDelete;
-                        var currentMoveToDeadLetterQueue = checkBoxMoveToDeadLetter.Checked;
-                        var currentReadFromDeadLetterQueue = checkBoxReadFromDeadLetter.Checked;
-
-                        try
-                        {
-                            receiverCancellationTokenSource = new CancellationTokenSource();
-                            receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
-                                                          ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
-                                                          : null;
-
-                            Action<int, MessagingFactory> receiverAction = (taskId, messagingFactory) =>
-                            {
-                                var allSessionsAccepted = false;
-
-                                while (!allSessionsAccepted)
-                                {
-                                    try
-                                    {
-                                        MessageReceiver messageReceiver;
-                                        if (currentReadFromDeadLetterQueue)
-                                        {
-                                            messageReceiver =
-                                                messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath,
-                                                                                                                               currentSubscription.Name),
-                                                                                       currentReceiveMode);
-                                        }
-                                        else
-                                        {
-                                            if (currentSubscription.RequiresSession)
-                                            {
-                                                var subscriptionClient = messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath,
-                                                                                                                   currentSubscription.Name,
-                                                                                                                   currentReceiveMode);
-                                                messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
-                                            }
-                                            else
-                                            {
-                                                messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(currentSubscription.TopicPath,
-                                                                                                                                                   currentSubscription.Name),
-                                                                                                         currentReceiveMode);
-                                            }
-                                        }
-                                        messageReceiver.PrefetchCount = prefetchCount;
-                                        string traceMessage;
-                                        if (checkBoxReceiverUseTransaction.Checked)
-                                        {
-                                            using (var scope = new TransactionScope())
-                                            {
-                                                serviceBusHelper.ReceiveMessages(messageReceiver,
-                                                                                 taskId,
-                                                                                 receiveTimeout,
-                                                                                 filter,
-                                                                                 currentMoveToDeadLetterQueue,
-                                                                                 checkBoxCompleteReceive.Checked,
-                                                                                 checkBoxDeferMessage.Checked,
-                                                                                 checkBoxEnableReceiverLogging.Checked,
-                                                                                 checkBoxReceiverVerboseLogging.Checked,
-                                                                                 checkBoxReceiverEnableStatistics.Checked,
-                                                                                 checkBoxReceiveBatch.Checked,
-                                                                                 receiverBatchSize,
-                                                                                 checkBoxReceiverThinkTime.Checked,
-                                                                                 receiverThinkTime,
-                                                                                 receiverBrokeredMessageInspector,
-                                                                                 UpdateStatistics,
-                                                                                 receiverCancellationTokenSource,
-                                                                                 out traceMessage);
-                                                var builder = new StringBuilder(traceMessage);
-                                                if (checkBoxReceiverCommitTransaction.Checked)
-                                                {
-                                                    scope.Complete();
-                                                    builder.AppendLine(TransactionCommitted);
-                                                }
-                                                else
-                                                {
-                                                    builder.AppendLine(TransactionAborted);
-                                                }
-                                                traceMessage = builder.ToString();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            serviceBusHelper.ReceiveMessages(messageReceiver,
-                                                                             taskId,
-                                                                             receiveTimeout,
-                                                                             filter,
-                                                                             currentMoveToDeadLetterQueue,
-                                                                             checkBoxCompleteReceive.Checked,
-                                                                             checkBoxDeferMessage.Checked,
-                                                                             checkBoxEnableReceiverLogging.Checked,
-                                                                             checkBoxReceiverVerboseLogging.Checked,
-                                                                             checkBoxReceiverEnableStatistics.Checked,
-                                                                             checkBoxReceiveBatch.Checked,
-                                                                             receiverBatchSize,
-                                                                             checkBoxReceiverThinkTime.Checked,
-                                                                             receiverThinkTime,
-                                                                             receiverBrokeredMessageInspector,
-                                                                             UpdateStatistics,
-                                                                             receiverCancellationTokenSource,
-                                                                             out traceMessage);
-                                        }
-                                        if (!string.IsNullOrWhiteSpace(traceMessage))
-                                        {
-                                            writeToLog(traceMessage.Substring(0, traceMessage.Length - 1));
-                                        }
-                                        allSessionsAccepted = !currentSubscription.RequiresSession;
-                                    }
-                                    catch (TimeoutException ex)
-                                    {
-                                        if (currentSubscription.RequiresSession)
-                                        {
-                                            writeToLog(string.Format(NoMoreSessionsToAccept, taskId));
-                                            allSessionsAccepted = true;
-                                        }
-                                        else
-                                        {
-                                            HandleException(ex);
-                                        }
-                                    }
-                                    catch (Exception ex)
+                                    else
                                     {
                                         HandleException(ex);
                                     }
                                 }
-                            };
-
-                            // Define Receiver AsyncCallback
-                            AsyncCallback receiverCallback = a =>
-                            {
-                                var action = a.AsyncState as Action<int, MessagingFactory>;
-                                if (action != null)
+                                catch (Exception ex)
                                 {
-                                    action.EndInvoke(a);
-                                    if (Interlocked.Decrement(ref actionCount) == 0)
-                                    {
-                                        managerResetEvent.Set();
-                                    }
+                                    HandleException(ex);
                                 }
-                            };
-
-                            // Start Receiver Actions
-                            for (var i = 0; i < receiverTaskCount; i++)
-                            {
-                                MessagingFactory factory;
-                                if (checkBoxReceiveNewFactory.Checked)
-                                {
-                                    factory = serviceBusHelper.CreateMessagingFactory();
-                                    receiverFactories.Add(factory);
-                                }
-                                else
-                                {
-                                    factory = serviceBusHelper.MessagingFactory;
-                                }
-
-                                receiverAction.BeginInvoke(i, factory, receiverCallback, receiverAction);
-                                Interlocked.Increment(ref actionCount);
                             }
-                        }
-                        catch (Exception ex)
+                        };
+
+                        // Define Receiver AsyncCallback
+                        AsyncCallback receiverCallback = a =>
                         {
-                            HandleException(ex);
+                            var action = a.AsyncState as Action<int, MessagingFactory>;
+                            if (action != null)
+                            {
+                                action.EndInvoke(a);
+                                if (Interlocked.Decrement(ref actionCount) == 0)
+                                {
+                                    managerResetEvent.Set();
+                                }
+                            }
+                        };
+
+                        // Start Receiver Actions
+                        for (var i = 0; i < receiverTaskCount; i++)
+                        {
+                            MessagingFactory factory;
+                            if (checkBoxReceiveNewFactory.Checked)
+                            {
+                                factory = serviceBusHelper.CreateMessagingFactory();
+                                receiverFactories.Add(factory);
+                            }
+                            else
+                            {
+                                factory = serviceBusHelper.MessagingFactory;
+                            }
+
+                            receiverAction.BeginInvoke(i, factory, receiverCallback, receiverAction);
+                            Interlocked.Increment(ref actionCount);
                         }
                     }
-                    if (actionCount > 0)
+                    catch (Exception ex)
                     {
-                        managerCancellationTokenSource = new CancellationTokenSource();
-                        managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
-                        graphCancellationTokenSource = new CancellationTokenSource();
-                        updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
-                        Interlocked.Increment(ref actionCount);
-                        btnStart.Text = StopCaption;
+                        HandleException(ex);
                     }
+                }
+                if (actionCount > 0)
+                {
+                    managerCancellationTokenSource = new CancellationTokenSource();
+                    managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
+                    graphCancellationTokenSource = new CancellationTokenSource();
+                    updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
+                    Interlocked.Increment(ref actionCount);
+                    btnStart.Text = StopCaption;
                 }
             }
             catch (Exception ex)
@@ -1235,12 +1216,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
@@ -1364,22 +1345,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 await stopLog();
             }
-            if (managerCancellationTokenSource != null)
-            {
-                managerCancellationTokenSource.Cancel();
-            }
-            if (graphCancellationTokenSource != null)
-            {
-                graphCancellationTokenSource.Cancel();
-            }
-            if (senderCancellationTokenSource != null)
-            {
-                senderCancellationTokenSource.Cancel();
-            }
-            if (receiverCancellationTokenSource != null)
-            {
-                receiverCancellationTokenSource.Cancel();
-            }
+            managerCancellationTokenSource?.Cancel();
+            graphCancellationTokenSource?.Cancel();
+            senderCancellationTokenSource?.Cancel();
+            receiverCancellationTokenSource?.Cancel();
 
             // always cleans up the factories
             // clean up factories if the checkbox is checked.
@@ -1421,10 +1390,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
             await CancelActions();
-            if (OnCancel != null)
-            {
-                OnCancel();
-            }
+            OnCancel?.Invoke();
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -1978,9 +1944,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = string.Format("{0} KB", fileInfo.Length % 1024 == 0
-                                                       ? fileInfo.Length / 1024
-                                                       : fileInfo.Length / 1024 + 1);
+                var size = $"{(fileInfo.Length%1024 == 0 ? fileInfo.Length/1024 : fileInfo.Length/1024 + 1)} KB";
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
                     fileInfo.FullName,
@@ -2138,66 +2102,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                if (disposing && (components != null))
+                if (disposing)
                 {
-                    components.Dispose();
+                    components?.Dispose();
                 }
 
-                if (senderCancellationTokenSource != null)
-                {
-                    senderCancellationTokenSource.Dispose();
-                }
+                senderCancellationTokenSource?.Dispose();
 
-                if (receiverCancellationTokenSource != null)
-                {
-                    receiverCancellationTokenSource.Dispose();
-                }
+                receiverCancellationTokenSource?.Dispose();
 
-                if (managerCancellationTokenSource != null)
-                {
-                    managerCancellationTokenSource.Dispose();
-                }
+                managerCancellationTokenSource?.Dispose();
 
-                if (graphCancellationTokenSource != null)
-                {
-                    graphCancellationTokenSource.Dispose();
-                }
+                graphCancellationTokenSource?.Dispose();
 
-                if (managerResetEvent != null)
-                {
-                    managerResetEvent.Dispose();
-                }
+                managerResetEvent?.Dispose();
 
-                if (blockingCollection != null)
-                {
-                    blockingCollection.Dispose();
-                }
+                blockingCollection?.Dispose();
 
                 if (brokeredMessageGenerator != null)
                 {
                     var disposable = brokeredMessageGenerator as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 if (senderBrokeredMessageInspector != null)
                 {
                     var disposable = senderBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 if (receiverBrokeredMessageInspector != null)
                 {
                     var disposable = receiverBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 for (var i = 0; i < Controls.Count; i++)

@@ -62,7 +62,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string EntitiesFileNameFormat = "{0} {1}.xml";
         private const string UrlSegmentFormat = "{0}/{1}";
         //private const string FaultNode = "Fault";
-        private const string NameMessageCountFormat = "{0} ({1}, {2})";
+        private const string NameMessageCountFormat = "{0} ({1}, {2}, {3})";
         private const string PartitionFormat = "{0,2:00}";
 
         //***************************
@@ -1014,7 +1014,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                            string.Format(NameMessageCountFormat,
                                                                                          wrapper.SubscriptionDescription.Name,
                                                                                          wrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount) :
+                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
+                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
                                                                            wrapper.SubscriptionDescription.Name,
                                                                            wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                            wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
@@ -1661,7 +1662,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                string.Format(NameMessageCountFormat,
                                                                              serviceBusTreeView.SelectedNode.Name,
                                                                              queueDescription.MessageCountDetails.ActiveMessageCount,
-                                                                             queueDescription.MessageCountDetails.DeadLetterMessageCount) :
+                                                                             queueDescription.MessageCountDetails.DeadLetterMessageCount,
+                                                                             queueDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
                                                                serviceBusTreeView.SelectedNode.Name;
                         return;
                     }
@@ -1878,7 +1880,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                                    string.Format(NameMessageCountFormat,
                                                                                                  subscription.Name,
                                                                                                  subscription.MessageCountDetails.ActiveMessageCount,
-                                                                                                 subscription.MessageCountDetails.DeadLetterMessageCount) :
+                                                                                                 subscription.MessageCountDetails.DeadLetterMessageCount,
+                                                                                                 subscription.MessageCountDetails.TransferDeadLetterMessageCount) :
                                                                                    subscription.Name,
                                                                                    subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                                    subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
@@ -1960,7 +1963,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                string.Format(NameMessageCountFormat,
                                                                              serviceBusTreeView.SelectedNode.Name,
                                                                              subscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                                                             subscriptionDescription.MessageCountDetails.DeadLetterMessageCount) :
+                                                                             subscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
+                                                                             subscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
                                                                serviceBusTreeView.SelectedNode.Name;
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
@@ -2027,7 +2031,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             foreach (var subscriptionDescription in subscriptionDescriptions)
             {
                 var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, showMessageCount
-                        ? string.Format(NameMessageCountFormat, subscriptionDescription.Name, subscriptionDescription.MessageCountDetails.ActiveMessageCount, subscriptionDescription.MessageCountDetails.DeadLetterMessageCount)
+                        ? string.Format(NameMessageCountFormat, 
+                                        subscriptionDescription.Name, 
+                                        subscriptionDescription.MessageCountDetails.ActiveMessageCount, 
+                                        subscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
+                                        subscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount)
                         : subscriptionDescription.Name, subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex, subscriptionDescription.Status == EntityStatus.Active
                         ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
@@ -4761,7 +4769,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                         ? string.Format(NameMessageCountFormat,
                                                             subscription.Name,
                                                             subscription.MessageCountDetails.ActiveMessageCount,
-                                                            subscription.MessageCountDetails.DeadLetterMessageCount)
+                                                            subscription.MessageCountDetails.DeadLetterMessageCount,
+                                                            subscription.MessageCountDetails.TransferDeadLetterMessageCount)
                                                         : subscription.Name,
                                                     subscription.Status == EntityStatus.Active
                                                         ? SubscriptionIconIndex
@@ -5853,7 +5862,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                               string.Format(NameMessageCountFormat,
                                                                             segments[i],
                                                                             queueDescription.MessageCountDetails.ActiveMessageCount,
-                                                                            queueDescription.MessageCountDetails.DeadLetterMessageCount) :
+                                                                            queueDescription.MessageCountDetails.DeadLetterMessageCount,
+                                                                            queueDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
                                                               segments[i],
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);

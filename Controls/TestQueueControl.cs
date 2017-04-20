@@ -66,9 +66,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DefaulReceiveBatchSize = "10";
         private const string DefaultSenderTaskCount = "1";
         private const string DefaultReceiverTaskCount = "1";
-        private const string DefaultReceiveTimeout = "1";
-        private const string DefaultSessionTimeout = "3";
-        private const string DefaultPrefetchCount = "0";
         private const string PeekLock = "PeekLock";
         private const string StartCaption = "Start";
         private const string StopCaption = "Stop";
@@ -198,13 +195,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private IBrokeredMessageGenerator brokeredMessageGenerator;
         private IBrokeredMessageInspector senderBrokeredMessageInspector;
         private IBrokeredMessageInspector receiverBrokeredMessageInspector;
-        private List<MessagingFactory> senderFactories = new List<MessagingFactory>();
-        private List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
+        private readonly List<MessagingFactory> senderFactories = new List<MessagingFactory>();
+        private readonly List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
 
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
         #endregion
 
         #region Public Constructors
@@ -307,7 +304,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 // Create the Type column
                 var comboBoxColumn = new DataGridViewComboBoxColumn
                 {
-                    DataSource = types,
+                    DataSource = Types,
                     DataPropertyName = PropertyType,
                     Name = PropertyType,
                     Width = 90,
@@ -348,12 +345,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                txtMessageText.Text = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
+                txtMessageText.Text = !string.IsNullOrWhiteSpace(mainForm?.MessageText) ?
+                                      JsonSerializerHelper.Indent(XmlHelper.Indent(mainForm.MessageText)) :
                                       DefaultMessageText;
-                txtLabel.Text = mainForm != null &&
-                                !string.IsNullOrWhiteSpace(mainForm.Label) ?
+                txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
                                 mainForm.Label :
                                 DefaultMessageText;
                 txtMessageId.Text = Guid.NewGuid().ToString();
@@ -372,15 +367,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
-                txtReceiveTimeout.Text = mainForm != null ?
-                                         mainForm.ReceiveTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultReceiveTimeout;
-                txtSessionTimeout.Text = mainForm != null ?
-                                         mainForm.ServerTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultSessionTimeout;
-                txtPrefetchCount.Text = mainForm != null ?
-                                        mainForm.PrefetchCount.ToString(CultureInfo.InvariantCulture) :
-                                        DefaultPrefetchCount;
+                txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
+                txtSessionTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
+                txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
                 cboReceivedMode.SelectedIndex = 1;
                 txtSendBatchSize.Enabled = false;
                 txtReceiveBatchSize.Enabled = false;
@@ -1367,22 +1356,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 await stopLog();
             }
-            if (managerCancellationTokenSource != null)
-            {
-                managerCancellationTokenSource.Cancel();
-            }
-            if (graphCancellationTokenSource != null)
-            {
-                graphCancellationTokenSource.Cancel();
-            }
-            if (senderCancellationTokenSource != null)
-            {
-                senderCancellationTokenSource.Cancel();
-            }
-            if (receiverCancellationTokenSource != null)
-            {
-                receiverCancellationTokenSource.Cancel();
-            }
+            managerCancellationTokenSource?.Cancel();
+            graphCancellationTokenSource?.Cancel();
+            senderCancellationTokenSource?.Cancel();
+            receiverCancellationTokenSource?.Cancel();
 
             // always cleans up the factories
             // clean up factories if the checkbox is checked.
@@ -1424,10 +1401,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
             await CancelActions();
-            if (OnCancel != null)
-            {
-                OnCancel();
-            }
+            OnCancel?.Invoke();
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -1966,9 +1940,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = string.Format("{0} KB", fileInfo.Length % 1024 == 0
-                                                       ? fileInfo.Length / 1024
-                                                       : fileInfo.Length / 1024 + 1);
+                var size = $"{(fileInfo.Length%1024 == 0 ? fileInfo.Length/1024 : fileInfo.Length/1024 + 1)} KB";
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
                     fileInfo.FullName,
@@ -2126,66 +2098,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                if (disposing && (components != null))
+                if (disposing)
                 {
-                    components.Dispose();
+                    components?.Dispose();
                 }
 
-                if (senderCancellationTokenSource != null)
-                {
-                    senderCancellationTokenSource.Dispose();
-                }
+                senderCancellationTokenSource?.Dispose();
 
-                if (receiverCancellationTokenSource != null)
-                {
-                    receiverCancellationTokenSource.Dispose();
-                }
+                receiverCancellationTokenSource?.Dispose();
 
-                if (managerCancellationTokenSource != null)
-                {
-                    managerCancellationTokenSource.Dispose();
-                }
+                managerCancellationTokenSource?.Dispose();
 
-                if (graphCancellationTokenSource != null)
-                {
-                    graphCancellationTokenSource.Dispose();
-                }
+                graphCancellationTokenSource?.Dispose();
 
-                if (managerResetEvent != null)
-                {
-                    managerResetEvent.Dispose();
-                }
+                managerResetEvent?.Dispose();
 
-                if (blockingCollection != null)
-                {
-                    blockingCollection.Dispose();
-                }
+                blockingCollection?.Dispose();
 
                 if (brokeredMessageGenerator != null)
                 {
                     var disposable = brokeredMessageGenerator as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 if (senderBrokeredMessageInspector != null)
                 {
                     var disposable = senderBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 if (receiverBrokeredMessageInspector != null)
                 {
                     var disposable = receiverBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 for (var i = 0; i < Controls.Count; i++)

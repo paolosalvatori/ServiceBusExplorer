@@ -57,9 +57,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string StartCaption = "Start";
         private const string StopCaption = "Stop";
         private const string DefaultFilterExpression = "1=1";
-        private const string DefaultReceiveTimeout = "1";
-        private const string DefaultSessionTimeout = "3";
-        private const string DefaultPrefetchCount = "0";
         private const string DefaulReceiveBatchSize = "10";
 
         //***************************
@@ -155,14 +152,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
                 cboReceiverInspector.SelectedIndex = 0;
 
-                if (serviceBusHelper != null)
+                if (serviceBusHelper?.BrokeredMessageInspectors != null)
                 {
-                    if (serviceBusHelper.BrokeredMessageInspectors != null)
+                    foreach (var key in serviceBusHelper.BrokeredMessageInspectors.Keys)
                     {
-                        foreach (var key in serviceBusHelper.BrokeredMessageInspectors.Keys)
-                        {
-                            cboReceiverInspector.Items.Add(key);
-                        }
+                        cboReceiverInspector.Items.Add(key);
                     }
                 }
 
@@ -173,15 +167,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 // Set Task Count
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
                 cboReceivedMode.SelectedIndex = 1;
-                txtReceiveTimeout.Text = mainForm != null ?
-                                         mainForm.ReceiveTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultReceiveTimeout;
-                txtServerTimeout.Text = mainForm != null ?
-                                         mainForm.ServerTimeout.ToString(CultureInfo.InvariantCulture) :
-                                         DefaultSessionTimeout;
-                txtPrefetchCount.Text = mainForm != null ?
-                                        mainForm.PrefetchCount.ToString(CultureInfo.InvariantCulture) :
-                                        DefaultPrefetchCount;
+                txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
+                txtServerTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
+                txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtReceiveBatchSize.Enabled = false;
 
@@ -358,10 +346,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 var receiveTuple = new Tuple<long, long, DirectionType>(receiveMessageNumber, receiveTotalTime, DirectionType.Receive);
                                 if (InvokeRequired)
                                 {
-                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
-                                           new object[] { receiveTuple.Item1, 
-                                                          receiveTuple.Item2, 
-                                                          receiveTuple.Item3 });
+                                    Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics), receiveTuple.Item1, receiveTuple.Item2, receiveTuple.Item3);
                                 }
                                 else
                                 {
@@ -577,12 +562,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
@@ -693,24 +678,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 await stopLog();
             }
-            if (managerCancellationTokenSource != null)
-            {
-                managerCancellationTokenSource.Cancel();
-            }
-            if (graphCancellationTokenSource != null)
-            {
-                graphCancellationTokenSource.Cancel();
-            }
-            if (receiverCancellationTokenSource != null)
-            {
-                receiverCancellationTokenSource.Cancel();
-            }
+            managerCancellationTokenSource?.Cancel();
+            graphCancellationTokenSource?.Cancel();
+            receiverCancellationTokenSource?.Cancel();
         }
 
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
             await CancelActions();
-            OnCancel();
+            OnCancel?.Invoke();
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -876,7 +852,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
@@ -885,7 +861,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
 
-            if (Char.IsDigit(e.KeyChar))
+            if (char.IsDigit(e.KeyChar))
             {
                 // Digits are OK
             }
@@ -917,43 +893,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                if (disposing && (components != null))
+                if (disposing)
                 {
-                    components.Dispose();
+                    components?.Dispose();
                 }
 
-                if (receiverCancellationTokenSource != null)
-                {
-                    receiverCancellationTokenSource.Dispose();
-                }
+                receiverCancellationTokenSource?.Dispose();
 
-                if (managerCancellationTokenSource != null)
-                {
-                    managerCancellationTokenSource.Dispose();
-                }
+                managerCancellationTokenSource?.Dispose();
 
-                if (graphCancellationTokenSource != null)
-                {
-                    graphCancellationTokenSource.Dispose();
-                }
+                graphCancellationTokenSource?.Dispose();
 
-                if (managerResetEvent != null)
-                {
-                    managerResetEvent.Dispose();
-                }
+                managerResetEvent?.Dispose();
 
-                if (blockingCollection != null)
-                {
-                    blockingCollection.Dispose();
-                }
+                blockingCollection?.Dispose();
 
                 if (receiverBrokeredMessageInspector != null)
                 {
                     var disposable = receiverBrokeredMessageInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    disposable?.Dispose();
                 }
 
                 for (var i = 0; i < Controls.Count; i++)

@@ -2653,7 +2653,7 @@
             this.btnTransferDeadletterQueue.Name = "btnTransferDeadletterQueue";
             this.btnTransferDeadletterQueue.Size = new System.Drawing.Size(72, 24);
             this.btnTransferDeadletterQueue.TabIndex = 16;
-            this.btnTransferDeadletterQueue.Text = "Transfer";
+            this.btnTransferDeadletterQueue.Text = "Transf DLQ";
             this.btnTransferDeadletterQueue.UseVisualStyleBackColor = false;
             this.btnTransferDeadletterQueue.Click += new System.EventHandler(this.btnTransferDlq_Click);
             // 
