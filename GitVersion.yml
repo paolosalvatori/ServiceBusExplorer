@@ -1,5 +1,11 @@
 mode: ContinuousDeployment
 assembly-versioning-scheme: MajorMinorPatch
-branches: {}
-ignore:
-  sha: []
+increment: Patch
+branches: {
+  master:
+    mode: ContinuousDeployment
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+}
