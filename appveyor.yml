@@ -59,7 +59,7 @@ deploy:
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
-    description: ServiceBus Explorer build ${build}.
+    description: ServiceBus Explorer build %APPVEYOR_BUILD_VERSION%.
     draft: false
     prerelease: false
     on:
