@@ -11,7 +11,6 @@ before_build:
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform: Any CPU
 
-
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
@@ -20,6 +19,9 @@ version: '4.0.{build}'
 
 assembly_info:
   patch: false
+
+#init:
+  
  
 build:
   parallel: true                     # enable MSBuild parallel builds
