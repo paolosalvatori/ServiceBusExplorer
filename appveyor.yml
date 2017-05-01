@@ -15,15 +15,8 @@ platform: Any CPU
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
-# versioning
-#  version: '4.0.{build}'
-
 assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+  patch: false
  
 build:
   parallel: true                     # enable MSBuild parallel builds
@@ -66,7 +59,7 @@ deploy:
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
-    description: ServiceBus Explorer build {build}.
+    description: ServiceBus Explorer build ${build}.
     draft: false
     prerelease: false
     on:
