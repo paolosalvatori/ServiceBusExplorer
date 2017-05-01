@@ -11,29 +11,16 @@ before_build:
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform: Any CPU
 
-# to add several platforms to build matrix:
-#platform:
-#  - x86
-#  - Any CPU
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
 # versioning
-version: '4.0.{build}'
+#version: '4.0.{build}'
 
 assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
-# to add several configurations to build matrix:
-#configuration:
-#  - Debug
-#  - Release
-
+  patch: false
+ 
 build:
   parallel: true                     # enable MSBuild parallel builds
   project: ServiceBusExplorer.csproj # path to Visual Studio project
