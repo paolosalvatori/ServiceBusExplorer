@@ -4,6 +4,7 @@
 before_build:
   - nuget restore
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+  - ps: Update-AppveyorBuild -Version $env:APPVEYOR_REPO_TAG_NAME.TrimStart("-")
   
 #---------------------------------#
 #       build configuration       #
