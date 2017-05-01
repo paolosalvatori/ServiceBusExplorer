@@ -16,7 +16,7 @@ platform: Any CPU
 configuration: Release
 
 # versioning
-#version: '4.0.{build}'
+version: '4.0.{build}'
 
 assembly_info:
   patch: false
@@ -62,9 +62,8 @@ deploy:
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
-    description: ServiceBus Explorer build {appveyor_build_version}.
+    description: ServiceBus Explorer build {build}.
     draft: false
     prerelease: false
     on:
       branch: master                # release from master branch only
-      #appveyor_repo_tag: true        # deploy on tag push only
