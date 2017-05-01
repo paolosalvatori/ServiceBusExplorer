@@ -1,4 +1,5 @@
 mode: ContinuousDeployment
+assembly-versioning-scheme: MajorMinorPatch
 branches: {}
 ignore:
   sha: []
