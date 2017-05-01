@@ -16,11 +16,13 @@ configuration: Release
 
 # versioning
 #version: '4.0.{build}'
+init:
+  # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
+  - ps: >-
+      Update-AppveyorBuild -Version "tests-$($env:APPVEYOR_BUILD_VERSION)=$($env:APPVEYOR_BUILD_NUMBER)"
 
 assembly_info:
   patch: false
-
-#init:
   
  
 build:
