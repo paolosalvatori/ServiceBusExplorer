@@ -3,6 +3,7 @@
 #---------------------------------#
 before_build:
   - nuget restore
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   
 #---------------------------------#
 #       build configuration       #
@@ -11,15 +12,14 @@ before_build:
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform: Any CPU
 
-
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
 # versioning
-#version: '4.0.{build}'
+#  version: '4.0.{build}'
 
-assembly_info:
-  patch: false
+#assembly_info:
+#  patch: false
  
 build:
   parallel: true                     # enable MSBuild parallel builds
@@ -62,9 +62,8 @@ deploy:
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
-    description: ServiceBus Explorer build {appveyor_build_version}.
+    description: ServiceBus Explorer build {build}.
     draft: false
     prerelease: false
     on:
       branch: master                # release from master branch only
-      #appveyor_repo_tag: true        # deploy on tag push only
