@@ -35,11 +35,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region IBrokeredMessageInspector Methods
         public EventData BeforeSendMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
         {
-            if (eventData == null)
-            {
-                return null;
-            }
-            var stream = eventData.Clone().GetBodyStream();
+            var stream = eventData?.Clone().GetBodyStream();
             if (stream == null)
             {
                 return null;
@@ -53,11 +49,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public EventData AfterReceiveMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
         {
-            if (eventData == null)
-            {
-                return null;
-            }
-            var stream = eventData.Clone().GetBodyStream();
+            var stream = eventData?.Clone().GetBodyStream();
             if (stream == null)
             {
                 return null;

@@ -34,14 +34,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class BrokeredMessageExtensions
     {
-        private static readonly PropertyInfo bodyStreamPropertyInfo;
+        private static readonly PropertyInfo BodyStreamPropertyInfo;
 
         static BrokeredMessageExtensions()
         {
             try
             {
                 var type = typeof (BrokeredMessage);
-                bodyStreamPropertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
+                BodyStreamPropertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
                                              .FirstOrDefault(p => string.Compare("BodyStream", p.Name, StringComparison.OrdinalIgnoreCase) == 0);
             }
             // ReSharper disable once EmptyGeneralCatchClause
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 stream.Seek(0, SeekOrigin.Begin);
             }
             var clone = message.Clone();
-            bodyStreamPropertyInfo.SetValue(clone, stream);
+            BodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
         }
 
@@ -72,7 +72,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             writer.Write(text);
             writer.Flush();
             var clone = message.Clone();
-            bodyStreamPropertyInfo.SetValue(clone, stream);
+            BodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
         }
 
@@ -103,12 +103,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public static Stream GetBodyStream(this BrokeredMessage message)
         {
-            return bodyStreamPropertyInfo.GetValue(message) as Stream;
+            return BodyStreamPropertyInfo.GetValue(message) as Stream;
         }
 
         public static void SetBodyStream(this BrokeredMessage message, Stream stream)
         {
-            bodyStreamPropertyInfo.SetValue(message, stream);
+            BodyStreamPropertyInfo.SetValue(message, stream);
         }
     }
 }

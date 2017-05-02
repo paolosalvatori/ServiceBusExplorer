@@ -35,11 +35,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region IBrokeredMessageInspector Methods
         public BrokeredMessage BeforeSendMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
         {
-            if (message == null)
-            {
-                return null;
-            }
-            var stream = message.Clone().GetBody<Stream>();
+            var stream = message?.Clone().GetBody<Stream>();
             if (stream == null)
             {
                 return null;
@@ -54,11 +50,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public BrokeredMessage AfterReceiveMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
         {
-            if (message == null)
-            {
-                return null;
-            }
-            var stream = message.Clone().GetBody<Stream>();
+            var stream = message?.Clone().GetBody<Stream>();
             if (stream == null)
             {
                 return null;
