@@ -203,7 +203,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " About Service Bus Explorer " + VersionProvider.GetVersion();
+            this.Text = " About Service Bus Explorer " + VersionProvider.GetVersionWithSha();
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AboutForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -3,6 +3,7 @@
 #---------------------------------#
 before_build:
   - nuget restore
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   
 #---------------------------------#
 #       build configuration       #
@@ -11,29 +12,12 @@ before_build:
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform: Any CPU
 
-# to add several platforms to build matrix:
-#platform:
-#  - x86
-#  - Any CPU
-
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
 
-# versioning
-version: '4.0.{build}'
-
 assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
-# to add several configurations to build matrix:
-#configuration:
-#  - Debug
-#  - Release
-
+  patch: false
+ 
 build:
   parallel: true                     # enable MSBuild parallel builds
   project: ServiceBusExplorer.csproj # path to Visual Studio project
@@ -75,6 +59,7 @@ deploy:
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
+    description: ServiceBus Explorer build %APPVEYOR_BUILD_VERSION%.
     draft: false
     prerelease: false
     on:
