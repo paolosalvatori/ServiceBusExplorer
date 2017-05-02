@@ -2343,6 +2343,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 dataGridView.SuspendDrawing();
                 dataGridView.SuspendLayout();
+                if (dataGridView.Columns.Count == 0)
+                {
+                    return;
+                }
                 if (dataGridView.Columns.Count == 2)
                 {
                     var width = dataGridView.Width - dataGridView.Columns[0].Width - dataGridView.RowHeadersWidth;
