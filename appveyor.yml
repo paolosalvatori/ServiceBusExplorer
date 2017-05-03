@@ -1,5 +1,8 @@
 image: Visual Studio 2017
 
+assembly_info:
+  patch: false
+
 #---------------------------------#
 #       restore nuget packages    #
 #---------------------------------#
@@ -19,9 +22,6 @@ platform: Any CPU
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
-
-assembly_info:
-  patch: false
  
 build:
   parallel: true                     # enable MSBuild parallel builds
@@ -61,12 +61,12 @@ notifications:
 
 deploy:
   - provider: GitHub
-    tag: %GitVersion_MajorMinorPatch%
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
     description: ServiceBus Explorer build %APPVEYOR_BUILD_VERSION%.
     draft: false
     prerelease: false
+    tag: $(GitVersion_MajorMinorPatch)
     on:
       branch: master                # release from master branch only
