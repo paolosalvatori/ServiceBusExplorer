@@ -1,1 +1,10 @@
-mode: Mainline
+mode: ContinuousDeployment
+assembly-versioning-scheme: MajorMinorPatch
+continuous-delivery-fallback-tag: ''
+branches:
+  master:
+    mode: ContinuousDeployment
+    tag: ''
+    increment: Patch
+ignore:
+  sha: []
