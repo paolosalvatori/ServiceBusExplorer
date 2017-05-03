@@ -8,6 +8,7 @@ before_build:
   - cmd: echo %appveyor_build_version%
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   - cmd: echo %appveyor_build_version%
+  - cmd: ECHO %GitVersion_MajorMinorPatch%
   
 #---------------------------------#
 #       build configuration       #
@@ -60,6 +61,7 @@ notifications:
 
 deploy:
   - provider: GitHub
+    tag: %GitVersion_MajorMinorPatch%
     auth_token:
       secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
