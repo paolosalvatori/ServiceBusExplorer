@@ -1,9 +1,17 @@
+image: Visual Studio 2017
+
+assembly_info:
+  patch: false
+
 #---------------------------------#
 #       restore nuget packages    #
 #---------------------------------#
 before_build:
   - nuget restore
+  - cmd: echo %appveyor_build_version%
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+  - cmd: echo %appveyor_build_version%
+  - cmd: ECHO %GitVersion_MajorMinorPatch%
   
 #---------------------------------#
 #       build configuration       #
@@ -14,9 +22,6 @@ platform: Any CPU
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
-
-assembly_info:
-  patch: false
  
 build:
   parallel: true                     # enable MSBuild parallel builds
@@ -62,5 +67,6 @@ deploy:
     description: ServiceBus Explorer build %APPVEYOR_BUILD_VERSION%.
     draft: false
     prerelease: false
+    tag: $(GitVersion_MajorMinorPatch)
     on:
       branch: master                # release from master branch only
