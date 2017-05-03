@@ -53,14 +53,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            CheckBoxProperties checkBoxProperties1 = new CheckBoxProperties();
+            Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.useAsciiCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblUseAscii = new System.Windows.Forms.Label();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
             this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.cboSelectedEntities = new CheckBoxComboBox();
+            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.lblShowMessageCount = new System.Windows.Forms.Label();
             this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
@@ -163,6 +165,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
+            this.mainPanel.Controls.Add(this.useAsciiCheckBox);
+            this.mainPanel.Controls.Add(this.lblUseAscii);
             this.mainPanel.Controls.Add(this.lblSaveCheckpointsOnExit);
             this.mainPanel.Controls.Add(this.saveCheckpointsToFileCheckBox);
             this.mainPanel.Controls.Add(this.cboSelectedEntities);
@@ -216,14 +220,36 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainPanel.TabIndex = 33;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
+            // useAsciiCheckBox
+            // 
+            this.useAsciiCheckBox.AutoSize = true;
+            this.useAsciiCheckBox.Checked = true;
+            this.useAsciiCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useAsciiCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.useAsciiCheckBox.Location = new System.Drawing.Point(184, 212);
+            this.useAsciiCheckBox.Name = "useAsciiCheckBox";
+            this.useAsciiCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.useAsciiCheckBox.TabIndex = 89;
+            this.useAsciiCheckBox.UseVisualStyleBackColor = true;
+            this.useAsciiCheckBox.CheckedChanged += new System.EventHandler(this.useAscii_CheckedChanged);
+            // 
+            // lblUseAscii
+            // 
+            this.lblUseAscii.AutoSize = true;
+            this.lblUseAscii.Location = new System.Drawing.Point(8, 212);
+            this.lblUseAscii.Name = "lblUseAscii";
+            this.lblUseAscii.Size = new System.Drawing.Size(59, 13);
+            this.lblUseAscii.TabIndex = 88;
+            this.lblUseAscii.Text = "Use ASCII:";
+            // 
             // lblSaveCheckpointsOnExit
             // 
             this.lblSaveCheckpointsOnExit.AutoSize = true;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(248, 244);
+            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(280, 244);
             this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
-            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(258, 13);
+            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(227, 13);
             this.lblSaveCheckpointsOnExit.TabIndex = 86;
-            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints to File on Exit:";
+            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints on Exit:";
             // 
             // saveCheckpointsToFileCheckBox
             // 
@@ -287,7 +313,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.lblEncoding.AutoSize = true;
             this.lblEncoding.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEncoding.Location = new System.Drawing.Point(8, 212);
+            this.lblEncoding.Location = new System.Drawing.Point(280, 212);
             this.lblEncoding.Name = "lblEncoding";
             this.lblEncoding.Size = new System.Drawing.Size(55, 13);
             this.lblEncoding.TabIndex = 81;
@@ -304,9 +330,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             "UTF8",
             "UTF32",
             "Unicode"});
-            this.cboEncodingType.Location = new System.Drawing.Point(184, 208);
+            this.cboEncodingType.Location = new System.Drawing.Point(464, 208);
             this.cboEncodingType.Name = "cboEncodingType";
-            this.cboEncodingType.Size = new System.Drawing.Size(360, 21);
+            this.cboEncodingType.Size = new System.Drawing.Size(80, 21);
             this.cboEncodingType.TabIndex = 80;
             this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
             // 
@@ -544,7 +570,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblSavePropertiesOnExit
             // 
             this.lblSavePropertiesOnExit.AutoSize = true;
-            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(248, 276);
+            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(280, 276);
             this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
             this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(197, 13);
             this.lblSavePropertiesOnExit.TabIndex = 11;
@@ -923,5 +949,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private CheckBoxComboBox cboSelectedEntities;
         private System.Windows.Forms.Label lblSaveCheckpointsOnExit;
         private System.Windows.Forms.CheckBox saveCheckpointsToFileCheckBox;
+        private System.Windows.Forms.CheckBox useAsciiCheckBox;
+        private System.Windows.Forms.Label lblUseAscii;
     }
 }

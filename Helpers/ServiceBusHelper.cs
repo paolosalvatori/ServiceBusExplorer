@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -169,12 +170,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private ServiceBus.NamespaceManager namespaceManager;
-        private Azure.NotificationHubs.NamespaceManager notificationHubNamespaceManager;
+        private NotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
         private ServiceBus.TokenProvider tokenProvider;
-        private Azure.NotificationHubs.TokenProvider notificationHubTokenProvider;
+        private NotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private Uri atomFeedUri;
         private string ns;
@@ -373,7 +374,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets the current namespace manager.
         /// </summary>
-        public Azure.NotificationHubs.NamespaceManager NotificationHubNamespaceManager
+        public NotificationHubs.NamespaceManager NotificationHubNamespaceManager
         {
             get
             {
@@ -778,7 +779,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
-                    notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                    notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 }
                 catch (Exception)
                 {
@@ -798,7 +799,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
-                var notificationHubNamespaceManagerSettings = new Azure.NotificationHubs.NamespaceManagerSettings
+                var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
@@ -811,7 +812,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
-                    notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                    notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 }
                 catch (Exception)
                 {
@@ -899,7 +900,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
-                    notificationHubTokenProvider = Azure.NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                    notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 }
                 catch (Exception)
                 {
@@ -919,7 +920,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
-                var notificationHubNamespaceManagerSettings = new Azure.NotificationHubs.NamespaceManagerSettings
+                var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
@@ -932,7 +933,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
-                    notificationHubNamespaceManager = new Azure.NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                    notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 }
                 catch (Exception)
                 {
@@ -970,8 +971,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             Func<bool> func = (() =>
             {
-                if (serviceBusNamespace == null ||
-                    string.IsNullOrWhiteSpace(serviceBusNamespace.ConnectionString))
+                if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
                 {
                     throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
                 }
@@ -991,7 +991,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
                 try
                 {
-                    notificationHubNamespaceManager = Azure.NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
+                    notificationHubNamespaceManager = NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
                 }
                 catch (Exception)
                 {
@@ -1000,7 +1000,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
-                atomFeedUri = new Uri(string.Format("{0}://{1}", Uri.UriSchemeHttp, namespaceUri.Host));
+                atomFeedUri = new Uri($"{Uri.UriSchemeHttp}://{namespaceUri.Host}");
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
@@ -1058,7 +1058,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var relayService = RetryHelper.RetryFunc(() => namespaceManager.CreateRelayAsync(description).Result, writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayCreated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
                 return relayService;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1078,7 +1078,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteRelayAsync(path).Wait(), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayDeleted, path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Relay));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Relay));
             }
             else
             {
@@ -1117,7 +1117,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var relayService = RetryHelper.RetryFunc(() => namespaceManager.UpdateRelayAsync(description).Result, writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayUpdated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
                 return relayService;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1134,14 +1134,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            if (namespaceManager != null)
+            if (namespaceManager == null)
             {
-                var currentScheme = description.RelayType != RelayType.Http
-                    ? scheme
-                    : description.RequiresTransportSecurity ? "https" : "http";
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
+                return null;
             }
-            return null;
+            var currentScheme = description.RelayType != RelayType.Http
+                ? scheme
+                : description.RequiresTransportSecurity ? "https" : "http";
+            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
         }
 
         /// <summary>
@@ -1191,7 +1191,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var eventHub = RetryHelper.RetryFunc(() => namespaceManager.CreateEventHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubCreated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
                 return eventHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1211,7 +1211,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteEventHub(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
             }
             else
             {
@@ -1225,8 +1225,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="eventHubDescription">The event hub to delete.</param>
         public void DeleteEventHub(EventHubDescription eventHubDescription)
         {
-            if (eventHubDescription == null ||
-                string.IsNullOrWhiteSpace(eventHubDescription.Path))
+            if (string.IsNullOrWhiteSpace(eventHubDescription?.Path))
             {
                 throw new ArgumentException(EventHubDescriptionCannotBeNull);
             }
@@ -1234,7 +1233,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteEventHubAsync(eventHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, eventHubDescription.Path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(eventHubDescription, EntityType.EventHub));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(eventHubDescription, EntityType.EventHub));
             }
             else
             {
@@ -1269,14 +1268,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            if (namespaceManager != null)
+            if (namespaceManager == null)
             {
-                var eventHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateEventHub(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubUpdated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
-                return eventHub;
+                throw new ApplicationException(ServiceBusIsDisconnected);
             }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            var eventHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateEventHub(description), writeToLog);
+            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubUpdated, description.Path));
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
+            return eventHub;
         }
 
         /// <summary>
@@ -1338,12 +1337,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ArgumentException(PathCannotBeNull);
             }
-            if (namespaceManager != null)
+            if (namespaceManager == null)
             {
-                var description = namespaceManager.GetEventHub(path);
-                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, description.PartitionIds[index]), writeToLog)).ToList();
+                throw new ApplicationException(ServiceBusIsDisconnected);
             }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            var description = namespaceManager.GetEventHub(path);
+            return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, description.PartitionIds[index]), writeToLog)).ToList();
         }
 
         /// <summary>
@@ -1497,7 +1496,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.CreateConsumerGroup(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupCreated, description.Name));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
                 return consumerGroup;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1518,8 +1517,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(eventHubName, name), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, name));
-                if (OnDelete != null)
-                    OnDelete(new ServiceBusHelperEventArgs(new ConsumerGroupDescription(eventHubName, name), EntityType.ConsumerGroup));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new ConsumerGroupDescription(eventHubName, name), EntityType.ConsumerGroup));
             }
             else
             {
@@ -1533,8 +1531,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="consumerGroupDescription">The consumer group to delete.</param>
         public void DeleteConsumerGroup(ConsumerGroupDescription consumerGroupDescription)
         {
-            if (consumerGroupDescription == null ||
-                string.IsNullOrWhiteSpace(consumerGroupDescription.Name))
+            if (string.IsNullOrWhiteSpace(consumerGroupDescription?.Name))
             {
                 throw new ArgumentException(ConsumerGroupDescriptionCannotBeNull);
             }
@@ -1542,8 +1539,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(consumerGroupDescription.EventHubPath, consumerGroupDescription.Name), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, consumerGroupDescription.Name));
-                if (OnDelete != null)
-                    OnDelete(new ServiceBusHelperEventArgs(consumerGroupDescription, EntityType.ConsumerGroup));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(consumerGroupDescription, EntityType.ConsumerGroup));
             }
             else
             {
@@ -1583,7 +1579,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.UpdateConsumerGroup(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupUpdated, description.Name));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
                 return consumerGroup;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -1646,7 +1642,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
             }
             else
             {
@@ -1665,15 +1661,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            if (namespaceManager != null)
+            if (namespaceManager == null)
             {
-                var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.CreateNotificationHub(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubCreated, description.Path));
-                if (OnCreate != null)
-                    OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
-                return notificationHub;
+                throw new ApplicationException(ServiceBusIsDisconnected);
             }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.CreateNotificationHub(description), writeToLog);
+            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubCreated, description.Path));
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
+            return notificationHub;
         }
 
         /// <summary>
@@ -1682,8 +1677,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
         public void DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
         {
-            if (notificationHubDescription == null ||
-                string.IsNullOrWhiteSpace(notificationHubDescription.Path))
+            if (string.IsNullOrWhiteSpace(notificationHubDescription?.Path))
             {
                 throw new ArgumentException(NotificationHubDescriptionCannotBeNull);
             }
@@ -1691,8 +1685,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
-                if (OnDelete != null)
-                    OnDelete(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
             }
             else
             {
@@ -1731,8 +1724,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.UpdateNotificationHub(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubUpdated, description.Path));
-                if (OnCreate != null)
-                    OnCreate(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
                 return notificationHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2055,7 +2047,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 var uriBuilder = new UriBuilder
                 {
                     Host = namespaceUri.Host,
-                    Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, queuePath),
+                    Path = $"{namespaceUri.AbsolutePath}/{queuePath}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -2080,7 +2072,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 var uriBuilder = new UriBuilder
                 {
                     Host = namespaceUri.Host,
-                    Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, QueueClient.FormatDeadLetterPath(queuePath)),
+                    Path = $"{namespaceUri.AbsolutePath}/{QueueClient.FormatDeadLetterPath(queuePath)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -2105,7 +2097,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 var uriBuilder = new UriBuilder
                 {
                     Host = namespaceUri.Host,
-                    Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, topicPath),
+                    Path = $"{namespaceUri.AbsolutePath}/{topicPath}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -2131,7 +2123,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 var uriBuilder = new UriBuilder
                 {
                     Host = namespaceUri.Host,
-                    Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)),
+                    Path = $"{namespaceUri.AbsolutePath}/{SubscriptionClient.FormatSubscriptionPath(topicPath, name)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -2157,7 +2149,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 var uriBuilder = new UriBuilder
                 {
                     Host = namespaceUri.Host,
-                    Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, SubscriptionClient.FormatDeadLetterPath(topicPath, name)),
+                    Path = $"{namespaceUri.AbsolutePath}/{SubscriptionClient.FormatDeadLetterPath(topicPath, name)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -2179,7 +2171,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.CreateQueue(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2200,7 +2192,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.CreateQueue(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2221,7 +2213,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var queue = RetryHelper.RetryFunc(() => namespaceManager.UpdateQueue(description), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueUpdated, description.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
                 return queue;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2257,7 +2249,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Queue));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Queue));
             }
             else
             {
@@ -2279,7 +2271,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(queueDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
             }
             else
             {
@@ -2302,7 +2294,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2323,7 +2315,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(topicDescription), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2344,7 +2336,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 var topic = RetryHelper.RetryFunc(() => namespaceManager.UpdateTopic(topicDescription), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
-                if (OnCreate != null) OnCreate(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -2380,7 +2372,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(path, EntityType.Topic));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Topic));
             }
             else
             {
@@ -2402,7 +2394,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(topic.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
-                if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
             }
             else
             {
@@ -2428,8 +2420,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             var subscription = RetryHelper.RetryFunc(() => namespaceManager.CreateSubscription(subscriptionDescription), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
-            if (OnCreate != null)
-                OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
         }
 
@@ -2458,8 +2449,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             var subscription = RetryHelper.RetryFunc(() => namespaceManager.CreateSubscription(subscriptionDescription, ruleDescription), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
-            if (OnCreate != null)
-                OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
         }
 
@@ -2518,7 +2508,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(topicPath, name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, name, topicPath));
-            if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Subscription));
+            OnDelete?.Invoke(new ServiceBusHelperEventArgs(name, EntityType.Subscription));
         }
 
         /// <summary>
@@ -2533,8 +2523,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, subscriptionDescription.Name, subscriptionDescription.TopicPath));
-            if (OnDelete != null)
-                OnDelete(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
+            OnDelete?.Invoke(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
         }
 
         /// <summary>
@@ -2561,8 +2550,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var rules = RetryHelper.RetryFunc(func, writeToLog);
             var rule = rules.FirstOrDefault(r => r.Name == ruleDescription.Name);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleCreated, ruleDescription.Name, subscriptionDescription.Name));
-            if (OnCreate != null)
-                OnCreate(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
             return rule;
         }
 
@@ -2601,7 +2589,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, name, subscriptionClient.Name));
-            if (OnDelete != null) OnDelete(new ServiceBusHelperEventArgs(name, EntityType.Rule));
+            OnDelete?.Invoke(new ServiceBusHelperEventArgs(name, EntityType.Rule));
         }
 
         /// <summary>
@@ -2623,8 +2611,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(rule.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionClient.Name));
-            if (OnDelete != null)
-                OnDelete(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+            OnDelete?.Invoke(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
         }
 
         /// <summary>
@@ -3777,7 +3764,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                          new UriBuilder
                          {
                              Host = namespaceUri.Host,
-                             Path = string.Format("{0}/{1}", namespaceUri.AbsolutePath, messageSender.Path),
+                             Path = $"{namespaceUri.AbsolutePath}/{messageSender.Path}",
                              Scheme = "sb"
                          }.Uri;
             try
@@ -4704,16 +4691,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
                         }
                         finally
                         {
-                            if (inboundMessage != null)
-                            {
-                                inboundMessage.Dispose();
-                            }
+                            inboundMessage?.Dispose();
                         }
-                        if (receiverThinkTime)
+                        if (!receiverThinkTime)
                         {
-                            WriteToLog(string.Format(SleepingFor, thinkTime));
-                            Thread.Sleep(thinkTime);
+                            continue;
                         }
+                        WriteToLog(string.Format(SleepingFor, thinkTime));
+                        Thread.Sleep(thinkTime);
                     }
                 }
 
@@ -4904,7 +4889,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                         using (var reader = new StreamReader(stream))
                                         {
                                             messageText = reader.ReadToEnd();
-                                            if (messageText.ToCharArray().GroupBy(c => c).
+                                            if (!MainForm.SingletonMainForm.UseAscii && messageText.ToCharArray().GroupBy(c => c). 
                                                 Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
                                                 Select(g => g.First()).Any())
                                             {
@@ -5258,9 +5243,10 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var encoder = encoderFactory.Encoder;
 
             MessageReceiver messageReceiver = null;
-            if (entityDescription is QueueDescription)
+            var description = entityDescription as QueueDescription;
+            if (description != null)
             {
-                var queueDescription = entityDescription as QueueDescription;
+                var queueDescription = description;
                 if (deadletterQueue)
                 {
                     messageReceiver = messagingFactory.CreateMessageReceiver(QueueClient.FormatDeadLetterPath(queueDescription.Path),
@@ -5283,9 +5269,10 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             else
             {
-                if (entityDescription is SubscriptionDescription)
+                var description1 = entityDescription as SubscriptionDescription;
+                if (description1 != null)
                 {
-                    var subscriptionDescription = entityDescription as SubscriptionDescription;
+                    var subscriptionDescription = description1;
                     if (deadletterQueue)
                     {
                         messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionDescription.TopicPath,

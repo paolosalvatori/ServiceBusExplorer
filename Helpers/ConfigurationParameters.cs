@@ -42,6 +42,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string ReceiveTimeoutParameter = "receiveTimeout";
         public const string ServerTimeoutParameter = "serverTimeout";
         public const string SenderThinkTimeParameter = "senderThinkTime";
+        public const string UseAsciiParameter = "useAscii";
         public const string ReceiverThinkTimeParameter = "receiverThinkTime";
         public const string MonitorRefreshIntervalParameter = "monitorRefreshInterval";
         public const string PrefetchCountParameter = "prefetchCount";

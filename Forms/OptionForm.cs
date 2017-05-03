@@ -65,6 +65,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                           bool saveMessageToFile,
                           bool savePropertiesToFile,
                           bool saveCheckpointsToFile,
+                          bool useAscii,
                           IEnumerable<string> entities,
                           IEnumerable<string> selectedEntities)
         {
@@ -120,6 +121,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             SaveMessageToFile = saveMessageToFile;
             SavePropertiesToFile = savePropertiesToFile;
             SaveCheckpointsToFile = saveCheckpointsToFile;
+            UseAscii = useAscii;
 
             foreach (var item in entities)
             {
@@ -145,6 +147,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public int ReceiverThinkTime { get; private set; }
         public int MonitorRefreshInterval { get; private set; }
         public bool ShowMessageCount { get; private set; }
+        public bool UseAscii { get; private set; }
         public bool SaveMessageToFile { get; private set; }
         public bool SavePropertiesToFile { get; private set; }
         public bool SaveCheckpointsToFile { get; private set; }
@@ -229,10 +232,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
             SaveCheckpointsToFile = true;
+            UseAscii = true;
 
             saveMessageToFileCheckBox.Checked = true;
             savePropertiesToFileCheckBox.Checked = true;
             saveCheckpointsToFileCheckBox.Checked = true;
+            useAsciiCheckBox.Checked = true;
 
             foreach (var item in MainForm.SingletonMainForm.Entities)
             {
@@ -337,6 +342,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
+        private void useAscii_CheckedChanged(object sender, EventArgs e)
+        {
+            UseAscii = useAsciiCheckBox.Checked;
+        }
+
         private void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
@@ -410,6 +420,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             else
             {
                 configuration.AppSettings.Settings[ConfigurationParameters.SaveMessageToFileParameter].Value = SaveMessageToFile.ToString();
+            }
+            if (configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter] == null)
+            {
+                configuration.AppSettings.Settings.Add(ConfigurationParameters.UseAsciiParameter, UseAscii.ToString());
+            }
+            else
+            {
+                configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter].Value = UseAscii.ToString();
             }
             if (configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter] == null)
             {

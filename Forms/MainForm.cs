@@ -281,6 +281,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private bool saveMessageToFile = true;
         private bool savePropertiesToFile = true;
         private bool saveCheckpointsToFile = true;
+        private bool useAscii = true;
         private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         private readonly string argumentName;
         private readonly string argumentValue;
@@ -372,6 +373,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                    saveMessageToFile,
                                                    savePropertiesToFile,
                                                    saveCheckpointsToFile,
+                                                   useAscii,
                                                    entities,
                                                    selectedEntites))
             {
@@ -404,6 +406,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 saveMessageToFile = optionForm.SaveMessageToFile;
                 savePropertiesToFile = optionForm.SavePropertiesToFile;
                 saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
+                useAscii = optionForm.UseAscii;
                 selectedEntites = optionForm.SelectedEntities;
             }
         }
@@ -4223,6 +4226,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        public bool UseAscii
+        {
+            get
+            {
+                return useAscii;
+            }
+            set
+            {
+                useAscii = value;
+            }
+        }
+
         public List<string> Entities
         {
             get
@@ -6679,7 +6694,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
+        private async void MainForm_Shown(object sender, EventArgs e)
         {
             try
             {
@@ -6891,6 +6906,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (!Text.EndsWith("1.0.0"))
+            {
+                return;
+            }
+            var version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
+            if (!string.IsNullOrWhiteSpace(version))
+            {
+                Text = $@"Service Bus Explore {version}";
             }
         }
         #endregion

@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Properties;
 
 #endregion
@@ -203,6 +204,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 //and added to the list of shapes
                 shapes.Add(shape);
             }
+        }
+        
+        private void AboutForm_Load(object sender, EventArgs e)
+        {
+            Text = $@"About {MainForm.SingletonMainForm.Text}";
         }
         #endregion
     }
