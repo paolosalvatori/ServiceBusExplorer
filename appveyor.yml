@@ -9,7 +9,7 @@ assembly_info:
 before_build:
   - nuget restore
   - cmd: echo %appveyor_build_version%
-  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo GitVersionTaskAssemblyInfo.g.cs
   - cmd: echo %appveyor_build_version%
   - cmd: ECHO %GitVersion_MajorMinorPatch%
   
