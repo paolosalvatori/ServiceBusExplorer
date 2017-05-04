@@ -6911,15 +6911,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (!Text.EndsWith("1.0.0"))
-            {
-                return;
-            }
-            var version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
-            if (!string.IsNullOrWhiteSpace(version))
-            {
-                Text = $@"Service Bus Explore {version}";
-            }
+            var version = VersionProvider.GetVersion();
+            Text = $@"Service Bus Explore {version}";
         }
         #endregion
     }

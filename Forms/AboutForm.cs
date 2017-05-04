@@ -35,7 +35,7 @@ using Microsoft.Azure.ServiceBusExplorer.Properties;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
-    public partial class AboutForm : Form
+    public sealed partial class AboutForm : Form
     {
         #region Private Fields
         private readonly Bitmap whiteLogoBitmap = new Bitmap(Resources.WhiteLogo);
@@ -115,6 +115,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             timer.Interval = 40;
             timer.Tick += timer_Tick;
             timer.Enabled = true;
+
+            var version = VersionProvider.GetVersion();
+            Text += version;
+            lblVersion.Text += VersionProvider.GetVersionWithSha();
         }
         #endregion
 
