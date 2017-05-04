@@ -1,0 +1,1 @@
+﻿// required by GitVersion
