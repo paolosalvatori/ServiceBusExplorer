@@ -41,7 +41,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             try
             {
-                return JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Formatting.Indented);
+                return JsonConvert
+                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%")), Formatting.Indented)
+                    .Replace("%%$type%%", "$type");
             }
             catch (Exception)
             {
