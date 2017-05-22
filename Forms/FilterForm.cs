@@ -325,7 +325,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 var width = timeFilterDataGridView.Width - timeFilterDataGridView.Columns[0].Width -
                             timeFilterDataGridView.Columns[1].Width - timeFilterDataGridView.RowHeadersWidth;
                 var verticalScrollbar = timeFilterDataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }

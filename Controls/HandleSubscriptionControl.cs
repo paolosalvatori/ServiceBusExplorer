@@ -2335,7 +2335,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 return;
             }
             var dataGridView = sender as DataGridView;
-            if (dataGridView == null)
+            if (dataGridView == null || dataGridView.Columns.Count == 0)
             {
                 return;
             }
@@ -2343,29 +2343,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 dataGridView.SuspendDrawing();
                 dataGridView.SuspendLayout();
-                if (dataGridView.Columns.Count == 0)
-                {
-                    return;
-                }
                 if (dataGridView.Columns.Count == 2)
                 {
                     var width = dataGridView.Width - dataGridView.Columns[0].Width - dataGridView.RowHeadersWidth;
                     var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                    if (verticalScrollbar.Visible)
+                    if (verticalScrollbar != null && verticalScrollbar.Visible)
                     {
                         width -= verticalScrollbar.Width;
                     }
                     dataGridView.Columns[1].Width = width;
                 }
-                if (dataGridView == messagesDataGridView ||
-                    dataGridView == deadletterDataGridView)
+                if ((dataGridView == messagesDataGridView ||
+                    dataGridView == deadletterDataGridView) &&
+                    dataGridView.ColumnCount == 6)
                 {
                     var width = dataGridView.Width -
                                 dataGridView.RowHeadersWidth -
                                 dataGridView.Columns[1].Width -
                                 dataGridView.Columns[2].Width;
                     var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                    if (verticalScrollbar.Visible)
+                    if (verticalScrollbar != null && verticalScrollbar.Visible)
                     {
                         width -= verticalScrollbar.Width;
                     }
@@ -2375,11 +2372,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     dataGridView.Columns[4].Width = columnWidth +(width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
-                if (dataGridView == sessionsDataGridView)
+                if (dataGridView == sessionsDataGridView && 
+                    dataGridView.ColumnCount == 4)
                 {
                     var width = dataGridView.Width - dataGridView.RowHeadersWidth;
                     var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                    if (verticalScrollbar.Visible)
+                    if (verticalScrollbar != null && verticalScrollbar.Visible)
                     {
                         width -= verticalScrollbar.Width;
                     }
@@ -2593,7 +2591,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             var width = dataPointDataGridView.Width - dataPointDataGridView.RowHeadersWidth - otherColumnsWidth;
             var verticalScrollbar = dataPointDataGridView.Controls.OfType<VScrollBar>().First();
-            if (verticalScrollbar.Visible)
+            if (verticalScrollbar != null && verticalScrollbar.Visible)
             {
                 width -= verticalScrollbar.Width;
             }

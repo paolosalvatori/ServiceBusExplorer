@@ -1528,7 +1528,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 var width = gridWidth - dataGridView.Columns[0].Width - dataGridView.RowHeadersWidth;
                 var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }
@@ -1536,11 +1536,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 return;
             }
 
-            if (dataGridView == registrationsDataGridView)
+            if (dataGridView == registrationsDataGridView &&
+                dataGridView.ColumnCount == 5)
             {
                 var width = dataGridView.Width - dataGridView.RowHeadersWidth - dataGridView.Columns[0].Width - dataGridView.Columns[3].Width;
                 var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }
@@ -1551,15 +1552,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 dataGridView.Columns[5].Width = columnWidth + 5;
             }
 
-            if (dataGridView == mpnsTagsDataGridView ||
-                dataGridView == wnsTagsDataGridView ||
-                dataGridView == templateTagsDataGridView ||
-                dataGridView == appleTagsDataGridView ||
-                dataGridView == gcmTagsDataGridView)
+            if (dataGridView.ColumnCount == 0 ||
+               (dataGridView != mpnsTagsDataGridView && 
+                dataGridView != wnsTagsDataGridView &&
+                dataGridView != templateTagsDataGridView && 
+                dataGridView != appleTagsDataGridView &&
+                dataGridView != gcmTagsDataGridView))
+            {
+                return;
+            }
             {
                 var width = dataGridView.Width - dataGridView.RowHeadersWidth;
                 var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }
@@ -4018,7 +4023,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             var width = dataPointDataGridView.Width - dataPointDataGridView.RowHeadersWidth - otherColumnsWidth;
             var verticalScrollbar = dataPointDataGridView.Controls.OfType<VScrollBar>().First();
-            if (verticalScrollbar.Visible)
+            if (verticalScrollbar != null && verticalScrollbar.Visible)
             {
                 width -= verticalScrollbar.Width;
             }

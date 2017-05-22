@@ -1130,7 +1130,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 dataGridView.SuspendLayout();
                 var width = dataGridView.Width - dataGridView.RowHeadersWidth;
                 var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }

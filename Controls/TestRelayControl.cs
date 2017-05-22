@@ -1209,7 +1209,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var width = headersDataGridView.Width - headersDataGridView.Columns[0].Width -
                             headersDataGridView.Columns[1].Width - headersDataGridView.RowHeadersWidth;
                 var verticalScrollbar = headersDataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }

@@ -584,7 +584,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 return;
             }
             var dataGridView = sender as DataGridView;
-            if (dataGridView == null)
+            if (dataGridView == null || dataGridView.ColumnCount != 3)
             {
                 return;
             }
@@ -594,7 +594,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 dataGridView.SuspendLayout();
                 var width = dataGridView.Width - dataGridView.RowHeadersWidth;
                 var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                if (verticalScrollbar.Visible)
+                if (verticalScrollbar != null && verticalScrollbar.Visible)
                 {
                     width -= verticalScrollbar.Width;
                 }
