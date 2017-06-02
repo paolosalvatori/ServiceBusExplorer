@@ -36,7 +36,7 @@ using Microsoft.Azure.ServiceBusExplorer.Properties;
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class AboutForm : Form
-    {
+    //{
         #region Private Fields
         private readonly Bitmap whiteLogoBitmap = new Bitmap(Resources.WhiteLogo);
         private readonly Bitmap azureLogoBitmap = new Bitmap(Resources.AzureLogo);
