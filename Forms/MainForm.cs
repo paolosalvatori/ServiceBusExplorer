@@ -6918,7 +6918,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
             if (!string.IsNullOrWhiteSpace(version))
             {
-                Text = $@"Service Bus Explore {version}";
+                Text = $@"Service Bus Explorer {version}";
             }
         }
         #endregion
