@@ -35,15 +35,15 @@ build:
 #---------------------------------#
 
 after_build:
-  7z a ServiceBusExplorer.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*.*
+  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*.*
 
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
 
 artifacts:
-  - path: ServiceBusExplorer.zip  # bin\$(configuration)\*.*
-    name: ServiceBusExplorer
+  - path: '*.zip'  # bin\$(configuration)\*.*
+    name: 'ServiceBusExplorer-%GitVersion_MajorMinorPatch%'
 
 #---------------------------------#
 #     GitHub PR notifications     #
