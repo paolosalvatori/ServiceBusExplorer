@@ -1531,7 +1531,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
-                bool doNotSerializeBody = saveFileDialog.FilterIndex == 2;
+                var doNotSerializeBody = saveFileDialog.FilterIndex == 2;
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text, doNotSerializeBody));
@@ -1570,12 +1570,11 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
-                bool doNotSerializeBody = saveFileDialog.FilterIndex == 2;
+                var doNotSerializeBody = saveFileDialog.FilterIndex == 2;
 
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType, doNotSerializeBody));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _, doNotSerializeBody));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody));
                 }
             }

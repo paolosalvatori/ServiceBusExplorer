@@ -34,17 +34,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #region CONSTRUCTOR
 
         public CheckBoxComboBox()
-            : base()
         {
             InitializeComponent();
             _CheckBoxProperties = new CheckBoxProperties();
-            _CheckBoxProperties.PropertyChanged += new EventHandler(_CheckBoxProperties_PropertyChanged);
+            _CheckBoxProperties.PropertyChanged += _CheckBoxProperties_PropertyChanged;
             // Dumps the ListControl in a(nother) Container to ensure the ScrollBar on the ListControl does not
             // Paint over the Size grip. Setting the Padding or Margin on the Popup or host control does
             // not work as I expected. I don't think it can work that way.
-            CheckBoxComboBoxListControlContainer ContainerControl = new CheckBoxComboBoxListControlContainer();
+            var ContainerControl = new CheckBoxComboBoxListControlContainer();
             _CheckBoxComboBoxListControl = new CheckBoxComboBoxListControl(this);
-            _CheckBoxComboBoxListControl.Items.CheckBoxCheckedChanged += new EventHandler(Items_CheckBoxCheckedChanged);
+            _CheckBoxComboBoxListControl.Items.CheckBoxCheckedChanged += Items_CheckBoxCheckedChanged;
             ContainerControl.Controls.Add(_CheckBoxComboBoxListControl);
             // This padding spaces neatly on the left-hand side and allows space for the size grip at the bottom.
             ContainerControl.Padding = new Padding(4, 0, 0, 14);
@@ -71,8 +70,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// a concatenated Text of the items selected. This concatenation and its formatting however is controlled 
         /// by the Binded object, since it owns that property.
         /// </summary>
-        private string _DisplayMemberSingleItem = null;
-        internal bool _MustAddHiddenItem = false;
+        private string _DisplayMemberSingleItem;
+        internal bool _MustAddHiddenItem;
 
         #endregion
 
@@ -83,18 +82,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         internal string GetCSVText(bool skipFirstItem)
         {
-            string ListText = String.Empty;
-            int StartIndex =
+            var ListText = String.Empty;
+            var StartIndex =
                 DropDownStyle == ComboBoxStyle.DropDownList 
                 && DataSource == null
                 && skipFirstItem
                     ? 1
                     : 0;
-            for (int Index = StartIndex; Index <= _CheckBoxComboBoxListControl.Items.Count - 1; Index++)
+            for (var Index = StartIndex; Index <= _CheckBoxComboBoxListControl.Items.Count - 1; Index++)
             {
-                CheckBoxComboBoxItem Item = _CheckBoxComboBoxListControl.Items[Index];
-                if (Item.Checked)
-                    ListText += string.IsNullOrEmpty(ListText) ? Item.Text : String.Format(", {0}", Item.Text);
+                var checkBoxComboBoxItem = _CheckBoxComboBoxListControl.Items[Index];
+                if (checkBoxComboBoxItem.Checked)
+                    ListText += string.IsNullOrEmpty(ListText) ? checkBoxComboBoxItem.Text : $", {checkBoxComboBoxItem.Text}";
             }
             return ListText;
         }
@@ -127,7 +126,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public new object DataSource
         {
-            get { return base.DataSource; }
+            get => base.DataSource;
             set
             {
                 base.DataSource = value;
@@ -141,7 +140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public new string ValueMember
         {
-            get { return base.ValueMember; }
+            get => base.ValueMember;
             set
             {
                 base.ValueMember = value;
@@ -158,8 +157,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public string DisplayMemberSingleItem
         {
-            get { if (string.IsNullOrEmpty(_DisplayMemberSingleItem)) return DisplayMember; else return _DisplayMemberSingleItem; }
-            set { _DisplayMemberSingleItem = value; }
+            get
+            {
+                if (string.IsNullOrEmpty(_DisplayMemberSingleItem))
+                    return DisplayMember;
+                return _DisplayMemberSingleItem;
+            }
+            set => _DisplayMemberSingleItem = value;
         }
         /// <summary>
         /// Made this property Browsable again, since the Base Popup hides it. This class uses it again.
@@ -171,10 +175,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </returns>
         [Browsable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public new ObjectCollection Items
-        {
-            get { return base.Items; }
-        }
+        public new ObjectCollection Items => base.Items;
 
         #endregion
 
@@ -193,7 +194,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         protected void OnCheckBoxCheckedChanged(object sender, EventArgs e)
         {
-            string ListText = GetCSVText(true);
+            var ListText = GetCSVText(true);
             // The DropDownList style seems to require that the text
             // part of the "textbox" should match a single item.
             if (DropDownStyle != ComboBoxStyle.DropDownList)
@@ -208,9 +209,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 CheckBoxItems[0].ComboBoxItem = ListText;
             }
 
-            EventHandler handler = CheckBoxCheckedChanged;
-            if (handler != null)
-                handler(sender, e);
+            CheckBoxCheckedChanged?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -232,8 +231,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             // When the ComboBox is resized, the width of the dropdown 
             // is also resized to match the width of the ComboBox. I think it looks better.
-            Size Size = new Size(Width, DropDownControl.Height);
-            dropDown.Size = Size;
+            var size = new Size(Width, DropDownControl.Height);
+            dropDown.Size = size;
             base.OnResize(e);
         }
 
@@ -247,7 +246,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public void Clear()
         {
-            this.Items.Clear();
+            Items.Clear();
             if (DropDownStyle == ComboBoxStyle.DropDownList && DataSource == null)
                 _MustAddHiddenItem = true;                
         }        /// <summary>
@@ -255,7 +254,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public void ClearSelection()
         {
-            foreach (CheckBoxComboBoxItem Item in CheckBoxItems)
+            foreach (var Item in CheckBoxItems)
                 if (Item.Checked)
                     Item.Checked = false;
         }
@@ -273,13 +272,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [Browsable(true)]
         public CheckBoxProperties CheckBoxProperties
         {
-            get { return _CheckBoxProperties; }
+            get => _CheckBoxProperties;
             set { _CheckBoxProperties = value; _CheckBoxProperties_PropertyChanged(this, EventArgs.Empty); }
         }
 
         private void _CheckBoxProperties_PropertyChanged(object sender, EventArgs e)
         {
-            foreach (CheckBoxComboBoxItem Item in CheckBoxItems)
+            foreach (var Item in CheckBoxItems)
                 Item.ApplyProperties(CheckBoxProperties);
         }
 
@@ -311,7 +310,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #region CONSTRUCTOR
 
         public CheckBoxComboBoxListControlContainer()
-            : base()
         {
             BackColor = SystemColors.Window;
             BorderStyle = BorderStyle.FixedSingle;
@@ -331,7 +329,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
         {
-            if ((Parent as Popup).ProcessResizing(ref m))
+            if (((Popup) Parent).ProcessResizing(ref m))
             {
                 return;
             }
@@ -345,12 +343,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
     /// The items are docked DockStyle.Top in this control.
     /// </summary>
     [ToolboxItem(false)]
-    public class CheckBoxComboBoxListControl : ScrollableControl
+    public sealed class CheckBoxComboBoxListControl : ScrollableControl
     {
         #region CONSTRUCTOR
 
         public CheckBoxComboBoxListControl(CheckBoxComboBox owner)
-            : base()
         {
             DoubleBuffered = true;
             _CheckBoxComboBox = owner;
@@ -423,9 +420,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             Controls.Clear();
             #region Disposes all items that are no longer in the combo box list
 
-            for (int Index = _Items.Count - 1; Index >= 0; Index--)
+            for (var Index = _Items.Count - 1; Index >= 0; Index--)
             {
-                CheckBoxComboBoxItem Item = _Items[Index];
+                var Item = _Items[Index];
                 if (!_CheckBoxComboBox.Items.Contains(Item.ComboBoxItem))
                 {
                     #pragma warning disable 618
@@ -439,15 +436,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             #region Recreate the list in the same order of the combo box items
 
             // ReSharper disable once InconsistentNaming
-            bool HasHiddenItem = 
+            var HasHiddenItem = 
                 _CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList
                 && _CheckBoxComboBox.DataSource == null
                 && !DesignMode;
 
-            CheckBoxComboBoxItemList NewList = new CheckBoxComboBoxItemList(_CheckBoxComboBox);
-            for(int Index0 = 0; Index0 <= _CheckBoxComboBox.Items.Count - 1; Index0 ++)
+            var NewList = new CheckBoxComboBoxItemList(_CheckBoxComboBox);
+            for(var Index0 = 0; Index0 <= _CheckBoxComboBox.Items.Count - 1; Index0 ++)
             {
-                object Object = _CheckBoxComboBox.Items[Index0];
+                var obj = _CheckBoxComboBox.Items[Index0];
                 CheckBoxComboBoxItem Item = null;
                 // The hidden item could match any other item when only
                 // one other item was selected.
@@ -455,12 +452,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     Item = _Items[0];
                 else
                 {
-                    int StartIndex = HasHiddenItem
+                    var StartIndex = HasHiddenItem
                         ? 1 // Skip the hidden item, it could match 
                         : 0;
-                    for (int Index1 = StartIndex; Index1 <= _Items.Count - 1; Index1++)
+                    for (var Index1 = StartIndex; Index1 <= _Items.Count - 1; Index1++)
                     {
-                        if (_Items[Index1].ComboBoxItem == Object)
+                        if (_Items[Index1].ComboBoxItem == obj)
                         {
                             Item = _Items[Index1];
                             break;
@@ -469,7 +466,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 if (Item == null)
                 {
-                    Item = new CheckBoxComboBoxItem(_CheckBoxComboBox, Object);
+                    Item = new CheckBoxComboBoxItem(_CheckBoxComboBox, obj);
                     Item.ApplyProperties(_CheckBoxComboBox.CheckBoxProperties);
                 }
                 #pragma warning disable 618
@@ -522,7 +519,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// <param name="owner">A reference to the CheckBoxComboBox.</param>
         /// <param name="comboBoxItem">A reference to the item in the ComboBox.items that this object is extending.</param>
         public CheckBoxComboBoxItem(CheckBoxComboBox owner, object comboBoxItem)
-            : base()
         {
             DoubleBuffered = true;
             _CheckBoxComboBox = owner;
@@ -601,8 +597,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // Found that when this event is raised, the bool value of the binded item is not yet updated.
             if (_CheckBoxComboBox.DataSource != null)
             {
-                PropertyInfo PI = ComboBoxItem.GetType().GetProperty(_CheckBoxComboBox.ValueMember);
-                PI.SetValue(ComboBoxItem, Checked, null);
+                var propertyInfo = ComboBoxItem.GetType().GetProperty(_CheckBoxComboBox.ValueMember);
+                propertyInfo.SetValue(ComboBoxItem, Checked, null);
             }
             base.OnCheckedChanged(e);
             // Forces a refresh of the Text displayed in the main TextBox of the ComboBox,
@@ -610,7 +606,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // Also see DisplayMemberSingleItem on the CheckBoxComboBox for more information.
             if (_CheckBoxComboBox.DataSource != null)
             {
-                string OldDisplayMember = _CheckBoxComboBox.DisplayMember;
+                var OldDisplayMember = _CheckBoxComboBox.DisplayMember;
                 _CheckBoxComboBox.DisplayMember = null;
                 _CheckBoxComboBox.DisplayMember = OldDisplayMember;
             }
@@ -693,9 +689,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         protected void OnCheckBoxCheckedChanged(object sender, EventArgs e)
         {
-            EventHandler handler = CheckBoxCheckedChanged;
-            if (handler != null)
-                handler(sender, e);
+            var handler = CheckBoxCheckedChanged;
+            handler?.Invoke(sender, e);
         }
         private void item_CheckedChanged(object sender, EventArgs e)
         {
@@ -715,14 +710,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public new void AddRange(IEnumerable<CheckBoxComboBoxItem> collection)
         {
-            foreach (CheckBoxComboBoxItem Item in collection)
-                Item.CheckedChanged += new EventHandler(item_CheckedChanged);
+            foreach (var Item in collection)
+                Item.CheckedChanged += item_CheckedChanged;
             base.AddRange(collection);
         }
 
         public new void Clear()
         {
-            foreach (CheckBoxComboBoxItem Item in this)
+            foreach (var Item in this)
                 Item.CheckedChanged -= item_CheckedChanged;
             base.Clear();
         }
@@ -745,16 +740,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                int StartIndex =
+                var StartIndex =
                     // An invisible item exists in this scenario to help 
                     // with the Text displayed in the TextBox of the Combo
                     _CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList 
                     && _CheckBoxComboBox.DataSource == null
                         ? 1 // Ubiklou : 2008-04-28 : Ignore first item. (http://www.codeproject.com/KB/combobox/extending_combobox.aspx?fid=476622&df=90&mpp=25&noise=3&sort=Position&view=Quick&select=2526813&fr=1#xx2526813xx)
                         : 0;
-                for(int Index = StartIndex; Index <= Count - 1; Index ++)
+                for(var Index = StartIndex; Index <= Count - 1; Index ++)
                 {
-                    CheckBoxComboBoxItem Item = this[Index];
+                    var Item = this[Index];
 
                     string Text;
                     // The binding might not be active yet
@@ -784,8 +779,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class CheckBoxProperties
     {
-        public CheckBoxProperties() { }
-
         #region PRIVATE PROPERTIES
 
         private Appearance _Appearance = Appearance.Normal;
@@ -910,9 +903,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         protected void OnPropertyChanged()
         {
-            EventHandler handler = PropertyChanged;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            var handler = PropertyChanged;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

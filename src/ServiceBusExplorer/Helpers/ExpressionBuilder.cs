@@ -267,7 +267,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 var constant = filter.Value != null ?
                                    Expression.Constant(filter.Value, Nullable.GetUnderlyingType(filter.Value.GetType()) ?? filter.Value.GetType()) :
                                    Expression.Constant(filter.Value);
-                var left = propertyInfo.PropertyType != typeof(DateTime?) ? (Expression)member : (Expression)Expression.Call(member, getValueOrDefault);
+                var left = propertyInfo.PropertyType != typeof(DateTime?) ? member : (Expression)Expression.Call(member, getValueOrDefault);
 
                 switch (filter.Operator)
                 {

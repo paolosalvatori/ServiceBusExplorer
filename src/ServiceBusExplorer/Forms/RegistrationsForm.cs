@@ -135,7 +135,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void txtMessageCount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;

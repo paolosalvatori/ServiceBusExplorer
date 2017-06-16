@@ -421,7 +421,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             try
             {
                 var descriptions = partitionDescriptions as IList<PartitionDescription> ?? partitionDescriptions.ToList();
-                if (partitionDescriptions == null || !descriptions.Any())
+                if (!descriptions.Any())
                 {
                     return;
                 }
@@ -500,7 +500,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                 if (iotHub)
                 {
-                    var match = Regex.Match(connectionString, @"HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
+                    var match = Regex.Match(connectionString, "HostName=([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase);
                     var ioTHubName = match.Success ? match.Groups[1].Value : string.Empty;
                     Text = string.Format(IoTHubListenerFormat, consumerGroup, ioTHubName);
                     panelMain.HeaderText = string.Format(HeaderTextIoTHubListenerFormat, ioTHubName);
@@ -516,10 +516,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             finally
             {
-                if (panelMain != null)
-                {
-                    panelMain.ResumeDrawing();
-                }
+                panelMain?.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -653,10 +650,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             catch (Exception ex)
             {
-                if (mainForm != null)
-                {
-                    mainForm.HandleException(ex);
-                }
+                mainForm?.HandleException(ex);
             }
             finally
             {
@@ -761,7 +755,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         if (i == 0)
                         {
-                            string line = string.Format(DateFormat,
+                            var line = string.Format(DateFormat,
                                                         objNow.Hour,
                                                         objNow.Minute,
                                                         objNow.Second,
@@ -795,7 +789,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }

@@ -31,7 +31,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     internal class CustomTypeDescriptionProvider : TypeDescriptionProvider
     {
         #region Private Fields
-        private TypeDescriptionProvider parent;
+
         private readonly ICustomTypeDescriptor customTypeDescriptor; 
         #endregion
 
@@ -39,7 +39,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public CustomTypeDescriptionProvider(TypeDescriptionProvider parent, ICustomTypeDescriptor ctd)
             : base(parent)
         {
-            this.parent = parent;
             customTypeDescriptor = ctd;
         } 
         #endregion

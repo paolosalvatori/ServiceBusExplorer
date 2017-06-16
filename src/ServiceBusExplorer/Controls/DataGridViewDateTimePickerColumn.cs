@@ -259,13 +259,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         // Implements the IDataGridViewEditingControl 
         // .EditingPanelCursor property. 
-        public Cursor EditingPanelCursor
-        {
-            get
-            {
-                return base.Cursor;
-            }
-        } 
+        public Cursor EditingPanelCursor => Cursor;
+
         #endregion
     }
 }

@@ -365,10 +365,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             };
                             Action<int, bool, string> senderAction = (taskId, oneway, messageText) =>
                             {
-                                long messagesSent = 0;
-                                long totalElapsedTime = 0;
-                                long minimumSendTime = long.MaxValue;
-                                long maximumSendTime = 0;
+                                var messagesSent = 0;
+                                var totalElapsedTime = 0L;
+                                var minimumSendTime = long.MaxValue;
+                                var maximumSendTime = 0L;
                                 string exceptionMessage = null;
                                 string traceMessage;
                                 ChannelFactory<IOutputChannel> outputChannelFactory = null;
@@ -376,6 +376,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 IOutputChannel outputChannel = null;
                                 IRequestChannel requestChannel = null;
                                 StringBuilder builder;
+
+                                // local method to remove duplication
+                                void closeFactoriesAndChannelsAndHandleException(Exception exception)
+                                {
+                                    outputChannelFactory?.Abort();
+                                    outputChannel?.Abort();
+                                    requestChannelFactory?.Abort();
+                                    requestChannel?.Abort();
+                                    exceptionMessage = string.Format(ExceptionOccurred, exception.Message);
+                                    HandleException(exception);
+                                }
 
                                 try
                                 {
@@ -604,148 +615,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                             UpdateStatistics(elapsedMilliseconds, DirectionType.Send);
                                         }
                                     }
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Close();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Close();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Close();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Close();
-                                    }
+                                    outputChannelFactory?.Close();
+                                    outputChannel?.Close();
+                                    requestChannelFactory?.Close();
+                                    requestChannel?.Close();
                                 }
                                 catch (FaultException ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 catch (CommunicationObjectAbortedException ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 catch (CommunicationObjectFaultedException ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 catch (CommunicationException ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 catch (TimeoutException ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 catch (Exception ex)
                                 {
-                                    if (outputChannelFactory != null)
-                                    {
-                                        outputChannelFactory.Abort();
-                                    }
-                                    if (outputChannel != null)
-                                    {
-                                        outputChannel.Abort();
-                                    }
-                                    if (requestChannelFactory != null)
-                                    {
-                                        requestChannelFactory.Abort();
-                                    }
-                                    if (requestChannel != null)
-                                    {
-                                        requestChannel.Abort();
-                                    }
-                                    exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
-                                    HandleException(ex);
+                                    closeFactoriesAndChannelsAndHandleException(ex);
                                 }
                                 var averageSendTime = messagesSent > 0 ? totalElapsedTime / messagesSent : maximumSendTime;
                                 var messagesPerSecond = totalElapsedTime > 0 ? messagesSent * 1000 / (double)totalElapsedTime : 0;
@@ -1242,7 +1139,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;

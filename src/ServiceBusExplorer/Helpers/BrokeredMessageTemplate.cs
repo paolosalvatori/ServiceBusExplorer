@@ -173,7 +173,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 var node0 = value;
                 if (node0 == null)
                 {
-                    throw new InvalidOperationException(string.Format("Invalid node type"));
+                    throw new InvalidOperationException("Invalid node type");
                 }
                 content = node0.Value;
             }

@@ -30,7 +30,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -2947,7 +2946,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
             long messagesSent = 0;
             long totalElapsedTime = 0;
-            long minimumSendTime = long.MaxValue;
+            var minimumSendTime = long.MaxValue;
             long maximumSendTime = 0;
             string exceptionMessage = null;
             try
@@ -3059,7 +3058,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                        !cancellationTokenSource.Token.IsCancellationRequested)
                     {
                         long elapsedMilliseconds = 0;
-                        long number = messageNumber;
+                        var number = messageNumber;
                         await RetryHelper.RetryActionAsync(async () =>
                         {
                             var eventData = eventDataInspector != null ?
@@ -3755,9 +3754,9 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
             long messagesSent = 0;
             long totalElapsedTime = 0;
-            long minimumSendTime = long.MaxValue;
+            var minimumSendTime = long.MaxValue;
             long maximumSendTime = 0;
-            bool ok = true;
+            var ok = true;
             string exceptionMessage = null;
             var wcfUri = IsCloudNamespace ?
                          new Uri(namespaceUri, messageSender.Path) :
@@ -4243,9 +4242,9 @@ namespace Microsoft.Azure.ServiceBusExplorer
             long messagesReceived = 0;
             long totalReceiveElapsedTime = 0;
             long totalCompleteElapsedTime = 0;
-            long minimumReceiveTime = long.MaxValue;
+            var minimumReceiveTime = long.MaxValue;
             long maximumReceiveTime = 0;
-            long minimumCompleteTime = long.MaxValue;
+            var minimumCompleteTime = long.MaxValue;
             long maximumCompleteTime = 0;
             long fetchedMessages = 0;
             long prefetchElapsedTime = 0;
@@ -5061,7 +5060,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 return null;
             }
             var inboundMessage = eventDataToRead.Clone();
-            bool bBodyParsed = false;
+            var bBodyParsed = false;
             if (!doNotSerializeBody)
             {
                 try

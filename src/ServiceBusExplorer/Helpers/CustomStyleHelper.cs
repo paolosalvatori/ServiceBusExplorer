@@ -30,7 +30,9 @@ using Microsoft.Azure.ServiceBusExplorer.Controls;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-	/// <summary>
+    using System;
+
+    /// <summary>
 	/// Summary description for DrawCustomStyleHelper.
 	/// </summary>
 	public static class CustomStyleHelper
@@ -55,7 +57,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 			//			
 			colorBlend.Colors = new[]{color1, color2, color3, color4, color5};
 			colorBlend.Positions = new[]{0, 0.25f, 0.5f, 0.75f, 1};
-			LinearGradientBrush gradientBrush = orientation == Orientation.Horizontal ? new LinearGradientBrush(new Point((int)drawRectF.Left, (int)drawRectF.Top-1), new Point((int)drawRectF.Left, (int)drawRectF.Top + (int)drawRectF.Height+1), color1, color5) : new LinearGradientBrush(new Point((int)drawRectF.Left-1, (int)drawRectF.Top), new Point((int)drawRectF.Left + (int)drawRectF.Width+1, (int)drawRectF.Top), color1, color5);
+			var gradientBrush = orientation == Orientation.Horizontal ? new LinearGradientBrush(new Point((int)drawRectF.Left, (int)drawRectF.Top-1), new Point((int)drawRectF.Left, (int)drawRectF.Top + (int)drawRectF.Height+1), color1, color5) : new LinearGradientBrush(new Point((int)drawRectF.Left-1, (int)drawRectF.Top), new Point((int)drawRectF.Left + (int)drawRectF.Width+1, (int)drawRectF.Top), color1, color5);
 			gradientBrush.InterpolationColors = colorBlend;
 			FillPill(gradientBrush, drawRectF, g);
 
@@ -69,14 +71,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="g"></param>
-		/// <param name="drawRectF"></param>
-		/// <param name="drawColor"></param>
-		/// <param name="orientation"></param>
-		public static void DrawAquaPillSingleLayer(Graphics g, RectangleF drawRectF, Color drawColor, Orientation orientation, BrushStyle brushStyle)
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="g"></param>
+	    /// <param name="drawRectF"></param>
+	    /// <param name="drawColor"></param>
+	    /// <param name="orientation"></param>
+	    /// <param name="brushStyle"></param>
+	    public static void DrawAquaPillSingleLayer(Graphics g, RectangleF drawRectF, Color drawColor, Orientation orientation, BrushStyle brushStyle)
 		{
 		    if (brushStyle == BrushStyle.LinearGradient)
 		    {
@@ -124,8 +127,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 				g.FillEllipse(b, new RectangleF(rect.Left, rect.Top, rect.Height, rect.Height));
 				g.FillEllipse(b, new RectangleF(rect.Left + rect.Width - rect.Height, rect.Top, rect.Height, rect.Height));				
 
-				float w = rect.Width - rect.Height;
-				float l = rect.Left + ((rect.Height)/ 2);
+				var w = rect.Width - rect.Height;
+				var l = rect.Left + ((rect.Height)/ 2);
 				g.FillRectangle(b, new RectangleF(l, rect.Top, w, rect.Height));
 				g.SmoothingMode = SmoothingMode.Default;
 			} 
@@ -135,12 +138,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 				g.FillEllipse(b, new RectangleF(rect.Left, rect.Top, rect.Width, rect.Width));
 				g.FillEllipse(b, new RectangleF(rect.Left, rect.Top + rect.Height - rect.Width, rect.Width, rect.Width));				
 
-				float t = rect.Top + (rect.Width/ 2);
-				float h = rect.Height - rect.Width;
+				var t = rect.Top + (rect.Width/ 2);
+				var h = rect.Height - rect.Width;
 				g.FillRectangle (b, new RectangleF(rect.Left, t, rect.Width, h));				
 				g.SmoothingMode = SmoothingMode.Default;
 			} 
-			else if (rect.Width == rect.Height) 
+			else if (Math.Abs(rect.Width - rect.Height) < 0.1) // floats equality
 			{
 				g.SmoothingMode = SmoothingMode.HighQuality;
 				g.FillEllipse(b, rect);

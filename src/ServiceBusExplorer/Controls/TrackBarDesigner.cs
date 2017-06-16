@@ -34,10 +34,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 	/// </summary>
 	public class CustomTrackBarDesigner : ControlDesigner
 	{
-		public CustomTrackBarDesigner()
-		{}
-
-		/// <summary>
+	    /// <summary>
 		/// Returns the allowable design time selection rules.
 		/// </summary>
 		public override SelectionRules SelectionRules 
@@ -45,17 +42,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			
 			get 
 			{ 
-				CustomTrackBar control = this.Control as CustomTrackBar;
+				var control = this.Control as CustomTrackBar;
 
 				// Disallow vertical or horizontal sizing when AutoSize = True
-				if(control != null && control.AutoSize == true)
+				if(control != null && control.AutoSize)
 					if(control.Orientation == Orientation.Horizontal)
 						return (base.SelectionRules & ~SelectionRules.TopSizeable) & ~SelectionRules.BottomSizeable;
 					else //control.Orientation == Orientation.Vertical
 						return (base.SelectionRules & ~SelectionRules.LeftSizeable) & ~SelectionRules.RightSizeable;
-				else
-					return base.SelectionRules;
-
+			    return base.SelectionRules;
 			}
 		}
 
