@@ -58,20 +58,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
         {
-            if (value == null)
-            {
-                return base.GetProperties(context, value, attributes);
-            }
-
             var propType = Type.Missing.GetType();
-            if (context != null && context.PropertyDescriptor is CustomPropertyDescriptor)
+            if (context?.PropertyDescriptor is CustomPropertyDescriptor)
             {
-                var cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
+                var cpd = (CustomPropertyDescriptor) context.PropertyDescriptor;
                 UpdateEnumDisplayText(cpd);
                 propType = cpd.PropertyType;
             }
             var pdl = new List<CustomPropertyDescriptor>();
-            int nIndex = -1;
+            var nIndex = -1;
             if (pdl.Count == 0)
             {
                 var en = value as IEnumerable;
@@ -91,7 +86,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         }
                         else if (propType.IsArray)
                         {
-                            sPropName = "[" + nIndex.ToString() + "]";
+                            sPropName = "[" + nIndex + "]";
                         }
                         pdl.Add(new CustomPropertyDescriptor(null, sPropName, enu.Current.GetType(), enu.Current));
                     }
@@ -113,7 +108,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
-            if (context != null && context.PropertyDescriptor is CustomPropertyDescriptor)
+            if (context?.PropertyDescriptor is CustomPropertyDescriptor)
             {
                 var cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
 
@@ -147,52 +142,52 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             //WriteContext("ConvertFrom", context, value, Type.Missing.GetType());
 
-            ICollection<StandardValueAttribute> col = null;
-            Type propType = Type.Missing.GetType();
-            if (context != null && context.PropertyDescriptor is CustomPropertyDescriptor)
+            ICollection<StandardValueAttribute> standardValueAttributes = null;
+            var propType = Type.Missing.GetType();
+            if (context?.PropertyDescriptor is CustomPropertyDescriptor)
             {
-                CustomPropertyDescriptor cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
+                var cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
                 UpdateEnumDisplayText(cpd);
-                col = cpd.StandardValues;
+                standardValueAttributes = cpd.StandardValues;
                 propType = cpd.PropertyType;
             }
             if (value == null)
             {
                 return null;
             }
-            else if (value is string)
+            if (value is string)
             {
                 if (propType.IsEnum)
                 {
                     var sInpuValue = value as string;
-                    string[] arrDispName = sInpuValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    var arrDispName = sInpuValue.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                     var sb = new StringBuilder(1000);
-                    foreach (string sDispName in arrDispName)
+                    foreach (var sDispName in arrDispName)
                     {
-                        string sTrimValue = sDispName.Trim();
-                        foreach (StandardValueAttribute sva in col)
+                        var sTrimValue = sDispName.Trim();
+                        foreach (var sva in standardValueAttributes)
                         {
-                            if (String.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
-                                String.Compare(sva.DisplayName, sTrimValue, true) == 0)
+                            if (string.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
+                                string.Compare(sva.DisplayName, sTrimValue, true) == 0)
                             {
                                 if (sb.Length > 0)
                                 {
                                     sb.Append(",");
                                 }
-                                sb.Append(sva.Value.ToString());
+                                sb.Append(sva.Value);
                             }
                         }
 
                     }  // end of foreach..loop
                     return Enum.Parse(propType, sb.ToString(), true);
                 }
-                foreach (StandardValueAttribute sva in col)
+                foreach (var standardValueAttribute in standardValueAttributes)
                 {
-                    if (String.Compare(value.ToString(), sva.DisplayName, true, culture) == 0 ||
-                        String.Compare(value.ToString(), sva.Value.ToString(), true, culture) == 0)
+                    if (String.Compare(value.ToString(), standardValueAttribute.DisplayName, true, culture) == 0 ||
+                        String.Compare(value.ToString(), standardValueAttribute.Value.ToString(), true, culture) == 0)
                     {
-                        return sva.Value;
+                        return standardValueAttribute.Value;
 
                     }
                 }
@@ -229,13 +224,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             //WriteContext("ConvertTo", context, value, destinationType);
 
-            ICollection<StandardValueAttribute> col = null;
+            ICollection<StandardValueAttribute> standardValueAttributes = null;
             var propType = Type.Missing.GetType();
             if (context != null && context.PropertyDescriptor is CustomPropertyDescriptor)
             {
                 var cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
                 UpdateEnumDisplayText(cpd);
-                col = cpd.StandardValues;
+                standardValueAttributes = cpd.StandardValues;
                 propType = cpd.PropertyType;
             }
             if (value == null)
@@ -254,10 +249,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
                 else if (destinationType == typeof(StandardValueAttribute))
                 {
-                    foreach (StandardValueAttribute sva in col)
+                    foreach (var sva in standardValueAttributes)
                     {
-                        if (String.Compare(value.ToString(), sva.DisplayName, true, culture) == 0 ||
-                            String.Compare(value.ToString(), sva.Value.ToString(), true, culture) == 0)
+                        if (string.Compare(value.ToString(), sva.DisplayName, true, culture) == 0 ||
+                            string.Compare(value.ToString(), sva.Value.ToString(), true, culture) == 0)
                         {
                             return sva;
                         }
@@ -271,16 +266,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     if (propType.IsEnum)
                     {
                         var sDelimitedValues = Enum.Format(propType, value, "G");
-                        var arrValue = sDelimitedValues.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        var arrValue = sDelimitedValues.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                         var sb = new StringBuilder(1000);
-                        foreach (string sDispName in arrValue)
+                        foreach (var sDispName in arrValue)
                         {
-                            string sTrimValue = sDispName.Trim();
-                            foreach (StandardValueAttribute sva in col)
+                            var sTrimValue = sDispName.Trim();
+                            foreach (var sva in standardValueAttributes)
                             {
-                                if (String.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
-                                    String.Compare(sva.DisplayName, sTrimValue, true) == 0)
+                                if (string.Compare(sva.Value.ToString(), sTrimValue, true) == 0 ||
+                                    string.Compare(sva.DisplayName, sTrimValue, true) == 0)
                                 {
                                     if (sb.Length > 0)
                                     {
@@ -293,14 +288,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         }  // end of foreach..loop
                         return sb.ToString();
                     }
-                    foreach (StandardValueAttribute sva in col)
+                    foreach (var standardValueAttribute in standardValueAttributes)
                     {
-                        if (sva.Value.Equals(value))
+                        if (standardValueAttribute.Value.Equals(value))
                         {
-                            return sva.DisplayName;
+                            return standardValueAttribute.DisplayName;
                         }
                     }
-                    TypeConverter tc = TypeDescriptor.GetConverter(propType);
+                    var tc = TypeDescriptor.GetConverter(propType);
                     if (tc != null)
                     {
                         object convertedValue = null;
@@ -320,7 +315,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
                 else if (destinationType == typeof(StandardValueAttribute))
                 {
-                    foreach (var sva in col)
+                    foreach (var sva in standardValueAttributes)
                     {
                         if (sva.Value.Equals(value))
                         {
@@ -355,7 +350,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             ICollection<StandardValueAttribute> col = null;
-            if (context != null && context.PropertyDescriptor is CustomPropertyDescriptor)
+            if (context?.PropertyDescriptor is CustomPropertyDescriptor)
             {
                 var cpd = context.PropertyDescriptor as CustomPropertyDescriptor;
                 UpdateEnumDisplayText(cpd);
@@ -391,18 +386,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 return;
             }
-            string prefix = String.Empty;
+            var prefix = String.Empty;
             ResourceManager rm = null;
-            StandardValueAttribute sva = null;
+            StandardValueAttribute sva;
 
             sva = cpd.StandardValues.FirstOrDefault() as StandardValueAttribute;
 
             // first try property itself
             if (cpd.ResourceManager != null)
             {
-                string keyName = cpd.KeyPrefix + cpd.Name + "_" + sva.Value.ToString() + "_Name";
-                string valueName = cpd.ResourceManager.GetString(keyName);
-                if (!String.IsNullOrWhiteSpace(valueName))
+                var keyName = cpd.KeyPrefix + cpd.Name + "_" + sva.Value.ToString() + "_Name";
+                var valueName = cpd.ResourceManager.GetString(keyName);
+                if (!string.IsNullOrWhiteSpace(valueName))
                 {
                     rm = cpd.ResourceManager;
                     prefix = cpd.KeyPrefix + cpd.Name;
@@ -412,8 +407,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             // now try class level
             if (rm == null && cpd.ResourceManager != null)
             {
-                string keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva.Value.ToString() + "_Name";
-                string valueName = cpd.ResourceManager.GetString(keyName);
+                var keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva.Value + "_Name";
+                var valueName = cpd.ResourceManager.GetString(keyName);
                 if (!String.IsNullOrWhiteSpace(valueName))
                 {
                     rm = cpd.ResourceManager;
@@ -448,12 +443,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (rm != null)
             {
-                foreach (StandardValueAttribute sv in cpd.StandardValues)
+                foreach (var standardValueAttribute in cpd.StandardValues)
                 {
-                    string keyName = prefix + "_" + sv.Value.ToString() + "_Name";  // display name
-                    string keyDesc = prefix + "_" + sv.Value.ToString() + "_Desc"; // description
-                    string dispName = String.Empty;
-                    string description = String.Empty;
+                    var keyName = prefix + "_" + standardValueAttribute.Value + "_Name";  // display name
+                    var keyDesc = prefix + "_" + standardValueAttribute.Value + "_Desc"; // description
+                    var dispName = String.Empty;
+                    var description = String.Empty;
 
                     try
                     {
@@ -464,9 +459,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    if (String.IsNullOrWhiteSpace(dispName) == false)
+                    if (string.IsNullOrWhiteSpace(dispName) == false)
                     {
-                        sv.DisplayName = dispName;
+                        standardValueAttribute.DisplayName = dispName;
                     }
 
                     try
@@ -478,9 +473,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    if (String.IsNullOrWhiteSpace(description) == false)
+                    if (string.IsNullOrWhiteSpace(description) == false)
                     {
-                        sv.Description = description;
+                        standardValueAttribute.Description = description;
                     }
                 }
             }
@@ -495,12 +490,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 if (ctx.Instance != null)
                 {
-                    sb.Append("ctx.Instance is " + ctx.Instance.ToString() + ". ");
+                    sb.Append("ctx.Instance is " + ctx.Instance + ". ");
                 }
 
                 if (ctx.PropertyDescriptor != null)
                 {
-                    sb.Append("ctx.PropertyDescriptor is " + ctx.PropertyDescriptor.ToString() + ". ");
+                    sb.Append("ctx.PropertyDescriptor is " + ctx.PropertyDescriptor + ". ");
                 }
             }
             else
@@ -514,10 +509,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             else
             {
-                sb.AppendLine("Value is " + value.ToString() + ", " + value.GetType().ToString() + ". ");
+                sb.AppendLine("Value is " + value + ", " + value.GetType() + ". ");
             }
             sb.AppendLine(destinationType.ToString());
-            Console.WriteLine(count.ToString() + " " + prefix + ": " + sb.ToString());
+            Console.WriteLine(count + " " + prefix + ": " + sb);
         } 
         #endregion
     }

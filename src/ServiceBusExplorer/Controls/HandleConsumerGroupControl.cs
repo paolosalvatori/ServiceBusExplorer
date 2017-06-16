@@ -194,7 +194,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     var partitionEnumerable = serviceBusHelper.GetPartitions(consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
                     var partitionDescriptionList = partitionEnumerable as IList<PartitionDescription> ??
                                                    partitionEnumerable.ToList();
-                    if (partitionEnumerable == null || !partitionDescriptionList.Any())
+                    if (!partitionDescriptionList.Any())
                     {
                         return;
                     }
@@ -585,7 +585,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private async void btnCancelUpdate_Click(object sender, EventArgs e)
         {
-            bool ok = true;
+            var ok = true;
 
             if (btnCancelUpdate.Text == CancelText)
             {
@@ -1010,17 +1010,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     serviceBusHelper.Namespace,
                     pointBindingList);
                 var uriList = uris as IList<Uri> ?? uris.ToList();
-                if (uris == null || !uriList.Any())
+                if (!uriList.Any())
                 {
                     return;
                 }
                 var metricData = MetricHelper.ReadMetricDataUsingTasks(uriList,
                     MainForm.SingletonMainForm.CertificateThumbprint);
                 var metricList = metricData as IList<IEnumerable<MetricValue>> ?? metricData.ToList();
-                if (metricData == null && metricList.Count == 0)
-                {
-                    return;
-                }
                 for (var i = 0; i < metricList.Count; i++)
                 {
                     if (metricList[i] == null || !metricList[i].Any())

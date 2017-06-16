@@ -44,10 +44,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private readonly AttributeList attributes = new AttributeList();
         private readonly PropertyDescriptor propertyDescriptor;
         private readonly Collection<PropertyValueUIItem> colUIItem = new Collection<PropertyValueUIItem>();
-        private string keyPrefix = String.Empty;
         private Image valueImage;
         private int tabAppendCount;
-        private ResourceManager resourceManager;
         private object value;
         private readonly List<StandardValueAttribute> standardValues = new List<StandardValueAttribute>();
         #endregion
@@ -168,7 +166,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 var sResult = String.Empty;
                 if (ResourceManager != null && CategoryId != 0 && (PropertyFlags & PropertyFlags.LocalizeCategoryName) > 0)
                 {
-                    string sKey = KeyPrefix + "Cat" + CategoryId.ToString();
+                    var sKey = KeyPrefix + "Cat" + CategoryId;
                     sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
                     if (!String.IsNullOrWhiteSpace(sResult))
                     {
@@ -181,11 +179,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     sResult = attr.Category;
                 }
-                if (String.IsNullOrWhiteSpace(sResult))
+                if (string.IsNullOrWhiteSpace(sResult))
                 {
                     sResult = base.Category;
                 }
-                return sResult.PadLeft(base.Category.Length + tabAppendCount, '\t');
+                return sResult.PadLeft(Category.Length + tabAppendCount, '\t');
             }
         }
 
@@ -195,9 +193,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 if (ResourceManager != null && (PropertyFlags & PropertyFlags.LocalizeDescription) > 0)
                 {
-                    string sKey = KeyPrefix + base.Name + "_Desc";
-                    string sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
-                    if (!String.IsNullOrWhiteSpace(sResult))
+                    var sKey = KeyPrefix + Name + "_Desc";
+                    var sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
+                    if (!string.IsNullOrWhiteSpace(sResult))
                     {
                         return sResult;
                     }
@@ -267,7 +265,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     attributes.RemoveAll(a => a is DefaultValueAttribute);
                 }
-                attr = new DefaultValueAttribute(value);
+                attr = new DefaultValueAttribute(value); // TODO: what's this doing?
             }
         }
 
@@ -340,10 +338,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 if (ResourceManager != null && (PropertyFlags & PropertyFlags.LocalizeDisplayName) > 0)
                 {
-                    var sKey = KeyPrefix + base.Name + "_Name";
+                    var sKey = KeyPrefix + Name + "_Name";
 
                     var sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
-                    if (!String.IsNullOrWhiteSpace(sResult))
+                    if (!string.IsNullOrWhiteSpace(sResult))
                     {
                         return sResult;
                     }
@@ -355,41 +353,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Internal Properties
-        internal string KeyPrefix
-        {
-            get
-            {
-                return keyPrefix;
-            }
-            set
-            {
-                keyPrefix = value;
-            }
-        }
+        internal string KeyPrefix { get; set; } = String.Empty;
 
         internal int TabAppendCount
         {
-            get
-            {
-                return tabAppendCount;
-            }
-            set
-            {
-                tabAppendCount = value;
-            }
+            get => tabAppendCount;
+            set => tabAppendCount = value;
         }
 
-        internal ResourceManager ResourceManager
-        {
-            get
-            {
-                return resourceManager;
-            }
-            set
-            {
-                resourceManager = value;
-            }
-        }
+        internal ResourceManager ResourceManager { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -481,7 +454,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             if (value != null && value is StandardValueAttribute)
             {
-                this.value = (value as StandardValueAttribute).Value;
+                this.value = ((StandardValueAttribute) value).Value;
             }
             else
             {
@@ -496,11 +469,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             else
             {
-                EventHandler eh = this.GetValueChangedHandler(owner);
-                if (eh != null)
-                {
-                    eh.Invoke(this, new EventArgs( ));
-                }
+                var eh = this.GetValueChangedHandler(owner);
+                eh?.Invoke(this, new EventArgs( ));
                 OnValueChanged(this, new EventArgs( ));
             }
         }
@@ -538,14 +508,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public override PropertyDescriptorCollection GetChildProperties( object instance, Attribute[] filter )
         {
             PropertyDescriptorCollection pdc = null;
-            var tc = this.Converter;
-            if (tc.GetPropertiesSupported(null) == false)
+            var tc = Converter;
+            if (tc != null && tc.GetPropertiesSupported(null) == false)
             {
                 pdc = base.GetChildProperties(instance, filter);
-            }
-            else
-            {
-
             }
             if (propertyDescriptor != null)
             {

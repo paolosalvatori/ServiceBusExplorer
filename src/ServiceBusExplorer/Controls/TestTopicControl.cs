@@ -714,12 +714,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     // Get Body Type
-                    BodyType bodyType;
-                    if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
+                    if (!Enum.TryParse(cboBodyType.Text, true, out BodyType bodyType))
                     {
                         bodyType = BodyType.Stream;
                     }
-                    bool isBinary = false;
+                    var isBinary = false;
                     // Create outbound message template list
                     var messageTemplateList = new List<BrokeredMessage>();
                     var messageTextList = new List<string>();

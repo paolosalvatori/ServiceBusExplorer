@@ -4635,7 +4635,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
-            foreach (string t in metricTabPageIndexList)
+            foreach (var t in metricTabPageIndexList)
             {
                 mainTabControl.TabPages.RemoveByKey(t);
             }

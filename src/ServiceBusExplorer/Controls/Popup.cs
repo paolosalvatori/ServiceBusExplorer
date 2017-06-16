@@ -132,7 +132,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
             get
             {
-                CreateParams cp = base.CreateParams;
+                var cp = base.CreateParams;
                 cp.ExStyle |= NativeMethods.WS_EX_NOACTIVATE;
                 return cp;
             }
@@ -260,8 +260,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             SetOwnerItem(control);
             resizableTop = resizableRight = false;
-            Point location = control.PointToScreen(new Point(area.Left, area.Top + area.Height));
-            Rectangle screen = Screen.FromControl(control).WorkingArea;
+            var location = control.PointToScreen(new Point(area.Left, area.Top + area.Height));
+            var screen = Screen.FromControl(control).WorkingArea;
             if (location.X + Size.Width > (screen.Left + screen.Width))
             {
                 resizableRight = true;
@@ -285,11 +285,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// <param name="visible">true if the owner <see cref="T:System.Windows.Forms.ToolStrip" /> is currently displayed; otherwise, false.</param>
         protected override void SetVisibleCore(bool visible)
         {
-            double opacity = Opacity;
+            var opacity = Opacity;
             if (visible && fade && focusOnOpen) Opacity = 0;
             base.SetVisibleCore(visible);
             if (!visible || !fade || !focusOnOpen) return;
-            for (int i = 1; i <= Frames; i++)
+            for (var i = 1; i <= Frames; i++)
             {
                 if (i > 1)
                 {
@@ -312,7 +312,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             if (control is Popup)
             {
-                Popup popupControl = control as Popup;
+                var popupControl = control as Popup;
                 ownerPopup = popupControl;
                 ownerPopup.childPopup = this;
                 OwnerItem = popupControl.Items[0];
@@ -450,26 +450,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private bool OnNcHitTest(ref Message m, bool contentControl)
         {
-            int x = NativeMethods.LOWORD(m.LParam);
-            int y = NativeMethods.HIWORD(m.LParam);
-            Point clientLocation = PointToClient(new Point(x, y));
+            var x = NativeMethods.LOWORD(m.LParam);
+            var y = NativeMethods.HIWORD(m.LParam);
+            var clientLocation = PointToClient(new Point(x, y));
 
-            GripBounds gripBouns = new GripBounds(contentControl ? content.ClientRectangle : ClientRectangle);
-            IntPtr transparent = new IntPtr(NativeMethods.HTTRANSPARENT);
+            var gripBounds = new GripBounds(contentControl ? content.ClientRectangle : ClientRectangle);
+            var transparent = new IntPtr(NativeMethods.HTTRANSPARENT);
 
             if (resizableTop)
             {
-                if (resizableRight && gripBouns.TopLeft.Contains(clientLocation))
+                if (resizableRight && gripBounds.TopLeft.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTTOPLEFT;
                     return true;
                 }
-                if (!resizableRight && gripBouns.TopRight.Contains(clientLocation))
+                if (!resizableRight && gripBounds.TopRight.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTTOPRIGHT;
                     return true;
                 }
-                if (gripBouns.Top.Contains(clientLocation))
+                if (gripBounds.Top.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTTOP;
                     return true;
@@ -477,28 +477,28 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                if (resizableRight && gripBouns.BottomLeft.Contains(clientLocation))
+                if (resizableRight && gripBounds.BottomLeft.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTBOTTOMLEFT;
                     return true;
                 }
-                if (!resizableRight && gripBouns.BottomRight.Contains(clientLocation))
+                if (!resizableRight && gripBounds.BottomRight.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTBOTTOMRIGHT;
                     return true;
                 }
-                if (gripBouns.Bottom.Contains(clientLocation))
+                if (gripBounds.Bottom.Contains(clientLocation))
                 {
                     m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTBOTTOM;
                     return true;
                 }
             }
-            if (resizableRight && gripBouns.Left.Contains(clientLocation))
+            if (resizableRight && gripBounds.Left.Contains(clientLocation))
             {
                 m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTLEFT;
                 return true;
             }
-            if (!resizableRight && gripBouns.Right.Contains(clientLocation))
+            if (!resizableRight && gripBounds.Right.Contains(clientLocation))
             {
                 m.Result = contentControl ? transparent : (IntPtr)NativeMethods.HTRIGHT;
                 return true;
@@ -513,11 +513,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
         public void PaintSizeGrip(PaintEventArgs e)
         {
-            if (e == null || e.Graphics == null || !resizable)
+            if (e == null || !resizable)
             {
                 return;
             }
-            Size clientSize = content.ClientSize;
+            var clientSize = content.ClientSize;
             if (Application.RenderWithVisualStyles)
             {
                 if (this.sizeGripRenderer == null)

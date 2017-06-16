@@ -38,7 +38,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         // Messages
         //***************************
-        private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
+        const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
         #endregion
 
         #region Public Constructor
@@ -50,7 +50,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
             cboReceiverInspector.SelectedIndex = 0;
             var messageInspectors = brokeredMessageInspectors as string[] ?? brokeredMessageInspectors.ToArray();
-            if (brokeredMessageInspectors == null || !messageInspectors.Any())
+            if (!messageInspectors.Any())
             {
                 return;
             }
@@ -118,7 +118,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void txtMessageCount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            base.OnKeyPress(e);
+            OnKeyPress(e);
 
             var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
             var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;

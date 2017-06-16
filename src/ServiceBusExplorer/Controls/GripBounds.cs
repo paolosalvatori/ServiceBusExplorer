@@ -48,7 +48,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Y = rect.Bottom - GripSize + 1;
                 rect.Height = GripSize;
                 return rect;
@@ -59,7 +59,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Y = rect.Bottom - CornerGripSize + 1;
                 rect.Height = CornerGripSize;
                 rect.X = rect.Width - CornerGripSize + 1;
@@ -72,7 +72,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Height = GripSize;
                 return rect;
             }
@@ -82,7 +82,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Height = CornerGripSize;
                 rect.X = rect.Width - CornerGripSize + 1;
                 rect.Width = CornerGripSize;
@@ -94,7 +94,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Width = GripSize;
                 return rect;
             }
@@ -104,7 +104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Width = CornerGripSize;
                 rect.Y = rect.Height - CornerGripSize + 1;
                 rect.Height = CornerGripSize;
@@ -116,7 +116,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.X = rect.Right - GripSize + 1;
                 rect.Width = GripSize;
                 return rect;
@@ -127,7 +127,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             get
             {
-                Rectangle rect = ClientRectangle;
+                var rect = ClientRectangle;
                 rect.Width = CornerGripSize;
                 rect.Height = CornerGripSize;
                 return rect;

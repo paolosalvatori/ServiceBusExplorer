@@ -163,7 +163,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         public List<string> SelectedEntities
         {
-            get { return Enumerable.Where<CheckBoxComboBoxItem>(cboSelectedEntities.CheckBoxItems, i => i.Checked).Select(i => i.Text).ToList(); }
+            get { return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList(); }
         }
 
         #endregion
@@ -265,7 +265,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     cn = cn.Substring(0, cn.Length - 1);
                 }
                 var parameters =
-                    Enumerable.Where<string>(cn.Split(';'), p => Enumerable.Contains(p, '='))
+                    cn.Split(';').Where(p => Enumerable.Contains(p, '='))
                         .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
                             s => s.Substring(s.IndexOf('=') + 1));
                 if (!parameters.ContainsKey(ConnectionStringTransportType))
@@ -379,12 +379,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     cn = cn.Substring(0, cn.Length - 1);
                 }
                 var parameters =
-                    Enumerable.Where<string>(cn.Split(';'), p => Enumerable.Contains(p, '='))
+                    cn.Split(';').Where(p => p.Contains('='))
                         .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
                             s => s.Substring(s.IndexOf('=') + 1));
                 var value = parameters.ContainsKey(ConnectionStringTransportType)
                     ? cn.Replace(parameters[ConnectionStringTransportType], cboTransportType.SelectedItem.ToString())
-                    : cn + string.Format((string) ConnectionStringTransportTypeFormat, (object) cboTransportType.SelectedItem);
+                    : cn + string.Format(ConnectionStringTransportTypeFormat, cboTransportType.SelectedItem);
                 if (parameters.ContainsKey(ConnectionStringRuntimePort))
                 {
                     if (!(cboTransportType.SelectedItem is TransportType))
@@ -625,7 +625,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        public void HandleException(Exception ex)
+        void HandleException(Exception ex)
         {
             if (string.IsNullOrWhiteSpace(ex?.Message))
             {

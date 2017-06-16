@@ -229,7 +229,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// <summary>This method will initialize the GroupBox control.</summary>
 		private void InitializeGroupBox()
 		{
-			components = new System.ComponentModel.Container();
+			components = new Container();
 			this.Resize+=new EventHandler(GroupBox_Resize);
 			this.DockPadding.All = 20;
 			this.Name = "GroupBox";
@@ -270,21 +270,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			//-------------------------------------------
 
 			//Declare Variables------------------
-			SizeF StringSize = g.MeasureString(this.GroupTitle, this.Font);
-			Size StringSize2 = StringSize.ToSize();
+			var StringSize = g.MeasureString(this.GroupTitle, this.Font);
+			var StringSize2 = StringSize.ToSize();
 			if(this.GroupImage!=null){StringSize2.Width+=18;}
-			int ArcWidth = this.RoundCorners;
-			int ArcHeight = this.RoundCorners;
-			int ArcX1 = 20;
-			int ArcX2 = (StringSize2.Width+34) - (ArcWidth + 1);
-			int ArcY1 = 0;
-			int ArcY2 = 24 - (ArcHeight + 1);
-			GraphicsPath path = new GraphicsPath();
+			var ArcWidth = this.RoundCorners;
+			var ArcHeight = this.RoundCorners;
+			var ArcX1 = 20;
+			var ArcX2 = (StringSize2.Width+34) - (ArcWidth + 1);
+			var ArcY1 = 0;
+			var ArcY2 = 24 - (ArcHeight + 1);
+			var path = new GraphicsPath();
 			Brush BorderBrush = new SolidBrush(this.BorderColor);
-			Pen BorderPen = new Pen(BorderBrush, this.BorderThickness);
+			var BorderPen = new Pen(BorderBrush, this.BorderThickness);
 			LinearGradientBrush BackgroundGradientBrush = null;
 			Brush BackgroundBrush = (this.PaintGroupBox) ? new SolidBrush(this.CustomGroupBoxColor) : new SolidBrush(this.BackgroundColor);
-			SolidBrush TextColorBrush = new SolidBrush(this.ForeColor);
+			var TextColorBrush = new SolidBrush(this.ForeColor);
 			SolidBrush ShadowBrush = null;
 			GraphicsPath ShadowPath  = null;
 			//-----------------------------------
@@ -345,7 +345,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			//-----------------------------------
 
 			//Paint Text-------------------------
-			int CustomStringWidth = (this.GroupImage!=null) ? 44 : 28;
+			var CustomStringWidth = (this.GroupImage!=null) ? 44 : 28;
 			g.DrawString(this.GroupTitle, this.Font, TextColorBrush, CustomStringWidth, 5);
 			//-----------------------------------
 
@@ -357,16 +357,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			//-----------------------------------
 
 			//Destroy Graphic Objects------------
-			if(path!=null){path.Dispose();}
-			if(BorderBrush!=null){BorderBrush.Dispose();}
-			if(BorderPen!=null){BorderPen.Dispose();}
-			if(BackgroundGradientBrush!=null){BackgroundGradientBrush.Dispose();}
-			if(BackgroundBrush!=null){BackgroundBrush.Dispose();}
-			if(TextColorBrush!=null){TextColorBrush .Dispose();}
-			if(ShadowBrush!=null){ShadowBrush.Dispose();}
-			if(ShadowPath!=null){ShadowPath.Dispose();}
-            
-			//-----------------------------------
+		    path?.Dispose();
+		    BorderBrush?.Dispose();
+		    BorderPen?.Dispose();
+		    BackgroundGradientBrush?.Dispose();
+		    BackgroundBrush?.Dispose();
+		    TextColorBrush?.Dispose();
+		    ShadowBrush?.Dispose();
+		    ShadowPath?.Dispose();
+
+		    //-----------------------------------
 		}
 
 		
@@ -379,15 +379,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			//-------------------------------------------
 
 			//Declare Variables------------------
-			int ArcWidth = this.RoundCorners * 2;
-			int ArcHeight = this.RoundCorners * 2;
-			int ArcX1 = 0;
-			int ArcX2 = (this.ShadowControl) ? (this.Width - (ArcWidth + 1))-this.ShadowThickness : this.Width - (ArcWidth + 1);
-			int ArcY1 = 10;
-			int ArcY2 = (this.ShadowControl) ? (this.Height - (ArcHeight + 1))-this.ShadowThickness : this.Height - (ArcHeight + 1);
-			GraphicsPath path = new GraphicsPath();
+			var ArcWidth = this.RoundCorners * 2;
+			var ArcHeight = this.RoundCorners * 2;
+			var ArcX1 = 0;
+			var ArcX2 = (this.ShadowControl) ? (this.Width - (ArcWidth + 1))-this.ShadowThickness : this.Width - (ArcWidth + 1);
+			var ArcY1 = 10;
+			var ArcY2 = (this.ShadowControl) ? (this.Height - (ArcHeight + 1))-this.ShadowThickness : this.Height - (ArcHeight + 1);
+			var path = new GraphicsPath();
 			Brush BorderBrush = new SolidBrush(this.BorderColor);
-			Pen BorderPen = new Pen(BorderBrush, this.BorderThickness);
+			var BorderPen = new Pen(BorderBrush, this.BorderThickness);
 			LinearGradientBrush BackgroundGradientBrush = null;
 			Brush BackgroundBrush = new SolidBrush(this.BackgroundColor);
 			SolidBrush ShadowBrush = null;
@@ -441,14 +441,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			//-----------------------------------
 
 			//Destroy Graphic Objects------------
-			if(path!=null){path.Dispose();}
-			if(BorderBrush!=null){BorderBrush.Dispose();}
-			if(BorderPen!=null){BorderPen.Dispose();}
-			if(BackgroundGradientBrush!=null){BackgroundGradientBrush.Dispose();}
-			if(BackgroundBrush!=null){BackgroundBrush.Dispose();}
-			if(ShadowBrush!=null){ShadowBrush.Dispose();}
-			if(ShadowPath!=null){ShadowPath.Dispose();}
-			//-----------------------------------
+		    path?.Dispose();
+		    BorderBrush?.Dispose();
+		    BorderPen?.Dispose();
+		    BackgroundGradientBrush?.Dispose();
+		    BackgroundBrush?.Dispose();
+		    ShadowBrush?.Dispose();
+		    ShadowPath?.Dispose();
+		    //-----------------------------------
 		}
 
 	

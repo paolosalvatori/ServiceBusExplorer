@@ -68,19 +68,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.metricInfo = metricInfo;
             InitializeComponent();
             metricList = metricValues as IList<MetricValue> ?? metricValues.ToList();
-            bindingList = metricValues != null ?
-                          new BindingList<MetricValue>(metricList)
-                            {
-                                AllowNew = true,
-                                AllowEdit = true,
-                                AllowRemove = true
-                            } : 
-                          new BindingList<MetricValue>
-                            {
-                                AllowNew = true,
-                                AllowEdit = true,
-                                AllowRemove = true
-                            };
+            bindingList = new BindingList<MetricValue>(metricList)
+            {
+                AllowNew = true,
+                AllowEdit = true,
+                AllowRemove = true
+            };
             InitializeControls();
         } 
         #endregion

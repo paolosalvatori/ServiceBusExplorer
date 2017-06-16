@@ -122,14 +122,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 	[Designer(typeof(CustomTrackBarDesigner))]
 	[DefaultProperty("Maximum")]
 	[DefaultEvent("ValueChanged")]	
-	public class CustomTrackBar : System.Windows.Forms.Control
+	public sealed class CustomTrackBar : Control
 	{	
 	
 		#region Private Fields
 
 		// Instance fields
-		private int value = 0;
-		private int minimum = 0;
+		private int value;
+		private int minimum;
 		private int maximum = 10;
 
 		private int largeChange = 2;
@@ -190,7 +190,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				ControlStyles.SupportsTransparentBackColor,
 				true);
 
-			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
+			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			ForeColor = Color.FromArgb(123, 125, 123);
 			BackColor = Color.Transparent;
 
@@ -247,14 +247,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(true)]
 		public new bool AutoSize
 		{
-			get { return autoSize; }
+			get => autoSize;
 
-			set
+		    set
 			{
 				if(autoSize != value)
 				{
 					autoSize = value;
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 				}
 			}
@@ -275,9 +275,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(2)]
 		public int LargeChange
 		{
-			get { return largeChange; }
+			get => largeChange;
 
-			set
+		    set
 			{
 				largeChange = value;
 				if(largeChange < 1)
@@ -299,9 +299,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(1)]
 		public int SmallChange
 		{
-			get { return smallChange; }
+			get => smallChange;
 
-			set
+		    set
 			{
 				smallChange = value;
 				if(smallChange < 1)
@@ -318,9 +318,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(4)]
 		public int TrackLineHeight
 		{
-			get { return trackLineHeight; }
+			get => trackLineHeight;
 
-			set
+		    set
 			{
 				if(trackLineHeight != value)
 				{
@@ -344,9 +344,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the tick's color of the control.")]
 		public Color TickColor
 		{
-			get { return tickColor; }
+			get => tickColor;
 
-			set
+		    set
 			{
 				if(tickColor != value)
 				{
@@ -373,9 +373,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(1)]
 		public int TickFrequency
 		{
-			get { return tickFrequency; }
+			get => tickFrequency;
 
-			set
+		    set
 			{
 				if(tickFrequency != value)
 				{
@@ -397,9 +397,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(6)]
 		public int TickHeight
 		{
-			get { return tickHeight; }
+			get => tickHeight;
 
-			set
+		    set
 			{
 				if(tickHeight != value)
 				{
@@ -408,7 +408,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					if(tickHeight < 1)
 						tickHeight = 1;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -425,9 +425,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(2)]
 		public int IndentHeight
 		{
-			get { return indentHeight; }
+			get => indentHeight;
 
-			set
+		    set
 			{
 				if(indentHeight != value)
 				{
@@ -435,7 +435,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					if(indentHeight < 0)
 						indentHeight = 0;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -453,9 +453,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(6)]
 		public int IndentWidth
 		{
-			get { return indentWidth; }
+			get => indentWidth;
 
-			set
+		    set
 			{
 				if(indentWidth != value)
 				{
@@ -463,7 +463,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					if(indentWidth < 0)
 						indentWidth = 0;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -481,9 +481,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the tracker's size.")]
 		public Size TrackerSize
 		{
-			get { return trackerSize; }
+			get => trackerSize;
 
-			set
+		    set
 			{
 				if(trackerSize != value)
 				{
@@ -491,7 +491,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					if(trackerSize.Width > trackerSize.Height)
 						trackerSize.Height = trackerSize.Width;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -512,15 +512,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(TickStyle.BottomRight)]
 		public TickStyle TextTickStyle
 		{
-			get { return textTickStyle; }
+			get => textTickStyle;
 
-			set
+		    set
 			{
 				if(textTickStyle != value)
 				{
 					textTickStyle = value;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -541,15 +541,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(TickStyle.BottomRight)]
 		public TickStyle TickStyle
 		{
-			get { return tickStyle; }
+			get => tickStyle;
 
-			set
+		    set
 			{
 				if(tickStyle != value)
 				{
 					tickStyle = value;
 
-					if(autoSize == true)
+					if(autoSize)
 						Size = FitSize;
 
 					Invalidate();
@@ -569,11 +569,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category( "Appearance")]
 		public Color TrackerColor
 		{
-			get
-			{
-				return trackerColor;
-			}
-			set
+			get => trackerColor;
+		    set
 			{
 				if(trackerColor != value)
 				{
@@ -593,11 +590,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category( "Behavior")]
 		public int Value
 		{
-			get
-			{
-				return value;
-			}
-			set
+			get => value;
+		    set
 			{
 				if(this.value != value)
 				{
@@ -625,20 +619,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category( "Behavior")]
 		public int Minimum
 		{
-			get
-			{
-				return minimum;
-			}
-			set
+			get => minimum;
+		    set
 			{
 				minimum = value;
 
 				if (minimum > maximum)
 					maximum = minimum;
 				if (minimum > value)
-					value = minimum;
+					value = minimum; // TODO: this is off...
 
-				if(autoSize == true)
+				if(autoSize)
 					Size = FitSize;
 				Invalidate();
 			}
@@ -653,20 +644,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category( "Behavior")]
 		public int Maximum
 		{
-			get
-			{
-				return maximum;
-			}
-			set
+			get => maximum;
+		    set
 			{
 				maximum = value;
 
 				if (maximum < value)
-					value = maximum;
-				if (maximum < minimum)
+					value = maximum; // TODO: this is off..
+                if (maximum < minimum)
 					minimum = maximum;
 
-				if(autoSize == true)
+				if(autoSize)
 					Size = FitSize;
 				Invalidate();
 			}
@@ -687,11 +675,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(Orientation.Horizontal)]
 		public Orientation Orientation
 		{
-			get
-			{
-				return orientation;
-			}
-			set
+			get => orientation;
+		    set
 			{
 				if(value != orientation)
 				{
@@ -700,7 +685,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					{
 						if(Width < Height)
 						{
-							int temp = Width;
+							var temp = Width;
 							Width = Height;
 							Height = temp;
 						}
@@ -709,7 +694,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					{
 						if(Width > Height)
 						{
-							int temp = Width;
+							var temp = Width;
 							Width = Height;
 							Height = temp;
 						}
@@ -718,6 +703,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 			}
 		}
+
 
 		/// <summary>
 		/// Gets or sets the border type of the trackbar control.
@@ -729,11 +715,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public CustomBorderStyle BorderStyle 
 		{
-			get 
-			{
-				return borderStyle;
-			}
-			set 
+			get => borderStyle;
+		    set 
 			{
 				if(borderStyle != value) 
 				{
@@ -751,8 +734,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the border color of the control.")]
 		public Color BorderColor
 		{
-			get { return borderColor; }
-			set 
+			get => borderColor;
+		    set 
 			{
 				if( value != borderColor)
 				{
@@ -770,8 +753,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the color of the track line.")]
 		public Color TrackLineColor
 		{
-			get { return trackLineColor; }
-			set 
+			get => trackLineColor;
+		    set 
 			{
 				if( value != trackLineColor)
 				{
@@ -789,7 +772,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [Description("Gets or sets the brush style of the track line.")]
         public BrushStyle TrackLineBrushStyle
         {
-            get { return brushStyle; }
+            get => brushStyle;
             set
             {
                 if (value != brushStyle)
@@ -818,10 +801,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     float textAreaSize;
 
                     // Create a Graphics object for the Control.
-                    Graphics g = CreateGraphics();
+                    var graphics = CreateGraphics();
 
-                    Rectangle workingRect = Rectangle.Inflate(ClientRectangle, -indentWidth, -indentHeight);
-                    float currentUsedPos = 0;
+                    var workingRect = Rectangle.Inflate(ClientRectangle, -indentWidth, -indentHeight);
+                    float currentUsedPos;
 
                     if (orientation == Orientation.Horizontal)
                     {
@@ -829,7 +812,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         //==========================================================================
 
                         // Get Height of Text Area
-                        textAreaSize = g.MeasureString(maximum.ToString(), Font).Height;
+                        textAreaSize = graphics.MeasureString(maximum.ToString(), Font).Height;
 
                         if (textTickStyle == TickStyle.TopLeft || textTickStyle == TickStyle.Both)
                             currentUsedPos += textAreaSize;
@@ -858,7 +841,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         //==========================================================================
 
                         // Get Width of Text Area
-                        textAreaSize = g.MeasureString(maximum.ToString(), Font).Width;
+                        textAreaSize = graphics.MeasureString(maximum.ToString(), Font).Width;
 
                         if (textTickStyle == TickStyle.TopLeft || textTickStyle == TickStyle.Both)
                             currentUsedPos += textAreaSize;
@@ -884,7 +867,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     // Clean up the Graphics object.
-                    g.Dispose();
+                    graphics.Dispose();
 
                     return fitSize;
 			    }
@@ -909,10 +892,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				float textAreaSize;
 
 				// Create a Graphics object for the Control.
-				Graphics g = CreateGraphics();
+				var graphics = CreateGraphics();
 
-				Rectangle workingRect = Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
-				float currentUsedPos = 0;
+				var workingRect = Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
+				float currentUsedPos;
 
 				if(orientation == Orientation.Horizontal)
 				{
@@ -920,7 +903,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					//==========================================================================
 
 					// Get Height of Text Area
-					textAreaSize = g.MeasureString(maximum.ToString(), Font).Height;
+					textAreaSize = graphics.MeasureString(maximum.ToString(), Font).Height;
 
 					if(textTickStyle == TickStyle.TopLeft || textTickStyle == TickStyle.Both)
 						currentUsedPos += textAreaSize;
@@ -930,7 +913,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
 
 					//==========================================================================
-					// Caculate the Tracker's rectangle
+					// Calculate the Tracker's rectangle
 					//==========================================================================
 					float currentTrackerPos;
 					if (maximum == minimum)
@@ -946,7 +929,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					//==========================================================================
 
 					// Get Width of Text Area
-					textAreaSize = g.MeasureString(maximum.ToString(), Font).Width;
+					textAreaSize = graphics.MeasureString(maximum.ToString(), Font).Width;
 
 					if(textTickStyle == TickStyle.TopLeft  || textTickStyle == TickStyle.Both)
 						currentUsedPos += textAreaSize;
@@ -955,7 +938,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 						currentUsedPos += tickHeight + 1;
 
 					//==========================================================================
-					// Caculate the Tracker's rectangle
+					// Calculate the Tracker's rectangle
 					//==========================================================================
 					float currentTrackerPos;
 					if (maximum == minimum)
@@ -970,7 +953,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 
 				// Clean up the Graphics object.
-				g.Dispose();
+				graphics.Dispose();
 
 				return trackerRect;
 			}
@@ -985,24 +968,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// Raises the ValueChanged event.
 		/// </summary>
 		/// <param name="value">The new value</param>
-		public virtual void OnValueChanged(int value)
+		void OnValueChanged(int value)
 		{
-			// Any attached event handlers?
-			if (ValueChanged != null)
-				ValueChanged(this, value);
-
+		    // Any attached event handlers?
+		    ValueChanged?.Invoke(this, value);
 		}
 
 		/// <summary>
 		/// Raises the Scroll event.
 		/// </summary>
-		public virtual void OnScroll()
+		void OnScroll()
 		{
 			try
 			{
-				// Any attached event handlers?
-				if(Scroll != null)
-					Scroll(this, new System.EventArgs());
+			    // Any attached event handlers?
+			    Scroll?.Invoke(this, new EventArgs());
 			}
 			catch(Exception Err)
 			{
@@ -1016,7 +996,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// Call the Increment() method to increase the value displayed by an integer you specify 
 		/// </summary>
 		/// <param name="value"></param>
-		public void Increment(int value)
+		void Increment(int value)
 		{
 			if (value < maximum)
 			{
@@ -1035,7 +1015,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// Call the Decrement() method to decrease the value displayed by an integer you specify 
 		/// </summary>
 		/// <param name="value"> The value to decrement</param>
-		public void Decrement(int value)
+		void Decrement(int value)
 		{
 			if (value > minimum)
 			{
@@ -1077,7 +1057,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// </summary>
 		public void ResetAppearance()
 		{
-			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
+			Font = new Font("Verdana", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			ForeColor = Color.FromArgb(123, 125, 123);
 			BackColor = Color.Transparent;
 
@@ -1099,7 +1079,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 	
 			//==========================================================================
 
-			if(autoSize == true)
+			if(autoSize)
 				Size = FitSize;
 			Invalidate();
 		}
@@ -1148,16 +1128,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		/// </summary>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			bool blResult = true;
+			var blResult = true;
 
-			/// <summary>
-			/// Specified WM_KEYDOWN enumeration value.
-			/// </summary>
+			// Specified WM_KEYDOWN enumeration value.
 			const int WM_KEYDOWN = 0x0100;
 
-			/// <summary>
-			/// Specified WM_SYSKEYDOWN enumeration value.
-			/// </summary>
+			// Specified WM_SYSKEYDOWN enumeration value.
 			const int WM_SYSKEYDOWN = 0x0104;
 
 
@@ -1197,35 +1173,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 			return blResult;
 		}
 
-		/// <summary>
-		/// Dispose of instance resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose (disposing);
-		}
-
-		#endregion
+	    #endregion
 
 		#region Painting Methods
 
 		/// <summary>
 		/// This member overrides <see cref="Control.OnPaint">Control.OnPaint</see>.
 		/// </summary>
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+		protected override void OnPaint(PaintEventArgs e)
 		{
-			Brush brush;
-			RectangleF rectTemp, drawRect;
+		    RectangleF rectTemp, drawRect;
 			float textAreaSize;
 
-			Rectangle workingRect = Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
-			float currentUsedPos = 0;
+			var workingRect = Rectangle.Inflate(ClientRectangle, - indentWidth, - indentHeight);
+			float currentUsedPos;
 
 			//==========================================================================
 			// Draw the background of the ProgressBar control.
 			//==========================================================================
-			brush = new SolidBrush(BackColor);
+			Brush brush = new SolidBrush(BackColor);
 			rectTemp = ClientRectangle;
 			e.Graphics.FillRectangle(brush, rectTemp);
 			brush.Dispose();
@@ -1267,7 +1233,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 
 				//==========================================================================
-				// Caculate the Tracker's rectangle
+				// Calculate the Tracker's rectangle
 				//==========================================================================
 				float currentTrackerPos;
 				if (maximum == minimum)
@@ -1362,9 +1328,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				trackerRect = new RectangleF(currentUsedPos, workingRect.Bottom - currentTrackerPos - trackerSize.Width, trackerSize.Height, trackerSize.Width);// Remember this for drawing the Tracker later
 				//_trackerRect.Inflate(-1,0);
 
-				rectTemp = trackerRect;//Testing
-
-				//==========================================================================
+			    //==========================================================================
 				// Draw the Track Line
 				//==========================================================================
 				drawRect = new RectangleF(currentUsedPos + trackerSize.Height/2 - trackLineHeight/2, workingRect.Top, trackLineHeight, workingRect.Height);
@@ -1394,9 +1358,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					// Get Height of Text Area
 					drawRect = new RectangleF(currentUsedPos, workingRect.Top, textAreaSize, workingRect.Height);
 					drawRect.Inflate(0, - trackerSize.Width/2);
-					currentUsedPos += textAreaSize;
 
-					DrawTickTextLine(e.Graphics, drawRect, tickFrequency, minimum, maximum, ForeColor, Font, orientation);
+				    DrawTickTextLine(e.Graphics, drawRect, tickFrequency, minimum, maximum, ForeColor, Font, orientation);
 					//==========================================================================
 				}
 			}
@@ -1467,14 +1430,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				return;
 
 			//Caculate tick number
-			int tickCount = (int)((maximum - minimum)/tickFrequency);
+			var tickCount = (maximum - minimum)/tickFrequency;
 			if ((maximum - minimum) % tickFrequency == 0)
 				tickCount -= 1;
 
 			//Prepare for drawing Text
 			//===============================================================
-			StringFormat stringFormat;			
-			stringFormat = new StringFormat();
+		    var stringFormat = new StringFormat();
 			stringFormat.FormatFlags = StringFormatFlags.NoWrap;
 			stringFormat.LineAlignment = StringAlignment.Center;
 			stringFormat.Alignment = StringAlignment.Center;
@@ -1494,7 +1456,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				//===============================================================
 
 				// Draw each tick text
-				for (int i = 0; i <= tickCount; i++)
+				for (var i = 0; i <= tickCount; i++)
 				{
 					text = Convert.ToString(minimum + tickFrequency * i,10);
 					g.DrawString(text, font, brush, drawRect.Left + tickFrequencySize * i, drawRect.Top + drawRect.Height/2, stringFormat);
@@ -1513,7 +1475,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				//===============================================================
 
 				// Draw each tick text
-				for (int i = 0; i <= tickCount; i++)
+				for (var i = 0; i <= tickCount; i++)
 				{
 					text = Convert.ToString(minimum + tickFrequency * i,10);
 					g.DrawString(text, font, brush, drawRect.Left + drawRect.Width/2, drawRect.Bottom - tickFrequencySize * i, stringFormat);
@@ -1543,11 +1505,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				return;
 
 			//Create the Pen for drawing Ticks
-			Pen pen = new Pen(tickColor, 1);
+			var pen = new Pen(tickColor, 1);
 			float tickFrequencySize;
 
-			//Caculate tick number
-			int tickCount = (int)((maximum - minimum)/tickFrequency);
+			//Calculate tick number
+			var tickCount = (maximum - minimum)/tickFrequency;
 			if ((maximum - minimum) % tickFrequency == 0)
 				tickCount -= 1;
 
@@ -1559,7 +1521,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				//===============================================================
 
 				// Draw each tick
-				for (int i = 0; i <= tickCount; i++)
+				for (var i = 0; i <= tickCount; i++)
 				{
 					g.DrawLine(pen,	drawRect.Left + tickFrequencySize * i, drawRect.Top, drawRect.Left + tickFrequencySize * i, drawRect.Bottom);
 				}
@@ -1574,7 +1536,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				//===============================================================
 
 				// Draw each tick
-				for (int i = 0; i <= tickCount; i++)
+				for (var i = 0; i <= tickCount; i++)
 				{
 					g.DrawLine(pen,drawRect.Left, drawRect.Bottom - tickFrequencySize * i, drawRect.Right, drawRect.Bottom - tickFrequencySize * i);
 				}
@@ -1639,8 +1601,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				case CustomBorderStyle.SunkenOuter: //from Border3DStyle Enumeration
 					ControlPaint.DrawBorder3D(g,ClientRectangle, Border3DStyle.SunkenOuter);
 					break;
-				case CustomBorderStyle.None:
-				default:
+			    default:
 					break;
 			}
 		}
@@ -1652,9 +1613,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
 		private void OnMouseDownSlider (object sender, MouseEventArgs e)
 		{
-			int offsetValue = 0;
-			int oldValue = 0;
-			PointF currentPoint;
+			var offsetValue = 0;
+		    PointF currentPoint;
 
 			currentPoint = new PointF(e.X, e.Y);
 			if(trackerRect.Contains(currentPoint))
@@ -1703,7 +1663,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 						break;
 				}
 
-				oldValue = value;
+				var oldValue = value;
 				value = minimum + offsetValue;
 				Invalidate();
 
@@ -1726,10 +1686,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		private void OnMouseMoveSlider (object sender, MouseEventArgs e)
 		{
 			var offsetValue = 0;
-			var oldValue = 0;
-			PointF currentPoint;
 
-			currentPoint = new PointF(e.X, e.Y);
+		    var currentPoint = new PointF(e.X, e.Y);
 
 			if(leftButtonDown)
 			{
@@ -1759,10 +1717,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					}
 
 				}
-				catch(Exception){}
+				catch (Exception)
+				{
+				    // ignored
+				}
 				finally
 				{
-					oldValue = value;
+					var oldValue = value;
 					Value =minimum + offsetValue;
 					Invalidate();
 

@@ -133,7 +133,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     if (!(pd is CustomPropertyDescriptor))
                     {
-                        var cpd = new CustomPropertyDescriptor(base.GetPropertyOwner(pd), pd);
+                        var cpd = new CustomPropertyDescriptor(GetPropertyOwner(pd), pd);
                         propertyDescriptorList.Add(cpd);
                     }
                 }
@@ -192,7 +192,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     }
                     else
                     {
-                        rm = new ResourceManager(attr.BaseName, base.GetPropertyOwner(cpd).GetType().Assembly);
+                        rm = new ResourceManager(attr.BaseName, GetPropertyOwner(cpd).GetType().Assembly);
                     }
                 }
                 catch (Exception ex)
@@ -215,7 +215,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             var propSorter = new CategorySorter();
 
-            var nTabCount = 0;
+            int nTabCount;
 
             switch (categorySortOrder)
             {
@@ -249,7 +249,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     propSorter.SortOrder = CustomSortOrder.AscendingById;
                     pdl.Sort(propSorter);
                     nTabCount = 0;
-                    int nCategorySortIndex = pdl[0].CategoryId;
+                    var nCategorySortIndex = pdl[0].CategoryId;
                     foreach (var cpd in pdl)
                     {
                         if (nCategorySortIndex == cpd.CategoryId)
