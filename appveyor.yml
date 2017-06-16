@@ -1,3 +1,6 @@
+init:
+- git config --global core.autocrlf false
+
 image: Visual Studio 2017
 
 assembly_info:
