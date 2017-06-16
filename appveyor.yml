@@ -25,7 +25,7 @@ configuration: Release
  
 build:
   parallel: true                     # enable MSBuild parallel builds
-  project: ServiceBusExplorer.csproj # path to Visual Studio project
+  project: 'src\ServiceBusExplorer.sln' # path to Visual Studio project
 
   # MSBuild verbosity level
   verbosity: normal                  # quiet|minimal|normal|detailed
@@ -35,7 +35,7 @@ build:
 #---------------------------------#
 
 after_build:
-  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*.*
+  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
 
 #---------------------------------#
 #      artifacts configuration    #
