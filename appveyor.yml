@@ -7,7 +7,7 @@ assembly_info:
 #       restore nuget packages    #
 #---------------------------------#
 before_build:
-  - nuget restore
+  - nuget restore src\ServiceBusExplorer.sln
   - cmd: echo %appveyor_build_version%
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   - cmd: echo %appveyor_build_version%
@@ -25,7 +25,7 @@ configuration: Release
  
 build:
   parallel: true                     # enable MSBuild parallel builds
-  project: 'src\ServiceBusExplorer.sln' # path to Visual Studio project
+  project: src\ServiceBusExplorer.sln # path to Visual Studio project
 
   # MSBuild verbosity level
   verbosity: normal                  # quiet|minimal|normal|detailed
