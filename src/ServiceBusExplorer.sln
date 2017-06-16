@@ -1,19 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer", "ServiceBusExplorer.csproj", "{32754F39-E353-4607-94FE-B9B9ACFD58EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer", "ServiceBusExplorer\ServiceBusExplorer.csproj", "{32754F39-E353-4607-94FE-B9B9ACFD58EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B59933A5-4AE0-4340-9102-578619A93341}"
 	ProjectSection(SolutionItems) = preProject
-		appveyor.yml = appveyor.yml
-		GitVersion.yml = GitVersion.yml
-		LICENSE.txt = LICENSE.txt
-		README.md = README.md
+		..\appveyor.yml = ..\appveyor.yml
+		..\GitVersion.yml = ..\GitVersion.yml
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\README.md = ..\README.md
 	EndProjectSection
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ServiceBusExplorer.Setup", "ServiceBusExplorer.Setup\ServiceBusExplorer.Setup.vdproj", "{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer.Tests", "ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "{41D3C27D-37FF-43B8-AAC0-4F483E507698}"
 EndProject
@@ -33,11 +31,6 @@ Global
 		{32754F39-E353-4607-94FE-B9B9ACFD58EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32754F39-E353-4607-94FE-B9B9ACFD58EF}.Release|x86.ActiveCfg = Release|x86
 		{32754F39-E353-4607-94FE-B9B9ACFD58EF}.Release|x86.Build.0 = Release|x86
-		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Debug|Any CPU.ActiveCfg = Debug
-		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Debug|Any CPU.Build.0 = Debug
-		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Debug|x86.ActiveCfg = Debug
-		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Release|Any CPU.ActiveCfg = Release
-		{5BC3BD90-C3B0-465B-B678-B76E919AF1C1}.Release|x86.ActiveCfg = Release
 		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41D3C27D-37FF-43B8-AAC0-4F483E507698}.Debug|x86.ActiveCfg = Debug|Any CPU

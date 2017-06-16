@@ -24,7 +24,6 @@
   <ItemGroup>
     <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,7 +43,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ServiceBusExplorer.csproj">
+    <ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj">
       <Project>{32754f39-e353-4607-94fe-b9b9acfd58ef}</Project>
       <Name>ServiceBusExplorer</Name>
     </ProjectReference>
