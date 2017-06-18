@@ -390,12 +390,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             ResourceManager rm = null;
             StandardValueAttribute sva;
 
-            sva = cpd.StandardValues.FirstOrDefault() as StandardValueAttribute;
+            sva = cpd.StandardValues.FirstOrDefault();
 
             // first try property itself
             if (cpd.ResourceManager != null)
             {
-                var keyName = cpd.KeyPrefix + cpd.Name + "_" + sva.Value.ToString() + "_Name";
+                var keyName = cpd.KeyPrefix + cpd.Name + "_" + sva?.Value + "_Name";
                 var valueName = cpd.ResourceManager.GetString(keyName);
                 if (!string.IsNullOrWhiteSpace(valueName))
                 {
@@ -407,7 +407,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             // now try class level
             if (rm == null && cpd.ResourceManager != null)
             {
-                var keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva.Value + "_Name";
+                var keyName = cpd.KeyPrefix + cpd.PropertyType.Name + "_" + sva?.Value + "_Name";
                 var valueName = cpd.ResourceManager.GetString(keyName);
                 if (!String.IsNullOrWhiteSpace(valueName))
                 {

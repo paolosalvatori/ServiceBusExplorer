@@ -35,7 +35,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #region Private Fields
         private int headerHeight = 24;
         private string headerText = "header title";
-        private Font headerFont = new Font("Arial", 10F, System.Drawing.FontStyle.Bold);
+        private Font headerFont = new Font("Arial", 10F, FontStyle.Bold);
         private Color headerColor1 = SystemColors.InactiveCaption;
         private Color headerColor2 = SystemColors.ActiveCaption;
         private Color iconTransparentColor = Color.White;

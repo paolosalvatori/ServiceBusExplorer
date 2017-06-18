@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 
 #endregion
@@ -753,23 +752,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                     string Text;
                     // The binding might not be active yet
-                    if (string.IsNullOrEmpty(Item.Text)
-                        // Ubiklou : 2008-04-28 : No databinding
-                        && Item.DataBindings != null 
-                        && Item.DataBindings["Text"] != null
-                        )
+                    if (string.IsNullOrEmpty(Item.Text) && Item.DataBindings?["Text"] != null)
                     {
-                        PropertyInfo PropertyInfo
-                            = Item.ComboBoxItem.GetType().GetProperty(
+                        var PropertyInfo = Item.ComboBoxItem.GetType().GetProperty(
                                 Item.DataBindings["Text"].BindingMemberInfo.BindingMember);
-                        Text = (string)PropertyInfo.GetValue(Item.ComboBoxItem, null);
+                        Text = (string)PropertyInfo?.GetValue(Item.ComboBoxItem, null);
                     }
                     else
                         Text = Item.Text;
                     if (Text.CompareTo(displayName) == 0)
                         return Item;
                 }
-                throw new ArgumentOutOfRangeException(String.Format("\"{0}\" does not exist in this combo box.", displayName));
+                throw new ArgumentOutOfRangeException($"\"{displayName}\" does not exist in this combo box.");
             }
         }
         
@@ -804,91 +798,91 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [DefaultValue(Appearance.Normal)]
         public Appearance Appearance
         {
-            get { return _Appearance; }
+            get => _Appearance;
             set { _Appearance = value; OnPropertyChanged(); }
         }
         [DefaultValue(true)]
         public bool AutoCheck
         {
-            get { return _AutoCheck; }
+            get => _AutoCheck;
             set { _AutoCheck = value; OnPropertyChanged(); }
         }
         [DefaultValue(false)]
         public bool AutoEllipsis
         {
-            get { return _AutoEllipsis; }
+            get => _AutoEllipsis;
             set { _AutoEllipsis = value; OnPropertyChanged(); }
         }
         [DefaultValue(false)]
         public bool AutoSize
         {
-            get { return _AutoSize; }
+            get => _AutoSize;
             set { _AutoSize = true; OnPropertyChanged(); }
         }
         [DefaultValue(ContentAlignment.MiddleLeft)]
         public ContentAlignment CheckAlign
         {
-            get { return _CheckAlign; }
+            get => _CheckAlign;
             set { _CheckAlign = value; OnPropertyChanged(); }
         }
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceBorderColor
         {
-            get { return _FlatAppearanceBorderColor; }
+            get => _FlatAppearanceBorderColor;
             set { _FlatAppearanceBorderColor = value; OnPropertyChanged(); }
         }
         [DefaultValue(1)]
         public int FlatAppearanceBorderSize
         {
-            get { return _FlatAppearanceBorderSize; }
+            get => _FlatAppearanceBorderSize;
             set { _FlatAppearanceBorderSize = value; OnPropertyChanged(); }
         }
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceCheckedBackColor
         {
-            get { return _FlatAppearanceCheckedBackColor; }
+            get => _FlatAppearanceCheckedBackColor;
             set { _FlatAppearanceCheckedBackColor = value; OnPropertyChanged(); }
         }
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceMouseDownBackColor
         {
-            get { return _FlatAppearanceMouseDownBackColor; }
+            get => _FlatAppearanceMouseDownBackColor;
             set { _FlatAppearanceMouseDownBackColor = value; OnPropertyChanged(); }
         }
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceMouseOverBackColor
         {
-            get { return _FlatAppearanceMouseOverBackColor; }
+            get => _FlatAppearanceMouseOverBackColor;
             set { _FlatAppearanceMouseOverBackColor = value; OnPropertyChanged(); }
         }
         [DefaultValue(FlatStyle.Standard)]
         public FlatStyle FlatStyle
         {
-            get { return _FlatStyle; }
+            get => _FlatStyle;
             set { _FlatStyle = value; OnPropertyChanged(); }
         }
         [DefaultValue(typeof(SystemColors), "ControlText")]
         public Color ForeColor
         {
-            get { return _ForeColor; }
+            get => _ForeColor;
             set { _ForeColor = value; OnPropertyChanged(); }
         }
         [DefaultValue(RightToLeft.No)]
         public RightToLeft RightToLeft
         {
-            get { return _RightToLeft; }
+            get => _RightToLeft;
             set { _RightToLeft = value; OnPropertyChanged(); }
         }
         [DefaultValue(ContentAlignment.MiddleLeft)]
         public ContentAlignment TextAlign
         {
-            get { return _TextAlign; }
+            get => _TextAlign;
             set { _TextAlign = value; OnPropertyChanged(); }
         }
         [DefaultValue(false)]
         public bool ThreeState
         {
-            get { return _ThreeState; }
+            get => _ThreeState;
             set { _ThreeState = value; OnPropertyChanged(); }
         }
 
