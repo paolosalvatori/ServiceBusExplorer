@@ -29,7 +29,7 @@ using System.ComponentModel;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    internal sealed class SimpleSite : ISite, IServiceProvider
+    internal sealed class SimpleSite : ISite
     {
         #region Private Fields
         private readonly IContainer container = new Container();

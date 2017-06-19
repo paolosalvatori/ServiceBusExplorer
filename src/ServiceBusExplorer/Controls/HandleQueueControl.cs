@@ -1482,13 +1482,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // MaxQueueSizeInBytes
             trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
-                ? (int)
-                (queueDescription.EnablePartitioning
-                    ? queueDescription.MaxSizeInMegabytes/16384
-                    : queueDescription.MaxSizeInMegabytes/1024)
+                ? queueDescription.MaxSizeInGigabytes()
                 : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
-                    ? 11
-                    : (int) queueDescription.MaxSizeInMegabytes/1024;
+                ? 11 : queueDescription.MaxSizeInGigabytes();
+
+            // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
+            if (queueDescription.MaxSizeInGigabytes() > 5)
+            {
+                trackBarMaxQueueSize.Maximum = queueDescription.MaxSizeInGigabytes();
+                trackBarMaxQueueSize.Value = queueDescription.MaxSizeInGigabytes();
+            }
 
             // MaxDeliveryCount
             txtMaxDeliveryCount.Text = queueDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
