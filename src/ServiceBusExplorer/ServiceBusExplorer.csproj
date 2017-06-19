@@ -413,6 +413,8 @@
     <Compile Include="Helpers\NotificationHubAuthorizationRuleWrapper.cs" />
     <Compile Include="Helpers\OnOffDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\PropertyComparer.cs" />
+    <Compile Include="Helpers\TopicDescriptionExtensions.cs" />
+    <Compile Include="Helpers\QueueDescriptionExtensions.cs" />
     <Compile Include="Helpers\ReadOnlyEditor.cs" />
     <Compile Include="Helpers\ReadOnlyList.cs" />
     <Compile Include="Helpers\RegistrationInfo.cs" />

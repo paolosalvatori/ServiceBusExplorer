@@ -564,10 +564,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // MaxQueueSizeInBytes
             trackBarMaxTopicSize.Value = serviceBusHelper.IsCloudNamespace
-                                             ? (int)(topicDescription.EnablePartitioning ? topicDescription.MaxSizeInMegabytes / 16384 : topicDescription.MaxSizeInMegabytes / 1024)
+                                             ? topicDescription.MaxSizeInGigabytes()
                                              : topicDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxTopicSize
-                                                   ? 11
-                                                   : (int)topicDescription.MaxSizeInMegabytes / 1024;
+                                             ? 11 : topicDescription.MaxSizeInGigabytes();
+
+            // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
+            if (topicDescription.MaxSizeInGigabytes() > 5)
+            {
+                trackBarMaxTopicSize.Maximum = topicDescription.MaxSizeInGigabytes();
+                trackBarMaxTopicSize.Value = topicDescription.MaxSizeInGigabytes();
+            }
 
             // DefaultMessageTimeToLive
             txtDefaultMessageTimeToLiveDays.Text = topicDescription.DefaultMessageTimeToLive.Days.ToString(CultureInfo.InvariantCulture);
