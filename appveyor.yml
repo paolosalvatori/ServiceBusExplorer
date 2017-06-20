@@ -1,3 +1,6 @@
+init:
+- git config --global core.autocrlf false
+
 image: Visual Studio 2017
 
 assembly_info:
@@ -7,7 +10,7 @@ assembly_info:
 #       restore nuget packages    #
 #---------------------------------#
 before_build:
-  - nuget restore
+  - nuget restore src\ServiceBusExplorer.sln
   - cmd: echo %appveyor_build_version%
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   - cmd: echo %appveyor_build_version%
@@ -25,7 +28,7 @@ configuration: Release
  
 build:
   parallel: true                     # enable MSBuild parallel builds
-  project: ServiceBusExplorer.csproj # path to Visual Studio project
+  project: src\ServiceBusExplorer.sln # path to Visual Studio project
 
   # MSBuild verbosity level
   verbosity: normal                  # quiet|minimal|normal|detailed
@@ -35,7 +38,7 @@ build:
 #---------------------------------#
 
 after_build:
-  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*.*
+  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
 
 #---------------------------------#
 #      artifacts configuration    #
