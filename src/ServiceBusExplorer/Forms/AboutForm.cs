@@ -208,6 +208,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void AboutForm_Load(object sender, EventArgs e)
         {
             Text = $@"About {MainForm.SingletonMainForm.Text}";
+            lblVersion.Text = $"Version: {MainForm.SingletonMainForm.Version}";
         }
         #endregion
     }

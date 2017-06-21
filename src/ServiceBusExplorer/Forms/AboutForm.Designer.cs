@@ -56,7 +56,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
             this.lblCorporation = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.mailLinkLabel = new System.Windows.Forms.LinkLabel();
             this.blogLinkLabel = new System.Windows.Forms.LinkLabel();
@@ -87,15 +87,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblName.TabIndex = 37;
             this.lblName.Text = "Paolo Salvatori";
             // 
-            // label3
+            // lblVersion
             // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Location = new System.Drawing.Point(368, 320);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 13);
-            this.label3.TabIndex = 42;
-            this.label3.Text = "Version: 1.0.0";
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.BackColor = System.Drawing.Color.Transparent;
+            this.lblVersion.Location = new System.Drawing.Point(368, 320);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(72, 13);
+            this.lblVersion.TabIndex = 42;
+            this.lblVersion.Text = "Version: 1.0.0";
             // 
             // label2
             // 
@@ -190,7 +190,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.Controls.Add(this.twitterLinkLabel);
             this.Controls.Add(this.blogLinkLabel);
             this.Controls.Add(this.mailLinkLabel);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblCorporation);
             this.Controls.Add(this.lblName);
@@ -215,7 +215,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private System.Windows.Forms.Label lblCorporation;
         private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel mailLinkLabel;
         private System.Windows.Forms.LinkLabel blogLinkLabel;

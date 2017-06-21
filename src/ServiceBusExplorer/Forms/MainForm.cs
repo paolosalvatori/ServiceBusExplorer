@@ -290,6 +290,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
+        private string version;
         #endregion
 
         #region Private Static Fields
@@ -4253,6 +4254,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return selectedEntites;
             }
         }
+
+        public string Version => version;
         #endregion
 
         #region Public Static Properties
@@ -6915,7 +6918,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 return;
             }
-            var version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
+            version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
             if (!string.IsNullOrWhiteSpace(version))
             {
                 Text = $@"Service Bus Explorer {version}";
