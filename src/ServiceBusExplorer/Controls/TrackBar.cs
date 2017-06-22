@@ -247,7 +247,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[DefaultValue(true)]
 		public new bool AutoSize
 		{
-			get => autoSize;
+		    get { return autoSize; }
 
 		    set
 			{
@@ -258,9 +258,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 						Size = FitSize;
 				}
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets a value to be added to or subtracted from the <see cref="Value"/> property when the slider is moved a large distance.
 		/// </summary>
 		/// <remarks>
@@ -274,18 +274,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets a value to be added to or subtracted from the Value property when the slider is moved a large distance.")]
 		[DefaultValue(2)]
 		public int LargeChange
-		{
-			get => largeChange;
+	    {
+	        get { return largeChange; }
 
-		    set
+	        set
 			{
 				largeChange = value;
 				if(largeChange < 1)
 					largeChange = 1;
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets a value to be added to or subtracted from the <see cref="Value"/> property when the slider is moved a small distance.
 		/// </summary>
 		/// <remarks>
@@ -298,18 +298,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets a value to be added to or subtracted from the Value property when the slider is moved a small distance.")]
 		[DefaultValue(1)]
 		public int SmallChange
-		{
-			get => smallChange;
+	    {
+	        get { return smallChange; }
 
-		    set
+	        set
 			{
 				smallChange = value;
 				if(smallChange < 1)
 					smallChange = 1;
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the height of track line.
 		/// </summary>
 		/// <value>The default value is 4.</value>
@@ -317,10 +317,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the height of track line.")]
 		[DefaultValue(4)]
 		public int TrackLineHeight
-		{
-			get => trackLineHeight;
+	    {
+	        get { return trackLineHeight; }
 
-		    set
+	        set
 			{
 				if(trackLineHeight != value)
 				{
@@ -335,18 +335,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the tick's <see cref="Color"/> of the control.
 		/// </summary>
 		[Category("Appearance")]
 		[Description("Gets or sets the tick's color of the control.")]
 		public Color TickColor
-		{
-			get => tickColor;
+	    {
+	        get { return tickColor; }
 
-		    set
+	        set
 			{
 				if(tickColor != value)
 				{
@@ -355,9 +355,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets a value that specifies the delta between ticks drawn on the control.
 		/// </summary>
 		/// <remarks>
@@ -372,10 +372,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets a value that specifies the delta between ticks drawn on the control.")]
 		[DefaultValue(1)]
 		public int TickFrequency
-		{
-			get => tickFrequency;
+	    {
+	        get { return tickFrequency; }
 
-		    set
+	        set
 			{
 				if(tickFrequency != value)
 				{
@@ -386,9 +386,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the height of tick.
 		/// </summary>
 		/// <value>The height of tick in pixels. The default value is 2.</value>
@@ -396,10 +396,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the height of tick.")]
 		[DefaultValue(6)]
 		public int TickHeight
-		{
-			get => tickHeight;
+	    {
+	        get { return tickHeight; }
 
-		    set
+	        set
 			{
 				if(tickHeight != value)
 				{
@@ -414,9 +414,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate();
 				}
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the height of indent (or Padding-Y).
 		/// </summary>
 		/// <value>The height of indent in pixels. The default value is 6.</value>
@@ -424,10 +424,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the height of indent.")]
 		[DefaultValue(2)]
 		public int IndentHeight
-		{
-			get => indentHeight;
+	    {
+	        get { return indentHeight; }
 
-		    set
+	        set
 			{
 				if(indentHeight != value)
 				{
@@ -442,9 +442,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the width of indent (or Padding-Y).
 		/// </summary>
 		/// <value>The width of indent in pixels. The default value is 6.</value>
@@ -452,10 +452,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the width of indent.")]
 		[DefaultValue(6)]
 		public int IndentWidth
-		{
-			get => indentWidth;
+	    {
+	        get { return indentWidth; }
 
-		    set
+	        set
 			{
 				if(indentWidth != value)
 				{
@@ -470,9 +470,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the tracker's size. 
 		/// The tracker's width must be greater or equal to tracker's height.
 		/// </summary>
@@ -480,10 +480,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category("Appearance")]
 		[Description("Gets or sets the tracker's size.")]
 		public Size TrackerSize
-		{
-			get => trackerSize;
+	    {
+	        get { return trackerSize; }
 
-		    set
+	        set
 			{
 				if(trackerSize != value)
 				{
@@ -498,9 +498,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the text tick style of the trackbar.
 		/// There are 4 styles for selection: None, TopLeft, BottomRight, Both. 
 		/// </summary>
@@ -511,10 +511,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the text tick style.")]
 		[DefaultValue(TickStyle.BottomRight)]
 		public TickStyle TextTickStyle
-		{
-			get => textTickStyle;
+	    {
+	        get { return textTickStyle; }
 
-		    set
+	        set
 			{
 				if(textTickStyle != value)
 				{
@@ -527,9 +527,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the tick style of the trackbar.
 		/// There are 4 styles for selection: None, TopLeft, BottomRight, Both. 
 		/// </summary>
@@ -540,10 +540,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the tick style.")]
 		[DefaultValue(TickStyle.BottomRight)]
 		public TickStyle TickStyle
-		{
-			get => tickStyle;
+	    {
+	        get { return tickStyle; }
 
-		    set
+	        set
 			{
 				if(tickStyle != value)
 				{
@@ -556,9 +556,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				}
 				
 			}
-		}	
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or set tracker's color.
 		/// </summary>
 		/// <value>
@@ -568,9 +568,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description( "Gets or set tracker's color.")]
 		[Category( "Appearance")]
 		public Color TrackerColor
-		{
-			get => trackerColor;
-		    set
+	    {
+	        get { return trackerColor; }
+	        set
 			{
 				if(trackerColor != value)
 				{
@@ -578,9 +578,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate();
 				}
 			}
-		}
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets a numeric value that represents the current position of the slider on the track bar.
 		/// </summary>
 		/// <remarks>The Value property contains the number that represents the current position of the slider on the track bar.</remarks>
@@ -589,9 +589,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description( "The current value for the CustomTrackBar, in the range specified by the Minimum and Maximum properties." )]
 		[Category( "Behavior")]
 		public int Value
-		{
-			get => value;
-		    set
+	    {
+	        get { return value; }
+	        set
 			{
 				if(this.value != value)
 				{
@@ -608,9 +608,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate();
 				}
 			}
-		}
-		
-		/// <summary>
+	    }
+
+	    /// <summary>
 		/// Gets or sets the lower limit of the range this <see cref="CustomTrackBar"/> is working with.
 		/// </summary>
 		/// <remarks>You can use the <see cref="SetRange"/> method to set both the <see cref="Maximum"/> and <see cref="Minimum"/> properties at the same time.</remarks>
@@ -618,9 +618,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("The lower bound of the range this CustomTrackBar is working with.")]
 		[Category( "Behavior")]
 		public int Minimum
-		{
-			get => minimum;
-		    set
+	    {
+	        get { return minimum; }
+	        set
 			{
 				minimum = value;
 
@@ -633,9 +633,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Size = FitSize;
 				Invalidate();
 			}
-		}
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the upper limit of the range this <see cref="CustomTrackBar"/> is working with.
 		/// </summary>
 		/// <remarks>You can use the <see cref="SetRange"/> method to set both the <see cref="Maximum"/> and <see cref="Minimum"/> properties at the same time.</remarks>
@@ -643,9 +643,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("The uppper bound of the range this CustomTrackBar is working with.")]
 		[Category( "Behavior")]
 		public int Maximum
-		{
-			get => maximum;
-		    set
+	    {
+	        get { return maximum; }
+	        set
 			{
 				maximum = value;
 
@@ -658,9 +658,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Size = FitSize;
 				Invalidate();
 			}
-		}
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets a value indicating the horizontal or vertical orientation of the track bar.
 		/// </summary>
 		/// <remarks>
@@ -674,9 +674,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Category("Behavior")]
 		[DefaultValue(Orientation.Horizontal)]
 		public Orientation Orientation
-		{
-			get => orientation;
-		    set
+	    {
+	        get { return orientation; }
+	        set
 			{
 				if(value != orientation)
 				{
@@ -702,10 +702,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate();
 				}
 			}
-		}
+	    }
 
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the border type of the trackbar control.
 		/// </summary>
 		/// <value>A <see cref="CustomBorderStyle"/> that represents the border type of the trackbar control. 
@@ -713,10 +713,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the border type of the trackbar control.")]
 		[Category("Appearance"), DefaultValue(typeof(CustomBorderStyle), "None")]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-		public CustomBorderStyle BorderStyle 
-		{
-			get => borderStyle;
-		    set 
+		public CustomBorderStyle BorderStyle
+	    {
+	        get { return borderStyle; }
+	        set 
 			{
 				if(borderStyle != value) 
 				{
@@ -724,18 +724,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate();
 				}
 			}
-		}
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the border color of the control.
 		/// </summary>
 		/// <value>A <see cref="Color"/> object that represents the border color of the control.</value>
 		[Category("Appearance")]
 		[Description("Gets or sets the border color of the control.")]
 		public Color BorderColor
-		{
-			get => borderColor;
-		    set 
+	    {
+	        get { return borderColor; }
+	        set 
 			{
 				if( value != borderColor)
 				{
@@ -743,9 +743,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate(); 
 				}
 			}
-		}
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets or sets the color of the track line.
 		/// </summary>
 		/// <value>A <see cref="Color"/> object that represents the color of the track line.</value>
@@ -753,7 +753,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 		[Description("Gets or sets the color of the track line.")]
 		public Color TrackLineColor
 		{
-			get => trackLineColor;
+		    get { return trackLineColor; }
 		    set 
 			{
 				if( value != trackLineColor)
@@ -762,18 +762,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					Invalidate(); 
 				}
 			}
-		}
+	    }
 
-        /// <summary>
+	    /// <summary>
         /// Gets or sets the brush style of the track line.
         /// </summary>
         /// <value>A <see cref="Color"/> object that represents the color of the track line.</value>
         [Category("Appearance")]
         [Description("Gets or sets the brush style of the track line.")]
         public BrushStyle TrackLineBrushStyle
-        {
-            get => brushStyle;
-            set
+	    {
+	        get { return brushStyle; }
+	        set
             {
                 if (value != brushStyle)
                 {
@@ -781,8 +781,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     Invalidate();
                 }
             }
-        }
-		#endregion
+	    }
+
+	    #endregion
 
 		#region Private Properties
 

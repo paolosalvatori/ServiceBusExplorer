@@ -125,7 +125,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// </summary>
         public new object DataSource
         {
-            get => base.DataSource;
+            get { return base.DataSource; }
             set
             {
                 base.DataSource = value;
@@ -134,12 +134,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     _CheckBoxComboBoxListControl.SynchroniseControlsWithComboBoxItems();
             }
         }
+
         /// <summary>
         /// The ValueMember of the combobox. Refreshes the CheckBox wrappers when this is set.
         /// </summary>
         public new string ValueMember
         {
-            get => base.ValueMember;
+            get { return base.ValueMember; }
             set
             {
                 base.ValueMember = value;
@@ -148,6 +149,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     _CheckBoxComboBoxListControl.SynchroniseControlsWithComboBoxItems();
             }
         }
+
         /// <summary>
         /// In DataBinding operations, this property will be used as the DisplayMember in the CheckBoxComboBoxListBox.
         /// The normal/existing "DisplayMember" property is used by the TextBox of the ComboBox to display 
@@ -162,8 +164,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return DisplayMember;
                 return _DisplayMemberSingleItem;
             }
-            set => _DisplayMemberSingleItem = value;
+            set { _DisplayMemberSingleItem = value; }
         }
+
         /// <summary>
         /// Made this property Browsable again, since the Base Popup hides it. This class uses it again.
         /// Gets an object representing the collection of the items contained in this 
@@ -271,7 +274,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [Browsable(true)]
         public CheckBoxProperties CheckBoxProperties
         {
-            get => _CheckBoxProperties;
+            get { return _CheckBoxProperties; }
             set { _CheckBoxProperties = value; _CheckBoxProperties_PropertyChanged(this, EventArgs.Empty); }
         }
 
@@ -798,91 +801,106 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [DefaultValue(Appearance.Normal)]
         public Appearance Appearance
         {
-            get => _Appearance;
+            get { return _Appearance; }
             set { _Appearance = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(true)]
         public bool AutoCheck
         {
-            get => _AutoCheck;
+            get { return _AutoCheck; }
             set { _AutoCheck = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(false)]
         public bool AutoEllipsis
         {
-            get => _AutoEllipsis;
+            get { return _AutoEllipsis; }
             set { _AutoEllipsis = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(false)]
         public bool AutoSize
         {
-            get => _AutoSize;
+            get { return _AutoSize; }
+            // ReSharper disable once ValueParameterNotUsed
             set { _AutoSize = true; OnPropertyChanged(); }
         }
+
         [DefaultValue(ContentAlignment.MiddleLeft)]
         public ContentAlignment CheckAlign
         {
-            get => _CheckAlign;
+            get { return _CheckAlign; }
             set { _CheckAlign = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceBorderColor
         {
-            get => _FlatAppearanceBorderColor;
+            get { return _FlatAppearanceBorderColor; }
             set { _FlatAppearanceBorderColor = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(1)]
         public int FlatAppearanceBorderSize
         {
-            get => _FlatAppearanceBorderSize;
+            get { return _FlatAppearanceBorderSize; }
             set { _FlatAppearanceBorderSize = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceCheckedBackColor
         {
-            get => _FlatAppearanceCheckedBackColor;
+            get { return _FlatAppearanceCheckedBackColor; }
             set { _FlatAppearanceCheckedBackColor = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceMouseDownBackColor
         {
-            get => _FlatAppearanceMouseDownBackColor;
+            get { return _FlatAppearanceMouseDownBackColor; }
             set { _FlatAppearanceMouseDownBackColor = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(typeof(Color), "")]
         public Color FlatAppearanceMouseOverBackColor
         {
-            get => _FlatAppearanceMouseOverBackColor;
+            get { return _FlatAppearanceMouseOverBackColor; }
             set { _FlatAppearanceMouseOverBackColor = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(FlatStyle.Standard)]
         public FlatStyle FlatStyle
         {
-            get => _FlatStyle;
+            get { return _FlatStyle; }
             set { _FlatStyle = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(typeof(SystemColors), "ControlText")]
         public Color ForeColor
         {
-            get => _ForeColor;
+            get { return _ForeColor; }
             set { _ForeColor = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(RightToLeft.No)]
         public RightToLeft RightToLeft
         {
-            get => _RightToLeft;
+            get { return _RightToLeft; }
             set { _RightToLeft = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(ContentAlignment.MiddleLeft)]
         public ContentAlignment TextAlign
         {
-            get => _TextAlign;
+            get { return _TextAlign; }
             set { _TextAlign = value; OnPropertyChanged(); }
         }
+
         [DefaultValue(false)]
         public bool ThreeState
         {
-            get => _ThreeState;
+            get { return _ThreeState; }
             set { _ThreeState = value; OnPropertyChanged(); }
         }
 

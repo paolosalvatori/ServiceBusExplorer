@@ -377,17 +377,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 IRequestChannel requestChannel = null;
                                 StringBuilder builder;
 
-                                // local method to remove duplication
-                                void closeFactoriesAndChannelsAndHandleException(Exception exception)
-                                {
-                                    outputChannelFactory?.Abort();
-                                    outputChannel?.Abort();
-                                    requestChannelFactory?.Abort();
-                                    requestChannel?.Abort();
-                                    exceptionMessage = string.Format(ExceptionOccurred, exception.Message);
-                                    HandleException(exception);
-                                }
-
                                 try
                                 {
                                     MessageBuffer messageBuffer;
@@ -622,27 +611,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 }
                                 catch (FaultException ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 catch (CommunicationObjectAbortedException ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 catch (CommunicationObjectFaultedException ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 catch (CommunicationException ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 catch (TimeoutException ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 catch (Exception ex)
                                 {
-                                    closeFactoriesAndChannelsAndHandleException(ex);
+                                    exceptionMessage = CloseFactoriesAndChannelsAndHandleException(ex, outputChannelFactory, outputChannel, requestChannelFactory, requestChannel);
                                 }
                                 var averageSendTime = messagesSent > 0 ? totalElapsedTime / messagesSent : maximumSendTime;
                                 var messagesPerSecond = totalElapsedTime > 0 ? messagesSent * 1000 / (double)totalElapsedTime : 0;
@@ -714,6 +703,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnStart.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
+        }
+
+        string CloseFactoriesAndChannelsAndHandleException(Exception ex, ChannelFactory<IOutputChannel> outputChannelFactory, IOutputChannel outputChannel, ChannelFactory<IRequestChannel> requestChannelFactory, IRequestChannel requestChannel)
+        {
+            outputChannelFactory?.Abort();
+            outputChannel?.Abort();
+            requestChannelFactory?.Abort();
+            requestChannel?.Abort();
+            var exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
+            HandleException(ex);
+
+            return exceptionMessage;
         }
 
         private TokenProvider CreateTokenProvider()

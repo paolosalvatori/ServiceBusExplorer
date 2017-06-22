@@ -1574,7 +1574,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
 
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _, doNotSerializeBody));
+                    BodyType temp;
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out temp, doNotSerializeBody));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody));
                 }
             }

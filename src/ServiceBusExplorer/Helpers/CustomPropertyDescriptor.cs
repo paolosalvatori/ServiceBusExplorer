@@ -45,7 +45,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private readonly PropertyDescriptor propertyDescriptor;
         private readonly Collection<PropertyValueUIItem> colUIItem = new Collection<PropertyValueUIItem>();
         private Image valueImage;
-        private int tabAppendCount;
         private object value;
         private readonly List<StandardValueAttribute> standardValues = new List<StandardValueAttribute>();
         #endregion
@@ -170,7 +169,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
                     if (!String.IsNullOrWhiteSpace(sResult))
                     {
-                        return sResult.PadLeft(sResult.Length + tabAppendCount, '\t');
+                        return sResult.PadLeft(sResult.Length + TabAppendCount, '\t');
                     }
 
                 }
@@ -183,7 +182,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     sResult = base.Category;
                 }
-                return sResult.PadLeft(Category.Length + tabAppendCount, '\t');
+                return sResult.PadLeft(Category.Length + TabAppendCount, '\t');
             }
         }
 
@@ -355,11 +354,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region Internal Properties
         internal string KeyPrefix { get; set; } = String.Empty;
 
-        internal int TabAppendCount
-        {
-            get => tabAppendCount;
-            set => tabAppendCount = value;
-        }
+        internal int TabAppendCount { get; set; }
 
         internal ResourceManager ResourceManager { get; set; }
 

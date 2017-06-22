@@ -714,7 +714,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     // Get Body Type
-                    if (!Enum.TryParse(cboBodyType.Text, true, out BodyType bodyType))
+                    BodyType bodyType;
+                    if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
                     {
                         bodyType = BodyType.Stream;
                     }
