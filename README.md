@@ -54,7 +54,7 @@ Service Bus Explorer is only on of the management clients available for Azure Se
 
 Here are a couple of alternatives:
 
-- [Microsoft Azure Management Portal](./docs/Alternative-Management-Clients.md#microsoft-azure-management-portal)
+- [Microsoft Azure Management Portal](./docs/alternative-management-clients.md#microsoft-azure-management-portal)
 - [ServiceBus360](./docs/Alternative-Management-Clients.md#servicebus360)
 
 # License

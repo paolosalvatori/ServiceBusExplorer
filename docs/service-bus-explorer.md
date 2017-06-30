@@ -1,18 +1,18 @@
 # Service Bus Explorer
 
-<div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio 2010</a> and requires the installation of the .<a href="http://www.microsoft.com/download/en/details.aspx?id=17718">NET Framework 4.0</a> and <a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=27421"> </a><a title="Windows Azure SDK for .NET" href="http://www.microsoft.com/download/en/details.aspx?id=28045">Windows Azure SDK for .NET</a>. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test  the Brokered and Relay messaging services defined in a given Service Bus namespace.</div>
-<div style="text-align: center;">&nbsp;</div>
+The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using [Visual Studio 2010](http://www.microsoft.com/visualstudio/en-us) and requires the installation of the [.NET Framework 4.0](http://www.microsoft.com/download/en/details.aspx?id=17718) and [Windows Azure SDK for .NET](http://www.microsoft.com/download/en/details.aspx?id=28045). The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test  the Brokered and Relay messaging services defined in a given Service Bus namespace.
+
 <div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" /></div>
-<div></div>
-<div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
-<div><strong>Author: </strong>Paolo Salvatori</div>
-<div><strong>Update</strong>: 28 August 2012</div>
-<div>This version introduces the following updates:</div>
-<ul>
-<li>A new flat UI. This change has been done primarily to match Windows 8 and Windows Server 2012 new UI style. </li>
-<li>Two new options in the configuration file and Options form that allow to save respectively the message text and user-defined properties of a BrokeredMessage between 2 runs. This way, you don't have to re-enter user-defined properties when you start a new  session. </li>
-<li>The possibility to define the body of BrokeredMessage as a stream. Now in the Sender tab of a queue and topic you can select 3 different formats for the payload: string, stream and WCF message. </li>
-</ul>
+
+**NOTE:** I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.
+**Author: **Paolo Salvatori
+**Update: **28 August 2012
+This version introduces the following updates:
+
+- A new flat UI. This change has been done primarily to match Windows 8 and Windows Server 2012 new UI style.
+- Two new options in the configuration file and Options form that allow to save respectively the message text and user-defined properties of a BrokeredMessage between 2 runs. This way, you don't have to re-enter user-defined properties when you start a new  session.
+- The possibility to define the body of BrokeredMessage as a stream. Now in the Sender tab of a queue and topic you can select 3 different formats for the payload: string, stream and WCF message.
+
 <div><strong>Update</strong>: 18&nbsp;December 2012</div>
 <div>This version introduces the following updates:</div>
 <ul>
