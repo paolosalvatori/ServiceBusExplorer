@@ -41,11 +41,11 @@ The source code of the tool is now availale on [GitHub](https://github.com/paolo
 Follow me on [Twitter](https://twitter.com/babosbird) if you want to receive a post whenever a new version of the tool is available.
 
 # Videos
-<p>For more information on how to use the Service Bus Explorer, see the following videos on Channel9:</p>
-<ul>
-<li><a href="http://www.digitalpodcast.com/items/10765228">Getting Started with Service Bus. Part 3: Service Bus Explorer</a> by Clemens Vasters </li>
-<li><a href="http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub">Cross Platform Notifications using Windows Azure Notifications Hub</a> by Elio Damaggio,&nbsp;Nick Harris and Chris Risner. </li>
-</ul>
+For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
+
+- [Getting Started with Service Bus. Part 3: Service Bus Explorer](http://www.digitalpodcast.com/items/10765228) by Clemens Vasters
+- [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
+
 # License
 <p>Microsoft Corporation (&ldquo;Microsoft&rdquo;) grants you a nonexclusive, perpetual, royalty-free right to use and modify the software code provided by us for the purposes of illustration&nbsp; ("Sample Code") and to reproduce and distribute the object  code form of the Sample Code, provided that you agree: (i) to not use our name, logo, or trademarks to market your software product in which the Sample Code is embedded; (ii) to include a valid copyright notice on your software product in which the Sample  Code is embedded; and (iii) to indemnify, hold harmless, and defend us and our suppliers from and against any claims or lawsuits, whether in an action of contract, tort or otherwise, including attorneys&rsquo; fees, that arise or result from the use or distribution  of the Sample Code or the use or other dealings in the Sample Code. Unless applicable law gives you more rights, Microsoft reserves all other rights not expressly granted herein, whether by implication, estoppel or otherwise.&nbsp;</p>
 <p>THE SAMPLE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL MICROSOFT OR ITS LICENSORS BE LIABLE  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
