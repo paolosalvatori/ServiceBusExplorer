@@ -1,47 +1,56 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/x5niu29yhun36hda/branch/master?svg=true)](https://ci.appveyor.com/project/seanfeldman/servicebusexplorer/branch/master)
-<ul>
-</ul>
-<div><strong>Author: </strong>Paolo Salvatori (@babosbird)</div>
-<h1>Introduction</h1>
-<div>
-<p><strong>Important Note<br /> </strong></p>
-<p>The zip file contains:&nbsp;</p>
-<ul>
-<li><span>The source code for the Service Bus Explorer 3.0.4. This version of the tool uses the&nbsp;<a href="http://www.nuget.org/packages/WindowsAzure.ServiceBus/">Microsoft.ServiceBus.dll</a>&nbsp;3.0.4 that is compatible with the current version of the  Azure Service Bus, but not with the Service Bus 1.1, that is, the current version of the on-premises version of the Service Bus.</span> </li>
-<li>The Service Bus Explorer 2.1.3.0. This version can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the&nbsp;<a href="http://www.nuget.org/packages/WindowsAzure.ServiceBus/">Microsoft.ServiceBus.dll</a>&nbsp;client library which is compatible  with the Service Bus for Windows Server 1.1 RTM version.&nbsp;You can download the source code of the Service Bus Explorer 2.1.3 from my <a href="http://1drv.ms/1nEl7ps">OneDrive</a>.&nbsp; </li>
-</ul>
-</div>
-<div>Queues and topics represent the foundation of a new cloud-based messaging and integration infrastructure that provides reliable message queuing and durable publish/subscribe messaging capabilities to both cloud and on-premises applications based on Microsoft  and non-Microsoft technologies. .NET applications can use the new functionality offered by queues and topics by using the new messaging API (<a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.aspx">Microsoft.ServiceBus.Messaging</a>)  or via WCF by using the new <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.netmessagingbinding.aspx"> NetMessagingBinding</a>. Likewise, any Microsoft or non-Microsoft applications can use a <a href="http://msdn.microsoft.com/en-us/library/hh367521.aspx">Service Bus REST API</a> to manage and access messaging entities over HTTPS. In November 2012, the&nbsp;<a href="http://msdn.microsoft.com/en-us/library/jj193022(v=azure.10).aspx">Service Bus for  Windows Server</a> was released. The Service Bus Exploer can be used with manage namespaces hosted by both Windows Azure Service Bus and Service Bus for Windows Server.</div>
-<div>Queues and topics were first introduced by the Community Technology Preview (CTP) of Windows Azure that was released in May 2011. At that time, the <a href="https://windows.azure.com/default.aspx">Windows Azure Management Portal</a> didn&rsquo;t provide any user interface to administer, create and delete messaging entities and the only way to accomplish this task was using the .NET or REST API. For this  reason, In June 2011 I decided to build a tool called <a href="http://windowsazurecat.com/2011/07/exploring-topics-and-queues-by-building-a-service-bus-explorer-toolpart-1/"> Service Bus Explorer</a> that would allow developers and system administrators to connect to a Service Bus namespace and administer its messaging entities.</div>
-<div style="text-align: center;">&nbsp;</div>
-<div style="text-align: center;"><img id="143379" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143379/1/servicebusexplorer.png" alt="" width="800" /></div>
-<div>During the last few months I continued to develop this tool and add new features with the intended goal to facilitate the development and administration of new Service Bus-enabled applications. In the meantime, the <a href="https://windows.azure.com/default.aspx">Windows Azure Management Portal</a> introduced the ability for a user to create, disable, update&nbsp;queues, topics, and subscriptions and define their properties, but not to define or display rules for an existing  subscription. Besides, the Service Bus Explorer enables to accomplish functionalities, such as importing, exporting and testing entities, that are not currently provided by the <a href="https://windows.azure.com/default.aspx">Windows Azure Management Portal</a>. For this reason, the Service Bus Explorer tool represents the perfect companion for the official Azure portal and it can also be used to explore the features (session-based  correlation, configurable detection of duplicate messages, deferring messages, etc.) provided out-of-the-box by the Service Bus brokered messaging.</div>
-<div>For more information on the Service Bus, you can use the following resources:</div>
-<ul>
-<li>"<a href="http://msdn.microsoft.com/en-us/library/ee732537.aspx">Windows Azure Service Bus</a>" section on the MSDN site. </li>
-<li>"<a href="http://msdn.microsoft.com/en-us/library/jj193022(v=azure.10).aspx">Service Bus for Windows Server</a>" section on the MSDN site. </li>
-<li>&ldquo;<a href="http://msdn.microsoft.com/en-us/library/ee732537.aspx">Service Bus</a>&rdquo; topic on the MSDN site. </li>
-<li>&ldquo;<a href="http://blogs.msdn.com/b/windowsazure/archive/2011/09/16/the-service-bus-september-2011-release.aspx">Now Available: The Service Bus September 2011 Release</a>&rdquo; article on the Windows Azure Blog. </li>
-<li>&ldquo;<a href="http://msdn.microsoft.com/en-us/library/windowsazure/hh367516.aspx">Queues, Topics, and Subscriptions</a>&rdquo; article on the MSDN site. </li>
-<li>&ldquo;<a href="http://blogs.msdn.com/b/clemensv/archive/2011/06/10/understanding-windows-azure-appfabric-queues-and-topics.aspx">Understanding Windows Azure Queues (and Topics)</a>&rdquo; video on the Clemens Vasters Blog. </li>
-<li>&ldquo;<a href="http://channel9.msdn.com/Events/BUILD/BUILD2011/SAC-862T">Building loosely-coupled apps with Windows Azure Service Bus Topics and Queues</a>&rdquo; video on the channel9 site. </li>
-<li>&ldquo;<a href="http://channel9.msdn.com/posts/ServiceBusTopicsAndQueues">Service Bus Topics And Queues</a>&rdquo; video on the channel9 site. </li>
-<li>&ldquo;<a href="http://channel9.msdn.com/posts/Securing-Service-Bus-with-ACS">Securing Service Bus with ACS</a>&rdquo; video on the channel9 site. </li>
-</ul>
-<h1>GitHub</h1>
-<p>The source code of the tool is now availale on&nbsp;<a href="https://github.com/paolosalvatori/ServiceBusExplorer">GitHub</a>&nbsp;as a public project. Now you have the opportunity to contribute to the evolution of the tool!</p>
-<h1>Updates</h1>
+
+**Author:** Paolo Salvatori ([@babosbird](https://twitter.com/babosbird))
+**Contributor:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman))
+
+# Introduction
+
+**Important Note**
+
+The zip file contains:
+
+- The source code for the Service Bus Explorer 3.0.4. This version of the tool uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) 3.0.4 that is compatible with the current version of the  Azure Service Bus, but not with the Service Bus 1.1, that is, the current version of the on-premises version of the Service Bus.
+- The Service Bus Explorer 2.1.3.0. This version can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible  with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer 2.1.3 from my [OneDrive](http://1drv.ms/1nEl7ps)
+
+Queues and topics represent the foundation of a new cloud-based messaging and integration infrastructure that provides reliable message queuing and durable publish/subscribe messaging capabilities to both cloud and on-premises applications based on Microsoft  and non-Microsoft technologies. .NET applications can use the new functionality offered by queues and topics by using the new messaging API ([Microsoft.ServiceBus.Messaging](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.aspx)) or via WCF by using the new [NetMessagingBinding](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.netmessagingbinding.aspx). Likewise, any Microsoft or non-Microsoft applications can use a [Service Bus REST API](http://msdn.microsoft.com/en-us/library/hh367521.aspx) to manage and access messaging entities over HTTPS. In November 2012, the [Service Bus for Windows Server](http://msdn.microsoft.com/en-us/library/jj193022(v=azure.10).aspx) was released. The Service Bus Exploer can be used with manage namespaces hosted by both Windows Azure Service Bus and Service Bus for Windows Server.
+
+Queues and topics were first introduced by the Community Technology Preview (CTP) of Windows Azure that was released in May 2011. At that time, the Windows Azure Management Portal didn't provide any user interface to administer, create and delete messaging entities and the only way to accomplish this task was using the .NET or REST API. For this  reason, In June 2011 I decided to build a tool called [Service Bus Explorer](http://windowsazurecat.com/2011/07/exploring-topics-and-queues-by-building-a-service-bus-explorer-toolpart-1/) that would allow developers and system administrators to connect to a Service Bus namespace and administer its messaging entities.
+
+<img id="143379" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143379/1/servicebusexplorer.png" alt="" width="800" />
+
+During the last few months I continued to develop this tool and add new features with the intended goal to facilitate the development and administration of new Service Bus-enabled applications. In the meantime, the Windows Azure Management Portal introduced the ability for a user to create, disable, update queues, topics, and subscriptions and define their properties, but not to define or display rules for an existing  subscription. Besides, the Service Bus Explorer enables to accomplish functionalities, such as importing, exporting and testing entities, that are not currently provided by the Windows Azure Management Portal. For this reason, the Service Bus Explorer tool represents the perfect companion for the official Azure portal and it can also be used to explore the features (session-based  correlation, configurable detection of duplicate messages, deferring messages, etc.) provided out-of-the-box by the Service Bus brokered messaging.
+
+For more information on the Service Bus, you can use the following resources:
+
+- ["Windows Azure Service Bus"](http://msdn.microsoft.com/en-us/library/ee732537.aspx) section on the MSDN site.
+- ["Service Bus for Windows Server"](http://msdn.microsoft.com/en-us/library/jj193022(v=azure.10).aspx) section on the MSDN site.
+- ["Service Bus"](http://msdn.microsoft.com/en-us/library/ee732537.aspx) topic on the MSDN site.
+- ["Now Available: The Service Bus September 2011 Release"](http://blogs.msdn.com/b/windowsazure/archive/2011/09/16/the-service-bus-september-2011-release.aspx) article on the Windows Azure Blog.
+- ["Queues, Topics, and Subscriptions"](http://msdn.microsoft.com/en-us/library/windowsazure/hh367516.aspx) article on the MSDN site.
+- ["Understanding Windows Azure Queues (and Topics)"](http://blogs.msdn.com/b/clemensv/archive/2011/06/10/understanding-windows-azure-appfabric-queues-and-topics.aspx) video on the Clemens Vasters Blog.
+- ["Building loosely-coupled apps with Windows Azure Service Bus Topics and Queues"](http://channel9.msdn.com/Events/BUILD/BUILD2011/SAC-862T) video on the channel9 site.
+- ["Service Bus Topics And Queues"](http://channel9.msdn.com/posts/ServiceBusTopicsAndQueues) video on the channel9 site.
+- ["Securing Service Bus with ACS"](http://channel9.msdn.com/posts/Securing-Service-Bus-with-ACS) video on the channel9 site.
+
+# GitHub
+The source code of the tool is now availale on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
+
+<a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png).</a>
+
+# Updates
 <p>Follow me on <a href="https://twitter.com/babosbird">Twitter</a>&nbsp;if you want to receive a post whenever a new version of the tool is available.</p>
-<h1>Videos<strong><span style="font-size: 10px;"><br /> </span></strong></h1>
+# Videos
 <p>For more information on how to use the Service Bus Explorer, see the following videos on Channel9:</p>
 <ul>
 <li><a href="http://www.digitalpodcast.com/items/10765228">Getting Started with Service Bus. Part 3: Service Bus Explorer</a> by Clemens Vasters </li>
 <li><a href="http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub">Cross Platform Notifications using Windows Azure Notifications Hub</a> by Elio Damaggio,&nbsp;Nick Harris and Chris Risner. </li>
 </ul>
-<h1>License</h1>
+# License
 <p>Microsoft Corporation (&ldquo;Microsoft&rdquo;) grants you a nonexclusive, perpetual, royalty-free right to use and modify the software code provided by us for the purposes of illustration&nbsp; ("Sample Code") and to reproduce and distribute the object  code form of the Sample Code, provided that you agree: (i) to not use our name, logo, or trademarks to market your software product in which the Sample Code is embedded; (ii) to include a valid copyright notice on your software product in which the Sample  Code is embedded; and (iii) to indemnify, hold harmless, and defend us and our suppliers from and against any claims or lawsuits, whether in an action of contract, tort or otherwise, including attorneys&rsquo; fees, that arise or result from the use or distribution  of the Sample Code or the use or other dealings in the Sample Code. Unless applicable law gives you more rights, Microsoft reserves all other rights not expressly granted herein, whether by implication, estoppel or otherwise.&nbsp;</p>
 <p>THE SAMPLE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL MICROSOFT OR ITS LICENSORS BE LIABLE  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-<h1>Microsoft Azure Management Portal</h1>
+
+# Service Bus Management Clients
+## Microsoft Azure Management Portal
 <div>In order to use the Brokered and Relay messaging functionality provided by the Service Bus, the first operation to perform is to provision a new Service Bus namespace or modify an existing namespace to include the Service Bus. You can accomplish this task  from the <a href="https://windows.azure.com/default.aspx">Windows Azure Management Portal</a>.</div>
 <div><a href="file:///C:/Users/paolos/AppData/Local/Temp/1/WindowsLiveWriter393614076/supfiles18B3FF56/CreateNamespace4.jpg"></a></div>
 <div>Once completed this step, you can start creating and using queues, topics and subscriptions. You have many options to provision and manage messaging entities:</div>
@@ -65,9 +74,9 @@
 <li>Import queues, topics and subscriptions from an XML file to an existing namespace. The Service Bus Explorer supports the ability to export entities to an XML file and reimport them on the same or another Service Bus namespace. This feature comes in a handy  to perform a backup and restore of a namespace or simply to transfer queues and topics from a testing to a production namespace. </li>
 </ul>
 <div>That&rsquo;s why in June, I created a tool called <a href="http://windowsazurecat.com/2011/07/exploring-topics-and-queues-by-building-a-service-bus-explorer-toolpart-1/"> Service Bus Explorer</a> that allows a user to create, delete and test queues, topics, subscriptions, and rules. My tool was able to manage entities in the <a href="https://portal.appfabriclabs.com/Default.aspx">Labs Beta environment</a>. However, the new version of the <a href="http://msdn.microsoft.com/en-us/library/hh394905.aspx">Service Bus API</a> introduced some breaking changes, as you can read <a href="http://rickgaribay.net/archive/2011/09/14/azure-appfabric-service-bus-brokered-messaging-ga-amp-rude-ctp.aspx"> here</a>, so I built a new version of the Service Bus Explorer tool that introduces a significant amount of new features.</div>
-<h1>ServiceBus360</h1>
+## ServiceBus360
 If you are looking for a fully supported commercial product for better management and monitoring of Azure Service Bus, take a look at <a href="https://servicebus360.com">ServiceBus360</a>. ServiceBus360 is from one of the Microsoft Gold Partners. 
-<h1>Service Bus Explorer</h1>
+## Service Bus Explorer
 <div>The following picture illustrates the high-level architecture of the Service Bus Explorer tool. The application has been written in C# using <a href="http://www.microsoft.com/visualstudio/en-us">Visual Studio 2010</a> and requires the installation of the .<a href="http://www.microsoft.com/download/en/details.aspx?id=17718">NET Framework 4.0</a> and <a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=27421"> </a><a title="Windows Azure SDK for .NET" href="http://www.microsoft.com/download/en/details.aspx?id=28045">Windows Azure SDK for .NET</a>. The tool can be copied and used on any workstation that satisfies the prerequisites mentioned above to manage and test  the Brokered and Relay messaging services defined in a given Service Bus namespace.</div>
 <div style="text-align: center;">&nbsp;</div>
 <div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" /></div>
