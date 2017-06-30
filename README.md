@@ -2,6 +2,11 @@
 <ul>
 </ul>
 <div><strong>Author: </strong>Paolo Salvatori (@babosbird)</div>
+<h1>Installation</h1>
+<h3>Using <a href="https://chocolatey.org/install">Chocolatey</a></h3>
+<pre>chocolatey install ServiceBusExplorer</pre>
+<h3>Using GitHub</h3>
+<pre>curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4</pre>
 <h1>Introduction</h1>
 <div>
 <p><strong>Important Note<br /> </strong></p>
