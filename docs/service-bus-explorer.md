@@ -5,89 +5,88 @@ The following picture illustrates the high-level architecture of the Service Bus
 <div style="text-align: center;"><img id="143452" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143452/1/servicebusexplorer.jpg" alt="" /></div>
 
 **NOTE:** I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.
-**Author: **Paolo Salvatori
-**Update: **28 August 2012
+
+**Author:** Paolo Salvatori
+
+**Update:** 28 August 2012
+
 This version introduces the following updates:
 
 - A new flat UI. This change has been done primarily to match Windows 8 and Windows Server 2012 new UI style.
 - Two new options in the configuration file and Options form that allow to save respectively the message text and user-defined properties of a BrokeredMessage between 2 runs. This way, you don't have to re-enter user-defined properties when you start a new  session.
 - The possibility to define the body of BrokeredMessage as a stream. Now in the Sender tab of a queue and topic you can select 3 different formats for the payload: string, stream and WCF message.
 
-<div><strong>Update</strong>: 18&nbsp;December 2012</div>
-<div>This version introduces the following updates:</div>
-<ul>
-<li>Implemented Disable/Enable operations for queues and topics. </li>
-</ul>
+**Update: **December 2012
+This version introduces the following updates:
+
+-Implemented Disable/Enable operations for queues and topics.
+
 <div style="text-align: center;"><img id="143380" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143380/1/disableentity.png" alt="" width="385" height="599" /></div>
-<div>&nbsp;</div>
-<ul>
-<li>Implemented Update operation for queues, topics and subscriptions. </li>
-<li>Added OData filter support for queues, topics and subscriptions in the ConnectForm. </li>
-<li>Added OData filter support on context menu of queues, topics and subscriptions. </li>
-<li>Added FilterForm that allows to compose a valid OData filter both as free-text or using the UI. The 2 mechanisms are synchronized. </li>
-</ul>
+
+- Implemented Update operation for queues, topics and subscriptions.
+- Added OData filter support for queues, topics and subscriptions in the ConnectForm.
+- Added OData filter support on context menu of queues, topics and subscriptions.
+- Added FilterForm that allows to compose a valid OData filter both as free-text or using the UI. The 2 mechanisms are synchronized.
+
 <div style="text-align: center;"><img id="143381" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143381/1/filterform.png" alt="" width="459" height="562" /></div>
-<div>&nbsp;</div>
-<ul>
-<li>Added support for Windows Azure Service Bus connection strings in the Connect Form. </li>
-</ul>
+
+- Added support for Windows Azure Service Bus connection strings in the Connect Form.
+
 <div style="text-align: center;"><img id="143382" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143382/1/connectionstring.png" alt="" width="469" height="668" /></div>
-<div>&nbsp;</div>
-<ul>
-<li>Added support for Service Bus for Windows Server and Windows Azure Service Bus connection strings in the configuration file. </li>
-<li>Added support for F5 shortcut to refresh current entity/entities </li>
-<li>Added connection string textbox in the Connect form. </li>
-<li>Added tooltip with samples for cloud &amp; server connection strings in the Connect form. </li>
-<li>Added checkbox for IsAnonymousAccessible property to topic and queue management control. </li>
-<li>Added checkbox for EnableFilteringMessagesBeforePublishing property to topic management control. </li>
-<li>Added TextBox for UserMetadata property to queue, topic and subscription management control. </li>
-<li>Added TextBox for ForwardTo property to queue and subscription management control. </li>
-<li>Added visualization of IsReadOnly property to queue, topic and subscription management control. </li>
-<li>Added ForwardToForm to select a target queue or topic from a treeview as value for the ForwardTo property. </li>
-</ul>
+
+- Added support for Service Bus for Windows Server and Windows Azure Service Bus connection strings in the configuration file.
+- Added support for F5 shortcut to refresh current entity/entities
+- Added connection string textbox in the Connect form.
+- Added tooltip with samples for cloud &amp; server connection strings in the Connect form.
+- Added checkbox for IsAnonymousAccessible property to topic and queue management control.
+- Added checkbox for EnableFilteringMessagesBeforePublishing property to topic management control.
+- Added TextBox for UserMetadata property to queue, topic and subscription management control.
+- Added TextBox for ForwardTo property to queue and subscription management control.
+- Added visualization of IsReadOnly property to queue, topic and subscription management control.
+- Added ForwardToForm to select a target queue or topic from a treeview as value for the ForwardTo property.
+
 <div style="text-align: center;"><img id="143383" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143383/1/forwardform.png" alt="" width="562" height="563" /></div>
-<div>&nbsp;</div>
-<ul>
-<li>Added support for SendBatch to the Sender tab of queue/topic test controls. </li>
-<li>Added support for ReceiveBatch to the Receiver tab of queue/topic/subscription test controls. </li>
-<li>Added support for Get Message Sessions to queue and subscription context menus for session-aware queues and subscriptions. </li>
-</ul>
+
+- Added support for SendBatch to the Sender tab of queue/topic test controls.
+- Added support for ReceiveBatch to the Receiver tab of queue/topic/subscription test controls.
+- Added support for Get Message Sessions to queue and subscription context menus for session-aware queues and subscriptions.
+
 <div style="text-align: center;"><img id="143384" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143384/1/getmessagesessions.png" alt="" width="376" height="705" /></div>
-<div>&nbsp;</div>
-<ul>
-<li>Replaced the absolute Uri of a target queue or topic with the value of the Path property (queues) and name property (subscriptions) when loading the value of the ForwardTo property. </li>
-<li>Added ListView for entity information (AccessedAt, UpdatedAt, Status, MessageCountDetail, etc.) to queue, topic and subscription management control. </li>
-<li>Added User Meyadata fields. </li>
-<li>Replaced TextBox with TrackBar for Maximum Size of Queues and Topics. </li>
-<li>Differentiated possible and maximum values for max size of messaging entities for cloud and on-premises Service Bus namespaces. </li>
-<li>Fixed Refresh operation for Subscriptions and Rules nodes. </li>
-<li>Changed the style of DataGridViews in all controls. </li>
-<li>Changed the style of ListViews in all controls.<br /> Adjusted the width of the last column of DataGridViews and ListViews based on control width and vertical scroll bar visibility. </li>
-<li>The main panel is cleared when connecting to a new namespace. </li>
-<li>Fixed minor issues in the Rule control. </li>
-<li>Significantly improved the performance of graph drawing. </li>
-<li>Significantly improved the performance of logging. </li>
-<li>Fixed problems with graphs when stopping load test. </li>
-<li>Fixed problems with graphs when using PrefetchCount &gt; 0 </li>
-<li>Hidden the Relay Services node for Service Bus for Windows Server namespaces. </li>
-<li>Hidden the Is Anonymous Accessible settings for cloud Service Bus namespaces. </li>
-<li>The ConnectForm remembers the last connectionstring opened. </li>
-<li>Improved the visualization of the namespace treeview. </li>
-<li>Change icon of the namespace treeview. </li>
-<li>Changed the About form. </li>
-<li>Changed the Windows Azure Logo. </li>
-</ul>
-<div><strong>Update</strong>:&nbsp;7&nbsp;January 2013</div>
-<div>This version introduces the following updates:</div>
-<ul>
-<li>Fixed&nbsp;Copy &lt;Queue|Topic|Subscription&gt;&nbsp;URL and Copy Deadletter Queue URL for Service Bus for Windows Server namespaces. </li>
-</ul>
-<div><strong>Update</strong>:&nbsp;8&nbsp;January 2013</div>
-<div>This version introduces the following updates:</div>
-<ul>
-<li>Fixed the address&nbsp;format&nbsp;of the&nbsp;To header when sending WCF messages to queues and topics of a Service Bus for Windows Server namespace. </li>
-</ul>
-<div><strong>Update</strong>: 12&nbsp;April 2013</div>
+
+- Replaced the absolute Uri of a target queue or topic with the value of the Path property (queues) and name property (subscriptions) when loading the value of the ForwardTo property. </li>
+- Added ListView for entity information (AccessedAt, UpdatedAt, Status, MessageCountDetail, etc.) to queue, topic and subscription management control. </li>
+- Added User Meyadata fields. </li>
+- Replaced TextBox with TrackBar for Maximum Size of Queues and Topics. </li>
+- Differentiated possible and maximum values for max size of messaging entities for cloud and on-premises Service Bus namespaces. </li>
+- Fixed Refresh operation for Subscriptions and Rules nodes. </li>
+- Changed the style of DataGridViews in all controls. </li>
+- Changed the style of ListViews in all controls.<br /> Adjusted the width of the last column of DataGridViews and ListViews based on control width and vertical scroll bar visibility. </li>
+- The main panel is cleared when connecting to a new namespace. </li>
+- Fixed minor issues in the Rule control. </li>
+- Significantly improved the performance of graph drawing. </li>
+- Significantly improved the performance of logging. </li>
+- Fixed problems with graphs when stopping load test. </li>
+- Fixed problems with graphs when using PrefetchCount &gt; 0 </li>
+- Hidden the Relay Services node for Service Bus for Windows Server namespaces. </li>
+- Hidden the Is Anonymous Accessible settings for cloud Service Bus namespaces. </li>
+- The ConnectForm remembers the last connectionstring opened. </li>
+- Improved the visualization of the namespace treeview. </li>
+- Change icon of the namespace treeview.
+- Changed the About form.
+- Changed the Windows Azure Logo.
+
+**Update:** 7 January 2013
+
+This version introduces the following updates:
+
+- Fixed Copy <Queue|Topic|Subscription> URL and Copy Deadletter Queue URL for Service Bus for Windows Server namespaces.
+
+**Update**: January 2013
+This version introduces the following updates:
+
+- Fixed the addres format of the To header when sending WCF messages to queues and topics of a Service Bus for Windows Server namespace.
+
+<div><strong>Update</strong>:** 12 April 2013
 <div>This version introduces the following updates:</div>
 <ul>
 <li>This version uses the Microsoft.ServiceBus.dll 2.0 Beta available on NuGet at <a href="http://nuget.org/packages/WindowsAzure.ServiceBus">http://nuget.org/packages/WindowsAzure.ServiceBus</a>. </li>
@@ -2431,49 +2430,54 @@ Properties:&nbsp;
 <li>Fixed a bug: an infinite loop when peeking messages from a queue or subscriptions with no messages. </li>
 <li>Updated Microsoft.ServiceBus.dll to version 2.6.5. </li>
 </ul>
-<p><strong>Update</strong>: 9 September 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>Bugs fixed buy the community (thanks guys!). </li>
-<li>Updated Microsoft.ServiceBus.dll to version 3.0.1 </li>
-<li>Introduced a reference to the new Microsoft.Azure.NotificationHubs.dll </li>
-<li>Introduced the possibility to retrieve the data of all the partitions associated to the consumer group of an event hub using the Get Partition Data menu item or the Partitions button as highlighted in the pictures below </li>
-</ul>
-<p>&nbsp;</p>
+
+**Update:** 9 September 2015
+This version introduces the following updates:
+
+- Bugs fixed buy the community (thanks guys!).
+- Updated Microsoft.ServiceBus.dll to version 3.0.1
+- Introduced a reference to the new Microsoft.Azure.NotificationHubs.dll
+- Introduced the possibility to retrieve the data of all the partitions associated to the consumer group of an event hub using the Get Partition Data menu item or the Partitions button as highlighted in the pictures below
+
 <p style="text-align: center;"><img id="143449" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143449/1/menuitem.png" alt="" width="369" height="257" /></p>
-<p style="text-align: center;">&nbsp;</p>
+
 <p style="text-align: center;"><img id="143450" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143450/1/button.png" alt="" width="800" /></p>
-<p style="text-align: justify;">&nbsp;</p>
-<p><strong>Update</strong>: 10 September 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>Bug fix to support Azure Service Bus Premium Messaging </li>
-</ul>
-<p><strong>Update</strong>: 14 September 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>Bug fix to support the new Microsoft.Azure.NotificationHubs.dll assembly. </li>
-</ul>
-<p><strong>Update</strong>: 21 September 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>Bug fix to support Notification Hub namespaces. </li>
-<li>Microsoft.ServiceBus.dll 3.0.3 </li>
-</ul>
-<p><strong>Update</strong>: 6 October 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>Bug fixes </li>
-<li>Microsoft.ServiceBus.dll 3.0.4 </li>
-<li>Ability to read messages from an IoT Hub. For more information, read&nbsp;<a href="https://code.msdn.microsoft.com/How-to-read-events-from-an-1641eb1b">How to read events from an IoT Hub with the Service Bus Explorer</a>. </li>
-</ul>
-<p><img id="143299" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143299/1/iothublistener.png" alt="" width="512" height="205" /></p>
-<p><img id="143300" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143300/1/parameters.png" alt="" width="616" height="225" /></p>
-<p><img id="143301" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143301/1/sbe02.png" alt="" width="800" /></p>
-<p><strong>Update</strong>: 8 October 2015</p>
-<p>This version introduces the following updates:</p>
-<ul>
-<li>The Service Bus product group (thanks Binzy!) extended the TestQueueControl and TestTopicControl with the possibility to create a separate MessagingFactory for each sender or receiver task as shown in the picture below. This should improve performance as  senders and receivers can use a different connection to Azure Service Bus message broker. </li>
-</ul>
-<p><img id="143375" style="display: block; margin-left: auto; margin-right: auto;" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143375/1/sendernewmessagingfactory.png" alt="" width="800" /></p>
-<p><img id="143376" style="display: block; margin-left: auto; margin-right: auto;" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143376/1/receivernewmessagingfactory.png" alt="" width="800" /></p>
+
+**Update:** 10 September 2015
+This version introduces the following updates:
+
+- Bug fix to support Azure Service Bus Premium Messaging
+
+**Update:** 14 September 2015
+This version introduces the following updates:
+
+- Bug fix to support the new Microsoft.Azure.NotificationHubs.dll assembly.
+
+**Update:** 21 September 2015
+
+This version introduces the following updates:
+
+- Bug fix to support Notification Hub namespaces.
+- Microsoft.ServiceBus.dll 3.0.3
+
+**Update:** 6 October 2015
+This version introduces the following updates:
+
+- Bug fixes
+- Microsoft.ServiceBus.dll 3.0.4
+- Ability to read messages from an IoT Hub. For more information, read [How to read events from an IoT Hub with the Service Bus Explorer](https://code.msdn.microsoft.com/How-to-read-events-from-an-1641eb1b).
+
+<img id="143299" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143299/1/iothublistener.png" alt="" width="512" height="205" />
+
+<img id="143300" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143300/1/parameters.png" alt="" width="616" height="225" />
+
+<img id="143301" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143301/1/sbe02.png" alt="" width="800" />
+
+**Update:** 8 October 2015
+This version introduces the following updates:
+
+- The Service Bus product group (thanks Binzy!) extended the TestQueueControl and TestTopicControl with the possibility to create a separate MessagingFactory for each sender or receiver task as shown in the picture below. This should improve performance as  senders and receivers can use a different connection to Azure Service Bus message broker.
+
+<img id="143375" style="display: block; margin-left: auto; margin-right: auto;" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143375/1/sendernewmessagingfactory.png" alt="" width="800" />
+
+<img id="143376" style="display: block; margin-left: auto; margin-right: auto;" src="https://i1.code.msdn.s-msft.com/windowsapps/service-bus-explorer-f2abca5a/image/file/143376/1/receivernewmessagingfactory.png" alt="" width="800" />
