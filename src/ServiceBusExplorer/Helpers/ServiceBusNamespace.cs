@@ -24,6 +24,7 @@
 using System;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -99,12 +100,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                   ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() : 
                   uri;
             ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ? 
-                               ConnectionString = string.Format(ConnectionStringFormat,
-                                                                Uri,
-                                                                name,
-                                                                key,
-                                                                transportType) : 
-                               connectionString;
+                               string.Format(ConnectionStringFormat,
+                                             Uri,
+                                             name,
+                                             key,
+                                             transportType) : 
+                               connectionString;            
             Namespace = ns;
             IssuerName = name;
             if (isSas)
@@ -184,6 +185,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets or sets the service bus namespace connection string.
         /// </summary>
         public string ConnectionString { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service bus namespace connection string without transport type.
+        /// </summary>
+        public string ConnectionStringWithoutTransportType
+        {
+            get
+            {
+                var regex = new Regex(@";TransportType=\w*;?");
+                var connectionString = regex.Replace(ConnectionString, string.Empty);
+                return connectionString;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the full address of the service bus namespace.

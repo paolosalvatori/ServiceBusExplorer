@@ -160,6 +160,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.changeStatusQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.exportQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -320,6 +321,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameTopicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -1278,6 +1280,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.changeStatusTopicMenuItem,
             this.deleteTopicMenuItem,
             this.refreshTopicMenuItem,
+            this.renameTopicMenuItem,
             this.toolStripSeparator6,
             this.exportTopicMenuItem,
             this.toolStripSeparator2,
@@ -1294,7 +1297,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator35,
             this.sendMessagesTopicMenuItem});
             this.topicContextMenuStrip.Name = "topicContextMenuStrip";
-            this.topicContextMenuStrip.Size = new System.Drawing.Size(200, 304);
+            this.topicContextMenuStrip.Size = new System.Drawing.Size(200, 348);
             // 
             // changeStatusTopicMenuItem
             // 
@@ -1428,6 +1431,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.changeStatusQueueMenuItem,
             this.deleteQueueMenuItem,
             this.refreshQueueMenuItem,
+            this.renameQueueMenuItem,
             this.toolStripSeparator5,
             this.exportQueueMenuItem,
             this.toolStripSeparator11,
@@ -1449,7 +1453,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.getQueueMessageSessionsSeparator,
             this.getQueueMessageSessionsMenuItem});
             this.queueContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.queueContextMenuStrip.Size = new System.Drawing.Size(309, 398);
+            this.queueContextMenuStrip.Size = new System.Drawing.Size(309, 420);
             // 
             // changeStatusQueueMenuItem
             // 
@@ -1474,6 +1478,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.refreshQueueMenuItem.Text = "Refresh Queue";
             this.refreshQueueMenuItem.ToolTipText = "Refresh the current queue.";
             this.refreshQueueMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
+            // 
+            // renameQueueMenuItem
+            // 
+            this.renameQueueMenuItem.Name = "renameQueueMenuItem";
+            this.renameQueueMenuItem.Size = new System.Drawing.Size(308, 22);
+            this.renameQueueMenuItem.Text = "Rename Queue";
+            this.renameQueueMenuItem.Click += new System.EventHandler(this.renameEntity_Click);
             // 
             // toolStripSeparator5
             // 
@@ -2717,6 +2728,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
             // 
+            // renameTopicMenuItem
+            // 
+            this.renameTopicMenuItem.Name = "renameTopicMenuItem";
+            this.renameTopicMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.renameTopicMenuItem.Text = "Rename Topic";
+            this.renameTopicMenuItem.Click += new System.EventHandler(this.renameEntity_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3070,6 +3088,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem queuePurgeDeadletterQueueMessagesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem queueReceiveTransferDeadletterQueueMessagesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem subscriptionReceiveTransferDeadletterQueueMessagesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameQueueMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameTopicMenuItem;
     }
 }
 
