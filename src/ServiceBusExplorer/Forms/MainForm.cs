@@ -1570,8 +1570,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     return;
                 }
                 Cursor.Current = Cursors.WaitCursor;
-                string fileName;
-                var xml = LoadEntityFromFile(out fileName);
+                var xml = LoadEntityFromFile(out string fileName);
                 if (xml == null)
                 {
                     return;
@@ -1587,6 +1586,62 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             finally
             {
                 importing = false;
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void renameEntity_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusHelper == null)
+                {
+                    return;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Queue Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                    using (var parameterForm = new ParameterForm($"Enter a new name for the {queueDescription.Path} queue.",
+                            new List<string> { "Name" },
+                            new List<string> { queueDescription.Path},
+                            new List<bool> { false }))
+                    {
+                        if (parameterForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        serviceBusHelper.RenameQueue(queueDescription.Path, parameterForm.ParameterValues[0]);
+                        return;
+                    }
+                }
+
+                // Topic Node
+                if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                {
+                    var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
+                    using (var parameterForm = new ParameterForm($"Enter a new name for the {topicDescription.Path} topic.",
+                            new List<string> { "Name" },
+                            new List<string> { topicDescription.Path },
+                            new List<bool> { false }))
+                    {
+                        if (parameterForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        serviceBusHelper.RenameTopic(topicDescription.Path, parameterForm.ParameterValues[0]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -4592,6 +4647,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
+                            catch (TimeoutException)
+                            {
+                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            }
                         }
                         if (selectedEntites.Contains(NotificationHubEntities) &&
                             (entityType == EntityType.All ||
@@ -4636,6 +4695,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 catch (MessagingException)
                                 {
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                                }
+                                catch (TimeoutException)
+                                {
+                                    serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                                 }
                             }
                             else
@@ -4687,6 +4750,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                             }
+                            catch (TimeoutException)
+                            {
+                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            }
                         }
                     }
 
@@ -4696,7 +4763,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var queues = serviceBusHelper.NamespaceManager.GetQueues(FilterExpressionHelper.QueueFilterExpression);
+                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? QueueEntities
                                 : FilteredQueueEntities;
@@ -4736,6 +4803,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
+                        catch (TimeoutException)
+                        {
+                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                        }
                     }
                     if (selectedEntites.Contains(TopicEntities) &&
                         (entityType == EntityType.All ||
@@ -4743,7 +4814,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var topics = serviceBusHelper.NamespaceManager.GetTopics(FilterExpressionHelper.TopicFilterExpression);
+                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? TopicEntities
                                 : FilteredTopicEntities;
@@ -4856,6 +4927,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         catch (MessagingException)
                         {
                             serviceBusTreeView.Nodes.Remove(topicListNode);
+                        }
+                        catch (TimeoutException)
+                        {
+                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                         }
                     }
                     queueListNode?.Expand();
@@ -6697,7 +6772,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private async void MainForm_Shown(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
             try
             {
@@ -6924,6 +6999,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Text = $@"Service Bus Explorer {version}";
             }
         }
+
         #endregion
     }
 
