@@ -3,6 +3,13 @@
 **Author:** Paolo Salvatori ([@babosbird](https://twitter.com/babosbird))
 **Contributor:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman))
 
+# Installation
+## Using [Chocolatey](https://chocolatey.org/install)
+`chocolatey install ServiceBusExplorer`
+
+## Using GitHub
+`curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4`
+
 # Introduction
 
 **Important Note**
