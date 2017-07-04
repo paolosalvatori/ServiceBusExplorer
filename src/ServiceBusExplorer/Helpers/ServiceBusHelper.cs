@@ -92,16 +92,19 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
         private const string RuleCannotBeNull = "The rule argument cannot be null.";
-        private const string PathCannotBeNull = "The name argument cannot be null or empty.";
+        private const string PathCannotBeNull = "The path argument cannot be null or empty.";
+        private const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
         private const string QueueCreated = "The queue {0} has been successfully created.";
         private const string QueueDeleted = "The queue {0} has been successfully deleted.";
+        private const string QueueRenamed = "The queue {0} has been successfully renamed to {1}.";
         private const string QueueUpdated = "The queue {0} has been successfully updated.";
         private const string TopicCreated = "The topic {0} has been successfully created.";
         private const string TopicDeleted = "The topic {0} has been successfully deleted.";
+        private const string TopicRenamed = "The topic {0} has been successfully renamed to {1}.";
         private const string TopicUpdated = "The topic {0} has been successfully updated.";
         private const string SubscriptionCreated = "The {0} subscription for the {1} topic has been successfully created.";
         private const string SubscriptionDeleted = "The {0} subscription for the {1} topic has been successfully deleted.";
@@ -763,12 +766,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
                 // Create the service URI using the scheme, namespace and service name (optional)
                 namespaceUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme,
-                                                                      nameSpace,
-                                                                      path);
+                                                                                 nameSpace,
+                                                                                 path);
                 // Create the atom feed URI using the scheme, namespace and service name (optional)
                 atomFeedUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(Uri.UriSchemeHttp,
-                                                                     nameSpace,
-                                                                     path);
+                                                                                nameSpace,
+                                                                                path);
                 Namespace = nameSpace;
                 ServicePath = path;
 
@@ -798,11 +801,31 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
+
+                // Set retry count
+                if (namespaceManagerSettings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                {
+                    namespaceManagerSettings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                                                                                           defaultServiceBusRetryExponential.MaximumBackoff,
+                                                                                           RetryHelper.RetryCount);
+                }
+
+
                 var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
+
+                // Set retry count
+                if (notificationHubNamespaceManagerSettings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                {
+                    notificationHubNamespaceManagerSettings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                                RetryHelper.RetryCount);
+                }
 
                 // The NamespaceManager class can be used for managing entities, 
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
@@ -919,11 +942,30 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
+
+                // Set retry count
+                if (namespaceManagerSettings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                {
+                    namespaceManagerSettings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                                                                                           defaultServiceBusRetryExponential.MaximumBackoff,
+                                                                                           RetryHelper.RetryCount);
+                }
+
                 var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
+
+                // Set retry count
+                if (notificationHubNamespaceManagerSettings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                {
+                    notificationHubNamespaceManagerSettings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                                defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                                RetryHelper.RetryCount);
+                }
 
                 // The NamespaceManager class can be used for managing entities, 
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
@@ -988,9 +1030,28 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 // to manage your service namespace.
 
                 namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+
+                // Set retry count
+                if (namespaceManager.Settings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                {
+                    namespaceManager.Settings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                                                                                            defaultServiceBusRetryExponential.MaximumBackoff,
+                                                                                            RetryHelper.RetryCount);
+                }
+
                 try
                 {
-                    notificationHubNamespaceManager = NotificationHubs.NamespaceManager.CreateFromConnectionString(connectionString);
+                    notificationHubNamespaceManager = NotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
+
+                    // Set retry count
+                    if (notificationHubNamespaceManager.Settings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                    {
+                        notificationHubNamespaceManager.Settings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                                     defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                                     defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                                     defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                                     RetryHelper.RetryCount);
+                    }
                 }
                 catch (Exception)
                 {
@@ -1037,7 +1098,19 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetRelaysAsync().Result, writeToLog);
+                var taskList = new List<Task>();
+                var task = namespaceManager.GetRelaysAsync();
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1170,7 +1243,19 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(async () => await namespaceManager.GetEventHubsAsync(), writeToLog);
+                var taskList = new List<Task>();
+                var task = namespaceManager.GetEventHubsAsync();
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1622,7 +1707,19 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => notificationHubNamespaceManager.GetNotificationHubs(), writeToLog);
+                var taskList = new List<Task>();
+                var task = notificationHubNamespaceManager.GetNotificationHubsAsync();
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1749,7 +1846,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => string.IsNullOrWhiteSpace(filter)? namespaceManager.GetQueues() : namespaceManager.GetQueues(filter), writeToLog);
+                var taskList = new List<Task>();
+                var task = string.IsNullOrWhiteSpace(filter) ? 
+                           namespaceManager.GetQueuesAsync() : 
+                           namespaceManager.GetQueuesAsync(filter);
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1841,7 +1952,19 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetTopics(), writeToLog);
+                var taskList = new List<Task>();
+                var task = namespaceManager.GetTopicsAsync();
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1856,7 +1979,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                return RetryHelper.RetryFunc(() => string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetTopics() : namespaceManager.GetTopics(filter), writeToLog);
+                var taskList = new List<Task>();
+                var task = string.IsNullOrWhiteSpace(filter) ?
+                           namespaceManager.GetTopicsAsync() :
+                           namespaceManager.GetTopicsAsync(filter);
+                taskList.Add(task);
+                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                Task.WaitAny(taskList.ToArray());
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    throw new TimeoutException();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -2279,6 +2416,33 @@ namespace Microsoft.Azure.ServiceBusExplorer
         }
 
         /// <summary>
+        /// Renames a queue inside a namespace.
+        /// </summary>
+        /// <param name="path">The path to an existing queue.</param>
+        /// <param name="path">The new path to the renamed queue.</param>
+        /// <returns>Returns a QueueDescription with the new name.</returns>
+        public QueueDescription RenameQueue(string path, string newPath)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (string.IsNullOrWhiteSpace(newPath))
+            {
+                throw new ArgumentException(NewPathCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var queueDescription = RetryHelper.RetryFunc(() => namespaceManager.RenameQueue(path, newPath), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueRenamed, path, newPath));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new QueueDescription(path), EntityType.Queue));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
+                return queueDescription;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
         /// Creates a new topic in the service namespace with the given name.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
@@ -2399,6 +2563,33 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ApplicationException(ServiceBusIsDisconnected);
             }
+        }
+
+        /// <summary>
+        /// Renames a topic inside a namespace.
+        /// </summary>
+        /// <param name="path">The path to an existing topic.</param>
+        /// <param name="path">The new path to the renamed topic.</param>
+        /// <returns>Returns a TopicDescription with the new name.</returns>
+        public TopicDescription RenameTopic(string path, string newPath)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (string.IsNullOrWhiteSpace(newPath))
+            {
+                throw new ArgumentException(NewPathCannotBeNull);
+            }
+            if (namespaceManager != null)
+            {
+                var topicDescription = RetryHelper.RetryFunc(() => namespaceManager.RenameTopic(path, newPath), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicRenamed, path, newPath));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new TopicDescription(path), EntityType.Topic));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topicDescription, EntityType.Topic));
+                return topicDescription;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
         /// <summary>
