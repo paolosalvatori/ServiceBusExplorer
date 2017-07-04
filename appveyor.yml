@@ -1,6 +1,13 @@
 init:
 - git config --global core.autocrlf false
 
+skip_tags: true
+skip_commits:
+  files:
+    - '**/*.md'
+    - '**/images/*'
+    - '**/icons/*'
+
 image: Visual Studio 2017
 
 assembly_info:
