@@ -48,9 +48,6 @@ The source code of the tool is now availale on [GitHub](https://github.com/paolo
 
 <a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png).</a>
 
-# Updates
-Follow me on [Twitter](https://twitter.com/babosbird) if you want to receive a post whenever a new version of the tool is available.
-
 # Videos
 For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
 
