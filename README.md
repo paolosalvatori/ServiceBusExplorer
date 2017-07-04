@@ -62,8 +62,10 @@ Service Bus Explorer is only on of the management tools available for Azure Serv
 
 Here are a couple of alternatives:
 
-- [Microsoft Azure Management Portal](./docs/alternative-management-tools.md#microsoft-azure-management-portal)
-- [ServiceBus360](./docs/alternative-management-tools.md#servicebus360)
+- **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
+- **ServiceBus360** _(paid with free trial, SaaS, web based)_
+- **Cerebrata Cerulean** _(paid, xplat client)_
+- **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
 
 # License
 Microsoft Corporation ("Microsoft") grants you a nonexclusive, perpetual, royalty-free right to use and modify the software code provided by us for the purposes of illustration ("Sample Code") and to reproduce and distribute the object code form of the Sample Code, provided that you agree: (i) to not use our name, logo, or trademarks to market your software product in which the Sample Code is embedded; (ii) to include a valid copyright notice on your software product in which the Sample  Code is embedded; and (iii) to indemnify, hold harmless, and defend us and our suppliers from and against any claims or lawsuits, whether in an action of contract, tort or otherwise, including attorneys' fees, that arise or result from the use or distribution  of the Sample Code or the use or other dealings in the Sample Code. Unless applicable law gives you more rights, Microsoft reserves all other rights not expressly granted herein, whether by implication, estoppel or otherwise.
