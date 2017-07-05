@@ -43,8 +43,8 @@ For more information on how to use the Service Bus Explorer, see the following v
 - [Getting Started with Service Bus. Part 3: Service Bus Explorer](http://www.digitalpodcast.com/items/10765228) by Clemens Vasters
 - [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
 
-# Documentation
-You can find the documentation for Service Bus Explorer [here](./docs/service-bus-explorer.md)
+# History of Service Bus Explorer
+[Here](./docs/history.md) you can find the tool documentation and a log of the features implemented over time.
 
 # Alternative Service Bus Management Tools
 Service Bus Explorer is only on of the management tools available for Azure Service Bus.
