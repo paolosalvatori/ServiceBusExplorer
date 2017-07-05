@@ -18,17 +18,7 @@ chocolatey install ServiceBusExplorer
 ```
 curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4
 ```
-
-# Introduction
-
-**Important Note**
-
-The zip file contains:
-
-- The source code for the Service Bus Explorer 3.0.4. This version of the tool uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) 3.0.4 that is compatible with the current version of the  Azure Service Bus, but not with the Service Bus 1.1, that is, the current version of the on-premises version of the Service Bus.
-- The Service Bus Explorer 2.1.3.0. This version can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible  with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer v2.X [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
-
-## Azure Service Bus
+# Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
 
 Similar to the postal service delivering letters, Service Bus is flexible information delivery from both the sender and the recipient. The messaging service ensures that the information is delivered even if the two parties are never both online at the same time, or if they aren't available at the exact same time. In this way, messaging is similar to sending a letter, while non-brokered communication is similar to placing a phone call (or how a phone call used to be - before call waiting and caller ID, which are much more like brokered messaging).
@@ -38,6 +28,10 @@ The message sender can also require a variety of delivery characteristics includ
 Service Bus supports two distinct messaging patterns: Azure Relay and Service Bus Messaging.
 
 For more information, feel free to read the official documentation [here](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
+
+# Service Bus Explorer for Windows Server
+The Service Bus Explorer 2.1.3.0 can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer v2.X [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
+
 
 # GitHub
 The source code of the tool is now availale on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
