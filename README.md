@@ -32,7 +32,6 @@ For more information, feel free to read the official documentation [here](https:
 # Service Bus Explorer for Windows Server
 The Service Bus Explorer 2.1.3.0 can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer v2.X [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
 
-
 # GitHub
 The source code of the tool is now availale on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
 
