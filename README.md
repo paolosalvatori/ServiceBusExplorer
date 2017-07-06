@@ -30,7 +30,7 @@ Service Bus supports two distinct messaging patterns: Azure Relay and Service Bu
 For more information, feel free to read the official documentation [here](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
 
 # Service Bus Explorer for Windows Server
-The Service Bus Explorer 2.1.3 can be used with the Service Bus for Windows Server 1.1. The Service Bus Explorer 2.1.3 uses a version of the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer 2.1.3 [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
+The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Server 1.1. The Service Bus Explorer 2.1.0 uses a version of the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer 2.1.0 [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
 
 # Documentation
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
