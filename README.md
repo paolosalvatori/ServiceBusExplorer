@@ -30,7 +30,10 @@ Service Bus supports two distinct messaging patterns: Azure Relay and Service Bu
 For more information, feel free to read the official documentation [here](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
 
 # Service Bus Explorer for Windows Server
-The Service Bus Explorer 2.1.3.0 can be used with the Service Bus 1.1. The Service Bus Explorer 2.1 uses the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer v2.X [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
+The Service Bus Explorer 2.1.3 can be used with the Service Bus for Windows Server 1.1. The Service Bus Explorer 2.1.3 uses a version of the [Microsoft.ServiceBus.dll](http://www.nuget.org/packages/WindowsAzure.ServiceBus/) client library which is compatible with the Service Bus for Windows Server 1.1 RTM version. You can download the source code of the Service Bus Explorer 2.1.3 [here](https://github.com/paolosalvatori/ServiceBusExplorer/releases/tag/2.1.0).
+
+# Documentation
+[Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
 
 # GitHub
 The source code of the tool is now availale on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
@@ -42,9 +45,6 @@ For more information on how to use the Service Bus Explorer, see the following v
 
 - [Getting Started with Service Bus. Part 3: Service Bus Explorer](http://www.digitalpodcast.com/items/10765228) by Clemens Vasters
 - [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
-
-# History of Service Bus Explorer
-[Here](./docs/history.md) you can find the tool documentation and a log of the features implemented over time.
 
 # Alternative Service Bus Management Tools
 Service Bus Explorer is only on of the management tools available for Azure Service Bus.
