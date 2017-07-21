@@ -13,6 +13,10 @@ image: Visual Studio 2017
 assembly_info:
   patch: false
 
+environment:
+  choco_token:
+    secure: 68Fr+kbT0ilhb84AyU/kKVWJw74urnreRDCpZ2L89v0cJeuEGcOchKGIFsy4Hp+V
+
 #---------------------------------#
 #       restore nuget packages    #
 #---------------------------------#
@@ -22,7 +26,7 @@ before_build:
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   - cmd: echo %appveyor_build_version%
   - cmd: ECHO %GitVersion_MajorMinorPatch%
-  
+
 #---------------------------------#
 #       build configuration       #
 #---------------------------------#
@@ -32,7 +36,7 @@ platform: Any CPU
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
- 
+
 build:
   parallel: true                     # enable MSBuild parallel builds
   project: src\ServiceBusExplorer.sln # path to Visual Studio project
@@ -45,7 +49,16 @@ build:
 #---------------------------------#
 
 after_build:
-  7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
+  - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
+  - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+  - choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+
+#---------------------------------#
+#      after build - on_success   #
+#---------------------------------#
+
+on_success:
+  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%''"
 
 #---------------------------------#
 #      artifacts configuration    #
