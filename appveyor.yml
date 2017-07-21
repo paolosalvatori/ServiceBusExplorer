@@ -58,7 +58,7 @@ after_build:
 #---------------------------------#
 
 on_success:
-  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%''"
+  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%'"
 
 #---------------------------------#
 #      artifacts configuration    #
