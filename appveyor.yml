@@ -50,7 +50,7 @@ build:
 
 after_build:
   - ps: (Get-ChildItem $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release -Include *.xml -Recurse | % { Remove-Item $_.FullName })
-  - ps: (Set-Content -Value "VERIFICATION: MD5" -Path $env:APPVEYOR_BUILD_FOLDER\VERIFICATION.txt)
+  - ps: (Set-Content -Value "VERIFICATION=MD5" -Path $env:APPVEYOR_BUILD_FOLDER\VERIFICATION.txt)
   - ps: (Get-ChildItem $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release -Include * | % { @{ $_.Name = (Get-FileHash $_ -Algorithm MD5).Hash } } | Sort-Object Name | Format-List | Out-String | Add-Content ./VERIFICATION.txt)
   - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
   - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
