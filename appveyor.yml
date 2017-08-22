@@ -84,6 +84,9 @@ on_success:
 artifacts:
   - path: '*.zip'  # bin\$(configuration)\*.*
     name: 'ServiceBusExplorer-%GitVersion_MajorMinorPatch%'
+  - path: 'bin\Release'
+    name: 'build-output'
+    type: 'zip'
 
 #---------------------------------#
 #     GitHub PR notifications     #
