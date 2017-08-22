@@ -1,5 +1,5 @@
 param(
-    [Parameter(Mandator=$true, HelpMessage="Location to output the result to")]
+    [Parameter(Mandatory=$true, HelpMessage="Location to output the result to")]
     [string] $OutputFilePath
 )
 
