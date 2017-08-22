@@ -64,7 +64,7 @@ after_build:
           | % { @{ $_.Name = (Get-FileHash $_ -Algorithm MD5).Hash } } `
           | Sort-Object Name `
           | Format-List `
-          | Out-String | Add-Content ./../../../../VERIFICATION.txt
+          | Out-String | Add-Content $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt
       Pop-Location
   - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
   - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
