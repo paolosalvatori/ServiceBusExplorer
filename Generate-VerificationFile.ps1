@@ -3,7 +3,7 @@ param(
     [string] $OutputFilePath
 )
 
-cd $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release
+Set-Location "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release"
 
 # Get all files
 $files = Get-ChildItem -File
