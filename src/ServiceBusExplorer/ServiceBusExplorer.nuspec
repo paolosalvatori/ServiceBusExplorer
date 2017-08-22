@@ -22,5 +22,6 @@
   <files>
     <file src="bin\Release\**" target="tools" />
     <file src="..\..\LICENSE.txt" target="tools" />
+    <file src="..\..\VERIFICATION.txt" target="tools" />
   </files>
 </package>
