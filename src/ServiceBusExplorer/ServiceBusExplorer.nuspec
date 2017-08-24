@@ -2,7 +2,7 @@
   <metadata>
     <id>servicebusexplorer</id>
     <title>ServiceBusExplorer</title>
-    <version>4.0.102</version> <!-- was $version$ but hardcoding it for choco validation --> 
+    <version>$version$</version>
     <authors>Paolo Salvatori</authors>
     <owners>Paolo Salvatori</owners>
     <summary>The Service Bus Explorer allows users to connect to a Service Bus namespace and administer messaging entities in an easy manner. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.</summary>
