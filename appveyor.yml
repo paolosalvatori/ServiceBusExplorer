@@ -59,7 +59,7 @@ after_build:
       (Set-Content -Value "VERIFICATION=MD5" -Path $env:APPVEYOR_BUILD_FOLDER\VERIFICATION.txt)
   - ps: .\Generate-VerificationFile.ps1 -OutputFilePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt"
   - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
-  - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+  # Temporarely disable until we pass choco validation - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
   - choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
 
 #---------------------------------#
