@@ -3,10 +3,8 @@ param(
     [string] $OutputFilePath
 )
 
-Set-Location "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release"
-
 # Get all files
-$files = Get-ChildItem -File
+$files = Get-ChildItem "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release" -File
 
 # Create a string builder to append all checksums
 $verificationBuilder = New-Object System.Text.StringBuilder
