@@ -12,7 +12,7 @@ param(
 Write-Output "Creating VERIFICATION.txt based on template '$($TemplateFilePath)' for '$($ExePath)'"
 
 # Get content of template
-$rawTemplate = Get-Content $TemplateFilePath
+$rawTemplate = Get-Content $TemplateFilePath | Out-String
 Write-Output "VERIFICATION.txt template: $($rawTemplate)"
 
 # Hash ServiceBusExplorer.exe
