@@ -13,6 +13,7 @@ Write-Output "Creating VERIFICATION.txt based on template '$($TemplateFilePath)'
 
 # Get content of template
 $rawTemplate = Get-Content $TemplateFilePath
+Write-Output "VERIFICATION.txt template: $($rawTemplate)"
 
 # Hash ServiceBusExplorer.exe
 $hashResult = Get-FileHash $ExePath -Algorithm MD5
