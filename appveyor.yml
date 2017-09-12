@@ -14,7 +14,6 @@ assembly_info:
   patch: false
 
 environment:
-  choco_version: 4.0.102
   choco_token:
     secure: 68Fr+kbT0ilhb84AyU/kKVWJw74urnreRDCpZ2L89v0cJeuEGcOchKGIFsy4Hp+V
 
@@ -60,7 +59,7 @@ after_build:
       (Set-Content -Value "VERIFICATION=MD5" -Path $env:APPVEYOR_BUILD_FOLDER\VERIFICATION.txt)
   - ps: .\Generate-VerificationFile.ps1 -Version $env:GitVersion_MajorMinorPatch -TemplateFilePath VERIFICATION-Template.txt -ExePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\ServiceBusExplorer.exe" -OutputFilePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt"
   - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
-  - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:choco_version") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+  - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
   - choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
 
 #---------------------------------#
@@ -68,7 +67,7 @@ after_build:
 #---------------------------------#
 
 on_success:
-  - IF '%APPVEYOR_REPO_BRANCH%'=='develop' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%choco_version%.nupkg -k="'%choco_token%'"
+  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%'"
 
 #---------------------------------#
 #      artifacts configuration    #
@@ -78,7 +77,7 @@ artifacts:
   - path: '*.zip'  # bin\$(configuration)\*.*
     name: 'ServiceBusExplorer-%GitVersion_MajorMinorPatch%'
   - path: '*.nupkg'
-    name: 'ServiceBusExplorer-Chocolatey-%choco_version%'
+    name: 'ServiceBusExplorer-Chocolatey-%GitVersion_MajorMinorPatch%'
 
 #---------------------------------#
 #     GitHub PR notifications     #
