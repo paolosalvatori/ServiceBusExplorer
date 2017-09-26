@@ -2397,7 +2397,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the queue passed as a argument.
         /// </summary>
         /// <param name="queueDescription">The queue to delete.</param>
-        public void DeleteQueue(QueueDescription queueDescription)
+        public async Task DeleteQueue(QueueDescription queueDescription)
         {
             if (queueDescription == null)
             {
@@ -2405,7 +2405,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(queueDescription.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteQueueAsync(queueDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
             }

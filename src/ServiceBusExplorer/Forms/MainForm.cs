@@ -2262,7 +2262,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void deleteEntity_Click(object sender, EventArgs e)
+        private async void deleteEntity_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2444,7 +2444,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteQueue(queueDescription);
+                                await serviceBusHelper.DeleteQueue(queueDescription);
                             }
                         }
                         return;
