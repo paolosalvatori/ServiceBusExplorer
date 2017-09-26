@@ -2359,23 +2359,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the queues in the list.
         /// <param name="queues">A list of queues to delete.</param>
         /// </summary>
-        public void DeleteQueues(IEnumerable<string> queues)
+        public async Task DeleteQueues(IEnumerable<string> queues)
         {
             if (queues == null)
             {
                 return;
             }
-            foreach (var queue in queues)
-            {
-                DeleteQueue(queue);
-            }
+
+            await Task.WhenAll(queues.Select(DeleteQueue).ToArray());
         }
 
         /// <summary>
         /// Deletes the queue described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        public void DeleteQueue(string path)
+        public async Task DeleteQueue(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -2383,7 +2381,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteQueueAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Queue));
             }
