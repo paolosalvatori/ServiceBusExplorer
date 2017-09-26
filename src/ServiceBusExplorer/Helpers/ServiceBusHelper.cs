@@ -2545,7 +2545,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the topic passed as a argument.
         /// </summary>
         /// <param name="topic">The topic to delete.</param>
-        public void DeleteTopic(TopicDescription topic)
+        public async Task DeleteTopic(TopicDescription topic)
         {
             if (topic == null)
             {
@@ -2553,7 +2553,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(topic.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(topic.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
             }

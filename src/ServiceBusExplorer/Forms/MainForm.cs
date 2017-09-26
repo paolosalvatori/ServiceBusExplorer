@@ -2482,7 +2482,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteTopic(topicDescription);
+                                await serviceBusHelper.DeleteTopic(topicDescription);
                             }
                         }
                         return;
