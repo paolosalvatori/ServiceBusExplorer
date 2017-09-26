@@ -1725,7 +1725,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the notification hub described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
-        public void DeleteNotificationHub(string path)
+        public async Task DeleteNotificationHub(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1733,7 +1733,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
             }
@@ -1768,7 +1768,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the notification hub described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
-        public void DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
+        public async Task DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
         {
             if (string.IsNullOrWhiteSpace(notificationHubDescription?.Path))
             {
@@ -1776,7 +1776,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(notificationHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
             }
@@ -1790,16 +1790,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the notification hubs in the list.
         /// <param name="notificationHubs">A list of notification hubs to delete.</param>
         /// </summary>
-        public void DeleteNotificationHubs(IEnumerable<string> notificationHubs)
+        public async Task DeleteNotificationHubs(IEnumerable<string> notificationHubs)
         {
             if (notificationHubs == null)
             {
                 return;
             }
-            foreach (var notificationHub in notificationHubs)
-            {
-                DeleteNotificationHub(notificationHub);
-            }
+            await Task.WhenAll(notificationHubs.Select(DeleteNotificationHub).ToArray());
         }
 
         /// <summary>

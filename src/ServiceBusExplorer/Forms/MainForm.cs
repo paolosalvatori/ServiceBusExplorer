@@ -2383,7 +2383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var notificationHubList = new List<string>();
                                 GetNotificationHubList(notificationHubList, notificationHubListNode);
-                                serviceBusHelper.DeleteNotificationHubs(notificationHubList);
+                                await serviceBusHelper.DeleteNotificationHubs(notificationHubList);
                                 GetEntities(EntityType.NotificationHub);
                             }
                         }
@@ -2559,7 +2559,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
+                                await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
                             }
                         }
                         return;
