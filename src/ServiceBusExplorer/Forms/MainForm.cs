@@ -2287,7 +2287,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 GetQueueList(queueList, queueListNode);
                                 GetTopicList(topicList, topicListNode);
                                 await serviceBusHelper.DeleteQueues(queueList);
-                                serviceBusHelper.DeleteTopics(topicList);
+                                await serviceBusHelper.DeleteTopics(topicList);
                                 GetEntities(EntityType.All);
                             }
                         }
@@ -2317,7 +2317,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var topicList = new List<string>();
                                 GetTopicList(topicList, topicListNode);
-                                serviceBusHelper.DeleteTopics(topicList);
+                                await serviceBusHelper.DeleteTopics(topicList);
                                 GetEntities(EntityType.Topic);
                             }
                         }
@@ -2418,7 +2418,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     var topicList = new List<string>();
                                     GetTopicList(topicList, serviceBusTreeView.SelectedNode);
-                                    serviceBusHelper.DeleteTopics(topicList);
+                                    await serviceBusHelper.DeleteTopics(topicList);
                                 }
                             }
                         }

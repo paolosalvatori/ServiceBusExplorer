@@ -2507,23 +2507,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the topics in the list.
         /// <param name="topics">A list of topics to delete.</param>
         /// </summary>
-        public void DeleteTopics(IEnumerable<string> topics)
+        public async Task DeleteTopics(IEnumerable<string> topics)
         {
             if (topics == null)
             {
                 return;
             }
-            foreach (var topic in topics)
-            {
-                DeleteTopic(topic);
-            }
+
+            await Task.WhenAll(topics.Select(DeleteTopic).ToArray());
         }
 
         /// <summary>
         /// Deletes the topic described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public void DeleteTopic(string path)
+        public async Task DeleteTopic(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -2531,7 +2529,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Topic));
             }
@@ -2567,7 +2565,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Renames a topic inside a namespace.
         /// </summary>
         /// <param name="path">The path to an existing topic.</param>
-        /// <param name="path">The new path to the renamed topic.</param>
+        /// <param name="newPath">The new path to the renamed topic.</param>
         /// <returns>Returns a TopicDescription with the new name.</returns>
         public TopicDescription RenameTopic(string path, string newPath)
         {
