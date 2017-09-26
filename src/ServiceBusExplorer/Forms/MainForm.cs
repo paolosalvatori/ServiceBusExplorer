@@ -2332,7 +2332,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var relayServiceList = new List<string>();
                                 GetRelayList(relayServiceList, relayServiceListNode);
-                                serviceBusHelper.DeleteRelays(relayServiceList);
+                                await serviceBusHelper.DeleteRelays(relayServiceList);
                                 GetEntities(EntityType.Relay);
                             }
                         }
@@ -2430,7 +2430,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     var relayServiceList = new List<string>();
                                     GetRelayList(relayServiceList, serviceBusTreeView.SelectedNode);
-                                    serviceBusHelper.DeleteRelays(relayServiceList);
+                                    await serviceBusHelper.DeleteRelays(relayServiceList);
                                 }
                             }
                         }
@@ -2495,7 +2495,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteRelay(relayDescription.Path);
+                                await serviceBusHelper.DeleteRelay(relayDescription.Path);
                             }
                         }
                         return;

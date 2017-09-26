@@ -1140,7 +1140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the relay described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the relay relative to the service namespace base address.</param>
-        public void DeleteRelay(string path)
+        public async Task DeleteRelay(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1148,7 +1148,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteRelayAsync(path).Wait(), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteRelayAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Relay));
             }
@@ -1162,16 +1162,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the relays in the list.
         /// <param name="relayServices">A list of relays to delete.</param>
         /// </summary>
-        public void DeleteRelays(IEnumerable<string> relayServices)
+        public async Task DeleteRelays(IEnumerable<string> relayServices)
         {
             if (relayServices == null)
             {
                 return;
             }
-            foreach (var relayService in relayServices)
-            {
-                DeleteRelay(relayService);
-            }
+            await Task.WhenAll(relayServices.Select(DeleteRelay).ToArray());
         }
 
         /// <summary>
