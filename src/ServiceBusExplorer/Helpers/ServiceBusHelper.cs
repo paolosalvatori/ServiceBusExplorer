@@ -2411,7 +2411,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Renames a queue inside a namespace.
         /// </summary>
         /// <param name="path">The path to an existing queue.</param>
-        /// <param name="path">The new path to the renamed queue.</param>
+        /// <param name="newPath">The new path to the renamed queue.</param>
         /// <returns>Returns a QueueDescription with the new name.</returns>
         public QueueDescription RenameQueue(string path, string newPath)
         {
@@ -2933,13 +2933,11 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 outboundMessage.ReplyToSessionId = replyToSessionId;
             }
-            int ttl;
-            if (!string.IsNullOrWhiteSpace(timeToLive) && int.TryParse(timeToLive, out ttl))
+            if (!string.IsNullOrWhiteSpace(timeToLive) && int.TryParse(timeToLive, out var ttl))
             {
                 outboundMessage.TimeToLive = TimeSpan.FromSeconds(ttl);
             }
-            int ss;
-            if (!string.IsNullOrWhiteSpace(scheduledEnqueueTimeUtc) && int.TryParse(scheduledEnqueueTimeUtc, out ss))
+            if (!string.IsNullOrWhiteSpace(scheduledEnqueueTimeUtc) && int.TryParse(scheduledEnqueueTimeUtc, out var ss))
             {
                 outboundMessage.ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(ss);
             }
@@ -4656,8 +4654,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                 isCompleted = messageDeferProvider.Count == 0;
                                 if (!isCompleted)
                                 {
-                                    long sequenceNumber;
-                                    if (messageDeferProvider.Dequeue(out sequenceNumber))
+                                    if (messageDeferProvider.Dequeue(out var sequenceNumber))
                                     {
                                         stopwatch.Start();
                                         inboundMessage = messageReceiver.Receive(sequenceNumber);

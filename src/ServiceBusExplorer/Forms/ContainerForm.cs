@@ -692,8 +692,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 var count = 1;
                 while (!cancellationTokenSource.IsCancellationRequested)
                 {
-                    string message;
-                    var ok = logCollection.TryTake(out message, 100);
+                    var ok = logCollection.TryTake(out var message, 100);
                     if (!ok)
                     {
                         continue;

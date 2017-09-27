@@ -647,8 +647,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             currentEventData = bindingList[e.RowIndex];
             eventDataPropertyGrid.SelectedObject = currentEventData;
-            BodyType bodyType;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(currentEventData, out bodyType));
+            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(currentEventData, out _));
             var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             eventDataPropertyListView.Items.Clear();
             eventDataPropertyListView.Items.AddRange(listViewItems);
@@ -921,8 +920,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                             cleared = false;
                             continue;
                         }
-                        EventData eventData;
-                        var ok = eventDataCollection.TryTake(out eventData, 100);
+                        var ok = eventDataCollection.TryTake(out var eventData, 100);
                         if (!ok)
                         {
                             continue;
@@ -1154,8 +1152,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                     while (receiveMessageNumber < max && cycles < max)
                     {
                         cycles++;
-                        Tuple<long, long, long> tuple;
-                        var ok = blockingCollection.TryTake(out tuple, 10);
+                        var ok = blockingCollection.TryTake(out var tuple, 10);
                         if (!ok)
                         {
                             continue;

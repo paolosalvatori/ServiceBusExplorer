@@ -627,6 +627,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				if (minimum > maximum)
 					maximum = minimum;
 				if (minimum > value)
+				    // ReSharper disable once RedundantAssignment
 					value = minimum; // TODO: this is off...
 
 				if(autoSize)
@@ -650,6 +651,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 				maximum = value;
 
 				if (maximum < value)
+				    // ReSharper disable once RedundantAssignment
 					value = maximum; // TODO: this is off..
                 if (maximum < minimum)
 					minimum = maximum;
@@ -803,6 +805,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     // Create a Graphics object for the Control.
                     var graphics = CreateGraphics();
 
+			        // ReSharper disable once UnusedVariable
                     var workingRect = Rectangle.Inflate(ClientRectangle, -indentWidth, -indentHeight);
                     float currentUsedPos;
 
@@ -1275,6 +1278,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 					// Get Height of Text Area
 					drawRect = new RectangleF(workingRect.Left, currentUsedPos, workingRect.Width, textAreaSize);
 					drawRect.Inflate(- trackerSize.Width/2, 0);
+				    // ReSharper disable once RedundantAssignment
 					currentUsedPos += textAreaSize;
 
 					DrawTickTextLine(e.Graphics, drawRect, tickFrequency, minimum, maximum, ForeColor, Font, orientation);

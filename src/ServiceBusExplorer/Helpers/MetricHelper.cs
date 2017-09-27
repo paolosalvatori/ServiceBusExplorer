@@ -438,8 +438,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                             {
                                 if (stream != null)
                                 {
-                                    string metric, entity;
-                                    GetMetricAndEntityFromUri(uri, out metric, out entity);
+                                    GetMetricAndEntityFromUri(uri, out var metric, out var entity);
                                     
                                     var array = JsonSerializerHelper.Deserialize<MetricValue[]>(stream);
                                     var length = array != null ? array.Length : 0;
@@ -513,8 +512,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         private static string CreateExceptionMessage(Uri uri, Exception ex)
         {
-            string metric, entity;
-            GetMetricAndEntityFromUri(uri, out metric, out entity);
+            GetMetricAndEntityFromUri(uri, out var metric, out var entity);
             return string.Format(ExceptionFormat,
                                  metric, 
                                  entity,
