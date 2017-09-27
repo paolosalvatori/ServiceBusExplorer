@@ -817,7 +817,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         public bool AutoSize
         {
             get => _AutoSize;
-            set { _AutoSize = true; OnPropertyChanged(); }
+            set { _AutoSize = value; _AutoSize = true; OnPropertyChanged(); }
         }
         [DefaultValue(ContentAlignment.MiddleLeft)]
         public ContentAlignment CheckAlign

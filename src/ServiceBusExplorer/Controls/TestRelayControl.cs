@@ -263,9 +263,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     writeToLog(MessageCannotBeNull);
                     return false;
                 }
-                int temp;
 
-                if (!int.TryParse(txtMessageCount.Text, out temp) || temp < 0)
+                if (!int.TryParse(txtMessageCount.Text, out var temp) || temp < 0)
                 {
                     writeToLog(MessageCountMustBeANumber);
                     return false;

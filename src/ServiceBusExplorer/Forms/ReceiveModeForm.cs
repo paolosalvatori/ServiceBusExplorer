@@ -78,8 +78,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void btnOk_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            int count;
-            if (int.TryParse(txtMessageCount.Text, out count))
+            if (int.TryParse(txtMessageCount.Text, out var count))
             {
                 Count = count;
             }

@@ -625,8 +625,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             brokeredMessage = bindingList[e.RowIndex];
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
-            BodyType bodyType;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
+            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _));
             var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             messagePropertyListView.Items.Clear();
             messagePropertyListView.Items.AddRange(listViewItems);
@@ -754,9 +753,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
                 var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
                 {
-                    BodyType bodyType;
                     var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out bodyType);
+                    serviceBusHelper.GetMessageText(message, out var bodyType);
                     if (bodyType == BodyType.Wcf)
                     {
                         var wcfUri = serviceBusHelper.IsCloudNamespace ?
@@ -764,7 +762,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                          new UriBuilder
                                          {
                                              Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = string.Format("{0}/{1}", serviceBusHelper.NamespaceUri.AbsolutePath, messageSender.Path),
+                                             Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
                                              Scheme = "sb"
                                          }.Uri;
                         return serviceBusHelper.CreateMessageForWcfReceiver(message,
@@ -1237,8 +1235,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     try
                     {
-                        BrokeredMessage message;
-                        var ok = messageCollection.TryTake(out message, 100);
+                        var ok = messageCollection.TryTake(out var message, 100);
                         if (!ok)
                         {
                             continue;
@@ -1386,8 +1383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     while (receiveMessageNumber < max && cycles < max)
                     {
                         cycles++;
-                        Tuple<long, long, long> tuple;
-                        var ok = blockingCollection.TryTake(out tuple, 10);
+                        var ok = blockingCollection.TryTake(out var tuple, 10);
                         if (!ok)
                         {
                             continue;
@@ -1775,8 +1771,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }

@@ -382,13 +382,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         var messageCountFilterOperator = matches[j].Groups[MessageCountFilterOperator].Value;
                         var messageCountFilterValue = matches[j].Groups[MessageCountFilterValue].Value;
-                        int value;
                         if (!string.IsNullOrWhiteSpace(messageCountFilterOperator) &&
                             !string.IsNullOrWhiteSpace(messageCountFilterValue) &&
                             operators.Any(
                                 op =>
                                 string.Compare(op, messageCountFilterOperator, StringComparison.OrdinalIgnoreCase) == 0) &&
-                            Int32.TryParse(messageCountFilterValue, out value))
+                            Int32.TryParse(messageCountFilterValue, out _))
                         {
                             cboMessageCountOperator.Text = messageCountFilterOperator;
                             txtMessageCount.Text = messageCountFilterValue;

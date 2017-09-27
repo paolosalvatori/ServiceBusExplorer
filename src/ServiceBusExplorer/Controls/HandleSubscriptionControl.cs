@@ -1593,8 +1593,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
-                        int value;
-                        if (int.TryParse(txtMaxDeliveryCount.Text, out value))
+                        if (int.TryParse(txtMaxDeliveryCount.Text, out var value))
                         {
                             subscriptionDescription.MaxDeliveryCount = value;
                         }
@@ -1848,8 +1847,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
-                        int value;
-                        if (int.TryParse(txtMaxDeliveryCount.Text, out value))
+                        if (int.TryParse(txtMaxDeliveryCount.Text, out var value))
                         {
                             subscriptionWrapper.SubscriptionDescription.MaxDeliveryCount = value;
                         }
@@ -2419,8 +2417,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 brokeredMessage = bindingList[e.RowIndex];
                 messagePropertyGrid.SelectedObject = brokeredMessage;
-                BodyType bodyType;
-                txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType));
+                txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _));
                 var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 messagePropertyListView.Items.Clear();
                 messagePropertyListView.Items.AddRange(listViewItems);
@@ -2513,8 +2510,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 deadletterMessage = bindingList[e.RowIndex];
                 deadletterPropertyGrid.SelectedObject = deadletterMessage;
-                BodyType bodyType;
-                txtDeadletterText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out bodyType));
+                txtDeadletterText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out _));
                 var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 deadletterPropertyListView.Items.Clear();
                 deadletterPropertyListView.Items.AddRange(listViewItems);
@@ -3192,8 +3188,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }
@@ -3273,8 +3268,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    BodyType bodyType;
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out bodyType));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }

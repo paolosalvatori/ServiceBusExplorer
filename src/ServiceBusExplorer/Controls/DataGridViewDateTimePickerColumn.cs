@@ -66,8 +66,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             // Set the value of the editing control to the current cell value. 
             base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
-            var control = DataGridView.EditingControl as CalendarEditingControl;
-            if (control == null)
+            if (!(DataGridView.EditingControl is CalendarEditingControl control))
             {
                 return;
             }
@@ -81,11 +80,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             // ReSharper restore LocalizableElement
             // Use the default row value when Value property is null. 
-            var s = Value as string;
-            if (s != null)
+            if (Value is string s)
             {
-                DateTime dateTime;
-                if (DateTime.TryParse(s, out dateTime))
+                if (DateTime.TryParse(s, out var dateTime))
                 {
                     control.Value = dateTime;
                 }
@@ -98,33 +95,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             control.Value = Value == null || Value is DBNull ? DateTime.Now : (DateTime)Value;
         }
 
-        public override Type EditType
-        {
-            get
-            {
-                // Return the type of the editing control that CalendarCell uses. 
-                return typeof(CalendarEditingControl);
-            }
-        }
+        public override Type EditType => typeof(CalendarEditingControl);
 
-        public override Type ValueType
-        {
-            get
-            {
-                // Return the type of the value that CalendarCell contains. 
+        public override Type ValueType => typeof(DateTime);
 
-                return typeof(DateTime);
-            }
-        }
-
-        public override object DefaultNewRowValue
-        {
-            get
-            {
-                // Use null as default value
-                return null;
-            }
-        }
+        public override object DefaultNewRowValue => null;
     }
 
     class CalendarEditingControl : DateTimePicker, IDataGridViewEditingControl
