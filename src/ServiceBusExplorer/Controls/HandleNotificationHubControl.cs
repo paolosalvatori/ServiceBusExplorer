@@ -2200,7 +2200,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             hiddenPages.Add(page);
         }
 
-        private void btnCreateDelete_Click(object sender, EventArgs e)
+        private async void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2214,7 +2214,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
-                            serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
+                            await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
                         }
                     }
                 }

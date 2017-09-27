@@ -2262,7 +2262,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void deleteEntity_Click(object sender, EventArgs e)
+        private async void deleteEntity_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2286,8 +2286,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 var topicList = new List<string>();
                                 GetQueueList(queueList, queueListNode);
                                 GetTopicList(topicList, topicListNode);
-                                serviceBusHelper.DeleteQueues(queueList);
-                                serviceBusHelper.DeleteTopics(topicList);
+                                await serviceBusHelper.DeleteQueues(queueList);
+                                await serviceBusHelper.DeleteTopics(topicList);
                                 GetEntities(EntityType.All);
                             }
                         }
@@ -2302,7 +2302,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var queueList = new List<string>();
                                 GetQueueList(queueList, queueListNode);
-                                serviceBusHelper.DeleteQueues(queueList);
+                                await serviceBusHelper.DeleteQueues(queueList);
                                 GetEntities(EntityType.Queue);
                             }
                         }
@@ -2317,7 +2317,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var topicList = new List<string>();
                                 GetTopicList(topicList, topicListNode);
-                                serviceBusHelper.DeleteTopics(topicList);
+                                await serviceBusHelper.DeleteTopics(topicList);
                                 GetEntities(EntityType.Topic);
                             }
                         }
@@ -2332,7 +2332,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var relayServiceList = new List<string>();
                                 GetRelayList(relayServiceList, relayServiceListNode);
-                                serviceBusHelper.DeleteRelays(relayServiceList);
+                                await serviceBusHelper.DeleteRelays(relayServiceList);
                                 GetEntities(EntityType.Relay);
                             }
                         }
@@ -2383,7 +2383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var notificationHubList = new List<string>();
                                 GetNotificationHubList(notificationHubList, notificationHubListNode);
-                                serviceBusHelper.DeleteNotificationHubs(notificationHubList);
+                                await serviceBusHelper.DeleteNotificationHubs(notificationHubList);
                                 GetEntities(EntityType.NotificationHub);
                             }
                         }
@@ -2406,7 +2406,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     var queueList = new List<string>();
                                     GetQueueList(queueList, serviceBusTreeView.SelectedNode);
-                                    serviceBusHelper.DeleteQueues(queueList);
+                                    await serviceBusHelper.DeleteQueues(queueList);
                                 }
                             }
                         }
@@ -2418,7 +2418,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     var topicList = new List<string>();
                                     GetTopicList(topicList, serviceBusTreeView.SelectedNode);
-                                    serviceBusHelper.DeleteTopics(topicList);
+                                    await serviceBusHelper.DeleteTopics(topicList);
                                 }
                             }
                         }
@@ -2430,7 +2430,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     var relayServiceList = new List<string>();
                                     GetRelayList(relayServiceList, serviceBusTreeView.SelectedNode);
-                                    serviceBusHelper.DeleteRelays(relayServiceList);
+                                    await serviceBusHelper.DeleteRelays(relayServiceList);
                                 }
                             }
                         }
@@ -2444,7 +2444,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteQueue(queueDescription);
+                                await serviceBusHelper.DeleteQueue(queueDescription);
                             }
                         }
                         return;
@@ -2482,7 +2482,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteTopic(topicDescription);
+                                await serviceBusHelper.DeleteTopic(topicDescription);
                             }
                         }
                         return;
@@ -2495,7 +2495,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteRelay(relayDescription.Path);
+                                await serviceBusHelper.DeleteRelay(relayDescription.Path);
                             }
                         }
                         return;
@@ -2559,7 +2559,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
+                                await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
                             }
                         }
                         return;

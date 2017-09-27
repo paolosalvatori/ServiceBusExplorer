@@ -2221,7 +2221,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void btnCreateDelete_Click(object sender, EventArgs e)
+        private async void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2235,7 +2235,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
-                            serviceBusHelper.DeleteQueue(queueDescription);
+                            await serviceBusHelper.DeleteQueue(queueDescription);
                         }
                     }
                 }
