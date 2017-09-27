@@ -1168,7 +1168,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 return;
             }
-            await Task.WhenAll(relayServices.Select(DeleteRelay).ToArray());
+            await Task.WhenAll(relayServices.Select(DeleteRelay));
         }
 
         /// <summary>
@@ -2360,7 +2360,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 return;
             }
 
-            await Task.WhenAll(queues.Select(DeleteQueue).ToArray());
+            await Task.WhenAll(queues.Select(DeleteQueue));
         }
 
         /// <summary>
@@ -2508,7 +2508,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 return;
             }
 
-            await Task.WhenAll(topics.Select(DeleteTopic).ToArray());
+            await Task.WhenAll(topics.Select(DeleteTopic));
         }
 
         /// <summary>
@@ -2659,16 +2659,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Removes the subscriptions contained in the list passed as a argument.
         /// </summary>
         /// <param name="subscriptionDescriptions">The list containing subscriptions to remove.</param>
-        public void DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions)
+        public Task DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions)
         {
             if (subscriptionDescriptions == null)
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            foreach (var subscriptionDescription in subscriptionDescriptions)
-            {
-                DeleteSubscription(subscriptionDescription);
-            }
+
+            return Task.WhenAll(subscriptionDescriptions.Select(DeleteSubscription));
         }
 
         /// <summary>
@@ -2678,6 +2676,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="name">Name of the subscription.</param>
         public void DeleteSubscription(string topicPath, string name)
         {
+            // TODO: remove, not used
             if (string.IsNullOrWhiteSpace(topicPath))
             {
                 throw new ArgumentException(PathCannotBeNull);
@@ -2695,13 +2694,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Removes the subscription passed as a argument.
         /// </summary>
         /// <param name="subscriptionDescription">The subscription to remove.</param>
-        public void DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        public async Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
         {
             if (subscriptionDescription == null)
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
+            await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, subscriptionDescription.Name, subscriptionDescription.TopicPath));
             OnDelete?.Invoke(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
         }

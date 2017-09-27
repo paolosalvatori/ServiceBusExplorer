@@ -2468,7 +2468,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
-                                    serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
+                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
                                 }
                             }
                         }
@@ -2579,7 +2579,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
-                                    serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
+                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
                                 }
                             }
                         }
@@ -2596,7 +2596,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
-                                    serviceBusHelper.DeleteSubscription(wrapper.SubscriptionDescription);
+                                    await serviceBusHelper.DeleteSubscription(wrapper.SubscriptionDescription);
                                 }
                             }
                         }
