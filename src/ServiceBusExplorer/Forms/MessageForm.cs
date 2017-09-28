@@ -102,8 +102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
-            BodyType bodyType;
-            txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType)));
+            txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _)));
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
@@ -296,8 +295,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    BodyType bodyType;
-                    if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
+                    if (!Enum.TryParse<BodyType>(cboBodyType.Text, true, out var bodyType))
                     {
                         bodyType = BodyType.Stream;
                     }

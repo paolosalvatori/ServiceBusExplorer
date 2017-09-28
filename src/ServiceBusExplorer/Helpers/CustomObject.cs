@@ -62,8 +62,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             get
             {
-                object val;
-                valueDictionary.TryGetValue(name, out val);
+                valueDictionary.TryGetValue(name, out var val);
                 return val;
             }
             set

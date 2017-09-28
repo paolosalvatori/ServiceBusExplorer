@@ -431,9 +431,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     writeToLog(MessageCannotBeNull);
                     return false;
                 }
-                int temp;
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
-                    !int.TryParse(txtReceiveTimeout.Text, out temp) ||
+                    !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
                 {
                     writeToLog(ReceiveTimeoutCannotBeNull);
@@ -630,8 +629,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             long receiveTotalTime = 0;
                             while (ok && sendMessageNumber < max && receiveMessageNumber < max)
                             {
-                                Tuple<long, long, DirectionType> tuple;
-                                ok = blockingCollection.TryTake(out tuple, 10);
+                                ok = blockingCollection.TryTake(out var tuple, 10);
                                 if (ok)
                                 {
                                     if (tuple.Item3 == DirectionType.Send)
@@ -735,8 +733,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
 
                         // Get Body Type
-                        BodyType bodyType;
-                        if (!Enum.TryParse(cboBodyType.Text, true, out bodyType))
+                        if (!Enum.TryParse<BodyType>(cboBodyType.Text, true, out var bodyType))
                         {
                             bodyType = BodyType.Stream;
                         }

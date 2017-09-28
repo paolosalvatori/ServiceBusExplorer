@@ -1140,7 +1140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the relay described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the relay relative to the service namespace base address.</param>
-        public void DeleteRelay(string path)
+        public async Task DeleteRelay(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1148,7 +1148,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteRelayAsync(path).Wait(), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteRelayAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Relay));
             }
@@ -1162,16 +1162,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the relays in the list.
         /// <param name="relayServices">A list of relays to delete.</param>
         /// </summary>
-        public void DeleteRelays(IEnumerable<string> relayServices)
+        public async Task DeleteRelays(IEnumerable<string> relayServices)
         {
             if (relayServices == null)
             {
                 return;
             }
-            foreach (var relayService in relayServices)
-            {
-                DeleteRelay(relayService);
-            }
+            await Task.WhenAll(relayServices.Select(DeleteRelay));
         }
 
         /// <summary>
@@ -1728,7 +1725,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the notification hub described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
-        public void DeleteNotificationHub(string path)
+        public async Task DeleteNotificationHub(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1736,7 +1733,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
             }
@@ -1771,7 +1768,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the notification hub described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
-        public void DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
+        public async Task DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
         {
             if (string.IsNullOrWhiteSpace(notificationHubDescription?.Path))
             {
@@ -1779,7 +1776,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => notificationHubNamespaceManager.DeleteNotificationHub(notificationHubDescription.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(notificationHubDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
             }
@@ -1793,16 +1790,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the notification hubs in the list.
         /// <param name="notificationHubs">A list of notification hubs to delete.</param>
         /// </summary>
-        public void DeleteNotificationHubs(IEnumerable<string> notificationHubs)
+        public async Task DeleteNotificationHubs(IEnumerable<string> notificationHubs)
         {
             if (notificationHubs == null)
             {
                 return;
             }
-            foreach (var notificationHub in notificationHubs)
-            {
-                DeleteNotificationHub(notificationHub);
-            }
+            await Task.WhenAll(notificationHubs.Select(DeleteNotificationHub).ToArray());
         }
 
         /// <summary>
@@ -2359,23 +2353,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the queues in the list.
         /// <param name="queues">A list of queues to delete.</param>
         /// </summary>
-        public void DeleteQueues(IEnumerable<string> queues)
+        public async Task DeleteQueues(IEnumerable<string> queues)
         {
             if (queues == null)
             {
                 return;
             }
-            foreach (var queue in queues)
-            {
-                DeleteQueue(queue);
-            }
+
+            await Task.WhenAll(queues.Select(DeleteQueue));
         }
 
         /// <summary>
         /// Deletes the queue described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        public void DeleteQueue(string path)
+        public async Task DeleteQueue(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -2383,7 +2375,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteQueueAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Queue));
             }
@@ -2397,7 +2389,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the queue passed as a argument.
         /// </summary>
         /// <param name="queueDescription">The queue to delete.</param>
-        public void DeleteQueue(QueueDescription queueDescription)
+        public async Task DeleteQueue(QueueDescription queueDescription)
         {
             if (queueDescription == null)
             {
@@ -2405,7 +2397,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteQueue(queueDescription.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteQueueAsync(queueDescription.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
             }
@@ -2419,7 +2411,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Renames a queue inside a namespace.
         /// </summary>
         /// <param name="path">The path to an existing queue.</param>
-        /// <param name="path">The new path to the renamed queue.</param>
+        /// <param name="newPath">The new path to the renamed queue.</param>
         /// <returns>Returns a QueueDescription with the new name.</returns>
         public QueueDescription RenameQueue(string path, string newPath)
         {
@@ -2509,23 +2501,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes all the topics in the list.
         /// <param name="topics">A list of topics to delete.</param>
         /// </summary>
-        public void DeleteTopics(IEnumerable<string> topics)
+        public async Task DeleteTopics(IEnumerable<string> topics)
         {
             if (topics == null)
             {
                 return;
             }
-            foreach (var topic in topics)
-            {
-                DeleteTopic(topic);
-            }
+
+            await Task.WhenAll(topics.Select(DeleteTopic));
         }
 
         /// <summary>
         /// Deletes the topic described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public void DeleteTopic(string path)
+        public async Task DeleteTopic(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -2533,7 +2523,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Topic));
             }
@@ -2547,7 +2537,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the topic passed as a argument.
         /// </summary>
         /// <param name="topic">The topic to delete.</param>
-        public void DeleteTopic(TopicDescription topic)
+        public async Task DeleteTopic(TopicDescription topic)
         {
             if (topic == null)
             {
@@ -2555,7 +2545,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             }
             if (namespaceManager != null)
             {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteTopic(topic.Path), writeToLog);
+                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(topic.Path), writeToLog);
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
                 OnDelete?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
             }
@@ -2569,7 +2559,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Renames a topic inside a namespace.
         /// </summary>
         /// <param name="path">The path to an existing topic.</param>
-        /// <param name="path">The new path to the renamed topic.</param>
+        /// <param name="newPath">The new path to the renamed topic.</param>
         /// <returns>Returns a TopicDescription with the new name.</returns>
         public TopicDescription RenameTopic(string path, string newPath)
         {
@@ -2669,16 +2659,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Removes the subscriptions contained in the list passed as a argument.
         /// </summary>
         /// <param name="subscriptionDescriptions">The list containing subscriptions to remove.</param>
-        public void DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions)
+        public Task DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions)
         {
             if (subscriptionDescriptions == null)
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            foreach (var subscriptionDescription in subscriptionDescriptions)
-            {
-                DeleteSubscription(subscriptionDescription);
-            }
+
+            return Task.WhenAll(subscriptionDescriptions.Select(DeleteSubscription));
         }
 
         /// <summary>
@@ -2688,6 +2676,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="name">Name of the subscription.</param>
         public void DeleteSubscription(string topicPath, string name)
         {
+            // TODO: remove, not used
             if (string.IsNullOrWhiteSpace(topicPath))
             {
                 throw new ArgumentException(PathCannotBeNull);
@@ -2705,13 +2694,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Removes the subscription passed as a argument.
         /// </summary>
         /// <param name="subscriptionDescription">The subscription to remove.</param>
-        public void DeleteSubscription(SubscriptionDescription subscriptionDescription)
+        public async Task DeleteSubscription(SubscriptionDescription subscriptionDescription)
         {
             if (subscriptionDescription == null)
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            RetryHelper.RetryAction(() => namespaceManager.DeleteSubscription(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
+            await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name), writeToLog);
             WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, subscriptionDescription.Name, subscriptionDescription.TopicPath));
             OnDelete?.Invoke(new ServiceBusHelperEventArgs(subscriptionDescription, EntityType.Subscription));
         }
@@ -2944,13 +2933,11 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 outboundMessage.ReplyToSessionId = replyToSessionId;
             }
-            int ttl;
-            if (!string.IsNullOrWhiteSpace(timeToLive) && int.TryParse(timeToLive, out ttl))
+            if (!string.IsNullOrWhiteSpace(timeToLive) && int.TryParse(timeToLive, out var ttl))
             {
                 outboundMessage.TimeToLive = TimeSpan.FromSeconds(ttl);
             }
-            int ss;
-            if (!string.IsNullOrWhiteSpace(scheduledEnqueueTimeUtc) && int.TryParse(scheduledEnqueueTimeUtc, out ss))
+            if (!string.IsNullOrWhiteSpace(scheduledEnqueueTimeUtc) && int.TryParse(scheduledEnqueueTimeUtc, out var ss))
             {
                 outboundMessage.ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(ss);
             }
@@ -4667,8 +4654,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                 isCompleted = messageDeferProvider.Count == 0;
                                 if (!isCompleted)
                                 {
-                                    long sequenceNumber;
-                                    if (messageDeferProvider.Dequeue(out sequenceNumber))
+                                    if (messageDeferProvider.Dequeue(out var sequenceNumber))
                                     {
                                         stopwatch.Start();
                                         inboundMessage = messageReceiver.Receive(sequenceNumber);

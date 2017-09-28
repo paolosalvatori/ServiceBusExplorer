@@ -402,8 +402,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             if (property.PropertyType == typeof(bool))
             {
-                bool ok;
-                if (bool.TryParse(xmlReader.ReadElementContentAsString().ToLower(), out ok))
+                if (bool.TryParse(xmlReader.ReadElementContentAsString().ToLower(), out var ok))
                 {
                     propertyValue[name] = ok;
                 }
@@ -421,8 +420,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             if (property.PropertyType == typeof(TimeSpan))
             {
-                TimeSpan timeSpan;
-                if (TimeSpan.TryParse(xmlReader.ReadElementContentAsString(), out timeSpan))
+                if (TimeSpan.TryParse(xmlReader.ReadElementContentAsString(), out var timeSpan))
                 {
                     propertyValue[name] = timeSpan;
                 }

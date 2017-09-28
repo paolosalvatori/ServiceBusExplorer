@@ -332,8 +332,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     writeToLog(MessageCannotBeNull);
                     return false;
                 }
-                int temp;
-                if (!int.TryParse(txtMessageCount.Text, out temp) || temp < 0)
+                if (!int.TryParse(txtMessageCount.Text, out var temp) || temp < 0)
                 {
                     writeToLog(MessageCountMustBeANumber);
                     return false;
@@ -440,8 +439,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             long sendTotalTime = 0;
                             while (ok && sendMessageNumber < max)
                             {
-                                Tuple<long, long, DirectionType> tuple;
-                                ok = blockingCollection.TryTake(out tuple, 10);
+                                ok = blockingCollection.TryTake(out var tuple, 10);
                                 if (ok)
                                 {
                                     sendMessageNumber += tuple.Item1;
