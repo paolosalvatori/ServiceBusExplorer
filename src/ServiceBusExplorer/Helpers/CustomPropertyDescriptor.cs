@@ -265,6 +265,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     attributes.RemoveAll(a => a is DefaultValueAttribute);
                 }
+                // ReSharper disable once RedundantAssignment
                 attr = new DefaultValueAttribute(value); // TODO: what's this doing?
             }
         }
@@ -515,11 +516,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             if (propertyDescriptor != null)
             {
+                // ReSharper disable once RedundantAssignment
                 tc = propertyDescriptor.Converter;
             }
             else
             {
                 //pdc = base.GetChildProperties(instance, filter);// this gives us a readonly collection, no good    
+                // ReSharper disable once RedundantAssignment
                 tc = TypeDescriptor.GetConverter(instance, true);
             }
             if (pdc == null || pdc.Count == 0)
@@ -564,6 +567,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         protected override void OnValueChanged(object component, EventArgs e)
         {
+            // ReSharper disable once UnusedVariable
             var md = component as MemberDescriptor;
             base.OnValueChanged(component, e);
         }

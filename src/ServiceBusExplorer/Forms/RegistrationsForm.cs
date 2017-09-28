@@ -94,8 +94,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             else
             {
                 TagName = txtTag.Text;
-                int temp;
-                if (int.TryParse(txtTop.Text, out temp))
+                if (int.TryParse(txtTop.Text, out var temp))
                 {
                     TopCount = temp;
                 }

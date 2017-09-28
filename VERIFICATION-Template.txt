@@ -1,0 +1,17 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+The installer have been downloaded from their official download link listed on <https://github.com/paolosalvatori/ServiceBusExplorer/releases>
+and can be verified like this:
+
+1. Download the following installers:
+  64-Bit: <https://github.com/paolosalvatori/ServiceBusExplorer/releases/download/%VERSION%/ServiceBusExplorer-%VERSION%.zip>
+2. You can use one of the following methods to obtain the checksum
+  - Use powershell function 'Get-Filehash'
+  - Use chocolatey utility 'checksum.exe'
+
+  checksum type:
+  checksum64: %CHECKSUM%
+
+File 'LICENSE.txt' is obtained from <https://github.com/paolosalvatori/ServiceBusExplorer/blob/master/LICENSE.txt>

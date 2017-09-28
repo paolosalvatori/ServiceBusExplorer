@@ -192,6 +192,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     }
                 }
                 var tc = TypeDescriptor.GetConverter(propType);
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (tc != null)
                 {
                     object convertedValue = null;
@@ -296,6 +297,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         }
                     }
                     var tc = TypeDescriptor.GetConverter(propType);
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (tc != null)
                     {
                         object convertedValue = null;

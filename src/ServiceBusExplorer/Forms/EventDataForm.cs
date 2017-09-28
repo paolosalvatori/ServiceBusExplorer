@@ -81,8 +81,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             InitializeComponent();
 
             messagePropertyGrid.SelectedObject = eventData;
-            BodyType bodyType;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(eventData, out bodyType));
+            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(eventData, out _));
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(eventData.Properties.Select(p => new MessagePropertyInfo(p.Key, 

@@ -379,8 +379,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ConnectivityMode connectivityMode;
-            if (Enum.TryParse(cboConnectivityMode.Text, true, out connectivityMode))
+            if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
             {
                 ServiceBusHelper.ConnectivityMode = connectivityMode;
             }

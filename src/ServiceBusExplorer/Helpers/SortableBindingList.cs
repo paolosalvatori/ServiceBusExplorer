@@ -78,8 +78,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var itemsList = (List<T>)Items;
 
             var propertyType = property.PropertyType;
-            PropertyComparer<T> comparer;
-            if (!comparers.TryGetValue(propertyType, out comparer))
+            if (!comparers.TryGetValue(propertyType, out var comparer))
             {
                 comparer = new PropertyComparer<T>(property, direction);
                 comparers.Add(propertyType, comparer);

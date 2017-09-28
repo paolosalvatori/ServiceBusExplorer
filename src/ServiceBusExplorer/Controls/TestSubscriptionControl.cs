@@ -197,9 +197,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                int temp;
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
-                    !int.TryParse(txtReceiveTimeout.Text, out temp) ||
+                    !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
                 {
                     writeToLog(ReceiveTimeoutCannotBeNull);
@@ -329,8 +328,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             long receiveTotalTime = 0;
                             while (ok && receiveMessageNumber < max)
                             {
-                                Tuple<long, long, DirectionType> tuple;
-                                ok = blockingCollection.TryTake(out tuple, 10);
+                                ok = blockingCollection.TryTake(out var tuple, 10);
                                 if (ok)
                                 {
                                     receiveMessageNumber += tuple.Item1;

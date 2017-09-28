@@ -272,8 +272,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     cboTransportType.SelectedItem = TransportType.NetMessaging;
                     return;
                 }
-                TransportType transportType;
-                if (Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType))
+                if (Enum.TryParse<TransportType>(parameters[ConnectionStringTransportType], true, out var transportType))
                 {
                     cboTransportType.SelectedItem = transportType;
                 }

@@ -14,6 +14,8 @@ The Service Bus Explorer allows users to connect to a Service Bus namespace and 
 chocolatey install ServiceBusExplorer
 ```
 
+More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
+
 ## Using GitHub
 ```
 curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4

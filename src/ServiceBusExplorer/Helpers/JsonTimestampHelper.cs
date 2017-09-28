@@ -52,8 +52,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 throw new ArgumentException("The timestamp argument cannot be null or empty.");
             }
-            double value;
-            if (!double.TryParse(timestamp, out value))
+            if (!double.TryParse(timestamp, out var value))
             {
                 throw new ArgumentException("The timestamp argument must be a number.");
             }
