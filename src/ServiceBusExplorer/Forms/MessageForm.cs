@@ -344,7 +344,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             
                             outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
                                                                                            0,
-                                                                                           false,
+                                                                                           chkNewMessageId.Checked,
                                                                                            false,
                                                                                            false,
                                                                                            bodyType,
