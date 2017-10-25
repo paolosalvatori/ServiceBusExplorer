@@ -432,42 +432,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-            try
-            {
+            try {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
+                int count = 0;
                 stopwatch.Start();
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
-                var count = 0;
-                while (true)
-                {
-                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                    // ReSharper disable once PossibleMultipleEnumeration
-                    if (messages.Any())
-                    {
-                        // ReSharper disable once PossibleMultipleEnumeration
-                        count += messages.Count();
-                    }
-                    else
-                    {
-                        if (queueDescription.EnablePartitioning)
-                        {
-                            while (true)
-                            {
-                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                                if (message != null)
-                                {
-                                    count++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
+                if (queueDescription.RequiresSession) {
+                    count = await PurgeSessionedQueue(messagingFactory);
+                }
+                else {
+                    count = await PurgeNonSessionedQueue(messagingFactory);
                 }
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
@@ -478,6 +453,67 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 Application.UseWaitCursor = false;
             }
+        }
+
+        private async Task<int> PurgeSessionedQueue(MessagingFactory messagingFactory) {
+            var count = 0;
+
+            var client = messagingFactory.CreateQueueClient(queueDescription.Path);
+
+            try {
+                while (true) {
+                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(100));
+
+                    while (true) {
+                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                        if (messages.Any()) {
+                            var locktokens = messages.Select(m => m.LockToken).ToArray();
+                            count += locktokens.Length;
+                            await session.CompleteBatchAsync(locktokens);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+
+                    session.Close();
+                }
+            }
+            catch ( TimeoutException ) {
+                // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
+            }
+
+            return count;
+        }
+
+        private async Task<int> PurgeNonSessionedQueue(MessagingFactory messagingFactory) {
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
+            var count = 0;
+
+            while (true) {
+                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (messages.Any()) {
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    count += messages.Count();
+                }
+                else {
+                    if (queueDescription.EnablePartitioning) {
+                        while (true) {
+                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
+                            if (message != null) {
+                                count++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            return count;
         }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
