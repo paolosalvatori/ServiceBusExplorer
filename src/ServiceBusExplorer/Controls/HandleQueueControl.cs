@@ -473,10 +473,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
                                                     .ConfigureAwait(false);
-                        if (0 < messages.Count())
+                        var messagesCount = messages.Count();
+                        if (0 < messagesCount)
                         {
-                            var locktokens = messages.Select(m => m.LockToken).ToArray();
-                            totalMessagesPurged += locktokens.Length;
+                            totalMessagesPurged += messagesCount;
+                            var locktokens = messages.Select(m => m.LockToken);
                             await session.CompleteBatchAsync(locktokens)
                                          .ConfigureAwait(false);
                         }
