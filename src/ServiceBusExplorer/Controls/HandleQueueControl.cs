@@ -439,10 +439,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 stopwatch.Start();
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
                 if (queueDescription.RequiresSession) {
-                    count = await PurgeSessionedQueue(messagingFactory);
+                    count = await PurgeSessionedQueue(messagingFactory).ConfigureAwait(false);
                 }
                 else {
-                    count = await PurgeNonSessionedQueue(messagingFactory);
+                    count = await PurgeNonSessionedQueue(messagingFactory).ConfigureAwait(false);
                 }
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
@@ -462,55 +462,68 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             try {
                 while (true) {
-                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(100));
+                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(100))
+                                              .ConfigureAwait(false);
 
                     while (true) {
-                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
+                                                    .ConfigureAwait(false);
                         if (messages.Any()) {
                             var locktokens = messages.Select(m => m.LockToken).ToArray();
                             count += locktokens.Length;
-                            await session.CompleteBatchAsync(locktokens);
+                            await session.CompleteBatchAsync(locktokens)
+                                         .ConfigureAwait(false);
                         }
                         else {
                             break;
                         }
                     }
 
-                    session.Close();
+                    await session.CloseAsync().ConfigureAwait(false);
                 }
             }
             catch ( TimeoutException ) {
                 // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
+            }
+            finally {
+                await client.CloseAsync().ConfigureAwait(false);
             }
 
             return count;
         }
 
         private async Task<int> PurgeNonSessionedQueue(MessagingFactory messagingFactory) {
-            var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
+
             var count = 0;
 
-            while (true) {
-                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                // ReSharper disable once PossibleMultipleEnumeration
-                if (messages.Any()) {
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
+
+            try {
+                while (true) {
+                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
                     // ReSharper disable once PossibleMultipleEnumeration
-                    count += messages.Count();
-                }
-                else {
-                    if (queueDescription.EnablePartitioning) {
-                        while (true) {
-                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                            if (message != null) {
-                                count++;
-                            }
-                            else {
-                                break;
+                    if (messages.Any()) {
+                        // ReSharper disable once PossibleMultipleEnumeration
+                        count += messages.Count();
+                    }
+                    else {
+                        if (queueDescription.EnablePartitioning) {
+                            while (true) {
+                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+                                if (message != null) {
+                                    count++;
+                                }
+                                else {
+                                    break;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
+            }
+            finally {
+                await receiver.CloseAsync().ConfigureAwait(false);
             }
 
             return count;

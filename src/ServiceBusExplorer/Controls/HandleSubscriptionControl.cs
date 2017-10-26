@@ -426,10 +426,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
                 if (subscriptionWrapper.SubscriptionDescription.RequiresSession) {
-                    count = await PurgeSessionedTopic(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, messagingFactory);
+                    count = await PurgeSessionedTopic(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, messagingFactory).ConfigureAwait(false);
                 }
                 else {
-                    count = await PurgeNonSessionedTopic(entityPath, messagingFactory);
+                    count = await PurgeNonSessionedTopic(entityPath, messagingFactory).ConfigureAwait(false);
                 }
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
@@ -450,25 +450,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             try {
                 while (true) {
                     // use a larger timeout because sometimes the session was just not received
-                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(250));
+                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(250))
+                                              .ConfigureAwait(false);
 
                     while (true) {
-                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
+                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
+                                                    .ConfigureAwait(false);
                         if (messages.Any()) {
                             var locktokens = messages.Select(m => m.LockToken).ToArray();
                             count += locktokens.Length;
-                            await session.CompleteBatchAsync(locktokens);
+                            await session.CompleteBatchAsync(locktokens)
+                                         .ConfigureAwait(false);
                         }
                         else {
                             break;
                         }
                     }
 
-                    session.Close();
+                    await session.CloseAsync().ConfigureAwait(false);
                 }
             }
             catch (TimeoutException) {
                 // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
+            }
+            finally {
+                await client.CloseAsync().ConfigureAwait(false);
             }
 
             return count;
@@ -478,29 +484,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             int count = 0;
 
-            var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
+            var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
 
-            while (true) {
-                var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                // ReSharper disable once PossibleMultipleEnumeration
-                if (messages.Any()) {
+            try {
+                while (true) {
+                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
                     // ReSharper disable once PossibleMultipleEnumeration
-                    count += messages.Count();
-                }
-                else {
-                    if (subscriptionWrapper.TopicDescription.EnablePartitioning) {
-                        while (true) {
-                            var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                            if (message != null) {
-                                count++;
-                            }
-                            else {
-                                break;
+                    if (messages.Any()) {
+                        // ReSharper disable once PossibleMultipleEnumeration
+                        count += messages.Count();
+                    }
+                    else {
+                        if (subscriptionWrapper.TopicDescription.EnablePartitioning) {
+                            while (true) {
+                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+                                if (message != null) {
+                                    count++;
+                                }
+                                else {
+                                    break;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
+            }
+            finally {
+                await receiver.CloseAsync().ConfigureAwait(false);
             }
 
             return count;
