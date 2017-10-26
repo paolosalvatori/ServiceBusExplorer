@@ -438,10 +438,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 int count = 0;
                 stopwatch.Start();
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                if (queueDescription.RequiresSession) {
+                if (queueDescription.RequiresSession)
+                {
                     count = await PurgeSessionedQueue(messagingFactory).ConfigureAwait(false);
                 }
-                else {
+                else
+                {
                     count = await PurgeNonSessionedQueue(messagingFactory).ConfigureAwait(false);
                 }
                 stopwatch.Stop();
@@ -455,26 +457,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private async Task<int> PurgeSessionedQueue(MessagingFactory messagingFactory) {
+        private async Task<int> PurgeSessionedQueue(MessagingFactory messagingFactory)
+        {
             var totalMessagesPurged = 0;
-
             var client = messagingFactory.CreateQueueClient(queueDescription.Path);
 
-            try {
-                while (true) {
+            try
+            {
+                while (true)
+                {
                     var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(100))
                                               .ConfigureAwait(false);
 
-                    while (true) {
+                    while (true)
+                    {
                         var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
                                                     .ConfigureAwait(false);
-                        if (0 < messages.Count()) {
+                        if (0 < messages.Count())
+                        {
                             var locktokens = messages.Select(m => m.LockToken).ToArray();
                             totalMessagesPurged += locktokens.Length;
                             await session.CompleteBatchAsync(locktokens)
                                          .ConfigureAwait(false);
                         }
-                        else {
+                        else
+                        {
                             break;
                         }
                     }
@@ -482,35 +489,43 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     await session.CloseAsync().ConfigureAwait(false);
                 }
             }
-            catch ( TimeoutException ) {
+            catch (TimeoutException)
+            {
                 // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
             }
-            finally {
+            finally
+            {
                 await client.CloseAsync().ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
         }
 
-        private async Task<int> PurgeNonSessionedQueue(MessagingFactory messagingFactory) {
-
+        private async Task<int> PurgeNonSessionedQueue(MessagingFactory messagingFactory)
+        {
             var totalMessagesPurged = 0;
-
             var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
 
-            try {
-                while (true) {
+            try
+            {
+                while (true)
+                {
                     var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
                     var messagesCount = messages.Count();
                     totalMessagesPurged += messagesCount;
-                    if (messagesCount == 0) {
-                        if (queueDescription.EnablePartitioning) {
-                            while (true) {
+                    if (messagesCount == 0)
+                    {
+                        if (queueDescription.EnablePartitioning)
+                        {
+                            while (true)
+                            {
                                 var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                                if (message != null) {
+                                if (message != null)
+                                {
                                     totalMessagesPurged++;
                                 }
-                                else {
+                                else
+                                {
                                     break;
                                 }
                             }
@@ -519,7 +534,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
                 }
             }
-            finally {
+            finally
+            {
                 await receiver.CloseAsync().ConfigureAwait(false);
             }
 

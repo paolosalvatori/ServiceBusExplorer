@@ -425,10 +425,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var count = 0;
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                if (subscriptionWrapper.SubscriptionDescription.RequiresSession) {
+                if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
+                {
                     count = await PurgeSessionedTopic(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, messagingFactory).ConfigureAwait(false);
                 }
-                else {
+                else
+                {
                     count = await PurgeNonSessionedTopic(entityPath, messagingFactory).ConfigureAwait(false);
                 }
                 stopwatch.Stop();
@@ -442,27 +444,32 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private async Task<int> PurgeSessionedTopic(string topicPath, string subscriptionName, MessagingFactory messagingFactory) {
+        private async Task<int> PurgeSessionedTopic(string topicPath, string subscriptionName, MessagingFactory messagingFactory)
+        {
             var totalMessagesPurged = 0;
-
             var client = messagingFactory.CreateSubscriptionClient(topicPath, subscriptionName);
 
-            try {
-                while (true) {
+            try
+            {
+                while (true)
+                {
                     // use a larger timeout because sometimes the session was just not received
                     var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(250))
                                               .ConfigureAwait(false);
 
-                    while (true) {
+                    while (true)
+                    {
                         var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
                                                     .ConfigureAwait(false);
-                        if (0 < messages.Count()) {
+                        if (0 < messages.Count())
+                        {
                             var locktokens = messages.Select(m => m.LockToken).ToArray();
                             totalMessagesPurged += locktokens.Length;
                             await session.CompleteBatchAsync(locktokens)
                                          .ConfigureAwait(false);
                         }
-                        else {
+                        else
+                        {
                             break;
                         }
                     }
@@ -470,35 +477,43 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     await session.CloseAsync().ConfigureAwait(false);
                 }
             }
-            catch (TimeoutException) {
+            catch (TimeoutException)
+            {
                 // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
             }
-            finally {
+            finally
+            {
                 await client.CloseAsync().ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
         }
 
-        private async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory) {
-
+        private async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory)
+        {
             int totalMessagesPurged = 0;
-
             var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
 
-            try {
-                while (true) {
+            try
+            {
+                while (true)
+                {
                     var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
                     var messagesCount = messages.Count();
                     totalMessagesPurged += messagesCount;
-                    if (messagesCount == 0 ) {
-                        if (subscriptionWrapper.TopicDescription.EnablePartitioning) {
-                            while (true) {
+                    if (messagesCount == 0)
+                    {
+                        if (subscriptionWrapper.TopicDescription.EnablePartitioning)
+                        {
+                            while (true)
+                            {
                                 var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                                if (message != null) {
+                                if (message != null)
+                                {
                                     totalMessagesPurged++;
                                 }
-                                else {
+                                else
+                                {
                                     break;
                                 }
                             }
@@ -507,7 +522,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
                 }
             }
-            finally {
+            finally
+            {
                 await receiver.CloseAsync().ConfigureAwait(false);
             }
 
