@@ -443,7 +443,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         }
 
         private async Task<int> PurgeSessionedTopic(string topicPath, string subscriptionName, MessagingFactory messagingFactory) {
-            var count = 0;
+            var totalMessagesPurged = 0;
 
             var client = messagingFactory.CreateSubscriptionClient(topicPath, subscriptionName);
 
@@ -456,9 +456,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     while (true) {
                         var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
                                                     .ConfigureAwait(false);
-                        if (messages.Any()) {
+                        if (0 < messages.Count()) {
                             var locktokens = messages.Select(m => m.LockToken).ToArray();
-                            count += locktokens.Length;
+                            totalMessagesPurged += locktokens.Length;
                             await session.CompleteBatchAsync(locktokens)
                                          .ConfigureAwait(false);
                         }
@@ -477,29 +477,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 await client.CloseAsync().ConfigureAwait(false);
             }
 
-            return count;
+            return totalMessagesPurged;
         }
 
         private async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory) {
 
-            int count = 0;
+            int totalMessagesPurged = 0;
 
             var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
 
             try {
                 while (true) {
                     var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                    // ReSharper disable once PossibleMultipleEnumeration
-                    if (messages.Any()) {
-                        // ReSharper disable once PossibleMultipleEnumeration
-                        count += messages.Count();
-                    }
-                    else {
+                    var messagesCount = messages.Count();
+                    totalMessagesPurged += messagesCount;
+                    if (messagesCount == 0 ) {
                         if (subscriptionWrapper.TopicDescription.EnablePartitioning) {
                             while (true) {
                                 var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
                                 if (message != null) {
-                                    count++;
+                                    totalMessagesPurged++;
                                 }
                                 else {
                                     break;
@@ -514,7 +511,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 await receiver.CloseAsync().ConfigureAwait(false);
             }
 
-            return count;
+            return totalMessagesPurged;
         }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
