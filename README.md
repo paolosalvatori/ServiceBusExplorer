@@ -26,7 +26,7 @@ Here are some guidelines concerning contributions:
 
 - All contributions should be done on `develop`
 	- `master` is only for releases
-- Every pull request should be linked to a GitHub issue.
+- Every pull request is built by AppVeyor and should be linked to a GitHub issue.
 - Write unit tests, if applicable
 
 If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
