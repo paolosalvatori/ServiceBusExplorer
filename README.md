@@ -20,6 +20,17 @@ More information on our [Chocolatey page](https://chocolatey.org/packages/Servic
 ```
 curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4
 ```
+
+# Contributions
+Here are some guidelines concerning contributions:
+
+- All contributions should be done on `develop`
+	- `master` is only for releases
+- Every pull request should be linked to a GitHub issue.
+- Write unit tests, if applicable
+
+If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
+
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
 
