@@ -60,14 +60,14 @@ after_build:
   - ps: .\Generate-VerificationFile.ps1 -Version $env:GitVersion_MajorMinorPatch -TemplateFilePath VERIFICATION-Template.txt -ExePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\ServiceBusExplorer.exe" -OutputFilePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt"
   - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
   - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
-  - choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+  - appveyor-retry choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
 
 #---------------------------------#
 #      after build - on_success   #
 #---------------------------------#
 
 on_success:
-  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%'"
+  - IF '%APPVEYOR_REPO_BRANCH%'=='master' IF '%APPVEYOR_PULL_REQUEST_NUMBER%'=='' appveyor-retry choco push ServiceBusExplorer.%GitVersion_MajorMinorPatch%.nupkg -k="'%choco_token%'"
 
 #---------------------------------#
 #      artifacts configuration    #
