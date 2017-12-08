@@ -97,6 +97,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             message.TimeToLive = originalMessage.TimeToLive;
             message.ScheduledEnqueueTimeUtc = originalMessage.ScheduledEnqueueTimeUtc;
             message.ViaPartitionKey = originalMessage.ViaPartitionKey;
+            message.ContentType = originalMessage.ContentType;
+            message.Label = originalMessage.Label;
 
             return message;
         }
