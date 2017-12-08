@@ -93,7 +93,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    string key,
                                    string stsEndpoint,
                                    TransportType transportType,
-                                   bool isSas = false)
+                                   bool isSas = false,
+                                   string entityPath = "")
         {
             ConnectionStringType = connectionStringType;
             Uri = string.IsNullOrWhiteSpace(uri) ? 
@@ -125,6 +126,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             WindowsDomain = default(string);
             WindowsUserName = default(string);
             WindowsPassword = default(string);
+            EntityPath = entityPath;
         }
 
         /// <summary>
@@ -268,6 +270,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets or sets the SharedAccessKey.
         /// </summary>
         public string SharedAccessKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the EntityPath
+        /// </summary>
+        public string EntityPath { get; set; }
         #endregion
     }
 }
