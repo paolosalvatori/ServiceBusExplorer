@@ -40,13 +40,14 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
-
 #endregion
 
 // ReSharper disable CheckNamespace
 namespace Microsoft.Azure.ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
+    using ServiceBusConnectionStringBuilder = ServiceBus.ServiceBusConnectionStringBuilder;
+
     public enum BodyType
     {
         Stream,
@@ -190,6 +191,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private TransportType currentTransportType;
+        private ServiceBusNamespace serviceBusNamespaceInstance;
         #endregion
 
         #region Private Static Fields
@@ -255,6 +257,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         #endregion
 
         #region Public Instance Properties
+
         /// <summary>
         /// Gets a boolean that indicates if the current namespace is a cloud namespace.
         /// </summary>
@@ -1010,6 +1013,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
+            this.serviceBusNamespaceInstance = serviceBusNamespace;
+
             Func<bool> func = (() =>
             {
                 if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -1023,13 +1028,23 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
                 currentTransportType = serviceBusNamespace.TransportType;
-                
+
                 // The NamespaceManager class can be used for managing entities, 
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-
-                namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                if (serviceBusNamespace.EntityPath != string.Empty)
+                {
+                    var csBuilder = new ServiceBusConnectionStringBuilder(connectionString)
+                    {
+                        EntityPath = string.Empty
+                    };
+                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString = csBuilder.ToString());
+                }
+                else
+                {
+                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                }
 
                 // Set retry count
                 if (namespaceManager.Settings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
@@ -1105,12 +1120,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 Task.WaitAny(taskList.ToArray());
                 if (task.IsCompleted)
                 {
-                    return task.Result;
+                    try {
+                        return task.Result;
+                    } catch (AggregateException ex) {
+                        throw ex.InnerExceptions.First();
+                    }
                 }
-                else
-                {
-                    throw new TimeoutException();
-                }
+                throw new TimeoutException();
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1840,23 +1856,42 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                var taskList = new List<Task>();
-                var task = string.IsNullOrWhiteSpace(filter) ? 
-                           namespaceManager.GetQueuesAsync() : 
-                           namespaceManager.GetQueuesAsync(filter);
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
+                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath)) {
+                    var taskList = new List<Task>();
+                    var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetQueuesAsync() : namespaceManager.GetQueuesAsync(filter);
+                    taskList.Add(task);
+                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                    Task.WaitAny(taskList.ToArray());
+                    if (task.IsCompleted) {
+                        return task.Result;
+                    }
                     throw new TimeoutException();
                 }
+
+                return new List<QueueDescription> {
+                    GetQueueUsingEntityPath()
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves a queue in the service bus namespace that matches the entity path.
+        /// </summary>
+        private QueueDescription GetQueueUsingEntityPath() {
+            var taskList = new List<Task>();
+            var getQueueTask = namespaceManager.GetQueueAsync(serviceBusNamespaceInstance.EntityPath);
+            taskList.Add(getQueueTask);
+            taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+            Task.WaitAny(taskList.ToArray());
+            if (getQueueTask.IsCompleted) {
+                try {
+                    return getQueueTask.Result;
+                } catch (AggregateException ex) {
+                    throw ex.InnerExceptions.First();
+                }
+            }
+            throw new TimeoutException();
         }
 
         /// <summary>
@@ -1940,32 +1975,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Retrieves an enumerable collection of all topics in the service bus namespace.
         /// </summary>
-        /// <returns>Returns an IEnumerable<TopicDescription/> collection of all topics in the service namespace. 
-        ///          Returns an empty collection if no topic exists in this service namespace.</returns>
-        public IEnumerable<TopicDescription> GetTopics()
-        {
-            if (namespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = namespaceManager.GetTopicsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerable collection of all topics in the service bus namespace.
-        /// </summary>
         /// <param name="filter">OData filter.</param> 
         /// <returns>Returns an IEnumerable<TopicDescription/> collection of all topics in the service namespace. 
         ///          Returns an empty collection if no topic exists in this service namespace.</returns>
@@ -1974,22 +1983,47 @@ namespace Microsoft.Azure.ServiceBusExplorer
             if (namespaceManager != null)
             {
                 var taskList = new List<Task>();
-                var task = string.IsNullOrWhiteSpace(filter) ?
-                           namespaceManager.GetTopicsAsync() :
-                           namespaceManager.GetTopicsAsync(filter);
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
+                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath)) {
+                    Task<IEnumerable<TopicDescription>> task;
+                    if (string.IsNullOrWhiteSpace(filter)) {
+                        task = namespaceManager.GetTopicsAsync();
+                    } else {
+                        task = namespaceManager.GetTopicsAsync(filter);
+                    }
+
+                    taskList.Add(task);
+                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                    Task.WaitAny(taskList.ToArray());
+                    if (task.IsCompleted) {
+                        return task.Result;
+                    }
                     throw new TimeoutException();
                 }
+
+                return new List<TopicDescription> {
+                    GetTopicUsingEntityPath()
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves a topic in the service bus namespace that matches the entity path.
+        /// </summary>
+        private TopicDescription GetTopicUsingEntityPath() {
+            var taskList = new List<Task>();
+            var getTopicTask = namespaceManager.GetTopicAsync(serviceBusNamespaceInstance.EntityPath);
+            taskList.Add(getTopicTask);
+            taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+            Task.WaitAny(taskList.ToArray());
+            if (getTopicTask.IsCompleted) {
+                try {
+                    return getTopicTask.Result;
+                } catch (AggregateException ex) {
+                    throw ex.InnerExceptions.First();
+                }
+            }
+            throw new TimeoutException();
         }
 
         /// <summary>
