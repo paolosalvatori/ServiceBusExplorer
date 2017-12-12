@@ -48,6 +48,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         //***************************
         public const string ConnectionStringFormat = "Endpoint={0};SharedSecretIssuer={1};SharedSecretValue={2};TransportType={3}";
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
+        public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
         #endregion
 
         #region Public Constructors

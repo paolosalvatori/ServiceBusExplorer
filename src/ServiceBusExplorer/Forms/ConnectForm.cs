@@ -157,6 +157,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public string SharedAccessKeyName { get; private set; }
         public string SharedAccessKey { get; private set; }
         public string ConnectionString { get; private set; }
+        public string EntityPath { get; private set; }
         public ConnectivityMode ConnectivityMode { get; private set; }
         public TransportType TransportType { get; set; }
 
@@ -203,6 +204,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Uri = txtUri.Text;
                 Namespace = txtNamespace.Text;
                 TransportType = (TransportType) cboTransportType.SelectedItem;
+                EntityPath = txtEntityPath.Text;
+
                 if (isIssuerName)
                 {
                     IssuerName = txtIssuerName.Text;
@@ -217,11 +220,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     SharedAccessKeyName = txtIssuerName.Text;
                     SharedAccessKey = txtIssuerSecret.Text;
-                    ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
-                        Uri,
-                        SharedAccessKeyName,
-                        SharedAccessKey,
-                        TransportType);
+
+                    if (string.IsNullOrEmpty(EntityPath))
+                    {
+                        ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
+                            Uri,
+                            SharedAccessKeyName,
+                            SharedAccessKey,
+                            TransportType);
+                    }
+                    else
+                    {
+                        ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringEntityPathFormat,
+                            Uri,
+                            SharedAccessKeyName,
+                            SharedAccessKey,
+                            TransportType,
+                            EntityPath);
+                    }
                 }
             }
             DialogResult = DialogResult.OK;
@@ -339,6 +355,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     txtIssuerName.Text = ns.SharedAccessKeyName;
                     txtIssuerSecret.Text = ns.SharedAccessKey;
+                    txtEntityPath.Text = ns.EntityPath;
                     lblIssuerName.Text = SharedAccessKeyNameLabel;
                     lblIssuerSecret.Text = SharedAccessKeyLabel;
                     isIssuerName = false;
@@ -347,6 +364,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     txtIssuerName.Text = ns.IssuerName;
                     txtIssuerSecret.Text = ns.IssuerSecret;
+                    txtEntityPath.Text = ns.EntityPath;
                     lblIssuerName.Text = SharedSecretIssuerNameLabel;
                     lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
                     isIssuerName = true;
@@ -523,6 +541,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
+                txtUri.Text = txtUri.Text.Trim();
                 if (string.IsNullOrWhiteSpace(txtUri.Text))
                 {
                     MainForm.StaticWriteToLog("The connection string of the Service Bus namespace cannot be null.");
