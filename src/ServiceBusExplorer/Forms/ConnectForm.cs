@@ -323,7 +323,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 lblUri.Text = ConnectionStringLabel;
                 txtUri.Multiline = true;
-                txtUri.Size = new Size(336, 168);
+                txtUri.Size = new Size(336, 220);
                 txtUri.Text = string.Empty;
                 toolTip.SetToolTip(txtUri, ConnectionStringTooltip);
             }
@@ -631,6 +631,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                     serviceBusHelper.ServiceBusNamespaces.Add(key, MainForm.GetServiceBusNamespace(key, value));
                     cboServiceBusNamespace.Items.Clear();
+                    cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
+                    cboServiceBusNamespace.Items.Add(EnterConnectionString);
+
                     // ReSharper disable once CoVariantArrayConversion
                     cboServiceBusNamespace.Items.AddRange(serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(s => s).ToArray());
                     cboServiceBusNamespace.Text = key;
