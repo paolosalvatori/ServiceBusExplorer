@@ -435,7 +435,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             try {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
-                int count = 0;
+                int count;
                 stopwatch.Start();
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
                 if (queueDescription.RequiresSession)

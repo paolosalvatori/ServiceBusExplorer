@@ -85,6 +85,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="stsEndpoint">The sts endpoint of the service bus namespace.</param>
         /// <param name="transportType">The transport type to use to access the namespace.</param>
         /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
+        /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
         public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
                                    string connectionString,
                                    string uri,
