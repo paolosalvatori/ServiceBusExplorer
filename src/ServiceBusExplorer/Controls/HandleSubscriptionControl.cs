@@ -422,7 +422,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                var count = 0;
+                int count;
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
                 if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
@@ -490,9 +490,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             return totalMessagesPurged;
         }
 
-        private async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory)
+        async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory)
         {
-            int totalMessagesPurged = 0;
+            var totalMessagesPurged = 0;
             var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
 
             try
