@@ -432,7 +432,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-            try {
+            try
+            {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 int count;
@@ -440,11 +441,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
                 if (queueDescription.RequiresSession)
                 {
-                    count = await PurgeSessionedQueue(messagingFactory).ConfigureAwait(false);
+                    count = await PurgeSessionedQueue(messagingFactory);
                 }
                 else
                 {
-                    count = await PurgeNonSessionedQueue(messagingFactory).ConfigureAwait(false);
+                    count = await PurgeNonSessionedQueue(messagingFactory);
                 }
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
