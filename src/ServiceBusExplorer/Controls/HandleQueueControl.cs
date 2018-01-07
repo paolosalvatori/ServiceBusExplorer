@@ -4724,28 +4724,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Application.UseWaitCursor = true;
-                await PurgeMessagesAsync();
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await PurgeMessagesAsync();
         }
         
         private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Application.UseWaitCursor = true;
-                await PurgeDeadletterQueueMessagesAsync();
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await PurgeDeadletterQueueMessagesAsync();
         }
         #endregion
     }
