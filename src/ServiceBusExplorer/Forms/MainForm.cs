@@ -4656,7 +4656,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             }
                             catch (TimeoutException)
                             {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
                         if (selectedEntites.Contains(NotificationHubEntities) &&
@@ -4705,7 +4705,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 }
                                 catch (TimeoutException)
                                 {
-                                    serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
                             }
                             else
@@ -4812,7 +4812,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         catch (TimeoutException)
                         {
-                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
                     if (selectedEntites.Contains(TopicEntities) &&
@@ -4937,7 +4937,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         catch (TimeoutException)
                         {
-                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            serviceBusTreeView.Nodes.Remove(topicListNode);
                         }
                     }
                     queueListNode?.Expand();
