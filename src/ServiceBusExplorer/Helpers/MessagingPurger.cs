@@ -94,9 +94,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             long totalMessagesPurged = 0;
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-
             ClientEntity entityClient;
-
             if (queueDescription != null)
             {
                 entityClient = messagingFactory.CreateQueueClient(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
@@ -108,11 +106,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             var consecutiveSessionTimeOuts = 0;
-
             try
             {
                 const int enoughZeroReceives = 3;
-
                 while (consecutiveSessionTimeOuts < enoughZeroReceives && totalMessagesPurged < messagesToPurgeCount)
                 {
                     MessageSession session;
@@ -133,7 +129,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     }
 
                     int consecutiveZeroBatchReceives = 0;
-
                     while (consecutiveZeroBatchReceives < enoughZeroReceives
                         && totalMessagesPurged < messagesToPurgeCount)
                     {
@@ -157,11 +152,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             catch (TimeoutException)
             {
                 ++consecutiveSessionTimeOuts;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Got exception {ex}");
-                throw;
             }
             finally
             {
@@ -240,6 +230,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             int taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
             var tasks = new Task[taskCount];
             var partitioned = EntityIsPartioned();
+            var quit = false;  // This instance controls all the receiving tasks
 
             for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
             {
@@ -249,33 +240,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
 
                     ClientEntity receiver;
-
-                    try
+                    if (queue)  // The dead letter queue for a subscription is a queue
                     {
-                        if (queue)  // The dead letter queue for a subscription is a queue
-                        {
-                            receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete)
-                               .ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            receiver = messagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                subscriptionWrapper.SubscriptionDescription.Name, ReceiveMode.ReceiveAndDelete);
-                        }
+                        receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete)
+                           .ConfigureAwait(false);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Debug.WriteLine($"Got an exception {ex}");
-                        throw;
+                        receiver = messagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                            subscriptionWrapper.SubscriptionDescription.Name, ReceiveMode.ReceiveAndDelete);
                     }
 
                     try
                     {
                         var consecutiveZeroBatchReceives = 0;
-                        const int enoughZeroBatchReceives = 5;
+                        const int enoughZeroBatchReceives = 3;
 
-                        while (consecutiveZeroBatchReceives < enoughZeroBatchReceives
-                            && Interlocked.Read(ref totalMessagesPurged) < messagesToPurgeCount)
+                        while (!quit && Interlocked.Read(ref totalMessagesPurged) < messagesToPurgeCount)
                         {
                             IEnumerable<BrokeredMessage> messages;
 
@@ -308,13 +289,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                             else
                             {
                                 ++consecutiveZeroBatchReceives;
+                                if (consecutiveZeroBatchReceives >= enoughZeroBatchReceives)
+                                    quit = true;
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Got an exception in receiving lambda {ex}");
-                        throw;
                     }
                     finally
                     {
@@ -327,7 +305,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             await Task.WhenAll(tasks);
-
             return totalMessagesPurged;
         }
 
