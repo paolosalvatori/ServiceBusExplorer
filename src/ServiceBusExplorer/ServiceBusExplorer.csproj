@@ -77,7 +77,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.ServiceBus.4.1.2\lib\net45\Microsoft.ServiceBus.dll</HintPath>
+      <HintPath>..\packages\WindowsAzure.ServiceBus.4.1.6\lib\net45\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -407,6 +407,7 @@
     <Compile Include="Helpers\IEventDataInspector.cs" />
     <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
     <Compile Include="Helpers\LogBrokeredMessageInspector.cs" />
+    <Compile Include="Helpers\MessagingPurger.cs" />
     <Compile Include="Helpers\MessageSerializationHelper.cs" />
     <Compile Include="Helpers\NotificationHubAuthorizationRuleWrapper.cs" />
     <Compile Include="Helpers\OnOffDeviceBrokeredMessageGenerator.cs" />
@@ -645,7 +646,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
