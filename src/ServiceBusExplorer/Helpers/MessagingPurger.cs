@@ -139,6 +139,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         {
                             Interlocked.Add(ref totalMessagesPurged, messages.Count());
                             consecutiveZeroBatchReceives = 0;
+
+                            foreach (var message in messages)
+                            {
+                                message.Dispose();
+                            }
                         }
                         else
                         {
