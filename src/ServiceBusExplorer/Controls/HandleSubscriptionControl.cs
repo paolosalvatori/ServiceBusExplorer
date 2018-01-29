@@ -416,26 +416,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-
             try
             {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-
-                int count;
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                {
-                    count = await PurgeSessionedTopic(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, messagingFactory);
-                }
-                else
-                {
-                    count = await PurgeNonSessionedTopic(entityPath, messagingFactory);
-                }
+                var messagingPurger = new MessagingPurger(serviceBusHelper, subscriptionWrapper);
+                var count = await messagingPurger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, 
+                    subscriptionWrapper.SubscriptionDescription.Name);
                 writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
                 return count;
             }
@@ -443,93 +434,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 Application.UseWaitCursor = false;
             }
-        }
-
-        private async Task<int> PurgeSessionedTopic(string topicPath, string subscriptionName, MessagingFactory messagingFactory)
-        {
-            var totalMessagesPurged = 0;
-            var client = messagingFactory.CreateSubscriptionClient(topicPath, subscriptionName);
-
-            try
-            {
-                while (true)
-                {
-                    // use a larger timeout because sometimes the session was just not received
-                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(250))
-                                              .ConfigureAwait(false);
-
-                    while (true)
-                    {
-                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
-                                                    .ConfigureAwait(false);
-                        var messagesCount = messages.Count();
-                        if (0 < messagesCount)
-                        {
-                            totalMessagesPurged += messagesCount;
-                            var locktokens = messages.Select(m => m.LockToken);
-                            await session.CompleteBatchAsync(locktokens)
-                                         .ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    await session.CloseAsync().ConfigureAwait(false);
-                }
-            }
-            catch (TimeoutException)
-            {
-                // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
-            }
-            finally
-            {
-                await client.CloseAsync().ConfigureAwait(false);
-            }
-
-            return totalMessagesPurged;
-        }
-
-        async Task<int> PurgeNonSessionedTopic(string entityPath, MessagingFactory messagingFactory)
-        {
-            var totalMessagesPurged = 0;
-            var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
-
-            try
-            {
-                while (true)
-                {
-                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                    var messagesCount = messages.Count();
-                    totalMessagesPurged += messagesCount;
-                    if (messagesCount == 0)
-                    {
-                        if (subscriptionWrapper.TopicDescription.EnablePartitioning)
-                        {
-                            while (true)
-                            {
-                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                                if (message != null)
-                                {
-                                    totalMessagesPurged++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-            finally
-            {
-                await receiver.CloseAsync().ConfigureAwait(false);
-            }
-
-            return totalMessagesPurged;
         }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
@@ -541,48 +445,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-
             try
             {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-
-                var entityPath = SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name);
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                var receiver = await messagingFactory.CreateMessageReceiverAsync(entityPath, ReceiveMode.ReceiveAndDelete);
-                var count = 0;
-                while (true)
-                {
-                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                    // ReSharper disable once PossibleMultipleEnumeration
-                    if (messages.Any())
-                    {
-                        // ReSharper disable once PossibleMultipleEnumeration
-                        count += messages.Count();
-                    }
-                    else
-                    {
-                        if (subscriptionWrapper.TopicDescription.EnablePartitioning)
-                        {
-                            while (true)
-                            {
-                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                                if (message != null)
-                                {
-                                    count++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
+                var messagingPurger = new MessagingPurger(serviceBusHelper, subscriptionWrapper);
+                var count = await messagingPurger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
-                entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
+                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                            subscriptionWrapper.SubscriptionDescription.Name);
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
