@@ -48,6 +48,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         //***************************
         public const string ConnectionStringFormat = "Endpoint={0};SharedSecretIssuer={1};SharedSecretValue={2};TransportType={3}";
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
+        public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
         #endregion
 
         #region Public Constructors
@@ -84,6 +85,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="stsEndpoint">The sts endpoint of the service bus namespace.</param>
         /// <param name="transportType">The transport type to use to access the namespace.</param>
         /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
+        /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
         public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
                                    string connectionString,
                                    string uri,
@@ -93,7 +95,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    string key,
                                    string stsEndpoint,
                                    TransportType transportType,
-                                   bool isSas = false)
+                                   bool isSas = false,
+                                   string entityPath = "")
         {
             ConnectionStringType = connectionStringType;
             Uri = string.IsNullOrWhiteSpace(uri) ? 
@@ -125,6 +128,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             WindowsDomain = default(string);
             WindowsUserName = default(string);
             WindowsPassword = default(string);
+            EntityPath = entityPath;
         }
 
         /// <summary>
@@ -268,6 +272,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets or sets the SharedAccessKey.
         /// </summary>
         public string SharedAccessKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the EntityPath
+        /// </summary>
+        public string EntityPath { get; set; }
         #endregion
     }
 }

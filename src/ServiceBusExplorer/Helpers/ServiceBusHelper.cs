@@ -40,13 +40,14 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
-
 #endregion
 
 // ReSharper disable CheckNamespace
 namespace Microsoft.Azure.ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
+    using ServiceBusConnectionStringBuilder = ServiceBus.ServiceBusConnectionStringBuilder;
+
     public enum BodyType
     {
         Stream,
@@ -190,6 +191,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private TransportType currentTransportType;
+        private ServiceBusNamespace serviceBusNamespaceInstance;
         #endregion
 
         #region Private Static Fields
@@ -255,6 +257,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         #endregion
 
         #region Public Instance Properties
+
         /// <summary>
         /// Gets a boolean that indicates if the current namespace is a cloud namespace.
         /// </summary>
@@ -265,8 +268,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 string uri;
                 return namespaceUri != null &&
                        !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
-                       (uri.Contains(CloudServiceBusPostfix) || 
-                        uri.Contains(TestServiceBusPostFix) || 
+                       (uri.Contains(CloudServiceBusPostfix) ||
+                        uri.Contains(TestServiceBusPostFix) ||
                         uri.Contains(GermanyServiceBusPostfix) ||
                         uri.Contains(ChinaServiceBusPostfix));
             }
@@ -652,7 +655,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Gets or sets the dictionary containing EventData generators.
         /// </summary>
         public Dictionary<string, Type> EventDataGenerators { get; set; }
-        
+
         #endregion
 
         #region Public Static Properties
@@ -741,9 +744,9 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="sharedAccessKeyName">The shared access key name.</param>
         /// <param name="sharedAccessKey">The shared access key.</param>
         /// <returns>True if the operation succeeds, false otherwise.</returns>
-        public bool Connect(string nameSpace, 
-                            string path, 
-                            string issuerName, 
+        public bool Connect(string nameSpace,
+                            string path,
+                            string issuerName,
                             string issuerSecret,
                             string sharedAccessKeyName,
                             string sharedAccessKey,
@@ -787,7 +790,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 {
                     // ignored
                 }
-                
+
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
@@ -873,8 +876,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="sharedAccessKeyName">The shared access key name.</param>
         /// <param name="sharedAccessKey">The shared access key.</param>
         /// <returns>True if the operation succeeds, false otherwise.</returns>
-        public bool Connect(string uri, 
-                            string issuerName, 
+        public bool Connect(string uri,
+                            string issuerName,
                             string issuerSecret,
                             string sharedAccessKeyName,
                             string sharedAccessKey,
@@ -928,7 +931,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 {
                     // ignored
                 }
-                
+
                 currentIssuerName = issuerName;
                 currentIssuerSecret = issuerSecret;
                 currentSharedAccessKeyName = sharedAccessKeyName;
@@ -1010,6 +1013,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
+            this.serviceBusNamespaceInstance = serviceBusNamespace;
+
             Func<bool> func = (() =>
             {
                 if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -1023,13 +1028,23 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
                 currentTransportType = serviceBusNamespace.TransportType;
-                
+
                 // The NamespaceManager class can be used for managing entities, 
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-
-                namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                if (serviceBusNamespace.EntityPath != string.Empty)
+                {
+                    var csBuilder = new ServiceBusConnectionStringBuilder(connectionString)
+                    {
+                        EntityPath = string.Empty
+                    };
+                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString = csBuilder.ToString());
+                }
+                else
+                {
+                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                }
 
                 // Set retry count
                 if (namespaceManager.Settings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
@@ -1105,12 +1120,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 Task.WaitAny(taskList.ToArray());
                 if (task.IsCompleted)
                 {
-                    return task.Result;
+                    try
+                    {
+                        return task.Result;
+                    }
+                    catch (AggregateException ex)
+                    {
+                        throw ex.InnerExceptions.First();
+                    }
                 }
-                else
-                {
-                    throw new TimeoutException();
-                }
+                throw new TimeoutException();
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -1840,23 +1859,49 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
-                var taskList = new List<Task>();
-                var task = string.IsNullOrWhiteSpace(filter) ? 
-                           namespaceManager.GetQueuesAsync() : 
-                           namespaceManager.GetQueuesAsync(filter);
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
+                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
-                    return task.Result;
-                }
-                else
-                {
+                    var taskList = new List<Task>();
+                    var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetQueuesAsync() : namespaceManager.GetQueuesAsync(filter);
+                    taskList.Add(task);
+                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                    Task.WaitAny(taskList.ToArray());
+                    if (task.IsCompleted)
+                    {
+                        return task.Result;
+                    }
                     throw new TimeoutException();
                 }
+
+                return new List<QueueDescription> {
+                    GetQueueUsingEntityPath()
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves a queue in the service bus namespace that matches the entity path.
+        /// </summary>
+        private QueueDescription GetQueueUsingEntityPath()
+        {
+            var taskList = new List<Task>();
+            var getQueueTask = namespaceManager.GetQueueAsync(serviceBusNamespaceInstance.EntityPath);
+            taskList.Add(getQueueTask);
+            taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+            Task.WaitAny(taskList.ToArray());
+            if (getQueueTask.IsCompleted)
+            {
+                try
+                {
+                    return getQueueTask.Result;
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerExceptions.First();
+                }
+            }
+            throw new TimeoutException();
         }
 
         /// <summary>
@@ -1910,13 +1955,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 throw new ArgumentException(QueueDescriptionCannotBeNull);
             }
-            if (messagingFactory == null )
+            if (messagingFactory == null)
             {
                 throw new ApplicationException(ServiceBusIsDisconnected);
 
             }
             var queueClient = messagingFactory.CreateQueueClient(queue.Path);
-            return RetryHelper.RetryFunc(() => dateTime != null? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
+            return RetryHelper.RetryFunc(() => dateTime != null ? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
         }
 
         /// <summary>
@@ -1940,32 +1985,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Retrieves an enumerable collection of all topics in the service bus namespace.
         /// </summary>
-        /// <returns>Returns an IEnumerable<TopicDescription/> collection of all topics in the service namespace. 
-        ///          Returns an empty collection if no topic exists in this service namespace.</returns>
-        public IEnumerable<TopicDescription> GetTopics()
-        {
-            if (namespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = namespaceManager.GetTopicsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerable collection of all topics in the service bus namespace.
-        /// </summary>
         /// <param name="filter">OData filter.</param> 
         /// <returns>Returns an IEnumerable<TopicDescription/> collection of all topics in the service namespace. 
         ///          Returns an empty collection if no topic exists in this service namespace.</returns>
@@ -1974,22 +1993,57 @@ namespace Microsoft.Azure.ServiceBusExplorer
             if (namespaceManager != null)
             {
                 var taskList = new List<Task>();
-                var task = string.IsNullOrWhiteSpace(filter) ?
-                           namespaceManager.GetTopicsAsync() :
-                           namespaceManager.GetTopicsAsync(filter);
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
+                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
-                    return task.Result;
-                }
-                else
-                {
+                    Task<IEnumerable<TopicDescription>> task;
+                    if (string.IsNullOrWhiteSpace(filter))
+                    {
+                        task = namespaceManager.GetTopicsAsync();
+                    }
+                    else
+                    {
+                        task = namespaceManager.GetTopicsAsync(filter);
+                    }
+
+                    taskList.Add(task);
+                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                    Task.WaitAny(taskList.ToArray());
+                    if (task.IsCompleted)
+                    {
+                        return task.Result;
+                    }
                     throw new TimeoutException();
                 }
+
+                return new List<TopicDescription> {
+                    GetTopicUsingEntityPath()
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Retrieves a topic in the service bus namespace that matches the entity path.
+        /// </summary>
+        private TopicDescription GetTopicUsingEntityPath()
+        {
+            var taskList = new List<Task>();
+            var getTopicTask = namespaceManager.GetTopicAsync(serviceBusNamespaceInstance.EntityPath);
+            taskList.Add(getTopicTask);
+            taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+            Task.WaitAny(taskList.ToArray());
+            if (getTopicTask.IsCompleted)
+            {
+                try
+                {
+                    return getTopicTask.Result;
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerExceptions.First();
+                }
+            }
+            throw new TimeoutException();
         }
 
         /// <summary>
@@ -3178,7 +3232,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                     }
                                     if (updatePartitionKey)
                                     {
-                                        eventDataList[i].PartitionKey = partitionKey; 
+                                        eventDataList[i].PartitionKey = partitionKey;
                                     }
                                     if (noPartitionKey || !partitionIdIsNull)
                                     {
@@ -3572,7 +3626,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 if (logging)
                 {
-                    builder.AppendLine(string.Format(CultureInfo.CurrentCulture, 
+                    builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
                                                      EventDataSuccessfullySent,
                                                      taskId,
                                                      messageNumber,
@@ -3714,10 +3768,10 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     outboundMessage = new BrokeredMessage(reader.ReadToEnd());
                 }
             }
-            
+
             outboundMessage.MessageId = updateMessageId ? Guid.NewGuid().ToString() : messageTemplate.MessageId;
             outboundMessage.SessionId = oneSessionPerTask ? taskId.ToString(CultureInfo.InvariantCulture) : messageTemplate.SessionId;
-            
+
             if (bodyType == BodyType.String || bodyType == BodyType.ByteArray || bodyType == BodyType.Stream)
             {
                 if (!string.IsNullOrWhiteSpace(messageTemplate.Label))
@@ -3975,7 +4029,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                 var useWcf = bodyType == BodyType.Wcf;
                                 for (var i = 0; i < messageNumberList.Count; i++)
                                 {
-                                    messageList.Add(useWcf?
+                                    messageList.Add(useWcf ?
                                                     CreateMessageForWcfReceiver(
                                                         messageTemplateCircularList.Next,
                                                         taskId,
@@ -4242,7 +4296,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                 using (var reader = XmlReader.Create(new StringReader(messageText)))
                                 {
                                     // The XmlWriter is used just to indent the XML message
-                                    var settings = new XmlWriterSettings {Indent = true};
+                                    var settings = new XmlWriterSettings { Indent = true };
                                     using (var writer = XmlWriter.Create(stringBuilder, settings))
                                     {
                                         writer.WriteNode(reader, true);
@@ -4250,7 +4304,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                 }
                                 messageText = stringBuilder.ToString();
                             }
-                            builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText : 
+                            builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText :
                                                                                 messageText.Substring(0, Math.Min(messageText.Length, 128)) +
                                                                                 (messageText.Length >= 128 ? "..." : "")));
                             builder.AppendLine(SentMessagePropertiesHeader);
@@ -4958,7 +5012,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             ImportExportHelper.DeserializeAndCreate(this, xml);
         }
-
+      
         /// <summary>
         /// Reads the content of the BrokeredMessage passed as argument.
         /// </summary>
@@ -5065,7 +5119,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                         using (var reader = new StreamReader(stream))
                                         {
                                             messageText = reader.ReadToEnd();
-                                            if (!MainForm.SingletonMainForm.UseAscii && messageText.ToCharArray().GroupBy(c => c). 
+                                            if (!MainForm.SingletonMainForm.UseAscii && messageText.ToCharArray().GroupBy(c => c).
                                                 Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
                                                 Select(g => g.First()).Any())
                                             {
@@ -5172,14 +5226,14 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 }
                 catch (Exception)
                 {
-                        try
-                        {
-                            stream.Seek(0, SeekOrigin.Begin);
-                            var serializer = new CustomDataContractBinarySerializer(typeof(string));
-                            messageText = serializer.ReadObject(stream) as string;
-                        }
-                        catch (Exception)
-                        {
+                    try
+                    {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        var serializer = new CustomDataContractBinarySerializer(typeof(string));
+                        messageText = serializer.ReadObject(stream) as string;
+                    }
+                    catch (Exception)
+                    {
                         try
                         {
                             stream.Seek(0, SeekOrigin.Begin);
@@ -5483,7 +5537,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
         public string GetHostWithoutNamespace()
         {
-            if (namespaceUri == null || 
+            if (namespaceUri == null ||
                 string.IsNullOrWhiteSpace(namespaceUri.Host))
             {
                 return null;
@@ -5551,7 +5605,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 messageTotal++;
                 var builder = new StringBuilder();
                 builder.AppendLine(string.Format(MessageSuccessfullyReceivedNoTask,
-                                                complete ? Read :Peeked,
+                                                complete ? Read : Peeked,
                                                 string.IsNullOrWhiteSpace(
                                                     inboundMessage.MessageId)
                                                     ? NullValue
@@ -5691,7 +5745,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
                 return;
             }
-            
+
             try
             {
                 var eventDataClone = inboundMessage.Clone();
@@ -5780,15 +5834,15 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             switch (encodingType)
             {
-                case EncodingType.ASCII: 
+                case EncodingType.ASCII:
                     return Encoding.ASCII;
-                case EncodingType.UTF7: 
+                case EncodingType.UTF7:
                     return Encoding.UTF7;
-                case EncodingType.UTF8: 
+                case EncodingType.UTF8:
                     return Encoding.UTF8;
-                case EncodingType.UTF32: 
+                case EncodingType.UTF32:
                     return Encoding.UTF32;
-                case EncodingType.Unicode: 
+                case EncodingType.Unicode:
                     return Encoding.Unicode;
                 default:
                     return Encoding.UTF8;

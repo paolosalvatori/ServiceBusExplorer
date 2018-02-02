@@ -345,8 +345,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             "SharedAccessKey"
         };
 
-        private static readonly List<string> Operators = new List<string> {"ge", "gt", "le", "lt", "eq", "ne"};
-        private static readonly List<string> TimeGranularityList = new List<string> {"PT5M", "PT1H", "P1D", "P7D"};
+        private static readonly List<string> Operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
+        private static readonly List<string> TimeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
 
         #endregion
 
@@ -432,20 +432,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-            try {
+            try
+            {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
-                int count = 0;
                 stopwatch.Start();
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                if (queueDescription.RequiresSession)
-                {
-                    count = await PurgeSessionedQueue(messagingFactory).ConfigureAwait(false);
-                }
-                else
-                {
-                    count = await PurgeNonSessionedQueue(messagingFactory).ConfigureAwait(false);
-                }
+                var messagingPurger = new MessagingPurger(serviceBusHelper, queueDescription);
+                var count = await messagingPurger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
@@ -457,91 +450,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private async Task<int> PurgeSessionedQueue(MessagingFactory messagingFactory)
-        {
-            var totalMessagesPurged = 0;
-            var client = messagingFactory.CreateQueueClient(queueDescription.Path);
-
-            try
-            {
-                while (true)
-                {
-                    var session = await client.AcceptMessageSessionAsync(TimeSpan.FromMilliseconds(100))
-                                              .ConfigureAwait(false);
-
-                    while (true)
-                    {
-                        var messages = await session.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100))
-                                                    .ConfigureAwait(false);
-                        var messagesCount = messages.Count();
-                        if (0 < messagesCount)
-                        {
-                            totalMessagesPurged += messagesCount;
-                            var locktokens = messages.Select(m => m.LockToken);
-                            await session.CompleteBatchAsync(locktokens)
-                                         .ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    await session.CloseAsync().ConfigureAwait(false);
-                }
-            }
-            catch (TimeoutException)
-            {
-                // ignore the exception, the AcceptMessageSessionAsync throws when no more sessions
-            }
-            finally
-            {
-                await client.CloseAsync().ConfigureAwait(false);
-            }
-
-            return totalMessagesPurged;
-        }
-
-        private async Task<int> PurgeNonSessionedQueue(MessagingFactory messagingFactory)
-        {
-            var totalMessagesPurged = 0;
-            var receiver = await messagingFactory.CreateMessageReceiverAsync(queueDescription.Path, ReceiveMode.ReceiveAndDelete).ConfigureAwait(false);
-
-            try
-            {
-                while (true)
-                {
-                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                    var messagesCount = messages.Count();
-                    totalMessagesPurged += messagesCount;
-                    if (messagesCount == 0)
-                    {
-                        if (queueDescription.EnablePartitioning)
-                        {
-                            while (true)
-                            {
-                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
-                                if (message != null)
-                                {
-                                    totalMessagesPurged++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-            finally
-            {
-                await receiver.CloseAsync().ConfigureAwait(false);
-            }
-
-            return totalMessagesPurged;
-        }
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
@@ -553,44 +461,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
-
             try
             {
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-                var receiver = await messagingFactory.CreateMessageReceiverAsync(dlqPath, ReceiveMode.ReceiveAndDelete);
-                var count = 0;
-                while (true)
-                {
-                    var messages = await receiver.ReceiveBatchAsync(1000, TimeSpan.FromMilliseconds(100));
-                    // ReSharper disable once PossibleMultipleEnumeration
-                    if (messages.Any())
-                    {
-                        // ReSharper disable once PossibleMultipleEnumeration
-                        count += messages.Count();
-                    }
-                    else
-                    {
-                        if (queueDescription.EnablePartitioning)
-                        {
-                            while (true)
-                            {
-                                var message = await receiver.ReceiveAsync(TimeSpan.FromMilliseconds(100));
-                                if (message != null)
-                                {
-                                    count++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
+                var messagingPurger = new MessagingPurger(serviceBusHelper, queueDescription);
+                var count = await messagingPurger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
@@ -702,7 +579,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                           GrouperMessagePropertiesWith -
                                                           sessionsSplitContainer.SplitterWidth;
                 sessionListTextPropertiesSplitContainer.SplitterDistance =
-                    sessionListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                    sessionListTextPropertiesSplitContainer.Size.Height / 2 - 8;
 
                 if (mainTabControl.TabPages[SessionsTabPage] != null)
                 {
@@ -1498,7 +1375,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 },
                 new[] {MessageCount, queueDescription.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
             });
-            
+
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
             {
@@ -1727,9 +1604,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                           GrouperMessagePropertiesWith -
                                                           messagesSplitContainer.SplitterWidth;
                 messageListTextPropertiesSplitContainer.SplitterDistance =
-                    messageListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                    messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
                 messagesCustomPropertiesSplitContainer.SplitterDistance =
-                    messagesCustomPropertiesSplitContainer.Size.Width/2 - 8;
+                    messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
 
                 if (!peek)
                 {
@@ -1838,9 +1715,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                           GrouperMessagePropertiesWith -
                                                           messagesSplitContainer.SplitterWidth;
                 messageListTextPropertiesSplitContainer.SplitterDistance =
-                    messageListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                    messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
                 messagesCustomPropertiesSplitContainer.SplitterDistance =
-                    messagesCustomPropertiesSplitContainer.Size.Width/2 - 8;
+                    messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
                 if (!peek)
                 {
                     OnRefresh?.Invoke();
@@ -1954,9 +1831,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                             GrouperMessagePropertiesWith -
                                                             deadletterSplitContainer.SplitterWidth;
                 deadletterListTextPropertiesSplitContainer.SplitterDistance =
-                    deadletterListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                    deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
                 deadletterCustomPropertiesSplitContainer.SplitterDistance =
-                    deadletterCustomPropertiesSplitContainer.Size.Width/2 - 8;
+                    deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
 
                 if (!peek)
                 {
@@ -2175,8 +2052,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
                                                             GrouperMessagePropertiesWith -
                                                             deadletterSplitContainer.SplitterWidth;
-                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height/2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width/2 - 8;
+                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
+                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
 
                 if (!peek)
                 {
@@ -2333,10 +2210,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         ForwardTo = txtForwardTo.Text,
                         ForwardDeadLetteredMessagesTo = txtForwardDeadLetteredMessagesTo.Text,
                         MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
-                            ? trackBarMaxQueueSize.Value*1024
+                            ? trackBarMaxQueueSize.Value * 1024
                             : trackBarMaxQueueSize.Value == trackBarMaxQueueSize.Maximum
                                 ? SeviceBusForWindowsServerMaxQueueSize
-                                : trackBarMaxQueueSize.Value*1024
+                                : trackBarMaxQueueSize.Value * 1024
                     };
 
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
@@ -2608,7 +2485,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             var rightList = new List<AccessRights>();
                             if (rule.Manage)
                             {
-                                rightList.AddRange(new[] {AccessRights.Manage, AccessRights.Send, AccessRights.Listen});
+                                rightList.AddRange(new[] { AccessRights.Manage, AccessRights.Send, AccessRights.Listen });
                             }
                             else
                             {
@@ -3156,8 +3033,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 e.Bounds.Height - 1);
             // Right vertical line
             e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float) Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize)/2, e.Bounds.Width,
+            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
+            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width,
                 roundedFontSize + 6);
             e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
         }
@@ -3302,8 +3179,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         if (icon != null)
                         {
                             var startPoint =
-                                new Point(tabBackgroundRect.X + 2 + ((tabBackgroundRect.Height - size.Height)/2),
-                                    tabBackgroundRect.Y + 2 + ((tabBackgroundRect.Height - size.Height)/2));
+                                new Point(tabBackgroundRect.X + 2 + ((tabBackgroundRect.Height - size.Height) / 2),
+                                    tabBackgroundRect.Y + 2 + ((tabBackgroundRect.Height - size.Height) / 2));
                             e.Graphics.DrawImage(icon, new Rectangle(startPoint, size));
                             iconOffset = size.Width + 4;
                         }
@@ -3312,7 +3189,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     // Draw out the label.
                     var labelRect = new Rectangle(tabBackgroundRect.X + iconOffset, tabBackgroundRect.Y + 5,
                         tabBackgroundRect.Width - iconOffset, tabBackgroundRect.Height - 3);
-                    using (var sf = new StringFormat {Alignment = StringAlignment.Center})
+                    using (var sf = new StringFormat { Alignment = StringAlignment.Center })
                     {
                         e.Graphics.DrawString(tabName, new Font(e.Font.FontFamily, 8.25F, e.Font.Style), foreBrush,
                             labelRect, sf);
@@ -3406,13 +3283,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         width -= verticalScrollbar.Width;
                     }
-                    var columnWidth = width/4;
+                    var columnWidth = width / 4;
                     dataGridView.Columns[0].Width = columnWidth - 20;
                     dataGridView.Columns[3].Width = columnWidth;
-                    dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth*4)) + 10;
+                    dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
-                if (dataGridView != sessionsDataGridView || 
+                if (dataGridView != sessionsDataGridView ||
                     dataGridView.ColumnCount != 4)
                 {
                     return;
@@ -3425,12 +3302,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         width -= verticalScrollbar.Width;
                     }
                     const int columnNumber = 4;
-                    var columnWidth = width/columnNumber;
+                    var columnWidth = width / columnNumber;
                     for (var i = 0; i < 3; i++)
                     {
                         dataGridView.Columns[i].Width = columnWidth;
                     }
-                    dataGridView.Columns[3].Width = columnWidth + (width - (columnWidth*columnNumber));
+                    dataGridView.Columns[3].Width = columnWidth + (width - (columnWidth * columnNumber));
                 }
             }
             finally
@@ -3468,7 +3345,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _)));
                 var listViewItems =
-                    brokeredMessage.Properties.Select(p => new ListViewItem(new[] {p.Key, Convert.ToString(p.Value)}))
+                    brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) }))
                         .ToArray();
                 messagePropertyListView.Items.Clear();
                 messagePropertyListView.Items.AddRange(listViewItems);
@@ -3511,7 +3388,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperMessageList_CustomPaint(PaintEventArgs e)
         {
             messagesDataGridView.Size = new Size(
-                grouperMessageList.Size.Width - (messagesDataGridView.Location.X*2 + 2),
+                grouperMessageList.Size.Width - (messagesDataGridView.Location.X * 2 + 2),
                 grouperMessageList.Size.Height - messagesDataGridView.Location.Y - messagesDataGridView.Location.X - 2);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                 messagesDataGridView.Location.X - 1,
@@ -3523,7 +3400,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperSessionList_CustomPaint(PaintEventArgs e)
         {
             sessionsDataGridView.Size = new Size(
-                grouperSessionList.Size.Width - (sessionsDataGridView.Location.X*2 + 2),
+                grouperSessionList.Size.Width - (sessionsDataGridView.Location.X * 2 + 2),
                 grouperSessionList.Size.Height - sessionsDataGridView.Location.Y - sessionsDataGridView.Location.X - 2);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                 sessionsDataGridView.Location.X - 1,
@@ -3535,7 +3412,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperDeadletterList_CustomPaint(PaintEventArgs e)
         {
             deadletterDataGridView.Size =
-                new Size(grouperDeadletterList.Size.Width - (deadletterDataGridView.Location.X*2 + 2),
+                new Size(grouperDeadletterList.Size.Width - (deadletterDataGridView.Location.X * 2 + 2),
                     grouperDeadletterList.Size.Height - deadletterDataGridView.Location.Y -
                     deadletterDataGridView.Location.X - 2);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
@@ -3603,7 +3480,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             deadletterMessage = bindingList[e.RowIndex];
             deadletterPropertyGrid.SelectedObject = deadletterMessage;
             txtDeadletterText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out _)));
-            var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] {p.Key, Convert.ToString(p.Value)})).ToArray();
+            var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
             deadletterPropertyListView.Items.Clear();
             deadletterPropertyListView.Items.AddRange(listViewItems);
         }
@@ -3695,8 +3572,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 int columnWidth;
                 if (serviceBusHelper.IsCloudNamespace)
                 {
-                    columnWidth = width/8;
-                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (7*columnWidth);
+                    columnWidth = width / 8;
+                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (7 * columnWidth);
                     if (authorizationRulesDataGridView.Columns["KeyName"] != null &&
                         authorizationRulesDataGridView.Columns["PrimaryKey"] != null &&
                         authorizationRulesDataGridView.Columns["SecondaryKey"] != null)
@@ -3708,8 +3585,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    columnWidth = width/5;
-                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (4*columnWidth);
+                    columnWidth = width / 5;
+                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (4 * columnWidth);
                 }
                 authorizationRulesDataGridView.Columns["ClaimType"].Width = columnWidth;
                 authorizationRulesDataGridView.Columns["ClaimValue"].Width = columnWidth;
@@ -3745,7 +3622,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             if (authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Manage")
             {
-                if (!(bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
+                if (!(bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
                 {
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value = true;
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Send"].Value = true;
@@ -3756,8 +3633,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if ((authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Send" ||
                  authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Listen"))
             {
-                if ((bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value &&
-                    (bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value)
+                if ((bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value &&
+                    (bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value)
                 {
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value = false;
@@ -4022,33 +3899,33 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void grouperMessageText_CustomPaint(PaintEventArgs obj)
         {
-            txtMessageText.Size = new Size(grouperMessageText.Size.Width - (txtMessageText.Location.X*2),
+            txtMessageText.Size = new Size(grouperMessageText.Size.Width - (txtMessageText.Location.X * 2),
                 grouperMessageText.Size.Height - txtMessageText.Location.Y - txtMessageText.Location.X);
         }
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - messagePropertyListView.Location.X*2,
+            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - messagePropertyListView.Location.X * 2,
                                                     grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
                                                     messagePropertyListView.Location.X);
         }
 
         private void grouperMessageProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - messagePropertyGrid.Location.X*2,
+            messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - messagePropertyGrid.Location.X * 2,
                                                 grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
         }
 
         private void grouperDeadletterText_CustomPaint(PaintEventArgs obj)
         {
-            txtDeadletterText.Size = new Size(grouperDeadletterText.Size.Width - txtDeadletterText.Location.X*2,
+            txtDeadletterText.Size = new Size(grouperDeadletterText.Size.Width - txtDeadletterText.Location.X * 2,
                 grouperDeadletterText.Size.Height - txtDeadletterText.Location.Y - txtDeadletterText.Location.X);
         }
 
         private void grouperDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
         {
             deadletterPropertyListView.Size =
-                new Size(grouperDeadletterCustomProperties.Size.Width - deadletterPropertyListView.Location.X*2,
+                new Size(grouperDeadletterCustomProperties.Size.Width - deadletterPropertyListView.Location.X * 2,
                     grouperDeadletterCustomProperties.Size.Height - deadletterPropertyListView.Location.Y -
                     deadletterPropertyListView.Location.X);
         }
@@ -4056,7 +3933,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperDeadletterProperties_CustomPaint(PaintEventArgs obj)
         {
             deadletterPropertyGrid.Size =
-                new Size(grouperDeadletterProperties.Size.Width - deadletterPropertyGrid.Location.X*2,
+                new Size(grouperDeadletterProperties.Size.Width - deadletterPropertyGrid.Location.X * 2,
                     grouperDeadletterProperties.Size.Height - deadletterPropertyGrid.Location.Y -
                     deadletterPropertyGrid.Location.X);
         }
@@ -4086,14 +3963,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void grouperSessionState_CustomPaint(PaintEventArgs obj)
         {
-            txtSessionState.Size = new Size(grouperSessionState.Size.Width - (txtSessionState.Location.X*2),
+            txtSessionState.Size = new Size(grouperSessionState.Size.Width - (txtSessionState.Location.X * 2),
                 grouperSessionState.Size.Height - txtSessionState.Location.Y - txtSessionState.Location.X);
         }
 
         private void grouperSessionProperties_CustomPaint(PaintEventArgs obj)
         {
             sessionPropertyGrid.Size = new Size(
-                grouperSessionProperties.Size.Width - (sessionPropertyGrid.Location.X*2),
+                grouperSessionProperties.Size.Width - (sessionPropertyGrid.Location.X * 2),
                 grouperSessionProperties.Size.Height - sessionPropertyGrid.Location.Y - sessionPropertyGrid.Location.X);
         }
 
@@ -4127,7 +4004,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
                 using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
+                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -4184,7 +4061,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
                 using (var form = new MessageForm(deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
+                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -4711,7 +4588,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 metricsManualResetEvent.WaitOne();
                 var dataGridViewComboBoxColumn =
-                    (DataGridViewComboBoxColumn) dataPointDataGridView.Columns[MetricProperty];
+                    (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
                 if (dataGridViewComboBoxColumn != null)
                 {
                     dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(QueueEntity)
@@ -4723,28 +4600,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Application.UseWaitCursor = true;
-                await PurgeMessagesAsync();
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await PurgeMessagesAsync();
         }
-        
+
         private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Application.UseWaitCursor = true;
-                await PurgeDeadletterQueueMessagesAsync();
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await PurgeDeadletterQueueMessagesAsync();
         }
         #endregion
     }

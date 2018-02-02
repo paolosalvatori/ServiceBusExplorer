@@ -214,6 +214,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string ConnectionStringSharedSecretIssuer = "sharedsecretissuer";
         private const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
         private const string ConnectionStringTransportType = "transporttype";
+        private const string ConnectionStringEntityPath = "entitypath";
 
         //***************************
         // Icons
@@ -3408,7 +3409,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true);
+                string entityPath = string.Empty;
+                if (parameters.ContainsKey(ConnectionStringEntityPath))
+                {
+                    entityPath = parameters[ConnectionStringEntityPath];
+                }
+
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, entityPath);
             }
 
             if (toLower.Contains(ConnectionStringRuntimePort) ||
@@ -4649,7 +4656,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             }
                             catch (TimeoutException)
                             {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
                         if (selectedEntites.Contains(NotificationHubEntities) &&
@@ -4698,7 +4705,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 }
                                 catch (TimeoutException)
                                 {
-                                    serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
                             }
                             else
@@ -4805,7 +4812,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         catch (TimeoutException)
                         {
-                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
                     if (selectedEntites.Contains(TopicEntities) &&
@@ -4930,7 +4937,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         catch (TimeoutException)
                         {
-                            serviceBusTreeView.Nodes.Remove(relayServiceListNode);
+                            serviceBusTreeView.Nodes.Remove(topicListNode);
                         }
                     }
                     queueListNode?.Expand();
