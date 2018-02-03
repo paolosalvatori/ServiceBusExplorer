@@ -299,7 +299,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     }
                     finally
                     {
-                        await CloseReceiver(receiver).ConfigureAwait(false);
+                        await receiver.CloseAsync().ConfigureAwait(false);
                         await messagingFactory.CloseAsync().ConfigureAwait(false);
                     }
 
@@ -309,17 +309,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             await Task.WhenAll(tasks);
             return totalMessagesPurged;
-        }
-
-        private static async Task CloseReceiver(ClientEntity receiver)
-        {
-            // Currently there is no implementation of CloseAsync in the MessageReceiver nor in the
-            // SubscriptionClient class, only in their common base cless, but in case there appears 
-            // one we want to call it.
-            if (receiver is MessageReceiver)
-                await ((MessageReceiver)receiver).CloseAsync().ConfigureAwait(false);
-            else
-                await ((SubscriptionClient)receiver).CloseAsync().ConfigureAwait(false);
         }
 
         private bool EntityIsPartioned()
