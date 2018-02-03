@@ -19,8 +19,6 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,20 +26,15 @@ using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
 using System.Threading;
 
-#endregion
-
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class MessagingPurger
     {
-        #region Private Fields
         // Either queueDescription or subscriptWrapper is used - but never both.
-        private readonly QueueDescription queueDescription;
-        private readonly SubscriptionWrapper subscriptionWrapper;
-        private readonly ServiceBusHelper serviceBusHelper;
-        #endregion
+        readonly QueueDescription queueDescription;
+        readonly SubscriptionWrapper subscriptionWrapper;
+        readonly ServiceBusHelper serviceBusHelper;
 
-        #region Public Constructors
         public MessagingPurger(ServiceBusHelper serviceBusHelper, QueueDescription queueDescription)
         {
             this.serviceBusHelper = serviceBusHelper;
@@ -53,9 +46,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
         }
-        #endregion
 
-        #region Public methods
         /// <summary>
         /// Purges the messages from a queue, subscription or a dead letter queue. Handles all kinds of queues.
         /// </summary>
@@ -77,20 +68,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             return totalMessagesPurged;
         }
-        #endregion
 
-        #region Private methods
-        private async Task<long> PurgeSessionEntity()
+        async Task<long> PurgeSessionEntity()
         {
             GetEntityData(deadLetterQueueData: false,
-                messageCount: out long messagesToPurgeCount,
+                messageCount: out var messagesToPurgeCount,
                 entityPath: out _);
 
             return await DoPurgeSessionEntity(messagesToPurgeCount)
                 .ConfigureAwait(false);
         }
 
-        private async Task<long> DoPurgeSessionEntity(long messagesToPurgeCount)
+        async Task<long> DoPurgeSessionEntity(long messagesToPurgeCount)
         {
             long totalMessagesPurged = 0;
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
@@ -128,7 +117,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                 .ConfigureAwait(false);
                     }
 
-                    int consecutiveZeroBatchReceives = 0;
+                    var consecutiveZeroBatchReceives = 0;
                     while (consecutiveZeroBatchReceives < enoughZeroReceives
                         && totalMessagesPurged < messagesToPurgeCount)
                     {
@@ -167,9 +156,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return totalMessagesPurged;
         }
 
-        private async Task<long> PurgeNonSessionEntity(bool purgeDeadLetterQueueInstead)
+        async Task<long> PurgeNonSessionEntity(bool purgeDeadLetterQueueInstead)
         {
-            GetEntityData(purgeDeadLetterQueueInstead, out long messagesToPurgeCount, out string entityPath);
+            GetEntityData(purgeDeadLetterQueueInstead, out var messagesToPurgeCount, out var entityPath);
 
             long purgedMessagesCount = 0;
             var messageCount = messagesToPurgeCount;
@@ -191,7 +180,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return purgedMessagesCount;
         }
 
-        private void GetEntityData(bool deadLetterQueueData, out long messageCount, out string entityPath)
+        void GetEntityData(bool deadLetterQueueData, out long messageCount, out string entityPath)
         {
             if (deadLetterQueueData)
             {
@@ -229,20 +218,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
 
-        private async Task<long> DoPurgeNonSessionEntity(bool queue, long messagesToPurgeCount,
-            string entityPath)
+        async Task<long> DoPurgeNonSessionEntity(bool queue, long messagesToPurgeCount, string entityPath)
         {
             long totalMessagesPurged = 0;
-            int taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
+            var taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
             var tasks = new Task[taskCount];
-            var partitioned = EntityIsPartioned();
             var quit = false;  // This instance controls all the receiving tasks
 
-            for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
+            for (var taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
             {
                 tasks[taskIndex] = Task.Run(async () =>
                 {
-                    var localTaskIndex = taskIndex;
                     var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
 
                     ClientEntity receiver;
@@ -305,8 +291,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         await receiver.CloseAsync().ConfigureAwait(false);
                         await messagingFactory.CloseAsync().ConfigureAwait(false);
                     }
-
-                    return;
                 });  // End of lambda 
             }
 
@@ -314,7 +298,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return totalMessagesPurged;
         }
 
-        private bool EntityIsPartioned()
+        bool EntityIsPartioned()
         {
             if (queueDescription != null)
             {
@@ -323,7 +307,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             return subscriptionWrapper.TopicDescription.EnablePartitioning;
         }
-        private bool EntityRequiresSession()
+
+        bool EntityRequiresSession()
         {
             if (queueDescription != null)
             {
@@ -332,6 +317,5 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             return subscriptionWrapper.SubscriptionDescription.RequiresSession;
         }
-        #endregion
     }
 }
