@@ -59,7 +59,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <summary>
         /// Purges the messages from a queue, subscription or a dead letter queue. Handles all kinds of queues.
         /// </summary>
-        /// <param name="purgeDeadLetterSubQueue">If false it will purge the queue, if true it will purge the 
+        /// <param name="purgeDeadLetterQueueInstead">If false it will purge the queue, if true it will purge the 
         /// dead letter queue instead.</param>
         /// <returns>The number of messages purged</returns>
         public async Task<long> Purge(bool purgeDeadLetterQueueInstead = false)
@@ -68,11 +68,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (!purgeDeadLetterQueueInstead && EntityRequiresSession())
             {
-                totalMessagesPurged = await PurgeSessionEntity();
+                totalMessagesPurged = await PurgeSessionEntity().ConfigureAwait(false);
             }
             else
             {
-                totalMessagesPurged = await PurgeNonSessionEntity(purgeDeadLetterQueueInstead: purgeDeadLetterQueueInstead);
+                totalMessagesPurged = await PurgeNonSessionEntity(purgeDeadLetterQueueInstead: purgeDeadLetterQueueInstead).ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
@@ -86,7 +86,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 messageCount: out long messagesToPurgeCount,
                 entityPath: out _);
 
-            return await DoPurgeSessionEntity(messagesToPurgeCount);
+            return await DoPurgeSessionEntity(messagesToPurgeCount)
+                .ConfigureAwait(false);
         }
 
         private async Task<long> DoPurgeSessionEntity(long messagesToPurgeCount)
@@ -159,7 +160,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             finally
             {
-                await entityClient.CloseAsync().ConfigureAwait(false);
+                await entityClient.CloseAsync()
+                    .ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
@@ -179,7 +181,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 purgedMessagesCount += await DoPurgeNonSessionEntity(
                     queue: purgeDeadLetterQueueInstead ? true : queueDescription != null,
                     messagesToPurgeCount: messagesToPurgeCount,
-                    entityPath: entityPath);
+                    entityPath: entityPath)
+                    .ConfigureAwait(false);
 
                 GetEntityData(purgeDeadLetterQueueInstead, out messageCount, out _);
                 ++retries;
@@ -307,7 +310,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 });  // End of lambda 
             }
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
             return totalMessagesPurged;
         }
 
