@@ -176,7 +176,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var retries = 0;
 
             // Sometimes it does not start polling or quits polling while not done
-            while (purgedMessagesCount < messagesToPurgeCount && messageCount > 1 && retries < 3)
+            while (purgedMessagesCount < messagesToPurgeCount && messageCount >= 1 && retries < 3)
             {
                 purgedMessagesCount += await DoPurgeNonSessionEntity(
                     queue: purgeDeadLetterQueueInstead ? true : queueDescription != null,
