@@ -325,16 +325,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private bool EntityIsPartioned()
         {
             if (queueDescription != null)
+            {
                 return queueDescription.EnablePartitioning;
-            else
-                return subscriptionWrapper.TopicDescription.EnablePartitioning;
+            }
+
+            return subscriptionWrapper.TopicDescription.EnablePartitioning;
         }
         private bool EntityRequiresSession()
         {
             if (queueDescription != null)
+            {
                 return queueDescription.RequiresSession;
-            else
-                return subscriptionWrapper.SubscriptionDescription.RequiresSession;
+            }
+
+            return subscriptionWrapper.SubscriptionDescription.RequiresSession;
         }
         #endregion
     }
