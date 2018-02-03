@@ -27,7 +27,6 @@ using System.Linq;
 using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Diagnostics;
 
 #endregion
 
@@ -160,7 +159,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             finally
             {
-                await CloseClient(entityClient).ConfigureAwait(false);
                 await entityClient.CloseAsync().ConfigureAwait(false);
             }
 
@@ -322,17 +320,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 await ((MessageReceiver)receiver).CloseAsync().ConfigureAwait(false);
             else
                 await ((SubscriptionClient)receiver).CloseAsync().ConfigureAwait(false);
-        }
-
-        private static async Task CloseClient(ClientEntity clientEntity)
-        {
-            // Currently there is no implementation of CloseAsync in the QueueClient nor in the
-            // SubscriptionClient class, only in their common base cless, but in case there appears 
-            // one we want to call it.
-            if (clientEntity is QueueClient)
-                await ((QueueClient)clientEntity).CloseAsync().ConfigureAwait(false);
-            else
-                await ((SubscriptionClient)clientEntity).CloseAsync().ConfigureAwait(false);
         }
 
         private bool EntityIsPartioned()
