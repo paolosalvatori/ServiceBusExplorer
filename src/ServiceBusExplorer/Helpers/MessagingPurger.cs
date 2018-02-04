@@ -298,17 +298,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return totalMessagesPurged;
         }
 
-        // TODO: this method was never used. Is it even needed?
-        bool EntityIsPartioned()
-        {
-            if (queueDescription != null)
-            {
-                return queueDescription.EnablePartitioning;
-            }
-
-            return subscriptionWrapper.TopicDescription.EnablePartitioning;
-        }
-
         bool EntityRequiresSession()
         {
             if (queueDescription != null)
