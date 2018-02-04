@@ -775,7 +775,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                         0,
                                                                         false,
                                                                         false,
-                                                                        false,
                                                                         bodyType,
                                                                         null);
                 });
