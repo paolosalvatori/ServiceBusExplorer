@@ -453,7 +453,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
-            var dlqPath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
             using (var deleteForm = new DeleteForm($"Would you like to purge the deadletter queue of the {queueDescription.Path} queue?"))
             {
                 if (deleteForm.ShowDialog() != DialogResult.OK)

@@ -19,30 +19,22 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Diagnostics;
-
-#endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class MessagingPurger
     {
-        #region Private Fields
         // Either queueDescription or subscriptWrapper is used - but never both.
-        private readonly QueueDescription queueDescription;
-        private readonly SubscriptionWrapper subscriptionWrapper;
-        private readonly ServiceBusHelper serviceBusHelper;
-        #endregion
+        readonly QueueDescription queueDescription;
+        readonly SubscriptionWrapper subscriptionWrapper;
+        readonly ServiceBusHelper serviceBusHelper;
 
-        #region Public Constructors
         public MessagingPurger(ServiceBusHelper serviceBusHelper, QueueDescription queueDescription)
         {
             this.serviceBusHelper = serviceBusHelper;
@@ -54,13 +46,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
         }
-        #endregion
 
-        #region Public methods
         /// <summary>
         /// Purges the messages from a queue, subscription or a dead letter queue. Handles all kinds of queues.
         /// </summary>
-        /// <param name="purgeDeadLetterSubQueue">If false it will purge the queue, if true it will purge the 
+        /// <param name="purgeDeadLetterQueueInstead">If false it will purge the queue, if true it will purge the 
         /// dead letter queue instead.</param>
         /// <returns>The number of messages purged</returns>
         public async Task<long> Purge(bool purgeDeadLetterQueueInstead = false)
@@ -69,28 +59,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (!purgeDeadLetterQueueInstead && EntityRequiresSession())
             {
-                totalMessagesPurged = await PurgeSessionEntity();
+                totalMessagesPurged = await PurgeSessionEntity().ConfigureAwait(false);
             }
             else
             {
-                totalMessagesPurged = await PurgeNonSessionEntity(purgeDeadLetterQueueInstead: purgeDeadLetterQueueInstead);
+                totalMessagesPurged = await PurgeNonSessionEntity(purgeDeadLetterQueueInstead: purgeDeadLetterQueueInstead).ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
         }
-        #endregion
 
-        #region Private methods
-        private async Task<long> PurgeSessionEntity()
+        async Task<long> PurgeSessionEntity()
         {
             GetEntityData(deadLetterQueueData: false,
-                messageCount: out long messagesToPurgeCount,
+                messageCount: out var messagesToPurgeCount,
                 entityPath: out _);
 
-            return await DoPurgeSessionEntity(messagesToPurgeCount);
+            return await DoPurgeSessionEntity(messagesToPurgeCount)
+                .ConfigureAwait(false);
         }
 
-        private async Task<long> DoPurgeSessionEntity(long messagesToPurgeCount)
+        async Task<long> DoPurgeSessionEntity(long messagesToPurgeCount)
         {
             long totalMessagesPurged = 0;
             var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
@@ -128,7 +117,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                 .ConfigureAwait(false);
                     }
 
-                    int consecutiveZeroBatchReceives = 0;
+                    var consecutiveZeroBatchReceives = 0;
                     while (consecutiveZeroBatchReceives < enoughZeroReceives
                         && totalMessagesPurged < messagesToPurgeCount)
                     {
@@ -160,28 +149,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             finally
             {
-                await CloseClient(entityClient).ConfigureAwait(false);
-                await entityClient.CloseAsync().ConfigureAwait(false);
+                await entityClient.CloseAsync()
+                    .ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
         }
 
-        private async Task<long> PurgeNonSessionEntity(bool purgeDeadLetterQueueInstead)
+        async Task<long> PurgeNonSessionEntity(bool purgeDeadLetterQueueInstead)
         {
-            GetEntityData(purgeDeadLetterQueueInstead, out long messagesToPurgeCount, out string entityPath);
+            GetEntityData(purgeDeadLetterQueueInstead, out var messagesToPurgeCount, out var entityPath);
 
             long purgedMessagesCount = 0;
             var messageCount = messagesToPurgeCount;
             var retries = 0;
 
             // Sometimes it does not start polling or quits polling while not done
-            while (purgedMessagesCount < messagesToPurgeCount && messageCount > 1 && retries < 3)
+            while (purgedMessagesCount < messagesToPurgeCount && messageCount >= 1 && retries < 3)
             {
                 purgedMessagesCount += await DoPurgeNonSessionEntity(
                     queue: purgeDeadLetterQueueInstead ? true : queueDescription != null,
                     messagesToPurgeCount: messagesToPurgeCount,
-                    entityPath: entityPath);
+                    entityPath: entityPath)
+                    .ConfigureAwait(false);
 
                 GetEntityData(purgeDeadLetterQueueInstead, out messageCount, out _);
                 ++retries;
@@ -190,7 +180,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return purgedMessagesCount;
         }
 
-        private void GetEntityData(bool deadLetterQueueData, out long messageCount, out string entityPath)
+        void GetEntityData(bool deadLetterQueueData, out long messageCount, out string entityPath)
         {
             if (deadLetterQueueData)
             {
@@ -228,20 +218,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
 
-        private async Task<long> DoPurgeNonSessionEntity(bool queue, long messagesToPurgeCount,
-            string entityPath)
+        async Task<long> DoPurgeNonSessionEntity(bool queue, long messagesToPurgeCount, string entityPath)
         {
             long totalMessagesPurged = 0;
-            int taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
+            var taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
             var tasks = new Task[taskCount];
-            var partitioned = EntityIsPartioned();
             var quit = false;  // This instance controls all the receiving tasks
 
-            for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
+            for (var taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
             {
                 tasks[taskIndex] = Task.Run(async () =>
                 {
-                    var localTaskIndex = taskIndex;
                     var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
 
                     ClientEntity receiver;
@@ -301,54 +288,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     }
                     finally
                     {
-                        await CloseReceiver(receiver).ConfigureAwait(false);
+                        await receiver.CloseAsync().ConfigureAwait(false);
                         await messagingFactory.CloseAsync().ConfigureAwait(false);
                     }
-
-                    return;
                 });  // End of lambda 
             }
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
             return totalMessagesPurged;
         }
 
-        private static async Task CloseReceiver(ClientEntity receiver)
-        {
-            // Currently there is no implementation of CloseAsync in the MessageReceiver nor in the
-            // SubscriptionClient class, only in their common base cless, but in case there appears 
-            // one we want to call it.
-            if (receiver is MessageReceiver)
-                await ((MessageReceiver)receiver).CloseAsync().ConfigureAwait(false);
-            else
-                await ((SubscriptionClient)receiver).CloseAsync().ConfigureAwait(false);
-        }
-
-        private static async Task CloseClient(ClientEntity clientEntity)
-        {
-            // Currently there is no implementation of CloseAsync in the QueueClient nor in the
-            // SubscriptionClient class, only in their common base cless, but in case there appears 
-            // one we want to call it.
-            if (clientEntity is QueueClient)
-                await ((QueueClient)clientEntity).CloseAsync().ConfigureAwait(false);
-            else
-                await ((SubscriptionClient)clientEntity).CloseAsync().ConfigureAwait(false);
-        }
-
-        private bool EntityIsPartioned()
+        bool EntityRequiresSession()
         {
             if (queueDescription != null)
-                return queueDescription.EnablePartitioning;
-            else
-                return subscriptionWrapper.TopicDescription.EnablePartitioning;
-        }
-        private bool EntityRequiresSession()
-        {
-            if (queueDescription != null)
+            {
                 return queueDescription.RequiresSession;
-            else
-                return subscriptionWrapper.SubscriptionDescription.RequiresSession;
+            }
+
+            return subscriptionWrapper.SubscriptionDescription.RequiresSession;
         }
-        #endregion
     }
 }
