@@ -346,7 +346,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                                            0,
                                                                                            chkNewMessageId.Checked,
                                                                                            false,
-                                                                                           false,
                                                                                            bodyType,
                                                                                            cboSenderInspector.SelectedIndex > 0 ?
                                                                                            Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :

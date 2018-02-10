@@ -3752,7 +3752,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                            int taskId,
                                                            bool updateMessageId,
                                                            bool oneSessionPerTask,
-                                                           bool isBinary,
                                                            BodyType bodyType,
                                                            IBrokeredMessageInspector messageInspector)
         {
@@ -4041,7 +4040,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                         taskId,
                                                         updateMessageId,
                                                         oneSessionPerTask,
-                                                        isBinary,
                                                         bodyType,
                                                         messageInspector));
                                     if (addMessageNumber)
@@ -4105,7 +4103,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                           taskId,
                                                           updateMessageId,
                                                           oneSessionPerTask,
-                                                          isBinary,
                                                           bodyType,
                                                           messageInspector);
                             if (addMessageNumber)
