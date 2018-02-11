@@ -1820,7 +1820,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     AllowEdit = false,
                     AllowNew = false,
-                    AllowRemove = false
+                    AllowRemove = true
                 };
 
                 deadletterBindingSource.DataSource = deadletterBindingList;
@@ -4022,10 +4022,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             deadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
+
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            moveMessageBackToMainQueueToolStripMenuItem.Visible = false; // !multipleSelectedRows;
+            deleteMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            moveMessagesBackToMainQueueToolStripMenuItem.Visible = false; // multipleSelectedRows;
+            deleteMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+
             deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -4607,5 +4614,111 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             await PurgeDeadletterQueueMessagesAsync();
         }
         #endregion
+
+        void deleteMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteMessagesToolStripMenuItem_Click(sender, e);
+        }
+
+        async void deleteMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (deadletterDataGridView.SelectedRows.Count <= 0)
+            {
+                return;
+            }
+
+            var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(r => r.DataBoundItem as BrokeredMessage);
+
+            string confirmationText;
+
+            if (messages.Count() == 1)
+            {
+                confirmationText = "Are you sure you want to delete the selected message from the " +
+                    $"deadletter subqueue for the {queueDescription.Path} queue?";
+            }
+            else
+            {
+                confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
+                    $"deadletter subqueue for {queueDescription.Path} queue?";
+            }
+
+            using (var deleteForm = new DeleteForm(confirmationText))
+            {
+                if (deleteForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+            }
+
+            var sequenceNumbersToDelete = messages.Select(s => s.SequenceNumber).ToList();
+            var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
+
+            try
+            {
+                Application.UseWaitCursor = true;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                var messagesDeleteCount = sequenceNumbersToDelete.Count();
+                var result = await deadLetterMessageHandler.DeleteMessages(
+                    sequenceNumbersToDelete, MainForm.SingletonMainForm.ReceiveTimeout);
+
+                foreach (DataGridViewRow row in deadletterDataGridView.SelectedRows)
+                {
+                    var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
+
+                    if (result.DeletedSequenceNumbers.Contains(brokeredMessage.SequenceNumber))
+                    {
+                        deadletterDataGridView.Rows.Remove(row);
+                    }
+                }
+
+                if (messagesDeleteCount > result.DeletedSequenceNumbers.Count())
+                {
+                    string messageText;
+
+                    if (result.DeletedSequenceNumbers.Count() == 0)
+                    {
+                        messageText = "No message was deleted.";
+                    }
+                    else
+                    {
+                        messageText = "Not all the selected messages were deleted.";
+                    }
+
+                    if (result.TimedOut)
+                    {
+                        messageText += " This was caused by the time to go through the messages were longer than " +
+                            "Lock duration for the queue. Either delete some messages in the dead letter subqueue or " +
+                            "increase the Lock duration for the queue." +
+                             Environment.NewLine + Environment.NewLine +
+                             $"The Lock duration for the queue is currently {queueDescription.LockDuration.TotalSeconds}" +
+                             " seconds.";
+                    }
+                    else
+                    {
+                        messageText += " This might have been caused by the Receive Timeout in the Options dialog is" +
+                            " too low or by another process which deleted or locked the messages." +
+                             Environment.NewLine + Environment.NewLine +
+                            $"The Receive Timeout is currently set to {MainForm.SingletonMainForm.ReceiveTimeout} seconds.";
+                    }
+
+                    Application.UseWaitCursor = false;
+                    MessageBox.Show(messageText, "Not all selected messages were deleted", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            catch (LockDurationTooLowException ldtle)
+            {
+                Application.UseWaitCursor = false;
+                MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
+
+            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+        }
     }
 }
