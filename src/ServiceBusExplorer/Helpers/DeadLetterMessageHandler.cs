@@ -21,17 +21,11 @@
 
 #region Using Directives
 
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.ServiceBus.Messaging;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Diagnostics;
-using System.Collections.Concurrent;
-using System.Globalization;
-using System.Text;
-using System.Transactions;
+using System.Threading.Tasks;
 
 #endregion
 
