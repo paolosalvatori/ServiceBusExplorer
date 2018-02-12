@@ -59,39 +59,38 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.logoPictureBox = new System.Windows.Forms.PictureBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.grouperFilters = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.lblSelectedEntities = new System.Windows.Forms.Label();
-            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.btnClearSubscriptionFilterExpression = new System.Windows.Forms.Button();
             this.btnClearTopicFilterExpression = new System.Windows.Forms.Button();
             this.btnClearQueueFilterExpression = new System.Windows.Forms.Button();
             this.btnOpenSubscriptionFilterForm = new System.Windows.Forms.Button();
             this.txtSubscriptionFilterExpression = new System.Windows.Forms.TextBox();
-            this.lblSubscriptionFilterExpression = new System.Windows.Forms.Label();
             this.btnOpenTopicFilterForm = new System.Windows.Forms.Button();
             this.btnOpenQueueFilterForm = new System.Windows.Forms.Button();
             this.txtQueueFilterExpression = new System.Windows.Forms.TextBox();
-            this.lblQueueFilterExpression = new System.Windows.Forms.Label();
             this.txtTopicFilterExpression = new System.Windows.Forms.TextBox();
+            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
+            this.txtIssuerName = new System.Windows.Forms.TextBox();
+            this.txtNamespace = new System.Windows.Forms.TextBox();
+            this.txtEntityPath = new System.Windows.Forms.TextBox();
+            this.logoPictureBox = new System.Windows.Forms.PictureBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.grouperFilters = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.lblSelectedEntities = new System.Windows.Forms.Label();
+            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.lblSubscriptionFilterExpression = new System.Windows.Forms.Label();
+            this.lblQueueFilterExpression = new System.Windows.Forms.Label();
             this.lblTopicFilterExpression = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaceSettings = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.lblEntityPath = new System.Windows.Forms.Label();
             this.cboTransportType = new System.Windows.Forms.ComboBox();
             this.lblTransportType = new System.Windows.Forms.Label();
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
             this.lblConnectivityMode = new System.Windows.Forms.Label();
             this.txtUri = new System.Windows.Forms.TextBox();
             this.lblUri = new System.Windows.Forms.Label();
-            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.lblIssuerSecret = new System.Windows.Forms.Label();
-            this.txtIssuerName = new System.Windows.Forms.TextBox();
             this.lblIssuerName = new System.Windows.Forms.Label();
-            this.txtNamespace = new System.Windows.Forms.TextBox();
             this.lblNamespace = new System.Windows.Forms.Label();
-            this.txtEntityPath = new System.Windows.Forms.TextBox();
+            this.lblEntityPath = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
@@ -135,106 +134,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             this.btnCancel.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCancel.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // logoPictureBox
-            // 
-            this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.logoPictureBox.BackgroundImage = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
-            this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.logoPictureBox.ErrorImage = null;
-            this.logoPictureBox.Location = new System.Drawing.Point(657, 8);
-            this.logoPictureBox.Name = "logoPictureBox";
-            this.logoPictureBox.Size = new System.Drawing.Size(110, 14);
-            this.logoPictureBox.TabIndex = 34;
-            this.logoPictureBox.TabStop = false;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(144, 400);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(8, 21);
-            this.comboBox1.TabIndex = 35;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(536, 409);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(72, 24);
-            this.btnSave.TabIndex = 3;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            this.btnSave.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnSave.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // grouperFilters
-            // 
-            this.grouperFilters.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperFilters.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilters.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperFilters.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperFilters.BorderThickness = 1F;
-            this.grouperFilters.Controls.Add(this.lblSelectedEntities);
-            this.grouperFilters.Controls.Add(this.cboSelectedEntities);
-            this.grouperFilters.Controls.Add(this.btnClearSubscriptionFilterExpression);
-            this.grouperFilters.Controls.Add(this.btnClearTopicFilterExpression);
-            this.grouperFilters.Controls.Add(this.btnClearQueueFilterExpression);
-            this.grouperFilters.Controls.Add(this.btnOpenSubscriptionFilterForm);
-            this.grouperFilters.Controls.Add(this.txtSubscriptionFilterExpression);
-            this.grouperFilters.Controls.Add(this.lblSubscriptionFilterExpression);
-            this.grouperFilters.Controls.Add(this.btnOpenTopicFilterForm);
-            this.grouperFilters.Controls.Add(this.btnOpenQueueFilterForm);
-            this.grouperFilters.Controls.Add(this.txtQueueFilterExpression);
-            this.grouperFilters.Controls.Add(this.lblQueueFilterExpression);
-            this.grouperFilters.Controls.Add(this.txtTopicFilterExpression);
-            this.grouperFilters.Controls.Add(this.lblTopicFilterExpression);
-            this.grouperFilters.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperFilters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperFilters.ForeColor = System.Drawing.Color.White;
-            this.grouperFilters.GroupImage = null;
-            this.grouperFilters.GroupTitle = "Filter Expressions";
-            this.grouperFilters.Location = new System.Drawing.Point(16, 104);
-            this.grouperFilters.Name = "grouperFilters";
-            this.grouperFilters.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperFilters.PaintGroupBox = true;
-            this.grouperFilters.RoundCorners = 4;
-            this.grouperFilters.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperFilters.ShadowControl = false;
-            this.grouperFilters.ShadowThickness = 1;
-            this.grouperFilters.Size = new System.Drawing.Size(368, 248);
-            this.grouperFilters.TabIndex = 1;
-            this.grouperFilters.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperFilters_CustomPaint);
-            // 
-            // lblSelectedEntities
-            // 
-            this.lblSelectedEntities.AutoSize = true;
-            this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 48);
-            this.lblSelectedEntities.Name = "lblSelectedEntities";
-            this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
-            this.lblSelectedEntities.TabIndex = 53;
-            this.lblSelectedEntities.Text = "Selected Entities:";
-            // 
-            // cboSelectedEntities
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
-            this.cboSelectedEntities.DisplayMemberSingleItem = "";
-            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(16, 64);
-            this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(336, 21);
-            this.cboSelectedEntities.TabIndex = 0;
             // 
             // btnClearSubscriptionFilterExpression
             // 
@@ -337,16 +236,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtSubscriptionFilterExpression.TabIndex = 7;
             this.toolTip.SetToolTip(this.txtSubscriptionFilterExpression, "Gets or sets the OData filter for topics.");
             // 
-            // lblSubscriptionFilterExpression
-            // 
-            this.lblSubscriptionFilterExpression.AutoSize = true;
-            this.lblSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 192);
-            this.lblSubscriptionFilterExpression.Name = "lblSubscriptionFilterExpression";
-            this.lblSubscriptionFilterExpression.Size = new System.Drawing.Size(147, 13);
-            this.lblSubscriptionFilterExpression.TabIndex = 51;
-            this.lblSubscriptionFilterExpression.Text = "Subscription Filter Expression:";
-            // 
             // btnOpenTopicFilterForm
             // 
             this.btnOpenTopicFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -401,16 +290,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtQueueFilterExpression.TabIndex = 1;
             this.toolTip.SetToolTip(this.txtQueueFilterExpression, "Gets or sets the OData filter for queues.");
             // 
-            // lblQueueFilterExpression
-            // 
-            this.lblQueueFilterExpression.AutoSize = true;
-            this.lblQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblQueueFilterExpression.Location = new System.Drawing.Point(16, 96);
-            this.lblQueueFilterExpression.Name = "lblQueueFilterExpression";
-            this.lblQueueFilterExpression.Size = new System.Drawing.Size(121, 13);
-            this.lblQueueFilterExpression.TabIndex = 47;
-            this.lblQueueFilterExpression.Text = "Queue Filter Expression:";
-            // 
             // txtTopicFilterExpression
             // 
             this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -421,6 +300,166 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtTopicFilterExpression.Size = new System.Drawing.Size(272, 20);
             this.txtTopicFilterExpression.TabIndex = 4;
             this.toolTip.SetToolTip(this.txtTopicFilterExpression, "Gets or sets the OData filter for topics.");
+            // 
+            // txtIssuerSecret
+            // 
+            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
+            this.txtIssuerSecret.Name = "txtIssuerSecret";
+            this.txtIssuerSecret.PasswordChar = '*';
+            this.txtIssuerSecret.Size = new System.Drawing.Size(336, 20);
+            this.txtIssuerSecret.TabIndex = 4;
+            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
+            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtIssuerName
+            // 
+            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtIssuerName.Location = new System.Drawing.Point(16, 192);
+            this.txtIssuerName.Name = "txtIssuerName";
+            this.txtIssuerName.Size = new System.Drawing.Size(336, 20);
+            this.txtIssuerName.TabIndex = 3;
+            this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
+            this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtNamespace
+            // 
+            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
+            this.txtNamespace.Name = "txtNamespace";
+            this.txtNamespace.Size = new System.Drawing.Size(336, 20);
+            this.txtNamespace.TabIndex = 1;
+            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
+            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtEntityPath
+            // 
+            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
+            this.txtEntityPath.Name = "txtEntityPath";
+            this.txtEntityPath.Size = new System.Drawing.Size(336, 20);
+            this.txtEntityPath.TabIndex = 2;
+            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the name of the Service Bus namespace.");
+            // 
+            // logoPictureBox
+            // 
+            this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.logoPictureBox.BackgroundImage = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
+            this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.logoPictureBox.ErrorImage = null;
+            this.logoPictureBox.Location = new System.Drawing.Point(657, 8);
+            this.logoPictureBox.Name = "logoPictureBox";
+            this.logoPictureBox.Size = new System.Drawing.Size(110, 14);
+            this.logoPictureBox.TabIndex = 34;
+            this.logoPictureBox.TabStop = false;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSave.Location = new System.Drawing.Point(536, 409);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(72, 24);
+            this.btnSave.TabIndex = 3;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Visible = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnSave.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnSave.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // grouperFilters
+            // 
+            this.grouperFilters.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperFilters.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperFilters.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilters.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilters.BorderThickness = 1F;
+            this.grouperFilters.Controls.Add(this.lblSelectedEntities);
+            this.grouperFilters.Controls.Add(this.cboSelectedEntities);
+            this.grouperFilters.Controls.Add(this.btnClearSubscriptionFilterExpression);
+            this.grouperFilters.Controls.Add(this.btnClearTopicFilterExpression);
+            this.grouperFilters.Controls.Add(this.btnClearQueueFilterExpression);
+            this.grouperFilters.Controls.Add(this.btnOpenSubscriptionFilterForm);
+            this.grouperFilters.Controls.Add(this.txtSubscriptionFilterExpression);
+            this.grouperFilters.Controls.Add(this.lblSubscriptionFilterExpression);
+            this.grouperFilters.Controls.Add(this.btnOpenTopicFilterForm);
+            this.grouperFilters.Controls.Add(this.btnOpenQueueFilterForm);
+            this.grouperFilters.Controls.Add(this.txtQueueFilterExpression);
+            this.grouperFilters.Controls.Add(this.lblQueueFilterExpression);
+            this.grouperFilters.Controls.Add(this.txtTopicFilterExpression);
+            this.grouperFilters.Controls.Add(this.lblTopicFilterExpression);
+            this.grouperFilters.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperFilters.ForeColor = System.Drawing.Color.White;
+            this.grouperFilters.GroupImage = null;
+            this.grouperFilters.GroupTitle = "Filter Expressions";
+            this.grouperFilters.Location = new System.Drawing.Point(16, 104);
+            this.grouperFilters.Name = "grouperFilters";
+            this.grouperFilters.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperFilters.PaintGroupBox = true;
+            this.grouperFilters.RoundCorners = 4;
+            this.grouperFilters.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperFilters.ShadowControl = false;
+            this.grouperFilters.ShadowThickness = 1;
+            this.grouperFilters.Size = new System.Drawing.Size(368, 296);
+            this.grouperFilters.TabIndex = 1;
+            this.grouperFilters.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperFilters_CustomPaint);
+            // 
+            // lblSelectedEntities
+            // 
+            this.lblSelectedEntities.AutoSize = true;
+            this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 48);
+            this.lblSelectedEntities.Name = "lblSelectedEntities";
+            this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
+            this.lblSelectedEntities.TabIndex = 53;
+            this.lblSelectedEntities.Text = "Selected Entities:";
+            // 
+            // cboSelectedEntities
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedEntities.DisplayMemberSingleItem = "";
+            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedEntities.FormattingEnabled = true;
+            this.cboSelectedEntities.Location = new System.Drawing.Point(16, 64);
+            this.cboSelectedEntities.Name = "cboSelectedEntities";
+            this.cboSelectedEntities.Size = new System.Drawing.Size(336, 21);
+            this.cboSelectedEntities.TabIndex = 0;
+            // 
+            // lblSubscriptionFilterExpression
+            // 
+            this.lblSubscriptionFilterExpression.AutoSize = true;
+            this.lblSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 192);
+            this.lblSubscriptionFilterExpression.Name = "lblSubscriptionFilterExpression";
+            this.lblSubscriptionFilterExpression.Size = new System.Drawing.Size(147, 13);
+            this.lblSubscriptionFilterExpression.TabIndex = 51;
+            this.lblSubscriptionFilterExpression.Text = "Subscription Filter Expression:";
+            // 
+            // lblQueueFilterExpression
+            // 
+            this.lblQueueFilterExpression.AutoSize = true;
+            this.lblQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblQueueFilterExpression.Location = new System.Drawing.Point(16, 96);
+            this.lblQueueFilterExpression.Name = "lblQueueFilterExpression";
+            this.lblQueueFilterExpression.Size = new System.Drawing.Size(121, 13);
+            this.lblQueueFilterExpression.TabIndex = 47;
+            this.lblQueueFilterExpression.Text = "Queue Filter Expression:";
             // 
             // lblTopicFilterExpression
             // 
@@ -466,19 +505,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperServiceBusNamespaceSettings.ShadowControl = false;
             this.grouperServiceBusNamespaceSettings.ShadowThickness = 1;
-            this.grouperServiceBusNamespaceSettings.Size = new System.Drawing.Size(368, 372);
+            this.grouperServiceBusNamespaceSettings.Size = new System.Drawing.Size(368, 376);
             this.grouperServiceBusNamespaceSettings.TabIndex = 2;
             this.grouperServiceBusNamespaceSettings.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperServiceBusNamespaceSettings_CustomPaint);
-            // 
-            // lblEntityPath
-            // 
-            this.lblEntityPath.AutoSize = true;
-            this.lblEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEntityPath.Location = new System.Drawing.Point(16, 128);
-            this.lblEntityPath.Name = "lblEntityPath";
-            this.lblEntityPath.Size = new System.Drawing.Size(61, 13);
-            this.lblEntityPath.TabIndex = 73;
-            this.lblEntityPath.Text = "Entity Path:";
             // 
             // cboTransportType
             // 
@@ -543,19 +572,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblUri.TabIndex = 43;
             this.lblUri.Text = "Endpoint URI:";
             // 
-            // txtIssuerSecret
-            // 
-            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
-            this.txtIssuerSecret.Name = "txtIssuerSecret";
-            this.txtIssuerSecret.PasswordChar = '*';
-            this.txtIssuerSecret.Size = new System.Drawing.Size(336, 20);
-            this.txtIssuerSecret.TabIndex = 4;
-            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
-            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
             // lblIssuerSecret
             // 
             this.lblIssuerSecret.AutoSize = true;
@@ -565,18 +581,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblIssuerSecret.Size = new System.Drawing.Size(143, 13);
             this.lblIssuerSecret.TabIndex = 40;
             this.lblIssuerSecret.Text = "Shared Secret Issuer Secret:";
-            // 
-            // txtIssuerName
-            // 
-            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtIssuerName.Location = new System.Drawing.Point(16, 192);
-            this.txtIssuerName.Name = "txtIssuerName";
-            this.txtIssuerName.Size = new System.Drawing.Size(336, 20);
-            this.txtIssuerName.TabIndex = 3;
-            this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
-            this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
             // lblIssuerName
             // 
@@ -588,18 +592,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblIssuerName.TabIndex = 39;
             this.lblIssuerName.Text = "Shared Secret Issuer Name:";
             // 
-            // txtNamespace
-            // 
-            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
-            this.txtNamespace.Name = "txtNamespace";
-            this.txtNamespace.Size = new System.Drawing.Size(336, 20);
-            this.txtNamespace.TabIndex = 1;
-            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
-            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
             // lblNamespace
             // 
             this.lblNamespace.AutoSize = true;
@@ -610,16 +602,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblNamespace.TabIndex = 38;
             this.lblNamespace.Text = "Namespace:";
             // 
-            // txtEntityPath
+            // lblEntityPath
             // 
-            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
-            this.txtEntityPath.Name = "txtEntityPath";
-            this.txtEntityPath.Size = new System.Drawing.Size(336, 20);
-            this.txtEntityPath.TabIndex = 2;
-            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the name of the Service Bus namespace.");
+            this.lblEntityPath.AutoSize = true;
+            this.lblEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEntityPath.Location = new System.Drawing.Point(16, 128);
+            this.lblEntityPath.Name = "lblEntityPath";
+            this.lblEntityPath.Size = new System.Drawing.Size(61, 13);
+            this.lblEntityPath.TabIndex = 73;
+            this.lblEntityPath.Text = "Entity Path:";
             // 
             // grouperServiceBusNamespaces
             // 
@@ -667,7 +658,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.ClientSize = new System.Drawing.Size(784, 442);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.grouperFilters);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.grouperServiceBusNamespaceSettings);
@@ -727,7 +717,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.ComboBox cboConnectivityMode;
         private System.Windows.Forms.ComboBox cboTransportType;
         private System.Windows.Forms.Label lblTransportType;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label lblSelectedEntities;
         private CheckBoxComboBox cboSelectedEntities;
         private System.Windows.Forms.Button btnSave;
