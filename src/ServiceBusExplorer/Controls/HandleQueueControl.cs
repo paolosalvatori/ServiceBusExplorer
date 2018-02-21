@@ -3840,7 +3840,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
-                messageForm.ShowDialog();
+                messageForm.ShowDialog();        
             }
         }
 
@@ -3855,9 +3855,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
+                if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
+                {
+                    RemoveRows(messageForm.RemovedSequenceNumbers);
+                }
             }
         }
 
@@ -4025,12 +4029,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            moveMessageBackToMainQueueToolStripMenuItem.Visible = false; // !multipleSelectedRows;
+            moveMessageBackToMainQueueToolStripMenuItem.Visible = !multipleSelectedRows;
             deleteMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            moveMessagesBackToMainQueueToolStripMenuItem.Visible = false; // multipleSelectedRows;
+            moveMessagesBackToMainQueueToolStripMenuItem.Visible = multipleSelectedRows;
             deleteMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
             deadletterContextMenuStrip.Show(Cursor.Position);
@@ -4066,10 +4070,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueDescription, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                     .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
+                    if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
+                    {
+                        RemoveRows(form.RemovedSequenceNumbers);
+                    }
                 }
             }
             catch (Exception ex)
@@ -4664,15 +4672,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var result = await deadLetterMessageHandler.DeleteMessages(
                     sequenceNumbersToDelete, MainForm.SingletonMainForm.ReceiveTimeout);
 
-                foreach (DataGridViewRow row in deadletterDataGridView.SelectedRows)
-                {
-                    var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
+                RemoveRows(result.DeletedSequenceNumbers);
+                //foreach (DataGridViewRow row in deadletterDataGridView.SelectedRows)
+                //{
+                //    var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
 
-                    if (result.DeletedSequenceNumbers.Contains(brokeredMessage.SequenceNumber))
-                    {
-                        deadletterDataGridView.Rows.Remove(row);
-                    }
-                }
+                //    if (result.DeletedSequenceNumbers.Contains(brokeredMessage.SequenceNumber))
+                //    {
+                //        deadletterDataGridView.Rows.Remove(row);
+                //    }
+                //}
+                //deadletterDataGridView.ClearSelection();
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count())
                 {
@@ -4719,6 +4729,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+        }
+
+        public void RemoveRows(IEnumerable<long> sequenceNumbersToRemove)
+        {
+            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
+            {
+                var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
+
+                if (sequenceNumbersToRemove.Contains(brokeredMessage.SequenceNumber))
+                {
+                    deadletterDataGridView.Rows.Remove(row);
+                }
+            }
+
+            deadletterDataGridView.ClearSelection();
+        }
+
+        private void moveMessageBackToMainQueueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -84,13 +84,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         private readonly BindingSource bindingSource = new BindingSource();
+        private readonly QueueDescription queueDescription; // Might be null
         #endregion
 
         #region Private Static Fields
         private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
         #endregion
 
-        #region Public Constructor
+        #region Public Properties
+        public List<long> RemovedSequenceNumbers
+        {
+            get; private set;
+        } = new List<long>();
+        #endregion
+
+        #region Public Constructors
         public MessageForm(BrokeredMessage brokeredMessage, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
         {
             this.brokeredMessage = brokeredMessage;
@@ -180,6 +188,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        public MessageForm(QueueDescription queueDescription, BrokeredMessage brokeredMessage,
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            this(brokeredMessage, serviceBusHelper, writeToLog)
+        {
+            this.queueDescription = queueDescription;
+        }
+
         public MessageForm(IEnumerable<BrokeredMessage> brokeredMessages, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
         {
             this.brokeredMessages = brokeredMessages;
@@ -209,9 +224,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        public MessageForm(QueueDescription queueDescription, IEnumerable<BrokeredMessage> brokeredMessages,
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            this(brokeredMessages, serviceBusHelper, writeToLog)
+        {
+            this.queueDescription = queueDescription;
+        }
         #endregion
 
-            #region Event Handlers
+        #region Event Handlers
         private void btnClose_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -285,7 +306,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
+                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+                    SelectEntityLabelText, queueDescription))
                 {
                     if (form.ShowDialog() != DialogResult.OK)
                     {
@@ -300,10 +322,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         bodyType = BodyType.Stream;
                     }
                     var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
-                    var messages = brokeredMessages != null ? 
+                    var messages = brokeredMessages != null ?
                                     new List<BrokeredMessage>(brokeredMessages) :
-                                    new List<BrokeredMessage>(new []{ brokeredMessage});
+                                    new List<BrokeredMessage>(new[] { brokeredMessage });
                     var outboundMessages = new List<BrokeredMessage>();
+                    var sequenceNumbers = new List<long>(); // Only used when removing messages
                     foreach (var message in messages)
                     {
                         BrokeredMessage outboundMessage;
@@ -341,7 +364,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                   message.CloneWithByteArrayBodyType(messageText) :
                                                   message.Clone(messageText);
                             }
-                            
+
                             outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
                                                                                            0,
                                                                                            chkNewMessageId.Checked,
@@ -351,6 +374,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                                                            Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
                                                                                            null);
                         }
+
+                        sequenceNumbers.Add(message.SequenceNumber);
+
                         var warningCollection = new ConcurrentBag<string>();
                         foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
                         {
@@ -405,7 +431,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var sent = outboundMessages.Count;
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
-                    await messageSender.SendBatchAsync(outboundMessages);
+                    if (chkRemove.Checked)
+                    {
+                        var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
+
+                        //for (int messageIndex = 0; messageIndex < sequenceNumbers.Count; ++messageIndex)
+                        //{
+                            messageHandler.MoveMessageFromDLQ(messageSender, sequenceNumbers, MainForm.SingletonMainForm.ReceiveTimeout,
+                                     outboundMessages[messageIndex]);
+
+                            RemovedSequenceNumbers = .Add(sequenceNumbers[messageIndex]);
+                        //}
+                    }
+                    else
+                    {
+                        await messageSender.SendBatchAsync(outboundMessages);
+                    }
                     stopwatch.Stop();
                     writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
                     if (brokeredMessages != null)
@@ -413,6 +454,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         Close();
                     }
                 }
+
+                DialogResult = DialogResult.OK;
+                Close();
             }
             catch (Exception ex)
             {
