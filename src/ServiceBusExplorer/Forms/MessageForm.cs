@@ -434,14 +434,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (chkRemove.Checked)
                     {
                         var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
-
-                        //for (int messageIndex = 0; messageIndex < sequenceNumbers.Count; ++messageIndex)
-                        //{
-                            messageHandler.MoveMessageFromDLQ(messageSender, sequenceNumbers, MainForm.SingletonMainForm.ReceiveTimeout,
-                                     outboundMessages[messageIndex]);
-
-                            RemovedSequenceNumbers = .Add(sequenceNumbers[messageIndex]);
-                        //}
+                        var result = await messageHandler.MoveMessagesFromDLQ(messageSender, MainForm.SingletonMainForm.ReceiveTimeout, 
+                            sequenceNumbers, outboundMessages);
+                        RemovedSequenceNumbers = result.DeletedSequenceNumbers;
                     }
                     else
                     {

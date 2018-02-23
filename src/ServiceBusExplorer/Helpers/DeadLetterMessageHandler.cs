@@ -34,10 +34,10 @@ using System.Linq;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    public class DeleteDlqMessagesResult
+    public class DeletedDlqMessagesResult
     {
         #region Public constructor
-        public DeleteDlqMessagesResult(bool timedOut, List<long> deletedSequenceNumbers)
+        public DeletedDlqMessagesResult(bool timedOut, List<long> deletedSequenceNumbers)
         {
             this.TimedOut = timedOut;
             this.DeletedSequenceNumbers = deletedSequenceNumbers;
@@ -54,9 +54,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     {
         #region Private Fields
         // Either queueDescription or subscriptionWrapper is used - but never both.
-        private readonly QueueDescription targetQueueDescription;
-        private readonly SubscriptionWrapper subscriptionWrapper;
-        private readonly ServiceBusHelper serviceBusHelper;
+        readonly QueueDescription sourceQueueDescription;
+        readonly SubscriptionWrapper subscriptionWrapper;
+        readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         #endregion
 
@@ -65,7 +65,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
-            this.targetQueueDescription = queueDescription;
+            this.sourceQueueDescription = queueDescription;
         }
 
         public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, SubscriptionWrapper subscriptionWrapper)
@@ -77,7 +77,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Public methods
-        public async Task<DeleteDlqMessagesResult> DeleteMessages(List<long> sequenceNumbersToDelete, int receiveTimeout)
+        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long> sequenceNumbersToDelete, int receiveTimeout)
         {
             var sequenceNumbersToDeleteList = new List<long>();
             foreach (var number in sequenceNumbersToDelete)
@@ -88,13 +88,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var timedOut = false;
 
             var messageReceiver = await serviceBusHelper.MessagingFactory.CreateMessageReceiverAsync(
-                QueueClient.FormatDeadLetterPath(targetQueueDescription.Path),
+                QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path),
                 ReceiveMode.PeekLock).ConfigureAwait(false);
 
             var done = false;
             var lockedMessages = new Dictionary<long, BrokeredMessage>(1000);
             var deletedSequenceNumbers = new List<long>();
-            var maxTimeInSeconds = (int)targetQueueDescription.LockDuration.TotalSeconds - 3; // Allocate three seconds for final operations;
+            var maxTimeInSeconds = (int)sourceQueueDescription.LockDuration.TotalSeconds - 3; // Allocate three seconds for final operations;
 
             if (maxTimeInSeconds < 1)
             {
@@ -169,19 +169,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 stopwatch.Stop();
             }
 
-            return new DeleteDlqMessagesResult(timedOut, deletedSequenceNumbers);
+            return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
-        public async void MoveMessageFromDLQ(MessageSender messageSender, List<long> sequenceNumbers, int receiveTimeout,
-           BrokeredMessage messageToSend = null) //async Task 
+        public async Task<DeletedDlqMessagesResult> MoveMessagesFromDLQ(MessageSender messageSender, int receiveTimeout, List<long> sequenceNumbers,
+            List<BrokeredMessage> messagesToSend = null) 
         {
+            if (messagesToSend != null)
+            {
+                if (sequenceNumbers.Count != messagesToSend.Count)
+                {
+                    throw new ArgumentException("The number of items in the parameter sequenceNumbers must be the same as the number of " +
+                        "items in the parameter messagesToSend", "messagesToSend");
+                }
+            }
+
             var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
-                QueueClient.FormatDeadLetterPath(targetQueueDescription.Path),
+                QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path),
                 ReceiveMode.PeekLock);
 
+            var timedOut = false;
             var done = false;
             var lockedMessages = new List<BrokeredMessage>(1000);
-            var sentMessagesCount = 0;
+            var movedSequenceNumbers = new List<long>();
 
             try
             {
@@ -193,23 +203,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                         if (sequenceNumbers.Contains(message.SequenceNumber))
                         {
-                            using (var scope = new TransactionScope())
+                            using (var scope = new TransactionScope())  // Stay on the thread during the transaction
                             {
                                 message.Complete();
 
-                                // Send message
-                                if (messageToSend == null)
+                                if (messagesToSend == null)
                                 {
-                                    // Send the message
-                                    await SendMessage(messageSender, message).ConfigureAwait(false);
+                                    await SendMessage(messageSender, message);
                                 }
                                 else
                                 {
-                                    await SendMessage(messageSender, messageToSend).ConfigureAwait(false);
+                                    var index = sequenceNumbers.IndexOf(message.SequenceNumber);
+                                    await SendMessage(messageSender, messagesToSend[index]);
                                 }
 
-                                ++sentMessagesCount;
-                                if (sentMessagesCount >= sequenceNumbers.Count)
+                                movedSequenceNumbers.Add(message.SequenceNumber);
+                                if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
                                 {
                                     done = true;
                                 }
@@ -241,6 +250,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 messageSender.Close();
                 messageReceiver.Close();
             }
+
+            return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers);
         }
 
 
