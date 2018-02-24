@@ -4084,6 +4084,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 HandleException(ex);
             }
+
+            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
         }
 
         private void repairAndResubmitTransferDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4670,7 +4672,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count();
                 var result = await deadLetterMessageHandler.DeleteMessages(
-                    sequenceNumbersToDelete, MainForm.SingletonMainForm.ReceiveTimeout);
+MainForm.SingletonMainForm.ReceiveTimeout, sequenceNumbersToDelete);
 
                 RemoveRows(result.DeletedSequenceNumbers);
                 //foreach (DataGridViewRow row in deadletterDataGridView.SelectedRows)
@@ -4733,14 +4735,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         public void RemoveRows(IEnumerable<long> sequenceNumbersToRemove)
         {
-            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
+            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
+
+            foreach(DataGridViewRow row in deadletterDataGridView.Rows)
             {
                 var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
 
                 if (sequenceNumbersToRemove.Contains(brokeredMessage.SequenceNumber))
                 {
-                    deadletterDataGridView.Rows.Remove(row);
+                    rowsToRemove.Add(row);
+                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
+                    {
+                        break;
+                    }
                 }
+            }
+
+            for(var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
+            {
+                var row = rowsToRemove[rowIndex];
+                deadletterDataGridView.Rows.Remove(row);
             }
 
             deadletterDataGridView.ClearSelection();

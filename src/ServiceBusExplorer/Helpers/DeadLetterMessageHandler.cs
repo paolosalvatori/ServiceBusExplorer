@@ -77,10 +77,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Public methods
-        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long> sequenceNumbersToDelete, int receiveTimeout)
+        public async Task<DeletedDlqMessagesResult> DeleteMessages(int receiveTimeout, List<long> sequenceNumbers)
         {
             var sequenceNumbersToDeleteList = new List<long>();
-            foreach (var number in sequenceNumbersToDelete)
+            foreach (var number in sequenceNumbers)
             {
                 sequenceNumbersToDeleteList.Add(number);
             }
@@ -113,7 +113,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                     if (message != null)
                     {
-                        if (sequenceNumbersToDelete.Contains(message.SequenceNumber))
+                        if (sequenceNumbers.Contains(message.SequenceNumber))
                         {
                             var sequenceNumber = message.SequenceNumber;
                             await message.CompleteAsync().ConfigureAwait(false);
@@ -172,8 +172,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
-        public async Task<DeletedDlqMessagesResult> MoveMessagesFromDLQ(MessageSender messageSender, int receiveTimeout, List<long> sequenceNumbers,
-            List<BrokeredMessage> messagesToSend = null) 
+        public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender, int receiveTimeout,
+            List<long> sequenceNumbers, List<BrokeredMessage> messagesToSend = null)
         {
             if (messagesToSend != null)
             {
@@ -193,39 +193,59 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var lockedMessages = new List<BrokeredMessage>(1000);
             var movedSequenceNumbers = new List<long>();
 
+            var maxTimeInSeconds = (int)sourceQueueDescription.LockDuration.TotalSeconds - 3; // Allocate three seconds for final operations;
+
+            if (maxTimeInSeconds < 1)
+            {
+                throw new LockDurationTooLowException();
+            }
+
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             try
             {
                 do
                 {
-                    var message = messageReceiver.Receive(TimeSpan.FromSeconds(receiveTimeout));
+                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeout));
 
                     if (message != null)
                     {
                         if (sequenceNumbers.Contains(message.SequenceNumber))
                         {
-                            using (var scope = new TransactionScope())  // Stay on the thread during the transaction
-                            {
-                                message.Complete();
+                            //using (var scope = new TransactionScope())  // Stay on the thread during the transaction
+                            //{
 
+                            try
+                            {
                                 if (messagesToSend == null)
                                 {
-                                    await SendMessage(messageSender, message);
+                                    await messageSender.SendAsync(message).ConfigureAwait(false);
                                 }
                                 else
                                 {
                                     var index = sequenceNumbers.IndexOf(message.SequenceNumber);
-                                    await SendMessage(messageSender, messagesToSend[index]);
+                                    await messageSender.SendAsync(messagesToSend[index]).ConfigureAwait(false);
                                 }
 
-                                movedSequenceNumbers.Add(message.SequenceNumber);
-                                if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
-                                {
-                                    done = true;
-                                }
-
-                                scope.Complete();
-                                message.Dispose();
+                                await message.CompleteAsync().ConfigureAwait(false);
                             }
+                            catch 
+                            {
+                                await message.AbandonAsync().ConfigureAwait(false);
+                                throw;
+                            }
+
+                            movedSequenceNumbers.Add(message.SequenceNumber);
+                            if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
+                            {
+                                done = true;
+                            }
+
+                            //scope.Complete();
+                            message.Dispose();
+                            //}
                         }
                         else
                         {
@@ -237,18 +257,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         done = true;
                     }
 
+                    if (stopwatch.ElapsedMilliseconds >= maxTimeInSeconds * 1000)
+                    {
+                        timedOut = true;
+                        done = true;
+                    }
+
                 } while (!done);
+            }
+            catch (MessageLockLostException)
+            {
+                WriteToLog($"Got a MessageLockLostException after {stopwatch.ElapsedMilliseconds / 1000} seconds.");
+                timedOut = true;
             }
             finally
             {
                 foreach (var message in lockedMessages)
                 {
-                    message.Abandon();
+                    await message.AbandonAsync();
                     message.Dispose();
                 }
 
-                messageSender.Close();
-                messageReceiver.Close();
+                await messageSender.CloseAsync();
+                await messageReceiver.CloseAsync();
+
+                stopwatch.Stop();
             }
 
             return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers);
@@ -258,10 +291,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Private methods
-        async Task SendMessage(MessageSender messageSender, BrokeredMessage message)
-        {
-            await messageSender.SendAsync(message).ConfigureAwait(false);
-        }
+        //async Task SendMessage(MessageSender messageSender, BrokeredMessage message)
+        //{
+        //    await messageSender.SendAsync(message).ConfigureAwait(false);
+        //}
 
         void WriteToLog(string message)
         {

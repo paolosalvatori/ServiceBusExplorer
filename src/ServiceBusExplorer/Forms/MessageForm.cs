@@ -317,136 +317,146 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    if (!Enum.TryParse<BodyType>(cboBodyType.Text, true, out var bodyType))
+
+                    Application.UseWaitCursor = true;
+                    try
                     {
-                        bodyType = BodyType.Stream;
-                    }
-                    var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
-                    var messages = brokeredMessages != null ?
-                                    new List<BrokeredMessage>(brokeredMessages) :
-                                    new List<BrokeredMessage>(new[] { brokeredMessage });
-                    var outboundMessages = new List<BrokeredMessage>();
-                    var sequenceNumbers = new List<long>(); // Only used when removing messages
-                    foreach (var message in messages)
-                    {
-                        BrokeredMessage outboundMessage;
-                        if (bodyType == BodyType.Wcf)
+
+                        if (!Enum.TryParse<BodyType>(cboBodyType.Text, true, out var bodyType))
                         {
-                            var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                             new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                             new UriBuilder
-                                             {
-                                                 Host = serviceBusHelper.NamespaceUri.Host,
-                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
-                                                 Scheme = "sb"
-                                             }.Uri;
-                            outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text),
-                                                                                           0,
-                                                                                           false,
-                                                                                           false,
-                                                                                           wcfUri);
+                            bodyType = BodyType.Stream;
                         }
-                        else
+                        var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
+                        var messages = brokeredMessages != null ?
+                                        new List<BrokeredMessage>(brokeredMessages) :
+                                        new List<BrokeredMessage>(new[] { brokeredMessage });
+                        var outboundMessages = new List<BrokeredMessage>();
+                        var sequenceNumbers = new List<long>(); // Only used when removing messages
+                        foreach (var message in messages)
                         {
-                            if (brokeredMessage != null)
+                            BrokeredMessage outboundMessage;
+                            if (bodyType == BodyType.Wcf)
                             {
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
-                                                  brokeredMessage.Clone(txtMessageText.Text);
+                                var wcfUri = serviceBusHelper.IsCloudNamespace ?
+                                                 new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
+                                                 new UriBuilder
+                                                 {
+                                                     Host = serviceBusHelper.NamespaceUri.Host,
+                                                     Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
+                                                     Scheme = "sb"
+                                                 }.Uri;
+                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text),
+                                                                                               0,
+                                                                                               false,
+                                                                                               false,
+                                                                                               wcfUri);
                             }
                             else
                             {
-                                var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
-
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  message.CloneWithByteArrayBodyType(messageText) :
-                                                  message.Clone(messageText);
-                            }
-
-                            outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
-                                                                                           0,
-                                                                                           chkNewMessageId.Checked,
-                                                                                           false,
-                                                                                           bodyType,
-                                                                                           cboSenderInspector.SelectedIndex > 0 ?
-                                                                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                                                                           null);
-                        }
-
-                        sequenceNumbers.Add(message.SequenceNumber);
-
-                        var warningCollection = new ConcurrentBag<string>();
-                        foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
-                        {
-                            try
-                            {
-                                if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
-                                    StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                                    string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
-                                    StringComparison.InvariantCultureIgnoreCase) == 0)
+                                if (brokeredMessage != null)
                                 {
-                                    continue;
-                                }
-                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
-                                if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
-                                {
-                                    warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
+                                    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                    outboundMessage = bodyType == BodyType.ByteArray ?
+                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
+                                                      brokeredMessage.Clone(txtMessageText.Text);
                                 }
                                 else
                                 {
-                                    if (outboundMessage.Properties.ContainsKey(messagePropertyInfo.Key))
+                                    var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
+
+                                    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                    outboundMessage = bodyType == BodyType.ByteArray ?
+                                                      message.CloneWithByteArrayBodyType(messageText) :
+                                                      message.Clone(messageText);
+                                }
+
+                                outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
+                                                                                               0,
+                                                                                               chkNewMessageId.Checked,
+                                                                                               false,
+                                                                                               bodyType,
+                                                                                               cboSenderInspector.SelectedIndex > 0 ?
+                                                                                               Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
+                                                                                               null);
+                            }
+
+                            sequenceNumbers.Add(message.SequenceNumber);
+
+                            var warningCollection = new ConcurrentBag<string>();
+                            foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
+                            {
+                                try
+                                {
+                                    if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
+                                        StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                                        string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
+                                        StringComparison.InvariantCultureIgnoreCase) == 0)
                                     {
-                                        outboundMessage.Properties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
+                                        continue;
+                                    }
+                                    messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
+                                    if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
+                                    {
+                                        warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
                                     }
                                     else
                                     {
-                                        outboundMessage.Properties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
+                                        if (outboundMessage.Properties.ContainsKey(messagePropertyInfo.Key))
+                                        {
+                                            outboundMessage.Properties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
+                                        }
+                                        else
+                                        {
+                                            outboundMessage.Properties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
+                                        }
                                     }
                                 }
+                                catch (Exception ex)
+                                {
+                                    warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyConversionError, messagePropertyInfo.Key, ex.Message));
+                                }
                             }
-                            catch (Exception ex)
+                            if (warningCollection.Count <= 0)
                             {
-                                warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyConversionError, messagePropertyInfo.Key, ex.Message));
+                                outboundMessages.Add(outboundMessage);
+                                continue;
                             }
+                            var builder = new StringBuilder(WarningHeader);
+                            var warnings = warningCollection.ToArray<string>();
+                            for (var i = 0; i < warningCollection.Count; i++)
+                            {
+                                builder.AppendFormat(WarningFormat, warnings[i]);
+                            }
+                            writeToLog(builder.ToString());
                         }
-                        if (warningCollection.Count <= 0)
+                        if (!outboundMessages.Any())
                         {
-                            outboundMessages.Add(outboundMessage);
-                            continue;
+                            return;
                         }
-                        var builder = new StringBuilder(WarningHeader);
-                        var warnings = warningCollection.ToArray<string>();
-                        for (var i = 0; i < warningCollection.Count; i++)
+                        var sent = outboundMessages.Count;
+                        var stopwatch = new Stopwatch();
+                        stopwatch.Start();
+                        if (chkRemove.Checked)
                         {
-                            builder.AppendFormat(WarningFormat, warnings[i]);
+                            var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
+                            var result = await messageHandler.MoveMessages(messageSender, MainForm.SingletonMainForm.ReceiveTimeout,
+                                sequenceNumbers, outboundMessages);
+                            RemovedSequenceNumbers = result.DeletedSequenceNumbers;
                         }
-                        writeToLog(builder.ToString());
+                        else
+                        {
+                            await messageSender.SendBatchAsync(outboundMessages);
+                        }
+                        stopwatch.Stop();
+                        writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+                        if (brokeredMessages != null)
+                        {
+                            Close();
+                        }
                     }
-                    if (!outboundMessages.Any())
+                    finally
                     {
-                        return;
-                    }
-                    var sent = outboundMessages.Count;
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    if (chkRemove.Checked)
-                    {
-                        var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
-                        var result = await messageHandler.MoveMessagesFromDLQ(messageSender, MainForm.SingletonMainForm.ReceiveTimeout, 
-                            sequenceNumbers, outboundMessages);
-                        RemovedSequenceNumbers = result.DeletedSequenceNumbers;
-                    }
-                    else
-                    {
-                        await messageSender.SendBatchAsync(outboundMessages);
-                    }
-                    stopwatch.Stop();
-                    writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
-                    if (brokeredMessages != null)
-                    {
-                        Close();
+                        Application.UseWaitCursor = false;
                     }
                 }
 
