@@ -56,28 +56,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         // Either queueDescription or subscriptionWrapper is used - but never both.
         readonly QueueDescription sourceQueueDescription;
         readonly SubscriptionWrapper subscriptionWrapper;
+        readonly int receiveTimeoutInSeconds;
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
+
         #endregion
 
         #region Public Constructors
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, QueueDescription queueDescription)
+        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+            int receiveTimeoutInSeconds, QueueDescription queueDescription)
+            : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            this.writeToLog = writeToLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.sourceQueueDescription = queueDescription;
         }
 
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, SubscriptionWrapper subscriptionWrapper)
+        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+            int receiveTimeoutInSeconds, SubscriptionWrapper subscriptionWrapper)
+             : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            this.writeToLog = writeToLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
         }
         #endregion
 
+        #region Private Constructor
+        private DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, int receiveTimeoutInSeconds)
+        {
+            this.writeToLog = writeToLog;
+            this.serviceBusHelper = serviceBusHelper;
+            this.receiveTimeoutInSeconds = receiveTimeoutInSeconds;
+        }
+        #endregion
+
         #region Public methods
-        public async Task<DeletedDlqMessagesResult> DeleteMessages(int receiveTimeout, List<long> sequenceNumbers)
+        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long> sequenceNumbers)
         {
             var sequenceNumbersToDeleteList = new List<long>();
             foreach (var number in sequenceNumbers)
@@ -108,7 +119,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 do
                 {
-                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeout))
+                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds))
                         .ConfigureAwait(false);
 
                     if (message != null)
@@ -172,7 +183,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
-        public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender, int receiveTimeout,
+        public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender,
             List<long> sequenceNumbers, List<BrokeredMessage> messagesToSend = null)
         {
             if (messagesToSend != null)
@@ -208,7 +219,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 do
                 {
-                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeout));
+                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds));
 
                     if (message != null)
                     {
@@ -231,7 +242,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                                 await message.CompleteAsync().ConfigureAwait(false);
                             }
-                            catch 
+                            catch
                             {
                                 await message.AbandonAsync().ConfigureAwait(false);
                                 throw;
@@ -287,7 +298,40 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers);
         }
 
+        public string GetFailureExplanation(DeletedDlqMessagesResult result, int targetMessageCount, bool delete)
+        {
+            var verb = delete ? "deleted" : "moved";
+            var singularis= targetMessageCount == 1 ? true : false;
+            string messageText;
 
+            if (result.DeletedSequenceNumbers.Count() == 0)
+            {
+                messageText = singularis ? "The message was not {verb}." : "No messages were {verb}.";
+            }
+            else
+            {
+                messageText = "Not all the selected messages were {verb}.";
+            }
+
+            if (result.TimedOut)
+            {
+                messageText += " This was caused by the time to go through the messages were longer than " +
+                    "Lock duration for the queue. Either delete some messages in the dead letter subqueue or " +
+                    "increase the Lock duration for the queue." +
+                     Environment.NewLine + Environment.NewLine +
+                     $"The Lock duration for the queue is currently {sourceQueueDescription.LockDuration.TotalSeconds}" +
+                     " seconds.";
+            }
+            else
+            {
+                messageText += " This might have been caused by the Receive Timeout in the Options dialog is" +
+                    " too low or by another process which deleted or locked the messages." +
+                     Environment.NewLine + Environment.NewLine +
+                    $"The Receive Timeout is currently set to {receiveTimeoutInSeconds} seconds.";
+            }
+
+            return messageText;
+        }
         #endregion
 
         #region Private methods
@@ -305,5 +349,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
         #endregion
+
+     
     }
 }

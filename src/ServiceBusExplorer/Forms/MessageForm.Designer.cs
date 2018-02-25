@@ -58,12 +58,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnSave = new System.Windows.Forms.Button();
             this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.txtMessageText = new System.Windows.Forms.TextBox();
-            this.grouperMessageCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.propertiesDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperMessageProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.lblBody = new System.Windows.Forms.Label();
             this.cboBodyType = new System.Windows.Forms.ComboBox();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -72,6 +66,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnSubmit = new System.Windows.Forms.Button();
             this.chkNewMessageId = new System.Windows.Forms.CheckBox();
             this.chkRemove = new System.Windows.Forms.CheckBox();
+            this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageText = new System.Windows.Forms.TextBox();
+            this.grouperMessageCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.propertiesDataGridView = new System.Windows.Forms.DataGridView();
+            this.grouperMessageProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).BeginInit();
             this.messagesSplitContainer.Panel1.SuspendLayout();
             this.messagesSplitContainer.Panel2.SuspendLayout();
@@ -162,6 +162,100 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.messageListTextPropertiesSplitContainer.SplitterDistance = 277;
             this.messageListTextPropertiesSplitContainer.SplitterWidth = 10;
             this.messageListTextPropertiesSplitContainer.TabIndex = 0;
+            // 
+            // lblBody
+            // 
+            this.lblBody.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblBody.AutoSize = true;
+            this.lblBody.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblBody.Location = new System.Drawing.Point(430, 630);
+            this.lblBody.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblBody.Name = "lblBody";
+            this.lblBody.Size = new System.Drawing.Size(80, 17);
+            this.lblBody.TabIndex = 77;
+            this.lblBody.Text = "Body Type:";
+            // 
+            // cboBodyType
+            // 
+            this.cboBodyType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboBodyType.FormattingEnabled = true;
+            this.cboBodyType.Items.AddRange(new object[] {
+            "Stream",
+            "String",
+            "WCF",
+            "ByteArray"});
+            this.cboBodyType.Location = new System.Drawing.Point(515, 626);
+            this.cboBodyType.Margin = new System.Windows.Forms.Padding(4);
+            this.cboBodyType.Name = "cboBodyType";
+            this.cboBodyType.Size = new System.Drawing.Size(132, 24);
+            this.cboBodyType.TabIndex = 76;
+            // 
+            // cboSenderInspector
+            // 
+            this.cboSenderInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboSenderInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSenderInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSenderInspector.FormattingEnabled = true;
+            this.cboSenderInspector.Location = new System.Drawing.Point(160, 626);
+            this.cboSenderInspector.Margin = new System.Windows.Forms.Padding(4);
+            this.cboSenderInspector.Name = "cboSenderInspector";
+            this.cboSenderInspector.Size = new System.Drawing.Size(262, 24);
+            this.cboSenderInspector.TabIndex = 152;
+            // 
+            // lblReceiverInspector
+            // 
+            this.lblReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblReceiverInspector.AutoSize = true;
+            this.lblReceiverInspector.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblReceiverInspector.Location = new System.Drawing.Point(21, 630);
+            this.lblReceiverInspector.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblReceiverInspector.Name = "lblReceiverInspector";
+            this.lblReceiverInspector.Size = new System.Drawing.Size(131, 17);
+            this.lblReceiverInspector.TabIndex = 151;
+            this.lblReceiverInspector.Text = "Message Inspector:";
+            // 
+            // btnSubmit
+            // 
+            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSubmit.Location = new System.Drawing.Point(960, 625);
+            this.btnSubmit.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(96, 30);
+            this.btnSubmit.TabIndex = 0;
+            this.btnSubmit.Text = "Submit";
+            this.btnSubmit.UseVisualStyleBackColor = false;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
+            // 
+            // chkNewMessageId
+            // 
+            this.chkNewMessageId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkNewMessageId.Location = new System.Drawing.Point(828, 618);
+            this.chkNewMessageId.Margin = new System.Windows.Forms.Padding(4);
+            this.chkNewMessageId.Name = "chkNewMessageId";
+            this.chkNewMessageId.Size = new System.Drawing.Size(124, 48);
+            this.chkNewMessageId.TabIndex = 153;
+            this.chkNewMessageId.Text = "Generate new MessageId";
+            this.chkNewMessageId.UseVisualStyleBackColor = true;
+            // 
+            // chkRemove
+            // 
+            this.chkRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkRemove.Location = new System.Drawing.Point(655, 618);
+            this.chkRemove.Margin = new System.Windows.Forms.Padding(4);
+            this.chkRemove.Name = "chkRemove";
+            this.chkRemove.Size = new System.Drawing.Size(165, 48);
+            this.chkRemove.TabIndex = 154;
+            this.chkRemove.Text = "Remove message from DLQ";
+            this.chkRemove.UseVisualStyleBackColor = true;
+            this.chkRemove.Visible = false;
             // 
             // grouperMessageText
             // 
@@ -292,99 +386,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.messagePropertyGrid.Size = new System.Drawing.Size(295, 527);
             this.messagePropertyGrid.TabIndex = 0;
             this.messagePropertyGrid.ToolbarVisible = false;
-            // 
-            // lblBody
-            // 
-            this.lblBody.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblBody.AutoSize = true;
-            this.lblBody.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblBody.Location = new System.Drawing.Point(430, 630);
-            this.lblBody.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBody.Name = "lblBody";
-            this.lblBody.Size = new System.Drawing.Size(80, 17);
-            this.lblBody.TabIndex = 77;
-            this.lblBody.Text = "Body Type:";
-            // 
-            // cboBodyType
-            // 
-            this.cboBodyType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cboBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboBodyType.FormattingEnabled = true;
-            this.cboBodyType.Items.AddRange(new object[] {
-            "Stream",
-            "String",
-            "WCF",
-            "ByteArray"});
-            this.cboBodyType.Location = new System.Drawing.Point(515, 626);
-            this.cboBodyType.Margin = new System.Windows.Forms.Padding(4);
-            this.cboBodyType.Name = "cboBodyType";
-            this.cboBodyType.Size = new System.Drawing.Size(132, 24);
-            this.cboBodyType.TabIndex = 76;
-            // 
-            // cboSenderInspector
-            // 
-            this.cboSenderInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cboSenderInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSenderInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSenderInspector.FormattingEnabled = true;
-            this.cboSenderInspector.Location = new System.Drawing.Point(160, 626);
-            this.cboSenderInspector.Margin = new System.Windows.Forms.Padding(4);
-            this.cboSenderInspector.Name = "cboSenderInspector";
-            this.cboSenderInspector.Size = new System.Drawing.Size(262, 24);
-            this.cboSenderInspector.TabIndex = 152;
-            // 
-            // lblReceiverInspector
-            // 
-            this.lblReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblReceiverInspector.AutoSize = true;
-            this.lblReceiverInspector.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiverInspector.Location = new System.Drawing.Point(21, 630);
-            this.lblReceiverInspector.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblReceiverInspector.Name = "lblReceiverInspector";
-            this.lblReceiverInspector.Size = new System.Drawing.Size(131, 17);
-            this.lblReceiverInspector.TabIndex = 151;
-            this.lblReceiverInspector.Text = "Message Inspector:";
-            // 
-            // btnSubmit
-            // 
-            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSubmit.Location = new System.Drawing.Point(960, 625);
-            this.btnSubmit.Margin = new System.Windows.Forms.Padding(4);
-            this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(96, 30);
-            this.btnSubmit.TabIndex = 0;
-            this.btnSubmit.Text = "Submit";
-            this.btnSubmit.UseVisualStyleBackColor = false;
-            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
-            // 
-            // chkNewMessageId
-            // 
-            this.chkNewMessageId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkNewMessageId.Location = new System.Drawing.Point(828, 618);
-            this.chkNewMessageId.Margin = new System.Windows.Forms.Padding(4);
-            this.chkNewMessageId.Name = "chkNewMessageId";
-            this.chkNewMessageId.Size = new System.Drawing.Size(124, 48);
-            this.chkNewMessageId.TabIndex = 153;
-            this.chkNewMessageId.Text = "Generate new MessageId";
-            this.chkNewMessageId.UseVisualStyleBackColor = true;
-            // 
-            // chkRemove
-            // 
-            this.chkRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkRemove.Location = new System.Drawing.Point(655, 618);
-            this.chkRemove.Margin = new System.Windows.Forms.Padding(4);
-            this.chkRemove.Name = "chkRemove";
-            this.chkRemove.Size = new System.Drawing.Size(165, 48);
-            this.chkRemove.TabIndex = 154;
-            this.chkRemove.Text = "Remove message from DLQ";
-            this.chkRemove.UseVisualStyleBackColor = true;
             // 
             // MessageForm
             // 

@@ -3840,7 +3840,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
-                messageForm.ShowDialog();        
+                messageForm.ShowDialog();
             }
         }
 
@@ -3858,10 +3858,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
-                if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
+
+                Application.UseWaitCursor = true;
+                try
                 {
-                    RemoveRows(messageForm.RemovedSequenceNumbers);
+                    if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
+                    {
+                        RemoveRows(messageForm.RemovedSequenceNumbers);
+                    }
                 }
+                finally
+                {
+                    Application.UseWaitCursor = false;
+                }
+
+                MainForm.SingletonMainForm.RefreshQueues();
+                MainForm.SingletonMainForm.RefreshTopics();
             }
         }
 
@@ -4029,12 +4041,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            moveMessageBackToMainQueueToolStripMenuItem.Visible = !multipleSelectedRows;
             deleteMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            moveMessagesBackToMainQueueToolStripMenuItem.Visible = multipleSelectedRows;
             deleteMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
             deadletterContextMenuStrip.Show(Cursor.Position);
@@ -4085,7 +4095,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 HandleException(ex);
             }
 
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+            // Rather than getting the updated entities from the forms we refresh all queues and topics to keep things 
+            // simple.
+            MainForm.SingletonMainForm.RefreshQueues();
+            MainForm.SingletonMainForm.RefreshTopics();
         }
 
         private void repairAndResubmitTransferDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4662,7 +4675,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             var sequenceNumbersToDelete = messages.Select(s => s.SequenceNumber).ToList();
-            var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
+            var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 
             try
             {
@@ -4671,53 +4685,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 stopwatch.Start();
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count();
-                var result = await deadLetterMessageHandler.DeleteMessages(
-MainForm.SingletonMainForm.ReceiveTimeout, sequenceNumbersToDelete);
-
+                var result = await deadLetterMessageHandler.DeleteMessages( sequenceNumbersToDelete);
                 RemoveRows(result.DeletedSequenceNumbers);
-                //foreach (DataGridViewRow row in deadletterDataGridView.SelectedRows)
-                //{
-                //    var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
-
-                //    if (result.DeletedSequenceNumbers.Contains(brokeredMessage.SequenceNumber))
-                //    {
-                //        deadletterDataGridView.Rows.Remove(row);
-                //    }
-                //}
-                //deadletterDataGridView.ClearSelection();
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count())
                 {
-                    string messageText;
-
-                    if (result.DeletedSequenceNumbers.Count() == 0)
-                    {
-                        messageText = "No message was deleted.";
-                    }
-                    else
-                    {
-                        messageText = "Not all the selected messages were deleted.";
-                    }
-
-                    if (result.TimedOut)
-                    {
-                        messageText += " This was caused by the time to go through the messages were longer than " +
-                            "Lock duration for the queue. Either delete some messages in the dead letter subqueue or " +
-                            "increase the Lock duration for the queue." +
-                             Environment.NewLine + Environment.NewLine +
-                             $"The Lock duration for the queue is currently {queueDescription.LockDuration.TotalSeconds}" +
-                             " seconds.";
-                    }
-                    else
-                    {
-                        messageText += " This might have been caused by the Receive Timeout in the Options dialog is" +
-                            " too low or by another process which deleted or locked the messages." +
-                             Environment.NewLine + Environment.NewLine +
-                            $"The Receive Timeout is currently set to {MainForm.SingletonMainForm.ReceiveTimeout} seconds.";
-                    }
-
+                    var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete:true);
                     Application.UseWaitCursor = false;
-                    MessageBox.Show(messageText, "Not all selected messages were deleted", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    writeToLog(messageText);
+                    MessageBox.Show(messageText, "Not all selected messages were deleted", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
             catch (LockDurationTooLowException ldtle)
@@ -4737,7 +4714,7 @@ MainForm.SingletonMainForm.ReceiveTimeout, sequenceNumbersToDelete);
         {
             var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
 
-            foreach(DataGridViewRow row in deadletterDataGridView.Rows)
+            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
             {
                 var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
 
@@ -4751,18 +4728,13 @@ MainForm.SingletonMainForm.ReceiveTimeout, sequenceNumbersToDelete);
                 }
             }
 
-            for(var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
+            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
             {
                 var row = rowsToRemove[rowIndex];
                 deadletterDataGridView.Rows.Remove(row);
             }
 
             deadletterDataGridView.ClearSelection();
-        }
-
-        private void moveMessageBackToMainQueueToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

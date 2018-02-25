@@ -68,6 +68,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string WarningFormat = "\n\r - {0}";
         private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
         private const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
+        private const string MessageMovedMessage = "[{0}] messages where moved to [{1}] in [{2}] milliseconds.";
 
         //***************************
         // Constants
@@ -261,6 +262,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
+
+            if (queueDescription != null)
+            {
+                chkRemove.Visible = true;
+            }
         }
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs e)
@@ -438,17 +444,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         stopwatch.Start();
                         if (chkRemove.Checked)
                         {
-                            var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper, queueDescription);
-                            var result = await messageHandler.MoveMessages(messageSender, MainForm.SingletonMainForm.ReceiveTimeout,
+                            var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+                            var result = await messageHandler.MoveMessages(messageSender,
                                 sequenceNumbers, outboundMessages);
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;
+                            stopwatch.Stop();
+
+                            if (result.TimedOut)
+                            {
+                                var messageText = messageHandler.GetFailureExplanation(result, outboundMessages.Count, delete: false);
+                                writeToLog(messageText);
+                                Application.UseWaitCursor = false;
+                                MessageBox.Show(messageText, "Not all selected messages were moved",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            }
+                            else
+                            {
+                                writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
+                                    messageSender.Path, stopwatch.ElapsedMilliseconds));
+                            }
                         }
                         else
                         {
                             await messageSender.SendBatchAsync(outboundMessages);
+                            stopwatch.Stop();
+                            writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
                         }
-                        stopwatch.Stop();
-                        writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+
                         if (brokeredMessages != null)
                         {
                             Close();
