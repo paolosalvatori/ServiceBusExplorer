@@ -4030,6 +4030,78 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
+        void deleteMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteMessagesToolStripMenuItem_Click(sender, e);
+        }
+
+        async void deleteMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (deadletterDataGridView.SelectedRows.Count <= 0)
+            {
+                return;
+            }
+
+            var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(r => r.DataBoundItem as BrokeredMessage);
+
+            string confirmationText;
+
+            if (messages.Count() == 1)
+            {
+                confirmationText = "Are you sure you want to delete the selected message from the " +
+                    $"deadletter subqueue for the {queueDescription.Path} queue?";
+            }
+            else
+            {
+                confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
+                    $"deadletter subqueue for {queueDescription.Path} queue?";
+            }
+
+            using (var deleteForm = new DeleteForm(confirmationText))
+            {
+                if (deleteForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+            }
+
+            var sequenceNumbersToDelete = messages.Select(s => s.SequenceNumber).ToList();
+            var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+
+            try
+            {
+                Application.UseWaitCursor = true;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                var messagesDeleteCount = sequenceNumbersToDelete.Count;
+                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete);
+                RemoveRows(result.DeletedSequenceNumbers);
+
+                if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
+                {
+                    var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete: true);
+                    Application.UseWaitCursor = false;
+                    writeToLog(messageText);
+                    MessageBox.Show(messageText, "Not all selected messages were deleted",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            catch (LockDurationTooLowException ldtle)
+            {
+                Application.UseWaitCursor = false;
+                MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            finally
+            {
+                Application.UseWaitCursor = false;
+            }
+
+            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+        }
+
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right || e.RowIndex == -1)
@@ -4636,81 +4708,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             await PurgeDeadletterQueueMessagesAsync();
         }
-        #endregion
 
-        void deleteMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            deleteMessagesToolStripMenuItem_Click(sender, e);
-        }
-
-        async void deleteMessagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (deadletterDataGridView.SelectedRows.Count <= 0)
-            {
-                return;
-            }
-
-            var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                .Select(r => r.DataBoundItem as BrokeredMessage);
-
-            string confirmationText;
-
-            if (messages.Count() == 1)
-            {
-                confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"deadletter subqueue for the {queueDescription.Path} queue?";
-            }
-            else
-            {
-                confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"deadletter subqueue for {queueDescription.Path} queue?";
-            }
-
-            using (var deleteForm = new DeleteForm(confirmationText))
-            {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-            }
-
-            var sequenceNumbersToDelete = messages.Select(s => s.SequenceNumber).ToList();
-            var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
-
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                var messagesDeleteCount = sequenceNumbersToDelete.Count();
-                var result = await deadLetterMessageHandler.DeleteMessages( sequenceNumbersToDelete);
-                RemoveRows(result.DeletedSequenceNumbers);
-
-                if (messagesDeleteCount > result.DeletedSequenceNumbers.Count())
-                {
-                    var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete:true);
-                    Application.UseWaitCursor = false;
-                    writeToLog(messageText);
-                    MessageBox.Show(messageText, "Not all selected messages were deleted", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
-            catch (LockDurationTooLowException ldtle)
-            {
-                Application.UseWaitCursor = false;
-                MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
-
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-        }
-
-        public void RemoveRows(IEnumerable<long> sequenceNumbersToRemove)
+        void RemoveRows(IEnumerable<long> sequenceNumbersToRemove)
         {
             var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
 
@@ -4736,5 +4735,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             deadletterDataGridView.ClearSelection();
         }
+        #endregion
     }
 }

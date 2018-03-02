@@ -45,51 +45,51 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         // Formats
         //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
+        const string ExceptionFormat = "Exception: {0}";
+        const string InnerExceptionFormat = "InnerException: {0}";
 
         //***************************
         // Properties & Types
         //***************************
-        private const string PropertyKey = "Key";
-        private const string PropertyType = "Type";
-        private const string PropertyValue = "Value";
-        private const string StringType = "String";
+        const string PropertyKey = "Key";
+        const string PropertyType = "Type";
+        const string PropertyValue = "Value";
+        const string StringType = "String";
 
         //***************************
         // Messages
         //***************************
-        private const string SelectEntityDialogTitle = "Select a target Queue or Topic";
-        private const string SelectEntityGrouperTitle = "Send To";
-        private const string SelectEntityLabelText = "Target Queue or Topic:";
-        private const string PropertyConversionError = "{0} property conversion error: {1}";
-        private const string PropertyValueCannotBeNull = "The value of the {0} property cannot be null.";
-        private const string WarningHeader = "The following validations failed:";
-        private const string WarningFormat = "\n\r - {0}";
-        private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
-        private const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
-        private const string MessageMovedMessage = "[{0}] messages where moved to [{1}] in [{2}] milliseconds.";
+        const string SelectEntityDialogTitle = "Select a target Queue or Topic";
+        const string SelectEntityGrouperTitle = "Send To";
+        const string SelectEntityLabelText = "Target Queue or Topic:";
+        const string PropertyConversionError = "{0} property conversion error: {1}";
+        const string PropertyValueCannotBeNull = "The value of the {0} property cannot be null.";
+        const string WarningHeader = "The following validations failed:";
+        const string WarningFormat = "\n\r - {0}";
+        const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
+        const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
+        const string MessageMovedMessage = "[{0}] messages where moved to [{1}] in [{2}] milliseconds.";
 
         //***************************
         // Constants
         //***************************
-        private const string SaveAsTitle = "Save File As";
-        private const string JsonExtension = "json";
-        private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
-        private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
+        const string SaveAsTitle = "Save File As";
+        const string JsonExtension = "json";
+        const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
         #endregion
 
         #region Private Instance Fields
-        private readonly IEnumerable<BrokeredMessage> brokeredMessages;
-        private readonly BrokeredMessage brokeredMessage;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly BindingSource bindingSource = new BindingSource();
-        private readonly QueueDescription queueDescription; // Might be null
+        readonly IEnumerable<BrokeredMessage> brokeredMessages;
+        readonly BrokeredMessage brokeredMessage;
+        readonly ServiceBusHelper serviceBusHelper;
+        readonly WriteToLogDelegate writeToLog;
+        readonly BindingSource bindingSource = new BindingSource();
+        readonly QueueDescription queueDescription; // Might be null
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
         #endregion
 
         #region Public Properties
@@ -482,9 +482,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         Application.UseWaitCursor = false;
                     }
                 }
-
-                DialogResult = DialogResult.OK;
-                Close();
             }
             catch (Exception ex)
             {
@@ -557,7 +554,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         }
         #endregion
 
-        private string GetShortValueTypeName(object o)
+        string GetShortValueTypeName(object o)
         {
             if (o == null) o = new object();
             var typeName = o.GetType().ToString();

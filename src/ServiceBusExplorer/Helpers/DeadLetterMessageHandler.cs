@@ -26,8 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Transactions;
-
 using System.Linq;
 
 #endregion
@@ -39,8 +37,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region Public constructor
         public DeletedDlqMessagesResult(bool timedOut, List<long> deletedSequenceNumbers)
         {
-            this.TimedOut = timedOut;
-            this.DeletedSequenceNumbers = deletedSequenceNumbers;
+            TimedOut = timedOut;
+            DeletedSequenceNumbers = deletedSequenceNumbers;
         }
         #endregion
 
@@ -55,31 +53,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region Private Fields
         // Either queueDescription or subscriptionWrapper is used - but never both.
         readonly QueueDescription sourceQueueDescription;
-        readonly SubscriptionWrapper subscriptionWrapper;
+        readonly SubscriptionWrapper sourceSubscriptionWrapper;
         readonly int receiveTimeoutInSeconds;
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
-
         #endregion
 
         #region Public Constructors
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
             int receiveTimeoutInSeconds, QueueDescription queueDescription)
             : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            this.sourceQueueDescription = queueDescription;
+            sourceQueueDescription = queueDescription;
         }
 
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
             int receiveTimeoutInSeconds, SubscriptionWrapper subscriptionWrapper)
              : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            this.subscriptionWrapper = subscriptionWrapper;
+            sourceSubscriptionWrapper = subscriptionWrapper;
         }
         #endregion
 
         #region Private Constructor
-        private DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, int receiveTimeoutInSeconds)
+        DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+            int receiveTimeoutInSeconds)
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
@@ -191,7 +189,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 if (sequenceNumbers.Count != messagesToSend.Count)
                 {
                     throw new ArgumentException("The number of items in the parameter sequenceNumbers must be the same as the number of " +
-                        "items in the parameter messagesToSend", "messagesToSend");
+                        "items in the parameter messagesToSend", nameof(messagesToSend));
                 }
             }
 
@@ -225,9 +223,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                         if (sequenceNumbers.Contains(message.SequenceNumber))
                         {
-                            //using (var scope = new TransactionScope())  // Stay on the thread during the transaction
-                            //{
-
                             try
                             {
                                 if (messagesToSend == null)
@@ -237,7 +232,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                 else
                                 {
                                     var index = sequenceNumbers.IndexOf(message.SequenceNumber);
-                                    await messageSender.SendAsync(messagesToSend[index]).ConfigureAwait(false);
+                                    await messageSender.SendAsync(messagesToSend[index])
+                                        .ConfigureAwait(false);
                                 }
 
                                 await message.CompleteAsync().ConfigureAwait(false);
@@ -254,9 +250,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                 done = true;
                             }
 
-                            //scope.Complete();
                             message.Dispose();
-                            //}
                         }
                         else
                         {
@@ -285,12 +279,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 foreach (var message in lockedMessages)
                 {
-                    await message.AbandonAsync();
+                    await message.AbandonAsync().ConfigureAwait(false);
                     message.Dispose();
                 }
 
-                await messageSender.CloseAsync();
-                await messageReceiver.CloseAsync();
+                await messageSender.CloseAsync().ConfigureAwait(false);
+                await messageReceiver.CloseAsync().ConfigureAwait(false);
 
                 stopwatch.Stop();
             }
@@ -301,16 +295,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public string GetFailureExplanation(DeletedDlqMessagesResult result, int targetMessageCount, bool delete)
         {
             var verb = delete ? "deleted" : "moved";
-            var singularis= targetMessageCount == 1 ? true : false;
+            var singularis = targetMessageCount == 1;
             string messageText;
 
-            if (result.DeletedSequenceNumbers.Count() == 0)
+            if (!result.DeletedSequenceNumbers.Any())
             {
-                messageText = singularis ? "The message was not {verb}." : "No messages were {verb}.";
+                messageText = singularis ? $"The message was not {verb}." : $"No messages were {verb}.";
             }
             else
             {
-                messageText = "Not all the selected messages were {verb}.";
+                messageText = $"Not all the selected messages were {verb}.";
             }
 
             if (result.TimedOut)
@@ -335,21 +329,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Private methods
-        //async Task SendMessage(MessageSender messageSender, BrokeredMessage message)
-        //{
-        //    await messageSender.SendAsync(message).ConfigureAwait(false);
-        //}
-
         void WriteToLog(string message)
         {
-            if (writeToLog != null &&
-                !string.IsNullOrWhiteSpace(message))
+            if (writeToLog != null && !string.IsNullOrWhiteSpace(message))
             {
                 writeToLog(message);
             }
         }
         #endregion
-
-     
     }
 }
