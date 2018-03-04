@@ -3864,7 +3864,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                     {
-                        RemoveRows(messageForm.RemovedSequenceNumbers);
+                        RemoveDeadletterDataGridRows(messageForm.RemovedSequenceNumbers);
                     }
                 }
                 finally
@@ -4030,12 +4030,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        void deleteMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void deleteSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteMessagesToolStripMenuItem_Click(sender, e);
+            deleteSelectedMessagesToolStripMenuItem_Click(sender, e);
         }
 
-        async void deleteMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        async void deleteSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (deadletterDataGridView.SelectedRows.Count <= 0)
             {
@@ -4078,7 +4078,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count;
                 var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete);
-                RemoveRows(result.DeletedSequenceNumbers);
+                RemoveDeadletterDataGridRows(result.DeletedSequenceNumbers);
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
@@ -4113,11 +4113,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            deleteMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            deleteSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            deleteMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            deleteSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
             deadletterContextMenuStrip.Show(Cursor.Position);
         }
@@ -4158,7 +4158,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
                     {
-                        RemoveRows(form.RemovedSequenceNumbers);
+                        RemoveDeadletterDataGridRows(form.RemovedSequenceNumbers);
                     }
                 }
             }
@@ -4709,7 +4709,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             await PurgeDeadletterQueueMessagesAsync();
         }
 
-        void RemoveRows(IEnumerable<long> sequenceNumbersToRemove)
+        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
         {
             var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
 

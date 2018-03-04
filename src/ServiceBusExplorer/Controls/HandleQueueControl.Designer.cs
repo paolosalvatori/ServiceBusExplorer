@@ -166,8 +166,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.sessionsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.deadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -2661,8 +2661,8 @@
             this.toolStripSeparator2,
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
             this.saveSelectedDeadletteredMessagesToolStripMenuItem,
-            this.deleteMessageToolStripMenuItem,
-            this.deleteMessagesToolStripMenuItem});
+            this.deleteSelectedMessageToolStripMenuItem,
+            this.deleteSelectedMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
             this.deadletterContextMenuStrip.Size = new System.Drawing.Size(370, 154);
             // 
@@ -2699,19 +2699,19 @@
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesToolStripMenuItem_Click);
             // 
-            // deleteMessageToolStripMenuItem
+            // deleteSelectedMessageToolStripMenuItem
             // 
-            this.deleteMessageToolStripMenuItem.Name = "deleteMessageToolStripMenuItem";
-            this.deleteMessageToolStripMenuItem.Size = new System.Drawing.Size(369, 24);
-            this.deleteMessageToolStripMenuItem.Text = "Delete Selected Message";
-            this.deleteMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteMessageToolStripMenuItem_Click);
+            this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedMessageToolStripMenuItem";
+            this.deleteSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(369, 24);
+            this.deleteSelectedMessageToolStripMenuItem.Text = "Delete Selected Message";
+            this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessageToolStripMenuItem_Click);
             // 
-            // deleteMessagesToolStripMenuItem
+            // deleteSelectedMessagesToolStripMenuItem
             // 
-            this.deleteMessagesToolStripMenuItem.Name = "deleteMessagesToolStripMenuItem";
-            this.deleteMessagesToolStripMenuItem.Size = new System.Drawing.Size(369, 24);
-            this.deleteMessagesToolStripMenuItem.Text = "Delete Selected Messages";
-            this.deleteMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteMessagesToolStripMenuItem_Click);
+            this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedMessagesToolStripMenuItem";
+            this.deleteSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(369, 24);
+            this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
+            this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
             // 
             // btnMetrics
             // 
@@ -3151,7 +3151,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedTransferDeadletteredMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedTransferDeadletteredMessagesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteMessageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteSelectedMessageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteSelectedMessagesToolStripMenuItem;
     }
 }

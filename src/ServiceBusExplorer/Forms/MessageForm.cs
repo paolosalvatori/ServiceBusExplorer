@@ -86,6 +86,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         readonly WriteToLogDelegate writeToLog;
         readonly BindingSource bindingSource = new BindingSource();
         readonly QueueDescription queueDescription; // Might be null
+        readonly SubscriptionWrapper subscriptionWrapper; // Might be null
         #endregion
 
         #region Private Static Fields
@@ -196,6 +197,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.queueDescription = queueDescription;
         }
 
+        public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            this(brokeredMessage, serviceBusHelper, writeToLog)
+        {
+            this.subscriptionWrapper = subscriptionWrapper;
+        }
+
         public MessageForm(IEnumerable<BrokeredMessage> brokeredMessages, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
         {
             this.brokeredMessages = brokeredMessages;
@@ -231,6 +239,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             this.queueDescription = queueDescription;
         }
+
+        public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            this(brokeredMessages, serviceBusHelper, writeToLog)
+        {
+            this.subscriptionWrapper = subscriptionWrapper;
+        }
         #endregion
 
         #region Event Handlers
@@ -263,7 +278,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
 
-            if (queueDescription != null)
+            if (queueDescription != null || subscriptionWrapper != null)
             {
                 chkRemove.Visible = true;
             }
@@ -312,8 +327,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                    SelectEntityLabelText, queueDescription))
+                using (var form = CreateSelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+                    SelectEntityLabelText, queueDescription, subscriptionWrapper))
                 {
                     if (form.ShowDialog() != DialogResult.OK)
                     {
@@ -444,8 +459,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         stopwatch.Start();
                         if (chkRemove.Checked)
                         {
-                            var messageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+                            var messageHandler = CreateDeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription, subscriptionWrapper);
+
                             var result = await messageHandler.MoveMessages(messageSender,
                                 sequenceNumbers, outboundMessages);
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;
@@ -487,6 +503,55 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
+        }
+
+        DeadLetterMessageHandler CreateDeadLetterMessageHandler(WriteToLogDelegate writeToLog,
+            ServiceBusHelper serviceBusHelper, int receiveTimeout, QueueDescription queueDescription,
+            SubscriptionWrapper subscriptionWrapper)
+        {
+
+            if (queueDescription != null)
+            {
+                if (subscriptionWrapper != null)
+                {
+                    throw new ArgumentException(
+                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                }
+
+                return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+            }
+            else if (subscriptionWrapper != null)
+            {
+                return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+                                MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
+            }
+
+            throw new ArgumentException("queueDescription or subscriptionWrapper must be set.");
+        }
+
+        SelectEntityForm CreateSelectEntityForm(string selectEntityDialogTitle, string selectEntityGrouperTitle,
+            string selectEntityLabelText, QueueDescription queueDescription, SubscriptionWrapper subscriptionWrapper)
+        {
+            if (queueDescription != null)
+            {
+                if (subscriptionWrapper != null)
+                {
+                    throw new ArgumentException(
+                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                }
+
+                return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+                    SelectEntityLabelText, queueDescription);
+            }
+            else if (subscriptionWrapper != null)
+            {
+                return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+                   SelectEntityLabelText, subscriptionWrapper);
+            }
+
+            return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+                 SelectEntityLabelText);
         }
 
         private void HandleException(Exception ex)

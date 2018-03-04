@@ -38,33 +38,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         // Constants
         //***************************
-        private const string QueueEntities = "Queues";
-        private const string TopicEntities = "Topics";
-        private const string EventHubEntities = "Event Hubs";
-        private const string RelayEntities = "Relays";
-        private const string NotificationHubEntities = "Notification Hubs";
-        private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
-        private const string ConsumerGroupPathFormat = "{0}|{1}";
-        private const string QueueEntity = "Queue";
-        private const string TopicEntity = "Topic";
-        private const string SubscriptionEntity = "Subscription";
-        private const string EventHubEntity = "Event Hub";
-        private const string ConsumerGroupEntity = "Consumer Group";
-        private const string NotificationHubEntity = "Notification Hub";
-        private const string RelayEntity = "Relay";
+        const string QueueEntities = "Queues";
+        const string TopicEntities = "Topics";
+        const string EventHubEntities = "Event Hubs";
+        const string RelayEntities = "Relays";
+        const string NotificationHubEntities = "Notification Hubs";
+        const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
+        const string ConsumerGroupPathFormat = "{0}|{1}";
+        const string QueueEntity = "Queue";
+        const string TopicEntity = "Topic";
+        const string SubscriptionEntity = "Subscription";
+        const string EventHubEntity = "Event Hub";
+        const string ConsumerGroupEntity = "Consumer Group";
+        const string NotificationHubEntity = "Notification Hub";
+        const string RelayEntity = "Relay";
         #endregion
 
         #region Private Fields
-        private TreeNode queueListNode;
-        private TreeNode topicListNode;
-        private TreeNode eventHubListNode;
-        private TreeNode notificationHubListNode;
-        private TreeNode relayListNode;
-        private readonly bool includeSubscriptions;
-        private readonly bool includeEventHubs;
-        private readonly bool includeNotificationHubs;
-        private readonly bool includeRelays;
-        private readonly QueueDescription queueDescriptionSource;  // Might be null
+        TreeNode queueListNode;
+        TreeNode topicListNode;
+        TreeNode eventHubListNode;
+        TreeNode notificationHubListNode;
+        TreeNode relayListNode;
+        readonly bool includeSubscriptions;
+        readonly bool includeEventHubs;
+        readonly bool includeNotificationHubs;
+        readonly bool includeRelays;
+        readonly QueueDescription queueDescriptionSource;  // Might be null
+        readonly SubscriptionWrapper subscriptionWrapperSource;  // Might be null
         #endregion
 
         #region Public Constructor
@@ -133,6 +134,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             this.queueDescriptionSource = queueDescriptionSource;
         }
+
+        public SelectEntityForm(string dialogTitle,
+                       string groupTitle,
+                       string labelText,
+                       SubscriptionWrapper subscriptionWrapperSource,
+                       bool subscriptions = false,
+                       bool eventHubs = false,
+                       bool notificationHubs = false,
+                       bool relays = false) : this(dialogTitle,
+                           groupTitle,
+                           labelText,
+                           subscriptions,
+                           eventHubs,
+                           notificationHubs,
+                           relays)
+        {
+            this.subscriptionWrapperSource = subscriptionWrapperSource;
+        }
         #endregion
 
         #region Event Handlers
@@ -145,19 +164,49 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        foreach (TreeNode level2Node in level1Node.Nodes)
+                        if (level1Node.Text == QueueEntities)
                         {
-                            var queueTag = level2Node.Tag as QueueDescription;
-                            if (queueTag != null)
+                            foreach (TreeNode level2Node in level1Node.Nodes)
                             {
-                                if (string.Compare(queueTag.Path, queueDescriptionSource.Path,
-                                    StringComparison.InvariantCultureIgnoreCase) == 0)
+                                var queueTag = level2Node.Tag as QueueDescription;
+                                if (queueTag != null)
                                 {
-                                    serviceBusTreeView.HideSelection = false;
-                                    serviceBusTreeView.Focus();  // Otherwise the node will be light gray
-                                    serviceBusTreeView.SelectedNode = level2Node;
-                                    SetTextAndType(level2Node);
-                                    return;
+                                    if (string.Compare(queueTag.Path, queueDescriptionSource.Path,
+                                        StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    {
+                                        serviceBusTreeView.HideSelection = false;
+                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
+                                        serviceBusTreeView.SelectedNode = level2Node;
+                                        SetTextAndType(level2Node);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (subscriptionWrapperSource != null)
+            {
+                foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
+                {
+                    foreach (TreeNode level1Node in rootNode.Nodes)
+                    {
+                        if (level1Node.Text == TopicEntities)
+                        {
+                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            {
+                                var topicTag = level2Node.Tag as TopicDescription;
+                                if (topicTag != null)
+                                {
+                                    if (topicTag.Path == subscriptionWrapperSource.TopicDescription.Path)
+                                    {
+                                        serviceBusTreeView.HideSelection = false;
+                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
+                                        serviceBusTreeView.SelectedNode = level2Node;
+                                        SetTextAndType(level2Node);
+                                        return;
+                                    }
                                 }
                             }
                         }

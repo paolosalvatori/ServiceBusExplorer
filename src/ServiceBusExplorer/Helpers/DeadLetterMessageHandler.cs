@@ -21,12 +21,12 @@
 
 #region Using Directives
 
-using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -95,15 +95,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             var timedOut = false;
+            var dlqEntityPath = GetDlqEntityPath();
 
             var messageReceiver = await serviceBusHelper.MessagingFactory.CreateMessageReceiverAsync(
-                QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path),
+                dlqEntityPath,
                 ReceiveMode.PeekLock).ConfigureAwait(false);
 
             var done = false;
             var lockedMessages = new Dictionary<long, BrokeredMessage>(1000);
             var deletedSequenceNumbers = new List<long>();
-            var maxTimeInSeconds = (int)sourceQueueDescription.LockDuration.TotalSeconds - 3; // Allocate three seconds for final operations;
+            int maxTimeInSeconds = GetMaxOperationTimeInSeconds();
 
             if (maxTimeInSeconds < 1)
             {
@@ -181,6 +182,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
+    
+
         public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender,
             List<long> sequenceNumbers, List<BrokeredMessage> messagesToSend = null)
         {
@@ -193,22 +196,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
+            var dlqEntityPath = GetDlqEntityPath();
+
             var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
-                QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path),
+                dlqEntityPath,
                 ReceiveMode.PeekLock);
 
             var timedOut = false;
             var done = false;
             var lockedMessages = new List<BrokeredMessage>(1000);
             var movedSequenceNumbers = new List<long>();
-
-            var maxTimeInSeconds = (int)sourceQueueDescription.LockDuration.TotalSeconds - 3; // Allocate three seconds for final operations;
+            var maxTimeInSeconds = GetMaxOperationTimeInSeconds();
 
             if (maxTimeInSeconds < 1)
             {
                 throw new LockDurationTooLowException();
             }
-
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -217,7 +220,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 do
                 {
-                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds));
+                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
 
                     if (message != null)
                     {
@@ -313,7 +316,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     "Lock duration for the queue. Either delete some messages in the dead letter subqueue or " +
                     "increase the Lock duration for the queue." +
                      Environment.NewLine + Environment.NewLine +
-                     $"The Lock duration for the queue is currently {sourceQueueDescription.LockDuration.TotalSeconds}" +
+                     $"The Lock duration for the queue is currently {GetLockDurationInSeconds()}" +
                      " seconds.";
             }
             else
@@ -326,9 +329,46 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             return messageText;
         }
+
+
         #endregion
 
         #region Private methods
+        private double GetLockDurationInSeconds()
+        {
+            if (sourceQueueDescription != null)
+            {
+                return sourceQueueDescription.LockDuration.TotalSeconds;
+            }
+
+            return sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds;
+        }
+
+        private int GetMaxOperationTimeInSeconds()
+        {
+            // Allocate three seconds for final operations;
+            const int FinalActionsTime = 3;
+
+            if (sourceQueueDescription != null)
+            {
+                return (int)sourceQueueDescription.LockDuration.TotalSeconds - FinalActionsTime;
+            }
+
+            return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
+                - FinalActionsTime;
+        }
+
+        string GetDlqEntityPath()
+        {
+            if (sourceQueueDescription != null)
+            {
+                return QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path);
+            }
+
+            return SubscriptionClient.FormatDeadLetterPath(
+                sourceSubscriptionWrapper.SubscriptionDescription.TopicPath,
+                sourceSubscriptionWrapper.SubscriptionDescription.Name);
+        }
         void WriteToLog(string message)
         {
             if (writeToLog != null && !string.IsNullOrWhiteSpace(message))
