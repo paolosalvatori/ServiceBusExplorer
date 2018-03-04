@@ -104,7 +104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var done = false;
             var lockedMessages = new Dictionary<long, BrokeredMessage>(1000);
             var deletedSequenceNumbers = new List<long>();
-            int maxTimeInSeconds = GetMaxOperationTimeInSeconds();
+            var maxTimeInSeconds = GetMaxOperationTimeInSeconds();
 
             if (maxTimeInSeconds < 1)
             {

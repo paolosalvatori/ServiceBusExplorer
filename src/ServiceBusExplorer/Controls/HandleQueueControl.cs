@@ -4715,9 +4715,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             foreach (DataGridViewRow row in deadletterDataGridView.Rows)
             {
-                var brokeredMessage = (BrokeredMessage)row.DataBoundItem;
+                var message = (BrokeredMessage)row.DataBoundItem;
 
-                if (sequenceNumbersToRemove.Contains(brokeredMessage.SequenceNumber))
+                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
                 {
                     rowsToRemove.Add(row);
                     if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())

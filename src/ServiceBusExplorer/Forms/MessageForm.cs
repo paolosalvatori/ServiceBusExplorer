@@ -327,8 +327,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var form = CreateSelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                    SelectEntityLabelText, queueDescription, subscriptionWrapper))
+                using (var form = CreateSelectEntityForm())
                 {
                     if (form.ShowDialog() != DialogResult.OK)
                     {
@@ -459,8 +458,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         stopwatch.Start();
                         if (chkRemove.Checked)
                         {
-                            var messageHandler = CreateDeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription, subscriptionWrapper);
+                            var messageHandler = CreateDeadLetterMessageHandler();
 
                             var result = await messageHandler.MoveMessages(messageSender,
                                 sequenceNumbers, outboundMessages);
@@ -505,11 +503,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        DeadLetterMessageHandler CreateDeadLetterMessageHandler(WriteToLogDelegate writeToLog,
-            ServiceBusHelper serviceBusHelper, int receiveTimeout, QueueDescription queueDescription,
-            SubscriptionWrapper subscriptionWrapper)
+        DeadLetterMessageHandler CreateDeadLetterMessageHandler()
         {
-
             if (queueDescription != null)
             {
                 if (subscriptionWrapper != null)
@@ -521,7 +516,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
             }
-            else if (subscriptionWrapper != null)
+
+            if (subscriptionWrapper != null)
             {
                 return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                                 MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
@@ -530,8 +526,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             throw new ArgumentException("queueDescription or subscriptionWrapper must be set.");
         }
 
-        SelectEntityForm CreateSelectEntityForm(string selectEntityDialogTitle, string selectEntityGrouperTitle,
-            string selectEntityLabelText, QueueDescription queueDescription, SubscriptionWrapper subscriptionWrapper)
+        SelectEntityForm CreateSelectEntityForm()
         {
             if (queueDescription != null)
             {
@@ -544,7 +539,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
                     SelectEntityLabelText, queueDescription);
             }
-            else if (subscriptionWrapper != null)
+
+            if (subscriptionWrapper != null)
             {
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
                    SelectEntityLabelText, subscriptionWrapper);
