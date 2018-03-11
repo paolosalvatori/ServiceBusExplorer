@@ -481,7 +481,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         else
                         {
-                            await messageSender.SendBatchAsync(outboundMessages);
+                            var messageIndex = 0;
+                            try
+                            {
+                                while(messageIndex < outboundMessages.Count)
+                                {
+                                    await messageSender.SendAsync(outboundMessages[messageIndex++]);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                Application.UseWaitCursor = false;
+                                string messageText = $"Only sent {messageIndex} messages when {outboundMessages.Count}" +
+                                    " messages were selected.";
+                                MessageBox.Show(messageText, "Not all selected messages were sent",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                            }
+
                             stopwatch.Stop();
                             writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
                         }
