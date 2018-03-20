@@ -60,6 +60,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -373,6 +374,7 @@
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
+    <Compile Include="Helpers\DeadLetterMessageHandler.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointHelper.cs" />
     <Compile Include="Helpers\EventProcessorCheckpointInfo.cs" />
     <Compile Include="Helpers\CustomMessageSessionAsyncHandler.cs" />
@@ -406,6 +408,7 @@
     <Compile Include="Helpers\IEventDataGenerator.cs" />
     <Compile Include="Helpers\IEventDataInspector.cs" />
     <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
+    <Compile Include="Helpers\LockDurationTooLowException.cs" />
     <Compile Include="Helpers\LogBrokeredMessageInspector.cs" />
     <Compile Include="Helpers\MessagingPurger.cs" />
     <Compile Include="Helpers\MessageSerializationHelper.cs" />

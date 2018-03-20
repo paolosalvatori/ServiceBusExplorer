@@ -2971,6 +2971,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 WriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
+
+        public void RefreshQueues()
+        {
+            GetEntities(EntityType.Queue);
+        }
+
+        public void RefreshTopics()
+        {
+            GetEntities(EntityType.Topic);
+        }
         #endregion
 
         #region Private Methods

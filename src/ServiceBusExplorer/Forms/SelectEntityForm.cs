@@ -38,40 +38,42 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         // Constants
         //***************************
-        private const string QueueEntities = "Queues";
-        private const string TopicEntities = "Topics";
-        private const string EventHubEntities = "Event Hubs";
-        private const string RelayEntities = "Relays";
-        private const string NotificationHubEntities = "Notification Hubs";
-        private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
-        private const string ConsumerGroupPathFormat = "{0}|{1}";
-        private const string QueueEntity = "Queue";
-        private const string TopicEntity = "Topic";
-        private const string SubscriptionEntity = "Subscription";
-        private const string EventHubEntity = "Event Hub";
-        private const string ConsumerGroupEntity = "Consumer Group";
-        private const string NotificationHubEntity = "Notification Hub";
-        private const string RelayEntity = "Relay";
+        const string QueueEntities = "Queues";
+        const string TopicEntities = "Topics";
+        const string EventHubEntities = "Event Hubs";
+        const string RelayEntities = "Relays";
+        const string NotificationHubEntities = "Notification Hubs";
+        const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
+        const string ConsumerGroupPathFormat = "{0}|{1}";
+        const string QueueEntity = "Queue";
+        const string TopicEntity = "Topic";
+        const string SubscriptionEntity = "Subscription";
+        const string EventHubEntity = "Event Hub";
+        const string ConsumerGroupEntity = "Consumer Group";
+        const string NotificationHubEntity = "Notification Hub";
+        const string RelayEntity = "Relay";
         #endregion
 
         #region Private Fields
-        private TreeNode queueListNode;
-        private TreeNode topicListNode;
-        private TreeNode eventHubListNode;
-        private TreeNode notificationHubListNode;
-        private TreeNode relayListNode;
-        private readonly bool includeSubscriptions;
-        private readonly bool includeEventHubs;
-        private readonly bool includeNotificationHubs;
-        private readonly bool includeRelays;
+        TreeNode queueListNode;
+        TreeNode topicListNode;
+        TreeNode eventHubListNode;
+        TreeNode notificationHubListNode;
+        TreeNode relayListNode;
+        readonly bool includeSubscriptions;
+        readonly bool includeEventHubs;
+        readonly bool includeNotificationHubs;
+        readonly bool includeRelays;
+        readonly QueueDescription queueDescriptionSource;  // Might be null
+        readonly SubscriptionWrapper subscriptionWrapperSource;  // Might be null
         #endregion
 
         #region Public Constructor
-        public SelectEntityForm(string dialogTitle, 
-                                string groupTitle, 
-                                string labelText, 
-                                bool subscriptions = false, 
-                                bool eventHubs = false, 
+        public SelectEntityForm(string dialogTitle,
+                                string groupTitle,
+                                string labelText,
+                                bool subscriptions = false,
+                                bool eventHubs = false,
                                 bool notificationHubs = false,
                                 bool relays = false)
         {
@@ -114,9 +116,105 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             grouperTreeView.GroupTitle = groupTitle;
             lblTargetQueueTopic.Text = labelText;
         }
+
+        public SelectEntityForm(string dialogTitle,
+                               string groupTitle,
+                               string labelText,
+                               QueueDescription queueDescriptionSource,
+                               bool subscriptions = false,
+                               bool eventHubs = false,
+                               bool notificationHubs = false,
+                               bool relays = false) : this(dialogTitle,
+                                   groupTitle,
+                                   labelText,
+                                   subscriptions,
+                                   eventHubs,
+                                   notificationHubs,
+                                   relays)
+        {
+            this.queueDescriptionSource = queueDescriptionSource;
+        }
+
+        public SelectEntityForm(string dialogTitle,
+                       string groupTitle,
+                       string labelText,
+                       SubscriptionWrapper subscriptionWrapperSource,
+                       bool subscriptions = false,
+                       bool eventHubs = false,
+                       bool notificationHubs = false,
+                       bool relays = false) : this(dialogTitle,
+                           groupTitle,
+                           labelText,
+                           subscriptions,
+                           eventHubs,
+                           notificationHubs,
+                           relays)
+        {
+            this.subscriptionWrapperSource = subscriptionWrapperSource;
+        }
         #endregion
 
         #region Event Handlers
+        private void SelectEntityForm_Load(object sender, EventArgs e)
+        {
+            // Select the queue where it is coming from since that is likely where it will go
+            if (queueDescriptionSource != null)
+            {
+                foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
+                {
+                    foreach (TreeNode level1Node in rootNode.Nodes)
+                    {
+                        if (level1Node.Text == QueueEntities)
+                        {
+                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            {
+                                var queueTag = level2Node.Tag as QueueDescription;
+                                if (queueTag != null)
+                                {
+                                    if (string.Compare(queueTag.Path, queueDescriptionSource.Path,
+                                        StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    {
+                                        serviceBusTreeView.HideSelection = false;
+                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
+                                        serviceBusTreeView.SelectedNode = level2Node;
+                                        SetTextAndType(level2Node);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (subscriptionWrapperSource != null)
+            {
+                foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
+                {
+                    foreach (TreeNode level1Node in rootNode.Nodes)
+                    {
+                        if (level1Node.Text == TopicEntities)
+                        {
+                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            {
+                                var topicTag = level2Node.Tag as TopicDescription;
+                                if (topicTag != null)
+                                {
+                                    if (topicTag.Path == subscriptionWrapperSource.TopicDescription.Path)
+                                    {
+                                        serviceBusTreeView.HideSelection = false;
+                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
+                                        serviceBusTreeView.SelectedNode = level2Node;
+                                        SetTextAndType(level2Node);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void btnOk_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -161,26 +259,72 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private Methods
+        void SetTextAndType(TreeNode node)
+        {
+            var queueTag = node.Tag as QueueDescription;
+            if (queueTag != null)
+            {
+                txtEntity.Text = queueTag.Path;
+                Type = QueueEntity;
+                return;
+            }
+            var topicTag = node.Tag as TopicDescription;
+            if (topicTag != null)
+            {
+                txtEntity.Text = topicTag.Path;
+                Type = TopicEntity;
+                return;
+            }
+            var subscriptionTag = node.Tag as SubscriptionWrapper;
+            if (subscriptionTag != null)
+            {
+                txtEntity.Text = string.Format(SubscriptionPathFormat,
+                                               subscriptionTag.SubscriptionDescription.TopicPath,
+                                               subscriptionTag.SubscriptionDescription.Name);
+                Type = SubscriptionEntity;
+            }
+            var eventHubTag = node.Tag as EventHubDescription;
+            if (eventHubTag != null)
+            {
+                txtEntity.Text = eventHubTag.Path;
+                Type = EventHubEntity;
+            }
+            var consumerGroupTag = node.Tag as ConsumerGroupDescription;
+            if (consumerGroupTag != null)
+            {
+                txtEntity.Text = string.Format(ConsumerGroupPathFormat,
+                                               consumerGroupTag.EventHubPath,
+                                               consumerGroupTag.Name);
+                Type = ConsumerGroupEntity;
+            }
+            var notificationHubTag = node.Tag as NotificationHubDescription;
+            if (notificationHubTag != null)
+            {
+                txtEntity.Text = notificationHubTag.Path;
+                Type = NotificationHubEntity;
+            }
+            var relayTag = node.Tag as RelayDescription;
+            if (relayTag != null)
+            {
+                txtEntity.Text = relayTag.Path;
+                Type = RelayEntity;
+            }
+        }
         private void txtForwardTo_TextChanged(object sender, EventArgs e)
         {
             Path = txtEntity.Text;
         }
 
-        private void TextForm_Activated(object sender, EventArgs e)
-        {
-            txtEntity.Focus();
-        }
-
         private void CloneNode(TreeNode node, TreeNode parent)
         {
-            if (node == null || 
+            if (node == null ||
                 (!includeRelays && string.Compare(node.Text, RelayEntities, StringComparison.InvariantCultureIgnoreCase) == 0) ||
-                (!includeNotificationHubs && string.Compare(node.Text, NotificationHubEntities, StringComparison.InvariantCultureIgnoreCase) == 0) || 
+                (!includeNotificationHubs && string.Compare(node.Text, NotificationHubEntities, StringComparison.InvariantCultureIgnoreCase) == 0) ||
                 (!includeEventHubs && string.Compare(node.Text, EventHubEntities, StringComparison.InvariantCultureIgnoreCase) == 0))
             {
                 return;
             }
-            
+
             var newNode = parent == null ?
                               serviceBusTreeView.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.StateImageIndex) :
                               parent.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.SelectedImageIndex);
@@ -239,55 +383,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void serviceBusTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            var queueTag = e.Node.Tag as QueueDescription;
-            if (queueTag != null)
-            {
-                txtEntity.Text = queueTag.Path;
-                Type = QueueEntity;
-                return;
-            }
-            var topicTag = e.Node.Tag as TopicDescription;
-            if (topicTag != null)
-            {
-                txtEntity.Text = topicTag.Path;
-                Type = TopicEntity;
-                return;
-            }
-            var subscriptionTag = e.Node.Tag as SubscriptionWrapper;
-            if (subscriptionTag != null)
-            {
-                txtEntity.Text = string.Format(SubscriptionPathFormat, 
-                                               subscriptionTag.SubscriptionDescription.TopicPath, 
-                                               subscriptionTag.SubscriptionDescription.Name);
-                Type = SubscriptionEntity;
-            }
-            var eventHubTag = e.Node.Tag as EventHubDescription;
-            if (eventHubTag != null)
-            {
-                txtEntity.Text = eventHubTag.Path;
-                Type = EventHubEntity;
-            }
-            var consumerGroupTag = e.Node.Tag as ConsumerGroupDescription;
-            if (consumerGroupTag != null)
-            {
-                txtEntity.Text = string.Format(ConsumerGroupPathFormat, 
-                                               consumerGroupTag.EventHubPath,
-                                               consumerGroupTag.Name);
-                Type = ConsumerGroupEntity;
-            }
-            var notificationHubTag = e.Node.Tag as NotificationHubDescription;
-            if (notificationHubTag != null)
-            {
-                txtEntity.Text = notificationHubTag.Path;
-                Type = NotificationHubEntity;
-            }
-            var relayTag = e.Node.Tag as RelayDescription;
-            if (relayTag != null)
-            {
-                txtEntity.Text = relayTag.Path;
-                Type = RelayEntity;
-            }
+            SetTextAndType(e.Node);
         }
+
+
 
         private void btnClear_Click(object sender, EventArgs e)
         {
