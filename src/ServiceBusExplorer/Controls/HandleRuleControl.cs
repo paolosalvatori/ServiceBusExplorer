@@ -169,17 +169,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                if (serviceBusHelper == null ||
-                    ruleWrapper == null ||
-                    ruleWrapper.SubscriptionDescription == null)
+                if (serviceBusHelper == null || ruleWrapper?.SubscriptionDescription == null)
                 {
                     return;
                 }
-                if (btnCreateDelete.Text == RemoveText &&
-                    ruleWrapper.SubscriptionDescription != null &&
-                    !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription.Name) &&
-                    ruleWrapper.RuleDescription != null &&
-                    !string.IsNullOrWhiteSpace(ruleWrapper.RuleDescription.Name))
+
+                if (btnCreateDelete.Text == RemoveText 
+                    && !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription?.Name) 
+                    && !string.IsNullOrWhiteSpace(ruleWrapper.RuleDescription?.Name))
                 {
                     using (var deleteForm = new DeleteForm(ruleWrapper.RuleDescription.Name, RuleEntity.ToLower()))
                     {
@@ -190,28 +187,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
                     return;
                 }
-                if (btnCreateDelete.Text == AddText)
+
+                if (btnCreateDelete.Text != AddText)
                 {
-                    if (string.IsNullOrWhiteSpace(txtName.Text))
-                    {
-                        writeToLog(NameCannotBeNull);
-                        return;
-                    }
-
-                    var ruleDescription = new RuleDescription(txtName.Text);
-
-                    if (!string.IsNullOrWhiteSpace(txtSqlFilterExpression.Text))
-                    {
-                        ruleDescription.Filter = new SqlFilter(txtSqlFilterExpression.Text);
-                    }
-                    if (!string.IsNullOrWhiteSpace(txtSqlFilterAction.Text))
-                    {
-                        ruleDescription.Action = new SqlRuleAction(txtSqlFilterAction.Text);
-                    }
-
-                    ruleWrapper.RuleDescription = serviceBusHelper.AddRule(ruleWrapper.SubscriptionDescription, ruleDescription);
-                    InitializeData();
+                    return;
                 }
+
+                if (string.IsNullOrWhiteSpace(txtName.Text))
+                {
+                    writeToLog(NameCannotBeNull);
+                    return;
+                }
+
+                var ruleDescription = new RuleDescription(txtName.Text);
+
+                if (!string.IsNullOrWhiteSpace(txtSqlFilterExpression.Text))
+                {
+                    ruleDescription.Filter = new SqlFilter(txtSqlFilterExpression.Text);
+                }
+                if (!string.IsNullOrWhiteSpace(txtSqlFilterAction.Text))
+                {
+                    ruleDescription.Action = new SqlRuleAction(txtSqlFilterAction.Text);
+                }
+
+                ruleWrapper.RuleDescription = serviceBusHelper.AddRule(ruleWrapper.SubscriptionDescription, ruleDescription);
+                InitializeData();
             }
             catch (Exception ex)
             {
