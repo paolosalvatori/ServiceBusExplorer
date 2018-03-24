@@ -112,9 +112,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     txtName.Text = ruleWrapper.RuleDescription.Name;
                 }
 
-                if (ruleWrapper.RuleDescription.Filter is SqlFilter filter)
+                if (ruleWrapper.RuleDescription.Filter is SqlFilter sqlFilter)
                 {
-                    txtSqlFilterExpression.Text = filter.SqlExpression ?? string.Empty;
+                    txtFilterExpression.Text = sqlFilter.SqlExpression ?? string.Empty;
+                }
+
+                if (ruleWrapper.RuleDescription.Filter is CorrelationFilter correlationFilter)
+                {
+                    txtFilterExpression.Text = correlationFilter.ToString();
                 }
 
                 if (ruleWrapper.RuleDescription.Action is SqlRuleAction action)
@@ -123,7 +128,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
 
                 toolTip.SetToolTip(txtName, NameTooltip);
-                toolTip.SetToolTip(txtSqlFilterExpression, FilterExpressionTooltip);
+                toolTip.SetToolTip(txtFilterExpression, FilterExpressionTooltip);
                 toolTip.SetToolTip(txtSqlFilterAction, FilterActionTooltip);
             }
             else
@@ -201,9 +206,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var ruleDescription = new RuleDescription(txtName.Text);
 
-                if (!string.IsNullOrWhiteSpace(txtSqlFilterExpression.Text))
+                if (!string.IsNullOrWhiteSpace(txtFilterExpression.Text))
                 {
-                    ruleDescription.Filter = new SqlFilter(txtSqlFilterExpression.Text);
+                    ruleDescription.Filter = new SqlFilter(txtFilterExpression.Text);
                 }
                 if (!string.IsNullOrWhiteSpace(txtSqlFilterAction.Text))
                 {
