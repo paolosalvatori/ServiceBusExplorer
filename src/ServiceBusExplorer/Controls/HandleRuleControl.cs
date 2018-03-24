@@ -45,34 +45,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         //***************************
         // Formats
         //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
+        const string ExceptionFormat = "Exception: {0}";
+        const string InnerExceptionFormat = "InnerException: {0}";
 
         //***************************
         // Texts
         //***************************
-        private const string RemoveText = "Remove";
-        private const string AddText = "Add";
-        private const string RuleEntity = "RuleDescription";
+        const string RemoveText = "Remove";
+        const string AddText = "Add";
+        const string RuleEntity = "RuleDescription";
 
         //***************************
         // Messages
         //***************************
-        private const string NameCannotBeNull = "The Name field cannot be null.";
+        const string NameCannotBeNull = "The Name field cannot be null.";
 
         //***************************
         // Tooltips
         //***************************
-        private const string NameTooltip = "Gets or sets the rule name.";
-        private const string FilterExpressionTooltip = "Gets or sets the filter expression.";
-        private const string FilterActionTooltip = "Gets or sets the filter action.";
+        const string NameTooltip = "Gets or sets the rule name.";
+        const string FilterExpressionTooltip = "Gets or sets the filter expression.";
+        const string FilterActionTooltip = "Gets or sets the filter action.";
         #endregion
 
         #region Private Fields
-        private readonly RuleWrapper ruleWrapper;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly WriteToLogDelegate writeToLog;
-        private bool? isFirstRule = false;
+        readonly RuleWrapper ruleWrapper;
+        readonly ServiceBusHelper serviceBusHelper;
+        readonly WriteToLogDelegate writeToLog;
+        bool? isFirstRule;
         #endregion
 
         #region Public Constructors
@@ -104,21 +104,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtCreatedAt.BackColor = SystemColors.Window;
                 checkBoxDefault.Checked = ruleWrapper.RuleDescription.Name == RuleDescription.DefaultRuleName;
                 checkBoxDefault.Enabled = false;
+
                 SetReadOnly(this);
+
                 if (!string.IsNullOrWhiteSpace(ruleWrapper.RuleDescription.Name))
                 {
                     txtName.Text = ruleWrapper.RuleDescription.Name;
                 }
-                var filter = ruleWrapper.RuleDescription.Filter as SqlFilter;
-                if (filter != null)
+
+                if (ruleWrapper.RuleDescription.Filter is SqlFilter filter)
                 {
                     txtSqlFilterExpression.Text = filter.SqlExpression ?? string.Empty;
                 }
-                var action = ruleWrapper.RuleDescription.Action as SqlRuleAction;
-                if (action != null)
+
+                if (ruleWrapper.RuleDescription.Action is SqlRuleAction action)
                 {
                     txtSqlFilterAction.Text = action.SqlExpression ?? string.Empty;
                 }
+
                 toolTip.SetToolTip(txtName, NameTooltip);
                 toolTip.SetToolTip(txtSqlFilterExpression, FilterExpressionTooltip);
                 toolTip.SetToolTip(txtSqlFilterAction, FilterActionTooltip);
@@ -135,25 +138,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             txtName.Focus();
         }
 
-        private static void textBox_GotFocus(object sender, EventArgs e)
+        static void textBox_GotFocus(object sender, EventArgs e)
         {
-            var textBox = sender as TextBox;
-            if (textBox != null)
+            if (sender is TextBox textBox)
             {
                 HideCaret(textBox.Handle);
             }
         }
 
-        private void SetReadOnly(Control control)
+        void SetReadOnly(Control control)
         {
             if (control != null &&
                 control.Controls.Count > 0)
             {
                 for (var i = 0; i < control.Controls.Count; i++)
                 {
-                    if (control.Controls[i] is TextBox)
+                    if (control.Controls[i] is TextBox textBox)
                     {
-                        var textBox = ((TextBox)(control.Controls[i]));
                         textBox.ReadOnly = true;
                         textBox.BackColor = SystemColors.Window;
                         textBox.GotFocus += textBox_GotFocus;
@@ -164,7 +165,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void btnCreateDelete_Click(object sender, EventArgs e)
+        void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
             {
@@ -218,25 +219,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void HandleException(Exception ex)
+        void HandleException(Exception ex)
         {
-            if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
+            if (string.IsNullOrWhiteSpace(ex?.Message))
             {
                 return;
             }
+
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
                 writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        void btnCancel_Click(object sender, EventArgs e)
         {
-            OnCancel();
+            OnCancel?.Invoke();
         }
 
-        private void checkBoxDefault_CheckedChanged(object sender, EventArgs e)
+        void checkBoxDefault_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxDefault.Checked)
             {
@@ -244,7 +247,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void HandleRuleControl_Resize(object sender, EventArgs e)
+        void HandleRuleControl_Resize(object sender, EventArgs e)
         {
             var width = (Size.Width - 48) / 2;
             var height = Size.Height - 152;
@@ -259,19 +262,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                   grouperCreatedAt.Location.Y);
         }
 
-        private void button_MouseEnter(object sender, EventArgs e)
+        void button_MouseEnter(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = Color.White;
             }
         }
 
-        private void button_MouseLeave(object sender, EventArgs e)
+        void button_MouseLeave(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = SystemColors.ControlText;
             }
@@ -285,9 +286,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             try
             {
-                if (disposing && (components != null))
+                if (disposing)
                 {
-                    components.Dispose();
+                    components?.Dispose();
                 }
 
 
@@ -298,9 +299,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 base.Dispose(disposing);
             }
-            // ReSharper disable once EmptyGeneralCatchClause
             catch
             {
+                // ignored
             }
         }
         #endregion
