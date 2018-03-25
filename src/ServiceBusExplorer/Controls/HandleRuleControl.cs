@@ -119,7 +119,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 if (ruleWrapper.RuleDescription.Filter is CorrelationFilter correlationFilter)
                 {
-                    txtFilterExpression.Text = correlationFilter.ToString();
+                    var value = correlationFilter.ToString();
+                    txtFilterExpression.Text = value.Replace("CorrelationFilter: ", string.Empty);
                 }
 
                 if (ruleWrapper.RuleDescription.Action is SqlRuleAction action)
