@@ -22,7 +22,7 @@
             this.grouperName = new Grouper();
             this.txtName = new System.Windows.Forms.TextBox();
             this.grouperFilter = new Grouper();
-            this.txtSqlFilterExpression = new System.Windows.Forms.TextBox();
+            this.txtFilterExpression = new System.Windows.Forms.TextBox();
             this.grouperAction = new Grouper();
             this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
             this.grouperIsDefault = new Grouper();
@@ -120,7 +120,7 @@
             this.grouperFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
             this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilter.BorderThickness = 1F;
-            this.grouperFilter.Controls.Add(this.txtSqlFilterExpression);
+            this.grouperFilter.Controls.Add(this.txtFilterExpression);
             this.grouperFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperFilter.ForeColor = System.Drawing.Color.White;
@@ -137,18 +137,18 @@
             this.grouperFilter.Size = new System.Drawing.Size(460, 256);
             this.grouperFilter.TabIndex = 3;
             // 
-            // txtSqlFilterExpression
+            // txtFilterExpression
             // 
-            this.txtSqlFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSqlFilterExpression.BackColor = System.Drawing.SystemColors.Window;
-            this.txtSqlFilterExpression.Location = new System.Drawing.Point(16, 32);
-            this.txtSqlFilterExpression.Multiline = true;
-            this.txtSqlFilterExpression.Name = "txtSqlFilterExpression";
-            this.txtSqlFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtSqlFilterExpression.Size = new System.Drawing.Size(428, 208);
-            this.txtSqlFilterExpression.TabIndex = 0;
+            this.txtFilterExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtFilterExpression.Location = new System.Drawing.Point(16, 32);
+            this.txtFilterExpression.Multiline = true;
+            this.txtFilterExpression.Name = "txtFilterExpression";
+            this.txtFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtFilterExpression.Size = new System.Drawing.Size(428, 208);
+            this.txtFilterExpression.TabIndex = 0;
             // 
             // grouperAction
             // 
@@ -301,7 +301,7 @@
         private Grouper grouperName;
         private System.Windows.Forms.TextBox txtName;
         private Grouper grouperFilter;
-        private System.Windows.Forms.TextBox txtSqlFilterExpression;
+        private System.Windows.Forms.TextBox txtFilterExpression;
         private Grouper grouperAction;
         private System.Windows.Forms.TextBox txtSqlFilterAction;
         private Grouper grouperIsDefault;
