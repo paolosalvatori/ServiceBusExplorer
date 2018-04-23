@@ -489,14 +489,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     await messageSender.SendAsync(outboundMessages[messageIndex++]);
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception exception)
                             {
                                 Application.UseWaitCursor = false;
-                                string messageText = $"Only sent {messageIndex} messages when {outboundMessages.Count}" +
-                                    " messages were selected.";
+                                string messageText = $"{outboundMessages.Count} were selected but only" +
+                                    $" {messageIndex} messages were sent. The error message is: {exception.Message}";
                                 MessageBox.Show(messageText, "Not all selected messages were sent",
                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
                             }
 
                             stopwatch.Stop();
