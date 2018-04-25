@@ -3063,6 +3063,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        private void WriteToLogFormatted(string message, bool async = false)
+        {
+            WriteToLog(message, async);
+        }
+
+
         private void InternalWriteToLog(string message)
         {
             lock (this)
@@ -4648,24 +4654,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(eventHubListNode);
                                 }
                             }
-                            catch (ArgumentException)
+                            catch (Exception ex) when (FilterOutExceptionAndLog(ex))
                             {
-                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
-                            }
-                            catch (WebException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
-                            }
-                            catch (UnauthorizedAccessException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
-                            }
-                            catch (MessagingException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(eventHubListNode);
-                            }
-                            catch (TimeoutException)
-                            {
+                                WriteToLogFormatted($"Failed to retrieve EventHub entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
@@ -4697,24 +4688,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                         HandleNodeMouseClick(notificationHubListNode);
                                     }
                                 }
-                                catch (ArgumentException)
+                                catch (Exception ex) when (FilterOutExceptionAndLog(ex))
                                 {
-                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                }
-                                catch (WebException)
-                                {
-                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                }
-                                catch (UnauthorizedAccessException)
-                                {
-                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                }
-                                catch (MessagingException)
-                                {
-                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                }
-                                catch (TimeoutException)
-                                {
+                                    WriteToLogFormatted($"Failed to Notification Hub entities. Exception: {ex}");
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
                             }
@@ -4751,24 +4727,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(relayServiceListNode);
                                 }
                             }
-                            catch (ArgumentException)
+                            catch (Exception ex) when (FilterOutExceptionAndLog(ex))
                             {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
-                            }
-                            catch (WebException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
-                            }
-                            catch (UnauthorizedAccessException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
-                            }
-                            catch (MessagingException)
-                            {
-                                serviceBusTreeView.Nodes.Remove(relayServiceListNode);
-                            }
-                            catch (TimeoutException)
-                            {
+                                WriteToLogFormatted($"Failed to Relay entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                             }
                         }
@@ -4804,24 +4765,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(queueListNode);
                             }
                         }
-                        catch (ArgumentException)
+                        catch (Exception ex) when(FilterOutExceptionAndLog(ex))
                         {
-                            serviceBusTreeView.Nodes.Remove(queueListNode);
-                        }
-                        catch (WebException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(queueListNode);
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(queueListNode);
-                        }
-                        catch (MessagingException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(queueListNode);
-                        }
-                        catch (TimeoutException)
-                        {
+                            WriteToLogFormatted($"Failed to retrieve queues. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
@@ -4929,25 +4875,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(topicListNode);
                             }
                         }
-                        catch (ArgumentException)
+                        catch (Exception ex) when (FilterOutExceptionAndLog(ex))
                         {
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
-                        }
-                        catch (WebException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
-                        }
-                        catch (MessagingException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
-                        }
-                        catch (TimeoutException)
-                        {
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
+                            WriteToLogFormatted($"Failed to retrieve topics. Exception: {ex}");
+                            serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
                     queueListNode?.Expand();
@@ -4979,6 +4910,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     serviceBusTreeView.Refresh();
                 }
                 Cursor.Current = Cursors.Default;
+            }
+
+            bool FilterOutExceptionAndLog(Exception ex)
+            {
+                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
             }
         }
 
