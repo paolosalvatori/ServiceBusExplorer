@@ -492,7 +492,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             catch (Exception exception)
                             {
                                 Application.UseWaitCursor = false;
-                                string messageText = $"{outboundMessages.Count} were selected but only" +
+                                var messageText = $"{outboundMessages.Count} were selected but only" +
                                     $" {messageIndex} messages were sent. The error message is: {exception.Message}";
                                 MessageBox.Show(messageText, "Not all selected messages were sent",
                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
