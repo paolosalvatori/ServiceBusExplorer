@@ -3063,12 +3063,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void WriteToLogFormatted(string message, bool async = false)
-        {
-            WriteToLog(message, async);
-        }
-
-
         private void InternalWriteToLog(string message)
         {
             lock (this)
@@ -4654,9 +4648,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(eventHubListNode);
                                 }
                             }
-                            catch (Exception ex) when (FilterOutExceptionAndLog(ex))
+                            catch (Exception ex) when (FilterOutException(ex))
                             {
-                                WriteToLogFormatted($"Failed to retrieve EventHub entities. Exception: {ex}");
+                                WriteToLog($"Failed to retrieve EventHub entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
@@ -4688,9 +4682,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                         HandleNodeMouseClick(notificationHubListNode);
                                     }
                                 }
-                                catch (Exception ex) when (FilterOutExceptionAndLog(ex))
+                                catch (Exception ex) when (FilterOutException(ex))
                                 {
-                                    WriteToLogFormatted($"Failed to Notification Hub entities. Exception: {ex}");
+                                    WriteToLog($"Failed to retrieve Notification Hub entities. Exception: {ex}");
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
                             }
@@ -4727,9 +4721,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(relayServiceListNode);
                                 }
                             }
-                            catch (Exception ex) when (FilterOutExceptionAndLog(ex))
+                            catch (Exception ex) when (FilterOutException(ex))
                             {
-                                WriteToLogFormatted($"Failed to Relay entities. Exception: {ex}");
+                                WriteToLog($"Failed to retrieve Relay entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                             }
                         }
@@ -4765,9 +4759,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(queueListNode);
                             }
                         }
-                        catch (Exception ex) when(FilterOutExceptionAndLog(ex))
+                        catch (Exception ex) when(FilterOutException(ex))
                         {
-                            WriteToLogFormatted($"Failed to retrieve queues. Exception: {ex}");
+                            WriteToLog($"Failed to retrieve Service Bus queues. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
@@ -4875,9 +4869,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(topicListNode);
                             }
                         }
-                        catch (Exception ex) when (FilterOutExceptionAndLog(ex))
+                        catch (Exception ex) when (FilterOutException(ex))
                         {
-                            WriteToLogFormatted($"Failed to retrieve topics. Exception: {ex}");
+                            WriteToLog($"Failed to retrieve Service Bus topics. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
@@ -4912,7 +4906,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Cursor.Current = Cursors.Default;
             }
 
-            bool FilterOutExceptionAndLog(Exception ex)
+            bool FilterOutException(Exception ex)
             {
                 return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
             }
