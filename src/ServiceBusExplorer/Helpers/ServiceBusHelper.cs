@@ -1015,13 +1015,18 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             this.serviceBusNamespaceInstance = serviceBusNamespace;
 
+            if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
+            {
+                throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
+            }
+
+            if (!TestNamespaceHostIsContactable(serviceBusNamespace))
+            {
+                throw new Exception($"Could not contact host in connection string: { serviceBusNamespace.ConnectionString }.");
+            }
+
             Func<bool> func = (() =>
             {
-                if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
-                {
-                    throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
-                }
-
                 connectionString = serviceBusNamespace.ConnectionString;
                 currentIssuerName = serviceBusNamespace.IssuerName;
                 currentIssuerSecret = serviceBusNamespace.IssuerSecret;
@@ -5845,6 +5850,26 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     return Encoding.UTF8;
             }
         }
+
+        private static bool TestNamespaceHostIsContactable(ServiceBusNamespace serviceBusNamespace)
+        {
+            if (!Uri.TryCreate(serviceBusNamespace.Uri, UriKind.Absolute, out var namespaceUri))
+            {
+                return false;
+            }
+
+            try
+            {
+                System.Net.Dns.GetHostEntry(namespaceUri.Host);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         #endregion
     }
 }

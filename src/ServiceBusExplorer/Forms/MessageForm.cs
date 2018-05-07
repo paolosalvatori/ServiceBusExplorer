@@ -481,7 +481,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                         else
                         {
-                            await messageSender.SendBatchAsync(outboundMessages);
+                            var messageIndex = 0;
+                            try
+                            {
+                                while(messageIndex < outboundMessages.Count)
+                                {
+                                    await messageSender.SendAsync(outboundMessages[messageIndex++]);
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                Application.UseWaitCursor = false;
+                                var messageText = $"{outboundMessages.Count} were selected but only" +
+                                    $" {messageIndex} messages were sent. The error message is: {exception.Message}";
+                                MessageBox.Show(messageText, "Not all selected messages were sent",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            }
+
                             stopwatch.Stop();
                             writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
                         }
