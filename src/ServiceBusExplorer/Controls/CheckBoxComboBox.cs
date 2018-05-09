@@ -83,7 +83,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             var ListText = String.Empty;
             var StartIndex =
-                DropDownStyle == ComboBoxStyle.DropDownList 
+                DropDownStyle == ComboBoxStyle.DropDownList
                 && DataSource == null
                 && skipFirstItem
                     ? 1
@@ -111,13 +111,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         [Browsable(false)]
         public CheckBoxComboBoxItemList CheckBoxItems
         {
-            get 
-            { 
+            get
+            {
                 // Added to ensure the CheckBoxItems are ALWAYS
                 // available for modification via code.
                 if (_CheckBoxComboBoxListControl.Items.Count != Items.Count)
                     _CheckBoxComboBoxListControl.SynchroniseControlsWithComboBoxItems();
-                return _CheckBoxComboBoxListControl.Items; 
+                return _CheckBoxComboBoxListControl.Items;
             }
         }
         /// <summary>
@@ -247,10 +247,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             Items.Clear();
             if (DropDownStyle == ComboBoxStyle.DropDownList && DataSource == null)
-                _MustAddHiddenItem = true;                
+                _MustAddHiddenItem = true;
         }        /// <summary>
-        /// Uncheck all items.
-        /// </summary>
+                 /// Uncheck all items.
+                 /// </summary>
         public void ClearSelection()
         {
             foreach (var Item in CheckBoxItems)
@@ -293,7 +293,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 _MustAddHiddenItem = true;
             }
-            
+
             base.WndProc(ref m);
         }
     }
@@ -328,7 +328,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
         {
-            if (((Popup) Parent).ProcessResizing(ref m))
+            if (((Popup)Parent).ProcessResizing(ref m))
             {
                 return;
             }
@@ -424,9 +424,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var Item = _Items[Index];
                 if (!_CheckBoxComboBox.Items.Contains(Item.ComboBoxItem))
                 {
-                    #pragma warning disable 618
+#pragma warning disable 618
                     _Items.Remove(Item);
-                    #pragma warning restore 618
+#pragma warning restore 618
                     Item.Dispose();
                 }
             }
@@ -435,13 +435,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             #region Recreate the list in the same order of the combo box items
 
             // ReSharper disable once InconsistentNaming
-            var HasHiddenItem = 
+            var HasHiddenItem =
                 _CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList
                 && _CheckBoxComboBox.DataSource == null
                 && !DesignMode;
 
             var NewList = new CheckBoxComboBoxItemList(_CheckBoxComboBox);
-            for(var Index0 = 0; Index0 <= _CheckBoxComboBox.Items.Count - 1; Index0 ++)
+            for (var Index0 = 0; Index0 <= _CheckBoxComboBox.Items.Count - 1; Index0++)
             {
                 var obj = _CheckBoxComboBox.Items[Index0];
                 CheckBoxComboBoxItem Item = null;
@@ -468,9 +468,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     Item = new CheckBoxComboBoxItem(_CheckBoxComboBox, obj);
                     Item.ApplyProperties(_CheckBoxComboBox.CheckBoxProperties);
                 }
-                #pragma warning disable 618
+#pragma warning disable 618
                 NewList.Add(Item);
-                #pragma warning restore 618
+#pragma warning restore 618
                 Item.Dock = DockStyle.Top;
             }
             _Items.Clear();
@@ -496,8 +496,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (_CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList
                 && _CheckBoxComboBox.DataSource == null
                 && !DesignMode)
-                _CheckBoxComboBox.CheckBoxItems[0].Visible = false; 
-            
+                _CheckBoxComboBox.CheckBoxItems[0].Visible = false;
+
             ResumeLayout();
         }
 
@@ -582,7 +582,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // Helps to maintain the Checked status of this
             // checkbox before the control is visible
             if (_ComboBoxItem is INotifyPropertyChanged)
-                ((INotifyPropertyChanged)_ComboBoxItem).PropertyChanged += 
+                ((INotifyPropertyChanged)_ComboBoxItem).PropertyChanged +=
                     new PropertyChangedEventHandler(
                         CheckBoxComboBoxItem_PropertyChanged);
         }
@@ -647,7 +647,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void CheckBoxComboBoxItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == _CheckBoxComboBox.ValueMember)
-                Checked = 
+                Checked =
                     (bool)_ComboBoxItem
                         .GetType()
                         .GetProperty(_CheckBoxComboBox.ValueMember)
@@ -742,11 +742,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var StartIndex =
                     // An invisible item exists in this scenario to help 
                     // with the Text displayed in the TextBox of the Combo
-                    _CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList 
+                    _CheckBoxComboBox.DropDownStyle == ComboBoxStyle.DropDownList
                     && _CheckBoxComboBox.DataSource == null
                         ? 1 // Ubiklou : 2008-04-28 : Ignore first item. (http://www.codeproject.com/KB/combobox/extending_combobox.aspx?fid=476622&df=90&mpp=25&noise=3&sort=Position&view=Quick&select=2526813&fr=1#xx2526813xx)
                         : 0;
-                for(var Index = StartIndex; Index <= Count - 1; Index ++)
+                for (var Index = StartIndex; Index <= Count - 1; Index++)
                 {
                     var Item = this[Index];
 
@@ -759,14 +759,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         Text = (string)PropertyInfo?.GetValue(Item.ComboBoxItem, null);
                     }
                     else
+                    {
                         Text = Item.Text;
+                    }
+
                     if (Text.CompareTo(displayName) == 0)
+                    {
                         return Item;
+                    }
                 }
                 throw new ArgumentOutOfRangeException($"\"{displayName}\" does not exist in this combo box.");
             }
         }
-        
+
         #endregion
     }
 
