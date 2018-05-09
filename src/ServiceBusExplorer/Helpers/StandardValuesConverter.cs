@@ -37,10 +37,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     internal class StandardValuesConverter : TypeConverter
     {
-        #region Private Static Fields
-        private static int count; 
-        #endregion
-
         #region Public Methods
         public override bool GetPropertiesSupported(ITypeDescriptorContext context)
         {
@@ -482,40 +478,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
         }
-
-        private void WriteContext(string prefix, ITypeDescriptorContext ctx, object value, Type destinationType)
-        {
-            count++;
-            var sb = new StringBuilder(1024);
-
-            if (ctx != null)
-            {
-                if (ctx.Instance != null)
-                {
-                    sb.Append("ctx.Instance is " + ctx.Instance + ". ");
-                }
-
-                if (ctx.PropertyDescriptor != null)
-                {
-                    sb.Append("ctx.PropertyDescriptor is " + ctx.PropertyDescriptor + ". ");
-                }
-            }
-            else
-            {
-                sb.Append("ctx is null. ");
-            }
-
-            if (value == null)
-            {
-                sb.AppendLine("Value is null. ");
-            }
-            else
-            {
-                sb.AppendLine("Value is " + value + ", " + value.GetType() + ". ");
-            }
-            sb.AppendLine(destinationType.ToString());
-            Console.WriteLine(count + " " + prefix + ": " + sb);
-        } 
         #endregion
     }
 }

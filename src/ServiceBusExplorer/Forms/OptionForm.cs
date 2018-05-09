@@ -29,6 +29,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.ServiceBus;
 
 #endregion

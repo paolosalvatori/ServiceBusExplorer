@@ -33,7 +33,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     public class ZipBrokeredMessageInspector : IBrokeredMessageInspector, IDisposable
     {
         #region IBrokeredMessageInspector Methods
-        public BrokeredMessage BeforeSendMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
+        public BrokeredMessage BeforeSendMessage(BrokeredMessage message)
         {
             var stream = message?.Clone().GetBody<Stream>();
             if (stream == null)
@@ -48,7 +48,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return message;
         }
 
-        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
+        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message)
         {
             var stream = message?.Clone().GetBody<Stream>();
             if (stream == null)

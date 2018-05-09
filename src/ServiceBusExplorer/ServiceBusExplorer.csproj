@@ -246,6 +246,10 @@
     <Compile Include="Controls\HandleQueueControl.Designer.cs">
       <DependentUpon>HandleQueueControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Enums\DirectionType.cs" />
+    <Compile Include="Enums\EncodingType.cs" />
+    <Compile Include="Enums\EntityType.cs" />
+    <Compile Include="Enums\MessageDirection.cs" />
     <Compile Include="Forms\ConnectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -276,6 +280,7 @@
     <Compile Include="Forms\CollectionEditorForm.Designer.cs">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Enums\FormTypeEnum.cs" />
     <Compile Include="Forms\EventDataForm.cs">
       <SubType>Form</SubType>
     </Compile>

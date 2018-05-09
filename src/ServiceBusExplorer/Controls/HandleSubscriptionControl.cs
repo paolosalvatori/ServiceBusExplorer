@@ -110,7 +110,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string AutoDeleteOnIdleMinutesMustBeANumber = "The Minutes value of the AutoDeleteOnIdle field must be a number.";
         private const string AutoDeleteOnIdleSecondsMustBeANumber = "The Seconds value of the AutoDeleteOnIdle field must be a number.";
         private const string AutoDeleteOnIdleMillisecondsMustBeANumber = "The Milliseconds value of the AutoDeleteOnIdle field must be a number.";
-
+        
         private const string MessagesPeekedFromTheSubscription = "[{0}] messages peeked from the subscription [{1}].";
         private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the deadletter queue of the subscription [{1}].";
         private const string MessagesReceivedFromTheSubscription = "[{0}] messages received from the subscription [{1}].";
@@ -146,8 +146,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string ForwardToTooltip = "Gets or sets the path to the recipient to which the message is forwarded.";
         private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead lettered message is forwarded.";
-        private const string DeleteTooltip = "Delete the row.";
-
+        
         //***************************
         // Property Labels
         //***************************
@@ -189,20 +188,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         //***************************
         // Metrics Constants
         //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
         private const string SubscriptionEntity = "Subscription";
         private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
-        private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
         #endregion
 
         #region Private Fields
@@ -226,12 +213,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         private bool buttonsMoved;
         #endregion
-
-        #region Private Static Fields
-        private static readonly List<string> Operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
-        private static readonly List<string> TimeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
-        #endregion
-
+        
         #region Public Constructors
         public HandleSubscriptionControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, SubscriptionWrapper subscriptionWrapper)
         {
@@ -951,7 +933,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
                         var partialList = messageInspector != null ?
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList() :
+                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList() :
                                        new List<BrokeredMessage>(messageArray);
                         brokeredMessages.AddRange(partialList);
                         totalRetrieved += partialList.Count;
@@ -994,7 +976,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
@@ -1184,7 +1166,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
                     }
                     while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
@@ -1209,7 +1191,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)) : enumerable);
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
                     }
                     while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));

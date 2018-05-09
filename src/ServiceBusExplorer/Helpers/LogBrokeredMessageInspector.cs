@@ -36,11 +36,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    public enum MessageDirection
-    {
-        Send,
-        Receive
-    }
+    using Enums;
 
     public class LogBrokeredMessageInspector : IBrokeredMessageInspector, IDisposable
     {
@@ -83,12 +79,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region IBrokeredMessageInspector Methods
-        public BrokeredMessage BeforeSendMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
+        public BrokeredMessage BeforeSendMessage(BrokeredMessage message)
         {
             return LogMessage(MessageDirection.Send, message);
         }
 
-        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null)
+        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message)
         {
             return LogMessage(MessageDirection.Receive, message);
         } 

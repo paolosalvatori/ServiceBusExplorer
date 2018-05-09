@@ -33,7 +33,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
@@ -168,29 +167,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string RegistrationsPage = "tabPageRegistrations";
         private const string AuthorizationPage = "tabPageAuthorization";
         private const string MetricsTabPage = "tabPageMetrics";
-
-        //***************************
-        // Metrics Constants
-        //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string DisplayNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
         private const string NotificationHubEntity = "Notification Hub";
-        private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
-
-        //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
         #endregion
 
         #region Private Fields
@@ -3866,14 +3843,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             metricTabPageIndexList.Clear();
             btnCloseTabs.Enabled = false;
-        }
-
-        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
-        {
-            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
-            {
-                return;
-            }
         }
         #endregion
     }

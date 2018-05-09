@@ -281,29 +281,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DeadletterTabPage = "tabPageDeadletter";
         private const string TransferDeadletterTabPage = "tabPageTransferDeadletter";
         private const string MetricsTabPage = "tabPageMetrics";
-
-        //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
-
-        //***************************
-        // Metrics Constants
-        //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
         private const string QueueEntity = "Queue";
-        private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
 
         #endregion
 
@@ -1417,7 +1395,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
                         var partialList = messageInspector != null
-                            ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList()
+                            ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
                             : new List<BrokeredMessage>(messageArray);
                         brokeredMessages.AddRange(partialList);
                         totalRetrieved += partialList.Count;
@@ -1461,7 +1439,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
-                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
@@ -1649,7 +1627,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
-                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
@@ -1673,7 +1651,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
-                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     //if (!queueDescription.EnablePartitioning)
@@ -1776,7 +1754,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
-                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
@@ -1800,7 +1778,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
-                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog))
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     //if (!queueDescription.EnablePartitioning)

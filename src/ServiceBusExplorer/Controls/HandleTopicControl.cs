@@ -29,7 +29,6 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
@@ -101,7 +100,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string AuthorizationRuleDeleteMessage = "The Authorization Rule will be permanently deleted";
 
         private const string KeyNameCannotBeNull = "Authorization Rule [{0}]: the KeyName cannot be null";
-        //private const string PrimaryKeyCannotBeNull = "Authorization Rule [{0}]: the PrimaryKey cannot be null";
 
         //***************************
         // Tooltips
@@ -112,7 +110,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DuplicateDetectionHistoryTimeWindowTooltip = "Gets or sets the duration of the time window for duplicate detection history.";
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string UserMetadataTooltip = "Gets or sets the user metadata.";
-        private const string DeleteTooltip = "Delete the row.";
 
         //***************************
         // Property Labels
@@ -140,27 +137,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string MetricsTabPage = "tabPageMetrics";
 
         //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
-
-        //***************************
         // Metrics Constants
         //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string FriendlyNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
         private const string TopicEntity = "Topic";
-        private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
         #endregion
 
         #region Private Fields

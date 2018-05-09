@@ -95,14 +95,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DisplayNameProperty = "DisplayName";
         private const string NameProperty = "Name";
         private const string ConsumerGroupEntity = "Consumer Group";
-        private const string Unknown = "Unkown";
         private const string DeleteName = "Delete";
 
         //***************************
         // Metrics Formats
         //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
         private const string ConsumerGroupPathFormat = "{0}|{1}";
 
         //***************************

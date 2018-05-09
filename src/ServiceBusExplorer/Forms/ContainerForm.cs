@@ -42,12 +42,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
-    public enum FormTypeEnum
-    {
-        Send,
-        Test,
-        Listener
-    }
+    using Enums;
 
     public sealed partial class ContainerForm : Form
     {

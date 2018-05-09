@@ -89,12 +89,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string IsReadOnly = "Is ReadOnly";
 
         //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
-
-        //***************************
         // Metrics Constants
         //***************************
         private const string MetricProperty = "Metric";
@@ -108,7 +102,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DisplayNameProperty = "DisplayName";
         private const string NameProperty = "Name";
         private const string EventHubEntity = "Event Hub";
-        private const string Unknown = "Unkown";
         private const string DeleteName = "Delete";
 
         //***************************

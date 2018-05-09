@@ -29,7 +29,6 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
@@ -88,7 +87,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         //***************************
         private const string PathTooltip = "Gets or sets the relay path.";
         private const string UserMetadataTooltip = "Gets or sets the user metadata.";
-        private const string DeleteTooltip = "Delete the row.";
 
         //***************************
         // Property Labels
@@ -99,29 +97,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string IsReadOnly = "Is ReadOnly";
         private const string IsDynamic = "Is Dynamic";
         private const string ListenerCount = "Listener Count";
-
-        //***************************
-        // Metrics Constants
-        //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string DisplayNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
         private const string RelayEntity = "Relay";
-        private const string Unknown = "Unkown";
-        private const string DeleteName = "Delete";
-
-        //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
         #endregion
 
         #region Private Fields
