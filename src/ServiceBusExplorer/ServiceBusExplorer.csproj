@@ -157,24 +157,6 @@
     <Compile Include="Controls\HandleNotificationHubControl.designer.cs">
       <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MetricValueControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\MetricValueControl.Designer.cs">
-      <DependentUpon>MetricValueControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MetricGraphControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\MetricGraphControl.Designer.cs">
-      <DependentUpon>MetricGraphControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MetricMonitorControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\MetricMonitorControl.Designer.cs">
-      <DependentUpon>MetricMonitorControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\DataGridViewDateTimePickerColumn.cs" />
     <Compile Include="Controls\Grouper.cs">
       <SubType>UserControl</SubType>
@@ -528,16 +510,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\HandleNotificationHubControl.resx">
       <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MetricValueControl.resx">
-      <DependentUpon>MetricValueControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MetricGraphControl.resx">
-      <DependentUpon>MetricGraphControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MetricMonitorControl.resx">
-      <DependentUpon>MetricMonitorControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Grouper.resx">
       <DependentUpon>Grouper.cs</DependentUpon>

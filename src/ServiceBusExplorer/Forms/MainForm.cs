@@ -4609,12 +4609,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 relayServiceListNode.ContextMenuStrip = relayServicesContextMenuStrip;
                             }
                         }
-                        else
-                        {
-                            metricsToolStripSeparator.Visible = false;
-                            metricsSDIMenuItem.Visible = false;
-                            metricsMDIMenuItem.Visible = false;
-                        }
                     }
                     updating = true;
                     if (serviceBusHelper.IsCloudNamespace)
@@ -6530,55 +6524,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (control != null)
             {
                 control.GetRegistrations(true, null);
-            }
-        }
-
-        private void openMetrics_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(subscriptionId))
-            {
-                WriteToLog(SubscriptionIdCannotBeNull, false);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(certificateThumbprint))
-            {
-                WriteToLog(ManagementCertificateThumbprintCannotBeNull, false);
-                return;
-            }
-            if (sender is ToolStripMenuItem &&
-                ((ToolStripMenuItem)sender).Text == metricsSDIMenuItem.Text)
-            {
-                MetricMonitorControl metricMonitorControl = null;
-
-                try
-                {
-                    panelMain.SuspendDrawing();
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    panelMain.HeaderText = MetricsHeader;
-                    metricMonitorControl = new MetricMonitorControl(WriteToLog, serviceBusHelper, null, null, null);
-                    metricMonitorControl.SuspendDrawing();
-                    metricMonitorControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(metricMonitorControl);
-                    SetControlSize(metricMonitorControl);
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (metricMonitorControl != null)
-                    {
-                        metricMonitorControl.ResumeDrawing();
-                    }
-                }
-            }
-            else
-            {
-                var form = new ContainerForm(serviceBusHelper, this);
-                form.Show();
             }
         }
 
