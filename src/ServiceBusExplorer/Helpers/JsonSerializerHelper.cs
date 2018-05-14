@@ -41,8 +41,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             try
             {
+                var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
                 return JsonConvert
-                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%")), Formatting.Indented)
+                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%"), settings), Formatting.Indented)
                     .Replace("%%$type%%", "$type");
             }
             catch (Exception)
