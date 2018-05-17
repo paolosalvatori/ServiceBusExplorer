@@ -83,12 +83,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region IEventDataInspector Methods
-        public EventData BeforeSendMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
+        public EventData BeforeSendMessage(EventData eventData)
         {
             return LogEventData(EventDataDirection.Send, eventData);
         }
 
-        public EventData AfterReceiveMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
+        public EventData AfterReceiveMessage(EventData eventData)
         {
             return LogEventData(EventDataDirection.Receive, eventData);
         } 

@@ -33,7 +33,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     public class ZipEventDataInspector : IEventDataInspector, IDisposable
     {
         #region IBrokeredMessageInspector Methods
-        public EventData BeforeSendMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
+        public EventData BeforeSendMessage(EventData eventData)
         {
             var stream = eventData?.Clone().GetBodyStream();
             if (stream == null)
@@ -47,7 +47,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return eventData.Clone(Compress(stream));
         }
 
-        public EventData AfterReceiveMessage(EventData eventData, WriteToLogDelegate writeToLog = null)
+        public EventData AfterReceiveMessage(EventData eventData)
         {
             var stream = eventData?.Clone().GetBodyStream();
             if (stream == null)

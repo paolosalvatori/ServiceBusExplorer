@@ -42,12 +42,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
-    public enum FormTypeEnum
-    {
-        Send,
-        Test,
-        Listener
-    }
+    using Enums;
 
     public sealed partial class ContainerForm : Form
     {
@@ -133,20 +128,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 panelMain.SuspendDrawing();
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                var metricMonitorControl = new MetricMonitorControl(WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), null, null, null)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-
                 Text = MetricsHeader;
                 logTraceListener = new LogTraceListener(WriteToLog);
                 Trace.Listeners.Add(logTraceListener);
-                metricMonitorControl.Focus();
-
-                panelMain.Controls.Add(metricMonitorControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally

@@ -610,7 +610,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                     if (File.Exists(appConfig))
                     {
-                        var exeConfigurationFileMap = new ExeConfigurationFileMap()
+                        var exeConfigurationFileMap = new ExeConfigurationFileMap
                         {
                             ExeConfigFilename = appConfig
                         };

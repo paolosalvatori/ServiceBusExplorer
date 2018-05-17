@@ -39,7 +39,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region ICheckpointManager Methods
         public Task CheckpointAsync(Lease lease, string offset, long sequenceNumber)
         {
-            return EventProcessorCheckpointHelper.CheckpointAsync(Namespace, EventHub, ConsumerGroup, lease, offset, sequenceNumber);
+            return EventProcessorCheckpointHelper.CheckpointAsync(Namespace, EventHub, ConsumerGroup, lease, offset);
         }
         #endregion
     }

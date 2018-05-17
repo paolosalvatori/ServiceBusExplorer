@@ -29,7 +29,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public interface IBrokeredMessageInspector
     {
-        BrokeredMessage BeforeSendMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null);
-        BrokeredMessage AfterReceiveMessage(BrokeredMessage message, WriteToLogDelegate writeToLog = null);
+        BrokeredMessage BeforeSendMessage(BrokeredMessage message);
+        BrokeredMessage AfterReceiveMessage(BrokeredMessage message);
     }
 }

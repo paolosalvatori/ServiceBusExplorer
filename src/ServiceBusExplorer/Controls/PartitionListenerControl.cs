@@ -990,10 +990,10 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
 
         private void ClearStatistics()
         {
-            txtEventDataTotal.Text = @"0";
-            txtEventDataPerSecond.Text = @"0";
-            txtAverageDuration.Text = @"0";
-            txtMessageSizePerSecond.Text = @"0";
+            txtEventDataTotal.Text = "0";
+            txtEventDataPerSecond.Text = "0";
+            txtAverageDuration.Text = "0";
+            txtMessageSizePerSecond.Text = "0";
 
             receiverTotalTime = 0;
             receiverMessageSizeTotal = 0;

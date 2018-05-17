@@ -40,6 +40,7 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -2920,7 +2921,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                 replyToSessionId,
                                                 timeToLive,
                                                 scheduledEnqueueTimeUtc,
-                                                forcePersistence,
                                                 properties);
         }
 
@@ -2939,7 +2939,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="replyToSessionId">The value of the ReplyToSessionId property of the message.</param>
         /// <param name="timeToLive">The value of the TimeToLive property of the message.</param>
         /// <param name="scheduledEnqueueTimeUtc">The receiveTimeout in seconds after which the message will be enqueued.</param>
-        /// <param name="forcePersistence">The value of the ForcePersistence property of the message.</param>
         /// <param name="properties">The user-defined properties of the message.</param>
         /// <returns>The newly created BrokeredMessage object.</returns>
         public BrokeredMessage CreateBrokeredMessageTemplate(Stream stream,
@@ -2954,7 +2953,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                              string replyToSessionId,
                                                              string timeToLive,
                                                              string scheduledEnqueueTimeUtc,
-                                                             bool forcePersistence,
                                                              IEnumerable<MessagePropertyInfo> properties)
         {
             var warningCollection = new ConcurrentBag<string>();
@@ -4513,7 +4511,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                             messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
                             if (messageInspector != null)
                             {
-                                messageList = messageList.Select(b => messageInspector.AfterReceiveMessage(b, writeToLog)).ToList();
+                                messageList = messageList.Select(b => messageInspector.AfterReceiveMessage(b)).ToList();
                             }
                             isCompleted = messageEnumerable == null || !messageList.Any();
                             if (isCompleted)
@@ -5431,8 +5429,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <param name="deadletterQueue">This parameter indicates whether to read messages from the deadletter queue.</param>
         /// <param name="receiveTimeout">Receive receiveTimeout.</param>
         /// <param name="sessionTimeout">Session timeout</param>
-        /// <param name="cancellationTokenSource">Cancellation token source.</param>
-        public void ReceiveMessages(EntityDescription entityDescription, int? messageCount, bool complete, bool deadletterQueue, TimeSpan receiveTimeout, TimeSpan sessionTimeout, CancellationTokenSource cancellationTokenSource)
+        public void ReceiveMessages(EntityDescription entityDescription, int? messageCount, bool complete, bool deadletterQueue, TimeSpan receiveTimeout, TimeSpan sessionTimeout)
         {
             // ReSharper disable once CollectionNeverQueried.Local
             var receiverList = new List<MessageReceiver>();

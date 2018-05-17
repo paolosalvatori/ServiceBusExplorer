@@ -39,6 +39,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
@@ -61,7 +62,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string EntityFileNameFormat = "{0} {1} {2}.xml";
         private const string EntitiesFileNameFormat = "{0} {1}.xml";
         private const string UrlSegmentFormat = "{0}/{1}";
-        //private const string FaultNode = "Fault";
         private const string NameMessageCountFormat = "{0} ({1}, {2}, {3})";
         private const string PartitionFormat = "{0,2:00}";
 
@@ -92,8 +92,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string PartitionRetrievedFormat = "The partition {0} of the event hub {1} has been successfully retrieved.";
         private const string ConsumerGroupRetrievedFormat = "The consumer group {0} of the event hub {1} has been successfully retrieved.";
         private const string NotificationHubRetrievedFormat = "The notification hub {0} has been successfully retrieved.";
-        //private const string SyndicateItemFormat = "The atom feed item {0} has been successfully retrieved.";
-        //private const string LinkUriFormat = "The link uri {0} has been successfully retrieved.";
         private const string TestQueueFormat = "Test Queue: {0}";
         private const string TestTopicFormat = "Test Topic: {0}";
         private const string TestSubscriptionFormat = "Test Subscription: {0}";
@@ -149,7 +147,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string EventDataInspectors = "eventDataInspectors";
         private const string BrokeredMessageGenerators = "brokeredMessageGenerators";
         private const string EventDataGenerators = "eventDataGenerators";
-        //private const string UrlEntity = "Url";
         private const string AllEntities = "Entities";
         private const string QueueEntities = "Queues";
         private const string TopicEntities = "Topics";
@@ -229,9 +226,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const int RuleIconIndex = 6;
         private const int AzureIconIndex = 7;
         private const int RelayListIconIndex = 8;
-        //private const int RelayNonLeafIconIndex = 10;
         private const int RelayLeafIconIndex = 9;
-        //private const int RelayUriIconIndex = 11;
         internal const int UrlSegmentIconIndex = 10;
         private const int GreyQueueIconIndex = 12;
         private const int GreyTopicIconIndex = 13;
@@ -403,7 +398,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (showMessageCount != optionForm.ShowMessageCount)
                 {
                     showMessageCount = optionForm.ShowMessageCount;
-                    GetEntities(EntityType.All);
+                    GetEntities(ServiceBusExplorer.Enums.EntityType.All);
                 }
                 saveMessageToFile = optionForm.SaveMessageToFile;
                 savePropertiesToFile = optionForm.SavePropertiesToFile;
@@ -4609,12 +4604,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 relayServiceListNode.ContextMenuStrip = relayServicesContextMenuStrip;
                             }
                         }
-                        else
-                        {
-                            metricsToolStripSeparator.Visible = false;
-                            metricsSDIMenuItem.Visible = false;
-                            metricsMDIMenuItem.Visible = false;
-                        }
                     }
                     updating = true;
                     if (serviceBusHelper.IsCloudNamespace)
@@ -6533,55 +6522,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void openMetrics_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(subscriptionId))
-            {
-                WriteToLog(SubscriptionIdCannotBeNull, false);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(certificateThumbprint))
-            {
-                WriteToLog(ManagementCertificateThumbprintCannotBeNull, false);
-                return;
-            }
-            if (sender is ToolStripMenuItem &&
-                ((ToolStripMenuItem)sender).Text == metricsSDIMenuItem.Text)
-            {
-                MetricMonitorControl metricMonitorControl = null;
-
-                try
-                {
-                    panelMain.SuspendDrawing();
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    panelMain.HeaderText = MetricsHeader;
-                    metricMonitorControl = new MetricMonitorControl(WriteToLog, serviceBusHelper, null, null, null);
-                    metricMonitorControl.SuspendDrawing();
-                    metricMonitorControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(metricMonitorControl);
-                    SetControlSize(metricMonitorControl);
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (metricMonitorControl != null)
-                    {
-                        metricMonitorControl.ResumeDrawing();
-                    }
-                }
-            }
-            else
-            {
-                var form = new ContainerForm(serviceBusHelper, this);
-                form.Show();
-            }
-        }
-
         private void lstLog_KeyDown(object sender, KeyEventArgs e)
         {
             try
@@ -6943,42 +6883,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             version = VersionHelper.RetrieveLatestReleaseFromGitHubAsync().Result;
             if (!string.IsNullOrWhiteSpace(version))
             {
-                Text = $@"Service Bus Explorer {version}";
+                Text = $"Service Bus Explorer {version}";
             }
         }
 
         #endregion
-    }
-
-    public enum EntityType
-    {
-        All,
-        Queue,
-        Topic,
-        Subscription,
-        Rule,
-        Relay,
-        NotificationHub,
-        EventHub,
-        ConsumerGroup
-    }
-
-    public enum DirectionType
-    {
-        Send,
-        Receive
-    }
-
-    public enum EncodingType
-    {
-        // ReSharper disable once InconsistentNaming
-        ASCII,
-        // ReSharper disable once InconsistentNaming
-        UTF7,
-        // ReSharper disable once InconsistentNaming
-        UTF8,
-        // ReSharper disable once InconsistentNaming
-        UTF32,
-        Unicode
     }
 }
