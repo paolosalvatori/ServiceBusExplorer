@@ -32,6 +32,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class JsonSerializerHelper
     {
+        static readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
+
         /// <summary>
         /// Indent the supplied json string
         /// </summary>
@@ -42,7 +44,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             try
             {
                 return JsonConvert
-                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%")), Formatting.Indented)
+                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%"), serializerSettings), Formatting.Indented)
                     .Replace("%%$type%%", "$type");
             }
             catch (Exception)

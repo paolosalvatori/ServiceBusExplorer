@@ -42,7 +42,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string MessageFileName = "Message.xml";
         private const string RelayMessageFileName = "RelayMessage.xml";
         private const string PropertiesFileName = "Properties.xml";
-        private const string Namespace = @"http://schemas.microsoft.com/servicebusexplorer";
+        private const string Namespace = "http://schemas.microsoft.com/servicebusexplorer";
         private const string Message = "Message";
         private const string Date = "Date";
         private const string Content = "Content";

@@ -29,7 +29,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public interface IEventDataInspector
     {
-        EventData BeforeSendMessage(EventData eventData, WriteToLogDelegate writeToLog = null);
-        EventData AfterReceiveMessage(EventData eventData, WriteToLogDelegate writeToLog = null);
+        EventData BeforeSendMessage(EventData eventData);
+        EventData AfterReceiveMessage(EventData eventData);
     }
 }
