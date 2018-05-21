@@ -1441,6 +1441,7 @@
             this.txtMessageText.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessageText.Location = new System.Drawing.Point(21, 39);
             this.txtMessageText.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMessageText.MaxLength = 0;
             this.txtMessageText.Multiline = true;
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -1732,6 +1733,7 @@
             this.txtDeadletterText.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtDeadletterText.Location = new System.Drawing.Point(21, 39);
             this.txtDeadletterText.Margin = new System.Windows.Forms.Padding(4);
+            this.txtDeadletterText.MaxLength = 0;
             this.txtDeadletterText.Multiline = true;
             this.txtDeadletterText.Name = "txtDeadletterText";
             this.txtDeadletterText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -1986,6 +1988,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSessionState.Location = new System.Drawing.Point(21, 39);
             this.txtSessionState.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSessionState.MaxLength = 0;
             this.txtSessionState.Multiline = true;
             this.txtSessionState.Name = "txtSessionState";
             this.txtSessionState.Size = new System.Drawing.Size(766, 198);

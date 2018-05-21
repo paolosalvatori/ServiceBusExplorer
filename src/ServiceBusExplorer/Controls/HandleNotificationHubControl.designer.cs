@@ -1655,6 +1655,7 @@
             this.txtTemplatePayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTemplatePayload.Location = new System.Drawing.Point(21, 39);
             this.txtTemplatePayload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtTemplatePayload.MaxLength = 0;
             this.txtTemplatePayload.Multiline = true;
             this.txtTemplatePayload.Name = "txtTemplatePayload";
             this.txtTemplatePayload.ReadOnly = true;
@@ -1726,6 +1727,7 @@
             this.txtTemplateTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTemplateTagExpression.Location = new System.Drawing.Point(21, 39);
             this.txtTemplateTagExpression.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtTemplateTagExpression.MaxLength = 0;
             this.txtTemplateTagExpression.Multiline = true;
             this.txtTemplateTagExpression.Name = "txtTemplateTagExpression";
             this.txtTemplateTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -2023,6 +2025,7 @@
             this.txtMpnsPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMpnsPayload.Location = new System.Drawing.Point(21, 39);
             this.txtMpnsPayload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMpnsPayload.MaxLength = 0;
             this.txtMpnsPayload.Multiline = true;
             this.txtMpnsPayload.Name = "txtMpnsPayload";
             this.txtMpnsPayload.ReadOnly = true;
@@ -2095,6 +2098,7 @@
             this.txtMpnsTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMpnsTagExpression.Location = new System.Drawing.Point(21, 39);
             this.txtMpnsTagExpression.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMpnsTagExpression.MaxLength = 0;
             this.txtMpnsTagExpression.Multiline = true;
             this.txtMpnsTagExpression.Name = "txtMpnsTagExpression";
             this.txtMpnsTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -2399,6 +2403,7 @@
             this.txtWnsPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWnsPayload.Location = new System.Drawing.Point(21, 39);
             this.txtWnsPayload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtWnsPayload.MaxLength = 0;
             this.txtWnsPayload.Multiline = true;
             this.txtWnsPayload.Name = "txtWnsPayload";
             this.txtWnsPayload.ReadOnly = true;
@@ -2471,6 +2476,7 @@
             this.txtWnsTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWnsTagExpression.Location = new System.Drawing.Point(21, 39);
             this.txtWnsTagExpression.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtWnsTagExpression.MaxLength = 0;
             this.txtWnsTagExpression.Multiline = true;
             this.txtWnsTagExpression.Name = "txtWnsTagExpression";
             this.txtWnsTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -2758,6 +2764,7 @@
             this.txtApnsJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtApnsJsonPayload.Location = new System.Drawing.Point(21, 39);
             this.txtApnsJsonPayload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtApnsJsonPayload.MaxLength = 0;
             this.txtApnsJsonPayload.Multiline = true;
             this.txtApnsJsonPayload.Name = "txtApnsJsonPayload";
             this.txtApnsJsonPayload.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -2848,6 +2855,7 @@
             this.txtAppleTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAppleTagExpression.Location = new System.Drawing.Point(21, 39);
             this.txtAppleTagExpression.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAppleTagExpression.MaxLength = 0;
             this.txtAppleTagExpression.Multiline = true;
             this.txtAppleTagExpression.Name = "txtAppleTagExpression";
             this.txtAppleTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -3254,6 +3262,7 @@
             this.txtGcmJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGcmJsonPayload.Location = new System.Drawing.Point(21, 39);
             this.txtGcmJsonPayload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtGcmJsonPayload.MaxLength = 0;
             this.txtGcmJsonPayload.Multiline = true;
             this.txtGcmJsonPayload.Name = "txtGcmJsonPayload";
             this.txtGcmJsonPayload.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -3344,6 +3353,7 @@
             this.txtGcmTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGcmTagExpression.Location = new System.Drawing.Point(21, 39);
             this.txtGcmTagExpression.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtGcmTagExpression.MaxLength = 0;
             this.txtGcmTagExpression.Multiline = true;
             this.txtGcmTagExpression.Name = "txtGcmTagExpression";
             this.txtGcmTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
