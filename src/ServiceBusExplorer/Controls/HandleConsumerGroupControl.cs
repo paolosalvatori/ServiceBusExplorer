@@ -81,31 +81,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string UpdatedAt = "Updated At";
         private const string IsReadOnly = "Is ReadOnly";
 
-        //***************************
-        // Metrics Constants
-        //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string DisplayNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
+        ////***************************
+        //// Event Hub Constants
+        ////***************************
         private const string ConsumerGroupEntity = "Consumer Group";
-        private const string DeleteName = "Delete";
 
-        //***************************
-        // Metrics Formats
-        //***************************
-        private const string ConsumerGroupPathFormat = "{0}|{1}";
-
-        //***************************
-        // Pages
-        //***************************
-        private const string MetricsTabPage = "tabPageMetrics";
+        ////***************************
+        //// Pages
+        ////***************************
         private const string PartitionsTabPage = "tabPagePartitions";
 
         //***************************
@@ -124,8 +107,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private SortableBindingList<PartitionDescription> partitionsBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -238,7 +219,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         mainTabControl.SelectTab(PartitionsTabPage);
                     }
-                    CalculateLastColumnWidth();
                 }
                 catch (Exception ex)
                 {
@@ -288,152 +268,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             partitionsDataGridView.AutoSize = true;
             partitionsDataGridView.ForeColor = SystemColors.WindowText;
 
-            // Set Grid style
-            dataPointDataGridView.EnableHeadersVisualStyles = false;
 
-            // Set the selection background color for all the cells.
-            dataPointDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-            dataPointDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-            dataPointDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-            // Set the background color for all rows and for alternating rows.  
-            // The value for alternating rows overrides the value for all rows. 
-            dataPointDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-            dataPointDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            //filtersDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-            //filtersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-            // Set the row and column header styles.
-            dataPointDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            dataPointDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            dataPointDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            dataPointDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Initialize the DataGridView.
             dataPointBindingSource.DataSource = dataPointBindingList;
-            dataPointDataGridView.AutoGenerateColumns = false;
-            dataPointDataGridView.AutoSize = true;
-            dataPointDataGridView.DataSource = dataPointBindingSource;
-            dataPointDataGridView.ForeColor = SystemColors.WindowText;
-
-            if (consumerGroupDescription != null)
-            {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
-                                             ConsumerGroupEntity,
-                                             string.Format(ConsumerGroupPathFormat,
-                                                           consumerGroupDescription.EventHubPath,
-                                                           consumerGroupDescription.Name)).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
-            if (dataPointDataGridView.Columns.Count == 0)
-            {
-                // Create the Metric column
-                var metricColumn = new DataGridViewComboBoxColumn
-                {
-                    DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(ConsumerGroupEntity) ?
-                                 MetricInfo.EntityMetricDictionary[ConsumerGroupEntity] :
-                                 null,
-                    DataPropertyName = MetricProperty,
-                    DisplayMember = DisplayNameProperty,
-                    ValueMember = NameProperty,
-                    Name = MetricProperty,
-                    Width = 144,
-                    DropDownWidth = 250,
-                    FlatStyle = FlatStyle.Flat,
-                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
-                };
-                dataPointDataGridView.Columns.Add(metricColumn);
-
-                // Create the Time Granularity column
-                var timeGranularityColumn = new DataGridViewComboBoxColumn
-                {
-                    DataSource = timeGranularityList,
-                    DataPropertyName = GranularityProperty,
-                    Name = GranularityProperty,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(timeGranularityColumn);
-
-                // Create the Time Operator 1 column
-                var operator1Column = new DataGridViewComboBoxColumn
-                {
-                    DataSource = operators,
-                    DataPropertyName = TimeFilterOperator1Name,
-                    HeaderText = TimeFilterOperator,
-                    Name = TimeFilterOperator1Name,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(operator1Column);
-
-                // Create the Time Value 1 column
-                var value1Column = new DataGridViewDateTimePickerColumn
-                {
-                    DataPropertyName = TimeFilterValue1Name,
-                    HeaderText = TimeFilterValue,
-                    Name = TimeFilterValue1Name,
-                    Width = 136
-                };
-                dataPointDataGridView.Columns.Add(value1Column);
-
-                // Create the Time Operator 1 column
-                var operator2Column = new DataGridViewComboBoxColumn
-                {
-                    DataSource = operators,
-                    DataPropertyName = TimeFilterOperator2Name,
-                    HeaderText = TimeFilterOperator,
-                    Name = TimeFilterOperator2Name,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(operator2Column);
-
-                // Create the Time Value 1 column
-                var value2Column = new DataGridViewDateTimePickerColumn
-                {
-                    DataPropertyName = TimeFilterValue2Name,
-                    HeaderText = TimeFilterValue,
-                    Name = TimeFilterValue2Name,
-                    Width = 136
-                };
-                dataPointDataGridView.Columns.Add(value2Column);
-
-                // Create delete column
-                var deleteButtonColumn = new DataGridViewButtonColumn
-                {
-                    Name = DeleteName,
-                    CellTemplate = new DataGridViewDeleteButtonCell(),
-                    HeaderText = string.Empty,
-                    Width = 22
-                };
-                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
-                deleteButtonColumn.UseColumnTextForButtonValue = true;
-                dataPointDataGridView.Columns.Add(deleteButtonColumn);
-            }
 
             DisablePage(PartitionsTabPage);
 
             if (consumerGroupDescription != null)
             {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize buttons
                 btnCreateDelete.Text = DeleteText;
                 btnCancelUpdate.Text = UpdateText;
                 btnRefresh.Visible = true;
-                btnCloseTabs.Visible = true;
                 btnGetPartitions.Visible = true;
 
                 // Initialize textboxes
@@ -451,14 +298,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                // Tab pages
-                DisablePage(MetricsTabPage);
-
                 // Initialize buttons
                 btnCreateDelete.Text = CreateText;
                 btnCancelUpdate.Text = CancelText;
                 btnRefresh.Visible = false;
-                btnCloseTabs.Visible = false;
                 btnGetPartitions.Visible = false;
             }
         }
@@ -883,93 +726,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 HandleException(ex);
             }
-        }
-
-        private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
-            if (dataGridViewColumn != null &&
-                e.ColumnIndex == dataGridViewColumn.Index &&
-                e.RowIndex > -1 &&
-               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
-            {
-                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
-                return;
-            }
-            dataPointDataGridView.NotifyCurrentCellDirty(true);
-        }
-
-        private void dataPointDataGridView_Resize(object sender, EventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void CalculateLastColumnWidth()
-        {
-            if (dataPointDataGridView.Columns.Count < 5)
-            {
-                return;
-            }
-            var otherColumnsWidth = 0;
-            for (var i = 1; i < dataPointDataGridView.Columns.Count; i++)
-            {
-                otherColumnsWidth += dataPointDataGridView.Columns[i].Width;
-            }
-            var width = dataPointDataGridView.Width - dataPointDataGridView.RowHeadersWidth - otherColumnsWidth;
-            var verticalScrollbar = dataPointDataGridView.Controls.OfType<VScrollBar>().First();
-            if (verticalScrollbar.Visible)
-            {
-                width -= verticalScrollbar.Width;
-            }
-            dataPointDataGridView.Columns[0].Width = width;
-        }
-
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
-        }
-
-        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
-        {
-            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
-            {
-                return;
-            }
-            Task.Run(() =>
-            {
-                metricsManualResetEvent.WaitOne();
-                var dataGridViewComboBoxColumn = (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
-                if (dataGridViewComboBoxColumn != null)
-                {
-                    dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(ConsumerGroupEntity)
-                        ? MetricInfo.EntityMetricDictionary[ConsumerGroupEntity]
-                        : null;
-                }
-            });
         }
 
         private void partitionsDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)

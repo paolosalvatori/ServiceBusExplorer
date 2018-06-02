@@ -117,7 +117,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
-        private readonly List<string> metricTabPageIndexList = new List<string>();
         private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
@@ -353,7 +352,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnCancelUpdate.Text = UpdateText;
                 btnChangeStatus.Text = eventHubDescription.Status == EntityStatus.Active ? DisableText : EnableText;
                 btnRefresh.Visible = true;
-                btnCloseTabs.Visible = true;
                 btnChangeStatus.Visible = true;
                 
                 // Initialize textboxes
@@ -389,7 +387,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnCancelUpdate.Text = CancelText;
                 btnRefresh.Visible = false;
                 btnChangeStatus.Visible = false;
-                btnCloseTabs.Visible = false;
 
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
@@ -1142,92 +1139,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void dataPointDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            var dataGridViewColumn = dataPointDataGridView.Columns[DeleteName];
-            if (dataGridViewColumn != null &&
-                e.ColumnIndex == dataGridViewColumn.Index &&
-                e.RowIndex > -1 &&
-               !dataPointDataGridView.Rows[e.RowIndex].IsNewRow)
-            {
-                dataPointDataGridView.Rows.RemoveAt(e.RowIndex);
-                return;
-            }
-            dataPointDataGridView.NotifyCurrentCellDirty(true);
-        }
-
-        private void dataPointDataGridView_Resize(object sender, EventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            CalculateLastColumnWidth();
-        }
-
-        private void dataPointDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void CalculateLastColumnWidth()
-        {
-            if (dataPointDataGridView.Columns.Count < 5)
-            {
-                return;
-            }
-            var otherColumnsWidth = 0;
-            for (var i = 1; i < dataPointDataGridView.Columns.Count; i++)
-            {
-                otherColumnsWidth += dataPointDataGridView.Columns[i].Width;
-            }
-            var width = dataPointDataGridView.Width - dataPointDataGridView.RowHeadersWidth - otherColumnsWidth;
-            var verticalScrollbar = dataPointDataGridView.Controls.OfType<VScrollBar>().First();
-            if (verticalScrollbar != null && verticalScrollbar.Visible)
-            {
-                width -= verticalScrollbar.Width;
-            }
-            dataPointDataGridView.Columns[0].Width = width;
-        }
-
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
-        }
-
-        private void mainTabControl_Selected(object sender, TabControlEventArgs e)
-        {
-            if (string.Compare(e.TabPage.Name, MetricsTabPage, StringComparison.InvariantCultureIgnoreCase) != 0)
-            {
-                return;
-            }
-            Task.Run(() =>
-            {
-                metricsManualResetEvent.WaitOne();
-                var dataGridViewComboBoxColumn = (DataGridViewComboBoxColumn)dataPointDataGridView.Columns[MetricProperty];
-                if (dataGridViewComboBoxColumn != null)
-                {
-                    dataGridViewComboBoxColumn.DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(EventHubEntity)
-                        ? MetricInfo.EntityMetricDictionary[EventHubEntity]
-                        : null;
-                }
-            });
-        }
         #endregion
     }
 }
