@@ -45,7 +45,6 @@
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.btnCloseTabs = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
@@ -70,7 +69,7 @@
             this.tabPageDescription.Controls.Add(this.grouperRelayInformation);
             this.tabPageDescription.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDescription.Location = new System.Drawing.Point(4, 27);
-            this.tabPageDescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageDescription.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageDescription.Name = "tabPageDescription";
             this.tabPageDescription.Size = new System.Drawing.Size(1293, 560);
             this.tabPageDescription.TabIndex = 2;
@@ -92,7 +91,7 @@
             this.grouperRelaySettings.GroupImage = null;
             this.grouperRelaySettings.GroupTitle = "Relay Settings";
             this.grouperRelaySettings.Location = new System.Drawing.Point(437, 118);
-            this.grouperRelaySettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperRelaySettings.Margin = new System.Windows.Forms.Padding(4);
             this.grouperRelaySettings.Name = "grouperRelaySettings";
             this.grouperRelaySettings.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperRelaySettings.PaintGroupBox = true;
@@ -137,7 +136,7 @@
             this.grouperPath.GroupImage = null;
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(21, 10);
-            this.grouperPath.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperPath.Margin = new System.Windows.Forms.Padding(4);
             this.grouperPath.Name = "grouperPath";
             this.grouperPath.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperPath.PaintGroupBox = true;
@@ -166,7 +165,7 @@
             this.txtPath.BackColor = System.Drawing.SystemColors.Window;
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPath.Location = new System.Drawing.Point(21, 54);
-            this.txtPath.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtPath.Margin = new System.Windows.Forms.Padding(4);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(767, 23);
             this.txtPath.TabIndex = 0;
@@ -191,7 +190,7 @@
             this.grouperRelayProperties.GroupImage = null;
             this.grouperRelayProperties.GroupTitle = "Relay Properties";
             this.grouperRelayProperties.Location = new System.Drawing.Point(21, 118);
-            this.grouperRelayProperties.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperRelayProperties.Margin = new System.Windows.Forms.Padding(4);
             this.grouperRelayProperties.Name = "grouperRelayProperties";
             this.grouperRelayProperties.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperRelayProperties.PaintGroupBox = true;
@@ -212,7 +211,7 @@
             this.cboRelayType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboRelayType.FormattingEnabled = true;
             this.cboRelayType.Location = new System.Drawing.Point(21, 54);
-            this.cboRelayType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cboRelayType.Margin = new System.Windows.Forms.Padding(4);
             this.cboRelayType.Name = "cboRelayType";
             this.cboRelayType.Size = new System.Drawing.Size(308, 25);
             this.cboRelayType.TabIndex = 29;
@@ -235,7 +234,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
             this.txtUserMetadata.Location = new System.Drawing.Point(21, 108);
-            this.txtUserMetadata.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtUserMetadata.Margin = new System.Windows.Forms.Padding(4);
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
@@ -263,7 +262,7 @@
             this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(341, 108);
-            this.btnOpenDescriptionForm.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnOpenDescriptionForm.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
             this.btnOpenDescriptionForm.Size = new System.Drawing.Size(32, 26);
             this.btnOpenDescriptionForm.TabIndex = 3;
@@ -291,7 +290,7 @@
             this.grouperRelayInformation.GroupImage = null;
             this.grouperRelayInformation.GroupTitle = "Relay Information";
             this.grouperRelayInformation.Location = new System.Drawing.Point(853, 10);
-            this.grouperRelayInformation.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperRelayInformation.Margin = new System.Windows.Forms.Padding(4);
             this.grouperRelayInformation.Name = "grouperRelayInformation";
             this.grouperRelayInformation.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperRelayInformation.PaintGroupBox = true;
@@ -311,7 +310,7 @@
             this.nameColumnHeader,
             this.valueColumnHeader});
             this.propertyListView.Location = new System.Drawing.Point(21, 39);
-            this.propertyListView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.propertyListView.Margin = new System.Windows.Forms.Padding(4);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
             this.propertyListView.Size = new System.Drawing.Size(371, 472);
@@ -343,7 +342,7 @@
             this.mainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.mainTabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mainTabControl.Location = new System.Drawing.Point(21, 20);
-            this.mainTabControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mainTabControl.Margin = new System.Windows.Forms.Padding(4);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(1301, 591);
@@ -356,7 +355,7 @@
             this.tabPageAuthorization.Controls.Add(this.grouperAuthorizationRuleList);
             this.tabPageAuthorization.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAuthorization.Location = new System.Drawing.Point(4, 27);
-            this.tabPageAuthorization.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageAuthorization.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageAuthorization.Name = "tabPageAuthorization";
             this.tabPageAuthorization.Size = new System.Drawing.Size(1293, 560);
             this.tabPageAuthorization.TabIndex = 3;
@@ -379,7 +378,7 @@
             this.grouperAuthorizationRuleList.GroupImage = null;
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(21, 10);
-            this.grouperAuthorizationRuleList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperAuthorizationRuleList.Margin = new System.Windows.Forms.Padding(4);
             this.grouperAuthorizationRuleList.Name = "grouperAuthorizationRuleList";
             this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperAuthorizationRuleList.PaintGroupBox = true;
@@ -403,7 +402,7 @@
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.authorizationRulesDataGridView.Location = new System.Drawing.Point(21, 39);
-            this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(4);
             this.authorizationRulesDataGridView.MultiSelect = false;
             this.authorizationRulesDataGridView.Name = "authorizationRulesDataGridView";
             this.authorizationRulesDataGridView.RowHeadersWidth = 24;
@@ -430,7 +429,7 @@
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefresh.Location = new System.Drawing.Point(1013, 620);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(96, 30);
             this.btnRefresh.TabIndex = 2;
@@ -450,7 +449,7 @@
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancelUpdate.Location = new System.Drawing.Point(1227, 620);
-            this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(96, 30);
             this.btnCancelUpdate.TabIndex = 4;
@@ -470,7 +469,7 @@
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateDelete.Location = new System.Drawing.Point(1120, 620);
-            this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(96, 30);
             this.btnCreateDelete.TabIndex = 3;
@@ -480,36 +479,16 @@
             this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // btnCloseTabs
-            // 
-            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCloseTabs.Enabled = false;
-            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCloseTabs.Location = new System.Drawing.Point(907, 620);
-            this.btnCloseTabs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.btnCloseTabs.Name = "btnCloseTabs";
-            this.btnCloseTabs.Size = new System.Drawing.Size(96, 30);
-            this.btnCloseTabs.TabIndex = 1;
-            this.btnCloseTabs.Text = "Close Tabs";
-            this.btnCloseTabs.UseVisualStyleBackColor = false;
-            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
-            // 
             // HandleRelayControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCancelUpdate);
             this.Controls.Add(this.btnCreateDelete);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "HandleRelayControl";
             this.Size = new System.Drawing.Size(1344, 670);
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).EndInit();
@@ -562,6 +541,5 @@
         private System.Windows.Forms.BindingSource authorizationRulesBindingSource;
         private System.Windows.Forms.Label lblRelayType;
         private System.Windows.Forms.ComboBox cboRelayType;
-        private System.Windows.Forms.Button btnCloseTabs;
     }
 }
