@@ -104,7 +104,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly string eventHubName;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         private readonly BindingSource partitionsBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private SortableBindingList<PartitionDescription> partitionsBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         #endregion
@@ -121,12 +120,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.serviceBusHelper = serviceBusHelper;
             this.consumerGroupDescription = consumerGroupDescription;
             this.eventHubName = eventHubName;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -268,10 +262,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             partitionsDataGridView.AutoSize = true;
             partitionsDataGridView.ForeColor = SystemColors.WindowText;
 
-
-
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
 
             DisablePage(PartitionsTabPage);
 

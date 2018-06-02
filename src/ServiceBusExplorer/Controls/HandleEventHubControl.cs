@@ -88,36 +88,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string UpdatedAt = "Updated At";
         private const string IsReadOnly = "Is ReadOnly";
 
-        //***************************
-        // Metrics Constants
-        //***************************
-        private const string MetricProperty = "Metric";
-        private const string GranularityProperty = "Granularity";
-        private const string TimeFilterOperator = "Operator";
-        private const string TimeFilterValue = "Value";
-        private const string TimeFilterOperator1Name = "FilterOperator1";
-        private const string TimeFilterOperator2Name = "FilterOperator2";
-        private const string TimeFilterValue1Name = "FilterValue1";
-        private const string TimeFilterValue2Name = "FilterValue2";
-        private const string DisplayNameProperty = "DisplayName";
-        private const string NameProperty = "Name";
+        ////***************************
+        //// Event Hubs Constants
+        ////***************************
         private const string EventHubEntity = "Event Hub";
-        private const string DeleteName = "Delete";
 
-        //***************************
-        // Pages
-        //***************************
-        private const string MetricsTabPage = "tabPageMetrics";
         #endregion
 
         #region Private Fields
         private EventHubDescription eventHubDescription;
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
-        private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -132,12 +114,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             this.eventHubDescription = eventHubDescription;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -212,141 +189,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "ModifiedTime", DataPropertyName = "ModifiedTime", ReadOnly = true });
             }
 
-            // Set Grid style
-            dataPointDataGridView.EnableHeadersVisualStyles = false;
-
-            // Set the selection background color for all the cells.
-            dataPointDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-            dataPointDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-            dataPointDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-            // Set the background color for all rows and for alternating rows.  
-            // The value for alternating rows overrides the value for all rows. 
-            dataPointDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-            dataPointDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            //filtersDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-            //filtersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-            // Set the row and column header styles.
-            dataPointDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            dataPointDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            dataPointDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            dataPointDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
-            dataPointDataGridView.AutoGenerateColumns = false;
-            dataPointDataGridView.AutoSize = true;
-            dataPointDataGridView.DataSource = dataPointBindingSource;
-            dataPointDataGridView.ForeColor = SystemColors.WindowText;
-
             if (eventHubDescription != null)
             {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, EventHubEntity, eventHubDescription.Path).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
-            if (dataPointDataGridView.Columns.Count == 0)
-            {
-                // Create the Metric column
-                var metricColumn = new DataGridViewComboBoxColumn
-                {
-                    DataSource = MetricInfo.EntityMetricDictionary.ContainsKey(EventHubEntity) ?
-                                 MetricInfo.EntityMetricDictionary[EventHubEntity] :
-                                 null,
-                    DataPropertyName = MetricProperty,
-                    DisplayMember = DisplayNameProperty,
-                    ValueMember = NameProperty,
-                    Name = MetricProperty,
-                    Width = 144,
-                    DropDownWidth = 250,
-                    FlatStyle = FlatStyle.Flat,
-                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
-                };
-                dataPointDataGridView.Columns.Add(metricColumn);
-
-                // Create the Time Granularity column
-                var timeGranularityColumn = new DataGridViewComboBoxColumn
-                {
-                    DataSource = timeGranularityList,
-                    DataPropertyName = GranularityProperty,
-                    Name = GranularityProperty,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(timeGranularityColumn);
-
-                // Create the Time Operator 1 column
-                var operator1Column = new DataGridViewComboBoxColumn
-                {
-                    DataSource = operators,
-                    DataPropertyName = TimeFilterOperator1Name,
-                    HeaderText = TimeFilterOperator,
-                    Name = TimeFilterOperator1Name,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(operator1Column);
-
-                // Create the Time Value 1 column
-                var value1Column = new DataGridViewDateTimePickerColumn
-                {
-                    DataPropertyName = TimeFilterValue1Name,
-                    HeaderText = TimeFilterValue,
-                    Name = TimeFilterValue1Name,
-                    Width = 136
-                };
-                dataPointDataGridView.Columns.Add(value1Column);
-
-                // Create the Time Operator 1 column
-                var operator2Column = new DataGridViewComboBoxColumn
-                {
-                    DataSource = operators,
-                    DataPropertyName = TimeFilterOperator2Name,
-                    HeaderText = TimeFilterOperator,
-                    Name = TimeFilterOperator2Name,
-                    Width = 72,
-                    FlatStyle = FlatStyle.Flat
-                };
-                dataPointDataGridView.Columns.Add(operator2Column);
-
-                // Create the Time Value 1 column
-                var value2Column = new DataGridViewDateTimePickerColumn
-                {
-                    DataPropertyName = TimeFilterValue2Name,
-                    HeaderText = TimeFilterValue,
-                    Name = TimeFilterValue2Name,
-                    Width = 136
-                };
-                dataPointDataGridView.Columns.Add(value2Column);
-
-                // Create delete column
-                var deleteButtonColumn = new DataGridViewButtonColumn
-                {
-                    Name = DeleteName,
-                    CellTemplate = new DataGridViewDeleteButtonCell(),
-                    HeaderText = string.Empty,
-                    Width = 22
-                };
-                deleteButtonColumn.CellTemplate.ToolTipText = DeleteTooltip;
-                deleteButtonColumn.UseColumnTextForButtonValue = true;
-                dataPointDataGridView.Columns.Add(deleteButtonColumn);
-            }
-
-            if (eventHubDescription != null)
-            {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize buttons
                 btnCreateDelete.Text = DeleteText;
                 btnCancelUpdate.Text = UpdateText;
@@ -374,9 +218,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                // Tab pages
-                DisablePage(MetricsTabPage);
-
                 // Set Defaults
                 var eventHub = new EventHubDescription("DUMMY");
                 txtMessageRetentionInDays.Text = eventHub.MessageRetentionInDays.ToString(CultureInfo.InvariantCulture);
