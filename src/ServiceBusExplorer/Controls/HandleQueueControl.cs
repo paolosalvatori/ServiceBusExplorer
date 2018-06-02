@@ -1125,6 +1125,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
                 btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
+                btnPurgeDeadletterQueueMessages.Location = btnSessions.Location;
                 buttonsMoved = true;
             }
             btnDeadletter.Visible = true;

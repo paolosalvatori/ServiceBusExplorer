@@ -282,7 +282,7 @@
             this.btnChangeStatus.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnChangeStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChangeStatus.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnChangeStatus.Location = new System.Drawing.Point(1013, 620);
+            this.btnChangeStatus.Location = new System.Drawing.Point(1008, 620);
             this.btnChangeStatus.Margin = new System.Windows.Forms.Padding(4);
             this.btnChangeStatus.Name = "btnChangeStatus";
             this.btnChangeStatus.Size = new System.Drawing.Size(96, 30);
@@ -302,7 +302,7 @@
             this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCancelUpdate.Location = new System.Drawing.Point(1227, 620);
+            this.btnCancelUpdate.Location = new System.Drawing.Point(1220, 620);
             this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(96, 30);
@@ -322,7 +322,7 @@
             this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCreateDelete.Location = new System.Drawing.Point(1120, 620);
+            this.btnCreateDelete.Location = new System.Drawing.Point(1114, 620);
             this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(96, 30);
@@ -342,7 +342,7 @@
             this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnRefresh.Location = new System.Drawing.Point(907, 620);
+            this.btnRefresh.Location = new System.Drawing.Point(902, 620);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(4);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(96, 30);
@@ -2492,7 +2492,7 @@
             this.btnSessions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSessions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSessions.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSessions.Location = new System.Drawing.Point(481, 620);
+            this.btnSessions.Location = new System.Drawing.Point(478, 620);
             this.btnSessions.Margin = new System.Windows.Forms.Padding(4);
             this.btnSessions.Name = "btnSessions";
             this.btnSessions.Size = new System.Drawing.Size(96, 30);
@@ -2510,7 +2510,7 @@
             this.btnMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMessages.Location = new System.Drawing.Point(588, 620);
+            this.btnMessages.Location = new System.Drawing.Point(584, 620);
             this.btnMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnMessages.Name = "btnMessages";
             this.btnMessages.Size = new System.Drawing.Size(96, 30);
@@ -2528,7 +2528,7 @@
             this.btnDeadletter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDeadletter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnDeadletter.Location = new System.Drawing.Point(692, 620);
+            this.btnDeadletter.Location = new System.Drawing.Point(690, 620);
             this.btnDeadletter.Margin = new System.Windows.Forms.Padding(4);
             this.btnDeadletter.Name = "btnDeadletter";
             this.btnDeadletter.Size = new System.Drawing.Size(96, 30);
@@ -2652,7 +2652,7 @@
             this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(268, 620);
+            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(372, 620);
             this.btnPurgeDeadletterQueueMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
             this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(96, 30);
@@ -2672,7 +2672,7 @@
             this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeMessages.Location = new System.Drawing.Point(162, 620);
+            this.btnPurgeMessages.Location = new System.Drawing.Point(266, 620);
             this.btnPurgeMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnPurgeMessages.Name = "btnPurgeMessages";
             this.btnPurgeMessages.Size = new System.Drawing.Size(96, 30);
@@ -2692,7 +2692,7 @@
             this.btnTransferDeadletterQueue.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnTransferDeadletterQueue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnTransferDeadletterQueue.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnTransferDeadletterQueue.Location = new System.Drawing.Point(800, 620);
+            this.btnTransferDeadletterQueue.Location = new System.Drawing.Point(796, 620);
             this.btnTransferDeadletterQueue.Margin = new System.Windows.Forms.Padding(4);
             this.btnTransferDeadletterQueue.Name = "btnTransferDeadletterQueue";
             this.btnTransferDeadletterQueue.Size = new System.Drawing.Size(96, 30);
