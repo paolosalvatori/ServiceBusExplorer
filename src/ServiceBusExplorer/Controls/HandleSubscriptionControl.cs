@@ -173,20 +173,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string MessagesTabPage = "tabPageMessages";
         private const string SessionsTabPage = "tabPageSessions";
         private const string DeadletterTabPage = "tabPageDeadletter";
-        private const string MetricsTabPage = "tabPageMetrics";
         private const string SaveAsTitle = "Save File As";
         private const string JsonExtension = "json";
         private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
         private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
 
-        //***************************
-        // Metrics Formats
-        //***************************
-        private const string MetricTabPageKeyFormat = "MetricTabPage{0}";
-        private const string GrouperFormat = "Metric: [{0}] Unit: [{1}]";
 
         //***************************
-        // Metrics Constants
+        // Sunscription Constants
         //***************************
         private const string SubscriptionEntity = "Subscription";
         private const string SubscriptionPathFormat = "{0}/Subscriptions/{1}";
@@ -199,8 +193,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private BrokeredMessage brokeredMessage;
         private BrokeredMessage deadletterMessage;
-        private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
         private bool sorting;
@@ -209,8 +201,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         private bool buttonsMoved;
         #endregion
         
@@ -220,12 +210,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -465,32 +450,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             DisablePage(SessionsTabPage);
             DisablePage(DeadletterTabPage);
             
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
-
-            if (subscriptionWrapper != null && subscriptionWrapper.SubscriptionDescription != null)
-            {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
-                                             SubscriptionEntity,
-                                             string.Format(SubscriptionPathFormat,
-                                                           subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                           subscriptionWrapper.SubscriptionDescription.Name)).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
             if (subscriptionWrapper != null &&
                 subscriptionWrapper.TopicDescription != null &&
                 subscriptionWrapper.SubscriptionDescription != null)
             {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize textboxes
                 txtName.ReadOnly = true;
                 txtName.BackColor = SystemColors.Window;
@@ -769,9 +732,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                // Tab pages
-                DisablePage(MetricsTabPage);
-
                 // Initialize buttons
                 btnCreateDelete.Text = CreateText;
                 btnCancelUpdate.Text = CancelText;
@@ -780,7 +740,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnMessages.Visible = false;
                 btnSessions.Visible = false;
                 btnDeadletter.Visible = false;
-                btnCloseTabs.Visible = false;
                 btnPurgeMessages.Visible = false;
                 btnPurgeDeadletterQueueMessages.Visible = false;
                 txtName.Focus();
@@ -803,7 +762,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
                 btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
-                btnCloseTabs.Location = btnSessions.Location;
+                btnPurgeDeadletterQueueMessages.Location = btnSessions.Location;
                 buttonsMoved = true;
             }
 
@@ -3007,20 +2966,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             return string.Format(MessageFileFormat,
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
-        }
-
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
         }
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)

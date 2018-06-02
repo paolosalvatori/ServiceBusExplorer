@@ -145,7 +145,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnCloseTabs = new System.Windows.Forms.Button();
             this.btnPurgeMessages = new System.Windows.Forms.Button();
             this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
             this.mainTabControl.SuspendLayout();
@@ -226,7 +225,7 @@
             this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnRefresh.Location = new System.Drawing.Point(907, 620);
+            this.btnRefresh.Location = new System.Drawing.Point(906, 620);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(4);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(96, 30);
@@ -246,7 +245,7 @@
             this.btnChangeStatus.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnChangeStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChangeStatus.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnChangeStatus.Location = new System.Drawing.Point(1013, 620);
+            this.btnChangeStatus.Location = new System.Drawing.Point(1012, 620);
             this.btnChangeStatus.Margin = new System.Windows.Forms.Padding(4);
             this.btnChangeStatus.Name = "btnChangeStatus";
             this.btnChangeStatus.Size = new System.Drawing.Size(96, 30);
@@ -266,7 +265,7 @@
             this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCancelUpdate.Location = new System.Drawing.Point(1227, 620);
+            this.btnCancelUpdate.Location = new System.Drawing.Point(1224, 620);
             this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(96, 30);
@@ -284,7 +283,7 @@
             this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCreateDelete.Location = new System.Drawing.Point(1120, 620);
+            this.btnCreateDelete.Location = new System.Drawing.Point(1118, 620);
             this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(96, 30);
@@ -322,7 +321,7 @@
             this.btnMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMessages.Location = new System.Drawing.Point(693, 620);
+            this.btnMessages.Location = new System.Drawing.Point(694, 620);
             this.btnMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnMessages.Name = "btnMessages";
             this.btnMessages.Size = new System.Drawing.Size(96, 30);
@@ -340,7 +339,7 @@
             this.btnSessions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSessions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSessions.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSessions.Location = new System.Drawing.Point(587, 620);
+            this.btnSessions.Location = new System.Drawing.Point(588, 620);
             this.btnSessions.Margin = new System.Windows.Forms.Padding(4);
             this.btnSessions.Name = "btnSessions";
             this.btnSessions.Size = new System.Drawing.Size(96, 30);
@@ -2142,25 +2141,6 @@
             this.saveSelectedMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
             // 
-            // btnCloseTabs
-            // 
-            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCloseTabs.Enabled = false;
-            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCloseTabs.Location = new System.Drawing.Point(480, 620);
-            this.btnCloseTabs.Margin = new System.Windows.Forms.Padding(4);
-            this.btnCloseTabs.Name = "btnCloseTabs";
-            this.btnCloseTabs.Size = new System.Drawing.Size(96, 30);
-            this.btnCloseTabs.TabIndex = 1;
-            this.btnCloseTabs.Text = "Close Tabs";
-            this.btnCloseTabs.UseVisualStyleBackColor = false;
-            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
-            // 
             // btnPurgeMessages
             // 
             this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -2170,10 +2150,10 @@
             this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeMessages.Location = new System.Drawing.Point(266, 619);
+            this.btnPurgeMessages.Location = new System.Drawing.Point(376, 620);
             this.btnPurgeMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnPurgeMessages.Name = "btnPurgeMessages";
-            this.btnPurgeMessages.Size = new System.Drawing.Size(96, 32);
+            this.btnPurgeMessages.Size = new System.Drawing.Size(96, 30);
             this.btnPurgeMessages.TabIndex = 17;
             this.btnPurgeMessages.Text = "Purge";
             this.btnPurgeMessages.UseVisualStyleBackColor = false;
@@ -2190,10 +2170,10 @@
             this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(373, 619);
+            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(482, 620);
             this.btnPurgeDeadletterQueueMessages.Margin = new System.Windows.Forms.Padding(4);
             this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
-            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(96, 32);
+            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(96, 30);
             this.btnPurgeDeadletterQueueMessages.TabIndex = 16;
             this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
             this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
@@ -2208,7 +2188,6 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.Controls.Add(this.btnPurgeMessages);
             this.Controls.Add(this.btnPurgeDeadletterQueueMessages);
-            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnDeadletter);
             this.Controls.Add(this.btnMessages);
@@ -2429,7 +2408,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessagesToolStripMenuItem;
-        private System.Windows.Forms.Button btnCloseTabs;
         private System.Windows.Forms.Button btnPurgeMessages;
         private System.Windows.Forms.Button btnPurgeDeadletterQueueMessages;
         private System.Windows.Forms.ToolStripMenuItem deleteSelectedMessageToolStripMenuItem;
