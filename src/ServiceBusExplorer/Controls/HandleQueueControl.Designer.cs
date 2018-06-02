@@ -170,7 +170,6 @@
             this.deadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.btnCloseTabs = new System.Windows.Forms.Button();
             this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
             this.btnPurgeMessages = new System.Windows.Forms.Button();
             this.btnTransferDeadletterQueue = new System.Windows.Forms.Button();
@@ -2644,25 +2643,6 @@
             this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
             this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
             // 
-            // btnCloseTabs
-            // 
-            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCloseTabs.Enabled = false;
-            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCloseTabs.Location = new System.Drawing.Point(375, 620);
-            this.btnCloseTabs.Margin = new System.Windows.Forms.Padding(4);
-            this.btnCloseTabs.Name = "btnCloseTabs";
-            this.btnCloseTabs.Size = new System.Drawing.Size(96, 30);
-            this.btnCloseTabs.TabIndex = 13;
-            this.btnCloseTabs.Text = "Close Tabs";
-            this.btnCloseTabs.UseVisualStyleBackColor = false;
-            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
-            // 
             // btnPurgeDeadletterQueueMessages
             // 
             this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -2774,7 +2754,6 @@
             this.Controls.Add(this.btnTransferDeadletterQueue);
             this.Controls.Add(this.btnPurgeMessages);
             this.Controls.Add(this.btnPurgeDeadletterQueueMessages);
-            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.btnDeadletter);
             this.Controls.Add(this.btnMessages);
             this.Controls.Add(this.btnSessions);
@@ -3030,7 +3009,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessagesToolStripMenuItem;
-        private System.Windows.Forms.Button btnCloseTabs;
         private System.Windows.Forms.Button btnPurgeDeadletterQueueMessages;
         private System.Windows.Forms.Button btnPurgeMessages;
         private System.Windows.Forms.TabPage tabPageTransferDeadletter;

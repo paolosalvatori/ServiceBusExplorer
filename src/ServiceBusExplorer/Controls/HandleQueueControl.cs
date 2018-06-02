@@ -280,7 +280,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string SessionsTabPage = "tabPageSessions";
         private const string DeadletterTabPage = "tabPageDeadletter";
         private const string TransferDeadletterTabPage = "tabPageTransferDeadletter";
-        private const string MetricsTabPage = "tabPageMetrics";
         private const string QueueEntity = "Queue";
 
         #endregion
@@ -295,8 +294,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private BrokeredMessage brokeredMessage;
         private BrokeredMessage deadletterMessage;
         private BrokeredMessage transferDeadletterMessage;
-        private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private int currentMessageRowIndex;
         private int currentDeadletterMessageRowIndex;
         private int currentTransferDeadletterMessageRowIndex;
@@ -307,8 +304,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<BrokeredMessage> transferDeadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         private bool buttonsMoved;
 
         #endregion
@@ -337,12 +332,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.serviceBusHelper = serviceBusHelper;
             this.path = path;
             this.queueDescription = queueDescription;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         }
@@ -713,27 +703,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 });
             }
 
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
 
             if (queueDescription != null)
             {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, QueueEntity, queueDescription.Path)
-                    .ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
-            if (queueDescription != null)
-            {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
                 txtPath.BackColor = SystemColors.Window;
@@ -1091,9 +1063,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                // Tab pages
-                DisablePage(MetricsTabPage);
-
                 // Initialize buttons
                 btnCreateDelete.Text = CreateText;
                 btnCancelUpdate.Text = CancelText;
@@ -1102,7 +1071,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnMessages.Visible = false;
                 btnSessions.Visible = false;
                 btnDeadletter.Visible = false;
-                btnCloseTabs.Visible = false;
                 btnPurgeMessages.Visible = false;
                 btnPurgeDeadletterQueueMessages.Visible = false;
                 btnTransferDeadletterQueue.Visible = false;
@@ -1157,7 +1125,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
                 btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
-                btnCloseTabs.Location = btnSessions.Location;
                 buttonsMoved = true;
             }
             btnDeadletter.Visible = true;
@@ -4344,19 +4311,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
 
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            foreach (var t in metricTabPageIndexList)
-            {
-                mainTabControl.TabPages.RemoveByKey(t);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
-        }
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)
         {
