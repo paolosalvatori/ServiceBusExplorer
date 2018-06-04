@@ -435,7 +435,6 @@
     <Compile Include="Helpers\FilterExpressionHelper.cs" />
     <Compile Include="Helpers\MessageAndPropertiesHelper.cs" />
     <Compile Include="Helpers\MetricDataPoint.cs" />
-    <Compile Include="Helpers\MetricDataPointList.cs" />
     <Compile Include="Helpers\MetricInfo.cs" />
     <Compile Include="Helpers\MonitorRule.cs" />
     <Compile Include="Helpers\NotificationInfo.cs" />

@@ -529,11 +529,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // statusStrip
             // 
             this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.statusStrip.Location = new System.Drawing.Point(0, 1013);
+            this.statusStrip.Location = new System.Drawing.Point(0, 819);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1888, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1416, 22);
             this.statusStrip.TabIndex = 19;
             this.statusStrip.Text = "statusStrip";
             // 
@@ -546,7 +544,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -556,9 +553,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.panelMain);
-            this.splitContainer.Size = new System.Drawing.Size(1845, 701);
-            this.splitContainer.SplitterDistance = 495;
-            this.splitContainer.SplitterWidth = 5;
+            this.splitContainer.Size = new System.Drawing.Size(1384, 570);
+            this.splitContainer.SplitterDistance = 372;
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -577,10 +573,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
             this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
             this.panelTreeView.Location = new System.Drawing.Point(0, 0);
-            this.panelTreeView.Margin = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelTreeView.Name = "panelTreeView";
-            this.panelTreeView.Padding = new System.Windows.Forms.Padding(7, 36, 7, 5);
-            this.panelTreeView.Size = new System.Drawing.Size(495, 701);
+            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelTreeView.Size = new System.Drawing.Size(372, 570);
             this.panelTreeView.TabIndex = 0;
             // 
             // serviceBusTreeView
@@ -591,11 +587,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusTreeView.ImageList = this.imageList;
             this.serviceBusTreeView.Indent = 20;
             this.serviceBusTreeView.ItemHeight = 20;
-            this.serviceBusTreeView.Location = new System.Drawing.Point(7, 36);
-            this.serviceBusTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(481, 660);
+            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
             this.serviceBusTreeView.TabIndex = 13;
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             this.serviceBusTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyUp);
@@ -614,19 +609,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelMain.Icon = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.SmallWorld;
             this.panelMain.IconTransparentColor = System.Drawing.Color.White;
             this.panelMain.Location = new System.Drawing.Point(0, 0);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Padding = new System.Windows.Forms.Padding(7, 36, 7, 5);
-            this.panelMain.Size = new System.Drawing.Size(1345, 701);
+            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelMain.Size = new System.Drawing.Size(1008, 570);
             this.panelMain.TabIndex = 0;
             // 
             // mainSplitContainer
             // 
-            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainSplitContainer.Location = new System.Drawing.Point(21, 49);
-            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mainSplitContainer.Location = new System.Drawing.Point(16, 40);
             this.mainSplitContainer.Name = "mainSplitContainer";
             this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -637,9 +631,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.panelLog);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1845, 965);
-            this.mainSplitContainer.SplitterDistance = 701;
-            this.mainSplitContainer.SplitterWidth = 5;
+            this.mainSplitContainer.Size = new System.Drawing.Size(1384, 784);
+            this.mainSplitContainer.SplitterDistance = 570;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -658,10 +651,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
             this.panelLog.IconTransparentColor = System.Drawing.Color.White;
             this.panelLog.Location = new System.Drawing.Point(0, 0);
-            this.panelLog.Margin = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelLog.Name = "panelLog";
-            this.panelLog.Padding = new System.Windows.Forms.Padding(7, 36, 7, 5);
-            this.panelLog.Size = new System.Drawing.Size(1845, 259);
+            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelLog.Size = new System.Drawing.Size(1384, 210);
             this.panelLog.TabIndex = 0;
             // 
             // lstLog
@@ -672,15 +665,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstLog.FormattingEnabled = true;
             this.lstLog.HorizontalScrollbar = true;
-            this.lstLog.ItemHeight = 17;
-            this.lstLog.Location = new System.Drawing.Point(7, 36);
-            this.lstLog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstLog.ItemHeight = 14;
+            this.lstLog.Location = new System.Drawing.Point(5, 29);
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1831, 218);
+            this.lstLog.Size = new System.Drawing.Size(1374, 177);
             this.lstLog.TabIndex = 4;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
+
             // 
             // logContextMenuStrip
             // 
@@ -2743,19 +2736,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1888, 1035);
+            this.ClientSize = new System.Drawing.Size(1416, 841);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainSplitContainer);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "MainForm";
+
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Service Bus Explorer 1.0.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

@@ -135,8 +135,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string DisableSubscription = "Disable Subscription";
         private const string EnableEventHub = "Enable Event Hub";
         private const string DisableEventHub = "Disable Event Hub";
-        private const string SubscriptionIdCannotBeNull = "In order to use metrics, you need to define the Microsoft Azure Subscription Id in the configuration file or Options form.";
-        private const string ManagementCertificateThumbprintCannotBeNull = "In order to use metrics, you need to define in the configuration file or Options form the thumbprint of a valid management certificate for your Microsoft Azure subscription.";
         private const string NoNamespaceWithKeyMessageFormat = "No namespace with key equal to [{0}] exists in the serviceBusNamespaces section of the configuration file.";
 
         //***************************

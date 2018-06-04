@@ -129,15 +129,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         //***************************
         // Constants
         //***************************
-        private const long SeviceBusForWindowsServerMaxTopicSize = 8796093022207;
+        private const long ServiceBusForWindowsServerMaxTopicSize = 8796093022207;
 
         //***************************
-        // Pages
-        //***************************
-        private const string MetricsTabPage = "tabPageMetrics";
-
-        //***************************
-        // Metrics Constants
+        // Topic Constants
         //***************************
         private const string TopicEntity = "Topic";
         #endregion
@@ -148,10 +143,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         private readonly string path;
-        private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -167,12 +158,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.serviceBusHelper = serviceBusHelper;
             this.topicDescription = topicDescription;
             this.path = path;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -257,26 +243,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "ModifiedTime", DataPropertyName = "ModifiedTime", ReadOnly = true });
             }
 
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
-
             if (topicDescription != null)
             {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace, TopicEntity, topicDescription.Path).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
-            if (topicDescription != null)
-            {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize buttons
                 btnCreateDelete.Text = DeleteText;
                 btnCancelUpdate.Text = UpdateText;
@@ -317,15 +285,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else
             {
-                // Tab pages
-                DisablePage(MetricsTabPage);
-
                 // Initialize buttons
                 btnCreateDelete.Text = CreateText;
                 btnCancelUpdate.Text = CancelText;
                 btnRefresh.Visible = false;
                 btnChangeStatus.Visible = false;
-                btnCloseTabs.Visible = false;
 
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
@@ -427,7 +391,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // MaxQueueSizeInBytes
             trackBarMaxTopicSize.Value = serviceBusHelper.IsCloudNamespace
                                              ? topicDescription.MaxSizeInGigabytes()
-                                             : topicDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxTopicSize
+                                             : topicDescription.MaxSizeInMegabytes == ServiceBusForWindowsServerMaxTopicSize
                                              ? 11 : topicDescription.MaxSizeInGigabytes();
 
             // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
@@ -541,7 +505,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
                                                  ? trackBarMaxTopicSize.Value*1024
                                                  : trackBarMaxTopicSize.Value == trackBarMaxTopicSize.Maximum
-                                                       ? SeviceBusForWindowsServerMaxTopicSize
+                                                       ? ServiceBusForWindowsServerMaxTopicSize
                                                        : trackBarMaxTopicSize.Value*1024,
                             UserMetadata = txtUserMetadata.Text
                         };
@@ -1516,19 +1480,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
-        }
         #endregion
     }
 }

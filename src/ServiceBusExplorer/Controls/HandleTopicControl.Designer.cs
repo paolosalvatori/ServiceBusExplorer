@@ -80,7 +80,6 @@
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.btnCloseTabs = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
@@ -111,7 +110,7 @@
             this.tabPageDescription.Controls.Add(this.grouperTopicInformation);
             this.tabPageDescription.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDescription.Location = new System.Drawing.Point(4, 27);
-            this.tabPageDescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageDescription.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageDescription.Name = "tabPageDescription";
             this.tabPageDescription.Size = new System.Drawing.Size(1293, 560);
             this.tabPageDescription.TabIndex = 2;
@@ -140,7 +139,7 @@
             this.grouperAutoDeleteOnIdle.GroupImage = null;
             this.grouperAutoDeleteOnIdle.GroupTitle = "Auto Delete On Idle";
             this.grouperAutoDeleteOnIdle.Location = new System.Drawing.Point(21, 118);
-            this.grouperAutoDeleteOnIdle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperAutoDeleteOnIdle.Margin = new System.Windows.Forms.Padding(4);
             this.grouperAutoDeleteOnIdle.Name = "grouperAutoDeleteOnIdle";
             this.grouperAutoDeleteOnIdle.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperAutoDeleteOnIdle.PaintGroupBox = true;
@@ -166,7 +165,7 @@
             // 
             this.txtAutoDeleteOnIdleMilliseconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtAutoDeleteOnIdleMilliseconds.Location = new System.Drawing.Point(320, 54);
-            this.txtAutoDeleteOnIdleMilliseconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAutoDeleteOnIdleMilliseconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtAutoDeleteOnIdleMilliseconds.Name = "txtAutoDeleteOnIdleMilliseconds";
             this.txtAutoDeleteOnIdleMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleMilliseconds.TabIndex = 4;
@@ -187,7 +186,7 @@
             // 
             this.txtAutoDeleteOnIdleSeconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtAutoDeleteOnIdleSeconds.Location = new System.Drawing.Point(245, 54);
-            this.txtAutoDeleteOnIdleSeconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAutoDeleteOnIdleSeconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtAutoDeleteOnIdleSeconds.Name = "txtAutoDeleteOnIdleSeconds";
             this.txtAutoDeleteOnIdleSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleSeconds.TabIndex = 3;
@@ -208,7 +207,7 @@
             // 
             this.txtAutoDeleteOnIdleMinutes.BackColor = System.Drawing.SystemColors.Window;
             this.txtAutoDeleteOnIdleMinutes.Location = new System.Drawing.Point(171, 54);
-            this.txtAutoDeleteOnIdleMinutes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAutoDeleteOnIdleMinutes.Margin = new System.Windows.Forms.Padding(4);
             this.txtAutoDeleteOnIdleMinutes.Name = "txtAutoDeleteOnIdleMinutes";
             this.txtAutoDeleteOnIdleMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleMinutes.TabIndex = 2;
@@ -240,7 +239,7 @@
             // 
             this.txtAutoDeleteOnIdleHours.BackColor = System.Drawing.SystemColors.Window;
             this.txtAutoDeleteOnIdleHours.Location = new System.Drawing.Point(96, 54);
-            this.txtAutoDeleteOnIdleHours.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAutoDeleteOnIdleHours.Margin = new System.Windows.Forms.Padding(4);
             this.txtAutoDeleteOnIdleHours.Name = "txtAutoDeleteOnIdleHours";
             this.txtAutoDeleteOnIdleHours.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleHours.TabIndex = 1;
@@ -250,7 +249,7 @@
             // 
             this.txtAutoDeleteOnIdleDays.BackColor = System.Drawing.SystemColors.Window;
             this.txtAutoDeleteOnIdleDays.Location = new System.Drawing.Point(21, 54);
-            this.txtAutoDeleteOnIdleDays.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAutoDeleteOnIdleDays.Margin = new System.Windows.Forms.Padding(4);
             this.txtAutoDeleteOnIdleDays.Name = "txtAutoDeleteOnIdleDays";
             this.txtAutoDeleteOnIdleDays.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleDays.TabIndex = 0;
@@ -279,7 +278,7 @@
             this.groupergrouperDefaultMessageTimeToLive.GroupImage = null;
             this.groupergrouperDefaultMessageTimeToLive.GroupTitle = "Default Message Time To Live";
             this.groupergrouperDefaultMessageTimeToLive.Location = new System.Drawing.Point(437, 118);
-            this.groupergrouperDefaultMessageTimeToLive.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupergrouperDefaultMessageTimeToLive.Margin = new System.Windows.Forms.Padding(4);
             this.groupergrouperDefaultMessageTimeToLive.Name = "groupergrouperDefaultMessageTimeToLive";
             this.groupergrouperDefaultMessageTimeToLive.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.groupergrouperDefaultMessageTimeToLive.PaintGroupBox = true;
@@ -305,7 +304,7 @@
             // 
             this.txtDefaultMessageTimeToLiveMilliseconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtDefaultMessageTimeToLiveMilliseconds.Location = new System.Drawing.Point(320, 54);
-            this.txtDefaultMessageTimeToLiveMilliseconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDefaultMessageTimeToLiveMilliseconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtDefaultMessageTimeToLiveMilliseconds.Name = "txtDefaultMessageTimeToLiveMilliseconds";
             this.txtDefaultMessageTimeToLiveMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveMilliseconds.TabIndex = 4;
@@ -326,7 +325,7 @@
             // 
             this.txtDefaultMessageTimeToLiveSeconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtDefaultMessageTimeToLiveSeconds.Location = new System.Drawing.Point(245, 54);
-            this.txtDefaultMessageTimeToLiveSeconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDefaultMessageTimeToLiveSeconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtDefaultMessageTimeToLiveSeconds.Name = "txtDefaultMessageTimeToLiveSeconds";
             this.txtDefaultMessageTimeToLiveSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveSeconds.TabIndex = 3;
@@ -347,7 +346,7 @@
             // 
             this.txtDefaultMessageTimeToLiveMinutes.BackColor = System.Drawing.SystemColors.Window;
             this.txtDefaultMessageTimeToLiveMinutes.Location = new System.Drawing.Point(171, 54);
-            this.txtDefaultMessageTimeToLiveMinutes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDefaultMessageTimeToLiveMinutes.Margin = new System.Windows.Forms.Padding(4);
             this.txtDefaultMessageTimeToLiveMinutes.Name = "txtDefaultMessageTimeToLiveMinutes";
             this.txtDefaultMessageTimeToLiveMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveMinutes.TabIndex = 2;
@@ -379,7 +378,7 @@
             // 
             this.txtDefaultMessageTimeToLiveHours.BackColor = System.Drawing.SystemColors.Window;
             this.txtDefaultMessageTimeToLiveHours.Location = new System.Drawing.Point(96, 54);
-            this.txtDefaultMessageTimeToLiveHours.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDefaultMessageTimeToLiveHours.Margin = new System.Windows.Forms.Padding(4);
             this.txtDefaultMessageTimeToLiveHours.Name = "txtDefaultMessageTimeToLiveHours";
             this.txtDefaultMessageTimeToLiveHours.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveHours.TabIndex = 1;
@@ -389,7 +388,7 @@
             // 
             this.txtDefaultMessageTimeToLiveDays.BackColor = System.Drawing.SystemColors.Window;
             this.txtDefaultMessageTimeToLiveDays.Location = new System.Drawing.Point(21, 54);
-            this.txtDefaultMessageTimeToLiveDays.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDefaultMessageTimeToLiveDays.Margin = new System.Windows.Forms.Padding(4);
             this.txtDefaultMessageTimeToLiveDays.Name = "txtDefaultMessageTimeToLiveDays";
             this.txtDefaultMessageTimeToLiveDays.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveDays.TabIndex = 0;
@@ -411,7 +410,7 @@
             this.grouperTopicSettings.GroupImage = null;
             this.grouperTopicSettings.GroupTitle = "Topic Settings";
             this.grouperTopicSettings.Location = new System.Drawing.Point(437, 335);
-            this.grouperTopicSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperTopicSettings.Margin = new System.Windows.Forms.Padding(4);
             this.grouperTopicSettings.Name = "grouperTopicSettings";
             this.grouperTopicSettings.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperTopicSettings.PaintGroupBox = true;
@@ -461,7 +460,7 @@
             this.grouperPath.GroupImage = null;
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(21, 10);
-            this.grouperPath.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperPath.Margin = new System.Windows.Forms.Padding(4);
             this.grouperPath.Name = "grouperPath";
             this.grouperPath.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperPath.PaintGroupBox = true;
@@ -490,7 +489,7 @@
             this.txtPath.BackColor = System.Drawing.SystemColors.Window;
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPath.Location = new System.Drawing.Point(21, 54);
-            this.txtPath.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtPath.Margin = new System.Windows.Forms.Padding(4);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(767, 23);
             this.txtPath.TabIndex = 0;
@@ -518,7 +517,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Duplicate Detection History Time Window";
             this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(437, 226);
-            this.grouperDuplicateDetectionHistoryTimeWindow.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Margin = new System.Windows.Forms.Padding(4);
             this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
             this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
@@ -544,7 +543,7 @@
             // 
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Location = new System.Drawing.Point(320, 54);
-            this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Name = "txtDuplicateDetectionHistoryTimeWindowMilliseconds";
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.TabIndex = 4;
@@ -565,7 +564,7 @@
             // 
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.BackColor = System.Drawing.SystemColors.Window;
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.Location = new System.Drawing.Point(245, 54);
-            this.txtDuplicateDetectionHistoryTimeWindowSeconds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDuplicateDetectionHistoryTimeWindowSeconds.Margin = new System.Windows.Forms.Padding(4);
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.Name = "txtDuplicateDetectionHistoryTimeWindowSeconds";
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.TabIndex = 3;
@@ -586,7 +585,7 @@
             // 
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.BackColor = System.Drawing.SystemColors.Window;
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.Location = new System.Drawing.Point(171, 54);
-            this.txtDuplicateDetectionHistoryTimeWindowMinutes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDuplicateDetectionHistoryTimeWindowMinutes.Margin = new System.Windows.Forms.Padding(4);
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.Name = "txtDuplicateDetectionHistoryTimeWindowMinutes";
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.TabIndex = 2;
@@ -618,7 +617,7 @@
             // 
             this.txtDuplicateDetectionHistoryTimeWindowHours.BackColor = System.Drawing.SystemColors.Window;
             this.txtDuplicateDetectionHistoryTimeWindowHours.Location = new System.Drawing.Point(96, 54);
-            this.txtDuplicateDetectionHistoryTimeWindowHours.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDuplicateDetectionHistoryTimeWindowHours.Margin = new System.Windows.Forms.Padding(4);
             this.txtDuplicateDetectionHistoryTimeWindowHours.Name = "txtDuplicateDetectionHistoryTimeWindowHours";
             this.txtDuplicateDetectionHistoryTimeWindowHours.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowHours.TabIndex = 1;
@@ -628,7 +627,7 @@
             // 
             this.txtDuplicateDetectionHistoryTimeWindowDays.BackColor = System.Drawing.SystemColors.Window;
             this.txtDuplicateDetectionHistoryTimeWindowDays.Location = new System.Drawing.Point(21, 54);
-            this.txtDuplicateDetectionHistoryTimeWindowDays.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDuplicateDetectionHistoryTimeWindowDays.Margin = new System.Windows.Forms.Padding(4);
             this.txtDuplicateDetectionHistoryTimeWindowDays.Name = "txtDuplicateDetectionHistoryTimeWindowDays";
             this.txtDuplicateDetectionHistoryTimeWindowDays.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowDays.TabIndex = 0;
@@ -655,7 +654,7 @@
             this.grouperTopicProperties.GroupImage = null;
             this.grouperTopicProperties.GroupTitle = "Topic Properties";
             this.grouperTopicProperties.Location = new System.Drawing.Point(21, 226);
-            this.grouperTopicProperties.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperTopicProperties.Margin = new System.Windows.Forms.Padding(4);
             this.grouperTopicProperties.Name = "grouperTopicProperties";
             this.grouperTopicProperties.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperTopicProperties.PaintGroupBox = true;
@@ -686,7 +685,7 @@
             this.trackBarMaxTopicSize.IndentHeight = 6;
             this.trackBarMaxTopicSize.LargeChange = 1;
             this.trackBarMaxTopicSize.Location = new System.Drawing.Point(11, 49);
-            this.trackBarMaxTopicSize.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBarMaxTopicSize.Margin = new System.Windows.Forms.Padding(4);
             this.trackBarMaxTopicSize.Maximum = 10;
             this.trackBarMaxTopicSize.Minimum = 1;
             this.trackBarMaxTopicSize.Name = "trackBarMaxTopicSize";
@@ -710,7 +709,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
             this.txtUserMetadata.Location = new System.Drawing.Point(21, 108);
-            this.txtUserMetadata.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtUserMetadata.Margin = new System.Windows.Forms.Padding(4);
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
@@ -738,7 +737,7 @@
             this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(341, 108);
-            this.btnOpenDescriptionForm.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnOpenDescriptionForm.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
             this.btnOpenDescriptionForm.Size = new System.Drawing.Size(32, 26);
             this.btnOpenDescriptionForm.TabIndex = 3;
@@ -777,7 +776,7 @@
             this.grouperTopicInformation.GroupImage = null;
             this.grouperTopicInformation.GroupTitle = "Topic Information";
             this.grouperTopicInformation.Location = new System.Drawing.Point(853, 10);
-            this.grouperTopicInformation.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperTopicInformation.Margin = new System.Windows.Forms.Padding(4);
             this.grouperTopicInformation.Name = "grouperTopicInformation";
             this.grouperTopicInformation.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperTopicInformation.PaintGroupBox = true;
@@ -797,7 +796,7 @@
             this.nameColumnHeader,
             this.valueColumnHeader});
             this.propertyListView.Location = new System.Drawing.Point(21, 39);
-            this.propertyListView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.propertyListView.Margin = new System.Windows.Forms.Padding(4);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
             this.propertyListView.Size = new System.Drawing.Size(371, 472);
@@ -829,7 +828,7 @@
             this.mainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.mainTabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mainTabControl.Location = new System.Drawing.Point(21, 20);
-            this.mainTabControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mainTabControl.Margin = new System.Windows.Forms.Padding(4);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(1301, 591);
@@ -842,7 +841,7 @@
             this.tabPageAuthorization.Controls.Add(this.grouperAuthorizationRuleList);
             this.tabPageAuthorization.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAuthorization.Location = new System.Drawing.Point(4, 27);
-            this.tabPageAuthorization.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPageAuthorization.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageAuthorization.Name = "tabPageAuthorization";
             this.tabPageAuthorization.Size = new System.Drawing.Size(1293, 560);
             this.tabPageAuthorization.TabIndex = 3;
@@ -865,7 +864,7 @@
             this.grouperAuthorizationRuleList.GroupImage = null;
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(21, 10);
-            this.grouperAuthorizationRuleList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperAuthorizationRuleList.Margin = new System.Windows.Forms.Padding(4);
             this.grouperAuthorizationRuleList.Name = "grouperAuthorizationRuleList";
             this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.grouperAuthorizationRuleList.PaintGroupBox = true;
@@ -889,7 +888,7 @@
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.authorizationRulesDataGridView.Location = new System.Drawing.Point(21, 39);
-            this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(4);
             this.authorizationRulesDataGridView.MultiSelect = false;
             this.authorizationRulesDataGridView.Name = "authorizationRulesDataGridView";
             this.authorizationRulesDataGridView.RowHeadersWidth = 24;
@@ -916,7 +915,7 @@
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefresh.Location = new System.Drawing.Point(907, 620);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(96, 30);
             this.btnRefresh.TabIndex = 2;
@@ -936,7 +935,7 @@
             this.btnChangeStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChangeStatus.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnChangeStatus.Location = new System.Drawing.Point(1013, 620);
-            this.btnChangeStatus.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnChangeStatus.Margin = new System.Windows.Forms.Padding(4);
             this.btnChangeStatus.Name = "btnChangeStatus";
             this.btnChangeStatus.Size = new System.Drawing.Size(96, 30);
             this.btnChangeStatus.TabIndex = 3;
@@ -956,7 +955,7 @@
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancelUpdate.Location = new System.Drawing.Point(1227, 620);
-            this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancelUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancelUpdate.Name = "btnCancelUpdate";
             this.btnCancelUpdate.Size = new System.Drawing.Size(96, 30);
             this.btnCancelUpdate.TabIndex = 5;
@@ -976,7 +975,7 @@
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateDelete.Location = new System.Drawing.Point(1120, 620);
-            this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCreateDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnCreateDelete.Name = "btnCreateDelete";
             this.btnCreateDelete.Size = new System.Drawing.Size(96, 30);
             this.btnCreateDelete.TabIndex = 4;
@@ -986,37 +985,17 @@
             this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // btnCloseTabs
-            // 
-            this.btnCloseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCloseTabs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCloseTabs.Enabled = false;
-            this.btnCloseTabs.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCloseTabs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCloseTabs.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCloseTabs.Location = new System.Drawing.Point(800, 620);
-            this.btnCloseTabs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.btnCloseTabs.Name = "btnCloseTabs";
-            this.btnCloseTabs.Size = new System.Drawing.Size(96, 30);
-            this.btnCloseTabs.TabIndex = 1;
-            this.btnCloseTabs.Text = "Close Tabs";
-            this.btnCloseTabs.UseVisualStyleBackColor = false;
-            this.btnCloseTabs.Click += new System.EventHandler(this.btnCloseTabs_Click);
-            // 
             // HandleTopicControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.Controls.Add(this.btnCloseTabs);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnChangeStatus);
             this.Controls.Add(this.btnCancelUpdate);
             this.Controls.Add(this.btnCreateDelete);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "HandleTopicControl";
             this.Size = new System.Drawing.Size(1344, 670);
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).EndInit();
@@ -1110,6 +1089,5 @@
         private Grouper grouperAuthorizationRuleList;
         private System.Windows.Forms.DataGridView authorizationRulesDataGridView;
         private System.Windows.Forms.BindingSource authorizationRulesBindingSource;
-        private System.Windows.Forms.Button btnCloseTabs;
     }
 }

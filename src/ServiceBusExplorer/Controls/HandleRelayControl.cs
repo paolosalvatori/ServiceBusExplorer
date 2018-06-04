@@ -73,7 +73,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         // Pages
         //***************************
         private const string AuthorizationPage = "tabPageAuthorization";
-        private const string MetricsTabPage = "tabPageMetrics";
 
         //***************************
         // Messages
@@ -105,11 +104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         private readonly string path;
-        private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
-        private readonly List<string> metricTabPageIndexList = new List<string>();
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -125,12 +120,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.serviceBusHelper = serviceBusHelper;
             this.relayDescription = relayDescription;
             this.path = path;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -180,16 +170,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     checkedListBox.Items.RemoveAt(IsAnonymousAccessibleIndex);
                 }
             }
-            
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
-
-            if (relayDescription != null)
-            {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
-                                             RelayEntity,
-                                             relayDescription.Path).ContinueWith(t => metricsManualResetEvent.Set());
-            }
 
             // Set Grid style
             authorizationRulesDataGridView.EnableHeadersVisualStyles = false;
@@ -235,16 +215,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             if (relayDescription != null)
             {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize buttons
                 btnCreateDelete.Text = DeleteText;
                 btnCancelUpdate.Text = UpdateText;
@@ -281,7 +251,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     
                     btnCreateDelete.Visible = false;
                     btnCancelUpdate.Visible = false;
-                    btnCloseTabs.Location = btnCreateDelete.Location;
+                    //btnCloseTabs.Location = btnCreateDelete.Location;
                     btnRefresh.Location = btnCancelUpdate.Location;
                 }
             }
@@ -1001,18 +971,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                    cboRelayType.Size.Height + 1);
         }
 
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count > 0)
-            {
-                for (var i = 0; i < metricTabPageIndexList.Count; i++)
-                {
-                    mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-                }
-                metricTabPageIndexList.Clear();
-                btnCloseTabs.Enabled = false;
-            }
-        }
+
         #endregion
     }
 }
