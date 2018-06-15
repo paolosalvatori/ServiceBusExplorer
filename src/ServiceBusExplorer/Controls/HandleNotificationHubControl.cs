@@ -166,7 +166,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string GoogleNativeNotificationPage = "tabPageGoogleNativeNotification";
         private const string RegistrationsPage = "tabPageRegistrations";
         private const string AuthorizationPage = "tabPageAuthorization";
-        private const string MetricsTabPage = "tabPageMetrics";
         private const string NotificationHubEntity = "Notification Hub";
         #endregion
 
@@ -195,10 +194,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private int currentRegistrationRowIndex;
         private bool sorting;
         private string registrationsFilterExpression;
-        private readonly List<string> metricTabPageIndexList = new List<string>();
         private readonly BindingSource dataPointBindingSource = new BindingSource();
-        private readonly BindingList<MetricDataPoint> dataPointBindingList;
-        private readonly ManualResetEvent metricsManualResetEvent = new ManualResetEvent(false);
         #endregion
 
         #region Private Static Fields
@@ -215,12 +211,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             this.notificationHubDescription = notificationHubDescription;
-            dataPointBindingList = new BindingList<MetricDataPoint>
-            {
-                AllowNew = true,
-                AllowEdit = true,
-                AllowRemove = true
-            };
+
             InitializeComponent();
             InitializeControls();
         } 
@@ -401,34 +392,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "ModifiedTime", DataPropertyName = "ModifiedTime", ReadOnly = true });
             }
 
-            // Initialize the DataGridView.
-            dataPointBindingSource.DataSource = dataPointBindingList;
-
             if (notificationHubDescription != null)
             {
-                MetricInfo.GetMetricInfoListAsync(serviceBusHelper.Namespace,
-                                             NotificationHubEntity,
-                                             notificationHubDescription.Path).ContinueWith(t => metricsManualResetEvent.Set());
-            }
-
-            if (notificationHubDescription != null)
-            {
-                // Tab pages
-                if (serviceBusHelper.IsCloudNamespace)
-                {
-                    EnablePage(MetricsTabPage);
-                }
-                else
-                {
-                    DisablePage(MetricsTabPage);
-                }
-
                 // Initialize buttons
                 btnCreateDelete.Text = DeleteText;
                 btnCancelUpdate.Text = UpdateText;
                 btnRefresh.Enabled = true;
                 btnRegistrations.Visible = true;
-                btnCloseTabs.Visible = true;
 
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
@@ -1126,11 +1096,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnCancelUpdate.Text = CancelText;
                 btnRefresh.Enabled = false;
                 btnRegistrations.Visible = false;
-                btnCloseTabs.Visible = false;
                 txtPath.Focus();
 
                 // Disable test pages
-                DisablePage(MetricsTabPage);
                 DisablePage(TemplateNotificationPage);
                 DisablePage(WindowsPhoneNativeNotificationPage);
                 DisablePage(WindowsNativeNotificationPage);
@@ -3829,20 +3797,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             catch
             {
             }
-        }
-
-        private void btnCloseTabs_Click(object sender, EventArgs e)
-        {
-            if (metricTabPageIndexList.Count <= 0)
-            {
-                return;
-            }
-            for (var i = 0; i < metricTabPageIndexList.Count; i++)
-            {
-                mainTabControl.TabPages.RemoveByKey(metricTabPageIndexList[i]);
-            }
-            metricTabPageIndexList.Clear();
-            btnCloseTabs.Enabled = false;
         }
         #endregion
     }

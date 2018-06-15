@@ -185,7 +185,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string ChangeStatusTopicMenuItem = "changeStatusTopicMenuItem";
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
-        private const string MetricsHeader = "Namespace Metrics";
         private const string DefaultConsumerGroupName = "$Default";
 
         //***************************
