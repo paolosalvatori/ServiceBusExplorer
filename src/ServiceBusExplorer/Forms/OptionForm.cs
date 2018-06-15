@@ -72,8 +72,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             InitializeComponent();
 
-            SubscriptionId = subscriptionId;
-            CertificateThumbprint = certificateThumbprint;
             Label = label;
             MessageFile = messageFile;
             MessageText = messageText;
@@ -89,8 +87,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             PrefetchCount = prefetchCount;
             TopCount = top;
 
-            txtSubscriptionId.Text = subscriptionId;
-            txtManagementCertificateThumbprint.Text = certificateThumbprint;
             txtLabel.Text = label;
             txtMessageFile.Text = messageFile;
             txtMessageText.Text = messageText;
@@ -152,8 +148,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public bool SaveMessageToFile { get; private set; }
         public bool SavePropertiesToFile { get; private set; }
         public bool SaveCheckpointsToFile { get; private set; }
-        public string CertificateThumbprint { get; private set; }
-        public string SubscriptionId { get; private set; }
         public string Label { get; private set; }
         public string MessageFile { get; private set; }
         public string MessageText { get; private set; }
@@ -353,16 +347,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
-        private void txtSubscriptionId_TextChanged(object sender, EventArgs e)
-        {
-            SubscriptionId = txtSubscriptionId.Text;
-        }
-
-        private void txtManagementCertificateThumbprint_TextChanged(object sender, EventArgs e)
-        {
-            CertificateThumbprint = txtManagementCertificateThumbprint.Text;
-        }
-
         private void txtLabel_TextChanged(object sender, EventArgs e)
         {
             Label = txtLabel.Text;
@@ -525,23 +509,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 configuration.AppSettings.Settings[ConfigurationParameters.PrefetchCountParameter].Value = PrefetchCount.ToString(CultureInfo.InvariantCulture);
             }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SubscriptionIdParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SubscriptionIdParameter, SubscriptionId);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SubscriptionIdParameter].Value = SubscriptionId;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.CertificateThumbprintParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.CertificateThumbprintParameter, CertificateThumbprint);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.CertificateThumbprintParameter].Value = CertificateThumbprint;
-            }
-
 
             if (configuration.AppSettings.Settings[ConfigurationParameters.LabelParameter] == null)
             {
