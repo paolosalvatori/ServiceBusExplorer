@@ -1865,7 +1865,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     AllowEdit = false,
                     AllowNew = false,
-                    AllowRemove = false
+                    AllowRemove = true
                 };
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
