@@ -185,7 +185,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string ChangeStatusTopicMenuItem = "changeStatusTopicMenuItem";
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
-        private const string MetricsHeader = "Namespace Metrics";
         private const string DefaultConsumerGroupName = "$Default";
 
         //***************************
@@ -376,8 +375,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     return;
                 }
-                subscriptionId = optionForm.SubscriptionId;
-                certificateThumbprint = optionForm.CertificateThumbprint;
                 label = optionForm.Label;
                 messageFile = optionForm.MessageFile;
                 messageText = optionForm.MessageText;
@@ -3967,10 +3964,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 label = DefaultLabel;
             }
-
-            subscriptionId = ConfigurationManager.AppSettings[ConfigurationParameters.SubscriptionIdParameter];
-            certificateThumbprint = ConfigurationManager.AppSettings[ConfigurationParameters.CertificateThumbprintParameter];
-
 
             var logFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.LogFontSize];
             float tempFloat;
