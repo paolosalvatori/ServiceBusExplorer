@@ -4662,6 +4662,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                         HandleNodeMouseClick(notificationHubListNode);
                                     }
                                 }
+                                catch (ArgumentException)
+                                {
+                                    // This is where we end up if there are no Notification Hubs in the namespace
+                                    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                                }
                                 catch (Exception ex) when (FilterOutException(ex))
                                 {
                                     WriteToLog($"Failed to retrieve Notification Hub entities. Exception: {ex}");
