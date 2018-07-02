@@ -47,8 +47,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string MonitorRefreshIntervalParameter = "monitorRefreshInterval";
         public const string PrefetchCountParameter = "prefetchCount";
         public const string MessageDeferProviderParameter = "messageDeferProvider";
-        public const string SubscriptionIdParameter = "subscriptionId";
-        public const string CertificateThumbprintParameter = "certificateThumbprint";
         public const string LogFontSize = "logFontSize";
         public const string TreeViewFontSize = "treeViewFontSize";
         public const string ConnectivityMode = "connectivityMode";

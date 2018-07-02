@@ -266,7 +266,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
 
-        public static Task CheckpointAsync(string ns, string eventHub, string consumerGroup, Lease lease, string offset, long sequenceNumber)
+        public static Task CheckpointAsync(string ns, string eventHub, string consumerGroup, Lease lease, string offset)
         {
             if (string.IsNullOrWhiteSpace(ns) ||
                 string.IsNullOrWhiteSpace(eventHub) ||
@@ -274,14 +274,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 lease == null ||
                 string.IsNullOrWhiteSpace(offset))
             {
-                Task.FromResult<object>(null); 
+                return Task.CompletedTask;
             }
-            if (lease != null && !string.IsNullOrWhiteSpace(offset))
-            {
-                lease.Offset = offset;
-                SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
-            }
-            return Task.FromResult<object>(null);
+
+            lease.Offset = offset;
+            SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
+
+            return Task.CompletedTask;
         } 
         #endregion
 

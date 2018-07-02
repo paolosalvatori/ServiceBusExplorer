@@ -22,12 +22,13 @@
 #region Using Directives
 
 using System;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
+
     /// <summary>
     /// This class contains the information of a Url Segment
     /// </summary>

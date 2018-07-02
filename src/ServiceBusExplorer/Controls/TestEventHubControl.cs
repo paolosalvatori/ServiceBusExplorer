@@ -32,6 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
@@ -41,6 +42,8 @@ using Cursor = System.Windows.Forms.Cursor;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
+    using Enums;
+
     public partial class TestEventHubControl : UserControl
     {
         #region Private Constants

@@ -42,12 +42,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
-    public enum FormTypeEnum
-    {
-        Send,
-        Test,
-        Listener
-    }
+    using Enums;
 
     public sealed partial class ContainerForm : Form
     {
@@ -90,7 +85,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string SaveAsTitle = "Save Log As";
         private const string SaveAsExtension = "txt";
         private const string SaveAsFilter = "Text Documents|*.txt";
-        private const string MetricsHeader = "Namespace Metrics";
 
         //***************************
         // Sizes
@@ -115,47 +109,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Public Constructors
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm)
-        {
-            try
-            {
-                InitializeComponent();
-                logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
-                {
-                    if (t.IsFaulted && t.Exception != null)
-                    {
-                        WriteToLog(t.Exception.Message);
-                    }
-                });
-                this.mainForm = mainForm;
-                mainSplitterDistance = mainSplitContainer.SplitterDistance;
-                SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                var metricMonitorControl = new MetricMonitorControl(WriteToLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), null, null, null)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-
-                Text = MetricsHeader;
-                logTraceListener = new LogTraceListener(WriteToLog);
-                Trace.Listeners.Add(logTraceListener);
-                metricMonitorControl.Focus();
-
-                panelMain.Controls.Add(metricMonitorControl);
-                SetStyle(ControlStyles.ResizeRedraw, true);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                ResumeLayout();
-            }
-        }
-
         public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription)
         {
             try

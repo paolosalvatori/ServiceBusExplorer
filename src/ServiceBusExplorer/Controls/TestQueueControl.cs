@@ -37,6 +37,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Cursor = System.Windows.Forms.Cursor;
 #endregion
 
@@ -795,7 +796,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                                                           txtReplyToSessionId.Text,
                                                                                                           txtTimeToLive.Text,
                                                                                                           txtScheduledEnqueueTimeUtc.Text,
-                                                                                                          checkBoxForcePersistence.Checked,
                                                                                                           bindingSource.Cast<MessagePropertyInfo>());
                                                 messageTextList.Add(BitConverter.ToString(bytes).Replace('-', ' '));
                                                 bodyType = BodyType.Stream;
