@@ -133,6 +133,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtContent.Location = new System.Drawing.Point(16, 32);
+            this.txtContent.MaxLength = 0;
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;

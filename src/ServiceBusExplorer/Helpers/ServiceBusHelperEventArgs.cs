@@ -22,7 +22,7 @@
 #region Using Directives
 
 using System;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
 
 #endregion
 

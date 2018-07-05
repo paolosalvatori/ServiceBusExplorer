@@ -51,7 +51,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         //***************************
         // Constants
         //***************************
-        private const string Namespace = @"http://schemas.microsoft.com/servicebusexplorer";
+        private const string Namespace = "http://schemas.microsoft.com/servicebusexplorer";
         private const string QueueDescriptionClass = "QueueDescription";
         private const string TopicDescriptionClass = "TopicDescription";
         private const string RelayDescriptionClass = "RelayDescription";

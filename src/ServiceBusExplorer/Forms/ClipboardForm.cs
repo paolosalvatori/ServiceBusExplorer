@@ -31,14 +31,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     public partial class ClipboardForm : Form
     {
-        #region Private Constants
-        //***************************
-        // Message
-        //***************************
-        private const string MessageFormat = "The [{0}] {1} will be permanently deleted.";
-        private const string Unknown = "Unknown";
-        #endregion
-
         #region Public Constructor
         public ClipboardForm(string url)
         {

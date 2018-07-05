@@ -50,6 +50,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             Assert.AreEqual(indented, expectedResult);
         }
+        
+        [Test]
+        public void IndentJson_ValueIsJson_DoesNotChangeDateFormat()
+        {
+            var json = @"{""dateIso"":""2018-05-14T00:00:00Z"",""dateMicrosoft"":""/Date(1526256000000)/""}";
+            var expectedResult = @"{
+  ""dateIso"": ""2018-05-14T00:00:00Z"",
+  ""dateMicrosoft"": ""/Date(1526256000000)/""
+}";
+            var indented = JsonSerializerHelper.Indent(json);
+
+            Assert.AreEqual(indented, expectedResult);
+        }
 
         [Test]
         public void IndentJson_ValueHasTypeHandling_ReturnsIndentedStringWithTypeHandling()
