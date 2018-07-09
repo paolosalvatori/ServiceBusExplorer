@@ -789,6 +789,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             GetPartitions();
         }
+
+        private void txtName_TextChanged(object sender, EventArgs e)
+        {
+            txtName.Text = txtName.Text.ToLower();
+            txtName.SelectionStart = txtName.Text.Length;
+        }
         #endregion
     }
 }
