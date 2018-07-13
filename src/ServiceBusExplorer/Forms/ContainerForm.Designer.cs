@@ -56,8 +56,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContainerForm));
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.panelMain = new HeaderPanel();
-            this.panelLog = new HeaderPanel();
+            this.panelMain = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
+            this.panelLog = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
             this.lstLog = new System.Windows.Forms.ListBox();
             this.logContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();

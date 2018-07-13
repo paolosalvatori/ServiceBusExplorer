@@ -32,12 +32,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
+using FastColoredTextBoxNS;
+
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
@@ -180,6 +181,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 cboSenderInspector.SelectedIndex = 0;
                 cboEventDataGeneratorType.Items.Add(SelectEventDataGenerator);
                 cboEventDataGeneratorType.SelectedIndex = 0;
+                cboMessageFormat.Items.AddRange(new[] { "Text", "JSON", "XML" });
+                cboMessageFormat.SelectedIndex = 0;
+
+                grouperMessageProperties.Size = new Size(splitContainer.Panel2.Width, grouperMessageProperties.Size.Height);
 
                 if (serviceBusHelper != null)
                 {
@@ -283,10 +288,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                txtMessageText.Text = mainForm != null &&
+                var messageText = mainForm != null &&
                                       !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
                                       XmlHelper.Indent(mainForm.MessageText) :
                                       DefaultMessageText;
+
+                if (JsonSerializerHelper.IsJson(messageText))
+                {
+                    cboMessageFormat.Text = "JSON";
+                    txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
+                }
+                else if (XmlHelper.IsXml(messageText))
+                {
+                    cboMessageFormat.Text = "XML";
+                    txtMessageText.Text = XmlHelper.Indent(messageText);
+                }
+                else
+                {
+                    txtMessageText.Text = messageText;
+                }
+
+
                 txtPartitionKey.Text = Guid.NewGuid().ToString();
                 txtMessageCount.Text = DefaultMessageCount;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
@@ -987,14 +1009,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void txtMessageText_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
-        }
-
         private void SetGraphLayout()
         {
             chart.Series.Clear();
@@ -1365,6 +1379,49 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void checkBoxSendBatch_CheckedChanged(object sender, EventArgs e)
         {
             txtSendBatchSize.Enabled = checkBoxSendBatch.Checked;
+        }
+
+        private void grouperMessageFormat_CustomPaint(PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                   cboMessageFormat.Location.X - 1,
+                                   cboMessageFormat.Location.Y - 1,
+                                   cboMessageFormat.Size.Width + 1,
+                                   cboMessageFormat.Size.Height + 1);
+        }
+
+        private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
+            {
+                mainForm.MessageText = txtMessageText.Text;
+            }
+        }
+
+        private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtMessageText.ClearStylesBuffer();
+            txtMessageText.Range.ClearStyle(StyleIndex.All);
+
+            switch (cboMessageFormat.Text)
+            {
+                case "JSON":
+                    txtMessageText.Language = Language.JSON;
+                    break;
+                case "XML":
+                    txtMessageText.Language = Language.HTML;
+                    break;
+                default:
+                    txtMessageText.Language = Language.Custom;
+                    break;
+            }
+            txtMessageText.OnTextChanged();
+        }
+
+        private void grouperPartitionKey_CustomPaint(PaintEventArgs e)
+        {
+            grouperPartitionKey.Location = new Point(0, splitContainer.Panel2.Height - grouperPartitionKey.Size.Height - 16);
+            grouperPartitionKey.Size = new Size(splitContainer.Panel2.Width, grouperPartitionKey.Size.Height);
         }
         #endregion
     }

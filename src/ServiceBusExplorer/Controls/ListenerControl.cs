@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+using FastColoredTextBoxNS;
 
 #endregion
 
@@ -257,8 +258,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // Splitter controls
             messagesSplitContainer.SplitterWidth = 16;
-            messagesCustomPropertiesSplitContainer.SplitterWidth = 16;
-            messageListTextPropertiesSplitContainer.SplitterWidth = 8;
+            messageMainSplitContainer.SplitterWidth = 8;
 
             // Set Grid style
             messagesDataGridView.EnableHeadersVisualStyles = false;
@@ -625,7 +625,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             brokeredMessage = bindingList[e.RowIndex];
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _));
+            var messageText = serviceBusHelper.GetMessageText(brokeredMessage, out _);
+
+            if (JsonSerializerHelper.IsJson(messageText))
+            {
+                txtMessageText.Language = Language.JSON;
+                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
+            }
+            else if (XmlHelper.IsXml(messageText))
+            {
+                txtMessageText.Language = Language.HTML;
+                txtMessageText.Text = XmlHelper.Indent(messageText);
+            }
+            else
+            {
+                txtMessageText.Text = messageText;
+            }
+
             var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             messagePropertyListView.Items.Clear();
             messagePropertyListView.Items.AddRange(listViewItems);
@@ -637,12 +653,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 messagesSplitContainer.SuspendDrawing();
                 messagesSplitContainer.SuspendLayout();
-                grouperMessageCustomProperties.Size = new Size(grouperMessageCustomProperties.Size.Width, messageListTextPropertiesSplitContainer.Panel2.Size.Height);
-                messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - 32, messagePropertyGrid.Size.Height);
+                grouperMessageCustomProperties.Size = new Size(grouperMessageCustomProperties.Size.Width, messageMainSplitContainer.Panel2.Size.Height);
+                messagePropertyGrid.Size = new Size(grouperMessageSystemProperties.Size.Width - 32, messagePropertyGrid.Size.Height);
                 messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - 32, messagePropertyListView.Size.Height);
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Width -
-                                                                            grouperMessageCustomPropertiesWidth -
-                                                                            messagesCustomPropertiesSplitContainer.SplitterWidth;
                 grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Width;
             }
             finally
@@ -702,10 +715,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                     grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y - messagePropertyListView.Location.X);
         }
 
-        private void grouperMessageProperties_CustomPaint(PaintEventArgs obj)
+        private void grouperMessageSystemProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - (messagePropertyGrid.Location.X * 2),
-                                                grouperMessageProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
+            messagePropertyGrid.Size = new Size(grouperMessageSystemProperties.Size.Width - (messagePropertyGrid.Location.X * 2),
+                                                grouperMessageSystemProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
         }
 
         private void messagesDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)

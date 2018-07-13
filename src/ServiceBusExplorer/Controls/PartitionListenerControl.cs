@@ -38,6 +38,7 @@ using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using FastColoredTextBoxNS;
 
 // ReSharper disable CoVariantArrayConversion
 #endregion
@@ -271,8 +272,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // Splitter controls
             eventDataSplitContainer.SplitterWidth = 16;
-            eventDataCustomPropertiesSplitContainer.SplitterWidth = 16;
-            messageListTextPropertiesSplitContainer.SplitterWidth = 8;
+            eventDataPropertiesSplitContainer.SplitterWidth = 8;
+            eventDataMainSplitContainer.SplitterWidth = 8;
 
             // Set Grid style
             eventDataDataGridView.EnableHeadersVisualStyles = false;
@@ -647,7 +648,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             currentEventData = bindingList[e.RowIndex];
             eventDataPropertyGrid.SelectedObject = currentEventData;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(currentEventData, out _));
+
+            var messageText = serviceBusHelper.GetMessageText(currentEventData.Clone(), out _);
+
+            if (JsonSerializerHelper.IsJson(messageText))
+            {
+                txtMessageText.Language = Language.JSON;
+                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
+            }
+            else if (XmlHelper.IsXml(messageText))
+            {
+                txtMessageText.Language = Language.HTML;
+                txtMessageText.Text = XmlHelper.Indent(messageText);
+            }
+            else
+            {
+                txtMessageText.Text = messageText;
+            }
+
             var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             eventDataPropertyListView.Items.Clear();
             eventDataPropertyListView.Items.AddRange(listViewItems);
@@ -659,12 +677,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 eventDataSplitContainer.SuspendDrawing();
                 eventDataSplitContainer.SuspendLayout();
-                grouperEventDataCustomProperties.Size = new Size(grouperEventDataCustomProperties.Size.Width, messageListTextPropertiesSplitContainer.Panel2.Size.Height);
+                grouperEventDataCustomProperties.Size = new Size(grouperEventDataCustomProperties.Size.Width, eventDataMainSplitContainer.Panel2.Size.Height);
                 eventDataPropertyGrid.Size = new Size(grouperMessageProperties.Size.Width - 32, eventDataPropertyGrid.Size.Height);
                 eventDataPropertyListView.Size = new Size(grouperEventDataCustomProperties.Size.Width - 32, eventDataPropertyListView.Size.Height);
-                eventDataCustomPropertiesSplitContainer.SplitterDistance = eventDataCustomPropertiesSplitContainer.Width -
-                                                                            grouperEventDataCustomPropertiesWidth -
-                                                                            eventDataCustomPropertiesSplitContainer.SplitterWidth;
                 grouperEventDataCustomPropertiesWidth = grouperEventDataCustomProperties.Width;
             }
             finally
@@ -1549,8 +1564,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                     return;
                 }
                 var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventData);
-                IEnumerable<EventData> brokeredMessages = messages as EventData[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                IEnumerable<EventData> events = messages as EventData[] ?? messages.ToArray();
+                if (!events.Any())
                 {
                     return;
                 }
@@ -1571,8 +1586,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
 
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _, doNotSerializeBody));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody));
+                    var bodies = events.Select(bm => serviceBusHelper.GetMessageText(bm, out _, doNotSerializeBody));
+                    writer.Write(MessageSerializationHelper.Serialize(events, bodies, doNotSerializeBody));
                 }
             }
             catch (Exception ex)

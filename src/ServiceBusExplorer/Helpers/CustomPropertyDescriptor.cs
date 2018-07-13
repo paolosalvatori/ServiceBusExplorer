@@ -163,27 +163,28 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             get
             {
-                var sResult = String.Empty;
-                if (ResourceManager != null && CategoryId != 0 && (PropertyFlags & PropertyFlags.LocalizeCategoryName) > 0)
-                {
-                    var sKey = KeyPrefix + "Cat" + CategoryId;
-                    sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
-                    if (!String.IsNullOrWhiteSpace(sResult))
-                    {
-                        return sResult.PadLeft(sResult.Length + tabAppendCount, '\t');
-                    }
+                return base.Category;
+                //var sResult = String.Empty;
+                //if (ResourceManager != null && CategoryId != 0 && (PropertyFlags & PropertyFlags.LocalizeCategoryName) > 0)
+                //{
+                //    var sKey = KeyPrefix + "Cat" + CategoryId;
+                //    sResult = ResourceManager.GetString(sKey, CultureInfo.CurrentUICulture);
+                //    if (!String.IsNullOrWhiteSpace(sResult))
+                //    {
+                //        return sResult.PadLeft(sResult.Length + tabAppendCount, '\t');
+                //    }
 
-                }
-                var attr = (CategoryAttribute)attributes.FirstOrDefault(a => a is CategoryAttribute);
-                if (attr != null)
-                {
-                    sResult = attr.Category;
-                }
-                if (string.IsNullOrWhiteSpace(sResult))
-                {
-                    sResult = base.Category;
-                }
-                return sResult.PadLeft(Category.Length + tabAppendCount, '\t');
+                //}
+                //var attr = (CategoryAttribute)attributes.FirstOrDefault(a => a is CategoryAttribute);
+                //if (attr != null)
+                //{
+                //    sResult = attr.Category;
+                //}
+                //if (string.IsNullOrWhiteSpace(sResult))
+                //{
+                //    sResult = base.Category;
+                //}
+                //return sResult.PadLeft(Category.Length + tabAppendCount, '\t');
             }
         }
 

@@ -22,34 +22,35 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ListenerControl));
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btnClose = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageListener = new System.Windows.Forms.TabPage();
-            this.grouperStatistics = new Grouper();
+            this.grouperStatistics = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.cboMessageSizePerSecond = new System.Windows.Forms.ComboBox();
             this.cboAverageDuration = new System.Windows.Forms.ComboBox();
             this.cboMessagesPerSecond = new System.Windows.Forms.ComboBox();
             this.lblMessageSizePerSecond = new System.Windows.Forms.Label();
-            this.txtMessageSizePerSecond = new NumericTextBox();
+            this.txtMessageSizePerSecond = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAverageTime = new System.Windows.Forms.Label();
-            this.txtAverageDuration = new NumericTextBox();
-            this.txtMessagesTotal = new NumericTextBox();
+            this.txtAverageDuration = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtMessagesTotal = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessagesTotal = new System.Windows.Forms.Label();
-            this.txtMessagesPerSecond = new NumericTextBox();
+            this.txtMessagesPerSecond = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessagesPerSecond = new System.Windows.Forms.Label();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.grouperEntityInformation = new Grouper();
+            this.grouperEntityInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperOptions = new Grouper();
-            this.txtMessageWaitTimeout = new NumericTextBox();
+            this.grouperOptions = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageWaitTimeout = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessageWaitTimeout = new System.Windows.Forms.Label();
-            this.txtAutoRenewTimeout = new NumericTextBox();
+            this.txtAutoRenewTimeout = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAutoRenewTimeout = new System.Windows.Forms.Label();
-            this.txtPrefetchCount = new NumericTextBox();
+            this.txtPrefetchCount = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblPrefetchCount = new System.Windows.Forms.Label();
             this.lblReceiveMode = new System.Windows.Forms.Label();
             this.cboReceivedMode = new System.Windows.Forms.ComboBox();
@@ -58,24 +59,18 @@
             this.checkBoxTrackMessages = new System.Windows.Forms.CheckBox();
             this.checkBoxAutoComplete = new System.Windows.Forms.CheckBox();
             this.checkBoxVerbose = new System.Windows.Forms.CheckBox();
-            this.txtRefreshInformation = new NumericTextBox();
+            this.txtRefreshInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblRefreshInformation = new System.Windows.Forms.Label();
-            this.txtMaxConcurrentCalls = new NumericTextBox();
+            this.txtMaxConcurrentCalls = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMaxConcurrentCalls = new System.Windows.Forms.Label();
             this.tabPageMessages = new System.Windows.Forms.TabPage();
             this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageList = new Grouper();
+            this.messageMainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.grouperMessageList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.pictFindMessages = new System.Windows.Forms.PictureBox();
             this.messagesDataGridView = new System.Windows.Forms.DataGridView();
-            this.messagesCustomPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageText = new Grouper();
-            this.txtMessageText = new System.Windows.Forms.TextBox();
-            this.grouperMessageCustomProperties = new Grouper();
-            this.messagePropertyListView = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperMessageProperties = new Grouper();
+            this.messagePropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.grouperMessageSystemProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +85,12 @@
             this.entityInformationContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyPartitionInformationToClipboardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.grouperMessageCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.messagePropertyListView = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.mainTabControl.SuspendLayout();
             this.tabPageListener.SuspendLayout();
             this.grouperStatistics.SuspendLayout();
@@ -101,23 +102,24 @@
             this.messagesSplitContainer.Panel1.SuspendLayout();
             this.messagesSplitContainer.Panel2.SuspendLayout();
             this.messagesSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).BeginInit();
-            this.messageListTextPropertiesSplitContainer.Panel1.SuspendLayout();
-            this.messageListTextPropertiesSplitContainer.Panel2.SuspendLayout();
-            this.messageListTextPropertiesSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.messageMainSplitContainer)).BeginInit();
+            this.messageMainSplitContainer.Panel1.SuspendLayout();
+            this.messageMainSplitContainer.Panel2.SuspendLayout();
+            this.messageMainSplitContainer.SuspendLayout();
             this.grouperMessageList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.messagesCustomPropertiesSplitContainer)).BeginInit();
-            this.messagesCustomPropertiesSplitContainer.Panel1.SuspendLayout();
-            this.messagesCustomPropertiesSplitContainer.Panel2.SuspendLayout();
-            this.messagesCustomPropertiesSplitContainer.SuspendLayout();
-            this.grouperMessageText.SuspendLayout();
-            this.grouperMessageCustomProperties.SuspendLayout();
-            this.grouperMessageProperties.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).BeginInit();
+            this.messagePropertiesSplitContainer.Panel1.SuspendLayout();
+            this.messagePropertiesSplitContainer.Panel2.SuspendLayout();
+            this.messagePropertiesSplitContainer.SuspendLayout();
+            this.grouperMessageSystemProperties.SuspendLayout();
             this.messagesContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
             this.entityInformationContextMenuStrip.SuspendLayout();
+            this.grouperMessageCustomProperties.SuspendLayout();
+            this.grouperMessageText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
             this.SuspendLayout();
             // 
             // btnClose
@@ -194,7 +196,7 @@
             this.grouperStatistics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperStatistics.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperStatistics.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperStatistics.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperStatistics.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperStatistics.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperStatistics.BorderThickness = 1F;
             this.grouperStatistics.Controls.Add(this.cboMessageSizePerSecond);
@@ -422,7 +424,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperEntityInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperEntityInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperEntityInformation.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperEntityInformation.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperEntityInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperEntityInformation.BorderThickness = 1F;
             this.grouperEntityInformation.Controls.Add(this.propertyListView);
@@ -478,7 +480,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperOptions.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperOptions.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperOptions.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperOptions.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperOptions.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperOptions.BorderThickness = 1F;
             this.grouperOptions.Controls.Add(this.txtMessageWaitTimeout);
@@ -729,40 +731,40 @@
             // 
             // messagesSplitContainer.Panel1
             // 
-            this.messagesSplitContainer.Panel1.Controls.Add(this.messageListTextPropertiesSplitContainer);
+            this.messagesSplitContainer.Panel1.Controls.Add(this.messageMainSplitContainer);
             // 
             // messagesSplitContainer.Panel2
             // 
-            this.messagesSplitContainer.Panel2.Controls.Add(this.grouperMessageProperties);
+            this.messagesSplitContainer.Panel2.Controls.Add(this.messagePropertiesSplitContainer);
             this.messagesSplitContainer.Size = new System.Drawing.Size(936, 432);
             this.messagesSplitContainer.SplitterDistance = 608;
             this.messagesSplitContainer.SplitterWidth = 16;
             this.messagesSplitContainer.TabIndex = 3;
             // 
-            // messageListTextPropertiesSplitContainer
+            // messageMainSplitContainer
             // 
-            this.messageListTextPropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.messageListTextPropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.messageListTextPropertiesSplitContainer.Name = "messageListTextPropertiesSplitContainer";
-            this.messageListTextPropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.messageMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.messageMainSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.messageMainSplitContainer.Name = "messageMainSplitContainer";
+            this.messageMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // messageListTextPropertiesSplitContainer.Panel1
+            // messageMainSplitContainer.Panel1
             // 
-            this.messageListTextPropertiesSplitContainer.Panel1.Controls.Add(this.grouperMessageList);
+            this.messageMainSplitContainer.Panel1.Controls.Add(this.grouperMessageList);
             // 
-            // messageListTextPropertiesSplitContainer.Panel2
+            // messageMainSplitContainer.Panel2
             // 
-            this.messageListTextPropertiesSplitContainer.Panel2.Controls.Add(this.messagesCustomPropertiesSplitContainer);
-            this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(608, 432);
-            this.messageListTextPropertiesSplitContainer.SplitterDistance = 212;
-            this.messageListTextPropertiesSplitContainer.SplitterWidth = 8;
-            this.messageListTextPropertiesSplitContainer.TabIndex = 0;
+            this.messageMainSplitContainer.Panel2.Controls.Add(this.grouperMessageText);
+            this.messageMainSplitContainer.Size = new System.Drawing.Size(608, 432);
+            this.messageMainSplitContainer.SplitterDistance = 212;
+            this.messageMainSplitContainer.SplitterWidth = 8;
+            this.messageMainSplitContainer.TabIndex = 0;
             // 
             // grouperMessageList
             // 
             this.grouperMessageList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageList.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageList.BorderThickness = 1F;
             this.grouperMessageList.Controls.Add(this.pictFindMessages);
@@ -787,7 +789,7 @@
             // 
             // pictFindMessages
             // 
-            this.pictFindMessages.Image = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.FindExtension;
+            this.pictFindMessages.Image = ((System.Drawing.Image)(resources.GetObject("pictFindMessages.Image")));
             this.pictFindMessages.Location = new System.Drawing.Point(100, 0);
             this.pictFindMessages.Name = "pictFindMessages";
             this.pictFindMessages.Size = new System.Drawing.Size(24, 24);
@@ -830,146 +832,50 @@
             this.messagesDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
             this.messagesDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
-            // messagesCustomPropertiesSplitContainer
+            // messagePropertiesSplitContainer
             // 
-            this.messagesCustomPropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.messagesCustomPropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.messagesCustomPropertiesSplitContainer.Name = "messagesCustomPropertiesSplitContainer";
+            this.messagePropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.messagePropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.messagePropertiesSplitContainer.Name = "messagePropertiesSplitContainer";
+            this.messagePropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // messagesCustomPropertiesSplitContainer.Panel1
+            // messagePropertiesSplitContainer.Panel1
             // 
-            this.messagesCustomPropertiesSplitContainer.Panel1.Controls.Add(this.grouperMessageText);
+            this.messagePropertiesSplitContainer.Panel1.Controls.Add(this.grouperMessageSystemProperties);
             // 
-            // messagesCustomPropertiesSplitContainer.Panel2
+            // messagePropertiesSplitContainer.Panel2
             // 
-            this.messagesCustomPropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
-            this.messagesCustomPropertiesSplitContainer.Size = new System.Drawing.Size(608, 212);
-            this.messagesCustomPropertiesSplitContainer.SplitterDistance = 328;
-            this.messagesCustomPropertiesSplitContainer.SplitterWidth = 16;
-            this.messagesCustomPropertiesSplitContainer.TabIndex = 26;
+            this.messagePropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
+            this.messagePropertiesSplitContainer.Size = new System.Drawing.Size(312, 432);
+            this.messagePropertiesSplitContainer.SplitterDistance = 212;
+            this.messagePropertiesSplitContainer.SplitterWidth = 8;
+            this.messagePropertiesSplitContainer.TabIndex = 0;
             // 
-            // grouperMessageText
+            // grouperMessageSystemProperties
             // 
-            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageText.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.BorderThickness = 1F;
-            this.grouperMessageText.Controls.Add(this.txtMessageText);
-            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageText.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Message Text";
-            this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageText.Name = "grouperMessageText";
-            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperMessageText.PaintGroupBox = true;
-            this.grouperMessageText.RoundCorners = 4;
-            this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageText.ShadowControl = false;
-            this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(328, 212);
-            this.grouperMessageText.TabIndex = 25;
-            this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
-            // 
-            // txtMessageText
-            // 
-            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMessageText.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMessageText.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtMessageText.Location = new System.Drawing.Point(16, 32);
-            this.txtMessageText.MaxLength = 0;
-            this.txtMessageText.Multiline = true;
-            this.txtMessageText.Name = "txtMessageText";
-            this.txtMessageText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtMessageText.Size = new System.Drawing.Size(296, 164);
-            this.txtMessageText.TabIndex = 0;
-            // 
-            // grouperMessageCustomProperties
-            // 
-            this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageCustomProperties.BorderThickness = 1F;
-            this.grouperMessageCustomProperties.Controls.Add(this.messagePropertyListView);
-            this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.GroupImage = null;
-            this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
-            this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
-            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperMessageCustomProperties.PaintGroupBox = true;
-            this.grouperMessageCustomProperties.RoundCorners = 4;
-            this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageCustomProperties.ShadowControl = false;
-            this.grouperMessageCustomProperties.ShadowThickness = 1;
-            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(264, 212);
-            this.grouperMessageCustomProperties.TabIndex = 26;
-            this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
-            // 
-            // messagePropertyListView
-            // 
-            this.messagePropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
-            this.messagePropertyListView.Name = "messagePropertyListView";
-            this.messagePropertyListView.OwnerDraw = true;
-            this.messagePropertyListView.Size = new System.Drawing.Size(232, 164);
-            this.messagePropertyListView.TabIndex = 0;
-            this.messagePropertyListView.UseCompatibleStateImageBehavior = false;
-            this.messagePropertyListView.View = System.Windows.Forms.View.Details;
-            this.messagePropertyListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
-            this.messagePropertyListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
-            this.messagePropertyListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
-            this.messagePropertyListView.Resize += new System.EventHandler(this.listView_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 113;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Value";
-            this.columnHeader2.Width = 115;
-            // 
-            // grouperMessageProperties
-            // 
-            this.grouperMessageProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageProperties.BorderThickness = 1F;
-            this.grouperMessageProperties.Controls.Add(this.messagePropertyGrid);
-            this.grouperMessageProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageProperties.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageProperties.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageProperties.GroupImage = null;
-            this.grouperMessageProperties.GroupTitle = "Message Properties";
-            this.grouperMessageProperties.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageProperties.Name = "grouperMessageProperties";
-            this.grouperMessageProperties.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperMessageProperties.PaintGroupBox = true;
-            this.grouperMessageProperties.RoundCorners = 4;
-            this.grouperMessageProperties.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageProperties.ShadowControl = false;
-            this.grouperMessageProperties.ShadowThickness = 1;
-            this.grouperMessageProperties.Size = new System.Drawing.Size(312, 432);
-            this.grouperMessageProperties.TabIndex = 19;
-            this.grouperMessageProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageProperties_CustomPaint);
+            this.grouperMessageSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageSystemProperties.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessageSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageSystemProperties.BorderThickness = 1F;
+            this.grouperMessageSystemProperties.Controls.Add(this.messagePropertyGrid);
+            this.grouperMessageSystemProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageSystemProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperMessageSystemProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperMessageSystemProperties.ForeColor = System.Drawing.Color.White;
+            this.grouperMessageSystemProperties.GroupImage = null;
+            this.grouperMessageSystemProperties.GroupTitle = "Message System Properties";
+            this.grouperMessageSystemProperties.Location = new System.Drawing.Point(0, 0);
+            this.grouperMessageSystemProperties.Name = "grouperMessageSystemProperties";
+            this.grouperMessageSystemProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageSystemProperties.PaintGroupBox = true;
+            this.grouperMessageSystemProperties.RoundCorners = 4;
+            this.grouperMessageSystemProperties.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperMessageSystemProperties.ShadowControl = false;
+            this.grouperMessageSystemProperties.ShadowThickness = 1;
+            this.grouperMessageSystemProperties.Size = new System.Drawing.Size(312, 212);
+            this.grouperMessageSystemProperties.TabIndex = 20;
+            this.grouperMessageSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageSystemProperties_CustomPaint);
             // 
             // messagePropertyGrid
             // 
@@ -981,7 +887,7 @@
             this.messagePropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.messagePropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyGrid.Name = "messagePropertyGrid";
-            this.messagePropertyGrid.Size = new System.Drawing.Size(280, 384);
+            this.messagePropertyGrid.Size = new System.Drawing.Size(280, 164);
             this.messagePropertyGrid.TabIndex = 2;
             this.messagePropertyGrid.ToolbarVisible = false;
             // 
@@ -1086,6 +992,120 @@
             this.copyPartitionInformationToClipboardMenuItem.ToolTipText = "Copy entity information to clipboard.";
             this.copyPartitionInformationToClipboardMenuItem.Click += new System.EventHandler(this.copyEntityInformationToClipboardMenuItem_Click);
             // 
+            // grouperMessageCustomProperties
+            // 
+            this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessageCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.BorderThickness = 1F;
+            this.grouperMessageCustomProperties.Controls.Add(this.messagePropertyListView);
+            this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
+            this.grouperMessageCustomProperties.GroupImage = null;
+            this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
+            this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
+            this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
+            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageCustomProperties.PaintGroupBox = true;
+            this.grouperMessageCustomProperties.RoundCorners = 4;
+            this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperMessageCustomProperties.ShadowControl = false;
+            this.grouperMessageCustomProperties.ShadowThickness = 1;
+            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(312, 212);
+            this.grouperMessageCustomProperties.TabIndex = 27;
+            this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
+            // 
+            // messagePropertyListView
+            // 
+            this.messagePropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
+            this.messagePropertyListView.Name = "messagePropertyListView";
+            this.messagePropertyListView.OwnerDraw = true;
+            this.messagePropertyListView.Size = new System.Drawing.Size(280, 164);
+            this.messagePropertyListView.TabIndex = 0;
+            this.messagePropertyListView.UseCompatibleStateImageBehavior = false;
+            this.messagePropertyListView.View = System.Windows.Forms.View.Details;
+            this.messagePropertyListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
+            this.messagePropertyListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
+            this.messagePropertyListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
+            this.messagePropertyListView.Resize += new System.EventHandler(this.listView_Resize);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 113;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Value";
+            this.columnHeader2.Width = 115;
+            // 
+            // grouperMessageText
+            // 
+            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessageText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.BorderThickness = 1F;
+            this.grouperMessageText.Controls.Add(this.txtMessageText);
+            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperMessageText.ForeColor = System.Drawing.Color.White;
+            this.grouperMessageText.GroupImage = null;
+            this.grouperMessageText.GroupTitle = "Message Text";
+            this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
+            this.grouperMessageText.Name = "grouperMessageText";
+            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageText.PaintGroupBox = true;
+            this.grouperMessageText.RoundCorners = 4;
+            this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperMessageText.ShadowControl = false;
+            this.grouperMessageText.ShadowThickness = 1;
+            this.grouperMessageText.Size = new System.Drawing.Size(608, 212);
+            this.grouperMessageText.TabIndex = 26;
+            this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
+            // 
+            // txtMessageText
+            // 
+            this.txtMessageText.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.BackBrush = null;
+            this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtMessageText.CharHeight = 14;
+            this.txtMessageText.CharWidth = 8;
+            this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
+            this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtMessageText.IsReplaceMode = false;
+            this.txtMessageText.Location = new System.Drawing.Point(16, 32);
+            this.txtMessageText.Name = "txtMessageText";
+            this.txtMessageText.Paddings = new System.Windows.Forms.Padding(0);
+            this.txtMessageText.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtMessageText.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtMessageText.ServiceColors")));
+            this.txtMessageText.Size = new System.Drawing.Size(576, 164);
+            this.txtMessageText.TabIndex = 0;
+            this.txtMessageText.Zoom = 100;
+            // 
             // ListenerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1114,24 +1134,24 @@
             this.messagesSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).EndInit();
             this.messagesSplitContainer.ResumeLayout(false);
-            this.messageListTextPropertiesSplitContainer.Panel1.ResumeLayout(false);
-            this.messageListTextPropertiesSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).EndInit();
-            this.messageListTextPropertiesSplitContainer.ResumeLayout(false);
+            this.messageMainSplitContainer.Panel1.ResumeLayout(false);
+            this.messageMainSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.messageMainSplitContainer)).EndInit();
+            this.messageMainSplitContainer.ResumeLayout(false);
             this.grouperMessageList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).EndInit();
-            this.messagesCustomPropertiesSplitContainer.Panel1.ResumeLayout(false);
-            this.messagesCustomPropertiesSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.messagesCustomPropertiesSplitContainer)).EndInit();
-            this.messagesCustomPropertiesSplitContainer.ResumeLayout(false);
-            this.grouperMessageText.ResumeLayout(false);
-            this.grouperMessageText.PerformLayout();
-            this.grouperMessageCustomProperties.ResumeLayout(false);
-            this.grouperMessageProperties.ResumeLayout(false);
+            this.messagePropertiesSplitContainer.Panel1.ResumeLayout(false);
+            this.messagePropertiesSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).EndInit();
+            this.messagePropertiesSplitContainer.ResumeLayout(false);
+            this.grouperMessageSystemProperties.ResumeLayout(false);
             this.messagesContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).EndInit();
             this.entityInformationContextMenuStrip.ResumeLayout(false);
+            this.grouperMessageCustomProperties.ResumeLayout(false);
+            this.grouperMessageText.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1152,19 +1172,10 @@
         private Grouper grouperOptions;
         private System.Windows.Forms.Label lblMaxConcurrentCalls;
         private System.Windows.Forms.SplitContainer messagesSplitContainer;
-        private Grouper grouperMessageProperties;
         private System.Windows.Forms.BindingSource messagesBindingSource;
-        private System.Windows.Forms.SplitContainer messageListTextPropertiesSplitContainer;
+        private System.Windows.Forms.SplitContainer messageMainSplitContainer;
         private Grouper grouperMessageList;
         private System.Windows.Forms.DataGridView messagesDataGridView;
-        private System.Windows.Forms.SplitContainer messagesCustomPropertiesSplitContainer;
-        private Grouper grouperMessageText;
-        private System.Windows.Forms.TextBox txtMessageText;
-        private Grouper grouperMessageCustomProperties;
-        private System.Windows.Forms.ListView messagePropertyListView;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.PropertyGrid messagePropertyGrid;
         private System.Windows.Forms.ContextMenuStrip messagesContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem repairAndResubmitMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resubmitSelectedMessagesInBatchModeToolStripMenuItem;
@@ -1207,5 +1218,14 @@
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedMessagesToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.SplitContainer messagePropertiesSplitContainer;
+        private Grouper grouperMessageSystemProperties;
+        private System.Windows.Forms.PropertyGrid messagePropertyGrid;
+        private Grouper grouperMessageText;
+        private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
+        private Grouper grouperMessageCustomProperties;
+        private System.Windows.Forms.ListView messagePropertyListView;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }

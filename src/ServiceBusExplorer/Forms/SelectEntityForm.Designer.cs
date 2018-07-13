@@ -75,10 +75,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(437, 532);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnOk.Location = new System.Drawing.Point(328, 432);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(96, 30);
+            this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 2;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = false;
@@ -94,10 +93,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(544, 532);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Location = new System.Drawing.Point(408, 432);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(96, 30);
+            this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -124,26 +122,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperTreeView.ForeColor = System.Drawing.Color.White;
             this.grouperTreeView.GroupImage = null;
             this.grouperTreeView.GroupTitle = "Title";
-            this.grouperTreeView.Location = new System.Drawing.Point(21, 20);
-            this.grouperTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperTreeView.Location = new System.Drawing.Point(16, 16);
             this.grouperTreeView.Name = "grouperTreeView";
-            this.grouperTreeView.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
+            this.grouperTreeView.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperTreeView.PaintGroupBox = true;
             this.grouperTreeView.RoundCorners = 4;
             this.grouperTreeView.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTreeView.ShadowControl = false;
             this.grouperTreeView.ShadowThickness = 1;
-            this.grouperTreeView.Size = new System.Drawing.Size(619, 492);
+            this.grouperTreeView.Size = new System.Drawing.Size(464, 400);
             this.grouperTreeView.TabIndex = 0;
             // 
             // lblSelectTargetEntity
             // 
             this.lblSelectTargetEntity.AutoSize = true;
             this.lblSelectTargetEntity.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectTargetEntity.Location = new System.Drawing.Point(21, 39);
-            this.lblSelectTargetEntity.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblSelectTargetEntity.Location = new System.Drawing.Point(16, 32);
             this.lblSelectTargetEntity.Name = "lblSelectTargetEntity";
-            this.lblSelectTargetEntity.Size = new System.Drawing.Size(138, 17);
+            this.lblSelectTargetEntity.Size = new System.Drawing.Size(104, 13);
             this.lblSelectTargetEntity.TabIndex = 24;
             this.lblSelectTargetEntity.Text = "Current Namespace:";
             // 
@@ -152,10 +148,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblTargetQueueTopic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblTargetQueueTopic.AutoSize = true;
             this.lblTargetQueueTopic.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTargetQueueTopic.Location = new System.Drawing.Point(21, 431);
-            this.lblTargetQueueTopic.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTargetQueueTopic.Location = new System.Drawing.Point(16, 350);
             this.lblTargetQueueTopic.Name = "lblTargetQueueTopic";
-            this.lblTargetQueueTopic.Size = new System.Drawing.Size(157, 17);
+            this.lblTargetQueueTopic.Size = new System.Drawing.Size(118, 13);
             this.lblTargetQueueTopic.TabIndex = 23;
             this.lblTargetQueueTopic.Text = "Target Queue or Topic:";
             // 
@@ -163,11 +158,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.txtEntity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEntity.Location = new System.Drawing.Point(21, 450);
-            this.txtEntity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtEntity.Location = new System.Drawing.Point(16, 366);
             this.txtEntity.Name = "txtEntity";
             this.txtEntity.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtEntity.Size = new System.Drawing.Size(571, 23);
+            this.txtEntity.Size = new System.Drawing.Size(429, 20);
             this.txtEntity.TabIndex = 1;
             this.txtEntity.TextChanged += new System.EventHandler(this.txtForwardTo_TextChanged);
             // 
@@ -181,11 +175,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusTreeView.ImageList = this.imageList;
             this.serviceBusTreeView.Indent = 20;
             this.serviceBusTreeView.ItemHeight = 20;
-            this.serviceBusTreeView.Location = new System.Drawing.Point(21, 59);
-            this.serviceBusTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.serviceBusTreeView.Location = new System.Drawing.Point(16, 48);
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(571, 361);
+            this.serviceBusTreeView.Size = new System.Drawing.Size(429, 294);
             this.serviceBusTreeView.TabIndex = 0;
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             // 
@@ -226,10 +219,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnClear.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClear.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClear.Location = new System.Drawing.Point(331, 532);
-            this.btnClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnClear.Location = new System.Drawing.Point(248, 432);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(96, 30);
+            this.btnClear.Size = new System.Drawing.Size(72, 24);
             this.btnClear.TabIndex = 1;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = false;
@@ -237,16 +229,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // SelectEntityForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(661, 582);
+            this.ClientSize = new System.Drawing.Size(496, 473);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.grouperTreeView);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "SelectEntityForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Title";
