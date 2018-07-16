@@ -419,6 +419,7 @@
     <Compile Include="Helpers\IEventDataGenerator.cs" />
     <Compile Include="Helpers\IEventDataInspector.cs" />
     <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
+    <Compile Include="Helpers\LanguageDetector.cs" />
     <Compile Include="Helpers\LockDurationTooLowException.cs" />
     <Compile Include="Helpers\LogBrokeredMessageInspector.cs" />
     <Compile Include="Helpers\MessagingPurger.cs" />

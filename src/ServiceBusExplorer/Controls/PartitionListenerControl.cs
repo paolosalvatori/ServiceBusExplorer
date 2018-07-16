@@ -649,22 +649,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             currentEventData = bindingList[e.RowIndex];
             eventDataPropertyGrid.SelectedObject = currentEventData;
 
-            var messageText = serviceBusHelper.GetMessageText(currentEventData.Clone(), out _);
-
-            if (JsonSerializerHelper.IsJson(messageText))
-            {
-                txtMessageText.Language = Language.JSON;
-                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
-            }
-            else if (XmlHelper.IsXml(messageText))
-            {
-                txtMessageText.Language = Language.HTML;
-                txtMessageText.Text = XmlHelper.Indent(messageText);
-            }
-            else
-            {
-                txtMessageText.Text = messageText;
-            }
+            LanguageDetector.SetFormattedMessage(serviceBusHelper, currentEventData.Clone(), txtMessageText);
 
             var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
             eventDataPropertyListView.Items.Clear();

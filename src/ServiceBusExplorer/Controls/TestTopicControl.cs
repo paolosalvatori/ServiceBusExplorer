@@ -349,25 +349,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                var messageText = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
-                                      DefaultMessageText;
-
-                if (JsonSerializerHelper.IsJson(messageText))
-                {
-                    cboMessageFormat.Text = "JSON";
-                    txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
-                }
-                else if (XmlHelper.IsXml(messageText))
-                {
-                    cboMessageFormat.Text = "XML";
-                    txtMessageText.Text = XmlHelper.Indent(messageText);
-                }
-                else
-                {
-                    txtMessageText.Text = messageText;
-                }
+                LanguageDetector.SetFormattedMessage(serviceBusHelper,
+                                                     mainForm != null &&
+                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
+                                                     mainForm.MessageText :
+                                                     DefaultMessageText,
+                                                     txtMessageText);
 
                 txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
                                 mainForm.Label :
@@ -1509,7 +1496,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         return;
                     }
-                    txtMessageText.Text = XmlHelper.Indent(text);
+                    LanguageDetector.SetFormattedMessage(serviceBusHelper, text, txtMessageText);
                     if (mainForm != null)
                     {
                         mainForm.MessageText = text;

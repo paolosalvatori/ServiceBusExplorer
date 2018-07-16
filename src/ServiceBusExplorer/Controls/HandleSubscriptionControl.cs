@@ -2169,22 +2169,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 brokeredMessage = bindingList[e.RowIndex];
                 messagePropertyGrid.SelectedObject = brokeredMessage;
 
-                var messageText = serviceBusHelper.GetMessageText(brokeredMessage, out _);
-
-                if (JsonSerializerHelper.IsJson(messageText))
-                {
-                    txtMessageText.Language = Language.JSON;
-                    txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
-                }
-                else if (XmlHelper.IsXml(messageText))
-                {
-                    txtMessageText.Language = Language.HTML;
-                    txtMessageText.Text = XmlHelper.Indent(messageText);
-                }
-                else
-                {
-                    txtMessageText.Text = messageText;
-                }
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
 
                 var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 messagePropertyListView.Items.Clear();
@@ -2279,22 +2264,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterMessage = bindingList[e.RowIndex];
                 deadletterPropertyGrid.SelectedObject = deadletterMessage;
 
-                var messageText = serviceBusHelper.GetMessageText(deadletterMessage, out _);
-
-                if (JsonSerializerHelper.IsJson(messageText))
-                {
-                    txtDeadletterText.Language = Language.JSON;
-                    txtDeadletterText.Text = JsonSerializerHelper.Indent(messageText);
-                }
-                else if (XmlHelper.IsXml(messageText))
-                {
-                    txtDeadletterText.Language = Language.HTML;
-                    txtDeadletterText.Text = XmlHelper.Indent(messageText);
-                }
-                else
-                {
-                    txtDeadletterText.Text = messageText;
-                }
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtMessageText);
 
                 var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 deadletterPropertyListView.Items.Clear();

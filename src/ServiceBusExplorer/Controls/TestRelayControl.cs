@@ -246,32 +246,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 headersDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 headersDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                var messageText = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
-                                      DefaultMessageText;
-
-                if (JsonSerializerHelper.IsJson(messageText))
-                {
-                    cboMessageFormat.Text = "JSON";
-                    txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
-                }
-                else if (XmlHelper.IsXml(messageText))
-                {
-                    cboMessageFormat.Text = "XML";
-                    txtMessageText.Text = XmlHelper.Indent(messageText);
-                }
-                else
-                {
-                    txtMessageText.Text = messageText;
-                }
+                LanguageDetector.SetFormattedMessage(serviceBusHelper,
+                                                     mainForm != null &&
+                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
+                                                     mainForm.MessageText :
+                                                     DefaultMessageText,
+                                                     txtMessageText);
 
                 // Set Tooltips
                 toolTip.SetToolTip(txtMessageCount, MessageCountTooltip);
                 toolTip.SetToolTip(txtSendTaskCount, SendTaskCountTooltip);
 
                 splitContainer.SplitterWidth = 16;
-                //headersDataGridView.Size = txtMessageText.Size;
 
             }
             catch (Exception ex)
@@ -923,7 +909,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         return;
                     }
-                    txtMessageText.Text = XmlHelper.Indent(text);
+                    LanguageDetector.SetFormattedMessage(serviceBusHelper, text, txtMessageText);
                     if (mainForm != null)
                     {
                         mainForm.MessageText = text;
