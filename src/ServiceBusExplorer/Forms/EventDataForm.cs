@@ -31,6 +31,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+using FastColoredTextBoxNS;
 
 #endregion
 
@@ -81,7 +82,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             InitializeComponent();
 
             messagePropertyGrid.SelectedObject = eventData;
-            txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(eventData, out _));
+            var messageText = serviceBusHelper.GetMessageText(eventData, out _);
+
+            if (JsonSerializerHelper.IsJson(messageText))
+            {
+                txtMessageText.Language = Language.JSON;
+                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
+            }
+            else if (XmlHelper.IsXml(messageText))
+            {
+                txtMessageText.Language = Language.HTML;
+                txtMessageText.Text = XmlHelper.Indent(messageText);
+            }
+            else
+            {
+                txtMessageText.Text = messageText;
+            }
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(eventData.Properties.Select(p => new MessagePropertyInfo(p.Key, 

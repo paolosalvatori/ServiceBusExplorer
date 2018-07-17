@@ -53,16 +53,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventDataForm));
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageText = new Grouper();
-            this.txtMessageText = new System.Windows.Forms.TextBox();
-            this.grouperMessageCustomProperties = new Grouper();
+            this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.grouperMessageCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.propertiesDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperMessageProperties = new Grouper();
+            this.grouperMessageProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).BeginInit();
@@ -74,6 +75,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.messageListTextPropertiesSplitContainer.Panel2.SuspendLayout();
             this.messageListTextPropertiesSplitContainer.SuspendLayout();
             this.grouperMessageText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
             this.grouperMessageCustomProperties.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesDataGridView)).BeginInit();
             this.grouperMessageProperties.SuspendLayout();
@@ -156,7 +158,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageText.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageText.BorderThickness = 1F;
             this.grouperMessageText.Controls.Add(this.txtMessageText);
@@ -165,7 +167,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageText.ForeColor = System.Drawing.Color.White;
             this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Event Data Text";
+            this.grouperMessageText.GroupTitle = "Event Text";
             this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageText.Name = "grouperMessageText";
             this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
@@ -182,20 +184,40 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMessageText.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMessageText.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.BackBrush = null;
+            this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtMessageText.CharHeight = 14;
+            this.txtMessageText.CharWidth = 8;
+            this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
-            this.txtMessageText.MaxLength = 0;
-            this.txtMessageText.Multiline = true;
             this.txtMessageText.Name = "txtMessageText";
-            this.txtMessageText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtMessageText.Size = new System.Drawing.Size(576, 158);
+            this.txtMessageText.Paddings = new System.Windows.Forms.Padding(0);
+            this.txtMessageText.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtMessageText.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtMessageText.ServiceColors")));
+            this.txtMessageText.Size = new System.Drawing.Size(576, 160);
             this.txtMessageText.TabIndex = 0;
+            this.txtMessageText.Zoom = 100;
             // 
             // grouperMessageCustomProperties
             // 
             this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageCustomProperties.BorderThickness = 1F;
             this.grouperMessageCustomProperties.Controls.Add(this.propertiesDataGridView);
@@ -204,7 +226,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
             this.grouperMessageCustomProperties.GroupImage = null;
-            this.grouperMessageCustomProperties.GroupTitle = "Event Data Custom Properties";
+            this.grouperMessageCustomProperties.GroupTitle = "Event Custom Properties";
             this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
             this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
@@ -240,7 +262,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperMessageProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageProperties.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageProperties.BorderThickness = 1F;
             this.grouperMessageProperties.Controls.Add(this.messagePropertyGrid);
@@ -249,7 +271,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperMessageProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageProperties.ForeColor = System.Drawing.Color.White;
             this.grouperMessageProperties.GroupImage = null;
-            this.grouperMessageProperties.GroupTitle = "Event Data Properties";
+            this.grouperMessageProperties.GroupTitle = "Event System Properties";
             this.grouperMessageProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageProperties.Name = "grouperMessageProperties";
             this.grouperMessageProperties.Padding = new System.Windows.Forms.Padding(20);
@@ -288,7 +310,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EventDataForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "View Event Data";
+            this.Text = "View Event";
             this.Load += new System.EventHandler(this.MessageForm_Load);
             this.messagesSplitContainer.Panel1.ResumeLayout(false);
             this.messagesSplitContainer.Panel2.ResumeLayout(false);
@@ -299,7 +321,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).EndInit();
             this.messageListTextPropertiesSplitContainer.ResumeLayout(false);
             this.grouperMessageText.ResumeLayout(false);
-            this.grouperMessageText.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.grouperMessageCustomProperties.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.propertiesDataGridView)).EndInit();
             this.grouperMessageProperties.ResumeLayout(false);
@@ -316,9 +338,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private Grouper grouperMessageProperties;
         private System.Windows.Forms.PropertyGrid messagePropertyGrid;
         private Grouper grouperMessageText;
-        private System.Windows.Forms.TextBox txtMessageText;
         private Grouper grouperMessageCustomProperties;
         private System.Windows.Forms.DataGridView propertiesDataGridView;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
     }
 }

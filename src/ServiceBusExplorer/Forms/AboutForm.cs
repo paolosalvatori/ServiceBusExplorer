@@ -210,7 +210,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             Text = $"About {MainForm.SingletonMainForm.Text}";
             lblVersion.Text = $"Version: {MainForm.SingletonMainForm.Version}";
         }
-        #endregion
+        #endregion 
     }
 
     public class Shape

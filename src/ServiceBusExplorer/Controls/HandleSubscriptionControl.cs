@@ -30,12 +30,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
+using FastColoredTextBoxNS;
 
 #endregion
 
@@ -352,8 +352,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 sessionsSplitContainer.SplitterDistance = sessionsSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
                                                           sessionsSplitContainer.SplitterWidth;
-                sessionListTextPropertiesSplitContainer.SplitterDistance =
-                    sessionListTextPropertiesSplitContainer.Size.Height/2 - 8;
+                sessionMainSplitContainer.SplitterDistance =
+                    sessionMainSplitContainer.Size.Height/2 - 8;
 
                 if (mainTabControl.TabPages[SessionsTabPage] != null)
                 {
@@ -440,10 +440,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             messagesSplitContainer.SplitterWidth = 16;
             sessionsSplitContainer.SplitterWidth = 16;
             deadletterSplitContainer.SplitterWidth = 16;
-            messagesCustomPropertiesSplitContainer.SplitterWidth = 16;
-            deadletterCustomPropertiesSplitContainer.SplitterWidth = 16;
-            messageListTextPropertiesSplitContainer.SplitterWidth = 8;
-            deadletterListTextPropertiesSplitContainer.SplitterWidth = 8;
+
+            messageMainSplitContainer.SplitterWidth = 8;
+            deadletterMainSplitContainer.SplitterWidth = 8;
+            sessionMainSplitContainer.SplitterDistance = 8;
+
+            messagePropertiesSplitContainer.SplitterWidth = 8;
 
             // Tabe pages
             DisablePage(MessagesTabPage);
@@ -951,8 +953,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
                                                           messagesSplitContainer.SplitterWidth;
-                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+                messageMainSplitContainer.SplitterDistance = messageMainSplitContainer.Size.Height / 2 - 8;
 
                 if (!peek)
                 {
@@ -1063,8 +1064,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
                                                           messagesSplitContainer.SplitterWidth;
-                messageListTextPropertiesSplitContainer.SplitterDistance = messageListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                messagesCustomPropertiesSplitContainer.SplitterDistance = messagesCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+                messageMainSplitContainer.SplitterDistance = messageMainSplitContainer.Size.Height / 2 - 8;
 
                 if (!peek)
                 {
@@ -1169,8 +1169,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
                                                           deadletterSplitContainer.SplitterWidth;
-                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+                deadletterMainSplitContainer.SplitterDistance = deadletterMainSplitContainer.Size.Height / 2 - 8;
 
                 if (!peek)
                 {
@@ -1270,8 +1269,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
                                                           deadletterSplitContainer.SplitterWidth;
-                deadletterListTextPropertiesSplitContainer.SplitterDistance = deadletterListTextPropertiesSplitContainer.Size.Height / 2 - 8;
-                deadletterCustomPropertiesSplitContainer.SplitterDistance = deadletterCustomPropertiesSplitContainer.Size.Width / 2 - 8;
+                deadletterMainSplitContainer.SplitterDistance = deadletterMainSplitContainer.Size.Height / 2 - 8;
 
                 if (!peek)
                 {
@@ -2170,7 +2168,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 brokeredMessage = bindingList[e.RowIndex];
                 messagePropertyGrid.SelectedObject = brokeredMessage;
-                txtMessageText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _));
+
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
+
                 var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 messagePropertyListView.Items.Clear();
                 messagePropertyListView.Items.AddRange(listViewItems);
@@ -2263,7 +2263,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 deadletterMessage = bindingList[e.RowIndex];
                 deadletterPropertyGrid.SelectedObject = deadletterMessage;
-                txtDeadletterText.Text = XmlHelper.Indent(serviceBusHelper.GetMessageText(deadletterMessage, out _));
+
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtMessageText);
+
                 var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 deadletterPropertyListView.Items.Clear();
                 deadletterPropertyListView.Items.AddRange(listViewItems);
@@ -2303,7 +2305,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
 
-            if (Char.IsDigit(e.KeyChar))
+            if (char.IsDigit(e.KeyChar))
             {
                 // Digits are OK
             }
@@ -2420,10 +2422,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                        grouperDeadletterCustomProperties.Size.Height - deadletterPropertyListView.Location.Y - deadletterPropertyListView.Location.X);
         }
 
-        private void grouperDeadletterProperties_CustomPaint(PaintEventArgs obj)
+        private void grouperDeadletterSystemProperties_CustomPaint(PaintEventArgs obj)
         {
-            deadletterPropertyGrid.Size = new Size(grouperDeadletterProperties.Size.Width - (deadletterPropertyGrid.Location.X * 2),
-                                                   grouperDeadletterProperties.Size.Height - deadletterPropertyGrid.Location.Y - deadletterPropertyGrid.Location.X);
+            deadletterPropertyGrid.Size = new Size(grouperDeadletterSystemProperties.Size.Width - (deadletterPropertyGrid.Location.X * 2),
+                                                   grouperDeadletterSystemProperties.Size.Height - deadletterPropertyGrid.Location.Y - deadletterPropertyGrid.Location.X);
         }
 
         private void grouperSessionState_CustomPaint(PaintEventArgs obj)

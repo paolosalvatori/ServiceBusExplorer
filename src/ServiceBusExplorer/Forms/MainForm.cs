@@ -393,7 +393,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (showMessageCount != optionForm.ShowMessageCount)
                 {
                     showMessageCount = optionForm.ShowMessageCount;
-                    GetEntities(ServiceBusExplorer.Enums.EntityType.All);
+                    GetEntities(EntityType.All);
                 }
                 saveMessageToFile = optionForm.SaveMessageToFile;
                 savePropertiesToFile = optionForm.SavePropertiesToFile;
@@ -4685,6 +4685,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             try
                             {
                                 var relayServices = serviceBusHelper.GetRelays();
+
                                 relayServiceListNode.Text = RelayEntities;
 
                                 relayServiceListNode.Nodes.Clear();
