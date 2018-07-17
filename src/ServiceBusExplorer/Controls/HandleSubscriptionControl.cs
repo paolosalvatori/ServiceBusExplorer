@@ -2264,7 +2264,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 deadletterMessage = bindingList[e.RowIndex];
                 deadletterPropertyGrid.SelectedObject = deadletterMessage;
 
-                LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtMessageText);
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtDeadletterText);
 
                 var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
                 deadletterPropertyListView.Items.Clear();
