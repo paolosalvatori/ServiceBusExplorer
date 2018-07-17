@@ -36,76 +36,98 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #region Public Static Methods
         public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, BrokeredMessage message, FastColoredTextBox textBox)
         {
+            if (serviceBusHelper == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
+            }
+
             if (message == null)
             {
-                throw new ArgumentNullException("message", "message parameter cannot be null");
+                throw new ArgumentNullException(nameof(message), $"{nameof(message)} parameter cannot be null");
             }
 
             if (textBox == null)
             {
-                throw new ArgumentNullException("textBox", "textBox parameter cannot be null");
+                throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
             }
 
-            var messageText = serviceBusHelper.GetMessageText(message, out _);
-
-            if (JsonSerializerHelper.IsJson(messageText))
-            {
-                textBox.Language = Language.JSON;
-                textBox.Text = JsonSerializerHelper.Indent(messageText);
-            }
-            else if (XmlHelper.IsXml(messageText))
-            {
-                textBox.Language = Language.HTML;
-                textBox.Text = XmlHelper.Indent(messageText);
-            }
-            else
-            {
-                textBox.Text = messageText;
-            }
+            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message, out _), textBox);
         }
 
         public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, EventData message, FastColoredTextBox textBox)
         {
+            if (serviceBusHelper == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
+            }
+
             if (message == null)
             {
-                throw new ArgumentNullException("message", "message parameter cannot be null");
+                throw new ArgumentNullException(nameof(message), $"{nameof(message)} parameter cannot be null");
             }
 
             if (textBox == null)
             {
-                throw new ArgumentNullException("textBox", "textBox parameter cannot be null");
+                throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
             }
 
-            var messageText = serviceBusHelper.GetMessageText(message, out _);
-
-            if (JsonSerializerHelper.IsJson(messageText))
-            {
-                textBox.Language = Language.JSON;
-                textBox.Text = JsonSerializerHelper.Indent(messageText);
-            }
-            else if (XmlHelper.IsXml(messageText))
-            {
-                textBox.Language = Language.HTML;
-                textBox.Text = XmlHelper.Indent(messageText);
-            }
-            else
-            {
-                textBox.Text = messageText;
-            }
+            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message, out _), textBox);
         }
 
-        public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, string message, FastColoredTextBox textBox)
+        public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, string messageText, FastColoredTextBox textBox)
         {
-            if (string.IsNullOrEmpty(message))
+            if (serviceBusHelper == null)
             {
-                throw new ArgumentNullException("message", "message parameter cannot be null");
+                throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
+            }
+
+            if (string.IsNullOrEmpty(messageText))
+            {
+                throw new ArgumentNullException(nameof(messageText), $"{nameof(messageText)} parameter cannot be null");
             }
 
             if (textBox == null)
             {
-                throw new ArgumentNullException("textBox", "textBox parameter cannot be null");
+                throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
             }
 
+            InternalSetFormattedMessage(messageText, textBox);
+        }
+
+        public static void SetFormattedMessage(string language, FastColoredTextBox textBox)
+        {
+            if (string.IsNullOrEmpty(language))
+            {
+                throw new ArgumentNullException(nameof(language), $"{nameof(language)} parameter cannot be null");
+            }
+
+            if (textBox == null)
+            {
+                throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
+            }
+
+            textBox.ClearStylesBuffer();
+            textBox.Range.ClearStyle(StyleIndex.All);
+
+            switch (language)
+            {
+                case "JSON":
+                    textBox.Language = Language.JSON;
+                    break;
+                case "XML":
+                    textBox.Language = Language.HTML;
+                    break;
+                default:
+                    textBox.Language = Language.Custom;
+                    break;
+            }
+            textBox.OnTextChanged();
+        }
+        #endregion
+
+        #region Private Static Methods
+        private static void InternalSetFormattedMessage(string message, FastColoredTextBox textBox)
+        {
             if (JsonSerializerHelper.IsJson(message))
             {
                 textBox.Language = Language.JSON;

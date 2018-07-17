@@ -2162,22 +2162,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
         {
-            txtMessageText.ClearStylesBuffer();
-            txtMessageText.Range.ClearStyle(StyleIndex.All);
-
-            switch (cboMessageFormat.Text)
-            {
-                case "JSON":
-                    txtMessageText.Language = Language.JSON;
-                    break;
-                case "XML":
-                    txtMessageText.Language = Language.HTML;
-                    break;
-                default:
-                    txtMessageText.Language = Language.Custom;
-                    break;
-            }
-            txtMessageText.OnTextChanged();
+            LanguageDetector.SetFormattedMessage(cboMessageFormat.Text, txtMessageText);
         }
 
         #endregion

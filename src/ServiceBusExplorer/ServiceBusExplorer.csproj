@@ -643,8 +643,9 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="App.config">
+    <None Include="..\..\App.config">
       <SubType>Designer</SubType>
+      <Link>App.config</Link>
     </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
