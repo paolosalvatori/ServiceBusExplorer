@@ -461,7 +461,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 else
                 {
                     Text = string.Format(ConsumerGroupListenerFormat, consumerGroup);
-                    panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroup);
+                    panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, hubName, consumerGroup);
                 }
                 partitionListenerControl.Focus();
                 panelMain.Controls.Add(partitionListenerControl);
