@@ -49,6 +49,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string MessageDeferProviderParameter = "messageDeferProvider";
         public const string LogFontSize = "logFontSize";
         public const string TreeViewFontSize = "treeViewFontSize";
+        public const string MessageBodyTypeSelectedIndex = "messageBodyTypeSelectedIndex";
         public const string ConnectivityMode = "connectivityMode";
         public const string Encoding = "encoding";
         public const string SelectedEntitiesParameter = "selectedEntities";

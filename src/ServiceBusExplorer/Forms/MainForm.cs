@@ -279,6 +279,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private readonly string argumentName;
         private readonly string argumentValue;
         private List<string> selectedEntites = new List<string>();
+        private int messageBodyTypeSelectedIndex = 0;
         private readonly List<string> entities = new List<string> { QueueEntities, TopicEntities, EventHubEntities, NotificationHubEntities, RelayEntities };
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -369,7 +370,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                    saveCheckpointsToFile,
                                                    useAscii,
                                                    entities,
-                                                   selectedEntites))
+                                                   selectedEntites,
+                                                   messageBodyTypeSelectedIndex))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
@@ -400,6 +402,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
                 useAscii = optionForm.UseAscii;
                 selectedEntites = optionForm.SelectedEntities;
+                messageBodyTypeSelectedIndex = optionForm.MessageBodyTypeSelectedIndex;
             }
         }
 
@@ -3893,6 +3896,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     RetryHelper.TraceEnabled = debug;
                 }
             }
+            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.MessageBodyTypeSelectedIndex];
+            if (!string.IsNullOrWhiteSpace(parameter))
+            {
+                int paramMessageBodyTypeSelectedIndex;
+                if (int.TryParse(parameter, out paramMessageBodyTypeSelectedIndex))
+                {
+                    messageBodyTypeSelectedIndex = paramMessageBodyTypeSelectedIndex;
+                }
+            }
             parameter = ConfigurationManager.AppSettings[ConfigurationParameters.ConnectivityMode];
             if (!string.IsNullOrWhiteSpace(parameter))
             {
@@ -4310,6 +4322,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             get
             {
                 return selectedEntites;
+            }
+        }
+
+        public int MessageBodyTypeSelectedIndex
+        {
+            get
+            {
+                return messageBodyTypeSelectedIndex;
             }
         }
 

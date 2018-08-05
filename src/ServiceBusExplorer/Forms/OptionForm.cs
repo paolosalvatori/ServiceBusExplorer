@@ -68,7 +68,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                           bool saveCheckpointsToFile,
                           bool useAscii,
                           IEnumerable<string> entities,
-                          IEnumerable<string> selectedEntities)
+                          IEnumerable<string> selectedEntities,
+                          int messageBodyTypeSelectedIndex)
         {
             InitializeComponent();
 
@@ -128,6 +129,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
+            cboDefaultMessageBodyType.SelectedIndex = messageBodyTypeSelectedIndex;
         }
         #endregion
 
@@ -158,6 +160,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
             }
         }
+        public int MessageBodyTypeSelectedIndex { get; private set; }
+
         #endregion
 
         #region Event Handlers
@@ -238,6 +242,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
+
+            MessageBodyTypeSelectedIndex = 0;
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -368,6 +374,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 ServiceBusHelper.ConnectivityMode = connectivityMode;
             }
+        }
+
+        private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MessageBodyTypeSelectedIndex = cboDefaultMessageBodyType.SelectedIndex;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -558,6 +569,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter].Value = cboSelectedEntities.Text;
             }
+            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyTypeSelectedIndex] == null)
+            {
+                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageBodyTypeSelectedIndex, cboDefaultMessageBodyType.SelectedIndex.ToString());
+            }
+            else
+            {
+                configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyTypeSelectedIndex].Value = cboDefaultMessageBodyType.SelectedIndex.ToString();
+            }
             configuration.Save(ConfigurationSaveMode.Minimal);
         }
 
@@ -580,5 +599,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
         #endregion
+
     }
 } 
