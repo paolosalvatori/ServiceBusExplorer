@@ -288,7 +288,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 bindingSource.DataSource = MessagePropertyInfo.Properties;
 
                 // Initialize body type combo
-                cboBodyType.SelectedIndex = MainForm.SingletonMainForm.MessageBodyTypeSelectedIndex;
+                cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
                 // Initialize the DataGridView.
                 propertiesDataGridView.AutoGenerateColumns = false;

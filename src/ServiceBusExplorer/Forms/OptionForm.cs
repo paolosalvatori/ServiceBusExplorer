@@ -69,7 +69,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                           bool useAscii,
                           IEnumerable<string> entities,
                           IEnumerable<string> selectedEntities,
-                          int messageBodyTypeSelectedIndex)
+                          string messageBodyType)
         {
             InitializeComponent();
 
@@ -129,7 +129,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
-            cboDefaultMessageBodyType.SelectedIndex = messageBodyTypeSelectedIndex;
+            if (!Enum.TryParse<BodyType>(messageBodyType, true, out var bodyType))
+            {
+                bodyType = BodyType.Stream;
+            }
+            cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
         }
         #endregion
 
@@ -160,7 +164,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
             }
         }
-        public int MessageBodyTypeSelectedIndex { get; private set; }
+        public string MessageBodyType { get; private set; }
 
         #endregion
 
@@ -243,7 +247,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
 
-            MessageBodyTypeSelectedIndex = 0;
+            MessageBodyType = BodyType.Stream.ToString();
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -330,6 +334,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     cboSelectedEntities.Location.Y - 1,
                                     cboSelectedEntities.Size.Width + 1,
                                     cboSelectedEntities.Size.Height + 1);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboDefaultMessageBodyType.Location.X - 1,
+                                    cboDefaultMessageBodyType.Location.Y - 1,
+                                    cboDefaultMessageBodyType.Size.Width + 1,
+                                    cboDefaultMessageBodyType.Size.Height + 1);
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
@@ -378,7 +387,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MessageBodyTypeSelectedIndex = cboDefaultMessageBodyType.SelectedIndex;
+            MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -569,13 +578,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter].Value = cboSelectedEntities.Text;
             }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyTypeSelectedIndex] == null)
+            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType] == null)
             {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageBodyTypeSelectedIndex, cboDefaultMessageBodyType.SelectedIndex.ToString());
+                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageBodyType, cboDefaultMessageBodyType.SelectedIndex.ToString());
             }
             else
             {
-                configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyTypeSelectedIndex].Value = cboDefaultMessageBodyType.SelectedIndex.ToString();
+                configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType].Value = cboDefaultMessageBodyType.SelectedIndex.ToString();
             }
             configuration.Save(ConfigurationSaveMode.Minimal);
         }
