@@ -279,6 +279,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private readonly string argumentName;
         private readonly string argumentValue;
         private List<string> selectedEntites = new List<string>();
+        private string messageBodyType = BodyType.Stream.ToString();
         private readonly List<string> entities = new List<string> { QueueEntities, TopicEntities, EventHubEntities, NotificationHubEntities, RelayEntities };
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -369,7 +370,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                    saveCheckpointsToFile,
                                                    useAscii,
                                                    entities,
-                                                   selectedEntites))
+                                                   selectedEntites,
+                                                   messageBodyType))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
@@ -400,6 +402,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
                 useAscii = optionForm.UseAscii;
                 selectedEntites = optionForm.SelectedEntities;
+                messageBodyType = optionForm.MessageBodyType;
             }
         }
 
@@ -3893,6 +3896,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     RetryHelper.TraceEnabled = debug;
                 }
             }
+            messageBodyType = ConfigurationManager.AppSettings[ConfigurationParameters.MessageBodyType];
+            if (!Enum.TryParse<BodyType>(messageBodyType, true, out var bodyType))
+            {
+                messageBodyType = BodyType.Stream.ToString();
+            }
             parameter = ConfigurationManager.AppSettings[ConfigurationParameters.ConnectivityMode];
             if (!string.IsNullOrWhiteSpace(parameter))
             {
@@ -4310,6 +4318,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             get
             {
                 return selectedEntites;
+            }
+        }
+
+        public BodyType MessageBodyType
+        {
+            get
+            {
+                if (!Enum.TryParse<BodyType>(messageBodyType, out var bodyType))
+                {
+                    bodyType = BodyType.Stream;
+                }
+                return bodyType;
             }
         }
 

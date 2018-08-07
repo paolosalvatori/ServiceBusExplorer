@@ -109,7 +109,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.writeToLog = writeToLog;
             InitializeComponent();
 
-            cboBodyType.SelectedIndex = 0;
+            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
@@ -233,7 +233,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             Size = new Size(Size.Width - 104, 80);
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-            cboBodyType.SelectedIndex = 0;
+            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
             // Get Brokered Message Inspector classes
             cboSenderInspector.Items.Add(SelectBrokeredMessageInspector);
