@@ -23,6 +23,26 @@
             this.txtName = new System.Windows.Forms.TextBox();
             this.grouperFilter = new Grouper();
             this.txtFilterExpression = new System.Windows.Forms.TextBox();
+            this.grouperFilterType = new Grouper();
+            this.grouperCorrelationFilter = new Grouper();
+            this.checkBoxIsCorrelationFilter = new System.Windows.Forms.CheckBox();
+            this.txtCorrelationFilterTo = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterTo = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterSessionId = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterSessionId = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterReplyToSessionId = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterReplyToSessionId = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterReplyTo = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterReplyTo = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterMessageId = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterMessageId = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterLabel = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterLabel = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterCorrelationId = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterCorrelationId = new System.Windows.Forms.Label();
+            this.txtCorrelationFilterContentType = new System.Windows.Forms.TextBox();
+            this.lblCorrelationFilterContentType = new System.Windows.Forms.Label();
+            this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperAction = new Grouper();
             this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
             this.grouperIsDefault = new Grouper();
@@ -31,6 +51,9 @@
             this.txtCreatedAt = new System.Windows.Forms.TextBox();
             this.grouperName.SuspendLayout();
             this.grouperFilter.SuspendLayout();
+            this.grouperFilterType.SuspendLayout();
+            this.grouperCorrelationFilter.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).BeginInit();
             this.grouperAction.SuspendLayout();
             this.grouperIsDefault.SuspendLayout();
             this.grouperCreatedAt.SuspendLayout();
@@ -150,10 +173,254 @@
             this.txtFilterExpression.Size = new System.Drawing.Size(428, 208);
             this.txtFilterExpression.TabIndex = 0;
             // 
+            // grouperFilterType
+            // 
+            this.grouperFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperFilterType.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperFilterType.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperFilterType.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperFilterType.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilterType.BorderThickness = 1F;
+            this.grouperFilterType.Controls.Add(this.checkBoxIsCorrelationFilter);
+            this.grouperFilterType.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilterType.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperFilterType.ForeColor = System.Drawing.Color.White;
+            this.grouperFilterType.GroupImage = null;
+            this.grouperFilterType.GroupTitle = "Filter Type";
+            this.grouperFilterType.Location = new System.Drawing.Point(728, 8);
+            this.grouperFilterType.Name = "grouperFilterType";
+            this.grouperFilterType.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperFilterType.PaintGroupBox = true;
+            this.grouperFilterType.RoundCorners = 4;
+            this.grouperFilterType.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperFilterType.ShadowControl = false;
+            this.grouperFilterType.ShadowThickness = 1;
+            this.grouperFilterType.Size = new System.Drawing.Size(104, 80);
+            this.grouperFilterType.TabIndex = 2;
+            // 
+            // grouperCorrelationFilter
+            // 
+            this.grouperCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperCorrelationFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperCorrelationFilter.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperCorrelationFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCorrelationFilter.BorderThickness = 1F;
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterTo);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterTo);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterSessionId);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterSessionId);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterReplyToSessionId);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterReplyToSessionId);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterReplyTo);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterReplyTo);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterMessageId);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterMessageId);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterLabel);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterLabel);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterCorrelationId);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterCorrelationId);
+            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterContentType);
+            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterContentType);
+            this.grouperCorrelationFilter.Controls.Add(this.authorizationRulesDataGridView);
+            this.grouperCorrelationFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCorrelationFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperCorrelationFilter.ForeColor = System.Drawing.Color.White;
+            this.grouperCorrelationFilter.GroupImage = null;
+            this.grouperCorrelationFilter.GroupTitle = "Correlation Filter";
+            this.grouperCorrelationFilter.Location = new System.Drawing.Point(16, 96);
+            this.grouperCorrelationFilter.Name = "grouperCorrelationFilter";
+            this.grouperCorrelationFilter.Padding = new System.Windows.Forms.Padding(40, 38, 40, 38);
+            this.grouperCorrelationFilter.PaintGroupBox = true;
+            this.grouperCorrelationFilter.RoundCorners = 4;
+            this.grouperCorrelationFilter.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperCorrelationFilter.ShadowControl = false;
+            this.grouperCorrelationFilter.ShadowThickness = 1;
+            this.grouperCorrelationFilter.Size = new System.Drawing.Size(860, 256);
+            this.grouperCorrelationFilter.TabIndex = 4;
+            this.grouperCorrelationFilter.Visible = false;
+            // 
+            // txtCorrelationFilterTo
+            // 
+            this.txtCorrelationFilterTo.Location = new System.Drawing.Point(128, 228);
+            this.txtCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterTo.Name = "txtCorrelationFilterTo";
+            this.txtCorrelationFilterTo.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterTo.TabIndex = 15;
+            // 
+            // lblCorrelationFilterTo
+            // 
+            this.lblCorrelationFilterTo.AutoSize = true;
+            this.lblCorrelationFilterTo.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterTo.Location = new System.Drawing.Point(16, 228);
+            this.lblCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterTo.Name = "lblCorrelationFilterTo";
+            this.lblCorrelationFilterTo.Size = new System.Drawing.Size(36, 26);
+            this.lblCorrelationFilterTo.TabIndex = 14;
+            this.lblCorrelationFilterTo.Text = "To";
+            // 
+            // txtCorrelationFilterSessionId
+            // 
+            this.txtCorrelationFilterSessionId.Location = new System.Drawing.Point(128, 200);
+            this.txtCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterSessionId.Name = "txtCorrelationFilterSessionId";
+            this.txtCorrelationFilterSessionId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterSessionId.TabIndex = 13;
+            // 
+            // lblCorrelationFilterSessionId
+            // 
+            this.lblCorrelationFilterSessionId.AutoSize = true;
+            this.lblCorrelationFilterSessionId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterSessionId.Location = new System.Drawing.Point(16, 200);
+            this.lblCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterSessionId.Name = "lblCorrelationFilterSessionId";
+            this.lblCorrelationFilterSessionId.Size = new System.Drawing.Size(108, 26);
+            this.lblCorrelationFilterSessionId.TabIndex = 12;
+            this.lblCorrelationFilterSessionId.Text = "SessionId";
+            // 
+            // txtCorrelationFilterReplyToSessionId
+            // 
+            this.txtCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(128, 172);
+            this.txtCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterReplyToSessionId.Name = "txtCorrelationFilterReplyToSessionId";
+            this.txtCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterReplyToSessionId.TabIndex = 11;
+            // 
+            // lblCorrelationFilterReplyToSessionId
+            // 
+            this.lblCorrelationFilterReplyToSessionId.AutoSize = true;
+            this.lblCorrelationFilterReplyToSessionId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(16, 172);
+            this.lblCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterReplyToSessionId.Name = "lblCorrelationFilterReplyToSessionId";
+            this.lblCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(188, 26);
+            this.lblCorrelationFilterReplyToSessionId.TabIndex = 10;
+            this.lblCorrelationFilterReplyToSessionId.Text = "ReplyToSessionId";
+            // 
+            // txtCorrelationFilterReplyTo
+            // 
+            this.txtCorrelationFilterReplyTo.Location = new System.Drawing.Point(128, 144);
+            this.txtCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterReplyTo.Name = "txtCorrelationFilterReplyTo";
+            this.txtCorrelationFilterReplyTo.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterReplyTo.TabIndex = 9;
+            // 
+            // lblCorrelationFilterReplyTo
+            // 
+            this.lblCorrelationFilterReplyTo.AutoSize = true;
+            this.lblCorrelationFilterReplyTo.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterReplyTo.Location = new System.Drawing.Point(16, 144);
+            this.lblCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterReplyTo.Name = "lblCorrelationFilterReplyTo";
+            this.lblCorrelationFilterReplyTo.Size = new System.Drawing.Size(92, 26);
+            this.lblCorrelationFilterReplyTo.TabIndex = 8;
+            this.lblCorrelationFilterReplyTo.Text = "ReplyTo";
+            // 
+            // txtCorrelationFilterMessageId
+            // 
+            this.txtCorrelationFilterMessageId.Location = new System.Drawing.Point(128, 116);
+            this.txtCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterMessageId.Name = "txtCorrelationFilterMessageId";
+            this.txtCorrelationFilterMessageId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterMessageId.TabIndex = 7;
+            // 
+            // lblCorrelationFilterMessageId
+            // 
+            this.lblCorrelationFilterMessageId.AutoSize = true;
+            this.lblCorrelationFilterMessageId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterMessageId.Location = new System.Drawing.Point(16, 116);
+            this.lblCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterMessageId.Name = "lblCorrelationFilterMessageId";
+            this.lblCorrelationFilterMessageId.Size = new System.Drawing.Size(118, 26);
+            this.lblCorrelationFilterMessageId.TabIndex = 6;
+            this.lblCorrelationFilterMessageId.Text = "MessageId";
+            // 
+            // txtCorrelationFilterLabel
+            // 
+            this.txtCorrelationFilterLabel.Location = new System.Drawing.Point(128, 88);
+            this.txtCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterLabel.Name = "txtCorrelationFilterLabel";
+            this.txtCorrelationFilterLabel.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterLabel.TabIndex = 5;
+            // 
+            // lblCorrelationFilterLabel
+            // 
+            this.lblCorrelationFilterLabel.AutoSize = true;
+            this.lblCorrelationFilterLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterLabel.Location = new System.Drawing.Point(16, 88);
+            this.lblCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterLabel.Name = "lblCorrelationFilterLabel";
+            this.lblCorrelationFilterLabel.Size = new System.Drawing.Size(65, 26);
+            this.lblCorrelationFilterLabel.TabIndex = 4;
+            this.lblCorrelationFilterLabel.Text = "Label";
+            // 
+            // txtCorrelationFilterCorrelationId
+            // 
+            this.txtCorrelationFilterCorrelationId.Location = new System.Drawing.Point(128, 60);
+            this.txtCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterCorrelationId.Name = "txtCorrelationFilterCorrelationId";
+            this.txtCorrelationFilterCorrelationId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterCorrelationId.TabIndex = 3;
+            // 
+            // lblCorrelationFilterCorrelationId
+            // 
+            this.lblCorrelationFilterCorrelationId.AutoSize = true;
+            this.lblCorrelationFilterCorrelationId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterCorrelationId.Location = new System.Drawing.Point(16, 60);
+            this.lblCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterCorrelationId.Name = "lblCorrelationFilterCorrelationId";
+            this.lblCorrelationFilterCorrelationId.Size = new System.Drawing.Size(136, 26);
+            this.lblCorrelationFilterCorrelationId.TabIndex = 2;
+            this.lblCorrelationFilterCorrelationId.Text = "CorrelationId";
+            // 
+            // txtCorrelationFilterContentType
+            // 
+            this.txtCorrelationFilterContentType.Location = new System.Drawing.Point(128, 32);
+            this.txtCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6);
+            this.txtCorrelationFilterContentType.Name = "txtCorrelationFilterContentType";
+            this.txtCorrelationFilterContentType.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterContentType.TabIndex = 1;
+            // 
+            // lblCorrelationFilterContentType
+            // 
+            this.lblCorrelationFilterContentType.AutoSize = true;
+            this.lblCorrelationFilterContentType.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCorrelationFilterContentType.Location = new System.Drawing.Point(16, 32);
+            this.lblCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblCorrelationFilterContentType.Name = "lblCorrelationFilterContentType";
+            this.lblCorrelationFilterContentType.Size = new System.Drawing.Size(135, 26);
+            this.lblCorrelationFilterContentType.TabIndex = 0;
+            this.lblCorrelationFilterContentType.Text = "ContentType";
+            // 
+            // authorizationRulesDataGridView
+            // 
+            this.authorizationRulesDataGridView.AllowUserToResizeRows = false;
+            this.authorizationRulesDataGridView.AllowUserToAddRows = true;
+            this.authorizationRulesDataGridView.AllowUserToDeleteRows = true;
+            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.Location = new System.Drawing.Point(16, 256);
+            this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(8);
+            this.authorizationRulesDataGridView.MultiSelect = false;
+            this.authorizationRulesDataGridView.Name = "authorizationRulesDataGridView";
+            this.authorizationRulesDataGridView.RowHeadersWidth = 24;
+            this.authorizationRulesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.authorizationRulesDataGridView.ShowCellErrors = false;
+            this.authorizationRulesDataGridView.ShowRowErrors = false;
+            this.authorizationRulesDataGridView.Size = new System.Drawing.Size(400, 96);
+            this.authorizationRulesDataGridView.TabIndex = 0;
+            this.authorizationRulesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.authorizationRulesDataGridView_RowsAdded);
+            this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
+            this.authorizationRulesDataGridView.Resize += new System.EventHandler(this.authorizationRulesDataGridView_Resize);
+            // 
             // grouperAction
             // 
-            this.grouperAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.grouperAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAction.BackgroundGradientColor = System.Drawing.Color.White;
@@ -179,8 +446,8 @@
             // 
             // txtSqlFilterAction
             // 
-            this.txtSqlFilterAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtSqlFilterAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSqlFilterAction.BackColor = System.Drawing.SystemColors.Window;
             this.txtSqlFilterAction.Location = new System.Drawing.Point(16, 32);
@@ -229,7 +496,7 @@
             // 
             // grouperCreatedAt
             // 
-            this.grouperCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grouperCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
@@ -250,25 +517,40 @@
             this.grouperCreatedAt.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperCreatedAt.ShadowControl = false;
             this.grouperCreatedAt.ShadowThickness = 1;
-            this.grouperCreatedAt.Size = new System.Drawing.Size(340, 80);
+            this.grouperCreatedAt.Size = new System.Drawing.Size(220, 80);
             this.grouperCreatedAt.TabIndex = 1;
             // 
             // txtCreatedAt
             // 
-            this.txtCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCreatedAt.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreatedAt.Location = new System.Drawing.Point(16, 40);
             this.txtCreatedAt.Name = "txtCreatedAt";
             this.txtCreatedAt.ReadOnly = true;
-            this.txtCreatedAt.Size = new System.Drawing.Size(308, 20);
+            this.txtCreatedAt.Size = new System.Drawing.Size(188, 20);
             this.txtCreatedAt.TabIndex = 0;
+            // 
+            // checkBoxIsCorrelationFilter
+            // 
+            this.checkBoxIsCorrelationFilter.AutoSize = true;
+            this.checkBoxIsCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxIsCorrelationFilter.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxIsCorrelationFilter.Location = new System.Drawing.Point(16, 40);
+            this.checkBoxIsCorrelationFilter.Name = "checkBoxIsCorrelationFilter";
+            this.checkBoxIsCorrelationFilter.Size = new System.Drawing.Size(90, 17);
+            this.checkBoxIsCorrelationFilter.TabIndex = 8;
+            this.checkBoxIsCorrelationFilter.Text = "Correlation";
+            this.checkBoxIsCorrelationFilter.UseVisualStyleBackColor = true;
+            this.checkBoxIsCorrelationFilter.CheckedChanged += new System.EventHandler(this.checkBoxIsCorrelationFilter_CheckedChanged);
             // 
             // HandleRuleControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.Controls.Add(this.grouperFilterType);
+            this.Controls.Add(this.grouperCorrelationFilter);
             this.Controls.Add(this.grouperCreatedAt);
             this.Controls.Add(this.grouperIsDefault);
             this.Controls.Add(this.grouperAction);
@@ -283,6 +565,12 @@
             this.grouperName.PerformLayout();
             this.grouperFilter.ResumeLayout(false);
             this.grouperFilter.PerformLayout();
+            this.grouperFilterType.ResumeLayout(false);
+            this.grouperFilterType.PerformLayout();
+
+            ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
+            this.grouperCorrelationFilter.ResumeLayout(false);
+            this.grouperCorrelationFilter.PerformLayout();
             this.grouperAction.ResumeLayout(false);
             this.grouperAction.PerformLayout();
             this.grouperIsDefault.ResumeLayout(false);
@@ -308,5 +596,25 @@
         private System.Windows.Forms.CheckBox checkBoxDefault;
         private Grouper grouperCreatedAt;
         private System.Windows.Forms.TextBox txtCreatedAt;
+        private Grouper grouperFilterType;
+        private Grouper grouperCorrelationFilter;
+        private System.Windows.Forms.CheckBox checkBoxIsCorrelationFilter;
+        private System.Windows.Forms.TextBox txtCorrelationFilterContentType;
+        private System.Windows.Forms.Label lblCorrelationFilterContentType;
+        private System.Windows.Forms.TextBox txtCorrelationFilterTo;
+        private System.Windows.Forms.Label lblCorrelationFilterTo;
+        private System.Windows.Forms.TextBox txtCorrelationFilterSessionId;
+        private System.Windows.Forms.Label lblCorrelationFilterSessionId;
+        private System.Windows.Forms.TextBox txtCorrelationFilterReplyToSessionId;
+        private System.Windows.Forms.Label lblCorrelationFilterReplyToSessionId;
+        private System.Windows.Forms.TextBox txtCorrelationFilterReplyTo;
+        private System.Windows.Forms.Label lblCorrelationFilterReplyTo;
+        private System.Windows.Forms.TextBox txtCorrelationFilterMessageId;
+        private System.Windows.Forms.Label lblCorrelationFilterMessageId;
+        private System.Windows.Forms.TextBox txtCorrelationFilterLabel;
+        private System.Windows.Forms.Label lblCorrelationFilterLabel;
+        private System.Windows.Forms.TextBox txtCorrelationFilterCorrelationId;
+        private System.Windows.Forms.Label lblCorrelationFilterCorrelationId;
+        private System.Windows.Forms.DataGridView authorizationRulesDataGridView;
     }
 }
