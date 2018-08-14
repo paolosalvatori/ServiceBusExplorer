@@ -278,14 +278,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     var filter = new CorrelationFilter()
                     {
-                        ContentType = (!String.IsNullOrWhiteSpace(txtCorrelationFilterContentType.Text) ? txtCorrelationFilterContentType.Text : null),
-                        CorrelationId = (!String.IsNullOrWhiteSpace(txtCorrelationFilterCorrelationId.Text) ? txtCorrelationFilterCorrelationId.Text : null),
-                        Label = (!String.IsNullOrWhiteSpace(txtCorrelationFilterLabel.Text) ? txtCorrelationFilterLabel.Text : null),
-                        MessageId = (!String.IsNullOrWhiteSpace(txtCorrelationFilterMessageId.Text) ? txtCorrelationFilterMessageId.Text : null),
-                        ReplyTo = (!String.IsNullOrWhiteSpace(txtCorrelationFilterReplyTo.Text) ? txtCorrelationFilterReplyTo.Text : null),
-                        ReplyToSessionId = (!String.IsNullOrWhiteSpace(txtCorrelationFilterReplyToSessionId.Text) ? txtCorrelationFilterReplyToSessionId.Text : null),
-                        SessionId = (!String.IsNullOrWhiteSpace(txtCorrelationFilterSessionId.Text) ? txtCorrelationFilterSessionId.Text : null),
-                        To = (!String.IsNullOrWhiteSpace(txtCorrelationFilterTo.Text) ? txtCorrelationFilterTo.Text : null)
+                        ContentType = (!string.IsNullOrWhiteSpace(txtCorrelationFilterContentType.Text) ? txtCorrelationFilterContentType.Text : null),
+                        CorrelationId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterCorrelationId.Text) ? txtCorrelationFilterCorrelationId.Text : null),
+                        Label = (!string.IsNullOrWhiteSpace(txtCorrelationFilterLabel.Text) ? txtCorrelationFilterLabel.Text : null),
+                        MessageId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterMessageId.Text) ? txtCorrelationFilterMessageId.Text : null),
+                        ReplyTo = (!string.IsNullOrWhiteSpace(txtCorrelationFilterReplyTo.Text) ? txtCorrelationFilterReplyTo.Text : null),
+                        ReplyToSessionId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterReplyToSessionId.Text) ? txtCorrelationFilterReplyToSessionId.Text : null),
+                        SessionId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterSessionId.Text) ? txtCorrelationFilterSessionId.Text : null),
+                        To = (!string.IsNullOrWhiteSpace(txtCorrelationFilterTo.Text) ? txtCorrelationFilterTo.Text : null)
                     };
                     if (userPropertyBindingList != null)
                     {
