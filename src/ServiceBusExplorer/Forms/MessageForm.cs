@@ -394,7 +394,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
                                                       brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
-                                                      brokeredMessage.Clone(txtMessageText.Text);
+                                                      brokeredMessage.Clone();
                                 }
                                 else
                                 {
