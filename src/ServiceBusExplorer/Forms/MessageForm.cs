@@ -500,7 +500,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             var messageIndex = 0;
                             try
                             {
-                                while (messageIndex < outboundMessages.Count)
+                                while(messageIndex < outboundMessages.Count)
                                 {
                                     await messageSender.SendAsync(outboundMessages[messageIndex++]);
                                 }
