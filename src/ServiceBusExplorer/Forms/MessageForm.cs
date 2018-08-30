@@ -403,7 +403,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
                                                       message.CloneWithByteArrayBodyType(messageText) :
-                                                      message.Clone(messageText);
+                                                      message.Clone(message.GetBody<Stream>());
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
