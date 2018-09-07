@@ -325,6 +325,58 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             GetEventDataGeneratorsFromConfiguration();
             GetServiceBusNamespaceSettingsFromConfiguration();
             ReadEventHubPartitionCheckpointFile();
+            UpdateSavedConnectionsMenu();
+        }
+
+        private void UpdateSavedConnectionsMenu()
+        {
+            savedConnectionsToolStripMenuItem.DropDownItems.Clear();
+            savedConnectionsToolStripMenuItem.Enabled = false;
+
+            List<Keys> allowedShortCutKeys = new List<Keys>() {
+                Keys.Control | Keys.D1,
+                Keys.Control | Keys.D2,
+                Keys.Control | Keys.D3,
+                Keys.Control | Keys.D4,
+                Keys.Control | Keys.D5
+            };
+
+            foreach (var namespaceKey in serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(k => k))
+            {
+                if (serviceBusHelper.ServiceBusNamespaces[namespaceKey].UserCreated)
+                {
+                    var shortcutKey = allowedShortCutKeys.Count > 0 ? allowedShortCutKeys.First() : Keys.None;
+                    if (allowedShortCutKeys.Count > 0) allowedShortCutKeys.RemoveAt(0);
+
+                    var menuItem = new ToolStripMenuItem
+                    {
+                        Text = namespaceKey,
+                        ShortcutKeys = shortcutKey,
+                        Tag = namespaceKey
+                    };
+                    menuItem.Click += SavedConnectionToolStripMenuItem_Click;
+
+                    savedConnectionsToolStripMenuItem.DropDownItems.Add(menuItem);
+                }
+            }
+
+            if (savedConnectionsToolStripMenuItem.DropDownItems.Count > 0)
+                savedConnectionsToolStripMenuItem.Enabled = true;
+
+        }
+
+        private void SavedConnectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
+            serviceBusHelper.Connect(serviceBusNamespace);
+            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+            {
+                userControl.Dispose();
+            }
+            panelMain.Controls.Clear();
+            panelMain.BackColor = SystemColors.Window;
+            GetEntities(EntityType.All);
+
         }
 
         /// <summary>
@@ -1282,8 +1334,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
+                        UpdateSavedConnectionsMenu();
                         return;
                     }
+                    UpdateSavedConnectionsMenu();
                     selectedEntites = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
@@ -2084,9 +2138,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             foreach (var subscriptionDescription in subscriptionDescriptions)
             {
                 var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, showMessageCount
-                        ? string.Format(NameMessageCountFormat, 
-                                        subscriptionDescription.Name, 
-                                        subscriptionDescription.MessageCountDetails.ActiveMessageCount, 
+                        ? string.Format(NameMessageCountFormat,
+                                        subscriptionDescription.Name,
+                                        subscriptionDescription.MessageCountDetails.ActiveMessageCount,
                                         subscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
                                         subscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount)
                         : subscriptionDescription.Name, subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex, subscriptionDescription.Status == EntityStatus.Active
@@ -3353,6 +3407,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return null;
             }
 
+            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString");
             var toLower = connectionString.ToLower();
             var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
 
@@ -3418,7 +3473,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     entityPath = parameters[ConnectionStringEntityPath];
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, entityPath);
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, entityPath, isUserCreated);
             }
 
             if (toLower.Contains(ConnectionStringRuntimePort) ||
@@ -3504,7 +3559,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
-                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType);
+                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType, isUserCreated);
             }
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
@@ -3613,7 +3668,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType);
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
             }
         }
 
@@ -4696,7 +4751,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             else
                             {
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                            } 
+                            }
                         }
                         if (selectedEntites.Contains(RelayEntities) &&
                             (entityType == EntityType.All ||
@@ -6726,7 +6781,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     return;
                 }
-                
+
                 if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
                 {
                     var control = panelMain.Controls[0] as HandleConsumerGroupControl;
@@ -6743,8 +6798,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group", 
-                                                             new List<string> {"IoT Hub Connection String", "Endpoint", "Consumer Group"}, 
+                using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group",
+                                                             new List<string> {"IoT Hub Connection String", "Endpoint", "Consumer Group"},
                                                              new List<string>{null, "messages/events", "$Default" },
                                                              new List<bool>{false, false, false}))
                 {
@@ -6767,10 +6822,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
-                    var form = new ContainerForm(this, 
-                                                 parameterForm.ParameterValues[0], 
-                                                 parameterForm.ParameterValues[1], 
-                                                 parameterForm.ParameterValues[2], 
+                    var form = new ContainerForm(this,
+                                                 parameterForm.ParameterValues[0],
+                                                 parameterForm.ParameterValues[1],
+                                                 parameterForm.ParameterValues[2],
                                                  true);
                     form.Show();
                 }
@@ -6819,7 +6874,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 HandleException(ex);
             }
         }
-        
+
 
         private async void purgeMessages_Click(object sender, EventArgs e)
         {
