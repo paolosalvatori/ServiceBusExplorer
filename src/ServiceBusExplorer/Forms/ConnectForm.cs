@@ -87,7 +87,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private readonly ServiceBusHelper serviceBusHelper;
         private bool isIssuerName;
-        private bool ignoreSelectedIndexChange = false;
+        private bool ignoreSelectedIndexChange;
 
         #endregion
 
@@ -305,7 +305,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         
         private void cboServiceBusNamespace_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ignoreSelectedIndexChange) return;
+            if (ignoreSelectedIndexChange)
+            {
+                return;
+            }
+
             var connectionStringType = cboServiceBusNamespace.SelectedIndex > 1
                 ? serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType
                 : ServiceBusNamespaceType.Custom;
@@ -637,8 +641,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void btnRename_Click(object sender, EventArgs e)
         {
             var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            var key = cboServiceBusNamespace.Text;
 
-            string key = cboServiceBusNamespace.Text;
             using (var parameterForm = new ParameterForm("Enter the new key for the Service Bus namespace",
                    new List<string> { "Key" },
                    new List<string> { key },
@@ -648,6 +652,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     return;
                 }
+
                 var newKey = parameterForm.ParameterValues[0];
                 if (newKey == key)
                 {

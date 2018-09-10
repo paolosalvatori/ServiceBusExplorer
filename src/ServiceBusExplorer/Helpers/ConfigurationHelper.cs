@@ -24,8 +24,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             // Update config file for development
             configuration = GetDevelopmentConfiguration();
             if (configuration != null)
+            { 
                 UpdateServiceBusElement(configuration, key, newKey, newValue);
-
+            }
         }
 
         public static void AddServiceBusNamespace(string key, string value)
@@ -35,7 +36,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             configuration = GetDevelopmentConfiguration();
             if (configuration != null)
+            {
                 AddServiceBusElement(configuration, key, value);
+            }
         }
 
         public static void RemoveServiceBusNamespace(string key)
@@ -45,10 +48,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             configuration = GetDevelopmentConfiguration();
             if (configuration != null)
+            {
                 RemoveServiceBusElement(configuration, key);
+            }
         }
-
-
+        
         #endregion
 
         #region Private methods
@@ -145,8 +149,5 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         #endregion  
-
-
-
     }
 }

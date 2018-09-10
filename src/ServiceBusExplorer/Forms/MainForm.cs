@@ -333,7 +333,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             savedConnectionsToolStripMenuItem.DropDownItems.Clear();
             savedConnectionsToolStripMenuItem.Enabled = false;
 
-            List<Keys> allowedShortCutKeys = new List<Keys>() {
+            List<Keys> allowedShortCutKeys = new List<Keys>()
+            {
                 Keys.Control | Keys.D1,
                 Keys.Control | Keys.D2,
                 Keys.Control | Keys.D3,
@@ -361,14 +362,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
 
             if (savedConnectionsToolStripMenuItem.DropDownItems.Count > 0)
+            {
                 savedConnectionsToolStripMenuItem.Enabled = true;
-
+            }
         }
 
         private void SavedConnectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
+
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
             {
                 userControl.Dispose();
@@ -376,7 +379,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             panelMain.Controls.Clear();
             panelMain.BackColor = SystemColors.Window;
             GetEntities(EntityType.All);
-
         }
 
         /// <summary>
