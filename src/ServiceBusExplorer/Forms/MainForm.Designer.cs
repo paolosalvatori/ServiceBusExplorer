@@ -319,6 +319,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
+            this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -390,6 +391,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.connectToolStripMenuItem,
+            this.savedConnectionsToolStripMenuItem,
             this.toolStripSeparatorMain,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -400,20 +402,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
             this.connectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.connectToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.connectToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.connectToolStripMenuItem.Text = "&Connect";
             this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
             // 
             // toolStripSeparatorMain
             // 
             this.toolStripSeparatorMain.Name = "toolStripSeparatorMain";
-            this.toolStripSeparatorMain.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparatorMain.Size = new System.Drawing.Size(170, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.close_Click);
             // 
@@ -2733,6 +2735,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
             // 
+            // savedConnectionsToolStripMenuItem
+            // 
+            this.savedConnectionsToolStripMenuItem.Enabled = false;
+            this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
+            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3085,6 +3094,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem subscriptionReceiveTransferDeadletterQueueMessagesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameQueueMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameTopicMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem savedConnectionsToolStripMenuItem;
     }
 }
 

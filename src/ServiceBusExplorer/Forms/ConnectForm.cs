@@ -87,6 +87,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private readonly ServiceBusHelper serviceBusHelper;
         private bool isIssuerName;
+        private bool ignoreSelectedIndexChange;
 
         #endregion
 
@@ -301,9 +302,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 !string.IsNullOrWhiteSpace(txtIssuerSecret.Text);
             }
         }
-
+        
         private void cboServiceBusNamespace_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ignoreSelectedIndexChange)
+            {
+                return;
+            }
+
             var connectionStringType = cboServiceBusNamespace.SelectedIndex > 1
                 ? serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType
                 : ServiceBusNamespaceType.Custom;
@@ -313,6 +319,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 ? cboServiceBusNamespace.Text
                 : null;
 
+            btnRename.Visible = false;
+            btnDelete.Visible = false;
             btnSave.Visible = cboServiceBusNamespace.Text == EnterConnectionString;
 
             var containsStsEndpoint = !string.IsNullOrWhiteSpace(Key) &&
@@ -339,6 +347,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return;
             }
             var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            btnRename.Visible = ns.UserCreated;
+            btnDelete.Visible = ns.UserCreated;
+
             if (ns == null)
             {
                 return;
@@ -587,48 +598,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         return;
                     }
                     var value = txtUri.Text;
-                    var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                    var configurationSection = configuration.Sections["serviceBusNamespaces"];
-                    var directory = Path.GetDirectoryName(configuration.FilePath);
-                    if (string.IsNullOrEmpty(directory))
-                    {
-                        MainForm.StaticWriteToLog("The directory of the configuration file cannot be null.");
-                        return;
-                    }
-                    var appConfig = Path.Combine(directory, "..\\..\\App.config");
-                    configurationSection.SectionInformation.ForceSave = true;
-                    var xml = configurationSection.SectionInformation.GetRawXml();
-                    var xmlDocument = new XmlDocument();
-                    xmlDocument.LoadXml(xml);
-                    var node = xmlDocument.CreateElement("add");
-                    node.SetAttribute("key", key);
-                    node.SetAttribute("value", value);
-                    xmlDocument.DocumentElement?.AppendChild(node);
-                    configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-                    configuration.Save(ConfigurationSaveMode.Modified);
-                    ConfigurationManager.RefreshSection("serviceBusNamespaces");
 
-                    if (File.Exists(appConfig))
+                    try
                     {
-                        var exeConfigurationFileMap = new ExeConfigurationFileMap
-                        {
-                            ExeConfigFilename = appConfig
-                        };
-                        configuration = ConfigurationManager.OpenMappedExeConfiguration(exeConfigurationFileMap, ConfigurationUserLevel.None);
-                        configurationSection = configuration.Sections["serviceBusNamespaces"];
-                        configurationSection.SectionInformation.ForceSave = true;
-                        xml = configurationSection.SectionInformation.GetRawXml();
-                        xmlDocument = new XmlDocument();
-                        xmlDocument.LoadXml(xml);
-                        node = xmlDocument.CreateElement("add");
-                        node.SetAttribute("key", key);
-                        node.SetAttribute("value", value);
-                        xmlDocument.DocumentElement?.AppendChild(node);
-                        configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-                        configuration.Save(ConfigurationSaveMode.Modified);
-                        ConfigurationManager.RefreshSection("serviceBusNamespaces");
+                        ConfigurationHelper.AddServiceBusNamespace(key, value);
                     }
-
+                    catch (ArgumentNullException ex)
+                    {
+                        MainForm.StaticWriteToLog(ex.Message);
+                    }
+                    
                     serviceBusHelper.ServiceBusNamespaces.Add(key, MainForm.GetServiceBusNamespace(key, value));
                     cboServiceBusNamespace.Items.Clear();
                     cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
@@ -658,5 +637,71 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
         #endregion
+
+        private void btnRename_Click(object sender, EventArgs e)
+        {
+            var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            var key = cboServiceBusNamespace.Text;
+
+            using (var parameterForm = new ParameterForm("Enter the new key for the Service Bus namespace",
+                   new List<string> { "Key" },
+                   new List<string> { key },
+                   new List<bool> { false }))
+            {
+                if (parameterForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                var newKey = parameterForm.ParameterValues[0];
+                if (newKey == key)
+                {
+                    MainForm.StaticWriteToLog("The new key of the Service Bus namespace was the same as before.");
+                    return;
+                }
+
+                var existingKeys = serviceBusHelper.ServiceBusNamespaces.Keys;
+                if (existingKeys.Contains(newKey))
+                {
+                    MainForm.StaticWriteToLog("A Service Bus namespace key must be unique");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(newKey))
+                {
+                    MainForm.StaticWriteToLog("The key of the Service Bus namespace cannot be null.");
+                    return;
+                }
+
+                var itemIndex = cboServiceBusNamespace.SelectedIndex;
+                ConfigurationHelper.UpdateServiceBusNamespace(key, newKey);
+
+                ignoreSelectedIndexChange = true;
+                serviceBusHelper.ServiceBusNamespaces.Remove(key);
+                serviceBusHelper.ServiceBusNamespaces[newKey] = ns;
+                cboServiceBusNamespace.Items[itemIndex] = newKey.GetHashCode();
+                cboServiceBusNamespace.Items[itemIndex] = newKey;
+                cboServiceBusNamespace.Text = newKey;
+                ignoreSelectedIndexChange = false;
+
+                MainForm.StaticWriteToLog($"Renamed '{key}' to '{newKey}'");
+            }
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            var key = cboServiceBusNamespace.Text;
+            using (var deleteForm = new DeleteForm($"Really delete Service Bus Namespace '{cboServiceBusNamespace.Text}'?"))
+            {
+                if (deleteForm.ShowDialog() == DialogResult.OK)
+                {
+                    ConfigurationHelper.RemoveServiceBusNamespace(key);
+                    cboServiceBusNamespace.Items.RemoveAt(cboServiceBusNamespace.SelectedIndex);
+                    cboServiceBusNamespace.SelectedIndex = 0;
+
+                    serviceBusHelper.ServiceBusNamespaces.Remove(key);
+                }
+            }
+        }
     }
 }

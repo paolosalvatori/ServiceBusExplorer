@@ -93,6 +93,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblEntityPath = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
+            this.btnRename = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.grouperFilters.SuspendLayout();
             this.grouperServiceBusNamespaceSettings.SuspendLayout();
@@ -651,12 +653,48 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.cboServiceBusNamespace.TabIndex = 0;
             this.cboServiceBusNamespace.SelectedIndexChanged += new System.EventHandler(this.cboServiceBusNamespace_SelectedIndexChanged);
             // 
+            // btnRename
+            // 
+            this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRename.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnRename.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRename.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRename.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRename.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRename.Location = new System.Drawing.Point(16, 409);
+            this.btnRename.Name = "btnRename";
+            this.btnRename.Size = new System.Drawing.Size(72, 24);
+            this.btnRename.TabIndex = 35;
+            this.btnRename.Text = "Rename";
+            this.btnRename.UseVisualStyleBackColor = false;
+            this.btnRename.Visible = false;
+            this.btnRename.Click += new System.EventHandler(this.btnRename_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDelete.Location = new System.Drawing.Point(94, 409);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(72, 24);
+            this.btnDelete.TabIndex = 36;
+            this.btnDelete.Text = "Delete";
+            this.btnDelete.UseVisualStyleBackColor = false;
+            this.btnDelete.Visible = false;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
             // ConnectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.ClientSize = new System.Drawing.Size(784, 442);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.btnRename);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grouperFilters);
             this.Controls.Add(this.logoPictureBox);
@@ -722,5 +760,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.TextBox txtEntityPath;
         private System.Windows.Forms.Label lblEntityPath;
+        private System.Windows.Forms.Button btnRename;
+        private System.Windows.Forms.Button btnDelete;
     }
 }

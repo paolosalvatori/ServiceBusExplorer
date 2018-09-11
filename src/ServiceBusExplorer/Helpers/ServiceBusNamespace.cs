@@ -96,7 +96,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    string stsEndpoint,
                                    TransportType transportType,
                                    bool isSas = false,
-                                   string entityPath = "")
+                                   string entityPath = "",
+                                   bool isUserCreated = false)
         {
             ConnectionStringType = connectionStringType;
             Uri = string.IsNullOrWhiteSpace(uri) ? 
@@ -129,6 +130,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             WindowsUserName = default(string);
             WindowsPassword = default(string);
             EntityPath = entityPath;
+            UserCreated = isUserCreated;
         }
 
         /// <summary>
@@ -153,7 +155,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    string windowsUsername,
                                    string windowsPassword,
                                    string ns,
-                                   TransportType transportType)
+                                   TransportType transportType,
+                                   bool isUserCreated = false)
         {
             ConnectionStringType = ServiceBusNamespaceType.OnPremises;
             ConnectionString = connectionString;
@@ -175,6 +178,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             WindowsUserName = windowsUsername;
             WindowsPassword = windowsPassword;
             TransportType = transportType;
+            UserCreated = isUserCreated;
         }
         #endregion
 
@@ -184,6 +188,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets or sets the service bus namespace type.
         /// </summary>
         public ServiceBusNamespaceType ConnectionStringType { get; set; }
+
+        /// <summary>
+        /// Get or set if this is a connection string added by the user
+        /// </summary>
+        public bool UserCreated { get; set; }
 
         /// <summary>
         /// Gets or sets the service bus namespace connection string.
