@@ -26,6 +26,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using System.Net;
 
 #endregion
 
@@ -52,6 +53,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            ServicePointManager.DefaultConnectionLimit = 50;
             try
             {
                 string argument = null;
