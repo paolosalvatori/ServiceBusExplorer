@@ -53,7 +53,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            ServicePointManager.DefaultConnectionLimit = 50;
+            ServicePointManager.DefaultConnectionLimit = 200;
             try
             {
                 string argument = null;
