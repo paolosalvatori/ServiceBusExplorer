@@ -25,6 +25,7 @@ using System;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using System.Text.RegularExpressions;
+
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
@@ -56,7 +57,45 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         // Messages
         //***************************
         const string ServiceBusNamespacesNotConfigured = "Service bus accounts have not been properly configured in the configuration file.";
+        const string ServiceBusNamespaceIsNullOrEmpty = "The connection string for service bus entry {0} is null or empty.";
+        const string ServiceBusNamespaceIsWrong = "The connection string for service bus namespace {0} is in the wrong format.";
+        const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the uri and namespace for the service bus entry {0} is null or empty.";
+        const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceRuntimePortIsNullOrEmpty = "The runtime port for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceManagementPortIsNullOrEmpty = "The management port for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceEndpointUriIsInvalid = "The endpoint uri for the service bus namespace {0} is invalid.";
+        const string ServiceBusNamespaceSharedAccessKeyNameIsInvalid = "The SharedAccessKeyName for the service bus namespace {0} is invalid.";
+        const string ServiceBusNamespaceSharedAccessKeyIsInvalid = "The SharedAccessKey for the service bus namespace {0} is invalid.";
 
+        //***************************
+        // Parameters
+        //***************************
+        const string ConnectionStringUri = "uri";
+        const string ConnectionStringNameSpace = "namespace";
+        const string ConnectionStringServicePath = "servicepath";
+        const string ConnectionStringIssuerName = "issuername";
+        const string ConnectionStringIssuerSecret = "issuersecret";
+        const string ConnectionStringOwner = "owner";
+        const string ConnectionStringEndpoint = "endpoint";
+        const string ConnectionStringSharedAccessKeyName = "sharedaccesskeyname";
+        const string ConnectionStringSharedAccessKey = "sharedaccesskey";
+        const string ConnectionStringStsEndpoint = "stsendpoint";
+        const string ConnectionStringRuntimePort = "runtimeport";
+        const string ConnectionStringManagementPort = "managementport";
+        const string ConnectionStringWindowsUsername = "windowsusername";
+        const string ConnectionStringWindowsDomain = "windowsdomain";
+        const string ConnectionStringWindowsPassword = "windowspassword";
+        const string ConnectionStringSharedSecretIssuer = "sharedsecretissuer";
+        const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
+        const string ConnectionStringTransportType = "transporttype";
+        const string ConnectionStringEntityPath = "entitypath";
+
+        #endregion
+
+        #region Public Constants
         //***************************
         // Formats
         //***************************
@@ -65,52 +104,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
         #endregion
 
-        #region Public Constants
-        //**************************
-        // Messages
-        //**************************
-        private const string ServiceBusNamespaceIsNullOrEmpty = "The connection string for service bus entry {0} is null or empty.";
-        //***************************
-        // Messages
-        //***************************
-        private const string ServiceBusNamespaceIsWrong = "The connection string for service bus namespace {0} is in the wrong format.";
-        private const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the uri and namespace for the service bus entry {0} is null or empty.";
-        private const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceRuntimePortIsNullOrEmpty = "The runtime port for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceManagementPortIsNullOrEmpty = "The management port for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceEndpointUriIsInvalid = "The endpoint uri for the service bus namespace {0} is invalid.";
-        private const string ServiceBusNamespaceSharedAccessKeyNameIsInvalid = "The SharedAccessKeyName for the service bus namespace {0} is invalid.";
-        private const string ServiceBusNamespaceSharedAccessKeyIsInvalid = "The SharedAccessKey for the service bus namespace {0} is invalid.";
+        #region Public Constructors
+        /// <summary>
+        /// Initializes a new instance of the ServiceBusHelper class.
+        /// </summary>
+        public ServiceBusNamespace()
+        {
+            ConnectionStringType = ServiceBusNamespaceType.Cloud;
+            ConnectionString = default(string);
+            Uri = default(string);
+            Namespace = default(string);
+            IssuerName = default(string);
+            IssuerSecret = default(string);
+            ServicePath = default(string);
+            StsEndpoint = default(string);
+            RuntimePort = default(string);
+            ManagementPort = default(string);
+            WindowsDomain = default(string);
+            WindowsUserName = default(string);
+            WindowsPassword = default(string);
+        }
 
-        //***************************
-        // Parameters
-        //***************************
-        private const string ConnectionStringUri = "uri";
-        private const string ConnectionStringNameSpace = "namespace";
-        private const string ConnectionStringServicePath = "servicepath";
-        private const string ConnectionStringIssuerName = "issuername";
-        private const string ConnectionStringIssuerSecret = "issuersecret";
-        private const string ConnectionStringOwner = "owner";
-        private const string ConnectionStringEndpoint = "endpoint";
-        private const string ConnectionStringSharedAccessKeyName = "sharedaccesskeyname";
-        private const string ConnectionStringSharedAccessKey = "sharedaccesskey";
-        private const string ConnectionStringStsEndpoint = "stsendpoint";
-        private const string ConnectionStringRuntimePort = "runtimeport";
-        private const string ConnectionStringManagementPort = "managementport";
-        private const string ConnectionStringWindowsUsername = "windowsusername";
-        private const string ConnectionStringWindowsDomain = "windowsdomain";
-        private const string ConnectionStringWindowsPassword = "windowspassword";
-        private const string ConnectionStringSharedSecretIssuer = "sharedsecretissuer";
-        private const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
-        private const string ConnectionStringTransportType = "transporttype";
-        private const string ConnectionStringEntityPath = "entitypath";
-
-        #endregion
-
-        #region Private Constructors
         /// <summary>
         /// Initializes a new instance of the ServiceBusNamespace class.
         /// </summary>
@@ -125,7 +139,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="transportType">The transport type to use to access the namespace.</param>
         /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
         /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
-        private ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
+        public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
                                    string connectionString,
                                    string uri,
                                    string ns,
@@ -139,16 +153,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = connectionStringType;
-            Uri = string.IsNullOrWhiteSpace(uri) ?
-                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
+            Uri = string.IsNullOrWhiteSpace(uri) ? 
+                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() : 
                   uri;
-            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ?
+            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ? 
                                string.Format(ConnectionStringFormat,
                                              Uri,
                                              name,
                                              key,
-                                             transportType) :
-                               connectionString;
+                                             transportType) : 
+                               connectionString;            
             Namespace = ns;
             IssuerName = name;
             if (isSas)
@@ -185,7 +199,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="windowsPassword">The Windows user password.</param>
         /// <param name="ns">The service bus namespace.</param>
         /// <param name="transportType">The transport type to use to access the namespace.</param>
-        private ServiceBusNamespace(string connectionString,
+        public ServiceBusNamespace(string connectionString,
                                    string endpoint,
                                    string stsEndpoint,
                                    string runtimePort,
@@ -232,6 +246,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 return null;
             }
 
+            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString");
             var toLower = connectionString.ToLower();
             var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
 
@@ -383,7 +398,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
-                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType);
+                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType, isUserCreated);
             }
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
@@ -492,7 +507,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType);
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
             }
         }
 

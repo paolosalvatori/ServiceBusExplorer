@@ -20,15 +20,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.ServiceBus.Messaging;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    class DoubleHelper
+    public class DoubleHelper
     {
         #region Public methods
         // From https://stackoverflow.com/questions/3874627/floating-point-comparison-functions-for-c-sharp
@@ -39,7 +34,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             double diff = Math.Abs(a - b);
 
             if (a == b)
-            { // shortcut, handles infinities
+            { // Shortcut, handles infinities
                 return true;
             }
             else if (a == 0 || b == 0 || diff < Double.Epsilon)
@@ -49,7 +44,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 return diff < epsilon;
             }
             else
-            { // use relative error
+            { // Use relative error
                 return diff / (absA + absB) < epsilon;
             }
         }

@@ -37,7 +37,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     // safe when writing.
     public class TwoFilesConfiguration
     {
-        #region Contants
+        #region Constants
 
         const string indent = "  ";
 
@@ -244,7 +244,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        internal Hashtable GetHashtableFromSection(string sectionName)
+        public Hashtable GetHashtableFromSection(string sectionName)
         {
             Hashtable sectionValues = null;
 
@@ -278,7 +278,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        internal void AddEntryToDictionarySection(string sectionName, string key, string value)
+        public void AddEntryToDictionarySection(string sectionName, string key, string value)
         {
             AquireUserConfiguration();
 

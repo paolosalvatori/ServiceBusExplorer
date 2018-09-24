@@ -608,7 +608,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         MainForm.StaticWriteToLog(ex.Message);
                     }
                     
-                    serviceBusHelper.ServiceBusNamespaces.Add(key, MainForm.GetServiceBusNamespace(key, value));
+                    serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog));
                     cboServiceBusNamespace.Items.Clear();
                     cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
                     cboServiceBusNamespace.Items.Add(EnterConnectionString);

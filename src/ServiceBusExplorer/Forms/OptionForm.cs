@@ -46,9 +46,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion 
 
         #region Public Constructor
-        public OptionForm(string subscriptionId,
-                          string certificateThumbprint,
-                          string label,
+        public OptionForm(string label,
                           string messageFile,
                           string messageText,
                           decimal logFontSize, 
@@ -392,201 +390,35 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (configuration.AppSettings.Settings[ConfigurationParameters.LogFontSize] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.LogFontSize, LogFontSize.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.LogFontSize].Value = LogFontSize.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.TreeViewFontSize] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.TreeViewFontSize, TreeViewFontSize.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.TreeViewFontSize].Value = TreeViewFontSize.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ShowMessageCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ShowMessageCountParameter, ShowMessageCount.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ShowMessageCountParameter].Value = ShowMessageCount.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SaveMessageToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SaveMessageToFileParameter, SaveMessageToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SaveMessageToFileParameter].Value = SaveMessageToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.UseAsciiParameter, UseAscii.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter].Value = UseAscii.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SavePropertiesToFileParameter, SavePropertiesToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter].Value = SavePropertiesToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SaveCheckpointsToFileParameter, SaveCheckpointsToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter].Value = SaveCheckpointsToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.RetryCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.RetryCountParameter, RetryCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.RetryCountParameter].Value = RetryCount.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.RetryTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.RetryTimeoutParameter, RetryTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.RetryTimeoutParameter].Value = RetryTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.TopParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.TopParameter, TopCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.TopParameter].Value = TopCount.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ReceiveTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ReceiveTimeoutParameter, ReceiveTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ReceiveTimeoutParameter].Value = ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ServerTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ServerTimeoutParameter, ServerTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ServerTimeoutParameter].Value = ServerTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter].Value = SenderThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter].Value = SenderThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ReceiverThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ReceiverThinkTimeParameter, ReceiverThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ReceiverThinkTimeParameter].Value = ReceiverThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MonitorRefreshIntervalParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MonitorRefreshIntervalParameter, MonitorRefreshInterval.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MonitorRefreshIntervalParameter].Value = MonitorRefreshInterval.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.PrefetchCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.PrefetchCountParameter, PrefetchCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.PrefetchCountParameter].Value = PrefetchCount.ToString(CultureInfo.InvariantCulture);
-            }
+            var configuration = TwoFilesConfiguration.Create();
 
-            if (configuration.AppSettings.Settings[ConfigurationParameters.LabelParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.LabelParameter, Label);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.LabelParameter].Value = Label;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.FileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.FileParameter, MessageFile);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.FileParameter].Value = MessageFile;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageParameter, MessageText);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MessageParameter].Value = MessageText;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ConnectivityMode] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ConnectivityMode, ServiceBusHelper.ConnectivityMode.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ConnectivityMode].Value = ServiceBusHelper.ConnectivityMode.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.Encoding] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.Encoding, ServiceBusHelper.EncodingType.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.Encoding].Value = ServiceBusHelper.EncodingType.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SelectedEntitiesParameter, cboSelectedEntities.Text);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter].Value = cboSelectedEntities.Text;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageBodyType, cboDefaultMessageBodyType.SelectedIndex.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType].Value = cboDefaultMessageBodyType.SelectedIndex.ToString();
-            }
-            configuration.Save(ConfigurationSaveMode.Minimal);
+            configuration.SetValue(ConfigurationParameters.LogFontSize, LogFontSize);
+            configuration.SetValue(ConfigurationParameters.TreeViewFontSize, TreeViewFontSize);
+            configuration.SetValue(ConfigurationParameters.ShowMessageCountParameter, ShowMessageCount);
+            configuration.SetValue(ConfigurationParameters.SaveMessageToFileParameter, SaveMessageToFile);
+            configuration.SetValue(ConfigurationParameters.UseAsciiParameter, UseAscii);
+            configuration.SetValue(ConfigurationParameters.SavePropertiesToFileParameter, SavePropertiesToFile);
+            configuration.SetValue(ConfigurationParameters.SaveCheckpointsToFileParameter, SaveCheckpointsToFile);
+            configuration.SetValue(ConfigurationParameters.RetryCountParameter, RetryCount);
+            configuration.SetValue(ConfigurationParameters.RetryTimeoutParameter, RetryTimeout);
+            configuration.SetValue(ConfigurationParameters.TopParameter, TopCount);
+            configuration.SetValue(ConfigurationParameters.ReceiveTimeoutParameter, ReceiveTimeout);
+            configuration.SetValue(ConfigurationParameters.ServerTimeoutParameter, ServerTimeout);
+            configuration.SetValue(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime);
+            configuration.SetValue(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime);
+            configuration.SetValue(ConfigurationParameters.ReceiverThinkTimeParameter, ReceiverThinkTime);
+            configuration.SetValue(ConfigurationParameters.MonitorRefreshIntervalParameter, MonitorRefreshInterval);
+            configuration.SetValue(ConfigurationParameters.PrefetchCountParameter, PrefetchCount);
+            configuration.SetValue(ConfigurationParameters.LabelParameter, Label);
+            configuration.SetValue(ConfigurationParameters.FileParameter, MessageFile);
+            configuration.SetValue(ConfigurationParameters.MessageParameter, MessageText);
+            configuration.SetValue(ConfigurationParameters.ConnectivityMode, ServiceBusHelper.ConnectivityMode);
+            configuration.SetValue(ConfigurationParameters.Encoding, ServiceBusHelper.EncodingType);
+            configuration.SetValue(ConfigurationParameters.SelectedEntitiesParameter, cboSelectedEntities.Text);
+            configuration.SetValue(ConfigurationParameters.MessageBodyType,
+                cboDefaultMessageBodyType.SelectedIndex.ToString());
+
+            configuration.Save();
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
