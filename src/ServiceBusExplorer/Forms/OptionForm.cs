@@ -46,9 +46,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion 
 
         #region Public Constructor
-        public OptionForm(string subscriptionId,
-                          string certificateThumbprint,
-                          string label,
+        public OptionForm(string label,
                           string messageFile,
                           string messageText,
                           decimal logFontSize, 
