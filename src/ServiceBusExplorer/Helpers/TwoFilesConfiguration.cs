@@ -38,21 +38,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     public class TwoFilesConfiguration
     {
         #region Constants
-
         const string indent = "  ";
-
         #endregion
 
         #region Private fields
-
         string userConfigFilePath;
         Configuration applicationConfiguration;
         Configuration userConfiguration;
-
         #endregion
 
         #region Private constructor
-
         private TwoFilesConfiguration(Configuration applicationConfiguration, string userConfigFilePath,
             Configuration userConfiguration)
         {
@@ -60,11 +55,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             this.userConfigFilePath = userConfigFilePath;
             this.userConfiguration = userConfiguration;
         }
-
         #endregion
 
         #region Static Create methods 
-
         internal static TwoFilesConfiguration Create()
         {
             var localApplicationConfiguration = ConfigurationManager
@@ -88,7 +81,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return TwoFilesConfiguration.CreateConfiguration(applicationConfiguration,
                 userConfigFilePath);
         }
-
         #endregion
 
         #region Public methods
@@ -226,7 +218,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringUser, userConfigFilePath, typeof(int));
+                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringUser, 
+                    typeof(int));
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -238,13 +231,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringApp, userConfigFilePath, typeof(int));
+                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringApp, 
+                    typeof(int));
             }
 
             return defaultValue;
         }
 
-        public Hashtable GetHashtableFromSection(string sectionName)
+        internal Hashtable GetHashtableFromSection(string sectionName)
         {
             Hashtable sectionValues = null;
 
@@ -278,7 +272,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        public void AddEntryToDictionarySection(string sectionName, string key, string value)
+        internal void AddEntryToDictionarySection(string sectionName, string key, string value)
         {
             AquireUserConfiguration();
 
@@ -325,8 +319,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             if (null != writeToLogDelegate)
             {
                 writeToLogDelegate($"The configuration file {configFile} has a setting, {appSettingsKey}" +
-                    $" which an value, {value}, which cannot be parsed to a {type.ToString()}. " +
-                    "The setting is ignored.");
+                    $" having the value {value}, which cannot be parsed to a(n) {type.ToString()}. " +
+                    "The setting is therefore ignored.");
             }
         }
 
@@ -393,11 +387,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             configSections.Add(newSection);
             configElement.AquireElement(sectionName);
         }
-
         #endregion
 
         #region Private instance methods
-
         void AquireUserConfiguration()
         {
             if (userConfiguration == null)
@@ -494,7 +486,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 userConfiguration.AppSettings.Settings[AppSettingKey].Value = stringValue;
             }
         }
-
         #endregion
     }
 }

@@ -35,7 +35,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
     {
         #region Constants
         // Common values
-        const string keyDoesNotExistAnywhere = "nonExistingKey";
+        const string KeyDoesNotExistAnywhere = "nonExistingKey";
+        const string KeyWithInvalidValue = "ContainsInvalidValue";
 
         // Bool keys
         const string KeyIsTrueInAppConfig = "useAscii";
@@ -249,8 +250,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             // Create the TwoFilesConfiguration object without a user file
             var configurationOpenedWithoutUserFile = TwoFilesConfiguration.Create(GetUserSettingsFilePath());
 
-            // Test reading config values 
+            // Test reading the app config values 
             TestReadingIntValues(configurationOpenedWithoutUserFile, userFileShouldHaveValues: false);
+
+            // Set an invalid value which will end up in the user file 
+            configurationOpenedWithoutUserFile.SetValue(KeyWithInvalidValue, ValueAlaskaPollock);
 
             // Set a value which will end up in the user file and already exists in the application config
             configurationOpenedWithoutUserFile.SetValue(KeySharkLengthWhichWillBeOverridden,
@@ -520,11 +524,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "savePropertiesToFile";
 
             // Get a value that do not exist in the application config file defaulting to true
-            var nonExistingValueAsTrue = configuration.GetBoolValue(keyDoesNotExistAnywhere, true);
+            var nonExistingValueAsTrue = configuration.GetBoolValue(KeyDoesNotExistAnywhere, true);
             Assert.AreEqual(nonExistingValueAsTrue, true);
 
             // Get a value that do not exist in the application config file defaulting to false
-            var nonExistingValueAsFalse = configuration.GetBoolValue(keyDoesNotExistAnywhere, false);
+            var nonExistingValueAsFalse = configuration.GetBoolValue(KeyDoesNotExistAnywhere, false);
             Assert.AreEqual(nonExistingValueAsFalse, false);
 
             // Get the value from the user file defaulting to true. If userFileShouldHaveUseAsciiKeyAsFalse
@@ -550,12 +554,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "monster";
 
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsDefault = configuration.GetEnumValue<RelayType>(keyDoesNotExistAnywhere);
+            var nonExistingValueAsDefault = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere);
             Assert.AreEqual(nonExistingValueAsDefault, RelayType.None);
 
             // Get a value that do not exist in the application config file defaulting to false
-            var nonExistingValueAsNetEvent = configuration.GetEnumValue<RelayType>(keyDoesNotExistAnywhere,
-                RelayType.NetEvent);
+            var nonExistingValueAsNetEvent = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere,
+                writeToLog, RelayType.NetEvent);
             Assert.AreEqual(nonExistingValueAsNetEvent, RelayType.NetEvent);
 
             // Get the value from the user file defaulting to empty. If userFileShouldHaveValues
@@ -566,7 +570,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
                 ConnectivityMode.Https : ConnectivityMode.AutoDetect);
 
             // Get the value from the user file defaulting to Http
-            connectivityMode = configuration.GetEnumValue<ConnectivityMode>(KeyConnectivityModeWhichWillBeOverridden, ConnectivityMode.Http);
+            connectivityMode = configuration.GetEnumValue<ConnectivityMode>
+                (KeyConnectivityModeWhichWillBeOverridden, writeToLog, ConnectivityMode.Http);
             Assert.AreEqual(connectivityMode, userFileShouldHaveValues ?
                 ConnectivityMode.Https : ConnectivityMode.AutoDetect);
 
@@ -576,7 +581,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             // Get a value that will only exist in the user file
             var onlyInUserFile = configuration.GetEnumValue<Crustacean>(KeyCrustaceanWillExistOnlyInUserConfig,
-                Crustacean.Shrimp);
+                writeToLog, Crustacean.Shrimp);
             Assert.AreEqual(onlyInUserFile, userFileShouldHaveValues ? Crustacean.Crab : Crustacean.Shrimp);
         }
 
@@ -586,12 +591,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const float mediumNumber = 472.7865f;
 
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsDefault = configuration.GetFloatValue(keyDoesNotExistAnywhere);
+            var nonExistingValueAsDefault = configuration.GetFloatValue(KeyDoesNotExistAnywhere);
             Assert.AreEqual(nonExistingValueAsDefault, 0F, delta);
 
             // Get a value that do not exist in the application config file defaulting to mediumNumber
-            var nonExistingValueAsMediumNumber = configuration.GetFloatValue(keyDoesNotExistAnywhere,
-                mediumNumber);
+            var nonExistingValueAsMediumNumber = configuration.GetFloatValue
+                (KeyDoesNotExistAnywhere, writeToLog, mediumNumber);
             Assert.AreEqual(nonExistingValueAsMediumNumber, mediumNumber, delta);
 
            // Get the value from the user file defaulting to empty. If userFileShouldHaveValues
@@ -604,7 +609,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             // Get the value from the user file defaulting to a large number
             sharkWeight = configuration.GetFloatValue(KeySharkWeightWhichWillBeOverridden,
-                4789276579f);
+                writeToLog, 4789276579f);
             Assert.AreEqual(sharkWeight, expectedWeight, delta);
 
             // Get a value that do not exist in the user file
@@ -614,7 +619,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             // Get a value that will only exist in the user file
             var onlyInUserFile = configuration.GetFloatValue(KeyWhaleWeightWillExistOnlyInUserConfig,
-                mediumNumber);
+                writeToLog, mediumNumber);
             expectedWeight = userFileShouldHaveValues ? ValueWhaleWeightInUserConfig : mediumNumber;
             Assert.AreEqual(onlyInUserFile, expectedWeight, delta);
         }
@@ -624,13 +629,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "morayEelLength";
             const int mediumNumber = 13500;
 
+            // If the user file exists it should have an invalid value 
+            if (userFileShouldHaveValues)
+            {
+                var shouldBeDefault = configuration.GetIntValue(KeyWithInvalidValue, writeToLog, mediumNumber);
+                Assert.AreEqual(mediumNumber, shouldBeDefault);
+                Assert.IsTrue(logInMemory.Contains("which cannot be parsed to a(n) System.Int32"));
+                logInMemory = string.Empty;
+            }
+
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsDefault = configuration.GetIntValue(keyDoesNotExistAnywhere);
+            var nonExistingValueAsDefault = configuration.GetIntValue(KeyDoesNotExistAnywhere);
             Assert.AreEqual(nonExistingValueAsDefault, 0);
 
             // Get a value that do not exist in the application config file defaulting to mediumNumber
-            var nonExistingValueAsMediumNumber = configuration.GetIntValue(keyDoesNotExistAnywhere,
-                mediumNumber);
+            var nonExistingValueAsMediumNumber = configuration.GetIntValue(KeyDoesNotExistAnywhere,
+                writeToLog, mediumNumber);
             Assert.AreEqual(mediumNumber, nonExistingValueAsMediumNumber);
 
             // Get the value from the user file defaulting to empty. If userFileShouldHaveValues
@@ -642,7 +656,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             Assert.AreEqual(expectedLength, sharkLength);
 
             // Get the value from the user file defaulting to a large number
-            sharkLength = configuration.GetIntValue(KeySharkLengthWhichWillBeOverridden, 3450242);
+            sharkLength = configuration.GetIntValue(KeySharkLengthWhichWillBeOverridden, writeToLog, 3450242);
             Assert.AreEqual(expectedLength, sharkLength);
 
             // Get a value that do not exist in the user file
@@ -652,7 +666,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             // Get a value that will only exist in the user file
             var onlyInUserFile = configuration.GetIntValue(KeyWhaleLengthWillExistOnlyInUserConfig,
-                mediumNumber);
+                writeToLog, mediumNumber);
             expectedLength = userFileShouldHaveValues ? ValueWhaleLengthInUserConfig : mediumNumber;
             Assert.AreEqual(expectedLength, onlyInUserFile);
         }
@@ -663,11 +677,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string ExtinctShark = "Megalodon";
 
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsTrue = configuration.GetStringValue(keyDoesNotExistAnywhere, string.Empty);
+            var nonExistingValueAsTrue = configuration.GetStringValue(KeyDoesNotExistAnywhere, string.Empty);
             Assert.AreEqual(nonExistingValueAsTrue, string.Empty);
 
             // Get a value that do not exist in the application config file defaulting to false
-            var nonExistingValueAsFalse = configuration.GetStringValue(keyDoesNotExistAnywhere, ExtinctShark);
+            var nonExistingValueAsFalse = configuration.GetStringValue(KeyDoesNotExistAnywhere, ExtinctShark);
             Assert.AreEqual(nonExistingValueAsFalse, ExtinctShark);
 
             // Get the value from the user file defaulting to empty. If userFileShouldHaveValues
@@ -696,7 +710,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             bool userFileShouldHaveValues)
         {
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingSection = configuration.GetHashtableFromSection(keyDoesNotExistAnywhere);
+            var nonExistingSection = configuration.GetHashtableFromSection(KeyDoesNotExistAnywhere);
             Assert.AreEqual(nonExistingSection, null);
 
             // Get the Hashtable of the saltwater fishes. There are three of them in the app config.
