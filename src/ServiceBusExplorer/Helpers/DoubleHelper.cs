@@ -43,10 +43,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 // relative error is less meaningful here
                 return diff < epsilon;
             }
-            else
-            { // Use relative error
-                return diff / (absA + absB) < epsilon;
-            }
+
+            // Use relative error
+            return diff / (absA + absB) < epsilon;
         }
         #endregion
     }

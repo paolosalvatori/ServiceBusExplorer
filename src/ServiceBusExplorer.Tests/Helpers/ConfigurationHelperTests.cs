@@ -99,14 +99,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         WriteToLogDelegate writeToLog;
         string logInMemory;
 
-        readonly Dictionary<string, string> saltWaterFishes = new Dictionary<string, string>()
+        readonly Dictionary<string, string> someSaltWaterFishes = new Dictionary<string, string>()
         {
             { "Atlantic chub mackerel", "Scomber colias" },
             { "Atlantic mackerel", "Scomber scombrus" },
             { "Alaska pollock", "Theragra chalcogramma" }
         };
 
-        readonly Dictionary<string, string> freshWaterFishes = new Dictionary<string, string>()
+        readonly Dictionary<string, string> someFreshWaterFishes = new Dictionary<string, string>()
         {
             { "Pike", "Esox lucius" },
             { "Perch", "Perca flavescens" },
@@ -116,20 +116,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         readonly List<KeyValuePair<string, string>> fakeConnectionStrings =
             new List<KeyValuePair<string, string>>()
         {
-            { new KeyValuePair<string, string>("treasureInUserFile",
-                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=SomeKey;SharedAccessKey=18347=") },
+            new KeyValuePair<string, string>("treasureInUserFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=SomeKey;SharedAccessKey=18347="),
 
-            { new KeyValuePair<string, string>("anotherTreasureInUserFile",
-                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=21452=") },
+            new KeyValuePair<string, string>("anotherTreasureInUserFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=21452="),
 
-            { new KeyValuePair<string, string>("usedInUserFileAndAppFile",
-                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=UserFile;SharedAccessKey=32345=") },
+            new KeyValuePair<string, string>("usedInUserFileAndAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=UserFile;SharedAccessKey=32345="),
 
-            { new KeyValuePair<string, string>("usedInUserFileAndAppFile",
-                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=AppFile;SharedAccessKey=444445=") },
+            new KeyValuePair<string, string>("usedInUserFileAndAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=AppFile;SharedAccessKey=444445="),
 
-            { new KeyValuePair<string, string>("treasureInAppFile",
-                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=54442=") }
+            new KeyValuePair<string, string>("treasureInAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=54442=")
         };
         #endregion
 
@@ -156,7 +156,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         [Test]
         public void TestBoolValuesReadAndWrite()
         {
-            var configurationOpenedWithoutUserFile = TwoFilesConfiguration
+            TwoFilesConfiguration configurationOpenedWithoutUserFile = TwoFilesConfiguration
                 .Create(GetUserSettingsFilePath());
 
             // Test reading config values 
@@ -327,7 +327,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             configurationOpenedWithoutUserFile.AddEntryToDictionarySection(KeySaltWaterFishesWhichWillBeMerged,
                 "Alaska Pollock", ValueAlaskaPollockNewName);
 
-            foreach (var freshWaterFish in freshWaterFishes)
+            foreach (var freshWaterFish in someFreshWaterFishes)
             {
                 configurationOpenedWithoutUserFile.AddEntryToDictionarySection
                     (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, freshWaterFish.Key, freshWaterFish.Value);
@@ -558,7 +558,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             Assert.AreEqual(nonExistingValueAsDefault, RelayType.None);
 
             // Get a value that do not exist in the application config file defaulting to false
-            var nonExistingValueAsNetEvent = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere,
+            var nonExistingValueAsNetEvent = configuration.GetEnumValue(KeyDoesNotExistAnywhere,
                 writeToLog, RelayType.NetEvent);
             Assert.AreEqual(nonExistingValueAsNetEvent, RelayType.NetEvent);
 
@@ -570,8 +570,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
                 ConnectivityMode.Https : ConnectivityMode.AutoDetect);
 
             // Get the value from the user file defaulting to Http
-            connectivityMode = configuration.GetEnumValue<ConnectivityMode>
-                (KeyConnectivityModeWhichWillBeOverridden, writeToLog, ConnectivityMode.Http);
+            connectivityMode = configuration.GetEnumValue(KeyConnectivityModeWhichWillBeOverridden, writeToLog, ConnectivityMode.Http);
             Assert.AreEqual(connectivityMode, userFileShouldHaveValues ?
                 ConnectivityMode.Https : ConnectivityMode.AutoDetect);
 
@@ -580,7 +579,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             Assert.AreEqual(monster, Monster.KingKong);
 
             // Get a value that will only exist in the user file
-            var onlyInUserFile = configuration.GetEnumValue<Crustacean>(KeyCrustaceanWillExistOnlyInUserConfig,
+            var onlyInUserFile = configuration.GetEnumValue(KeyCrustaceanWillExistOnlyInUserConfig,
                 writeToLog, Crustacean.Shrimp);
             Assert.AreEqual(onlyInUserFile, userFileShouldHaveValues ? Crustacean.Crab : Crustacean.Shrimp);
         }
