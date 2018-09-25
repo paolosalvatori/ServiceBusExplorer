@@ -545,7 +545,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            var microsoftServiceBusConnectionString = ConfigurationManager.AppSettings[ConfigurationParameters.MicrosoftServiceBusConnectionString];
+            var microsoftServiceBusConnectionString = 
+                configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString);
 
             if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
             {
