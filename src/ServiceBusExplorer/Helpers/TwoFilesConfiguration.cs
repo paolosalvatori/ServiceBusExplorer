@@ -64,8 +64,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 .OpenExeConfiguration(ConfigurationUserLevel.None);
             var userConfigFilePath = GetUserSettingsFilePath();
 
-            return TwoFilesConfiguration.CreateConfiguration(localApplicationConfiguration,
-                userConfigFilePath);
+            return CreateConfiguration(localApplicationConfiguration, userConfigFilePath);
         }
 
         /// <summary>
@@ -78,8 +77,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             var applicationConfiguration = ConfigurationManager.
                 OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            return TwoFilesConfiguration.CreateConfiguration(applicationConfiguration,
-                userConfigFilePath);
+            return CreateConfiguration(applicationConfiguration, userConfigFilePath);
         }
         #endregion
 
@@ -117,11 +115,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     return result;
                 }
-                else
-                {
-                    WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
-                        AppSettingKey, resultStringUser, typeof(bool));
-                }
+
+                WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
+                    AppSettingKey, resultStringUser, typeof(bool));
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -132,11 +128,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     return result;
                 }
-                else
-                {
-                    WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
-                        AppSettingKey, resultStringApp, typeof(bool));
-                }
+                
+                WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
+                    AppSettingKey, resultStringApp, typeof(bool));
+                
             }
 
             return defaultValue;
@@ -319,7 +314,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             if (null != writeToLogDelegate)
             {
                 writeToLogDelegate($"The configuration file {configFile} has a setting, {appSettingsKey}" +
-                    $" having the value {value}, which cannot be parsed to a(n) {type.ToString()}. " +
+                    $" having the value {value}, which cannot be parsed to a(n) {type}. " +
                     "The setting is therefore ignored.");
             }
         }
@@ -334,8 +329,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 var doc = new XmlDocument();
 
                 doc.Load(XmlReader.Create(new StringReader(xml)));
-                sectionValues = new DictionarySectionHandler()
-                    .Create(null, null, doc.DocumentElement) as Hashtable;
+                sectionValues = (Hashtable) new DictionarySectionHandler()
+                    .Create(null, null, section: doc.DocumentElement ?? throw new InvalidDataException("A configuration file is invalid"));
             }
 
             return sectionValues;
