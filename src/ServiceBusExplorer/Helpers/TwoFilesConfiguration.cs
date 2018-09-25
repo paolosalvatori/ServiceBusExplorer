@@ -58,7 +58,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Static Create methods 
-        internal static TwoFilesConfiguration Create()
+        public static TwoFilesConfiguration Create()
         {
             var localApplicationConfiguration = ConfigurationManager
                 .OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -72,7 +72,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// neither the application config file for the executable running the unit 
         /// tests nor the user config file.
         /// </summary>
-        internal static TwoFilesConfiguration Create(string userConfigFilePath)
+        public static TwoFilesConfiguration Create(string userConfigFilePath)
         {
             var applicationConfiguration = ConfigurationManager.
                 OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -128,10 +128,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     return result;
                 }
-                
+
                 WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
                     AppSettingKey, resultStringApp, typeof(bool));
-                
+
             }
 
             return defaultValue;
@@ -213,7 +213,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringUser, 
+                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringUser,
                     typeof(int));
             }
 
@@ -226,14 +226,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringApp, 
+                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringApp,
                     typeof(int));
             }
 
             return defaultValue;
         }
 
-        internal Hashtable GetHashtableFromSection(string sectionName)
+        public Hashtable GetHashtableFromSection(string sectionName)
         {
             Hashtable sectionValues = null;
 
@@ -267,7 +267,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        internal void AddEntryToDictionarySection(string sectionName, string key, string value)
+        public void AddEntryToDictionarySection(string sectionName, string key, string value)
         {
             AquireUserConfiguration();
 
@@ -283,6 +283,74 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             section.SectionInformation.SetRawXml(element.ToString());
             userConfiguration.Save();
         }
+
+        public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey, string newValue,
+            WriteToLogDelegate writeToLog)
+        {
+            AquireUserConfiguration();
+
+            ConfigurationSection section = AquireSection(sectionName);
+            var xml = section.SectionInformation.GetRawXml();
+            var xmlDocument = new XmlDocument();
+            bool found = false;
+
+            xmlDocument.LoadXml(xml);
+
+            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            {
+                if (child.LocalName == "add" && child.GetAttribute("key") == key)
+                {
+                    if (!string.IsNullOrEmpty(newKey)) child.SetAttribute("key", newKey);
+                    if (!string.IsNullOrEmpty(newValue)) child.SetAttribute("value", newValue);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                section.SectionInformation.SetRawXml(xmlDocument.ToString());
+                userConfiguration.Save();
+            }
+            else
+            {
+                writeToLog($"The key {key} was not found in the file {userConfigFilePath}. It needs to "
+                    + $"be changed manually in the file {applicationConfiguration.FilePath}.");
+            }
+        }
+
+        public void RemoveEntryFromDictionarySection(string sectionName, string key, WriteToLogDelegate writeToLog)
+        {
+            AquireUserConfiguration();
+
+            ConfigurationSection section = AquireSection(sectionName);
+            var xml = section.SectionInformation.GetRawXml();
+            var xmlDocument = new XmlDocument();
+            bool found = false;
+
+            xmlDocument.LoadXml(xml);
+
+            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            {
+                if (child.LocalName == "add" && child.GetAttribute("key") == key)
+                {
+                    found = true;
+                    child.RemoveChild(child);
+                }
+            }
+
+            if (found)
+            {
+                section.SectionInformation.SetRawXml(xmlDocument.ToString());
+                userConfiguration.Save();
+            }
+            else
+            {
+                writeToLog($"The key {key} was not found in the file {userConfigFilePath}. It needs to "
+                    + $"be changed manually in the file {applicationConfiguration.FilePath}.");
+            }
+        }
+
 
         public void SetValue<T>(string AppSettingKey, T value)
         {
@@ -329,7 +397,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 var doc = new XmlDocument();
 
                 doc.Load(XmlReader.Create(new StringReader(xml)));
-                sectionValues = (Hashtable) new DictionarySectionHandler()
+                sectionValues = (Hashtable)new DictionarySectionHandler()
                     .Create(null, null, section: doc.DocumentElement ?? throw new InvalidDataException("A configuration file is invalid"));
             }
 

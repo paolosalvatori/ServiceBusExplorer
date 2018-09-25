@@ -204,7 +204,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 Uri = txtUri.Text;
                 Namespace = txtNamespace.Text;
-                TransportType = (TransportType) cboTransportType.SelectedItem;
+                TransportType = (TransportType)cboTransportType.SelectedItem;
                 EntityPath = txtEntityPath.Text;
 
                 if (isIssuerName)
@@ -242,7 +242,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
             }
             DialogResult = DialogResult.OK;
-            ConnectivityMode = (ConnectivityMode) cboConnectivityMode.SelectedItem;
+            ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
             FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
             FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
             FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
@@ -302,7 +302,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 !string.IsNullOrWhiteSpace(txtIssuerSecret.Text);
             }
         }
-        
+
         private void cboServiceBusNamespace_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ignoreSelectedIndexChange)
@@ -418,7 +418,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    var transportType = (TransportType) cboTransportType.SelectedItem;
+                    var transportType = (TransportType)cboTransportType.SelectedItem;
                     value = value.Replace(parameters[ConnectionStringRuntimePort],
                         transportType == TransportType.Amqp
                             ? DefaultAmqpRuntimePort
@@ -601,13 +601,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                     try
                     {
-                        ConfigurationHelper.AddServiceBusNamespace(key, value);
+                        ConfigurationHelper.AddServiceBusNamespace(key, value, MainForm.StaticWriteToLog);
                     }
                     catch (ArgumentNullException ex)
                     {
                         MainForm.StaticWriteToLog(ex.Message);
                     }
-                    
+
                     serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog));
                     cboServiceBusNamespace.Items.Clear();
                     cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
@@ -674,7 +674,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
 
                 var itemIndex = cboServiceBusNamespace.SelectedIndex;
-                ConfigurationHelper.UpdateServiceBusNamespace(key, newKey);
+                ConfigurationHelper.UpdateServiceBusNamespace(key, newKey, newValue: null, MainForm.StaticWriteToLog);
 
                 ignoreSelectedIndexChange = true;
                 serviceBusHelper.ServiceBusNamespaces.Remove(key);
@@ -695,7 +695,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 if (deleteForm.ShowDialog() == DialogResult.OK)
                 {
-                    ConfigurationHelper.RemoveServiceBusNamespace(key);
+                    ConfigurationHelper.RemoveServiceBusNamespace(key, MainForm.StaticWriteToLog);
                     cboServiceBusNamespace.Items.RemoveAt(cboServiceBusNamespace.SelectedIndex);
                     cboServiceBusNamespace.SelectedIndex = 0;
 

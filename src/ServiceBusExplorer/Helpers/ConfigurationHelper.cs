@@ -1,153 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿#region Copyright
+//=======================================================================================
+// Microsoft Azure Customer Advisory Team 
+//
+// This sample is supplemental to the technical guidance published on my personal
+// blog at http://blogs.msdn.com/b/paolos/. 
+// 
+// Author: Paolo Salvatori
+//=======================================================================================
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// 
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+// http://www.apache.org/licenses/LICENSE-2.0
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+//=======================================================================================
+#endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class ConfigurationHelper
     {
-        private static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
+        static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
 
         #region Public methods
 
-        public static void UpdateServiceBusNamespace(string key, string newKey = null, string newValue = null)
+        public static void UpdateServiceBusNamespace(string key, string newKey, string newValue, WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
+            var configuration = TwoFilesConfiguration.Create();
 
-            UpdateServiceBusElement(configuration, key, newKey, newValue);
-
-            // Update config file for development
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            { 
-                UpdateServiceBusElement(configuration, key, newKey, newValue);
-            }
+            configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
-        public static void AddServiceBusNamespace(string key, string value)
+        public static void AddServiceBusNamespace(string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
-            AddServiceBusElement(configuration, key, value);
+            var configuration = TwoFilesConfiguration.Create();
 
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            {
-                AddServiceBusElement(configuration, key, value);
-            }
+            configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
-        public static void RemoveServiceBusNamespace(string key)
+        public static void RemoveServiceBusNamespace(string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
-            RemoveServiceBusElement(configuration, key);
+            var configuration = TwoFilesConfiguration.Create();
 
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            {
-                RemoveServiceBusElement(configuration, key);
-            }
+            configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
         
         #endregion
-
-        #region Private methods
-
-        private static void AddServiceBusElement(Configuration configuration, string key, string value)
-        {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(xml);
-            var node = xmlDocument.CreateElement("add");
-            node.SetAttribute("key", key);
-            node.SetAttribute("value", value);
-            xmlDocument.DocumentElement?.AppendChild(node);
-
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
-        }
-
-        private static void RemoveServiceBusElement(Configuration configuration, string key)
-        {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
-            {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
-                {
-                    child.ParentNode.RemoveChild(child);
-                    break;
-                }
-            }
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
-        }
-
-        private static void UpdateServiceBusElement(Configuration configuration, string key, string newKey, string newValue)
-        {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
-            {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
-                {
-                    if (!string.IsNullOrEmpty(newKey)) child.SetAttribute("key", newKey);
-                    if (!string.IsNullOrEmpty(newValue)) child.SetAttribute("value", newValue);
-                    break;
-                }
-            }
-
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
-        }
-
-        private static Configuration GetExeConfiguration()
-        {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var directory = Path.GetDirectoryName(configuration.FilePath);
-            if (string.IsNullOrEmpty(directory))
-            {
-                throw new ArgumentNullException("The directory of the configuration file cannot be null.");
-            }
-            return configuration;
-        }
-
-        private static Configuration GetDevelopmentConfiguration()
-        {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var directory = Path.GetDirectoryName(configuration.FilePath);
-            var appConfig = Path.Combine(directory, "..\\..\\App.config");
-            if (File.Exists(appConfig))
-            {
-                var exeConfigurationFileMap = new ExeConfigurationFileMap
-                {
-                    ExeConfigFilename = appConfig
-                };
-                configuration = ConfigurationManager.OpenMappedExeConfiguration(exeConfigurationFileMap, ConfigurationUserLevel.None);
-                return configuration;
-            }
-            return null;
-        }
-
-        #endregion  
     }
 }
