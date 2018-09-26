@@ -105,19 +105,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         public bool GetBoolValue(string AppSettingKey, bool defaultValue,
-            WriteToLogDelegate writeToLogDelegate = null)
+            WriteToLogDelegate writeToLog)
         {
             if (userConfiguration != null)
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                if (bool.TryParse(resultStringUser, out var result))
+                if (null != resultStringUser)
                 {
-                    return result;
-                }
+                    if (bool.TryParse(resultStringUser, out var result))
+                    {
+                        return result;
+                    }
 
-                WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
-                    AppSettingKey, resultStringUser, typeof(bool));
+                    WriteParsingFailure(writeToLog, userConfigFilePath,
+                        AppSettingKey, resultStringUser, typeof(bool));
+                }
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -129,28 +132,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLogDelegate, userConfigFilePath,
-                    AppSettingKey, resultStringApp, typeof(bool));
-
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey, 
+                    resultStringApp, typeof(bool));
             }
 
             return defaultValue;
         }
 
-        public T GetEnumValue<T>(string AppSettingKey, WriteToLogDelegate writeToLog = null, T defaultValue = default)
+        public T GetEnumValue<T>(string AppSettingKey, WriteToLogDelegate writeToLog, T defaultValue = default)
             where T : struct
         {
             if (userConfiguration != null)
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                if (Enum.TryParse<T>(resultStringUser, out var result))
+                if (null != resultStringUser)
                 {
-                    return result;
-                }
+                    if (Enum.TryParse<T>(resultStringUser, out var result))
+                    {
+                        return result;
+                    }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringUser, userConfigFilePath,
-                    typeof(T));
+                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, 
+                        resultStringUser, typeof(T));
+                }
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -162,27 +167,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringApp, userConfigFilePath,
-                    typeof(T));
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                    resultStringApp, typeof(T));
             }
 
             return defaultValue;
         }
 
-        public float GetFloatValue(string AppSettingKey, WriteToLogDelegate writeToLog = null, float defaultValue = default)
+        public float GetFloatValue(string AppSettingKey, WriteToLogDelegate writeToLog, float defaultValue = default)
         {
             if (userConfiguration != null)
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                if (float.TryParse(resultStringUser, NumberStyles.Float,
-                    CultureInfo.InvariantCulture, out var result))
+                if (null != resultStringUser)
                 {
-                    return result;
-                }
+                    if (float.TryParse(resultStringUser, NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var result))
+                    {
+                        return result;
+                    }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringUser, userConfigFilePath,
-                    typeof(float));
+                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey,
+                        resultStringUser, typeof(float));
+                }
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -195,26 +203,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, AppSettingKey, resultStringApp, userConfigFilePath,
-                    typeof(float));
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                    resultStringApp, typeof(float));
             }
 
             return defaultValue;
         }
 
-        public int GetIntValue(string AppSettingKey, WriteToLogDelegate writeToLog = null, int defaultValue = default)
+        public int GetIntValue(string AppSettingKey, WriteToLogDelegate writeToLog, int defaultValue = default)
         {
             if (userConfiguration != null)
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                if (int.TryParse(resultStringUser, out var result))
+                if (null != resultStringUser)
                 {
-                    return result;
-                }
+                    if (int.TryParse(resultStringUser, out var result))
+                    {
+                        return result;
+                    }
 
-                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringUser,
-                    typeof(int));
+                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringUser,
+                        typeof(int));
+                }
             }
 
             string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
@@ -226,8 +237,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, resultStringApp,
-                    typeof(int));
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                    resultStringApp, typeof(int));
             }
 
             return defaultValue;
@@ -309,7 +320,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (found)
             {
-                section.SectionInformation.SetRawXml(xmlDocument.ToString());
+                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
                 userConfiguration.Save();
             }
             else
@@ -335,13 +346,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 if (child.LocalName == "add" && child.GetAttribute("key") == key)
                 {
                     found = true;
-                    child.RemoveChild(child);
+                    child.ParentNode.RemoveChild(child);
+                    break;
                 }
             }
 
             if (found)
             {
-                section.SectionInformation.SetRawXml(xmlDocument.ToString());
+                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
                 userConfiguration.Save();
             }
             else

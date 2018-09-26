@@ -75,6 +75,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         const string ValueAlaskaPollock = "Alaska pollock";
         const string ValueAlaskaPollockOldName = "Theragra chalcogramma";
         const string ValueAlaskaPollockNewName = "Gadus chalcogrammus";
+        const string ValuePike = "Pike";
+        const string ValuePikeScienticName = "Esox lucius";
 
         // MessagingNamespaces constants
 
@@ -108,7 +110,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
         readonly Dictionary<string, string> someFreshWaterFishes = new Dictionary<string, string>()
         {
-            { "Pike", "Esox lucius" },
+            { ValuePike, ValuePikeScienticName },
             { "Perch", "Perca flavescens" },
             { "Zander","Sander lucioperca" }
         };
@@ -312,6 +314,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         [Test]
         public void TestHashtableSectionReadAndWrite()
         {
+            const string NonExistingSpecies = "NonexistingSpecies";
+
             // Create the TwoFilesConfiguration object without a user file
             var configurationOpenedWithoutUserFile = TwoFilesConfiguration.Create(GetUserSettingsFilePath());
 
@@ -332,6 +336,40 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
                 configurationOpenedWithoutUserFile.AddEntryToDictionarySection
                     (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, freshWaterFish.Key, freshWaterFish.Value);
             }
+
+            // Persist the configuration
+            configurationOpenedWithoutUserFile.Save();
+
+            // Test reading config values again
+            TestReadingHashtableSection(configurationOpenedWithoutUserFile, userFileShouldHaveValues: true);
+
+            // Add an  entry with a new value
+            configurationOpenedWithoutUserFile.AddEntryToDictionarySection
+            (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies,
+                "No name");
+
+            // Delete the entry
+            configurationOpenedWithoutUserFile.RemoveEntryFromDictionarySection
+            (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies, writeToLog);
+
+            // Test reading config values again
+            TestReadingHashtableSection(configurationOpenedWithoutUserFile, userFileShouldHaveValues: true);
+
+            // Update an entry with a invalid value
+            configurationOpenedWithoutUserFile.UpdateEntryInDictionarySection(
+                KeyFreshWaterFishesWhichWillOnlyExistInUserConfig,
+                someFreshWaterFishes[ValuePike],
+                someFreshWaterFishes[ValuePike],
+                "Wrong name",
+                writeToLog);
+
+            // Update the previous entry with the correct value
+            configurationOpenedWithoutUserFile.UpdateEntryInDictionarySection(
+                KeyFreshWaterFishesWhichWillOnlyExistInUserConfig,
+                someFreshWaterFishes[ValuePike],
+                someFreshWaterFishes[ValuePike],
+                ValuePikeScienticName,
+                writeToLog);
 
             // Test reading config values again
             TestReadingHashtableSection(configurationOpenedWithoutUserFile, userFileShouldHaveValues: true);
@@ -524,28 +562,28 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "savePropertiesToFile";
 
             // Get a value that do not exist in the application config file defaulting to true
-            var nonExistingValueAsTrue = configuration.GetBoolValue(KeyDoesNotExistAnywhere, true);
+            var nonExistingValueAsTrue = configuration.GetBoolValue(KeyDoesNotExistAnywhere, true, writeToLog);
             Assert.AreEqual(nonExistingValueAsTrue, true);
 
             // Get a value that do not exist in the application config file defaulting to false
-            var nonExistingValueAsFalse = configuration.GetBoolValue(KeyDoesNotExistAnywhere, false);
+            var nonExistingValueAsFalse = configuration.GetBoolValue(KeyDoesNotExistAnywhere, false, writeToLog);
             Assert.AreEqual(nonExistingValueAsFalse, false);
 
             // Get the value from the user file defaulting to true. If userFileShouldHaveUseAsciiKeyAsFalse
             // is false then we should read from the application config and that value should be true
-            var useAsciiDefTrue = configuration.GetBoolValue(KeyIsTrueInAppConfig, true);
+            var useAsciiDefTrue = configuration.GetBoolValue(KeyIsTrueInAppConfig, true, writeToLog);
             Assert.AreEqual(useAsciiDefTrue, !userFileShouldHaveValues);
 
             // Get the value from the user file defaulting to false
-            var useAsciiDefFalse = configuration.GetBoolValue(KeyIsTrueInAppConfig, false);
+            var useAsciiDefFalse = configuration.GetBoolValue(KeyIsTrueInAppConfig, false, writeToLog);
             Assert.AreEqual(useAsciiDefFalse, !userFileShouldHaveValues);
 
             // Get a value that does not exist in the user file
-            var savePropertiesToFile = configuration.GetBoolValue(keyOnlyInAppConfig, false);
+            var savePropertiesToFile = configuration.GetBoolValue(keyOnlyInAppConfig, false, writeToLog);
             Assert.AreEqual(savePropertiesToFile, true);
 
             // Get a value that will only exist in the user file
-            var onlyInUserFile = configuration.GetBoolValue(KeyWillExistOnlyInUserConfig, false);
+            var onlyInUserFile = configuration.GetBoolValue(KeyWillExistOnlyInUserConfig, false, writeToLog);
             Assert.AreEqual(onlyInUserFile, userFileShouldHaveValues);
         }
 
@@ -554,7 +592,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "monster";
 
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsDefault = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere);
+            var nonExistingValueAsDefault = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere, writeToLog);
             Assert.AreEqual(nonExistingValueAsDefault, RelayType.None);
 
             // Get a value that do not exist in the application config file defaulting to false

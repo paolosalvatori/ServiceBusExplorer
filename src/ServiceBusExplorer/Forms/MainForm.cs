@@ -3598,7 +3598,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var configuration = TwoFilesConfiguration.Create();
 
             RetryHelper.TraceEnabled = serviceBusHelper.TraceEnabled =
-                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter, serviceBusHelper.TraceEnabled);
+                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter, serviceBusHelper.TraceEnabled, WriteToLog);
 
             messageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
                 BodyType.Stream.ToString());
@@ -3610,16 +3610,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 WriteToLog, ServiceBusHelper.EncodingType);
 
             showMessageCount = configuration.GetBoolValue(ConfigurationParameters.ShowMessageCountParameter,
-                 showMessageCount);
+                 showMessageCount, WriteToLog);
 
             saveMessageToFile = configuration.GetBoolValue(ConfigurationParameters.SaveMessageToFileParameter,
-                 saveMessageToFile);
+                 saveMessageToFile, WriteToLog);
 
             savePropertiesToFile = configuration.GetBoolValue(ConfigurationParameters.SavePropertiesToFileParameter,
-                  savePropertiesToFile);
+                  savePropertiesToFile, WriteToLog);
 
             saveCheckpointsToFile = configuration.GetBoolValue(ConfigurationParameters.SaveCheckpointsToFileParameter,
-                saveCheckpointsToFile);
+                saveCheckpointsToFile, WriteToLog);
 
             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
                    serviceBusHelper.Scheme);

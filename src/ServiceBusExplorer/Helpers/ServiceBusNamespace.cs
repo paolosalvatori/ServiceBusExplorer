@@ -312,7 +312,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     entityPath = parameters[ConnectionStringEntityPath];
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, entityPath);
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, 
+                    entityPath, isUserCreated);
             }
 
             if (toLower.Contains(ConnectionStringRuntimePort) ||
@@ -456,7 +457,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, issuerName, issuerSecret, stsEndpoint, transportType);
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, issuerName, issuerSecret, stsEndpoint, transportType, isUserCreated);
             }
             else
             {
