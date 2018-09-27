@@ -29,21 +29,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public static void UpdateServiceBusNamespace(string key, string newKey, string newValue, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create();
+            var configuration = TwoFilesConfiguration.Create(writeToLog);;
 
             configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
         public static void AddServiceBusNamespace(string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create();
+            var configuration = TwoFilesConfiguration.Create(writeToLog);;
 
             configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
         public static void RemoveServiceBusNamespace(string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create();
+            var configuration = TwoFilesConfiguration.Create(writeToLog);;
 
             configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }

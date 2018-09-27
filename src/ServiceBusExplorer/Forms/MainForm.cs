@@ -3364,7 +3364,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                var configuration = TwoFilesConfiguration.Create();
+                var configuration = TwoFilesConfiguration.Create(WriteToLog);
                 serviceBusHelper.ServiceBusNamespaces =
                     ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
             }
@@ -3595,7 +3595,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return;
             }
 
-            var configuration = TwoFilesConfiguration.Create();
+            var configuration = TwoFilesConfiguration.Create(WriteToLog);
 
             RetryHelper.TraceEnabled = serviceBusHelper.TraceEnabled =
                 configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter, serviceBusHelper.TraceEnabled, WriteToLog);
@@ -3698,11 +3698,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 receiverThinkTime = tempReceiverThinkTime;
             }
 
-            var monitorRefreshIntervalValue = configuration.GetIntValue
+            var tempMonitorRefreshIntervalValue = configuration.GetIntValue
                 (ConfigurationParameters.MonitorRefreshIntervalParameter, WriteToLog, -1);
-            if (tempReceiverThinkTime >= 0)
+            if (tempMonitorRefreshIntervalValue >= 0)
             {
-                monitorRefreshInterval = tempReceiverThinkTime;
+                monitorRefreshInterval = tempMonitorRefreshIntervalValue;
             }
 
             var tempPrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter, WriteToLog, -1);
