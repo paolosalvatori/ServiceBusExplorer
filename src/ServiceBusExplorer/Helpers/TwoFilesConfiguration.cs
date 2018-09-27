@@ -41,7 +41,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         const string indent = "  ";
         #endregion
 
-        #region Private fields
+        #region Private static fields
+        static bool userConfigPathHasBeenShown;
+        #endregion
+
+        #region Private instance fields
         string userConfigFilePath;
         Configuration applicationConfiguration;
         Configuration userConfiguration;
@@ -58,13 +62,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Static Create methods 
-        public static TwoFilesConfiguration Create()
+        public static TwoFilesConfiguration Create(WriteToLogDelegate writeToLog = null)
         {
-            var localApplicationConfiguration = ConfigurationManager
-                .OpenExeConfiguration(ConfigurationUserLevel.None);
+            var localApplicationConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var userConfigFilePath = GetUserSettingsFilePath();
 
-            return CreateConfiguration(localApplicationConfiguration, userConfigFilePath);
+            return CreateConfiguration(localApplicationConfiguration, userConfigFilePath, writeToLog);
         }
 
         /// <summary>
@@ -72,12 +75,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// neither the application config file for the executable running the unit 
         /// tests nor the user config file.
         /// </summary>
-        public static TwoFilesConfiguration Create(string userConfigFilePath)
+        public static TwoFilesConfiguration Create(string userConfigFilePath, WriteToLogDelegate writeToLog = null)
         {
-            var applicationConfiguration = ConfigurationManager.
-                OpenExeConfiguration(ConfigurationUserLevel.None);
+            var applicationConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            return CreateConfiguration(applicationConfiguration, userConfigFilePath);
+            return CreateConfiguration(applicationConfiguration, userConfigFilePath, writeToLog);
         }
         #endregion
 
@@ -132,7 +134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return result;
                 }
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey, 
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
                     resultStringApp, typeof(bool));
             }
 
@@ -153,7 +155,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         return result;
                     }
 
-                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey, 
+                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey,
                         resultStringUser, typeof(T));
                 }
             }
@@ -416,8 +418,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration, string userConfigFilePath)
+        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration, string userConfigFilePath,
+            WriteToLogDelegate writeToLog = null)
         {
+            if (!userConfigPathHasBeenShown && writeToLog != null)
+            {
+                userConfigPathHasBeenShown = true;
+
+                writeToLog($"The files {userConfigFilePath} and {applicationConfiguration.FilePath} are used" +
+                    " for the configuration settings.");
+
+                if (!File.Exists(userConfigFilePath))
+                {
+                    writeToLog($" The file {userConfigFilePath} does not currently exist though, but will be" +
+                               " automatically created if any connection string or setting is changed.");
+                }
+            }
+
             if (File.Exists(userConfigFilePath))
             {
                 Configuration userConfiguration = OpenConfiguration(userConfigFilePath);

@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ConfigurationHelperTests.cs" />
+    <Compile Include="Helpers\TwoFilesConfigurationTests.cs" />
     <Compile Include="Helpers\ConversionHelperTests.cs" />
     <Compile Include="Helpers\JsonSerializerHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
