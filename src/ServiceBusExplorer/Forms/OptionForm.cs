@@ -46,6 +46,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private fields
+        bool initializing;
         List<string> changedSettings = new List<string>();
         #endregion
 
@@ -72,6 +73,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                           IEnumerable<string> selectedEntities,
                           string messageBodyType)
         {
+            initializing = true;
             InitializeComponent();
 
             Label = label;
@@ -135,6 +137,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 bodyType = BodyType.Stream;
             }
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
+            initializing = false;
         }
         #endregion
 
@@ -184,11 +187,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void logNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.LogFontSize);
             LogFontSize = logNumericUpDown.Value;
         }
 
         private void treeViewNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.TreeViewFontSize);
             TreeViewFontSize = treeViewNumericUpDown.Value;
         }
 
@@ -253,50 +258,60 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.RetryCountParameter);
             RetryCount = (int)retryCountNumericUpDown.Value;
         }
 
         private void retryTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.RetryTimeoutParameter);
             RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
         }
 
         private void receiveTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.ReceiveTimeoutParameter);
             ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
         }
         private void sessionTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.ServerTimeoutParameter);
             ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
         }
 
         private void prefetchCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.PrefetchCountParameter);
             PrefetchCount = (int)prefetchCountNumericUpDown.Value;
         }
 
         private void topNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.TopParameter);
             TopCount = (int)topNumericUpDown.Value;
         }
 
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.ShowMessageCountParameter);
             ShowMessageCount = showMessageCountCheckBox.Checked;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.SaveMessageToFileParameter);
             SaveMessageToFile = saveMessageToFileCheckBox.Checked;
         }
 
         private void savePropertiesToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.SavePropertiesToFileParameter);
             SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
         }
 
         private void saveCheckpointsToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.SaveCheckpointsToFileParameter);
             SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
         }
 
@@ -345,36 +360,43 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.SenderThinkTimeParameter);
             SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
         }
 
         private void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.ReceiverThinkTimeParameter);
             ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
         private void useAscii_CheckedChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.UseAsciiParameter);
             UseAscii = useAsciiCheckBox.Checked;
         }
 
         private void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.MonitorRefreshIntervalParameter);
             MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.LabelParameter);
             Label = txtLabel.Text;
         }
 
         private void txtMessageFile_TextChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.FileParameter);
             MessageFile = txtMessageFile.Text;
         }
 
         private void txtMessageText_TextChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.MessageParameter);
             MessageText = txtMessageText.Text;
         }
 
@@ -382,12 +404,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
             {
+                AddSettingToChanged(ConfigurationParameters.ConnectivityMode);
                 ServiceBusHelper.ConnectivityMode = connectivityMode;
             }
         }
 
         private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            AddSettingToChanged(ConfigurationParameters.MessageBodyType);
             MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
@@ -395,41 +419,41 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             var configuration = TwoFilesConfiguration.Create();
 
-            SaveDecimalSettingIfChanged(configuration, ConfigurationParameters.LogFontSize, LogFontSize,
-                MainForm.lstLog.Font.Size);
-            SaveDecimalSettingIfChanged(configuration, ConfigurationParameters.TreeViewFontSize,
-                TreeViewFontSize, MainForm.tree);
-            SaveBoolSettingIfChanged(configuration, ConfigurationParameters.ShowMessageCountParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.LogFontSize, LogFontSize);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.TreeViewFontSize,
+                TreeViewFontSize);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.ShowMessageCountParameter,
                 ShowMessageCount);
-            SaveBoolSettingIfChanged(configuration, ConfigurationParameters.SaveMessageToFileParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SaveMessageToFileParameter,
                 SaveMessageToFile);
-            SaveBoolSettingIfChanged(configuration, ConfigurationParameters.UseAsciiParameter, UseAscii);
-            SaveBoolSettingIfChanged(configuration, ConfigurationParameters.SavePropertiesToFileParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.UseAsciiParameter, UseAscii);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SavePropertiesToFileParameter,
                 SavePropertiesToFile);
-            SaveBoolSettingIfChanged(configuration, ConfigurationParameters.SaveCheckpointsToFileParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SaveCheckpointsToFileParameter,
                 SaveCheckpointsToFile);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.RetryCountParameter, RetryCount);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.RetryTimeoutParameter, RetryTimeout);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.TopParameter, TopCount);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.ReceiveTimeoutParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryCountParameter, RetryCount);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryTimeoutParameter, RetryTimeout);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.TopParameter, TopCount);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.ReceiveTimeoutParameter,
                 ReceiveTimeout);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.ServerTimeoutParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.ServerTimeoutParameter,
                 ServerTimeout);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.SenderThinkTimeParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SenderThinkTimeParameter,
                 SenderThinkTime);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.ReceiverThinkTimeParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.ReceiverThinkTimeParameter,
                 ReceiverThinkTime);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.MonitorRefreshIntervalParameter,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.MonitorRefreshIntervalParameter,
                 MonitorRefreshInterval);
-            SaveIntSettingIfChanged(configuration, ConfigurationParameters.PrefetchCountParameter, PrefetchCount);
-            SaveStringSettingIfChanged(configuration, ConfigurationParameters.LabelParameter, Label);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.PrefetchCountParameter, PrefetchCount);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.LabelParameter, Label);
             SaveMessageSettingsIfChanged(configuration, MessageText, MessageFile);
-            SaveEnumSettingIfChanged(configuration, ConfigurationParameters.ConnectivityMode,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.ConnectivityMode,
                 ServiceBusHelper.ConnectivityMode);
-            SaveEnumSettingIfChanged(configuration, ConfigurationParameters.Encoding,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.Encoding,
                 ServiceBusHelper.EncodingType);
-            SaveSelectedEntitiesIfChanged(configuration, cboSelectedEntities.Text);
-            SaveStringSettingIfChanged(configuration, ConfigurationParameters.MessageBodyType,
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SelectedEntitiesParameter, 
+                cboSelectedEntities.Text);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.MessageBodyType,
                 cboDefaultMessageBodyType.SelectedIndex.ToString());
 
             configuration.Save();
@@ -459,48 +483,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Private methods
         void AddSettingToChanged(string setting)
         {
-            if(!changedSettings.Contains(setting))
+            if(!initializing && !changedSettings.Contains(setting))
             {
                 changedSettings.Add(setting);
             }
         }
-
-        // Since the MainFrom reads the values as float from the configuration file this
-        // method is doing that too. I'll create an Issue for making it decimal throughout.
-        void SaveBoolSettingIfChanged(TwoFilesConfiguration configuration, string setting, bool runningValue)
-        {
-            if (runningValue != configuration.GetBoolValue(setting, runningValue) &&
-                configuration.SettingExists(setting))
-            {
-                configuration.SetValue(setting, runningValue);
-            }
-        }
-
-        void SaveDecimalSettingIfChanged(TwoFilesConfiguration configuration, string setting,
-            decimal runningValue, decimal initialValue)
-        {
-            // Write the value if we get a different value when reading the configuration and
-            // it has been set or it is different from the initial value.
-            if (runningValue != configuration.GetDecimalValue(setting, default)
-                && configuration.SettingExists(setting)
-                || runningValue != initialValue)
-            {
-
-                configuration.SetValue(setting, runningValue);
-            }
-        }
-
-        void SaveIntSettingIfChanged(TwoFilesConfiguration configuration, string setting,
-            int runningValue)
-        {
-            if (runningValue != configuration.GetIntValue(setting, runningValue))
-            {
-                configuration.SetValue(setting, runningValue);
-            }
-
-
-        }
-
 
         void SaveMessageSettingsIfChanged(TwoFilesConfiguration configuration,
             string runningMessageText, string runningMessageFile)
@@ -508,49 +495,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
                 out var configuredMessageText, out var configuredMessageFile);
 
-            if (runningMessageText != configuredMessageText)
+            if (changedSettings.Contains(ConfigurationParameters.MessageParameter))
             {
                 configuration.SetValue(ConfigurationParameters.MessageParameter, runningMessageText);
             }
 
-            if ((runningMessageFile ?? string.Empty) != configuredMessageFile)
+            if (changedSettings.Contains(ConfigurationParameters.FileParameter))
             {
                 configuration.SetValue(ConfigurationParameters.FileParameter, runningMessageFile);
             }
         }
 
-        void SaveSelectedEntitiesIfChanged(TwoFilesConfiguration configuration, string runningSelectedEntities)
-        {
-            var configuredSelectedEntities = ConfigurationHelper.GetSelectedEntities(configuration);
-
-            // Check if the lists are different
-            if (!(configuredSelectedEntities.All(runningEntitiesAsList.Contains) &&
-                configuredSelectedEntities.Count == runningEntitiesAsList.Count))
-            {
-                configuration.SetValue(ConfigurationParameters.SelectedEntitiesParameter,
-                    runningSelectedEntities);
-            }
-        }
-
-        void SaveStringSettingIfChanged(TwoFilesConfiguration configuration, string setting,
-            string runningValue)
-        {
-            if (runningValue != configuration.GetStringValue(setting, runningValue))
-            {
-                configuration.SetValue(setting, runningValue);
-            }
-        }
-
-        void SaveEnumSettingIfChanged<T>(TwoFilesConfiguration configuration, string setting,
+        void SaveSettingIfChanged<T>(TwoFilesConfiguration configuration, string setting,
             T runningValue)
-            where T : struct
         {
-            if (!runningValue.Equals(configuration.GetEnumValue<T>(setting, runningValue)))
+            if (changedSettings.Contains(setting))
             {
                 configuration.SetValue(setting, runningValue);
             }
         }
-
         #endregion
     }
 }
