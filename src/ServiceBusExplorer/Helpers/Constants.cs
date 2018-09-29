@@ -31,6 +31,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class Constants
     {
+        public const string QueueEntities = "Queues";
+        public const string TopicEntities = "Topics";
+        public const string RelayEntities = "Relays";
+        public const string EventHubEntities = "Event Hubs";
+        public const string NotificationHubEntities = "Notification Hubs";
+
+
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1.0);
         public static readonly TimeSpan TokenRequestOperationTimeout = TimeSpan.FromMinutes(3.0);
         public static readonly long ServicePointMaxIdleTimeMilliSeconds = 0xc350;

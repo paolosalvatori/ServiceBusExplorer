@@ -51,6 +51,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string Key = "Key";
         private const string Type = "Type";
         private const string Value = "Value";
+        private const string DefaultMessageText = "Hi mate, how are you?";
         #endregion
 
         #region Private Static Fields
@@ -140,38 +141,32 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
 
-        /// <summary>
-        /// Reads a message from an XML file in the current directory.
-        /// </summary>
-        /// <returns>The message read from the XML file.</returns>
-        public static string ReadMessage()
+        public static void GetMessageTextAndFile(TwoFilesConfiguration configuration, 
+            out string messageText, out string messageFile)
         {
-            try
-            {
-                if (!File.Exists(messageFilePath))
-                {
-                    return null;
-                }
+            messageText = ReadMessage();
+            messageFile = string.Empty;
 
-                using (var reader = new StreamReader(messageFilePath))
+            if (string.IsNullOrWhiteSpace(messageText))
+            {
+                messageText = configuration.GetStringValue(ConfigurationParameters.MessageParameter,
+                   DefaultMessageText);
+            }
+
+            messageFile = configuration.GetStringValue(ConfigurationParameters.FileParameter, messageFile);
+            if (!string.IsNullOrWhiteSpace(messageFile) && File.Exists(messageFile))
+            {
+                using (var streamReader = new StreamReader(messageFile))
                 {
-                    using (var xmlReader = XmlReader.Create(reader))
+                    var text = streamReader.ReadToEnd();
+                    if (!string.IsNullOrWhiteSpace(text))
                     {
-                        var root = XElement.Load(xmlReader);
-                        var cdata = root.DescendantNodes().OfType<XCData>().FirstOrDefault();
-                        if (cdata != null)
-                        {
-                            return cdata.Value;
-                        }
+                        messageText = text;
                     }
                 }
             }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
-            {
-            }
-            return null;
         }
+
 
         /// <summary>
         /// Reads a relay message from an XML file in the current directory.
@@ -287,6 +282,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Static Methods
+        /// <summary>
+        /// Reads a message from an XML file in the current directory.
+        /// </summary>
+        /// <returns>The message read from the XML file.</returns>
+        static string ReadMessage()
+        {
+            try
+            {
+                if (!File.Exists(messageFilePath))
+                {
+                    return null;
+                }
+
+                using (var reader = new StreamReader(messageFilePath))
+                {
+                    using (var xmlReader = XmlReader.Create(reader))
+                    {
+                        var root = XElement.Load(xmlReader);
+                        var cdata = root.DescendantNodes().OfType<XCData>().FirstOrDefault();
+                        if (cdata != null)
+                        {
+                            return cdata.Value;
+                        }
+                    }
+                }
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
+            }
+            return null;
+        }
+
         private static void WriteFile(string path, string content)
         {
             try
@@ -311,6 +339,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
             }
         }
+
         #endregion
     }
 }

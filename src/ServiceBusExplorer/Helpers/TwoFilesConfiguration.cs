@@ -107,7 +107,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         public bool GetBoolValue(string AppSettingKey, bool defaultValue,
-            WriteToLogDelegate writeToLog)
+            WriteToLogDelegate writeToLog = null)
         {
             if (userConfiguration != null)
             {
@@ -141,7 +141,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public T GetEnumValue<T>(string AppSettingKey, WriteToLogDelegate writeToLog, T defaultValue = default)
+        public T GetEnumValue<T>(string AppSettingKey, T defaultValue = default, 
+            WriteToLogDelegate writeToLog = null)
             where T : struct
         {
             if (userConfiguration != null)
@@ -176,7 +177,45 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public float GetFloatValue(string AppSettingKey, WriteToLogDelegate writeToLog, float defaultValue = default)
+        public decimal GetDecimalValue(string AppSettingKey, decimal defaultValue = default,
+            WriteToLogDelegate writeToLog = null)
+        {
+            if (userConfiguration != null)
+            {
+                string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+                if (null != resultStringUser)
+                {
+                    if (decimal.TryParse(resultStringUser, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.InvariantCulture, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey,
+                        resultStringUser, typeof(decimal));
+                }
+            }
+
+            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            {
+                if (decimal.TryParse(resultStringApp, NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture, out var result))
+                {
+                    return result;
+                }
+
+                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                    resultStringApp, typeof(decimal));
+            }
+
+            return defaultValue;
+        }
+
+        public float GetFloatValue(string AppSettingKey, float defaultValue = default, 
+            WriteToLogDelegate writeToLog = null)
         {
             if (userConfiguration != null)
             {
@@ -212,7 +251,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public int GetIntValue(string AppSettingKey, WriteToLogDelegate writeToLog, int defaultValue = default)
+        public int GetIntValue(string AppSettingKey, int defaultValue = default,
+            WriteToLogDelegate writeToLog = null)
         {
             if (userConfiguration != null)
             {
@@ -278,6 +318,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             return sectionValues;
+        }
+
+        public bool SettingExists(string AppSettingKey)
+        {
+            if (userConfiguration != null)
+            {
+                string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+                if (null != resultStringUser)
+                {
+                    return true;
+                }
+            }
+
+            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+            return (null != resultStringApp);
         }
 
         public void AddEntryToDictionarySection(string sectionName, string key, string value)

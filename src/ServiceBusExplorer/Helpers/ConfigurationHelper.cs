@@ -19,35 +19,100 @@
 //=======================================================================================
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class ConfigurationHelper
     {
         static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
 
-        #region Public methods
+        static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
+            Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
+
+        #region Public instance methods
 
         public static void UpdateServiceBusNamespace(string key, string newKey, string newValue, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
 
             configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
         public static void AddServiceBusNamespace(string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
 
             configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
         public static void RemoveServiceBusNamespace(string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
 
             configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
-        
+
         #endregion
+
+        #region Public static methods
+        public static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
+        {
+            var selectedEntities = new List<string>();
+            var parameter = configuration.GetStringValue(ConfigurationParameters.SelectedEntitiesParameter);
+
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                List<string> items = GetEntitiesAsList(parameter);
+                if (items.Count == 0)
+                {
+                    GetDefaultSelectedEntities(selectedEntities, entities);
+                }
+                else
+                {
+                    foreach (var item in items)
+                    {
+                        if (entities.Contains(item, StringComparer.OrdinalIgnoreCase))
+                        {
+                            selectedEntities.Add(item);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                GetDefaultSelectedEntities(selectedEntities, entities);
+            }
+
+            return selectedEntities;
+        }
+
+        public static List<string> GetEntitiesAsList(string parameter)
+        {
+            return parameter.Split(',').Select(item => item.Trim()).ToList();
+        }
+
+        #endregion
+
+        #region Public properties
+        public static List<string> Entities
+        {
+            get
+            {
+                return entities;
+            }
+        }
+        #endregion
+
+        #region Private static methods
+        static void GetDefaultSelectedEntities(List<string> selectedEntities, List<string> entities)
+        {
+            selectedEntities.AddRange(entities);
+        }
+
+        #endregion
+
     }
 }

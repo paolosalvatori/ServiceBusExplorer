@@ -134,7 +134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             (cboServiceBusNamespace.Text == EnterConnectionString &&
                              !string.IsNullOrWhiteSpace(connectionString));
 
-            foreach (var item in MainForm.SingletonMainForm.Entities)
+            foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.Items.Add(item);
             }
