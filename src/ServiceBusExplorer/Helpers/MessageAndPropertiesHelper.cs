@@ -301,10 +301,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                         var root = XElement.Load(xmlReader);
                         var cdata = root.DescendantNodes().OfType<XCData>().FirstOrDefault();
-                        if (cdata != null)
-                        {
-                            return cdata.Value;
-                        }
+
+                        return cdata?.Value;
                     }
                 }
             }

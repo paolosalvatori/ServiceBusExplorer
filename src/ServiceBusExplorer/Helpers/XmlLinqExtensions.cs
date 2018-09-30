@@ -29,23 +29,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class XmlLinqExtensions
     {
-        public static XElement AquireElement(this XContainer container, 
+        public static XElement AquireElement(this XContainer container,
             string name, bool addFirst = false)
         {
             var element = container.Element(name);
 
-            if (null == element)
+            if (null != element)
             {
-                element = new XElement(name);
+                return element;
+            }
 
-                if (addFirst)
-                {
-                    container.AddFirst(element);
-                }
-                else
-                {
-                    container.Add(element);
-                }
+            element = new XElement(name);
+
+            if (addFirst)
+            {
+                container.AddFirst(element);
+            }
+            else
+            {
+                container.Add(element);
             }
 
             return element;

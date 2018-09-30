@@ -1,6 +1,4 @@
-﻿#region Using Directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -12,7 +10,6 @@ using Microsoft.ServiceBus;
 
 using NUnit.Framework;
 
-#endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 {
