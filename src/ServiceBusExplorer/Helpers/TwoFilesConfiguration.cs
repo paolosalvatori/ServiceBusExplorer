@@ -141,7 +141,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public T GetEnumValue<T>(string AppSettingKey, T defaultValue = default, 
+        public T GetEnumValue<T>(string AppSettingKey, T defaultValue = default,
             WriteToLogDelegate writeToLog = null)
             where T : struct
         {
@@ -214,7 +214,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public float GetFloatValue(string AppSettingKey, float defaultValue = default, 
+        public float GetFloatValue(string AppSettingKey, float defaultValue = default,
             WriteToLogDelegate writeToLog = null)
         {
             if (userConfiguration != null)
@@ -354,38 +354,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             userConfiguration.Save();
         }
 
+        // It tries to update the section in both of the files
         public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey, string newValue,
             WriteToLogDelegate writeToLog)
         {
             AquireUserConfiguration();
 
-            ConfigurationSection section = AquireSection(sectionName);
-            var xml = section.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-            bool found = false;
+            var sectionUser = AquireSection(sectionName);
+            var updatedUser = TryUpdateEntryInDictionarySectionUsingRawXml(sectionUser, key, newKey, newValue);
 
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            if (updatedUser)
             {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
-                {
-                    if (!string.IsNullOrEmpty(newKey)) child.SetAttribute("key", newKey);
-                    if (!string.IsNullOrEmpty(newValue)) child.SetAttribute("value", newValue);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
                 userConfiguration.Save();
             }
             else
             {
-                writeToLog($"The key {key} was not found in the file {userConfigFilePath}. It needs to "
-                    + $"be changed manually in the file {applicationConfiguration.FilePath}.");
+                // Update the application config
+                var sectionApp = applicationConfiguration.GetSection(sectionName);
+                var updatedApp = TryUpdateEntryInDictionarySectionUsingRawXml(sectionApp, key, newKey, newValue);
+
+                if (updatedApp)
+                {
+                    applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
+                    ConfigurationManager.RefreshSection(sectionName);
+                }
+                else
+                {
+                    writeToLog("Failed to updated any of the configuration files.");
+                }
             }
         }
 
@@ -393,35 +389,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             AquireUserConfiguration();
 
-            ConfigurationSection section = AquireSection(sectionName);
-            var xml = section.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-            bool found = false;
+            ConfigurationSection sectionUser = AquireSection(sectionName);
+            bool removedUser = TryRemoveEntryFromSectionUsingRawXml(sectionUser, key);
 
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            if (removedUser)
             {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
-                {
-                    found = true;
-                    child.ParentNode.RemoveChild(child);
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
                 userConfiguration.Save();
             }
             else
             {
-                writeToLog($"The key {key} was not found in the file {userConfigFilePath}. It needs to "
-                    + $"be changed manually in the file {applicationConfiguration.FilePath}.");
+                // Update the application config
+                var sectionApp = applicationConfiguration.GetSection(sectionName);
+                var removedApp = TryRemoveEntryFromSectionUsingRawXml(sectionApp, key);
+
+                if (removedApp)
+                {
+                    applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
+                    ConfigurationManager.RefreshSection(sectionName);
+                }
+                else
+                {
+                    writeToLog("Failed to updated any of the configuration files.");
+                }
             }
         }
-
 
         public void SetValue<T>(string AppSettingKey, T value)
         {
@@ -536,6 +527,74 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             configSections.Add(newSection);
             configElement.AquireElement(sectionName);
         }
+
+
+        // This updates only the specified section. The Configuration object needs to be saved.
+        static bool TryUpdateEntryInDictionarySectionUsingRawXml(ConfigurationSection section,
+            string key, string newKey, string newValue)
+        {
+            if (null == section )
+            {
+                return false;
+            }
+
+            var xml = section.SectionInformation.GetRawXml();
+            XmlDocument xmlDocument = new XmlDocument();
+            bool found = false;
+
+            xmlDocument.LoadXml(xml);
+
+            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            {
+                if (child.LocalName == "add" && child.GetAttribute("key") == key)
+                {
+                    if (!string.IsNullOrEmpty(newKey)) child.SetAttribute("key", newKey);
+                    if (!string.IsNullOrEmpty(newValue)) child.SetAttribute("value", newValue);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
+            }
+
+            return found;
+        }
+
+        // The Configuration object needs to be saved after the removal of the entry.
+        static bool TryRemoveEntryFromSectionUsingRawXml(ConfigurationSection section, string key)
+        {
+            if (null == section)
+            {
+                return false;
+            }
+
+            var xml = section.SectionInformation.GetRawXml();
+            var xmlDocument = new XmlDocument();
+            bool found = false;
+
+            xmlDocument.LoadXml(xml);
+
+            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            {
+                if (child.LocalName == "add" && child.GetAttribute("key") == key)
+                {
+                    found = true;
+                    child.ParentNode.RemoveChild(child);
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
+            }
+
+            return found;
+        }
+
         #endregion
 
         #region Private instance methods

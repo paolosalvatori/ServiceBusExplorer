@@ -636,7 +636,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
-        #endregion
 
         private void btnRename_Click(object sender, EventArgs e)
         {
@@ -703,5 +702,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
             }
         }
+
+        #endregion
     }
 }

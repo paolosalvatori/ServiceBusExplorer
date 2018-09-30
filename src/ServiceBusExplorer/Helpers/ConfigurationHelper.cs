@@ -32,32 +32,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
             Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
 
-        #region Public instance methods
+        #region Public methods
 
         public static void UpdateServiceBusNamespace(string key, string newKey, string newValue, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); 
 
             configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
         public static void AddServiceBusNamespace(string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); 
 
             configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
         public static void RemoveServiceBusNamespace(string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog); ;
+            var configuration = TwoFilesConfiguration.Create(writeToLog); 
 
             configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
 
-        #endregion
-
-        #region Public static methods
         public static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
         {
             var selectedEntities = new List<string>();
@@ -96,7 +93,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         #endregion
 
-        #region Public properties
+        #region Public static properties
         public static List<string> Entities
         {
             get
