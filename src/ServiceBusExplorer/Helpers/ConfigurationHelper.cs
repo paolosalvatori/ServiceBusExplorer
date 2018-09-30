@@ -108,8 +108,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             selectedEntities.AddRange(entities);
         }
-
         #endregion
-
     }
 }

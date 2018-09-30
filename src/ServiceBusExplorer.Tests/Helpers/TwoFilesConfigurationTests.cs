@@ -75,7 +75,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         const string ValueAlaskaPollock = "Alaska pollock";
         const string ValueAlaskaPollockOldName = "Theragra chalcogramma";
         const string ValueAlaskaPollockNewName = "Gadus chalcogrammus";
-        const string ValuePike = "Pike";
+        const string KeyPike = "Pike";
         const string ValuePikeScienticName = "Esox lucius";
 
         // MessagingNamespaces constants
@@ -110,7 +110,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
         readonly Dictionary<string, string> someFreshWaterFishes = new Dictionary<string, string>()
         {
-            { ValuePike, ValuePikeScienticName },
+            { KeyPike, ValuePikeScienticName },
             { "Perch", "Perca flavescens" },
             { "Zander","Sander lucioperca" }
         };
@@ -366,7 +366,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             foreach (var freshWaterFish in someFreshWaterFishes)
             {
                 configurationOpenedWithoutUserFile.AddEntryToDictionarySection
-                    (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, freshWaterFish.Key, freshWaterFish.Value);
+                    (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, freshWaterFish.Key, 
+                    freshWaterFish.Value);
             }
 
             // Persist the configuration
@@ -377,12 +378,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 
             // Add an  entry with a new value
             configurationOpenedWithoutUserFile.AddEntryToDictionarySection
-            (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies,
+                (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies,
                 "No name");
 
             // Delete the entry
             configurationOpenedWithoutUserFile.RemoveEntryFromDictionarySection
-            (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies, writeToLog);
+                (KeyFreshWaterFishesWhichWillOnlyExistInUserConfig, NonExistingSpecies, writeToLog);
 
             // Test reading config values again
             TestReadingHashtableSection(configurationOpenedWithoutUserFile, userFileShouldHaveValues: true);
@@ -390,16 +391,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             // Update an entry with a invalid value
             configurationOpenedWithoutUserFile.UpdateEntryInDictionarySection(
                 KeyFreshWaterFishesWhichWillOnlyExistInUserConfig,
-                someFreshWaterFishes[ValuePike],
-                someFreshWaterFishes[ValuePike],
+                KeyPike,
+                KeyPike,
                 "Wrong name",
                 writeToLog);
 
             // Update the previous entry with the correct value
             configurationOpenedWithoutUserFile.UpdateEntryInDictionarySection(
                 KeyFreshWaterFishesWhichWillOnlyExistInUserConfig,
-                someFreshWaterFishes[ValuePike],
-                someFreshWaterFishes[ValuePike],
+                KeyPike,
+                KeyPike,
                 ValuePikeScienticName,
                 writeToLog);
 

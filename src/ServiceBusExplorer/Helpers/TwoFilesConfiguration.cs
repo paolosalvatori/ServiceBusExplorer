@@ -432,7 +432,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public void Save()
         {
             // We are only making changes to the user configuration
-            userConfiguration.Save();
+            userConfiguration?.Save();
         }
 
         #endregion
@@ -466,8 +466,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration, string userConfigFilePath,
-            WriteToLogDelegate writeToLog = null)
+        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration, 
+            string userConfigFilePath, WriteToLogDelegate writeToLog = null)
         {
             if (!userConfigPathHasBeenShown && writeToLog != null)
             {
