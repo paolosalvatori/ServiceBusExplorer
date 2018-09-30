@@ -82,7 +82,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// </summary>
         public static void WriteCheckpoints()
         {
-            if (itemList.Count == 0)
+            if (itemList == null || itemList.Count == 0)
             {
                 return;
             }

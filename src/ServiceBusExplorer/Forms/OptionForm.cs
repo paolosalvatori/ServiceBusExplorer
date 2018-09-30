@@ -45,7 +45,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string MessageTextTitle = "Message Text";
         #endregion
 
-        #region Private fields
+        #region Private Fields
         bool initializing;
         List<string> changedSettings = new List<string>();
         #endregion
@@ -105,10 +105,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             monitorRefreshIntervalNumericUpDown.Value = monitorRefreshInterval;
             prefetchCountNumericUpDown.Value = prefetchCount;
             topNumericUpDown.Value = top;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
+            showMessageCountCheckBox.Checked = showMessageCount;
             savePropertiesToFileCheckBox.Checked = savePropertiesToFile;
             saveMessageToFileCheckBox.Checked = saveMessageToFile;
             saveCheckpointsToFileCheckBox.Checked = saveCheckpointsToFile;
+            useAsciiCheckBox.Checked = useAscii;
 
             var connectivityMode = ServiceBusHelper.ConnectivityMode;
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
@@ -244,6 +245,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             UseAscii = true;
 
             saveMessageToFileCheckBox.Checked = true;
+            showMessageCountCheckBox.Checked = true;
             savePropertiesToFileCheckBox.Checked = true;
             saveCheckpointsToFileCheckBox.Checked = true;
             useAsciiCheckBox.Checked = true;

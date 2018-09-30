@@ -3613,6 +3613,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             saveCheckpointsToFile = configuration.GetBoolValue(ConfigurationParameters.SaveCheckpointsToFileParameter,
                 saveCheckpointsToFile, WriteToLog);
 
+            useAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter, useAscii, WriteToLog);
+
             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
                    serviceBusHelper.Scheme);
 
