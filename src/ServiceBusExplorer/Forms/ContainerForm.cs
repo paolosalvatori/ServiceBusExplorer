@@ -460,7 +460,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
                 else
                 {
-                    Text = string.Format(ConsumerGroupListenerFormat, consumerGroup);
+                    Text = string.Format(ConsumerGroupListenerFormat, consumerGroup, hubName);
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, hubName, consumerGroup);
                 }
                 partitionListenerControl.Focus();
