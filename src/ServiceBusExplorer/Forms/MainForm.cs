@@ -216,8 +216,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private bool importing;
         private readonly int mainSplitterDistance;
         private readonly int splitterContainerDistance;
-        private float treeViewFontSize;
-        private float logFontSize;
+        private decimal treeViewFontSize;
+        private decimal logFontSize;
         private int topCount = 10;
         private int receiveTimeout = 1;
         private int serverTimeout = 5;
@@ -261,8 +261,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             });
             mainSplitterDistance = mainSplitContainer.SplitterDistance;
             splitterContainerDistance = splitContainer.SplitterDistance;
-            treeViewFontSize = serviceBusTreeView.Font.Size;
-            logFontSize = lstLog.Font.Size;
+            treeViewFontSize = (decimal)serviceBusTreeView.Font.Size;
+            logFontSize = (decimal)lstLog.Font.Size;
             Trace.Listeners.Add(new LogTraceListener());
             mainSingletonMainForm = this;
             serviceBusHelper = new ServiceBusHelper(WriteToLog);
@@ -3625,19 +3625,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
             label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, DefaultLabel);
 
-            var tempLogFontSize = configuration.GetFloatValue(ConfigurationParameters.LogFontSize, logFontSize, WriteToLog);
-            if (!DoubleHelper.NearlyEqual(tempLogFontSize, logFontSize))
+            var tempLogFontSize = configuration.GetDecimalValue(ConfigurationParameters.LogFontSize, logFontSize, WriteToLog);
+            if (tempLogFontSize != logFontSize)
             {
                 logFontSize = tempLogFontSize;
-                lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
             }
 
-            var tempTreeViewFontSize = configuration.GetFloatValue(ConfigurationParameters.TreeViewFontSize,
+            var tempTreeViewFontSize = configuration.GetDecimalValue(ConfigurationParameters.TreeViewFontSize,
                 treeViewFontSize, WriteToLog);
-            if (!DoubleHelper.NearlyEqual(tempTreeViewFontSize, treeViewFontSize))
+            if (tempTreeViewFontSize != treeViewFontSize)
             {
                 treeViewFontSize = tempTreeViewFontSize;
-                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
+                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
             }
 
             RetryHelper.RetryCount = configuration.GetIntValue(ConfigurationParameters.RetryCountParameter,
@@ -5840,8 +5840,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             mainSplitContainer.SplitterDistance = mainSplitterDistance;
             splitContainer.SplitterDistance = splitterContainerDistance;
-            lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
-            serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
+            lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
+            serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
         }
 
         private void receiveMessages_Click(object sender, EventArgs e)

@@ -338,10 +338,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void mainPanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                     cboConnectivityMode.Location.X - 1,
-                                     cboConnectivityMode.Location.Y - 1,
-                                     cboConnectivityMode.Size.Width + 1,
-                                     cboConnectivityMode.Size.Height + 1);
+                                    cboConfigFile.Location.X - 1,
+                                    cboConfigFile.Location.Y - 1,
+                                    cboConfigFile.Size.Width + 1,
+                                    cboConfigFile.Size.Height + 1);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboConnectivityMode.Location.X - 1,
+                                    cboConnectivityMode.Location.Y - 1,
+                                    cboConnectivityMode.Size.Width + 1,
+                                    cboConnectivityMode.Size.Height + 1);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                                    cboEncodingType.Location.X - 1,
                                    cboEncodingType.Location.Y - 1,
@@ -517,5 +522,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
         #endregion
+
+        private void cboConfigFile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Read the values according to the selected configuration option and
+            // and display them
+            //cboConfigFile
+
+            var configuration = TwoFilesConfiguration.Create();
+        }
     }
 }

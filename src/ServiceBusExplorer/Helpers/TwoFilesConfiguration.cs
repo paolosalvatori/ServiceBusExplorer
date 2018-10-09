@@ -33,12 +33,25 @@ using System.Xml.Linq;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
+    // Used for determining which config file(s) to use
+    [Flags]
+    public enum ConfigFileUse
+    {
+        None = 0,
+        ApplicationConfig = 1,
+        UserConfig = 2,
+        BothConfig = 4,
+        AccessApplicationConfig = ApplicationConfig | BothConfig,
+        AccessUserConfig = UserConfig | BothConfig
+    }
+
     // This class is not thread safe since it relies on the Configuration class which is not thread 
     // safe when writing.
     public class TwoFilesConfiguration
     {
         #region Constants
         const string indent = "  ";
+        const string ConfigurationConfigFileSetting = "ConfigFile";
         #endregion
 
         #region Private static fields
@@ -51,10 +64,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         Configuration userConfiguration;
         #endregion
 
+        #region Private static properties
+        static ConfigFileUse cachedConfigFileUse { get; set; } = ConfigFileUse.None;
+        #endregion
+
+        #region Public Instance properties
+        public ConfigFileUse ConfigFileUse { get; private set; } = ConfigFileUse.ApplicationConfig;
+        #endregion
+
+
         #region Private constructor
-        private TwoFilesConfiguration(Configuration applicationConfiguration, string userConfigFilePath,
-            Configuration userConfiguration)
+        private TwoFilesConfiguration(ConfigFileUse configFileUse, Configuration applicationConfiguration,
+            string userConfigFilePath, Configuration userConfiguration)
         {
+            this.ConfigFileUse = configFileUse;
             this.applicationConfiguration = applicationConfiguration;
             this.userConfigFilePath = userConfigFilePath;
             this.userConfiguration = userConfiguration;
@@ -62,24 +85,99 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Static Create methods 
+        // This is the normal way to create it
         public static TwoFilesConfiguration Create(WriteToLogDelegate writeToLog = null)
         {
-            var localApplicationConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            ConfigFileUse configFileUse = AquireConfigFileUseValue();
+
+            return Create(configFileUse, writeToLog);
+        }
+
+        // Use this creation method if you want to get configuration values with a
+        // ConfigFIleUse value other than in the config files. This is used in the 
+        // OptionForm.
+        public static TwoFilesConfiguration Create(ConfigFileUse configFileUse,
+            WriteToLogDelegate writeToLog = null)
+        {
             var userConfigFilePath = GetUserSettingsFilePath();
 
-            return CreateConfiguration(localApplicationConfiguration, userConfigFilePath, writeToLog);
+            return Create(userConfigFilePath, configFileUse, writeToLog);
         }
+
 
         /// <summary>
         /// This method is meant to only be called for unit testing, to avoid polluting 
         /// neither the application config file for the executable running the unit 
         /// tests nor the user config file.
         /// </summary>
-        public static TwoFilesConfiguration Create(string userConfigFilePath, WriteToLogDelegate writeToLog = null)
+        public static TwoFilesConfiguration Create(string userConfigFilePath,
+            ConfigFileUse configFileUse, WriteToLogDelegate writeToLog = null)
         {
-            var applicationConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var applicationConfiguration =
+                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            return CreateConfiguration(applicationConfiguration, userConfigFilePath, writeToLog);
+            return CreateConfiguration(applicationConfiguration, userConfigFilePath, configFileUse,
+                writeToLog);
+        }
+
+        public static ConfigFileUse GetConfigFileUseValueIgnoringCache(string userConfigFilePath,
+             WriteToLogDelegate writeToLog = null)
+        {
+            if (null != userConfigFilePath && File.Exists(userConfigFilePath))
+            {
+                Configuration userConfiguration = OpenUserConfiguration(userConfigFilePath);
+
+                if (userConfiguration != null)
+                {
+                    string resultStringUser =
+                        userConfiguration.AppSettings.Settings[ConfigurationConfigFileSetting]?.Value;
+
+                    if (null != resultStringUser)
+                    {
+                        if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
+                        {
+                            //if ((resultUser & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None)
+                            //{
+                            return resultUser; // No need to check the application config
+                            //}
+                        }
+                        else
+                        {
+                            WriteParsingFailure(writeToLog, userConfigFilePath, ConfigurationConfigFileSetting,
+                                resultStringUser, typeof(ConfigFileUse));
+                        }
+                    }
+                }
+            }
+
+            // We get here if the user file did not have a valid value 
+            string resultStringApp = ConfigurationManager.AppSettings[ConfigurationConfigFileSetting];
+
+            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            {
+                if (Enum.TryParse<ConfigFileUse>(resultStringApp, out var resultApp))
+                {
+                    return resultApp;
+                }
+
+                var appConfiguration =
+                    ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                WriteParsingFailure(writeToLog, appConfiguration.FilePath,
+                    ConfigurationConfigFileSetting, resultStringApp, typeof(ConfigFileUse));
+            }
+
+            return ConfigFileUse.ApplicationConfig;  // Default to Application for backwards compability
+        }
+
+        static ConfigFileUse AquireConfigFileUseValue()
+        {
+            if (cachedConfigFileUse == ConfigFileUse.None)
+            {
+                cachedConfigFileUse = GetConfigFileUseValueIgnoringCache(GetUserSettingsFilePath());
+            }
+
+            return cachedConfigFileUse;
         }
         #endregion
 
@@ -88,14 +186,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             string result = null;
 
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 result = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
             }
 
-            if (string.IsNullOrEmpty(result))
+            if (UseApplicationConfig())
             {
                 result = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
             }
 
             if (string.IsNullOrEmpty(result))
@@ -109,7 +217,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public bool GetBoolValue(string AppSettingKey, bool defaultValue,
             WriteToLogDelegate writeToLog = null)
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
@@ -125,17 +233,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            if (UseApplicationConfig())
             {
-                if (bool.TryParse(resultStringApp, out var result))
-                {
-                    return result;
-                }
+                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                    resultStringApp, typeof(bool));
+                if (!string.IsNullOrWhiteSpace(resultStringApp))
+                {
+                    if (bool.TryParse(resultStringApp, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                        resultStringApp, typeof(bool));
+                }
             }
 
             return defaultValue;
@@ -145,7 +256,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             WriteToLogDelegate writeToLog = null)
             where T : struct
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
@@ -161,17 +272,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            if (UseApplicationConfig())
             {
-                if (Enum.TryParse<T>(resultStringApp, out var result))
-                {
-                    return result;
-                }
+                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                    resultStringApp, typeof(T));
+                if (!string.IsNullOrWhiteSpace(resultStringApp))
+                {
+                    if (Enum.TryParse<T>(resultStringApp, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                        resultStringApp, typeof(T));
+                }
             }
 
             return defaultValue;
@@ -180,7 +294,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public decimal GetDecimalValue(string AppSettingKey, decimal defaultValue = default,
             WriteToLogDelegate writeToLog = null)
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
@@ -197,18 +311,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            if (UseApplicationConfig())
             {
-                if (decimal.TryParse(resultStringApp, NumberStyles.AllowDecimalPoint,
-                    CultureInfo.InvariantCulture, out var result))
-                {
-                    return result;
-                }
+                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                    resultStringApp, typeof(decimal));
+                if (!string.IsNullOrWhiteSpace(resultStringApp))
+                {
+                    if (decimal.TryParse(resultStringApp, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.InvariantCulture, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                        resultStringApp, typeof(decimal));
+                }
             }
 
             return defaultValue;
@@ -217,7 +334,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public float GetFloatValue(string AppSettingKey, float defaultValue = default,
             WriteToLogDelegate writeToLog = null)
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
@@ -234,18 +351,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            if (UseApplicationConfig())
             {
-                if (float.TryParse(resultStringApp, NumberStyles.Float,
-                    CultureInfo.InvariantCulture, out var result))
-                {
-                    return result;
-                }
+                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                    resultStringApp, typeof(float));
+                if (!string.IsNullOrWhiteSpace(resultStringApp))
+                {
+                    if (float.TryParse(resultStringApp, NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                        resultStringApp, typeof(float));
+                }
             }
 
             return defaultValue;
@@ -254,7 +374,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public int GetIntValue(string AppSettingKey, int defaultValue = default,
             WriteToLogDelegate writeToLog = null)
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
@@ -270,17 +390,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            if (UseApplicationConfig())
             {
-                if (int.TryParse(resultStringApp, out var result))
-                {
-                    return result;
-                }
+                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
-                WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                    resultStringApp, typeof(int));
+                if (!string.IsNullOrWhiteSpace(resultStringApp))
+                {
+                    if (int.TryParse(resultStringApp, out var result))
+                    {
+                        return result;
+                    }
+
+                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
+                        resultStringApp, typeof(int));
+                }
             }
 
             return defaultValue;
@@ -290,29 +413,37 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             Hashtable sectionValues = null;
 
-            var sectionInApp = applicationConfiguration?.Sections[sectionName];
-
-            if (null != sectionInApp)
+            if (UseApplicationConfig())
             {
-                sectionValues = GetHashtableFromConfigurationSection(sectionInApp);
+                var sectionInApp = applicationConfiguration?.Sections[sectionName];
+
+                if (null != sectionInApp)
+                {
+                    sectionValues = GetHashtableFromConfigurationSection(sectionInApp);
+                }
             }
 
-            var sectionInUser = userConfiguration?.Sections[sectionName];
-
-            if (null != sectionInUser)
+            if (UseUserConfig())
             {
-                var sectionValuesInUserConfig = GetHashtableFromConfigurationSection(sectionInUser);
+                var sectionInUser = userConfiguration?.Sections[sectionName];
 
-                if (null == sectionValues)
+                if (null != sectionInUser)
                 {
-                    sectionValues = sectionValuesInUserConfig;
-                }
-                else
-                {
-                    // Merge the hash tables giving superiority to the values from user config
-                    foreach (DictionaryEntry item in sectionValuesInUserConfig)
+                    var sectionValuesInUserConfig = GetHashtableFromConfigurationSection(sectionInUser);
+
+                    // If sectionValues has not been set previously or configFileUse is set to read 
+                    // just the user config then return what we got.
+                    if (null == sectionValues || ConfigFileUse == ConfigFileUse.UserConfig)
                     {
-                        sectionValues[item.Key] = item.Value;
+                        sectionValues = sectionValuesInUserConfig;
+                    }
+                    else
+                    {
+                        // Merge the hash tables giving superiority to the values from user config
+                        foreach (DictionaryEntry item in sectionValuesInUserConfig)
+                        {
+                            sectionValues[item.Key] = item.Value;
+                        }
                     }
                 }
             }
@@ -322,13 +453,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public bool SettingExists(string AppSettingKey)
         {
-            if (userConfiguration != null)
+            if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
                 if (null != resultStringUser)
                 {
                     return true;
+                }
+
+                // If we only should read the user config then we should quit searching here.
+                if (ConfigFileUse == ConfigFileUse.UserConfig)
+                {
+                    return false;
                 }
             }
 
@@ -339,9 +476,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public void AddEntryToDictionarySection(string sectionName, string key, string value)
         {
-            AquireUserConfiguration();
+            ConfigurationSection section;
 
-            ConfigurationSection section = AquireSection(sectionName);
+            AquireUserConfigurationIfNeeded();
+
+            section = AquireSectionInAppropriateConfigFile(sectionName);
+
+            if (section == null)
+            {
+                var filePath = UseUserConfig() ? userConfigFilePath :
+                    applicationConfiguration.FilePath;
+
+                throw new InvalidDataException($"Unable to add an entry to the section {sectionName}. " +
+                        $"The section in the configuration file {filePath} does not exist.");
+            }
+
             var xml = section.SectionInformation.GetRawXml();
             var element = XElement.Parse(xml);
 
@@ -351,88 +500,162 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 ));
 
             section.SectionInformation.SetRawXml(element.ToString());
-            userConfiguration.Save();
-        }
 
-        // It tries to update the section in both of the files
-        public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey, string newValue,
-            WriteToLogDelegate writeToLog)
-        {
-            AquireUserConfiguration();
 
-            var sectionUser = AquireSection(sectionName);
-            var updatedUser = TryUpdateEntryInDictionarySectionUsingRawXml(sectionUser, key, newKey, newValue);
-
-            if (updatedUser)
+            if (UseUserConfig())
             {
                 userConfiguration.Save();
             }
             else
             {
+                applicationConfiguration.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(sectionName);
+            }
+        }
+
+        // It tries to update the section in both of the files
+        public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey,
+            string newValue, WriteToLogDelegate writeToLog)
+        {
+            bool updatedUser = false;
+            bool updatedApp = false;
+
+            if (UseUserConfig())
+            {
+                AquireUserConfigurationIfNeeded();
+
+                var sectionUser = AquireSectionInAppropriateConfigFile(sectionName);
+                updatedUser = TryUpdateEntryInDictionarySectionUsingRawXml(sectionUser, key, newKey, newValue);
+
+                if (updatedUser)
+                {
+                    userConfiguration.Save();
+                }
+            }
+
+            // We will enter the scope if the entry was not deleted or if we are in Application config only
+            // mode.
+            if (!updatedUser && UseApplicationConfig())
+            {
                 // Update the application config
                 var sectionApp = applicationConfiguration.GetSection(sectionName);
-                var updatedApp = TryUpdateEntryInDictionarySectionUsingRawXml(sectionApp, key, newKey, newValue);
+                updatedApp = TryUpdateEntryInDictionarySectionUsingRawXml(sectionApp, key, newKey, newValue);
 
                 if (updatedApp)
                 {
                     applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
                     ConfigurationManager.RefreshSection(sectionName);
                 }
-                else
-                {
-                    writeToLog("Failed to updated any of the configuration files.");
-                }
+            }
+
+            if (!updatedUser || !updatedApp)
+            {
+                HandleUpdateConfigurationFileError(updatedUser, updatedApp, writeToLog);
             }
         }
 
-        public void RemoveEntryFromDictionarySection(string sectionName, string key, WriteToLogDelegate writeToLog)
+        public void RemoveEntryFromDictionarySection(string sectionName, string key,
+            WriteToLogDelegate writeToLog)
         {
-            AquireUserConfiguration();
+            bool removedUser = false;
+            bool removedApp = false;
 
-            ConfigurationSection sectionUser = AquireSection(sectionName);
-            bool removedUser = TryRemoveEntryFromSectionUsingRawXml(sectionUser, key);
-
-            if (removedUser)
+            if (UseUserConfig())
             {
-                userConfiguration.Save();
+                AquireUserConfigurationIfNeeded();
+
+                ConfigurationSection sectionUser = AquireSectionInAppropriateConfigFile(sectionName);
+                removedUser = TryRemoveEntryFromSectionUsingRawXml(sectionUser, key);
+
+                if (removedUser)
+                {
+                    userConfiguration.Save();
+                }
             }
-            else
+
+            // We will enter the scope if the entry was not deleted or if we are in Application config only
+            // mode.
+            if (!removedUser && UseApplicationConfig())
             {
                 // Update the application config
                 var sectionApp = applicationConfiguration.GetSection(sectionName);
-                var removedApp = TryRemoveEntryFromSectionUsingRawXml(sectionApp, key);
+                removedApp = TryRemoveEntryFromSectionUsingRawXml(sectionApp, key);
 
                 if (removedApp)
                 {
                     applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
                     ConfigurationManager.RefreshSection(sectionName);
                 }
-                else
+            }
+
+            if (!removedUser || !removedApp)
+            {
+                HandleUpdateConfigurationFileError(removedUser, removedApp, writeToLog);
+            }
+        }
+
+        public void RemoveSection(string sectionName, WriteToLogDelegate writeToLog)
+        {
+            // First remove the section
+            if (UseUserConfig())
+            {
+                if (null != userConfiguration)
                 {
-                    writeToLog("Failed to updated any of the configuration files.");
+                    var userSection = userConfiguration.Sections[sectionName];
+
+                    if (null != userSection)
+                    {
+                        userConfiguration.Sections.Remove(sectionName);
+                        userConfiguration.Save(ConfigurationSaveMode.Modified);
+                    }
                 }
             }
+
+            if (UseApplicationConfig())
+            {
+                if (null != applicationConfiguration)
+                {
+                    var appSection = applicationConfiguration.Sections[sectionName];
+
+                    if (null != appSection)
+                    {
+                        applicationConfiguration.Sections.Remove(sectionName);
+                        applicationConfiguration.Save(ConfigurationSaveMode.Modified);
+                        ConfigurationManager.RefreshSection(sectionName);
+                    }
+                }
+            }
+
+            // The remove it from the configSections section
+            RemoveEntryFromDictionarySection("configSections", sectionName, writeToLog);
         }
 
         public void SetValue<T>(string AppSettingKey, T value)
         {
-            AquireUserConfiguration();
+            AquireUserConfigurationIfNeeded();
 
             if (value is string)
             {
-                SetValueInUserConfiguration(AppSettingKey, value as string);
+                SetValueInAppropriateConfigurations(AppSettingKey, value as string);
             }
             else
             {
                 var stringValue = Convert.ToString(value, CultureInfo.InvariantCulture);
-                SetValueInUserConfiguration(AppSettingKey, stringValue);
+                SetValueInAppropriateConfigurations(AppSettingKey, stringValue);
             }
         }
 
         public void Save()
         {
-            // We are only making changes to the user configuration
-            userConfiguration?.Save();
+            if (UseApplicationConfig())
+            {
+                applicationConfiguration.Save(ConfigurationSaveMode.Modified);
+            }
+
+            if (UseUserConfig())
+            {
+                userConfiguration?.Save();
+            }
         }
 
         #endregion
@@ -466,8 +689,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration, 
-            string userConfigFilePath, WriteToLogDelegate writeToLog = null)
+        static TwoFilesConfiguration CreateConfiguration(Configuration applicationConfiguration,
+            string userConfigFilePath, ConfigFileUse configFileUse, WriteToLogDelegate writeToLog = null)
         {
             if (!userConfigPathHasBeenShown && writeToLog != null)
             {
@@ -485,16 +708,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (File.Exists(userConfigFilePath))
             {
-                Configuration userConfiguration = OpenConfiguration(userConfigFilePath);
-                return new TwoFilesConfiguration(applicationConfiguration, userConfigFilePath,
+                Configuration userConfiguration = OpenUserConfiguration(userConfigFilePath);
+                return new TwoFilesConfiguration(configFileUse, applicationConfiguration, userConfigFilePath,
                     userConfiguration);
             }
 
-            return new TwoFilesConfiguration(applicationConfiguration, userConfigFilePath,
+            return new TwoFilesConfiguration(configFileUse, applicationConfiguration, userConfigFilePath,
                 null);
         }
 
-        static Configuration OpenConfiguration(string userFilePath)
+        static Configuration OpenUserConfiguration(string userFilePath)
         {
             var exeConfigurationFileMap = new ExeConfigurationFileMap
             {
@@ -528,12 +751,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             configElement.AquireElement(sectionName);
         }
 
-
         // This updates only the specified section. The Configuration object needs to be saved.
         static bool TryUpdateEntryInDictionarySectionUsingRawXml(ConfigurationSection section,
             string key, string newKey, string newValue)
         {
-            if (null == section )
+            if (null == section)
             {
                 return false;
             }
@@ -598,27 +820,53 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Private instance methods
-        void AquireUserConfiguration()
+        bool UseUserConfig()
         {
-            if (userConfiguration == null)
+            return ((ConfigFileUse & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None);
+        }
+
+        bool UseApplicationConfig()
+        {
+            return ((ConfigFileUse & ConfigFileUse.AccessApplicationConfig) != ConfigFileUse.None);
+        }
+
+        void AquireUserConfigurationIfNeeded()
+        {
+            if (UseUserConfig())
             {
-                EnsureUserFileExists();
-                userConfiguration = OpenConfiguration(userConfigFilePath);
+                if (userConfiguration == null)
+                {
+                    EnsureUserFileExists();
+                    userConfiguration = OpenUserConfiguration(userConfigFilePath);
+                }
             }
         }
 
-        void CreateDictionarySectionInUserConfigFile(string sectionName)
+        void CreateDictionarySectionInAppropriateConfigFile(string sectionName)
         {
-            AquireUserConfiguration();
+            AquireUserConfigurationIfNeeded();
 
-            var section = userConfiguration.GetSection(sectionName);
+            ConfigurationSection section;
+            string configFilePath;
+
+
+            if (UseUserConfig())
+            {
+                section = userConfiguration.GetSection(sectionName);
+                configFilePath = userConfigFilePath;
+            }
+            else
+            {
+                section = applicationConfiguration.GetSection(sectionName);
+                configFilePath = applicationConfiguration.FilePath;
+            }
 
             if (null != section)
             {
                 return; // Section already exists
             }
 
-            var document = XDocument.Load(userConfigFilePath);
+            var document = XDocument.Load(configFilePath);
 
             CreateSectionUsingRawXml(document, sectionName);
 
@@ -628,28 +876,65 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 IndentChars = indent
             };
 
-            using (var writer = XmlWriter.Create(userConfigFilePath, settings))
+            using (var writer = XmlWriter.Create(configFilePath, settings))
             {
                 document.Save(writer);
             }
 
             // Refresh the configuration object
-            userConfiguration = null;
-            AquireUserConfiguration();
+            if (UseUserConfig())
+            {
+                userConfiguration = null;
+                AquireUserConfigurationIfNeeded();
+            }
+            else
+            {                
+                // Reset the configuration
+                ConfigurationManager.RefreshSection(sectionName);
+                applicationConfiguration = ConfigurationManager
+                    .OpenExeConfiguration(ConfigurationUserLevel.None);
+            }
         }
 
-        ConfigurationSection AquireSection(string sectionName)
+        ConfigurationSection AquireSectionInAppropriateConfigFile(string sectionName)
         {
-            AquireUserConfiguration();
+            AquireUserConfigurationIfNeeded();
 
-            var section = userConfiguration.GetSection(sectionName);
+            var singleConfiguration = UseUserConfig() ? userConfiguration : applicationConfiguration;
+
+            var section = singleConfiguration.GetSection(sectionName);
 
             if (null == section)
             {
                 // Create the section in the user file
-                CreateDictionarySectionInUserConfigFile(sectionName);
+                CreateDictionarySectionInAppropriateConfigFile(sectionName);
 
-                section = userConfiguration.GetSection(sectionName);
+                // Get an updated configuration object
+                if (UseUserConfig())
+                {
+                    singleConfiguration = userConfiguration = 
+                        OpenUserConfiguration(userConfigFilePath);
+                }
+                else
+                {
+                    ConfigurationManager.RefreshSection(sectionName);
+
+                    singleConfiguration = applicationConfiguration = ConfigurationManager
+                        .OpenExeConfiguration(ConfigurationUserLevel.None);
+                }
+
+
+                //configuration = UseUserConfig() ? userConfiguration : applicationConfiguration;
+                section = singleConfiguration.GetSection(sectionName);
+
+                if (null == section)
+                {
+                    var configFilePath = UseUserConfig() ? userConfigFilePath :
+                        applicationConfiguration.FilePath;
+
+                    throw new InvalidDataException($"Unable to create the section {sectionName} " +
+                        $"in the configuration file {configFilePath}.");
+                }
             }
 
             return section;
@@ -683,15 +968,74 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
         }
 
-        void SetValueInUserConfiguration(string AppSettingKey, string stringValue)
+        void SetValueInAppropriateConfigurations(string AppSettingKey, string stringValue)
         {
-            if (userConfiguration.AppSettings.Settings[AppSettingKey] == null)
+            if (UseUserConfig())
             {
-                userConfiguration.AppSettings.Settings.Add(AppSettingKey, stringValue);
+                if (userConfiguration.AppSettings.Settings[AppSettingKey] == null)
+                {
+                    userConfiguration.AppSettings.Settings.Add(AppSettingKey, stringValue);
+                }
+                else
+                {
+                    userConfiguration.AppSettings.Settings[AppSettingKey].Value = stringValue;
+                }
             }
-            else
+            else // Update the Application Configuration
             {
-                userConfiguration.AppSettings.Settings[AppSettingKey].Value = stringValue;
+                if (applicationConfiguration.AppSettings.Settings[AppSettingKey] == null)
+                {
+                    applicationConfiguration.AppSettings.Settings.Add(AppSettingKey, stringValue);
+                }
+                else
+                {
+                    applicationConfiguration.AppSettings.Settings[AppSettingKey].Value = stringValue;
+                }
+            }
+
+        }
+
+        void HandleUpdateConfigurationFileError(bool removedUser, bool removedApp, WriteToLogDelegate writeToLog)
+        {
+            if (removedUser || removedApp)
+            {
+                return;
+            }
+
+            string message = string.Empty;
+
+            switch (ConfigFileUse)
+            {
+                case ConfigFileUse.ApplicationConfig:
+                    if (!removedApp)
+                    {
+                        message = $"the application configuration file {applicationConfiguration.FilePath}.";
+                    }
+                    break;
+
+                case ConfigFileUse.UserConfig:
+                    if (!removedUser)
+                    {
+                        message = $"the user configuration file {userConfigFilePath}.";
+                    }
+                    break;
+
+                case ConfigFileUse.BothConfig:
+                    if (!removedApp && !removedUser)
+                    {
+                        message = $"the application configuration file {applicationConfiguration.FilePath}" +
+                            " and the user configuration file {userConfigFilePath}.";
+                    }
+                    break;
+
+                default:
+                    throw new InvalidDataException("Unexpected value for ConfigFileUse: " +
+                        $"{ConfigFileUse}.");
+            }
+
+            if (null != writeToLog)
+            {
+                writeToLog("Failed to update " + message);
             }
         }
         #endregion
