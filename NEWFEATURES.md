@@ -2,7 +2,7 @@
 - EventData.SerializedSizeInBytes is used to calculate KB/sec in the partitionlistenercontrol
 - Added new properties (LastEnqueuedOffset and LastEnqueuedTimeUtc) to PartitionDescription control 
 - Fixed visualization of event data properties in the partition listener control
-- Greatly improved message tracking and clear of the partiton listener control
+- Greatly improved message tracking and clear of the partition listener control
 - Relay Message saved to file
 - Support for Persistent and Dynamic Relay Services
 - Export Persistent Relay Services
