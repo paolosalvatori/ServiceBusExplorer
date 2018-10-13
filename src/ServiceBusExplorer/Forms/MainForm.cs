@@ -356,58 +356,90 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// <param name="e">System.EventArgs parameter</param>
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var optionForm = new OptionForm(label,
-                                                   messageFile,
-                                                   messageText,
-                                                   (decimal)lstLog.Font.Size,
-                                                   (decimal)serviceBusTreeView.Font.Size,
-                                                   RetryHelper.RetryCount,
-                                                   RetryHelper.RetryTimeout,
-                                                   receiveTimeout,
-                                                   serverTimeout,
-                                                   senderThinkTime,
-                                                   receiverThinkTime,
-                                                   monitorRefreshInterval,
-                                                   prefetchCount,
-                                                   topCount,
-                                                   showMessageCount,
-                                                   saveMessageToFile,
-                                                   savePropertiesToFile,
-                                                   saveCheckpointsToFile,
-                                                   useAscii,
-                                                   selectedEntites,
-                                                   messageBodyType))
+            var mainProperties = new MainProperties
+            {
+                Label = label,
+                MessageFile = messageFile,
+                MessageText = messageText,
+                LogFontSize = (decimal) lstLog.Font.Size,
+                TreeViewFontSize = (decimal) serviceBusTreeView.Font.Size,
+                RetryCount = RetryHelper.RetryCount,
+                RetryTimeout = RetryHelper.RetryTimeout,
+                ReceiveTimeout = receiveTimeout,
+                ServerTimeout = serverTimeout,
+                SenderThinkTime = senderThinkTime,
+                ReceiverThinkTime = receiverThinkTime,
+                MonitorRefreshInterval = monitorRefreshInterval,
+                PrefetchCount = prefetchCount,
+                TopCount = topCount,
+                ShowMessageCount = showMessageCount,
+                SaveMessageToFile = saveMessageToFile,
+                SavePropertiesToFile = savePropertiesToFile,
+                SaveCheckpointsToFile = saveCheckpointsToFile,
+                UseAscii = useAscii,
+                SelectedEntities = selectedEntites,
+                MessageBodyType = messageBodyType
+            };
+
+
+            //using (var optionForm = new OptionForm(label,
+            //                                       messageFile,
+            //                                       messageText,
+            //                                       (decimal)lstLog.Font.Size,
+            //                                       (decimal)serviceBusTreeView.Font.Size,
+            //                                       RetryHelper.RetryCount,
+            //                                       RetryHelper.RetryTimeout,
+            //                                       receiveTimeout,
+            //                                       serverTimeout,
+            //                                       senderThinkTime,
+            //                                       receiverThinkTime,
+            //                                       monitorRefreshInterval,
+            //                                       prefetchCount,
+            //                                       topCount,
+            //                                       showMessageCount,
+            //                                       saveMessageToFile,
+            //                                       savePropertiesToFile,
+            //                                       saveCheckpointsToFile,
+            //                                       useAscii,
+            //                                       selectedEntites,
+            //                                       messageBodyType))
+            using (var optionForm = new OptionForm(mainProperties))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
-                label = optionForm.Label;
-                messageFile = optionForm.MessageFile;
-                messageText = optionForm.MessageText;
-                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.LogFontSize);
+
+
+
+                label = optionForm.MainProperties.Label;
+                messageFile = optionForm.MainProperties.MessageFile;
+                messageText = optionForm.MainProperties.MessageText;
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainProperties.LogFontSize);
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
-                                                   (float)optionForm.TreeViewFontSize);
-                RetryHelper.RetryCount = optionForm.RetryCount;
-                RetryHelper.RetryTimeout = optionForm.RetryTimeout;
-                receiveTimeout = optionForm.ReceiveTimeout;
-                serverTimeout = optionForm.ServerTimeout;
-                senderThinkTime = optionForm.SenderThinkTime;
-                receiverThinkTime = optionForm.ReceiverThinkTime;
-                monitorRefreshInterval = optionForm.MonitorRefreshInterval;
-                prefetchCount = optionForm.PrefetchCount;
-                topCount = optionForm.TopCount;
-                if (showMessageCount != optionForm.ShowMessageCount)
+                                                   (float)optionForm.MainProperties.TreeViewFontSize);
+                RetryHelper.RetryCount = optionForm.MainProperties.RetryCount;
+                RetryHelper.RetryTimeout = optionForm.MainProperties.RetryTimeout;
+                receiveTimeout = optionForm.MainProperties.ReceiveTimeout;
+                serverTimeout = optionForm.MainProperties.ServerTimeout;
+                senderThinkTime = optionForm.MainProperties.SenderThinkTime;
+                receiverThinkTime = optionForm.MainProperties.ReceiverThinkTime;
+                monitorRefreshInterval = optionForm.MainProperties.MonitorRefreshInterval;
+                prefetchCount = optionForm.MainProperties.PrefetchCount;
+                topCount = optionForm.MainProperties.TopCount;
+
+                if (showMessageCount != optionForm.MainProperties.ShowMessageCount)
                 {
-                    showMessageCount = optionForm.ShowMessageCount;
+                    showMessageCount = optionForm.MainProperties.ShowMessageCount;
                     GetEntities(EntityType.All);
                 }
-                saveMessageToFile = optionForm.SaveMessageToFile;
-                savePropertiesToFile = optionForm.SavePropertiesToFile;
-                saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
-                useAscii = optionForm.UseAscii;
-                selectedEntites = optionForm.SelectedEntities;
-                messageBodyType = optionForm.MessageBodyType;
+
+                saveMessageToFile = optionForm.MainProperties.SaveMessageToFile;
+                savePropertiesToFile = optionForm.MainProperties.SavePropertiesToFile;
+                saveCheckpointsToFile = optionForm.MainProperties.SaveCheckpointsToFile;
+                useAscii = optionForm.MainProperties.UseAscii;
+                selectedEntites = optionForm.MainProperties.SelectedEntities;
+                messageBodyType = optionForm.MainProperties.MessageBodyType;
             }
         }
 

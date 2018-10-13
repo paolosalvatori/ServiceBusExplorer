@@ -48,128 +48,117 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Private Fields
         bool initializing;
         List<string> changedSettings = new List<string>();
+        int lastConfigFileIndex;
         #endregion
 
         #region Public Constructor
-        public OptionForm(string label,
-                          string messageFile,
-                          string messageText,
-                          decimal logFontSize,
-                          decimal treeViewFontSize,
-                          int retryCount,
-                          int retryTimeout,
-                          int receiveTimeout,
-                          int serverTimeout,
-                          int senderThinkTime,
-                          int receiverThinkTime,
-                          int monitorRefreshInterval,
-                          int prefetchCount,
-                          int top,
-                          bool showMessageCount,
-                          bool saveMessageToFile,
-                          bool savePropertiesToFile,
-                          bool saveCheckpointsToFile,
-                          bool useAscii,
-                          IEnumerable<string> selectedEntities,
-                          string messageBodyType)
+        public OptionForm(MainProperties mainProperties)
+        //public OptionForm(string label,
+        //                  string messageFile,
+        //                  string messageText,
+        //                  decimal logFontSize,
+        //                  decimal treeViewFontSize,
+        //                  int retryCount,
+        //                  int retryTimeout,
+        //                  int receiveTimeout,
+        //                  int serverTimeout,
+        //                  int senderThinkTime,
+        //                  int receiverThinkTime,
+        //                  int monitorRefreshInterval,
+        //                  int prefetchCount,
+        //                  int top,
+        //                  bool showMessageCount,
+        //                  bool saveMessageToFile,
+        //                  bool savePropertiesToFile,
+        //                  bool saveCheckpointsToFile,
+        //                  bool useAscii,
+        //                  IEnumerable<string> selectedEntities,
+        //                  string messageBodyType)
         {
             initializing = true;
             InitializeComponent();
+            MainProperties = mainProperties;
 
-            Label = label;
-            MessageFile = messageFile;
-            MessageText = messageText;
-            LogFontSize = logFontSize;
-            TreeViewFontSize = treeViewFontSize;
-            RetryCount = retryCount;
-            RetryTimeout = retryTimeout;
-            ReceiveTimeout = receiveTimeout;
-            ServerTimeout = serverTimeout;
-            SenderThinkTime = senderThinkTime;
-            ReceiverThinkTime = receiverThinkTime;
-            MonitorRefreshInterval = monitorRefreshInterval;
-            PrefetchCount = prefetchCount;
-            TopCount = top;
+            //Label= mainProperties.Label;
+            //MessageFile= MainProperties.messageFile;
+            //MessageText= MainProperties.MessageText;
+            //LogFontSize= MainProperties.LogFontSize;
+            //TreeViewFontSize= MainProperties.treeViewFontSize;
+            //RetryCount= MainProperties.RetryCount;
+            //RetryTimeout= MainProperties.RetryTimeout;
+            //ReceiveTimeout= MainProperties.ReceiveTimeout;
+            //ServerTimeout= MainProperties.ServerTimeout;
+            //SenderThinkTime= MainProperties.SenderThinkTime;
+            //ReceiverThinkTime= MainProperties.ReceiverThinkTime;
+            //MonitorRefreshInterval= MainProperties.MonitorRefreshInterval;
+            //PrefetchCount= MainProperties.prefetchCount;
+            //TopCount= MainProperties.top;
 
-            txtLabel.Text = label;
-            txtMessageFile.Text = messageFile;
-            txtMessageText.Text = messageText;
-            logNumericUpDown.Value = logFontSize;
-            treeViewNumericUpDown.Value = treeViewFontSize;
-            retryCountNumericUpDown.Value = retryCount;
-            retryTimeoutNumericUpDown.Value = retryTimeout;
-            receiveTimeoutNumericUpDown.Value = receiveTimeout;
-            serverTimeoutNumericUpDown.Value = serverTimeout;
-            senderThinkTimeNumericUpDown.Value = senderThinkTime;
-            receiverThinkTimeNumericUpDown.Value = receiverThinkTime;
-            monitorRefreshIntervalNumericUpDown.Value = monitorRefreshInterval;
-            prefetchCountNumericUpDown.Value = prefetchCount;
-            topNumericUpDown.Value = top;
-            showMessageCountCheckBox.Checked = showMessageCount;
-            savePropertiesToFileCheckBox.Checked = savePropertiesToFile;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
-            saveCheckpointsToFileCheckBox.Checked = saveCheckpointsToFile;
-            useAsciiCheckBox.Checked = useAscii;
+            txtLabel.Text = mainProperties.Label;
+            txtMessageFile.Text = mainProperties.MessageFile;
+            txtMessageText.Text = mainProperties.MessageText;
+            logNumericUpDown.Value = mainProperties.LogFontSize;
+            treeViewNumericUpDown.Value = mainProperties.TreeViewFontSize;
+            retryCountNumericUpDown.Value = mainProperties.RetryCount;
+            retryTimeoutNumericUpDown.Value = mainProperties.RetryTimeout;
+            receiveTimeoutNumericUpDown.Value = mainProperties.ReceiveTimeout;
+            serverTimeoutNumericUpDown.Value = mainProperties.ServerTimeout;
+            senderThinkTimeNumericUpDown.Value = mainProperties.SenderThinkTime;
+            receiverThinkTimeNumericUpDown.Value = mainProperties.ReceiverThinkTime;
+            monitorRefreshIntervalNumericUpDown.Value = mainProperties.MonitorRefreshInterval;
+            prefetchCountNumericUpDown.Value = mainProperties.PrefetchCount;
+            topNumericUpDown.Value = mainProperties.TopCount;
+            showMessageCountCheckBox.Checked = mainProperties.ShowMessageCount;
+            savePropertiesToFileCheckBox.Checked = mainProperties.SavePropertiesToFile;
+            saveMessageToFileCheckBox.Checked = mainProperties.SaveMessageToFile;
+            saveCheckpointsToFileCheckBox.Checked = mainProperties.SaveCheckpointsToFile;
+            useAsciiCheckBox.Checked = mainProperties.UseAscii;
 
-            var connectivityMode = ServiceBusHelper.ConnectivityMode;
+            var connectivityMode = ServiceBusHelper.ConnectivityMode;  // TODO
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
             cboConnectivityMode.SelectedItem = connectivityMode;
 
-            var encodingType = ServiceBusHelper.EncodingType;
+            var encodingType = ServiceBusHelper.EncodingType;  // TODO
             cboEncodingType.DataSource = Enum.GetValues(typeof(EncodingType));
             cboEncodingType.SelectedItem = encodingType;
 
-            ShowMessageCount = showMessageCount;
-            SaveMessageToFile = saveMessageToFile;
-            SavePropertiesToFile = savePropertiesToFile;
-            SaveCheckpointsToFile = saveCheckpointsToFile;
-            UseAscii = useAscii;
+            //ShowMessageCount= MainProperties.ShowMessageCount;
+            //SaveMessageToFile= MainProperties.SaveMessageToFile;
+            //SavePropertiesToFile= MainProperties.SavePropertiesToFile;
+            //SaveCheckpointsToFile= MainProperties.SaveCheckpointsToFile;
+            //UseAscii= MainProperties.useAscii;
 
             foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.Items.Add(item);
             }
-            foreach (var item in selectedEntities)
+
+            foreach (var item in mainProperties.SelectedEntities)
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
-            if (!Enum.TryParse<BodyType>(messageBodyType, true, out var bodyType))
+
+            if (!Enum.TryParse<BodyType>(mainProperties.MessageBodyType, true, out var bodyType))
             {
                 bodyType = BodyType.Stream;
             }
+
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
             initializing = false;
         }
         #endregion
 
         #region Public Properties
-        public decimal LogFontSize { get; private set; }
-        public decimal TreeViewFontSize { get; private set; }
-        public int RetryCount { get; private set; }
-        public int RetryTimeout { get; private set; }
-        public int ReceiveTimeout { get; private set; }
-        public int ServerTimeout { get; private set; }
-        public int PrefetchCount { get; private set; }
-        public int TopCount { get; private set; }
-        public int SenderThinkTime { get; private set; }
-        public int ReceiverThinkTime { get; private set; }
-        public int MonitorRefreshInterval { get; private set; }
-        public bool ShowMessageCount { get; private set; }
-        public bool UseAscii { get; private set; }
-        public bool SaveMessageToFile { get; private set; }
-        public bool SavePropertiesToFile { get; private set; }
-        public bool SaveCheckpointsToFile { get; private set; }
-        public string Label { get; private set; }
-        public string MessageFile { get; private set; }
-        public string MessageText { get; private set; }
-        public List<string> SelectedEntities
-        {
-            get
-            {
-                return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
-            }
-        }
-        public string MessageBodyType { get; private set; }
+
+        public MainProperties MainProperties { get; private set; }
+        //public List<string> SelectedEntities
+        //{
+        //    get
+        //    {
+        //        return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
+        //    }
+        //}
+        //public string MessageBodyType { get; private set; }
 
         #endregion
 
@@ -189,13 +178,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void logNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.LogFontSize);
-            LogFontSize = logNumericUpDown.Value;
+            MainProperties.LogFontSize = logNumericUpDown.Value;
         }
 
         private void treeViewNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.TreeViewFontSize);
-            TreeViewFontSize = treeViewNumericUpDown.Value;
+            MainProperties.TreeViewFontSize = treeViewNumericUpDown.Value;
         }
 
         private void OptionForm_KeyPress(object sender, KeyPressEventArgs e)
@@ -209,112 +198,98 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void btnDefault_Click(object sender, EventArgs e)
         {
-            LogFontSize = (decimal)8.25;
-            TreeViewFontSize = (decimal)8.25;
-            logNumericUpDown.Value = LogFontSize;
-            treeViewNumericUpDown.Value = TreeViewFontSize;
+            MainProperties.SetDefault();
 
-            RetryCount = 10;
-            RetryTimeout = 100;
-            retryCountNumericUpDown.Value = RetryCount;
-            retryTimeoutNumericUpDown.Value = RetryTimeout;
+            logNumericUpDown.Value = MainProperties.LogFontSize;
+            treeViewNumericUpDown.Value = MainProperties.TreeViewFontSize;
 
-            ReceiveTimeout = 1;
-            ServerTimeout = 3;
-            receiveTimeoutNumericUpDown.Value = ReceiveTimeout;
-            serverTimeoutNumericUpDown.Value = ServerTimeout;
+            retryCountNumericUpDown.Value = MainProperties.RetryCount;
+            retryTimeoutNumericUpDown.Value = MainProperties.RetryTimeout;
 
-            PrefetchCount = 0;
-            TopCount = 10;
-            prefetchCountNumericUpDown.Value = PrefetchCount;
-            topNumericUpDown.Value = TopCount;
+            receiveTimeoutNumericUpDown.Value = MainProperties.ReceiveTimeout;
+            serverTimeoutNumericUpDown.Value = MainProperties.ServerTimeout;
 
-            SenderThinkTime = 500;
-            ReceiverThinkTime = 500;
-            senderThinkTimeNumericUpDown.Value = SenderThinkTime;
-            receiveTimeoutNumericUpDown.Value = ReceiverThinkTime;
+            prefetchCountNumericUpDown.Value = MainProperties.PrefetchCount;
+            topNumericUpDown.Value = MainProperties.TopCount;
 
-            MonitorRefreshInterval = 30;
-            monitorRefreshIntervalNumericUpDown.Value = MonitorRefreshInterval;
+            senderThinkTimeNumericUpDown.Value = MainProperties.SenderThinkTime;
+            receiveTimeoutNumericUpDown.Value = MainProperties.ReceiverThinkTime;
+
+            monitorRefreshIntervalNumericUpDown.Value = MainProperties.MonitorRefreshInterval;
             cboConnectivityMode.SelectedItem = ConnectivityMode.AutoDetect;
             cboEncodingType.SelectedItem = EncodingType.ASCII;
 
-            SaveMessageToFile = true;
-            SavePropertiesToFile = true;
-            SaveCheckpointsToFile = true;
-            UseAscii = true;
-
-            saveMessageToFileCheckBox.Checked = true;
-            showMessageCountCheckBox.Checked = true;
-            savePropertiesToFileCheckBox.Checked = true;
-            saveCheckpointsToFileCheckBox.Checked = true;
-            useAsciiCheckBox.Checked = true;
+            saveMessageToFileCheckBox.Checked = MainProperties.SaveMessageToFile;
+            showMessageCountCheckBox.Checked = MainProperties.ShowMessageCount;
+            savePropertiesToFileCheckBox.Checked = MainProperties.SavePropertiesToFile;
+            saveCheckpointsToFileCheckBox.Checked = MainProperties.SaveCheckpointsToFile;
+            useAsciiCheckBox.Checked = MainProperties.UseAscii;
 
             foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
 
-            MessageBodyType = BodyType.Stream.ToString();
+            MainProperties.MessageBodyType = MainProperties.MessageBodyType; // .Stream.ToString();
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.RetryCountParameter);
-            RetryCount = (int)retryCountNumericUpDown.Value;
+            MainProperties.RetryCount = (int)retryCountNumericUpDown.Value;
         }
 
         private void retryTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.RetryTimeoutParameter);
-            RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
+            MainProperties.RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
         }
 
         private void receiveTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.ReceiveTimeoutParameter);
-            ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
+            MainProperties.ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
         }
         private void sessionTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.ServerTimeoutParameter);
-            ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
+            MainProperties.ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
         }
 
         private void prefetchCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.PrefetchCountParameter);
-            PrefetchCount = (int)prefetchCountNumericUpDown.Value;
+            MainProperties.PrefetchCount = (int)prefetchCountNumericUpDown.Value;
         }
 
         private void topNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.TopParameter);
-            TopCount = (int)topNumericUpDown.Value;
+            MainProperties.TopCount = (int)topNumericUpDown.Value;
         }
 
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.ShowMessageCountParameter);
-            ShowMessageCount = showMessageCountCheckBox.Checked;
+            MainProperties.ShowMessageCount = showMessageCountCheckBox.Checked;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.SaveMessageToFileParameter);
-            SaveMessageToFile = saveMessageToFileCheckBox.Checked;
+            MainProperties.SaveMessageToFile = saveMessageToFileCheckBox.Checked;
         }
 
         private void savePropertiesToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.SavePropertiesToFileParameter);
-            SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
+            MainProperties.SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
         }
 
         private void saveCheckpointsToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.SaveCheckpointsToFileParameter);
-            SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
+            MainProperties.SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
         }
 
         private void button_MouseEnter(object sender, EventArgs e)
@@ -368,43 +343,43 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.SenderThinkTimeParameter);
-            SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
+            MainProperties.SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
         }
 
         private void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.ReceiverThinkTimeParameter);
-            ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
+            MainProperties.ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
         private void useAscii_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.UseAsciiParameter);
-            UseAscii = useAsciiCheckBox.Checked;
+            MainProperties.UseAscii = useAsciiCheckBox.Checked;
         }
 
         private void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MonitorRefreshIntervalParameter);
-            MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
+            MainProperties.MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.LabelParameter);
-            Label = txtLabel.Text;
+            MainProperties.Label = txtLabel.Text;
         }
 
         private void txtMessageFile_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.FileParameter);
-            MessageFile = txtMessageFile.Text;
+            MainProperties.MessageFile = txtMessageFile.Text;
         }
 
         private void txtMessageText_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MessageParameter);
-            MessageText = txtMessageText.Text;
+            MainProperties.MessageText = txtMessageText.Text;
         }
 
         private void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -419,46 +394,46 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MessageBodyType);
-            MessageBodyType = cboDefaultMessageBodyType.Text;
+            MainProperties.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             var configuration = TwoFilesConfiguration.Create();
 
-            SaveSettingIfChanged(configuration, ConfigurationParameters.LogFontSize, LogFontSize);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.LogFontSize, MainProperties.LogFontSize);
             SaveSettingIfChanged(configuration, ConfigurationParameters.TreeViewFontSize,
-                TreeViewFontSize);
+                MainProperties.TreeViewFontSize);
             SaveSettingIfChanged(configuration, ConfigurationParameters.ShowMessageCountParameter,
-                ShowMessageCount);
+                MainProperties.ShowMessageCount);
             SaveSettingIfChanged(configuration, ConfigurationParameters.SaveMessageToFileParameter,
-                SaveMessageToFile);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.UseAsciiParameter, UseAscii);
+                MainProperties.SaveMessageToFile);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.UseAsciiParameter, MainProperties.UseAscii);
             SaveSettingIfChanged(configuration, ConfigurationParameters.SavePropertiesToFileParameter,
-                SavePropertiesToFile);
+                MainProperties.SavePropertiesToFile);
             SaveSettingIfChanged(configuration, ConfigurationParameters.SaveCheckpointsToFileParameter,
-                SaveCheckpointsToFile);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryCountParameter, RetryCount);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryTimeoutParameter, RetryTimeout);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.TopParameter, TopCount);
+                MainProperties.SaveCheckpointsToFile);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryCountParameter, MainProperties.RetryCount);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.RetryTimeoutParameter, MainProperties.RetryTimeout);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.TopParameter, MainProperties.TopCount);
             SaveSettingIfChanged(configuration, ConfigurationParameters.ReceiveTimeoutParameter,
-                ReceiveTimeout);
+                MainProperties.ReceiveTimeout);
             SaveSettingIfChanged(configuration, ConfigurationParameters.ServerTimeoutParameter,
-                ServerTimeout);
+                MainProperties.ServerTimeout);
             SaveSettingIfChanged(configuration, ConfigurationParameters.SenderThinkTimeParameter,
-                SenderThinkTime);
+                MainProperties.SenderThinkTime);
             SaveSettingIfChanged(configuration, ConfigurationParameters.ReceiverThinkTimeParameter,
-                ReceiverThinkTime);
+                MainProperties.ReceiverThinkTime);
             SaveSettingIfChanged(configuration, ConfigurationParameters.MonitorRefreshIntervalParameter,
-                MonitorRefreshInterval);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.PrefetchCountParameter, PrefetchCount);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.LabelParameter, Label);
-            SaveMessageSettingsIfChanged(configuration, MessageText, MessageFile);
+                MainProperties.MonitorRefreshInterval);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.PrefetchCountParameter, MainProperties.PrefetchCount);
+            SaveSettingIfChanged(configuration, ConfigurationParameters.LabelParameter, MainProperties.Label);
+            SaveMessageSettingsIfChanged(configuration, MainProperties.MessageText, MainProperties.MessageFile);
             SaveSettingIfChanged(configuration, ConfigurationParameters.ConnectivityMode,
                 ServiceBusHelper.ConnectivityMode);
             SaveSettingIfChanged(configuration, ConfigurationParameters.Encoding,
                 ServiceBusHelper.EncodingType);
-            SaveSettingIfChanged(configuration, ConfigurationParameters.SelectedEntitiesParameter, 
+            SaveSettingIfChanged(configuration, ConfigurationParameters.SelectedEntitiesParameter,
                 cboSelectedEntities.Text);
             SaveSettingIfChanged(configuration, ConfigurationParameters.MessageBodyType,
                 cboDefaultMessageBodyType.SelectedIndex.ToString());
@@ -490,7 +465,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Private methods
         void AddSettingToChanged(string setting)
         {
-            if(!initializing && !changedSettings.Contains(setting))
+            if (!initializing && !changedSettings.Contains(setting))
             {
                 changedSettings.Add(setting);
             }
@@ -530,6 +505,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             //cboConfigFile
 
             var configuration = TwoFilesConfiguration.Create();
+        }
+
+        private void btnOpenConfig_Click(object sender, EventArgs e)
+        {
+            // Open the file(s) depending on what's selected
+
+        }
+
+        private void cboConfigFile_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            var answer = MessageBox.Show("You have changed", "Changed", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+
+
+            if (answer == DialogResult.Cancel)
+            {
+                cboConfigFile.SelectedIndex = lastConfigFileIndex;
+            }
+            lastConfigFileIndex = cboConfigFile.SelectedIndex;
         }
     }
 }
