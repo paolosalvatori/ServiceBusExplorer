@@ -69,7 +69,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Public Instance properties
-        public ConfigFileUse ConfigFileUse { get; private set; } = ConfigFileUse.ApplicationConfig;
+        public ConfigFileUse ConfigFileUse { get; private set; }
+        public string UserConfigFilePath => userConfigFilePath;
+        public string ApplicationFilePath => applicationConfiguration.FilePath;
         #endregion
 
 
@@ -119,69 +121,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return CreateConfiguration(applicationConfiguration, userConfigFilePath, configFileUse,
                 writeToLog);
         }
-
-        public static ConfigFileUse GetConfigFileUseValueIgnoringCache(string userConfigFilePath,
-             WriteToLogDelegate writeToLog = null)
-        {
-            if (null != userConfigFilePath && File.Exists(userConfigFilePath))
-            {
-                Configuration userConfiguration = OpenUserConfiguration(userConfigFilePath);
-
-                if (userConfiguration != null)
-                {
-                    string resultStringUser =
-                        userConfiguration.AppSettings.Settings[ConfigurationConfigFileSetting]?.Value;
-
-                    if (null != resultStringUser)
-                    {
-                        if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
-                        {
-                            //if ((resultUser & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None)
-                            //{
-                            return resultUser; // No need to check the application config
-                            //}
-                        }
-                        else
-                        {
-                            WriteParsingFailure(writeToLog, userConfigFilePath, ConfigurationConfigFileSetting,
-                                resultStringUser, typeof(ConfigFileUse));
-                        }
-                    }
-                }
-            }
-
-            // We get here if the user file did not have a valid value 
-            string resultStringApp = ConfigurationManager.AppSettings[ConfigurationConfigFileSetting];
-
-            if (!string.IsNullOrWhiteSpace(resultStringApp))
-            {
-                if (Enum.TryParse<ConfigFileUse>(resultStringApp, out var resultApp))
-                {
-                    return resultApp;
-                }
-
-                var appConfiguration =
-                    ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-                WriteParsingFailure(writeToLog, appConfiguration.FilePath,
-                    ConfigurationConfigFileSetting, resultStringApp, typeof(ConfigFileUse));
-            }
-
-            return ConfigFileUse.ApplicationConfig;  // Default to Application for backwards compability
-        }
-
-        static ConfigFileUse AquireConfigFileUseValue()
-        {
-            if (cachedConfigFileUse == ConfigFileUse.None)
-            {
-                cachedConfigFileUse = GetConfigFileUseValueIgnoringCache(GetUserSettingsFilePath());
-            }
-
-            return cachedConfigFileUse;
-        }
         #endregion
 
         #region Public methods
+
+        public static ConfigFileUse GetCurrentConfigFileUse()
+        {
+            return AquireConfigFileUseValue();
+        }
+
         public string GetStringValue(string AppSettingKey, string defaultValue = "")
         {
             string result = null;
@@ -661,6 +609,66 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Private static methods
+        static ConfigFileUse GetConfigFileUseValueIgnoringCache(string userConfigFilePath,
+            WriteToLogDelegate writeToLog = null)
+        {
+            if (null != userConfigFilePath && File.Exists(userConfigFilePath))
+            {
+                Configuration userConfiguration = OpenUserConfiguration(userConfigFilePath);
+
+                if (userConfiguration != null)
+                {
+                    string resultStringUser =
+                        userConfiguration.AppSettings.Settings[ConfigurationConfigFileSetting]?.Value;
+
+                    if (null != resultStringUser)
+                    {
+                        if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
+                        {
+                            //if ((resultUser & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None)
+                            //{
+                            return resultUser; // No need to check the application config
+                            //}
+                        }
+                        else
+                        {
+                            WriteParsingFailure(writeToLog, userConfigFilePath, ConfigurationConfigFileSetting,
+                                resultStringUser, typeof(ConfigFileUse));
+                        }
+                    }
+                }
+            }
+
+            // We get here if the user file did not have a valid value 
+            string resultStringApp = ConfigurationManager.AppSettings[ConfigurationConfigFileSetting];
+
+            if (!string.IsNullOrWhiteSpace(resultStringApp))
+            {
+                if (Enum.TryParse<ConfigFileUse>(resultStringApp, out var resultApp))
+                {
+                    return resultApp;
+                }
+
+                var appConfiguration =
+                    ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                WriteParsingFailure(writeToLog, appConfiguration.FilePath,
+                    ConfigurationConfigFileSetting, resultStringApp, typeof(ConfigFileUse));
+            }
+
+            return ConfigFileUse.ApplicationConfig;  // Default to Application for backwards compability
+        }
+
+        static ConfigFileUse AquireConfigFileUseValue()
+        {
+            if (cachedConfigFileUse == ConfigFileUse.None)
+            {
+                cachedConfigFileUse = GetConfigFileUseValueIgnoringCache(GetUserSettingsFilePath());
+            }
+
+            return cachedConfigFileUse;
+        }
+
         static void WriteParsingFailure(WriteToLogDelegate writeToLogDelegate, string configFile,
             string appSettingsKey, string value, Type type)
         {
@@ -888,7 +896,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 AquireUserConfigurationIfNeeded();
             }
             else
-            {                
+            {
                 // Reset the configuration
                 ConfigurationManager.RefreshSection(sectionName);
                 applicationConfiguration = ConfigurationManager
@@ -912,7 +920,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 // Get an updated configuration object
                 if (UseUserConfig())
                 {
-                    singleConfiguration = userConfiguration = 
+                    singleConfiguration = userConfiguration =
                         OpenUserConfiguration(userConfigFilePath);
                 }
                 else

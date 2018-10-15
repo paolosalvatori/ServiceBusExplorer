@@ -156,7 +156,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string XmlExtension = "xml";
         private const string SaveAsFilter = "Text Documents|*.txt";
         private const string XmlFilter = "XML Files|*.xml";
-        private const string DefaultLabel = "Service Bus Explorer";
         private const string ImportToolStripMenuItemName = "importEntityMenuItem2";
         private const string ImportToolStripMenuItemText = "Import Entities";
         private const string ImportToolStripMenuItemToolTipText = "Import entity definition from file.";
@@ -361,8 +360,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Label = label,
                 MessageFile = messageFile,
                 MessageText = messageText,
-                LogFontSize = (decimal) lstLog.Font.Size,
-                TreeViewFontSize = (decimal) serviceBusTreeView.Font.Size,
+                LogFontSize = (decimal)lstLog.Font.Size,
+                TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
                 RetryCount = RetryHelper.RetryCount,
                 RetryTimeout = RetryHelper.RetryTimeout,
                 ReceiveTimeout = receiveTimeout,
@@ -1327,7 +1326,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
                     {
-                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual", 
+                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
                     }
@@ -1641,7 +1640,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
                     using (var parameterForm = new ParameterForm($"Enter a new name for the {queueDescription.Path} queue.",
                             new List<string> { "Name" },
-                            new List<string> { queueDescription.Path},
+                            new List<string> { queueDescription.Path },
                             new List<bool> { false }))
                     {
                         if (parameterForm.ShowDialog() != DialogResult.OK)
@@ -2030,7 +2029,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (subscriptionWrapper != null)
                     {
                         var wrapper = subscriptionWrapper;
-                        var subscriptionDescription = serviceBusHelper.GetSubscription(wrapper.SubscriptionDescription.TopicPath,wrapper.SubscriptionDescription.Name);
+                        var subscriptionDescription = serviceBusHelper.GetSubscription(wrapper.SubscriptionDescription.TopicPath, wrapper.SubscriptionDescription.Name);
                         wrapper = new SubscriptionWrapper(subscriptionDescription, wrapper.TopicDescription);
                         if (subscriptionDescription.Status == EntityStatus.Active)
                         {
@@ -2135,7 +2134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
                 if (topicDescription != null)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path),false);
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path), false);
                 }
 
                 RefreshIndividualSubscription(subscriptionDescription, subscriptionNode);
@@ -3433,7 +3432,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageInspector)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3484,7 +3483,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IEventDataInspector)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3535,7 +3534,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageGenerator)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3586,7 +3585,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IEventDataGenerator)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3619,111 +3618,118 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return;
             }
 
-            var configuration = TwoFilesConfiguration.Create(WriteToLog);
+            var currentProperties = new MainProperties
+            {
+                LogFontSize = logFontSize,
+                TreeViewFontSize = treeViewFontSize,
+                RetryCount = RetryHelper.RetryCount,
+                RetryTimeout = RetryHelper.RetryTimeout,
+                ReceiveTimeout = receiveTimeout,
+                ServerTimeout = serverTimeout,
+                PrefetchCount = prefetchCount,
+                TopCount = topCount,
+                SenderThinkTime = senderThinkTime,
+                ReceiverThinkTime = receiverThinkTime,
+                MonitorRefreshInterval = monitorRefreshInterval,
+                ShowMessageCount = showMessageCount,
+                UseAscii = useAscii,
+                SaveMessageToFile = saveMessageToFile,
+                SavePropertiesToFile = savePropertiesToFile,
+                SaveCheckpointsToFile = saveCheckpointsToFile,
+                Label = label,
+                MessageFile = messageFile,
+                MessageText = messageText,
+                SelectedEntities = selectedEntites,
+                MessageBodyType = messageBodyType,
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                TraceEnabled = serviceBusHelper.TraceEnabled
+            };
 
-            RetryHelper.TraceEnabled = serviceBusHelper.TraceEnabled =
-                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter, serviceBusHelper.TraceEnabled, WriteToLog);
+            var readProperties = ConfigurationHelper.GetMainProperties(currentProperties, WriteToLog);
 
-            messageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
-                BodyType.Stream.ToString());
+            RetryHelper.TraceEnabled = serviceBusHelper.TraceEnabled = readProperties.TraceEnabled;
+            messageBodyType = readProperties.MessageBodyType;
+            ServiceBusHelper.ConnectivityMode = readProperties.ConnectivityMode;
 
-            ServiceBusHelper.ConnectivityMode = configuration.GetEnumValue<ConnectivityMode>
-                (ConfigurationParameters.ConnectivityMode, ServiceBusHelper.ConnectivityMode, WriteToLog);
+            showMessageCount = readProperties.ShowMessageCount;
+            saveMessageToFile = readProperties.SaveMessageToFile;
+            savePropertiesToFile = readProperties.SavePropertiesToFile;
+            saveCheckpointsToFile = readProperties.SaveCheckpointsToFile;
+            useAscii = readProperties.UseAscii;
 
-            ServiceBusHelper.EncodingType = configuration.GetEnumValue(ConfigurationParameters.Encoding,
-                ServiceBusHelper.EncodingType, WriteToLog);
+            messageText = readProperties.MessageText;
+            messageFile = readProperties.MessageFile;
 
-            showMessageCount = configuration.GetBoolValue(ConfigurationParameters.ShowMessageCountParameter,
-                 showMessageCount, WriteToLog);
+            label = readProperties.Label;
 
-            saveMessageToFile = configuration.GetBoolValue(ConfigurationParameters.SaveMessageToFileParameter,
-                 saveMessageToFile, WriteToLog);
-
-            savePropertiesToFile = configuration.GetBoolValue(ConfigurationParameters.SavePropertiesToFileParameter,
-                  savePropertiesToFile, WriteToLog);
-
-            saveCheckpointsToFile = configuration.GetBoolValue(ConfigurationParameters.SaveCheckpointsToFileParameter,
-                saveCheckpointsToFile, WriteToLog);
-
-            useAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter, useAscii, WriteToLog);
-
-            serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
-                   serviceBusHelper.Scheme);
-
-            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
-                out messageText, out messageFile);
-
-            relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
-
-            label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, DefaultLabel);
-
-            var tempLogFontSize = configuration.GetDecimalValue(ConfigurationParameters.LogFontSize, logFontSize, WriteToLog);
+            var tempLogFontSize = readProperties.LogFontSize;
             if (tempLogFontSize != logFontSize)
             {
                 logFontSize = tempLogFontSize;
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
             }
 
-            var tempTreeViewFontSize = configuration.GetDecimalValue(ConfigurationParameters.TreeViewFontSize,
-                treeViewFontSize, WriteToLog);
+            var tempTreeViewFontSize = readProperties.TreeViewFontSize;
             if (tempTreeViewFontSize != treeViewFontSize)
             {
                 treeViewFontSize = tempTreeViewFontSize;
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
             }
 
-            RetryHelper.RetryCount = configuration.GetIntValue(ConfigurationParameters.RetryCountParameter,
-                RetryHelper.RetryCount, WriteToLog);
+            RetryHelper.RetryCount = readProperties.RetryCount;
+            RetryHelper.RetryTimeout = readProperties.RetryTimeout;
 
-            RetryHelper.RetryTimeout = configuration.GetIntValue(ConfigurationParameters.RetryTimeoutParameter,
-                 RetryHelper.RetryTimeout, WriteToLog);
-
-            var tempReceiveTimeout = configuration.GetIntValue(ConfigurationParameters.ReceiveTimeoutParameter,
-                -1, WriteToLog);
+            var tempReceiveTimeout = readProperties.ReceiveTimeout;
             if (tempReceiveTimeout >= 0)
             {
                 receiveTimeout = tempReceiveTimeout;
             }
 
-            var tempServerTimeout = configuration.GetIntValue(ConfigurationParameters.ServerTimeoutParameter,
-                -1, WriteToLog);
+            var tempServerTimeout = readProperties.ServerTimeout;
             if (tempServerTimeout >= 0)
             {
                 serverTimeout = tempServerTimeout;
             }
 
-            var tempSenderThinkTime = configuration.GetIntValue(ConfigurationParameters.SenderThinkTimeParameter,
-                -1, WriteToLog);
+            var tempSenderThinkTime = readProperties.SenderThinkTime;
             if (tempSenderThinkTime >= 0)
             {
                 senderThinkTime = tempSenderThinkTime;
             }
 
-            var tempReceiverThinkTime = configuration.GetIntValue(ConfigurationParameters.ReceiverThinkTimeParameter,
-                -1, WriteToLog);
+            var tempReceiverThinkTime = readProperties.ReceiverThinkTime;
             if (tempReceiverThinkTime >= 0)
             {
                 receiverThinkTime = tempReceiverThinkTime;
             }
 
-            var tempMonitorRefreshIntervalValue = configuration.GetIntValue
-                (ConfigurationParameters.MonitorRefreshIntervalParameter, -1, WriteToLog);
+            var tempMonitorRefreshIntervalValue = readProperties.MonitorRefreshInterval;
             if (tempMonitorRefreshIntervalValue >= 0)
             {
                 monitorRefreshInterval = tempMonitorRefreshIntervalValue;
             }
 
-            var tempPrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter, -1, WriteToLog);
+            var tempPrefetchCount = readProperties.PrefetchCount;
             if (tempPrefetchCount >= 0)
             {
                 prefetchCount = tempPrefetchCount;
             }
 
-            var tempTopValue = configuration.GetIntValue(ConfigurationParameters.TopParameter, -1, WriteToLog);
+            var tempTopValue = readProperties.TopCount;
             if (tempTopValue > 0)
             {
                 topCount = tempTopValue;
             }
+
+            selectedEntites = readProperties.SelectedEntities;
+
+            // Get values for settings that are not part of MainProperties
+            var configuration = TwoFilesConfiguration.Create(WriteToLog);
+
+            serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
+                serviceBusHelper.Scheme);
+            relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
+
 
             var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
@@ -3738,14 +3744,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         serviceBusHelper.MessageDeferProviderType = type;
                     }
                 }
-                // ReSharper disable EmptyGeneralCatchClause
                 catch (Exception)
-                // ReSharper restore EmptyGeneralCatchClause
                 {
+                    // Comment to avoid ReSharper warning
                 }
             }
 
-            selectedEntites = ConfigurationHelper.GetSelectedEntities(configuration);
+            ServiceBusHelper.EncodingType = configuration.GetEnumValue(ConfigurationParameters.Encoding,
+                ServiceBusHelper.EncodingType, WriteToLog);
         }
 
         private void ReadEventHubPartitionCheckpointFile()
@@ -3756,7 +3762,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-         private void SetControlSize(Control control)
+        private void SetControlSize(Control control)
         {
             var ok = false;
             if (panelMain.Controls.Count > 0)
@@ -4096,7 +4102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             return false;
         }
-        
+
 
         private void CreateLeafNode(Uri uri, TreeNode parentNode, string parentTitle)
         {
@@ -4391,7 +4397,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(queueListNode);
                             }
                         }
-                        catch (Exception ex) when(FilterOutException(ex))
+                        catch (Exception ex) when (FilterOutException(ex))
                         {
                             WriteToLog($"Failed to retrieve Service Bus queues. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
@@ -6370,9 +6376,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             try
             {
                 using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group",
-                                                             new List<string> {"IoT Hub Connection String", "Endpoint", "Consumer Group"},
-                                                             new List<string>{null, "messages/events", "$Default" },
-                                                             new List<bool>{false, false, false}))
+                                                             new List<string> { "IoT Hub Connection String", "Endpoint", "Consumer Group" },
+                                                             new List<string> { null, "messages/events", "$Default" },
+                                                             new List<bool> { false, false, false }))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
                     {

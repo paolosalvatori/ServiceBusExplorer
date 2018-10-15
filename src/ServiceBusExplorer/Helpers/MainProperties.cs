@@ -20,22 +20,14 @@
 #endregion
 
 #region Using Directives
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.ServiceBus;
-
 #endregion
-
-
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
+    using System.Linq;
+
     public class MainProperties
     {
         #region Public Properties
@@ -67,15 +59,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             //}
         }
         public string MessageBodyType { get; set; }
+        public ConnectivityMode ConnectivityMode { get; set; }
 
-        //public int Top { get; set; }
+        public bool TraceEnabled { get; set; }
 
         #endregion
 
         #region Public Methods
         public void SetDefault()
         {
-
             LogFontSize = (decimal)8.25;
             TreeViewFontSize = (decimal)8.25;
 
@@ -98,6 +90,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
             SaveCheckpointsToFile = true;
+
             // Not set
             //public string Label { get; set; }
             //public string MessageFile { get; set; }
@@ -105,6 +98,45 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             // SelectedEntities
 
             MessageBodyType = BodyType.Stream.ToString();
+            ConnectivityMode = ConnectivityMode.AutoDetect;
+        }
+
+        public override bool Equals(object other)
+        {
+            // Check if null
+            if (null == other) return false;
+
+            // Check if it's the right type
+            if (!(other is MainProperties otherProperties)) return false;
+
+            // Check all properties
+            if (LogFontSize != otherProperties.LogFontSize) return false;
+            if (TreeViewFontSize != otherProperties.TreeViewFontSize) return false;
+            if (RetryCount != otherProperties.RetryCount) return false;
+            if (RetryTimeout != otherProperties.RetryTimeout) return false;
+            if (ReceiveTimeout != otherProperties.ReceiveTimeout) return false;
+            if (ServerTimeout != otherProperties.ServerTimeout) return false;
+            if (PrefetchCount != otherProperties.PrefetchCount) return false;
+            if (TopCount != otherProperties.TopCount) return false;
+            if (SenderThinkTime != otherProperties.SenderThinkTime) return false;
+            if (ReceiverThinkTime != otherProperties.ReceiverThinkTime) return false;
+            if (MonitorRefreshInterval != otherProperties.MonitorRefreshInterval) return false;
+            if (ShowMessageCount != otherProperties.ShowMessageCount) return false;
+            if (UseAscii != otherProperties.UseAscii) return false;
+            if (SaveMessageToFile != otherProperties.SaveMessageToFile) return false;
+            if (SavePropertiesToFile != otherProperties.SavePropertiesToFile) return false;
+            if (SaveCheckpointsToFile != otherProperties.SaveCheckpointsToFile) return false;
+            if (Label != otherProperties.Label) return false;
+            if (MessageFile != otherProperties.MessageFile) return false;
+            if (MessageText != otherProperties.MessageText) return false;
+
+            if (!SelectedEntities.SequenceEqual(SelectedEntities)) return false;
+
+            if (MessageBodyType != otherProperties.MessageBodyType) return false;
+            if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
+            if (TraceEnabled != otherProperties.TraceEnabled) return false;
+
+            return true;
         }
         #endregion
     }

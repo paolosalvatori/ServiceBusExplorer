@@ -23,57 +23,48 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
-using System.Globalization;
-using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
 using Microsoft.Azure.ServiceBusExplorer.Enums;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
+    using System.Diagnostics;
+    using System.IO;
+
     public partial class OptionForm : Form
     {
         #region Private Constants
-        //***************************
         // Messages
-        //***************************
         private const string MessageTextTitle = "Message Text";
+
+        // ConfigUseForUI constants
+        const int ApplicationConfigFileIndex = 0;
+        const int UserConfigFileIndex = 1;
+        const int BothConfigFileIndex = 2;
         #endregion
 
         #region Private Fields
         bool initializing;
         List<string> changedSettings = new List<string>();
         int lastConfigFileIndex;
+
+        // This List variable is tied to some of the constants
+        static readonly List<string> ConfigUseForUI = new List<string>
+        {
+            "Application Configuration File",
+            "User Configuration File",
+            "Both (User file will override)"
+        };
         #endregion
 
         #region Public Constructor
         public OptionForm(MainProperties mainProperties)
-        //public OptionForm(string label,
-        //                  string messageFile,
-        //                  string messageText,
-        //                  decimal logFontSize,
-        //                  decimal treeViewFontSize,
-        //                  int retryCount,
-        //                  int retryTimeout,
-        //                  int receiveTimeout,
-        //                  int serverTimeout,
-        //                  int senderThinkTime,
-        //                  int receiverThinkTime,
-        //                  int monitorRefreshInterval,
-        //                  int prefetchCount,
-        //                  int top,
-        //                  bool showMessageCount,
-        //                  bool saveMessageToFile,
-        //                  bool savePropertiesToFile,
-        //                  bool saveCheckpointsToFile,
-        //                  bool useAscii,
-        //                  IEnumerable<string> selectedEntities,
-        //                  string messageBodyType)
         {
             initializing = true;
             InitializeComponent();
@@ -145,7 +136,50 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
             initializing = false;
+
+            cboConfigFile.DataSource = ConfigUseForUI;
+            cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(TwoFilesConfiguration.GetCurrentConfigFileUse());
         }
+
+        int GetIndexForConfigFileUseUIString(ConfigFileUse configFileUse)
+        {
+            switch (configFileUse)
+            {
+                case ConfigFileUse.None:
+                case ConfigFileUse.ApplicationConfig:
+                    return ApplicationConfigFileIndex;
+
+                case ConfigFileUse.UserConfig:
+                    return UserConfigFileIndex;
+
+                case ConfigFileUse.BothConfig:
+                    return BothConfigFileIndex;
+
+                default:
+                    throw new InvalidDataException("Unexpexted value passed to " +
+                        nameof(OptionForm.GetIndexForConfigFileUseUIString));
+            }
+        }
+
+        ConfigFileUse GetConfigFileUseFromUIIndex(int selectedIndex)
+        {
+            switch (selectedIndex)
+            {
+                case ApplicationConfigFileIndex:
+                    return ConfigFileUse.ApplicationConfig;
+
+                case UserConfigFileIndex:
+                    return ConfigFileUse.UserConfig;
+
+                case BothConfigFileIndex:
+                    return ConfigFileUse.BothConfig;
+
+                default:
+                    return ConfigFileUse.None;
+            }
+        }
+
+
         #endregion
 
         #region Public Properties
@@ -310,7 +344,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void mainPanel_Paint(object sender, PaintEventArgs e)
+        void mainPanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                                     cboConfigFile.Location.X - 1,
@@ -340,49 +374,49 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
-        private void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.SenderThinkTimeParameter);
             MainProperties.SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
         }
 
-        private void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.ReceiverThinkTimeParameter);
             MainProperties.ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
-        private void useAscii_CheckedChanged(object sender, EventArgs e)
+        void useAscii_CheckedChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.UseAsciiParameter);
             MainProperties.UseAscii = useAsciiCheckBox.Checked;
         }
 
-        private void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MonitorRefreshIntervalParameter);
             MainProperties.MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
-        private void txtLabel_TextChanged(object sender, EventArgs e)
+        void txtLabel_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.LabelParameter);
             MainProperties.Label = txtLabel.Text;
         }
 
-        private void txtMessageFile_TextChanged(object sender, EventArgs e)
+        void txtMessageFile_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.FileParameter);
             MainProperties.MessageFile = txtMessageFile.Text;
         }
 
-        private void txtMessageText_TextChanged(object sender, EventArgs e)
+        void txtMessageText_TextChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MessageParameter);
             MainProperties.MessageText = txtMessageText.Text;
         }
 
-        private void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
+        void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
             {
@@ -391,13 +425,68 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
+        void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
             AddSettingToChanged(ConfigurationParameters.MessageBodyType);
             MainProperties.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveChangedProperties();
+        }
+
+        void btnOpen_Click(object sender, EventArgs e)
+        {
+            using (var form = new TextForm(MessageTextTitle, txtMessageText.Text))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    txtMessageText.Text = form.Content;
+                }
+            }
+        }
+
+        void cboEncoding_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboEncodingType.SelectedItem is EncodingType)
+            {
+                ServiceBusHelper.EncodingType = (EncodingType)cboEncodingType.SelectedItem;
+                AddSettingToChanged(ConfigurationParameters.SelectedEntitiesParameter);
+            }
+        }
+        #endregion
+
+        #region Private methods
+        void AddSettingToChanged(string setting)
+        {
+            if (!initializing && !changedSettings.Contains(setting))
+            {
+                changedSettings.Add(setting);
+            }
+        }
+
+        void SaveMessageSettingsIfChanged(TwoFilesConfiguration configuration,
+            string runningMessageText, string runningMessageFile)
+        {
+            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
+                out var configuredMessageText, out var configuredMessageFile);
+
+            if (changedSettings.Contains(ConfigurationParameters.MessageParameter) &&
+                configuredMessageText != runningMessageText)
+            {
+                configuration.SetValue(ConfigurationParameters.MessageParameter, runningMessageText);
+            }
+
+            if (changedSettings.Contains(ConfigurationParameters.FileParameter) &&
+                configuredMessageFile != runningMessageFile)
+            {
+                configuration.SetValue(ConfigurationParameters.FileParameter, runningMessageFile);
+            }
+        }
+
+
+        void SaveChangedProperties()
         {
             var configuration = TwoFilesConfiguration.Create();
 
@@ -441,64 +530,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             configuration.Save();
         }
 
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            using (var form = new TextForm(MessageTextTitle, txtMessageText.Text))
-            {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    txtMessageText.Text = form.Content;
-                }
-            }
-        }
-
-        private void cboEncoding_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cboEncodingType.SelectedItem is EncodingType)
-            {
-                ServiceBusHelper.EncodingType = (EncodingType)cboEncodingType.SelectedItem;
-                AddSettingToChanged(ConfigurationParameters.SelectedEntitiesParameter);
-            }
-        }
-        #endregion
-
-        #region Private methods
-        void AddSettingToChanged(string setting)
-        {
-            if (!initializing && !changedSettings.Contains(setting))
-            {
-                changedSettings.Add(setting);
-            }
-        }
-
-        void SaveMessageSettingsIfChanged(TwoFilesConfiguration configuration,
-            string runningMessageText, string runningMessageFile)
-        {
-            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
-                out var configuredMessageText, out var configuredMessageFile);
-
-            if (changedSettings.Contains(ConfigurationParameters.MessageParameter))
-            {
-                configuration.SetValue(ConfigurationParameters.MessageParameter, runningMessageText);
-            }
-
-            if (changedSettings.Contains(ConfigurationParameters.FileParameter))
-            {
-                configuration.SetValue(ConfigurationParameters.FileParameter, runningMessageFile);
-            }
-        }
-
         void SaveSettingIfChanged<T>(TwoFilesConfiguration configuration, string setting,
-            T runningValue)
+        T runningValue)
         {
             if (changedSettings.Contains(setting))
             {
                 configuration.SetValue(setting, runningValue);
+                changedSettings.Remove(setting);
             }
         }
+
         #endregion
 
-        private void cboConfigFile_SelectedIndexChanged(object sender, EventArgs e)
+        void cboConfigFile_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Read the values according to the selected configuration option and
             // and display them
@@ -507,22 +551,92 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var configuration = TwoFilesConfiguration.Create();
         }
 
-        private void btnOpenConfig_Click(object sender, EventArgs e)
+        void btnOpenConfig_Click(object sender, EventArgs e)
         {
-            // Open the file(s) depending on what's selected
+            var selected = GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex);
 
+            if (selected == ConfigFileUse.None)
+            {
+                MessageBox.Show("No file was selected in the list.", "No file opened",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Open the file(s) depending on what's selected. Create an instance of the 
+            // TwoFilesConfiguration just to get the paths
+            var configuration = TwoFilesConfiguration.Create(selected, writeToLog: null);
+
+            if (cboConfigFile.SelectedIndex == ApplicationConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the application config file
+                Process.Start(configuration.ApplicationFilePath);
+            }
+
+            if (cboConfigFile.SelectedIndex == UserConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the user config file. It might not exist though
+                if (File.Exists(configuration.UserConfigFilePath))
+                {
+                    Process.Start(configuration.UserConfigFilePath);
+                }
+            }
         }
 
-        private void cboConfigFile_SelectionChangeCommitted(object sender, EventArgs e)
+        void cboConfigFile_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            var answer = MessageBox.Show("You have changed", "Changed", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-
-
-            if (answer == DialogResult.Cancel)
+            if (changedSettings.Count == 0)
             {
-                cboConfigFile.SelectedIndex = lastConfigFileIndex;
+                return;
             }
-            lastConfigFileIndex = cboConfigFile.SelectedIndex;
+
+            var defaultProperties = new MainProperties();
+
+            defaultProperties.SetDefault();
+            var resultingProperties = ConfigurationHelper.GetMainProperties(defaultProperties, null);
+
+            if (!MainProperties.Equals(resultingProperties))
+            {
+                var answer = MessageBox.Show("One or more settings are different in the configuration file selected. " +
+                    "Do you want to overwrite the settings "
+                    + $"{ConfigUseForUI[lastConfigFileIndex]}?",
+                    "Save changed settings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            }
+
+            switch (answer)
+            {
+                case DialogResult.Yes:
+                    // Save all changed values
+                    lastConfigFileIndex = cboConfigFile.SelectedIndex;
+                    SaveChangedProperties();
+                    ShowProperties(lastConfigFileIndex);
+                    break;
+
+                case DialogResult.No:
+                    lastConfigFileIndex = cboConfigFile.SelectedIndex;
+                    ShowProperties(lastConfigFileIndex);
+                    break;
+
+                case DialogResult.Cancel:
+                    cboConfigFile.SelectedIndex = lastConfigFileIndex;
+                    return;  // Don't do anything else
+
+                default:
+                    throw new InvalidDataException("Unexpected value returned from MessageBox.");
+            }
+        }
+
+        void ShowProperties(int configFileUIIndex)
+        {
+            var configFileUse = GetConfigFileUseFromUIIndex(configFileUIIndex);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog: null); // TODO get a variable here
+            var defaultProperties = new MainProperties();
+
+            defaultProperties.SetDefault();
+
+            var readProperties = ConfigurationHelper.GetMainProperties(configFileUse, defaultProperties, writeToLog: null);
+
         }
     }
 }
