@@ -21,16 +21,20 @@
 
 #region Using Directives
 using System.Collections.Generic;
+using System.Linq;
+
 using Microsoft.ServiceBus;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    using System.Linq;
+    using System;
+    using NotificationHubs.Messaging.Amqp.Serialization;
 
-    public class MainProperties
+    public class MainSettings
     {
         #region Public Properties
+
         public decimal LogFontSize { get; set; }
         public decimal TreeViewFontSize { get; set; }
         public int RetryCount { get; set; }
@@ -50,22 +54,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public string Label { get; set; }
         public string MessageFile { get; set; }
         public string MessageText { get; set; }
-        public List<string> SelectedEntities
-        {
-            get;
-            set;
-            //{  TODO
-            //    return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
-            //}
-        }
+
+        public List<string> SelectedEntities { get; set; }
+
         public string MessageBodyType { get; set; }
         public ConnectivityMode ConnectivityMode { get; set; }
 
-        public bool TraceEnabled { get; set; }
+        public Enums.EncodingType EncodingType { get; set; }
+
+        //public bool TraceEnabled { get; set; }
 
         #endregion
 
-        #region Public Methods
+        #region Public Static Methods
+        public MainSettings GetDefault()
+        {
+            var defaultSettings = new MainSettings();
+
+            defaultSettings.SetDefault();
+
+            return defaultSettings;
+        }
+        #endregion
+
+        #region Public Instance Methods
+
         public void SetDefault()
         {
             LogFontSize = (decimal)8.25;
@@ -107,7 +120,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             if (null == other) return false;
 
             // Check if it's the right type
-            if (!(other is MainProperties otherProperties)) return false;
+            if (!(other is MainSettings otherProperties)) return false;
 
             // Check all properties
             if (LogFontSize != otherProperties.LogFontSize) return false;
@@ -134,10 +147,104 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
-            if (TraceEnabled != otherProperties.TraceEnabled) return false;
 
             return true;
         }
+
+        //// GetHashCode is based on mutable fields so these fields must not be changed while 
+        // it is being in a container.
+        public override int GetHashCode()
+        {
+            return
+                RetryCount +
+                RetryTimeout +
+                ReceiveTimeout +
+                ServerTimeout +
+                PrefetchCount +
+                TopCount +
+                SenderThinkTime +
+                ReceiverThinkTime +
+                MonitorRefreshInterval +
+                Label.Length;
+        }
+
+        public object GetValue(string setting)
+        {
+            switch (setting)
+            {
+                case ConfigurationParameters.LogFontSize:
+                    return LogFontSize;
+
+                case ConfigurationParameters.TreeViewFontSize:
+                    return TreeViewFontSize;
+
+                case ConfigurationParameters.RetryCountParameter:
+                    return RetryCount;
+
+                case ConfigurationParameters.RetryTimeoutParameter:
+                    return RetryTimeout;
+
+                case ConfigurationParameters.ReceiveTimeoutParameter:
+                    return ReceiveTimeout;
+
+                case ConfigurationParameters.ServerTimeoutParameter:
+                    return ServerTimeout;
+
+                case ConfigurationParameters.PrefetchCountParameter:
+                    return PrefetchCount;
+
+                case ConfigurationParameters.TopParameter:
+                    return TopCount;
+
+                case ConfigurationParameters.SenderThinkTimeParameter:
+                    return SenderThinkTime;
+
+                case ConfigurationParameters.ReceiverThinkTimeParameter:
+                    return ReceiverThinkTime;
+
+                case ConfigurationParameters.MonitorRefreshIntervalParameter:
+                    return MonitorRefreshInterval;
+
+                case ConfigurationParameters.ShowMessageCountParameter:
+                    return ShowMessageCount;
+
+                case ConfigurationParameters.UseAsciiParameter:
+                    return UseAscii;
+
+                case ConfigurationParameters.SaveMessageToFileParameter:
+                    return SaveMessageToFile;
+
+                case ConfigurationParameters.SavePropertiesToFileParameter:
+                    return SavePropertiesToFile;
+
+                case ConfigurationParameters.SaveCheckpointsToFileParameter:
+                    return SaveCheckpointsToFile;
+
+                case ConfigurationParameters.LabelParameter:
+                    return Label;
+
+                case ConfigurationParameters.FileParameter:
+                    return MessageFile;
+
+                case ConfigurationParameters.MessageParameter:
+                    return MessageText;
+
+                case ConfigurationParameters.SelectedEntitiesParameter:
+                    return SelectedEntities;
+
+                case ConfigurationParameters.MessageBodyType:
+                    return MessageBodyType;
+
+                case ConfigurationParameters.ConnectivityMode:
+                    return ConnectivityMode;
+
+                case ConfigurationParameters.Encoding:
+                    return EncodingType;
+            }
+
+            throw new InvalidOperationException("Unexpected value ");
+        }
+
         #endregion
     }
 }

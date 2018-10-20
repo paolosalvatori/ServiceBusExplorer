@@ -51,7 +51,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     {
         #region Constants
         const string indent = "  ";
-        const string ConfigurationConfigFileSetting = "ConfigFile";
         #endregion
 
         #region Private static fields
@@ -74,9 +73,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public string ApplicationFilePath => applicationConfiguration.FilePath;
         #endregion
 
-
         #region Private constructor
-        private TwoFilesConfiguration(ConfigFileUse configFileUse, Configuration applicationConfiguration,
+        TwoFilesConfiguration(ConfigFileUse configFileUse, Configuration applicationConfiguration,
             string userConfigFilePath, Configuration userConfiguration)
         {
             this.ConfigFileUse = configFileUse;
@@ -86,7 +84,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
         #endregion
 
-        #region Static Create methods 
+        #region Public Static Create methods 
         // This is the normal way to create it
         public static TwoFilesConfiguration Create(WriteToLogDelegate writeToLog = null)
         {
@@ -123,13 +121,37 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
         #endregion
 
-        #region Public methods
+        #region Public static methods
+
+        public static void SaveConfigFileUse(ConfigFileUse configFileUse)
+        {
+            // If it is userconfig then we put it in the user config file.
+            // If it is bothconfig then we also put it in the user config file.
+            // But if it is applicationconfig then we remove the setting from the user file and 
+            // set it in the application file.
+
+            if (UseUserConfig(configFileUse))
+            {
+                var configuration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
+                configuration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
+            }
+            else  // Put it in the application config file and remove it from the user config
+            {
+                var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.ApplicationConfig);
+                userConfiguration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
+
+                var appConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
+                appConfiguration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
+            }
+        }
 
         public static ConfigFileUse GetCurrentConfigFileUse()
         {
             return AquireConfigFileUseValue();
         }
+        #endregion
 
+        #region Public instance methods
         public string GetStringValue(string AppSettingKey, string defaultValue = "")
         {
             string result = null;
@@ -618,21 +640,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 if (userConfiguration != null)
                 {
-                    string resultStringUser =
-                        userConfiguration.AppSettings.Settings[ConfigurationConfigFileSetting]?.Value;
+                    var resultStringUser =
+                        userConfiguration.AppSettings.Settings
+                        [ConfigurationParameters.ConfigurationConfigFileParameter]?.Value;
 
                     if (null != resultStringUser)
                     {
                         if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
                         {
-                            //if ((resultUser & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None)
-                            //{
                             return resultUser; // No need to check the application config
-                            //}
                         }
                         else
                         {
-                            WriteParsingFailure(writeToLog, userConfigFilePath, ConfigurationConfigFileSetting,
+                            WriteParsingFailure(writeToLog, userConfigFilePath, 
+                                ConfigurationParameters.ConfigurationConfigFileParameter,
                                 resultStringUser, typeof(ConfigFileUse));
                         }
                     }
@@ -640,7 +661,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             // We get here if the user file did not have a valid value 
-            string resultStringApp = ConfigurationManager.AppSettings[ConfigurationConfigFileSetting];
+            string resultStringApp = ConfigurationManager.AppSettings[ConfigurationParameters.ConfigurationConfigFileParameter];
 
             if (!string.IsNullOrWhiteSpace(resultStringApp))
             {
@@ -653,7 +674,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                 WriteParsingFailure(writeToLog, appConfiguration.FilePath,
-                    ConfigurationConfigFileSetting, resultStringApp, typeof(ConfigFileUse));
+                    ConfigurationParameters.ConfigurationConfigFileParameter, resultStringApp, typeof(ConfigFileUse));
             }
 
             return ConfigFileUse.ApplicationConfig;  // Default to Application for backwards compability
@@ -825,12 +846,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return found;
         }
 
+        static bool UseUserConfig(ConfigFileUse configFileUse)
+        {
+            return ((configFileUse & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None);
+        }
+
         #endregion
 
         #region Private instance methods
         bool UseUserConfig()
         {
-            return ((ConfigFileUse & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None);
+            return UseUserConfig(ConfigFileUse);
         }
 
         bool UseApplicationConfig()

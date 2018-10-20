@@ -215,6 +215,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private bool importing;
         private readonly int mainSplitterDistance;
         private readonly int splitterContainerDistance;
+        private ConfigFileUse configFileUse;
         private decimal treeViewFontSize;
         private decimal logFontSize;
         private int topCount = 10;
@@ -355,90 +356,77 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// <param name="e">System.EventArgs parameter</param>
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var mainProperties = new MainProperties
+            var mainSettings = new MainSettings
             {
-                Label = label,
-                MessageFile = messageFile,
-                MessageText = messageText,
                 LogFontSize = (decimal)lstLog.Font.Size,
                 TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
                 RetryCount = RetryHelper.RetryCount,
                 RetryTimeout = RetryHelper.RetryTimeout,
                 ReceiveTimeout = receiveTimeout,
                 ServerTimeout = serverTimeout,
+                PrefetchCount = prefetchCount,
+                TopCount = topCount,
                 SenderThinkTime = senderThinkTime,
                 ReceiverThinkTime = receiverThinkTime,
                 MonitorRefreshInterval = monitorRefreshInterval,
-                PrefetchCount = prefetchCount,
-                TopCount = topCount,
+
                 ShowMessageCount = showMessageCount,
+                UseAscii = useAscii,
                 SaveMessageToFile = saveMessageToFile,
                 SavePropertiesToFile = savePropertiesToFile,
                 SaveCheckpointsToFile = saveCheckpointsToFile,
-                UseAscii = useAscii,
+
+                Label = label,
+                MessageFile = messageFile,
+                MessageText = messageText,
+
                 SelectedEntities = selectedEntites,
-                MessageBodyType = messageBodyType
+                MessageBodyType = messageBodyType,
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                EncodingType = ServiceBusHelper.EncodingType
             };
 
-
-            //using (var optionForm = new OptionForm(label,
-            //                                       messageFile,
-            //                                       messageText,
-            //                                       (decimal)lstLog.Font.Size,
-            //                                       (decimal)serviceBusTreeView.Font.Size,
-            //                                       RetryHelper.RetryCount,
-            //                                       RetryHelper.RetryTimeout,
-            //                                       receiveTimeout,
-            //                                       serverTimeout,
-            //                                       senderThinkTime,
-            //                                       receiverThinkTime,
-            //                                       monitorRefreshInterval,
-            //                                       prefetchCount,
-            //                                       topCount,
-            //                                       showMessageCount,
-            //                                       saveMessageToFile,
-            //                                       savePropertiesToFile,
-            //                                       saveCheckpointsToFile,
-            //                                       useAscii,
-            //                                       selectedEntites,
-            //                                       messageBodyType))
-            using (var optionForm = new OptionForm(mainProperties))
+            using (var optionForm = new OptionForm(mainSettings, configFileUse))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
 
-
-
-                label = optionForm.MainProperties.Label;
-                messageFile = optionForm.MainProperties.MessageFile;
-                messageText = optionForm.MainProperties.MessageText;
-                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainProperties.LogFontSize);
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
-                                                   (float)optionForm.MainProperties.TreeViewFontSize);
-                RetryHelper.RetryCount = optionForm.MainProperties.RetryCount;
-                RetryHelper.RetryTimeout = optionForm.MainProperties.RetryTimeout;
-                receiveTimeout = optionForm.MainProperties.ReceiveTimeout;
-                serverTimeout = optionForm.MainProperties.ServerTimeout;
-                senderThinkTime = optionForm.MainProperties.SenderThinkTime;
-                receiverThinkTime = optionForm.MainProperties.ReceiverThinkTime;
-                monitorRefreshInterval = optionForm.MainProperties.MonitorRefreshInterval;
-                prefetchCount = optionForm.MainProperties.PrefetchCount;
-                topCount = optionForm.MainProperties.TopCount;
+                    (float)optionForm.MainSettings.TreeViewFontSize);
+                RetryHelper.RetryCount = optionForm.MainSettings.RetryCount;
+                RetryHelper.RetryTimeout = optionForm.MainSettings.RetryTimeout;
+                receiveTimeout = optionForm.MainSettings.ReceiveTimeout;
+                serverTimeout = optionForm.MainSettings.ServerTimeout;
+                prefetchCount = optionForm.MainSettings.PrefetchCount;
+                topCount = optionForm.MainSettings.TopCount;
+                senderThinkTime = optionForm.MainSettings.SenderThinkTime;
+                receiverThinkTime = optionForm.MainSettings.ReceiverThinkTime;
+                monitorRefreshInterval = optionForm.MainSettings.MonitorRefreshInterval;
 
-                if (showMessageCount != optionForm.MainProperties.ShowMessageCount)
+                if (showMessageCount != optionForm.MainSettings.ShowMessageCount)
                 {
-                    showMessageCount = optionForm.MainProperties.ShowMessageCount;
+                    showMessageCount = optionForm.MainSettings.ShowMessageCount;
                     GetEntities(EntityType.All);
                 }
 
-                saveMessageToFile = optionForm.MainProperties.SaveMessageToFile;
-                savePropertiesToFile = optionForm.MainProperties.SavePropertiesToFile;
-                saveCheckpointsToFile = optionForm.MainProperties.SaveCheckpointsToFile;
-                useAscii = optionForm.MainProperties.UseAscii;
-                selectedEntites = optionForm.MainProperties.SelectedEntities;
-                messageBodyType = optionForm.MainProperties.MessageBodyType;
+                useAscii = optionForm.MainSettings.UseAscii;
+                saveMessageToFile = optionForm.MainSettings.SaveMessageToFile;
+                savePropertiesToFile = optionForm.MainSettings.SavePropertiesToFile;
+                saveCheckpointsToFile = optionForm.MainSettings.SaveCheckpointsToFile;
+
+                label = optionForm.MainSettings.Label;
+                messageFile = optionForm.MainSettings.MessageFile;
+                messageText = optionForm.MainSettings.MessageText;
+
+                selectedEntites = optionForm.MainSettings.SelectedEntities;
+                messageBodyType = optionForm.MainSettings.MessageBodyType;
+                ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
+                ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
+
+                configFileUse = optionForm.ConfigFileUse;
             }
         }
 
@@ -3618,7 +3606,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return;
             }
 
-            var currentProperties = new MainProperties
+            var currentSettings = new MainSettings
             {
                 LogFontSize = logFontSize,
                 TreeViewFontSize = treeViewFontSize,
@@ -3641,95 +3629,99 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 MessageText = messageText,
                 SelectedEntities = selectedEntites,
                 MessageBodyType = messageBodyType,
-                ConnectivityMode = ServiceBusHelper.ConnectivityMode,
-                TraceEnabled = serviceBusHelper.TraceEnabled
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode
+                //TraceEnabled = serviceBusHelper.TraceEnabled
             };
 
-            var readProperties = ConfigurationHelper.GetMainProperties(currentProperties, WriteToLog);
+            var readSettings = ConfigurationHelper.GetMainProperties(currentSettings, WriteToLog);
 
-            RetryHelper.TraceEnabled = serviceBusHelper.TraceEnabled = readProperties.TraceEnabled;
-            messageBodyType = readProperties.MessageBodyType;
-            ServiceBusHelper.ConnectivityMode = readProperties.ConnectivityMode;
-
-            showMessageCount = readProperties.ShowMessageCount;
-            saveMessageToFile = readProperties.SaveMessageToFile;
-            savePropertiesToFile = readProperties.SavePropertiesToFile;
-            saveCheckpointsToFile = readProperties.SaveCheckpointsToFile;
-            useAscii = readProperties.UseAscii;
-
-            messageText = readProperties.MessageText;
-            messageFile = readProperties.MessageFile;
-
-            label = readProperties.Label;
-
-            var tempLogFontSize = readProperties.LogFontSize;
+            var tempLogFontSize = readSettings.LogFontSize;
             if (tempLogFontSize != logFontSize)
             {
                 logFontSize = tempLogFontSize;
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
             }
 
-            var tempTreeViewFontSize = readProperties.TreeViewFontSize;
+            var tempTreeViewFontSize = readSettings.TreeViewFontSize;
             if (tempTreeViewFontSize != treeViewFontSize)
             {
                 treeViewFontSize = tempTreeViewFontSize;
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
             }
 
-            RetryHelper.RetryCount = readProperties.RetryCount;
-            RetryHelper.RetryTimeout = readProperties.RetryTimeout;
+            RetryHelper.RetryCount = readSettings.RetryCount;
+            RetryHelper.RetryTimeout = readSettings.RetryTimeout;
 
-            var tempReceiveTimeout = readProperties.ReceiveTimeout;
+            var tempReceiveTimeout = readSettings.ReceiveTimeout;
             if (tempReceiveTimeout >= 0)
             {
                 receiveTimeout = tempReceiveTimeout;
             }
 
-            var tempServerTimeout = readProperties.ServerTimeout;
+            var tempServerTimeout = readSettings.ServerTimeout;
             if (tempServerTimeout >= 0)
             {
                 serverTimeout = tempServerTimeout;
             }
 
-            var tempSenderThinkTime = readProperties.SenderThinkTime;
-            if (tempSenderThinkTime >= 0)
-            {
-                senderThinkTime = tempSenderThinkTime;
-            }
-
-            var tempReceiverThinkTime = readProperties.ReceiverThinkTime;
-            if (tempReceiverThinkTime >= 0)
-            {
-                receiverThinkTime = tempReceiverThinkTime;
-            }
-
-            var tempMonitorRefreshIntervalValue = readProperties.MonitorRefreshInterval;
-            if (tempMonitorRefreshIntervalValue >= 0)
-            {
-                monitorRefreshInterval = tempMonitorRefreshIntervalValue;
-            }
-
-            var tempPrefetchCount = readProperties.PrefetchCount;
+            var tempPrefetchCount = readSettings.PrefetchCount;
             if (tempPrefetchCount >= 0)
             {
                 prefetchCount = tempPrefetchCount;
             }
 
-            var tempTopValue = readProperties.TopCount;
+            var tempTopValue = readSettings.TopCount;
             if (tempTopValue > 0)
             {
                 topCount = tempTopValue;
             }
 
-            selectedEntites = readProperties.SelectedEntities;
+            var tempSenderThinkTime = readSettings.SenderThinkTime;
+            if (tempSenderThinkTime >= 0)
+            {
+                senderThinkTime = tempSenderThinkTime;
+            }
 
-            // Get values for settings that are not part of MainProperties
+            var tempReceiverThinkTime = readSettings.ReceiverThinkTime;
+            if (tempReceiverThinkTime >= 0)
+            {
+                receiverThinkTime = tempReceiverThinkTime;
+            }
+
+            var tempMonitorRefreshIntervalValue = readSettings.MonitorRefreshInterval;
+            if (tempMonitorRefreshIntervalValue >= 0)
+            {
+                monitorRefreshInterval = tempMonitorRefreshIntervalValue;
+            }
+
+            showMessageCount = readSettings.ShowMessageCount;
+            useAscii = readSettings.UseAscii;
+            saveMessageToFile = readSettings.SaveMessageToFile;
+            savePropertiesToFile = readSettings.SavePropertiesToFile;
+            saveCheckpointsToFile = readSettings.SaveCheckpointsToFile;
+
+            label = readSettings.Label;
+
+            messageText = readSettings.MessageText;
+            messageFile = readSettings.MessageFile;
+
+            selectedEntites = readSettings.SelectedEntities;
+            messageBodyType = readSettings.MessageBodyType;
+            ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
+            ServiceBusHelper.EncodingType = readSettings.EncodingType;
+
+            // Get values for settings that are not part of MainSettings
+            configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+
             var configuration = TwoFilesConfiguration.Create(WriteToLog);
+
+            serviceBusHelper.TraceEnabled =
+                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,
+                    serviceBusHelper.TraceEnabled);
 
             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
                 serviceBusHelper.Scheme);
             relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
-
 
             var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
@@ -3749,9 +3741,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     // Comment to avoid ReSharper warning
                 }
             }
-
-            ServiceBusHelper.EncodingType = configuration.GetEnumValue(ConfigurationParameters.Encoding,
-                ServiceBusHelper.EncodingType, WriteToLog);
         }
 
         private void ReadEventHubPartitionCheckpointFile()

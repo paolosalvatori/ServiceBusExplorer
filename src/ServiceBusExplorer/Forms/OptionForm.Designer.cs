@@ -732,7 +732,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblShowMessageCount
             // 
             this.lblShowMessageCount.AutoSize = true;
-            this.lblShowMessageCount.Location = new System.Drawing.Point(17, 289);
+            this.lblShowMessageCount.Location = new System.Drawing.Point(17, 305);
             this.lblShowMessageCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblShowMessageCount.Name = "lblShowMessageCount";
             this.lblShowMessageCount.Size = new System.Drawing.Size(148, 17);
@@ -943,7 +943,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.cboConfigFile.Name = "cboConfigFile";
             this.cboConfigFile.Size = new System.Drawing.Size(199, 24);
             this.cboConfigFile.TabIndex = 1;
-            this.cboConfigFile.SelectedIndexChanged += new System.EventHandler(this.cboConfigFile_SelectedIndexChanged);
             this.cboConfigFile.SelectionChangeCommitted += new System.EventHandler(this.cboConfigFile_SelectionChangeCommitted);
             // 
             // label1

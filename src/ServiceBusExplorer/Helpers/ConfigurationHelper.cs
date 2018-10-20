@@ -58,22 +58,40 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
 
-        public static MainProperties GetMainProperties(ConfigFileUse configFileUse,
-            MainProperties currentProperties, WriteToLogDelegate writeToLog)
+        public static MainSettings GetMainProperties(ConfigFileUse configFileUse,
+            MainSettings currentSettings, WriteToLogDelegate writeToLog)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            return GetMainPropertiesUsingConfiguration(configuration, currentProperties, writeToLog);
+            return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
         }
 
-        public static MainProperties GetMainProperties(MainProperties currentProperties, WriteToLogDelegate writeToLog)
+        public static MainSettings GetMainProperties(MainSettings currentSettings, WriteToLogDelegate writeToLog)
         {
             var configuration = TwoFilesConfiguration.Create(writeToLog);
 
-            return GetMainPropertiesUsingConfiguration(configuration, currentProperties, writeToLog);
+            return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
         }
 
-        public static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
+        #endregion
+
+        #region Public static properties
+        public static List<string> Entities
+        {
+            get
+            {
+                return entities;
+            }
+        }
+        #endregion
+
+        #region Private static methods
+        static List<string> GetEntitiesAsList(string parameter)
+        {
+            return parameter.Split(',').Select(item => item.Trim()).ToList();
+        }
+
+        static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
         {
             var selectedEntities = new List<string>();
             var parameter = configuration.GetStringValue(ConfigurationParameters.SelectedEntitiesParameter);
@@ -104,86 +122,38 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return selectedEntities;
         }
 
-        #endregion
-
-        #region Public static properties
-        public static List<string> Entities
-        {
-            get
-            {
-                return entities;
-            }
-        }
-        #endregion
-
-        #region Private static methods
-        static List<string> GetEntitiesAsList(string parameter)
-        {
-            return parameter.Split(',').Select(item => item.Trim()).ToList();
-        }
-
         static void GetDefaultSelectedEntities(List<string> selectedEntities, List<string> entities)
         {
             selectedEntities.AddRange(entities);
         }
 
-        static MainProperties GetMainPropertiesUsingConfiguration(TwoFilesConfiguration configuration,
-      MainProperties currentProperties, WriteToLogDelegate writeToLog)
+        static MainSettings GetMainSettingsUsingConfiguration(TwoFilesConfiguration configuration,
+            MainSettings currentSettings, WriteToLogDelegate writeToLog)
         {
-            var resultProperties = new MainProperties();
-
-            resultProperties.TraceEnabled =
-                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,
-                currentProperties.TraceEnabled, writeToLog);
-
-            resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
-                BodyType.Stream.ToString());
-
-            resultProperties.ConnectivityMode = configuration.GetEnumValue
-                (ConfigurationParameters.ConnectivityMode, currentProperties.ConnectivityMode, writeToLog);
-
-            resultProperties.ShowMessageCount = configuration.GetBoolValue
-                (ConfigurationParameters.ShowMessageCountParameter,
-                currentProperties.ShowMessageCount, writeToLog);
-
-            resultProperties.SaveMessageToFile = configuration.GetBoolValue
-                (ConfigurationParameters.SaveMessageToFileParameter, currentProperties.SaveMessageToFile, writeToLog);
-
-            resultProperties.SavePropertiesToFile = configuration.GetBoolValue
-                (ConfigurationParameters.SavePropertiesToFileParameter,
-                currentProperties.SavePropertiesToFile, writeToLog);
-
-            resultProperties.SaveCheckpointsToFile = configuration.GetBoolValue
-                (ConfigurationParameters.SaveCheckpointsToFileParameter,
-                currentProperties.SaveCheckpointsToFile, writeToLog);
-
-            resultProperties.UseAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter,
-                currentProperties.UseAscii, writeToLog);
-
-            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
-                out string messageText, out string messageFile);
-            resultProperties.MessageText = messageText;
-            resultProperties.MessageFile = messageFile;
-
-            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, DefaultLabel);
+            var resultProperties = new MainSettings();
 
             resultProperties.LogFontSize = configuration.GetDecimalValue(ConfigurationParameters.LogFontSize,
-                currentProperties.LogFontSize, writeToLog);
+                currentSettings.LogFontSize, writeToLog);
 
             resultProperties.TreeViewFontSize = configuration.GetDecimalValue(ConfigurationParameters.TreeViewFontSize,
-                currentProperties.TreeViewFontSize, writeToLog);
+                currentSettings.TreeViewFontSize, writeToLog);
 
-            RetryHelper.RetryCount = configuration.GetIntValue(ConfigurationParameters.RetryCountParameter,
-                currentProperties.RetryCount, writeToLog);
+            resultProperties.RetryCount = configuration.GetIntValue(ConfigurationParameters.RetryCountParameter,
+                currentSettings.RetryCount, writeToLog);
 
-            RetryHelper.RetryTimeout = configuration.GetIntValue(ConfigurationParameters.RetryTimeoutParameter,
-                currentProperties.RetryTimeout, writeToLog);
+            resultProperties.RetryTimeout = configuration.GetIntValue(ConfigurationParameters.RetryTimeoutParameter,
+                currentSettings.RetryTimeout, writeToLog);
 
             resultProperties.ReceiveTimeout = configuration.GetIntValue(ConfigurationParameters.ReceiveTimeoutParameter,
                 -1, writeToLog);
 
             resultProperties.ServerTimeout = configuration.GetIntValue(ConfigurationParameters.ServerTimeoutParameter,
                 -1, writeToLog);
+
+            resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
+                -1, writeToLog);
+
+            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, -1, writeToLog);
 
             resultProperties.SenderThinkTime = configuration.GetIntValue
                 (ConfigurationParameters.SenderThinkTimeParameter, -1, writeToLog);
@@ -194,16 +164,44 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             resultProperties.MonitorRefreshInterval = configuration.GetIntValue
                 (ConfigurationParameters.MonitorRefreshIntervalParameter, -1, writeToLog);
 
-            resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
-                -1, writeToLog);
+            resultProperties.ShowMessageCount = configuration.GetBoolValue
+                (ConfigurationParameters.ShowMessageCountParameter,
+                currentSettings.ShowMessageCount, writeToLog);
 
-            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, -1, writeToLog);
+            resultProperties.UseAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter,
+                currentSettings.UseAscii, writeToLog);
+
+            resultProperties.SaveMessageToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SaveMessageToFileParameter, currentSettings.SaveMessageToFile, writeToLog);
+
+            resultProperties.SavePropertiesToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SavePropertiesToFileParameter,
+                currentSettings.SavePropertiesToFile, writeToLog);
+
+            resultProperties.SaveCheckpointsToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SaveCheckpointsToFileParameter,
+                currentSettings.SaveCheckpointsToFile, writeToLog);
+
+            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, DefaultLabel);
+
+            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
+                out string messageText, out string messageFile);
+            resultProperties.MessageText = messageText;
+            resultProperties.MessageFile = messageFile;
 
             resultProperties.SelectedEntities = ConfigurationHelper.GetSelectedEntities(configuration);
 
+            resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
+                BodyType.Stream.ToString());
+
+            resultProperties.ConnectivityMode = configuration.GetEnumValue
+                (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
+
+            resultProperties.EncodingType = configuration.GetEnumValue
+                (ConfigurationParameters.Encoding, currentSettings.EncodingType, writeToLog);
+
             return resultProperties;
         }
-
         #endregion
     }
 }

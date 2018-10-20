@@ -386,7 +386,7 @@
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\ConfigurationHelper.cs" />
-    <Compile Include="Helpers\MainProperties.cs" />
+    <Compile Include="Helpers\MainSettings.cs" />
     <Compile Include="Helpers\TwoFilesConfiguration.cs" />
     <Compile Include="Helpers\UserPropertyWrapper.cs" />
     <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
