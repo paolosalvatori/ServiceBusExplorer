@@ -134,7 +134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(577, 633);
+            this.btnOk.Location = new System.Drawing.Point(576, 633);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(96, 30);
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(683, 633);
+            this.btnCancel.Location = new System.Drawing.Point(681, 633);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(96, 30);
@@ -173,7 +173,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnDefault.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDefault.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDefault.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDefault.Location = new System.Drawing.Point(470, 633);
+            this.btnDefault.Location = new System.Drawing.Point(471, 633);
             this.btnDefault.Margin = new System.Windows.Forms.Padding(4);
             this.btnDefault.Name = "btnDefault";
             this.btnDefault.Size = new System.Drawing.Size(96, 30);
@@ -192,7 +192,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(671, 12);
+            this.btnSave.Location = new System.Drawing.Point(366, 633);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(96, 30);
@@ -804,7 +804,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.mainPanel.Controls.Add(this.btnSave);
             this.mainPanel.Controls.Add(this.groupBox1);
             this.mainPanel.Controls.Add(this.btnOpenConfig);
             this.mainPanel.Controls.Add(this.cboConfigFile);
@@ -923,7 +922,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOpenConfig.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenConfig.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.btnOpenConfig.Location = new System.Drawing.Point(568, 12);
+            this.btnOpenConfig.Location = new System.Drawing.Point(644, 12);
             this.btnOpenConfig.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpenConfig.Name = "btnOpenConfig";
             this.btnOpenConfig.Size = new System.Drawing.Size(96, 30);
@@ -941,7 +940,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.cboConfigFile.Location = new System.Drawing.Point(361, 12);
             this.cboConfigFile.Margin = new System.Windows.Forms.Padding(4);
             this.cboConfigFile.Name = "cboConfigFile";
-            this.cboConfigFile.Size = new System.Drawing.Size(199, 24);
+            this.cboConfigFile.Size = new System.Drawing.Size(262, 24);
             this.cboConfigFile.TabIndex = 1;
             this.cboConfigFile.SelectionChangeCommitted += new System.EventHandler(this.cboConfigFile_SelectionChangeCommitted);
             // 
@@ -963,6 +962,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(801, 674);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnDefault);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
