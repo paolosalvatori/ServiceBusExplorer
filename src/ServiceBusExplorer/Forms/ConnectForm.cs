@@ -151,9 +151,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        void SetConfigFileUseLabelText(Label lblConfigFileUse)
+        void SetConfigFileUseLabelText(Label label)
         {
-            var originalConfigFileUseInfo = lblConfigFileUse.Text;
+            var originalConfigFileUseInfo = label.Text;
 
             string replacement;
 
@@ -176,7 +176,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
 
             var updatedConfigFileUseInfo = originalConfigFileUseInfo.Replace(replacementText, replacement);
-            lblConfigFileUse.Text = updatedConfigFileUseInfo;
+            label.Text = updatedConfigFileUseInfo;
         }
 
         #endregion

@@ -68,7 +68,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Public Instance properties
-        public ConfigFileUse ConfigFileUse { get; private set; }
+        public ConfigFileUse ConfigFileUse { get; }
         public string UserConfigFilePath => userConfigFilePath;
         public string ApplicationFilePath => applicationConfiguration.FilePath;
         #endregion
@@ -77,7 +77,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         TwoFilesConfiguration(ConfigFileUse configFileUse, Configuration applicationConfiguration,
             string userConfigFilePath, Configuration userConfiguration)
         {
-            this.ConfigFileUse = configFileUse;
+            ConfigFileUse = configFileUse;
             this.applicationConfiguration = applicationConfiguration;
             this.userConfigFilePath = userConfigFilePath;
             this.userConfiguration = userConfiguration;
@@ -122,15 +122,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             if (UseUserConfig(configFileUse))
             {
-                var configuration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
+                var configuration = Create(ConfigFileUse.UserConfig);
                 configuration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
             }
             else  // Put it in the application config file and remove it from the user config
             {
-                var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.ApplicationConfig);
+                var userConfiguration = Create(ConfigFileUse.ApplicationConfig);
                 userConfiguration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
 
-                var appConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
+                var appConfiguration = Create(ConfigFileUse.UserConfig);
                 appConfiguration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
             }
         }
@@ -396,11 +396,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public void AddEntryToDictionarySection(string sectionName, string key, string value)
         {
-            ConfigurationSection section;
-
             AquireUserConfigurationIfNeeded();
 
-            section = AquireSectionInAppropriateConfigFile(sectionName);
+            var section = AquireSectionInAppropriateConfigFile(sectionName);
 
             if (section == null)
             {
@@ -468,7 +466,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            if (!updatedUser || !updatedApp)
+            if (!updatedApp && !updatedApp)
             {
                 HandleUpdateConfigurationFileError(updatedUser, updatedApp, writeToLog);
             }
@@ -508,7 +506,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            if (!removedUser || !removedApp)
+            if (!removedUser && !removedApp)
             {
                 HandleUpdateConfigurationFileError(removedUser, removedApp, writeToLog);
             }
@@ -519,30 +517,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             // First remove the section
             if (UseUserConfig())
             {
-                if (null != userConfiguration)
-                {
-                    var userSection = userConfiguration.Sections[sectionName];
+                var userSection = userConfiguration?.Sections[sectionName];
 
-                    if (null != userSection)
-                    {
-                        userConfiguration.Sections.Remove(sectionName);
-                        userConfiguration.Save(ConfigurationSaveMode.Modified);
-                    }
+                if (userSection != null)
+                {
+                    userConfiguration.Sections.Remove(sectionName);
+                    userConfiguration.Save(ConfigurationSaveMode.Modified);
                 }
             }
 
             if (UseApplicationConfig())
             {
-                if (null != applicationConfiguration)
-                {
-                    var appSection = applicationConfiguration.Sections[sectionName];
+                var appSection = applicationConfiguration?.Sections[sectionName];
 
-                    if (null != appSection)
-                    {
-                        applicationConfiguration.Sections.Remove(sectionName);
-                        applicationConfiguration.Save(ConfigurationSaveMode.Modified);
-                        ConfigurationManager.RefreshSection(sectionName);
-                    }
+                if (appSection != null)
+                {
+                    applicationConfiguration.Sections.Remove(sectionName);
+                    applicationConfiguration.Save(ConfigurationSaveMode.Modified);
+                    ConfigurationManager.RefreshSection(sectionName);
                 }
             }
 
@@ -588,25 +580,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 Configuration userConfiguration = OpenUserConfiguration(userConfigFilePath);
 
-                if (userConfiguration != null)
-                {
-                    var resultStringUser =
-                        userConfiguration.AppSettings.Settings
-                        [ConfigurationParameters.ConfigurationConfigFileParameter]?.Value;
+                var resultStringUser =
+                    userConfiguration?.AppSettings.Settings
+                        [ConfigurationParameters.ConfigurationConfigFileParameter]
+                        ?.Value;
 
-                    if (null != resultStringUser)
+                if (resultStringUser != null)
+                {
+                    if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
                     {
-                        if (Enum.TryParse<ConfigFileUse>(resultStringUser, out var resultUser))
-                        {
-                            return resultUser; // No need to check the application config
-                        }
-                        else
-                        {
-                            WriteParsingFailure(writeToLog, userConfigFilePath, 
-                                ConfigurationParameters.ConfigurationConfigFileParameter,
-                                resultStringUser, typeof(ConfigFileUse));
-                        }
+                        return resultUser; // No need to check the application config
                     }
+
+                    WriteParsingFailure(writeToLog, userConfigFilePath, 
+                        ConfigurationParameters.ConfigurationConfigFileParameter,
+                        resultStringUser, typeof(ConfigFileUse));
                 }
             }
 
@@ -643,12 +631,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         static void WriteParsingFailure(WriteToLogDelegate writeToLogDelegate, string configFile,
             string appSettingsKey, string value, Type type)
         {
-            if (null != writeToLogDelegate)
-            {
-                writeToLogDelegate($"The configuration file {configFile} has a setting, {appSettingsKey}" +
-                    $" having the value {value}, which cannot be parsed to a(n) {type}. " +
-                    "The setting is therefore ignored.");
-            }
+            writeToLogDelegate?.Invoke($"The configuration file {configFile} has a setting, {appSettingsKey}" +
+                                       $" having the value {value}, which cannot be parsed to a(n) {type}. " +
+                                       "The setting is therefore ignored.");
         }
 
         static Hashtable GetHashtableFromConfigurationSection(ConfigurationSection section)
@@ -700,7 +685,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 writeToLog(configFileUseInfo);
 
-                if (TwoFilesConfiguration.UseUserConfig(configFileUse) && !File.Exists(userConfigFilePath))
+                if (UseUserConfig(configFileUse) && !File.Exists(userConfigFilePath))
                 {
                     writeToLog($" The file {userConfigFilePath} does not currently exist though, but will be" +
                                " automatically created if any connection string or setting is changed.");
@@ -762,10 +747,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
 
             var xml = section.SectionInformation.GetRawXml();
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             bool found = false;
 
             xmlDocument.LoadXml(xml);
+
+            if (null == xmlDocument.DocumentElement)
+            {
+                return false;
+            }
 
             foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
             {
@@ -799,6 +789,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             bool found = false;
 
             xmlDocument.LoadXml(xml);
+
+            if (null == xmlDocument.DocumentElement)
+            {
+                return false;
+            }
 
             foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
             {
@@ -1003,7 +998,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         void HandleUpdateConfigurationFileError(bool removedUser, bool removedApp, WriteToLogDelegate writeToLog)
         {
-            if (removedUser || removedApp)
+            if (removedUser && removedApp)
             {
                 return;
             }
@@ -1039,10 +1034,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         $"{ConfigFileUse}.");
             }
 
-            if (null != writeToLog)
-            {
-                writeToLog("Failed to update " + message);
-            }
+            writeToLog?.Invoke("Failed to update " + message);
         }
         #endregion
     }

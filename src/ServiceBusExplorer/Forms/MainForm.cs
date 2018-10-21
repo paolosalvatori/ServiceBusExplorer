@@ -273,13 +273,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-            GetServiceBusNamespacesFromConfiguration(configFileUse);
+            GetServiceBusNamespacesFromConfiguration();
             GetServiceBusNamespaceFromEnvironmentVariable();
             GetBrokeredMessageInspectorsFromConfiguration();
             GetEventDataInspectorsFromConfiguration();
             GetBrokeredMessageGeneratorsFromConfiguration();
             GetEventDataGeneratorsFromConfiguration();
-            GetServiceBusNamespaceSettingsFromConfiguration(configFileUse);
+            GetServiceBusNamespaceSettingsFromConfiguration();
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
         }
@@ -402,7 +402,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (lastConfigFileUse != configFileUse)
                 {
                     // Refresh the ServiceBus namespaces
-                    GetServiceBusNamespacesFromConfiguration(configFileUse);
+                    GetServiceBusNamespacesFromConfiguration();
                     GetServiceBusNamespaceFromEnvironmentVariable();
 
                     // Then update the shortcut menus
@@ -3385,7 +3385,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespacesFromConfiguration(ConfigFileUse configFileUse)
+        private void GetServiceBusNamespacesFromConfiguration()
         {
             try
             {
@@ -3613,7 +3613,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        void GetServiceBusNamespaceSettingsFromConfiguration(ConfigFileUse configFileUse)
+        void GetServiceBusNamespaceSettingsFromConfiguration()
         {
             if (serviceBusHelper == null)
             {

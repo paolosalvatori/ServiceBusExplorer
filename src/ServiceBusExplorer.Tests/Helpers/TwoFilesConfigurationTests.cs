@@ -680,6 +680,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             // Get the value from the user file defaulting to true. If userFileShouldHaveUseAsciiKeyAsFalse
             // is false then we should read from the application config and that value should be true
             var useAsciiDefTrue = configuration.GetBoolValue(KeyIsInitiallyTrueInAppConfig, true, writeToLog);
+            Assert.AreEqual(!configHasBeenModified, useAsciiDefTrue);
 
             // Get a value from that initially only exist in the application file defaulting to false
             var useAsciiDefFalse = configuration.GetBoolValue(KeyIsInitiallyTrueInAppConfig, false, writeToLog);
@@ -718,7 +719,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "monster";
 
             // Get a value that do not exist in any of the config files using default
-            var nonExistingValueAsDefault = configuration.GetEnumValue<RelayType>(KeyDoesNotExistAnywhere,
+            var nonExistingValueAsDefault = configuration.GetEnumValue(KeyDoesNotExistAnywhere,
                 default(RelayType), writeToLog);
             Assert.AreEqual(RelayType.None, nonExistingValueAsDefault);
 
@@ -745,7 +746,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             }
 
             // Get a value that do exist initially
-            var monster = configuration.GetEnumValue<Monster>(keyOnlyInAppConfig,
+            var monster = configuration.GetEnumValue(keyOnlyInAppConfig,
                 default(Monster), writeToLog);
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
@@ -1120,36 +1121,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             configSections.Add(newSection);
             configElement.AquireElement(sectionName);
         }
-
-        static void RemoveSectionUsingRawXml(TwoFilesConfiguration configuration,
-            XDocument document, string sectionName, WriteToLogDelegate writeToLog)
-        {
-            // Remove the section
-            if (UseUserConfig(configuration.ConfigFileUse))
-            {
-
-            }
-
-            // Remove it from the configSections section
-            configuration.RemoveEntryFromDictionarySection("configSections",
-                sectionName, writeToLog);
-
-            //var configElement = document.Element("configuration");
-
-            //if (null == configElement)
-            //{
-            //    return ;
-            //}
-
-            //var configSections = configElement.Element("configSections");
-
-            //if (null == configSections)
-            //{
-            //    return;
-            //}
-
-        }
-
         static void DeleteFile(string filename)
         {
             if (File.Exists(filename))
@@ -1200,11 +1171,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             {
                 section.SectionInformation.SetRawXml(xmlDocument.OuterXml);
             }
-        }
-
-        static bool UseUserConfig(ConfigFileUse configFileUse)
-        {
-            return ((configFileUse & ConfigFileUse.AccessUserConfig) != ConfigFileUse.None);
         }
 
         static bool UseApplicationConfig(ConfigFileUse configFileUse)

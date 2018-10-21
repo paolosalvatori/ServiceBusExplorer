@@ -346,7 +346,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
             // Open the file(s) depending on what's selected. Create an instance of the 
             // TwoFilesConfiguration just to get the paths
-            var configuration = TwoFilesConfiguration.Create(selected, writeToLog: null);
+            var configuration = TwoFilesConfiguration.Create(selected);
 
             if (cboConfigFile.SelectedIndex == ApplicationConfigFileIndex ||
                 cboConfigFile.SelectedIndex == BothConfigFileIndex)
@@ -433,7 +433,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                 default:
                     throw new InvalidDataException("Unexpexted value passed to " +
-                                                   nameof(OptionForm.GetIndexForConfigFileUseUIString));
+                                                   nameof(GetIndexForConfigFileUseUIString));
             }
         }
 
@@ -545,7 +545,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         void GetAndShowProperties(int configFileUIIndex)
         {
             var configFileUse = GetConfigFileUseFromUIIndex(configFileUIIndex);
-            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog: null);
             var defaultProperties = new MainSettings();
 
             defaultProperties.SetDefault();
