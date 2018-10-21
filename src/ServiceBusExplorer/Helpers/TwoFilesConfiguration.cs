@@ -700,7 +700,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 writeToLog(configFileUseInfo);
 
-                if (!File.Exists(userConfigFilePath))
+                if (TwoFilesConfiguration.UseUserConfig(configFileUse) && !File.Exists(userConfigFilePath))
                 {
                     writeToLog($" The file {userConfigFilePath} does not currently exist though, but will be" +
                                " automatically created if any connection string or setting is changed.");
