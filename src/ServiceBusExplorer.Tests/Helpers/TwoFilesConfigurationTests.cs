@@ -445,16 +445,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             {
                 // Do the cleanup
                 Setup();
-
                 RemoveNamespaceSectionFromApplicationFile();
 
                 // Create the TwoFilesConfiguration object without a user file
-                var configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath()
-                    , configFileUse);
+                var configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
 
                 // Test reading config values - both application config and user config are missing
-                var namespaces = ServiceBusNamespace.GetMessagingNamespaces
-                    (configuration, writeToLog);
+                var namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
                 Assert.AreEqual(0, namespaces.Count);
                 Assert.IsTrue(logInMemory.Contains("Service bus accounts have not been properly configured"));
                 logInMemory = string.Empty;

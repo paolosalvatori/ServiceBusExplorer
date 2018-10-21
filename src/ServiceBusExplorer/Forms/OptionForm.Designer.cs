@@ -104,13 +104,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblUseAscii = new System.Windows.Forms.Label();
             this.useAsciiCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cboDefaultMessageBodyType = new System.Windows.Forms.ComboBox();
-            this.LabelDefaultMessageBodyType = new System.Windows.Forms.Label();
-            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.cboConfigFile = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.grouperSettings = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.cboDefaultMessageBodyType = new System.Windows.Forms.ComboBox();
+            this.LabelDefaultMessageBodyType = new System.Windows.Forms.Label();
+            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.retryCountNumericUpDown)).BeginInit();
@@ -123,7 +128,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).BeginInit();
             this.mainPanel.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.grouperSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnOk
@@ -204,6 +211,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblLogFontSize
             // 
             this.lblLogFontSize.AutoSize = true;
+            this.lblLogFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblLogFontSize.Location = new System.Drawing.Point(17, 30);
             this.lblLogFontSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLogFontSize.Name = "lblLogFontSize";
@@ -222,13 +230,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.logNumericUpDown.Location = new System.Drawing.Point(251, 25);
             this.logNumericUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.logNumericUpDown.Name = "logNumericUpDown";
-            this.logNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.logNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.logNumericUpDown.TabIndex = 4;
             this.logNumericUpDown.ValueChanged += new System.EventHandler(this.logNumericUpDown_ValueChanged);
             // 
             // lblTreeViewFontSize
             // 
             this.lblTreeViewFontSize.AutoSize = true;
+            this.lblTreeViewFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblTreeViewFontSize.Location = new System.Drawing.Point(17, 69);
             this.lblTreeViewFontSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTreeViewFontSize.Name = "lblTreeViewFontSize";
@@ -247,13 +256,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.treeViewNumericUpDown.Location = new System.Drawing.Point(251, 64);
             this.treeViewNumericUpDown.Margin = new System.Windows.Forms.Padding(4);
             this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
-            this.treeViewNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.treeViewNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.treeViewNumericUpDown.TabIndex = 8;
             this.treeViewNumericUpDown.ValueChanged += new System.EventHandler(this.treeViewNumericUpDown_ValueChanged);
             // 
             // lblRetryCount
             // 
             this.lblRetryCount.AutoSize = true;
+            this.lblRetryCount.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblRetryCount.Location = new System.Drawing.Point(17, 109);
             this.lblRetryCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRetryCount.Name = "lblRetryCount";
@@ -271,13 +281,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
-            this.retryCountNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.retryCountNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.retryCountNumericUpDown.TabIndex = 12;
             this.retryCountNumericUpDown.ValueChanged += new System.EventHandler(this.retryCountNumericUpDown_ValueChanged);
             // 
             // lblRetryTimeout
             // 
             this.lblRetryTimeout.AutoSize = true;
+            this.lblRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblRetryTimeout.Location = new System.Drawing.Point(17, 148);
             this.lblRetryTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRetryTimeout.Name = "lblRetryTimeout";
@@ -300,13 +311,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
-            this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.retryTimeoutNumericUpDown.TabIndex = 16;
             this.retryTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.retryTimeoutNumericUpDown_ValueChanged);
             // 
             // lblTop
             // 
             this.lblTop.AutoSize = true;
+            this.lblTop.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblTop.Location = new System.Drawing.Point(379, 148);
             this.lblTop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTop.Name = "lblTop";
@@ -329,7 +341,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.topNumericUpDown.Name = "topNumericUpDown";
-            this.topNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.topNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.topNumericUpDown.TabIndex = 18;
             this.topNumericUpDown.Value = new decimal(new int[] {
             10,
@@ -341,6 +353,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblReceiveTimeout
             // 
             this.lblReceiveTimeout.AutoSize = true;
+            this.lblReceiveTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblReceiveTimeout.Location = new System.Drawing.Point(379, 30);
             this.lblReceiveTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblReceiveTimeout.Name = "lblReceiveTimeout";
@@ -358,7 +371,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.receiveTimeoutNumericUpDown.Name = "receiveTimeoutNumericUpDown";
-            this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.receiveTimeoutNumericUpDown.TabIndex = 6;
             this.receiveTimeoutNumericUpDown.Value = new decimal(new int[] {
             1,
@@ -370,6 +383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblServerTimeout
             // 
             this.lblServerTimeout.AutoSize = true;
+            this.lblServerTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblServerTimeout.Location = new System.Drawing.Point(379, 69);
             this.lblServerTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblServerTimeout.Name = "lblServerTimeout";
@@ -387,7 +401,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.serverTimeoutNumericUpDown.Name = "serverTimeoutNumericUpDown";
-            this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.serverTimeoutNumericUpDown.TabIndex = 10;
             this.serverTimeoutNumericUpDown.Value = new decimal(new int[] {
             5,
@@ -399,6 +413,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblPrefetchCount
             // 
             this.lblPrefetchCount.AutoSize = true;
+            this.lblPrefetchCount.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblPrefetchCount.Location = new System.Drawing.Point(379, 109);
             this.lblPrefetchCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblPrefetchCount.Name = "lblPrefetchCount";
@@ -435,7 +450,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.prefetchCountNumericUpDown.Name = "prefetchCountNumericUpDown";
-            this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.prefetchCountNumericUpDown.TabIndex = 14;
             this.prefetchCountNumericUpDown.Value = new decimal(new int[] {
             10,
@@ -461,6 +476,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblSaveMessageOnExit
             // 
             this.lblSaveMessageOnExit.AutoSize = true;
+            this.lblSaveMessageOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblSaveMessageOnExit.Location = new System.Drawing.Point(17, 345);
             this.lblSaveMessageOnExit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSaveMessageOnExit.Name = "lblSaveMessageOnExit";
@@ -471,6 +487,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblSavePropertiesOnExit
             // 
             this.lblSavePropertiesOnExit.AutoSize = true;
+            this.lblSavePropertiesOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(379, 345);
             this.lblSavePropertiesOnExit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
@@ -481,6 +498,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblSenderThinkTime
             // 
             this.lblSenderThinkTime.AutoSize = true;
+            this.lblSenderThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblSenderThinkTime.Location = new System.Drawing.Point(17, 187);
             this.lblSenderThinkTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSenderThinkTime.Name = "lblSenderThinkTime";
@@ -503,7 +521,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.senderThinkTimeNumericUpDown.Name = "senderThinkTimeNumericUpDown";
-            this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.senderThinkTimeNumericUpDown.TabIndex = 20;
             this.senderThinkTimeNumericUpDown.Value = new decimal(new int[] {
             100,
@@ -515,6 +533,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblReceiverThinkTime
             // 
             this.lblReceiverThinkTime.AutoSize = true;
+            this.lblReceiverThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblReceiverThinkTime.Location = new System.Drawing.Point(379, 187);
             this.lblReceiverThinkTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblReceiverThinkTime.Name = "lblReceiverThinkTime";
@@ -537,7 +556,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.receiverThinkTimeNumericUpDown.Name = "receiverThinkTimeNumericUpDown";
-            this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.receiverThinkTimeNumericUpDown.TabIndex = 22;
             this.receiverThinkTimeNumericUpDown.Value = new decimal(new int[] {
             100,
@@ -549,6 +568,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblLabel
             // 
             this.lblLabel.AutoSize = true;
+            this.lblLabel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblLabel.Location = new System.Drawing.Point(17, 385);
             this.lblLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLabel.Name = "lblLabel";
@@ -563,13 +583,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtLabel.Location = new System.Drawing.Point(251, 382);
             this.txtLabel.Margin = new System.Windows.Forms.Padding(4);
             this.txtLabel.Name = "txtLabel";
-            this.txtLabel.Size = new System.Drawing.Size(477, 22);
+            this.txtLabel.Size = new System.Drawing.Size(477, 23);
             this.txtLabel.TabIndex = 39;
             this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
             // 
             // lblMessageText
             // 
             this.lblMessageText.AutoSize = true;
+            this.lblMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblMessageText.Location = new System.Drawing.Point(17, 461);
             this.lblMessageText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessageText.Name = "lblMessageText";
@@ -584,13 +605,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtMessageText.Location = new System.Drawing.Point(251, 456);
             this.txtMessageText.Margin = new System.Windows.Forms.Padding(4);
             this.txtMessageText.Name = "txtMessageText";
-            this.txtMessageText.Size = new System.Drawing.Size(425, 22);
+            this.txtMessageText.Size = new System.Drawing.Size(425, 23);
             this.txtMessageText.TabIndex = 43;
             this.txtMessageText.TextChanged += new System.EventHandler(this.txtMessageText_TextChanged);
             // 
             // lblMessageFile
             // 
             this.lblMessageFile.AutoSize = true;
+            this.lblMessageFile.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblMessageFile.Location = new System.Drawing.Point(17, 423);
             this.lblMessageFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMessageFile.Name = "lblMessageFile";
@@ -605,7 +627,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtMessageFile.Location = new System.Drawing.Point(251, 419);
             this.txtMessageFile.Margin = new System.Windows.Forms.Padding(4);
             this.txtMessageFile.Name = "txtMessageFile";
-            this.txtMessageFile.Size = new System.Drawing.Size(477, 22);
+            this.txtMessageFile.Size = new System.Drawing.Size(477, 23);
             this.txtMessageFile.TabIndex = 41;
             this.txtMessageFile.TextChanged += new System.EventHandler(this.txtMessageFile_TextChanged);
             // 
@@ -618,7 +640,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpen.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpen.Location = new System.Drawing.Point(696, 461);
+            this.btnOpen.Location = new System.Drawing.Point(696, 454);
             this.btnOpen.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(32, 26);
@@ -633,6 +655,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblMonitorRefreshInterval
             // 
             this.lblMonitorRefreshInterval.AutoSize = true;
+            this.lblMonitorRefreshInterval.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblMonitorRefreshInterval.Location = new System.Drawing.Point(17, 227);
             this.lblMonitorRefreshInterval.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMonitorRefreshInterval.Name = "lblMonitorRefreshInterval";
@@ -655,7 +678,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             0,
             0});
             this.monitorRefreshIntervalNumericUpDown.Name = "monitorRefreshIntervalNumericUpDown";
-            this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(107, 22);
+            this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(107, 23);
             this.monitorRefreshIntervalNumericUpDown.TabIndex = 24;
             this.monitorRefreshIntervalNumericUpDown.Value = new decimal(new int[] {
             30,
@@ -667,6 +690,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblConnectivityMode
             // 
             this.lblConnectivityMode.AutoSize = true;
+            this.lblConnectivityMode.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblConnectivityMode.Location = new System.Drawing.Point(379, 227);
             this.lblConnectivityMode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblConnectivityMode.Name = "lblConnectivityMode";
@@ -682,7 +706,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.cboConnectivityMode.Location = new System.Drawing.Point(625, 222);
             this.cboConnectivityMode.Margin = new System.Windows.Forms.Padding(4);
             this.cboConnectivityMode.Name = "cboConnectivityMode";
-            this.cboConnectivityMode.Size = new System.Drawing.Size(105, 24);
+            this.cboConnectivityMode.Size = new System.Drawing.Size(105, 25);
             this.cboConnectivityMode.TabIndex = 26;
             this.cboConnectivityMode.SelectedIndexChanged += new System.EventHandler(this.cboConnectivityMode_SelectedIndexChanged);
             // 
@@ -700,7 +724,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.cboEncodingType.Location = new System.Drawing.Point(625, 261);
             this.cboEncodingType.Margin = new System.Windows.Forms.Padding(4);
             this.cboEncodingType.Name = "cboEncodingType";
-            this.cboEncodingType.Size = new System.Drawing.Size(105, 24);
+            this.cboEncodingType.Size = new System.Drawing.Size(105, 25);
             this.cboEncodingType.TabIndex = 30;
             this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
             // 
@@ -732,6 +756,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblShowMessageCount
             // 
             this.lblShowMessageCount.AutoSize = true;
+            this.lblShowMessageCount.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblShowMessageCount.Location = new System.Drawing.Point(17, 305);
             this.lblShowMessageCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblShowMessageCount.Name = "lblShowMessageCount";
@@ -767,6 +792,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblSaveCheckpointsOnExit
             // 
             this.lblSaveCheckpointsOnExit.AutoSize = true;
+            this.lblSaveCheckpointsOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(379, 306);
             this.lblSaveCheckpointsOnExit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
@@ -777,6 +803,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // lblUseAscii
             // 
             this.lblUseAscii.AutoSize = true;
+            this.lblUseAscii.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblUseAscii.Location = new System.Drawing.Point(17, 266);
             this.lblUseAscii.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblUseAscii.Name = "lblUseAscii";
@@ -804,10 +831,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.mainPanel.Controls.Add(this.groupBox1);
             this.mainPanel.Controls.Add(this.btnOpenConfig);
             this.mainPanel.Controls.Add(this.cboConfigFile);
             this.mainPanel.Controls.Add(this.label1);
+            this.mainPanel.Controls.Add(this.grouperSettings);
             this.mainPanel.Location = new System.Drawing.Point(9, 0);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.mainPanel.Name = "mainPanel";
@@ -815,114 +842,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainPanel.TabIndex = 1;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cboDefaultMessageBodyType);
-            this.groupBox1.Controls.Add(this.LabelDefaultMessageBodyType);
-            this.groupBox1.Controls.Add(this.useAsciiCheckBox);
-            this.groupBox1.Controls.Add(this.lblUseAscii);
-            this.groupBox1.Controls.Add(this.lblSaveCheckpointsOnExit);
-            this.groupBox1.Controls.Add(this.saveCheckpointsToFileCheckBox);
-            this.groupBox1.Controls.Add(this.cboSelectedEntities);
-            this.groupBox1.Controls.Add(this.lblSelectedEntities);
-            this.groupBox1.Controls.Add(this.lblShowMessageCount);
-            this.groupBox1.Controls.Add(this.showMessageCountCheckBox);
-            this.groupBox1.Controls.Add(this.lblEncoding);
-            this.groupBox1.Controls.Add(this.cboEncodingType);
-            this.groupBox1.Controls.Add(this.cboConnectivityMode);
-            this.groupBox1.Controls.Add(this.lblConnectivityMode);
-            this.groupBox1.Controls.Add(this.monitorRefreshIntervalNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblMonitorRefreshInterval);
-            this.groupBox1.Controls.Add(this.btnOpen);
-            this.groupBox1.Controls.Add(this.txtMessageFile);
-            this.groupBox1.Controls.Add(this.lblMessageFile);
-            this.groupBox1.Controls.Add(this.txtMessageText);
-            this.groupBox1.Controls.Add(this.lblMessageText);
-            this.groupBox1.Controls.Add(this.txtLabel);
-            this.groupBox1.Controls.Add(this.lblLabel);
-            this.groupBox1.Controls.Add(this.receiverThinkTimeNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblReceiverThinkTime);
-            this.groupBox1.Controls.Add(this.senderThinkTimeNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblSenderThinkTime);
-            this.groupBox1.Controls.Add(this.lblSavePropertiesOnExit);
-            this.groupBox1.Controls.Add(this.lblSaveMessageOnExit);
-            this.groupBox1.Controls.Add(this.savePropertiesToFileCheckBox);
-            this.groupBox1.Controls.Add(this.prefetchCountNumericUpDown);
-            this.groupBox1.Controls.Add(this.saveMessageToFileCheckBox);
-            this.groupBox1.Controls.Add(this.lblPrefetchCount);
-            this.groupBox1.Controls.Add(this.serverTimeoutNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblServerTimeout);
-            this.groupBox1.Controls.Add(this.receiveTimeoutNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblReceiveTimeout);
-            this.groupBox1.Controls.Add(this.topNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblTop);
-            this.groupBox1.Controls.Add(this.retryTimeoutNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblRetryTimeout);
-            this.groupBox1.Controls.Add(this.retryCountNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblRetryCount);
-            this.groupBox1.Controls.Add(this.treeViewNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblTreeViewFontSize);
-            this.groupBox1.Controls.Add(this.logNumericUpDown);
-            this.groupBox1.Controls.Add(this.lblLogFontSize);
-            this.groupBox1.Location = new System.Drawing.Point(12, 49);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(755, 569);
-            this.groupBox1.TabIndex = 49;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Settings";
-            // 
-            // cboDefaultMessageBodyType
-            // 
-            this.cboDefaultMessageBodyType.BackColor = System.Drawing.SystemColors.Window;
-            this.cboDefaultMessageBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboDefaultMessageBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboDefaultMessageBodyType.FormattingEnabled = true;
-            this.cboDefaultMessageBodyType.Items.AddRange(new object[] {
-            "Stream",
-            "String",
-            "WCF"});
-            this.cboDefaultMessageBodyType.Location = new System.Drawing.Point(251, 532);
-            this.cboDefaultMessageBodyType.Margin = new System.Windows.Forms.Padding(4);
-            this.cboDefaultMessageBodyType.Name = "cboDefaultMessageBodyType";
-            this.cboDefaultMessageBodyType.Size = new System.Drawing.Size(479, 24);
-            this.cboDefaultMessageBodyType.TabIndex = 48;
-            this.cboDefaultMessageBodyType.SelectedIndexChanged += new System.EventHandler(this.cboDefaultMessageBodyType_SelectedIndexChanged);
-            // 
-            // LabelDefaultMessageBodyType
-            // 
-            this.LabelDefaultMessageBodyType.AutoSize = true;
-            this.LabelDefaultMessageBodyType.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.LabelDefaultMessageBodyType.Location = new System.Drawing.Point(15, 537);
-            this.LabelDefaultMessageBodyType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.LabelDefaultMessageBodyType.Name = "LabelDefaultMessageBodyType";
-            this.LabelDefaultMessageBodyType.Size = new System.Drawing.Size(184, 17);
-            this.LabelDefaultMessageBodyType.TabIndex = 47;
-            this.LabelDefaultMessageBodyType.Text = "Default message body type:";
-            // 
-            // cboSelectedEntities
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
-            this.cboSelectedEntities.DisplayMemberSingleItem = "";
-            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(251, 493);
-            this.cboSelectedEntities.Margin = new System.Windows.Forms.Padding(4);
-            this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(479, 24);
-            this.cboSelectedEntities.TabIndex = 46;
-            // 
             // btnOpenConfig
             // 
-            this.btnOpenConfig.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenConfig.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.btnOpenConfig.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenConfig.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenConfig.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenConfig.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.btnOpenConfig.Location = new System.Drawing.Point(644, 12);
+            this.btnOpenConfig.Location = new System.Drawing.Point(648, 11);
             this.btnOpenConfig.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpenConfig.Name = "btnOpenConfig";
             this.btnOpenConfig.Size = new System.Drawing.Size(96, 30);
@@ -953,6 +883,176 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label1.Size = new System.Drawing.Size(349, 17);
             this.label1.TabIndex = 0;
             this.label1.Text = "Configuration File for Settings and Connection Strings:";
+            // 
+            // grouperSettings
+            // 
+            this.grouperSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSettings.BorderThickness = 1F;
+            this.grouperSettings.Controls.Add(this.cboDefaultMessageBodyType);
+            this.grouperSettings.Controls.Add(this.LabelDefaultMessageBodyType);
+            this.grouperSettings.Controls.Add(this.useAsciiCheckBox);
+            this.grouperSettings.Controls.Add(this.lblUseAscii);
+            this.grouperSettings.Controls.Add(this.lblSaveCheckpointsOnExit);
+            this.grouperSettings.Controls.Add(this.saveCheckpointsToFileCheckBox);
+            this.grouperSettings.Controls.Add(this.cboSelectedEntities);
+            this.grouperSettings.Controls.Add(this.lblSelectedEntities);
+            this.grouperSettings.Controls.Add(this.lblShowMessageCount);
+            this.grouperSettings.Controls.Add(this.showMessageCountCheckBox);
+            this.grouperSettings.Controls.Add(this.lblEncoding);
+            this.grouperSettings.Controls.Add(this.cboEncodingType);
+            this.grouperSettings.Controls.Add(this.cboConnectivityMode);
+            this.grouperSettings.Controls.Add(this.lblConnectivityMode);
+            this.grouperSettings.Controls.Add(this.monitorRefreshIntervalNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblMonitorRefreshInterval);
+            this.grouperSettings.Controls.Add(this.btnOpen);
+            this.grouperSettings.Controls.Add(this.txtMessageFile);
+            this.grouperSettings.Controls.Add(this.lblMessageFile);
+            this.grouperSettings.Controls.Add(this.txtMessageText);
+            this.grouperSettings.Controls.Add(this.lblMessageText);
+            this.grouperSettings.Controls.Add(this.txtLabel);
+            this.grouperSettings.Controls.Add(this.lblLabel);
+            this.grouperSettings.Controls.Add(this.receiverThinkTimeNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblReceiverThinkTime);
+            this.grouperSettings.Controls.Add(this.senderThinkTimeNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblSenderThinkTime);
+            this.grouperSettings.Controls.Add(this.lblSavePropertiesOnExit);
+            this.grouperSettings.Controls.Add(this.lblSaveMessageOnExit);
+            this.grouperSettings.Controls.Add(this.savePropertiesToFileCheckBox);
+            this.grouperSettings.Controls.Add(this.prefetchCountNumericUpDown);
+            this.grouperSettings.Controls.Add(this.saveMessageToFileCheckBox);
+            this.grouperSettings.Controls.Add(this.lblPrefetchCount);
+            this.grouperSettings.Controls.Add(this.serverTimeoutNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblServerTimeout);
+            this.grouperSettings.Controls.Add(this.receiveTimeoutNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblReceiveTimeout);
+            this.grouperSettings.Controls.Add(this.topNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblTop);
+            this.grouperSettings.Controls.Add(this.retryTimeoutNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblRetryTimeout);
+            this.grouperSettings.Controls.Add(this.retryCountNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblRetryCount);
+            this.grouperSettings.Controls.Add(this.treeViewNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblTreeViewFontSize);
+            this.grouperSettings.Controls.Add(this.logNumericUpDown);
+            this.grouperSettings.Controls.Add(this.lblLogFontSize);
+            this.grouperSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperSettings.GroupImage = null;
+            this.grouperSettings.GroupTitle = "Settings";
+            this.grouperSettings.Location = new System.Drawing.Point(12, 49);
+            this.grouperSettings.Margin = new System.Windows.Forms.Padding(4);
+            this.grouperSettings.Name = "grouperSettings";
+            this.grouperSettings.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
+            this.grouperSettings.PaintGroupBox = true;
+            this.grouperSettings.RoundCorners = 4;
+            this.grouperSettings.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperSettings.ShadowControl = false;
+            this.grouperSettings.ShadowThickness = 1;
+            this.grouperSettings.Size = new System.Drawing.Size(755, 569);
+            this.grouperSettings.TabIndex = 50;
+            // 
+            // cboDefaultMessageBodyType
+            // 
+            this.cboDefaultMessageBodyType.BackColor = System.Drawing.SystemColors.Window;
+            this.cboDefaultMessageBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDefaultMessageBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboDefaultMessageBodyType.FormattingEnabled = true;
+            this.cboDefaultMessageBodyType.Items.AddRange(new object[] {
+            "Stream",
+            "String",
+            "WCF"});
+            this.cboDefaultMessageBodyType.Location = new System.Drawing.Point(251, 532);
+            this.cboDefaultMessageBodyType.Margin = new System.Windows.Forms.Padding(4);
+            this.cboDefaultMessageBodyType.Name = "cboDefaultMessageBodyType";
+            this.cboDefaultMessageBodyType.Size = new System.Drawing.Size(479, 25);
+            this.cboDefaultMessageBodyType.TabIndex = 48;
+            this.cboDefaultMessageBodyType.SelectedIndexChanged += new System.EventHandler(this.cboDefaultMessageBodyType_SelectedIndexChanged);
+            // 
+            // LabelDefaultMessageBodyType
+            // 
+            this.LabelDefaultMessageBodyType.AutoSize = true;
+            this.LabelDefaultMessageBodyType.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LabelDefaultMessageBodyType.Location = new System.Drawing.Point(15, 537);
+            this.LabelDefaultMessageBodyType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.LabelDefaultMessageBodyType.Name = "LabelDefaultMessageBodyType";
+            this.LabelDefaultMessageBodyType.Size = new System.Drawing.Size(184, 17);
+            this.LabelDefaultMessageBodyType.TabIndex = 47;
+            this.LabelDefaultMessageBodyType.Text = "Default message body type:";
+            // 
+            // cboSelectedEntities
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedEntities.DisplayMemberSingleItem = "";
+            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedEntities.FormattingEnabled = true;
+            this.cboSelectedEntities.Location = new System.Drawing.Point(251, 493);
+            this.cboSelectedEntities.Margin = new System.Windows.Forms.Padding(4);
+            this.cboSelectedEntities.Name = "cboSelectedEntities";
+            this.cboSelectedEntities.Size = new System.Drawing.Size(479, 25);
+            this.cboSelectedEntities.TabIndex = 46;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Location = new System.Drawing.Point(9, 119);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(755, 569);
+            this.groupBox1.TabIndex = 49;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Settings";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.DecimalPlaces = 2;
+            this.numericUpDown1.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.numericUpDown1.Location = new System.Drawing.Point(441, 273);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(4);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(107, 22);
+            this.numericUpDown1.TabIndex = 51;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(207, 278);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(99, 17);
+            this.label2.TabIndex = 50;
+            this.label2.Text = "Log Font Size:";
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.DecimalPlaces = 2;
+            this.numericUpDown2.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.numericUpDown2.Location = new System.Drawing.Point(278, 31);
+            this.numericUpDown2.Margin = new System.Windows.Forms.Padding(4);
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(107, 22);
+            this.numericUpDown2.TabIndex = 53;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(44, 36);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(99, 17);
+            this.label3.TabIndex = 52;
+            this.label3.Text = "Log Font Size:";
             // 
             // OptionForm
             // 
@@ -990,8 +1090,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).EndInit();
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.grouperSettings.ResumeLayout(false);
+            this.grouperSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1054,5 +1156,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnOpenConfig;
         private System.Windows.Forms.GroupBox groupBox1;
+        private Grouper grouperSettings;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Label label2;
     }
 }

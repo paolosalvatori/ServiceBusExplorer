@@ -67,6 +67,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string SharedSecretIssuerSecretLabel = "Shared Secret Issuer Secret:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
+        private const string replacementText = "{replace}";
 
         //***************************
         // Tooltips
@@ -86,6 +87,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Private Instance Fields
 
         private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ConfigFileUse configFileUse;
         private bool isIssuerName;
         private bool ignoreSelectedIndexChange;
 
@@ -100,9 +102,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         #region Public Constructor
 
-        public ConnectForm(ServiceBusHelper serviceBusHelper)
+        public ConnectForm(ServiceBusHelper serviceBusHelper, ConfigFileUse configFileUse)
         {
             InitializeComponent();
+
+            this.configFileUse = configFileUse;
+            SetConfigFileUseLabelText(lblConfigFileUse);            
+            
             this.serviceBusHelper = serviceBusHelper;
             cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
             cboServiceBusNamespace.Items.Add(EnterConnectionString);
@@ -143,6 +149,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
+        }
+
+        void SetConfigFileUseLabelText(Label lblConfigFileUse)
+        {
+            var originalConfigFileUseInfo = lblConfigFileUse.Text;
+
+            string replacement;
+
+            switch(configFileUse)
+            {
+                case ConfigFileUse.ApplicationConfig:
+                    replacement = "The application config file";
+                    break;
+
+                case ConfigFileUse.UserConfig:
+                    replacement = "The user config file";
+                    break;
+
+                case ConfigFileUse.BothConfig:
+                    replacement = "The application config file and the user config file";
+                    break;
+
+                default:
+                    throw new InvalidOperationException("Unexptected value");
+            }
+
+            var updatedConfigFileUseInfo = originalConfigFileUseInfo.Replace(replacementText, replacement);
+            lblConfigFileUse.Text = updatedConfigFileUseInfo;
         }
 
         #endregion
@@ -601,7 +635,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                     try
                     {
-                        ConfigurationHelper.AddServiceBusNamespace(key, value, MainForm.StaticWriteToLog);
+                        ConfigurationHelper.AddServiceBusNamespace(configFileUse, key, value, MainForm.StaticWriteToLog);
                     }
                     catch (ArgumentNullException ex)
                     {
@@ -673,7 +707,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
 
                 var itemIndex = cboServiceBusNamespace.SelectedIndex;
-                ConfigurationHelper.UpdateServiceBusNamespace(key, newKey, newValue: null, MainForm.StaticWriteToLog);
+                ConfigurationHelper.UpdateServiceBusNamespace(configFileUse, key, newKey, newValue: null, MainForm.StaticWriteToLog);
 
                 ignoreSelectedIndexChange = true;
                 serviceBusHelper.ServiceBusNamespaces.Remove(key);
@@ -694,7 +728,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 if (deleteForm.ShowDialog() == DialogResult.OK)
                 {
-                    ConfigurationHelper.RemoveServiceBusNamespace(key, MainForm.StaticWriteToLog);
+                    ConfigurationHelper.RemoveServiceBusNamespace(configFileUse, key, MainForm.StaticWriteToLog);
                     cboServiceBusNamespace.Items.RemoveAt(cboServiceBusNamespace.SelectedIndex);
                     cboServiceBusNamespace.SelectedIndex = 0;
 

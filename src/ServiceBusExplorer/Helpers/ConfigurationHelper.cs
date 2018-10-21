@@ -36,24 +36,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         #region Public methods
 
-        public static void UpdateServiceBusNamespace(string key, string newKey, string newValue,
+        public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
             WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
             configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
-        public static void AddServiceBusNamespace(string key, string value, WriteToLogDelegate writeToLog)
+        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
             configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
-        public static void RemoveServiceBusNamespace(string key, WriteToLogDelegate writeToLog)
+        public static void RemoveServiceBusNamespace(ConfigFileUse configFileUse, string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
             configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
@@ -66,12 +66,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
         }
 
-        public static MainSettings GetMainProperties(MainSettings currentSettings, WriteToLogDelegate writeToLog)
-        {
-            var configuration = TwoFilesConfiguration.Create(writeToLog);
+        //public static MainSettings GetMainProperties(MainSettings currentSettings, WriteToLogDelegate writeToLog)
+        //{
+        //    var configuration = TwoFilesConfiguration.Create(writeToLog);
 
-            return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
-        }
+        //    return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
+        //}
 
         #endregion
 
@@ -145,24 +145,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 currentSettings.RetryTimeout, writeToLog);
 
             resultProperties.ReceiveTimeout = configuration.GetIntValue(ConfigurationParameters.ReceiveTimeoutParameter,
-                -1, writeToLog);
+                currentSettings.ReceiveTimeout, writeToLog);
 
             resultProperties.ServerTimeout = configuration.GetIntValue(ConfigurationParameters.ServerTimeoutParameter,
-                -1, writeToLog);
+                currentSettings.ServerTimeout, writeToLog);
 
             resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
-                -1, writeToLog);
+                currentSettings.PrefetchCount, writeToLog);
 
-            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, -1, writeToLog);
+            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, 
+                currentSettings.TopCount, writeToLog);
 
             resultProperties.SenderThinkTime = configuration.GetIntValue
-                (ConfigurationParameters.SenderThinkTimeParameter, -1, writeToLog);
+                (ConfigurationParameters.SenderThinkTimeParameter, currentSettings.SenderThinkTime, writeToLog);
 
             resultProperties.ReceiverThinkTime = configuration.GetIntValue
-                (ConfigurationParameters.ReceiverThinkTimeParameter, -1, writeToLog);
+                (ConfigurationParameters.ReceiverThinkTimeParameter, currentSettings.ReceiverThinkTime, writeToLog);
 
             resultProperties.MonitorRefreshInterval = configuration.GetIntValue
-                (ConfigurationParameters.MonitorRefreshIntervalParameter, -1, writeToLog);
+                (ConfigurationParameters.MonitorRefreshIntervalParameter, 
+                currentSettings.MonitorRefreshInterval, writeToLog);
 
             resultProperties.ShowMessageCount = configuration.GetBoolValue
                 (ConfigurationParameters.ShowMessageCountParameter,

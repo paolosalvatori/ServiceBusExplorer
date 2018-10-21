@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,9 +29,6 @@ using Microsoft.ServiceBus;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    using System;
-    using NotificationHubs.Messaging.Amqp.Serialization;
-
     public class MainSettings
     {
         #region Public Properties

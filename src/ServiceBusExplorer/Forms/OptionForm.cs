@@ -51,8 +51,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private Fields
-        bool initializing;
-        List<string> changedSettings = new List<string>();
         int lastConfigFileIndex;
 
         // This List variable is tied to some of the constants
@@ -67,7 +65,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Public Constructor
         public OptionForm(MainSettings mainSettings, ConfigFileUse configFileUse)
         {
-            initializing = true;
             InitializeComponent();
 
             // Put data in the list controls
@@ -80,7 +77,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 cboSelectedEntities.Items.Add(item);
             }
 
-            initializing = false;
             MainSettings = mainSettings;
             ConfigFileUse = configFileUse;
             cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(ConfigFileUse);
@@ -90,14 +86,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Public Properties
-        public MainSettings MainSettings { get; private set; }
+        public MainSettings MainSettings { get; private set; } = new MainSettings();
         public ConfigFileUse ConfigFileUse { get; private set; }
         #endregion
 
         #region Event Handlers
         private void btnOk_Click(object sender, EventArgs e)
         {
-
             MainSettings.SelectedEntities = GetSelectedEntities();
 
             DialogResult = DialogResult.OK;
@@ -112,13 +107,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void logNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.LogFontSize);
             MainSettings.LogFontSize = logNumericUpDown.Value;
         }
 
         private void treeViewNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.TreeViewFontSize);
             MainSettings.TreeViewFontSize = treeViewNumericUpDown.Value;
         }
 
@@ -148,7 +141,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             topNumericUpDown.Value = MainSettings.TopCount;
 
             senderThinkTimeNumericUpDown.Value = MainSettings.SenderThinkTime;
-            receiveTimeoutNumericUpDown.Value = MainSettings.ReceiverThinkTime;
+            receiverThinkTimeNumericUpDown.Value = MainSettings.ReceiverThinkTime;
 
             monitorRefreshIntervalNumericUpDown.Value = MainSettings.MonitorRefreshInterval;
             cboConnectivityMode.SelectedItem = ConnectivityMode.AutoDetect;
@@ -170,61 +163,51 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.RetryCountParameter);
             MainSettings.RetryCount = (int)retryCountNumericUpDown.Value;
         }
 
         private void retryTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.RetryTimeoutParameter);
             MainSettings.RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
         }
 
         private void receiveTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.ReceiveTimeoutParameter);
             MainSettings.ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
         }
 
         private void sessionTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.ServerTimeoutParameter);
             MainSettings.ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
         }
 
         private void prefetchCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.PrefetchCountParameter);
             MainSettings.PrefetchCount = (int)prefetchCountNumericUpDown.Value;
         }
 
         private void topNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.TopParameter);
             MainSettings.TopCount = (int)topNumericUpDown.Value;
         }
 
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.ShowMessageCountParameter);
             MainSettings.ShowMessageCount = showMessageCountCheckBox.Checked;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.SaveMessageToFileParameter);
             MainSettings.SaveMessageToFile = saveMessageToFileCheckBox.Checked;
         }
 
         private void savePropertiesToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.SavePropertiesToFileParameter);
             MainSettings.SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
         }
 
         private void saveCheckpointsToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.SaveCheckpointsToFileParameter);
             MainSettings.SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
         }
 
@@ -278,43 +261,36 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.SenderThinkTimeParameter);
             MainSettings.SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
         }
 
         void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.ReceiverThinkTimeParameter);
             MainSettings.ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
         void useAscii_CheckedChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.UseAsciiParameter);
             MainSettings.UseAscii = useAsciiCheckBox.Checked;
         }
 
         void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.MonitorRefreshIntervalParameter);
             MainSettings.MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
         void txtLabel_TextChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.LabelParameter);
             MainSettings.Label = txtLabel.Text;
         }
 
         void txtMessageFile_TextChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.FileParameter);
             MainSettings.MessageFile = txtMessageFile.Text;
         }
 
         void txtMessageText_TextChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.MessageParameter);
             MainSettings.MessageText = txtMessageText.Text;
         }
 
@@ -322,14 +298,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
             {
-                AddSettingToChanged(ConfigurationParameters.ConnectivityMode);
                 MainSettings.ConnectivityMode = connectivityMode;
             }
         }
 
         void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AddSettingToChanged(ConfigurationParameters.MessageBodyType);
             MainSettings.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
@@ -357,7 +331,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (cboEncodingType.SelectedItem is EncodingType)
             {
                 MainSettings.EncodingType = (EncodingType)cboEncodingType.SelectedItem;
-                AddSettingToChanged(ConfigurationParameters.SelectedEntitiesParameter);
             }
         }
         void btnOpenConfig_Click(object sender, EventArgs e)
@@ -389,6 +362,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (File.Exists(configuration.UserConfigFilePath))
                 {
                     Process.Start(configuration.UserConfigFilePath);
+                }
+                else
+                {
+                    MessageBox.Show($"The file {configuration.UserConfigFilePath} does not exist. Click the Save"
+                        + " button to create it.",
+                        "File does exist", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -438,14 +417,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private methods
-        void AddSettingToChanged(string setting)
-        {
-            if (!initializing && !changedSettings.Contains(setting))
-            {
-                changedSettings.Add(setting);
-            }
-        }
-
         int GetIndexForConfigFileUseUIString(ConfigFileUse configFileUse)
         {
             switch (configFileUse)
@@ -481,25 +452,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                 default:
                     return ConfigFileUse.None;
-            }
-        }
-
-        void SaveMessageSettingsIfChanged(TwoFilesConfiguration configuration,
-            string runningMessageText, string runningMessageFile)
-        {
-            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
-                out var configuredMessageText, out var configuredMessageFile);
-
-            if (changedSettings.Contains(ConfigurationParameters.MessageParameter) &&
-                configuredMessageText != runningMessageText)
-            {
-                configuration.SetValue(ConfigurationParameters.MessageParameter, runningMessageText);
-            }
-
-            if (changedSettings.Contains(ConfigurationParameters.FileParameter) &&
-                configuredMessageFile != runningMessageFile)
-            {
-                configuration.SetValue(ConfigurationParameters.FileParameter, runningMessageFile);
             }
         }
 
@@ -590,23 +542,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        // TODO 
-        void SaveMessageSettings(TwoFilesConfiguration configuration, MainSettings savedSettings,
-            string runningMessageText, string runningMessageFile)
-        {
-            if (changedSettings.Contains(ConfigurationParameters.MessageParameter) &&
-                savedSettings.MessageText != runningMessageText)
-            {
-                configuration.SetValue(ConfigurationParameters.MessageParameter, runningMessageText);
-            }
-
-            if (changedSettings.Contains(ConfigurationParameters.FileParameter) &&
-                savedSettings.MessageFile != runningMessageFile)
-            {
-                configuration.SetValue(ConfigurationParameters.FileParameter, runningMessageFile);
-            }
-        }
-
         void GetAndShowProperties(int configFileUIIndex)
         {
             var configFileUse = GetConfigFileUseFromUIIndex(configFileUIIndex);
@@ -622,8 +557,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         void ShowSettings(MainSettings mainSettings)
         {
-            initializing = true;
-
             txtLabel.Text = mainSettings.Label;
             txtMessageFile.Text = mainSettings.MessageFile;
             txtMessageText.Text = mainSettings.MessageText;
@@ -658,8 +591,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
 
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
-
-            initializing = false;
         }
 
         List<string> GetSelectedEntities()

@@ -271,13 +271,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
-            GetServiceBusNamespacesFromConfiguration();
+            configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+
+            GetServiceBusNamespacesFromConfiguration(configFileUse);
             GetServiceBusNamespaceFromEnvironmentVariable();
             GetBrokeredMessageInspectorsFromConfiguration();
             GetEventDataInspectorsFromConfiguration();
             GetBrokeredMessageGeneratorsFromConfiguration();
             GetEventDataGeneratorsFromConfiguration();
-            GetServiceBusNamespaceSettingsFromConfiguration();
+            GetServiceBusNamespaceSettingsFromConfiguration(configFileUse);
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
         }
@@ -386,11 +388,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 EncodingType = ServiceBusHelper.EncodingType
             };
 
+            var lastConfigFileUse = configFileUse;
+
             using (var optionForm = new OptionForm(mainSettings, configFileUse))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
+                }
+
+                configFileUse = optionForm.ConfigFileUse;
+
+                if (lastConfigFileUse != configFileUse)
+                {
+                    // Refresh the ServiceBus namespaces
+                    GetServiceBusNamespacesFromConfiguration(configFileUse);
+                    GetServiceBusNamespaceFromEnvironmentVariable();
+
+                    // Then update the shortcut menus
+                    UpdateSavedConnectionsMenu();
                 }
 
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
@@ -425,8 +441,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
-
-                configFileUse = optionForm.ConfigFileUse;
             }
         }
 
@@ -1302,7 +1316,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper))
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
@@ -3371,11 +3385,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespacesFromConfiguration()
+        private void GetServiceBusNamespacesFromConfiguration(ConfigFileUse configFileUse)
         {
             try
             {
-                var configuration = TwoFilesConfiguration.Create(WriteToLog);
+                var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
                 serviceBusHelper.ServiceBusNamespaces =
                     ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
             }
@@ -3599,7 +3613,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        void GetServiceBusNamespaceSettingsFromConfiguration()
+        void GetServiceBusNamespaceSettingsFromConfiguration(ConfigFileUse configFileUse)
         {
             if (serviceBusHelper == null)
             {
@@ -3630,10 +3644,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 SelectedEntities = selectedEntites,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode
-                //TraceEnabled = serviceBusHelper.TraceEnabled
             };
 
-            var readSettings = ConfigurationHelper.GetMainProperties(currentSettings, WriteToLog);
+            var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
 
             var tempLogFontSize = readSettings.LogFontSize;
             if (tempLogFontSize != logFontSize)
@@ -3711,9 +3724,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ServiceBusHelper.EncodingType = readSettings.EncodingType;
 
             // Get values for settings that are not part of MainSettings
-            configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+            // configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-            var configuration = TwoFilesConfiguration.Create(WriteToLog);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
 
             serviceBusHelper.TraceEnabled =
                 configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,

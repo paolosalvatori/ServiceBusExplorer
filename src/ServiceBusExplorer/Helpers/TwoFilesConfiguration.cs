@@ -86,16 +86,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         #region Public Static Create methods 
         // This is the normal way to create it
-        public static TwoFilesConfiguration Create(WriteToLogDelegate writeToLog = null)
-        {
-            ConfigFileUse configFileUse = AquireConfigFileUseValue();
-
-            return Create(configFileUse, writeToLog);
-        }
-
-        // Use this creation method if you want to get configuration values with a
-        // ConfigFIleUse value other than in the config files. This is used in the 
-        // OptionForm.
         public static TwoFilesConfiguration Create(ConfigFileUse configFileUse,
             WriteToLogDelegate writeToLog = null)
         {
@@ -295,46 +285,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                     WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
                         resultStringApp, typeof(decimal));
-                }
-            }
-
-            return defaultValue;
-        }
-
-        public float GetFloatValue(string AppSettingKey, float defaultValue = default,
-            WriteToLogDelegate writeToLog = null)
-        {
-            if (userConfiguration != null && UseUserConfig())
-            {
-                string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-                if (null != resultStringUser)
-                {
-                    if (float.TryParse(resultStringUser, NumberStyles.Float,
-                        CultureInfo.InvariantCulture, out var result))
-                    {
-                        return result;
-                    }
-
-                    WriteParsingFailure(writeToLog, userConfigFilePath, AppSettingKey,
-                        resultStringUser, typeof(float));
-                }
-            }
-
-            if (UseApplicationConfig())
-            {
-                string resultStringApp = applicationConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
-
-                if (!string.IsNullOrWhiteSpace(resultStringApp))
-                {
-                    if (float.TryParse(resultStringApp, NumberStyles.Float,
-                        CultureInfo.InvariantCulture, out var result))
-                    {
-                        return result;
-                    }
-
-                    WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
-                        resultStringApp, typeof(float));
                 }
             }
 
@@ -725,8 +675,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 userConfigPathHasBeenShown = true;
 
-                writeToLog($"The files {userConfigFilePath} and {applicationConfiguration.FilePath} are used" +
-                    " for the configuration settings.");
+                string configFileUseInfo;
+
+                switch(configFileUse)
+                {
+                    case ConfigFileUse.ApplicationConfig:
+                        configFileUseInfo = $"The file {applicationConfiguration.FilePath} is used" +
+                            " for the configuration settings.";
+                        break;
+
+                    case ConfigFileUse.UserConfig:
+                        configFileUseInfo = $"The file {userConfigFilePath} is used" +
+                            " for the configuration settings.";
+                        break;
+
+                    case ConfigFileUse.BothConfig:
+                        configFileUseInfo = $"The files {userConfigFilePath} and {applicationConfiguration.FilePath} are used" +
+                            " for the configuration settings.";
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Unexptected value");
+                }
+
+                writeToLog(configFileUseInfo);
 
                 if (!File.Exists(userConfigFilePath))
                 {
