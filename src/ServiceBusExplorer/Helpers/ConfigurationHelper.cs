@@ -27,8 +27,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class ConfigurationHelper
     {
-        const string DefaultLabel = "Service Bus Explorer";
-
         static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
 
         static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
@@ -65,13 +63,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
             return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
         }
-
-        //public static MainSettings GetMainProperties(MainSettings currentSettings, WriteToLogDelegate writeToLog)
-        //{
-        //    var configuration = TwoFilesConfiguration.Create(writeToLog);
-
-        //    return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
-        //}
 
         #endregion
 
@@ -184,7 +175,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 (ConfigurationParameters.SaveCheckpointsToFileParameter,
                 currentSettings.SaveCheckpointsToFile, writeToLog);
 
-            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, DefaultLabel);
+            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, 
+                MainSettings.DefaultLabel);
 
             MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
                 out string messageText, out string messageFile);

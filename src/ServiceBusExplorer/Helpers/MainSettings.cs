@@ -31,6 +31,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public class MainSettings
     {
+        #region Internal constants
+        internal const string DefaultLabel = "Service Bus Explorer";
+        #endregion
+
         #region Public Properties
 
         public decimal LogFontSize { get; set; }
@@ -59,8 +63,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public ConnectivityMode ConnectivityMode { get; set; }
 
         public Enums.EncodingType EncodingType { get; set; }
-
-        //public bool TraceEnabled { get; set; }
 
         #endregion
 
@@ -102,11 +104,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             SavePropertiesToFile = true;
             SaveCheckpointsToFile = true;
 
-            // Not set
-            //public string Label { get; set; }
-            //public string MessageFile { get; set; }
-            //public string MessageText { get; set; }
-            // SelectedEntities
+            Label = DefaultLabel;
+            MessageFile = string.Empty;
+            MessageText = string.Empty;
+            SelectedEntities = ConfigurationHelper.Entities;
 
             MessageBodyType = BodyType.Stream.ToString();
             ConnectivityMode = ConnectivityMode.AutoDetect;

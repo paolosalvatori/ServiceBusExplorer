@@ -40,7 +40,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1.0);
         public static readonly TimeSpan TokenRequestOperationTimeout = TimeSpan.FromMinutes(3.0);
-        public static readonly long ServicePointMaxIdleTimeMilliSeconds = 0xc350;
+        public static readonly long ServicePointMaxIdleTimeMilliSeconds = 50000;
         public static readonly TimeSpan DefaultBatchFlushInterval = TimeSpan.FromMilliseconds(20.0);
         public static readonly double DefaultUsedSpaceAlertPercentage = 70.0;
         public static readonly TimeSpan DefaultLockDuration = TimeSpan.FromSeconds(60.0);
