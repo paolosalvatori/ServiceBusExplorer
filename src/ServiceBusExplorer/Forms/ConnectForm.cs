@@ -172,7 +172,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     break;
 
                 default:
-                    throw new InvalidOperationException("Unexptected value");
+                    throw new InvalidOperationException($"Unexpected value, {configFileUse} in method " +
+                        $"{nameof(SetConfigFileUseLabelText)}.");
             }
 
             var updatedConfigFileUseInfo = originalConfigFileUseInfo.Replace(replacementText, replacement);
