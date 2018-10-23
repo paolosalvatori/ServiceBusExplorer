@@ -23,14 +23,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
+
 using Microsoft.ServiceBus;
+
+using Microsoft.Azure.ServiceBusExplorer.Enums;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 #endregion
 
@@ -39,136 +41,60 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
     public partial class OptionForm : Form
     {
         #region Private Constants
-        //***************************
         // Messages
-        //***************************
-        private const string MessageTextTitle = "Message Text";
-        #endregion 
+        const string MessageTextTitle = "Message Text";
+
+        // ConfigUseForUI constants
+        const int ApplicationConfigFileIndex = 0;
+        const int UserConfigFileIndex = 1;
+        const int BothConfigFileIndex = 2;
+        #endregion
+
+        #region Private Fields
+        int lastConfigFileIndex;
+
+        // This List variable is tied to some of the constants
+        static readonly List<string> ConfigUseForUI = new List<string>
+        {
+            "Application Configuration File",
+            "User Configuration File",
+            "Both (User file will override)"
+        };
+        #endregion
 
         #region Public Constructor
-        public OptionForm(string label,
-                          string messageFile,
-                          string messageText,
-                          decimal logFontSize, 
-                          decimal treeViewFontSize, 
-                          int retryCount,
-                          int retryTimeout,
-                          int receiveTimeout,
-                          int serverTimeout,
-                          int senderThinkTime,
-                          int receiverThinkTime,
-                          int monitorRefreshInterval,
-                          int prefetchCount,
-                          int top,
-                          bool showMessageCount,
-                          bool saveMessageToFile,
-                          bool savePropertiesToFile,
-                          bool saveCheckpointsToFile,
-                          bool useAscii,
-                          IEnumerable<string> entities,
-                          IEnumerable<string> selectedEntities,
-                          string messageBodyType)
+        public OptionForm(MainSettings mainSettings, ConfigFileUse configFileUse)
         {
             InitializeComponent();
 
-            Label = label;
-            MessageFile = messageFile;
-            MessageText = messageText;
-            LogFontSize = logFontSize;
-            TreeViewFontSize = treeViewFontSize;
-            RetryCount = retryCount;
-            RetryTimeout = retryTimeout;
-            ReceiveTimeout = receiveTimeout;
-            ServerTimeout = serverTimeout;
-            SenderThinkTime = senderThinkTime;
-            ReceiverThinkTime = receiverThinkTime;
-            MonitorRefreshInterval = monitorRefreshInterval;            
-            PrefetchCount = prefetchCount;
-            TopCount = top;
-
-            txtLabel.Text = label;
-            txtMessageFile.Text = messageFile;
-            txtMessageText.Text = messageText;
-            logNumericUpDown.Value = logFontSize;
-            treeViewNumericUpDown.Value = treeViewFontSize;
-            retryCountNumericUpDown.Value = retryCount;
-            retryTimeoutNumericUpDown.Value = retryTimeout;
-            receiveTimeoutNumericUpDown.Value = receiveTimeout;
-            serverTimeoutNumericUpDown.Value = serverTimeout;
-            senderThinkTimeNumericUpDown.Value = senderThinkTime;
-            receiverThinkTimeNumericUpDown.Value = receiverThinkTime;
-            monitorRefreshIntervalNumericUpDown.Value = monitorRefreshInterval;
-            prefetchCountNumericUpDown.Value = prefetchCount;
-            topNumericUpDown.Value = top;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
-            savePropertiesToFileCheckBox.Checked = savePropertiesToFile;
-            saveMessageToFileCheckBox.Checked = saveMessageToFile;
-            saveCheckpointsToFileCheckBox.Checked = saveCheckpointsToFile;
-
-            var connectivityMode = ServiceBusHelper.ConnectivityMode;
+            // Put data in the list controls
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
-            cboConnectivityMode.SelectedItem = connectivityMode;
-
-            var encodingType = ServiceBusHelper.EncodingType;
             cboEncodingType.DataSource = Enum.GetValues(typeof(EncodingType));
-            cboEncodingType.SelectedItem = encodingType;
+            cboConfigFile.DataSource = ConfigUseForUI;
 
-            ShowMessageCount = showMessageCount;
-            SaveMessageToFile = saveMessageToFile;
-            SavePropertiesToFile = savePropertiesToFile;
-            SaveCheckpointsToFile = saveCheckpointsToFile;
-            UseAscii = useAscii;
-
-            foreach (var item in entities)
+            foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.Items.Add(item);
             }
-            foreach (var item in selectedEntities)
-            {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
-            }
-            if (!Enum.TryParse<BodyType>(messageBodyType, true, out var bodyType))
-            {
-                bodyType = BodyType.Stream;
-            }
-            cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
+
+            MainSettings = mainSettings;
+            ConfigFileUse = configFileUse;
+            cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(ConfigFileUse);
+
+            ShowSettings(mainSettings);
         }
         #endregion
 
         #region Public Properties
-        public decimal LogFontSize { get; private set; }
-        public decimal TreeViewFontSize { get; private set; }
-        public int RetryCount { get; private set; }
-        public int RetryTimeout { get; private set; }
-        public int ReceiveTimeout { get; private set; }
-        public int ServerTimeout { get; private set; }
-        public int PrefetchCount { get; private set; }
-        public int TopCount { get; private set; }
-        public int SenderThinkTime { get; private set; }
-        public int ReceiverThinkTime { get; private set; }
-        public int MonitorRefreshInterval { get; private set; }
-        public bool ShowMessageCount { get; private set; }
-        public bool UseAscii { get; private set; }
-        public bool SaveMessageToFile { get; private set; }
-        public bool SavePropertiesToFile { get; private set; }
-        public bool SaveCheckpointsToFile { get; private set; }
-        public string Label { get; private set; }
-        public string MessageFile { get; private set; }
-        public string MessageText { get; private set; }
-        public List<string> SelectedEntities
-        {
-            get
-            {
-                return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
-            }
-        }
-        public string MessageBodyType { get; private set; }
-
+        public MainSettings MainSettings { get; private set; } = new MainSettings();
+        public ConfigFileUse ConfigFileUse { get; private set; }
         #endregion
 
         #region Event Handlers
         private void btnOk_Click(object sender, EventArgs e)
         {
+            MainSettings.SelectedEntities = GetSelectedEntities();
+
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -181,12 +107,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void logNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            LogFontSize = logNumericUpDown.Value;
+            MainSettings.LogFontSize = logNumericUpDown.Value;
         }
 
         private void treeViewNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            TreeViewFontSize = treeViewNumericUpDown.Value;
+            MainSettings.TreeViewFontSize = treeViewNumericUpDown.Value;
         }
 
         private void OptionForm_KeyPress(object sender, KeyPressEventArgs e)
@@ -200,101 +126,89 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void btnDefault_Click(object sender, EventArgs e)
         {
-            LogFontSize = (decimal)8.25;
-            TreeViewFontSize = (decimal)8.25;
-            logNumericUpDown.Value = LogFontSize;
-            treeViewNumericUpDown.Value = TreeViewFontSize;
+            MainSettings.SetDefault();
 
-            RetryCount = 10;
-            RetryTimeout = 100;
-            retryCountNumericUpDown.Value = RetryCount;
-            retryTimeoutNumericUpDown.Value = RetryTimeout;
+            logNumericUpDown.Value = MainSettings.LogFontSize;
+            treeViewNumericUpDown.Value = MainSettings.TreeViewFontSize;
 
-            ReceiveTimeout = 1;
-            ServerTimeout = 3;
-            receiveTimeoutNumericUpDown.Value = ReceiveTimeout;
-            serverTimeoutNumericUpDown.Value = ServerTimeout;
-            
-            PrefetchCount = 0;
-            TopCount = 10;
-            prefetchCountNumericUpDown.Value = PrefetchCount;
-            topNumericUpDown.Value = TopCount;
+            retryCountNumericUpDown.Value = MainSettings.RetryCount;
+            retryTimeoutNumericUpDown.Value = MainSettings.RetryTimeout;
 
-            SenderThinkTime = 500;
-            ReceiverThinkTime = 500;
-            senderThinkTimeNumericUpDown.Value = SenderThinkTime;
-            receiveTimeoutNumericUpDown.Value = ReceiverThinkTime;
+            receiveTimeoutNumericUpDown.Value = MainSettings.ReceiveTimeout;
+            serverTimeoutNumericUpDown.Value = MainSettings.ServerTimeout;
 
-            MonitorRefreshInterval = 30;
-            monitorRefreshIntervalNumericUpDown.Value = MonitorRefreshInterval;
+            prefetchCountNumericUpDown.Value = MainSettings.PrefetchCount;
+            topNumericUpDown.Value = MainSettings.TopCount;
+
+            senderThinkTimeNumericUpDown.Value = MainSettings.SenderThinkTime;
+            receiverThinkTimeNumericUpDown.Value = MainSettings.ReceiverThinkTime;
+
+            monitorRefreshIntervalNumericUpDown.Value = MainSettings.MonitorRefreshInterval;
             cboConnectivityMode.SelectedItem = ConnectivityMode.AutoDetect;
             cboEncodingType.SelectedItem = EncodingType.ASCII;
-            
-            SaveMessageToFile = true;
-            SavePropertiesToFile = true;
-            SaveCheckpointsToFile = true;
-            UseAscii = true;
 
-            saveMessageToFileCheckBox.Checked = true;
-            savePropertiesToFileCheckBox.Checked = true;
-            saveCheckpointsToFileCheckBox.Checked = true;
-            useAsciiCheckBox.Checked = true;
+            saveMessageToFileCheckBox.Checked = MainSettings.SaveMessageToFile;
+            showMessageCountCheckBox.Checked = MainSettings.ShowMessageCount;
+            savePropertiesToFileCheckBox.Checked = MainSettings.SavePropertiesToFile;
+            saveCheckpointsToFileCheckBox.Checked = MainSettings.SaveCheckpointsToFile;
+            useAsciiCheckBox.Checked = MainSettings.UseAscii;
 
-            foreach (var item in MainForm.SingletonMainForm.Entities)
+            foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
 
-            MessageBodyType = BodyType.Stream.ToString();
+            MainSettings.MessageBodyType = MainSettings.MessageBodyType; // .Stream.ToString();
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            RetryCount = (int)retryCountNumericUpDown.Value;
+            MainSettings.RetryCount = (int)retryCountNumericUpDown.Value;
         }
 
         private void retryTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
+            MainSettings.RetryTimeout = (int)retryTimeoutNumericUpDown.Value;
         }
 
         private void receiveTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
+            MainSettings.ReceiveTimeout = (int)receiveTimeoutNumericUpDown.Value;
         }
+
         private void sessionTimeoutNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
+            MainSettings.ServerTimeout = (int)serverTimeoutNumericUpDown.Value;
         }
 
         private void prefetchCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            PrefetchCount = (int)prefetchCountNumericUpDown.Value;
+            MainSettings.PrefetchCount = (int)prefetchCountNumericUpDown.Value;
         }
 
         private void topNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            TopCount = (int)topNumericUpDown.Value;
+            MainSettings.TopCount = (int)topNumericUpDown.Value;
         }
 
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            ShowMessageCount = showMessageCountCheckBox.Checked;
+            MainSettings.ShowMessageCount = showMessageCountCheckBox.Checked;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            SaveMessageToFile = saveMessageToFileCheckBox.Checked;
+            MainSettings.SaveMessageToFile = saveMessageToFileCheckBox.Checked;
         }
 
         private void savePropertiesToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
+            MainSettings.SavePropertiesToFile = savePropertiesToFileCheckBox.Checked;
         }
 
         private void saveCheckpointsToFileCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
+            MainSettings.SaveCheckpointsToFile = saveCheckpointsToFileCheckBox.Checked;
         }
 
         private void button_MouseEnter(object sender, EventArgs e)
@@ -314,14 +228,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 control.ForeColor = SystemColors.ControlText;
             }
         }
-        
-        private void mainPanel_Paint(object sender, PaintEventArgs e)
+
+        void mainPanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                     cboConnectivityMode.Location.X - 1,
-                                     cboConnectivityMode.Location.Y - 1,
-                                     cboConnectivityMode.Size.Width + 1,
-                                     cboConnectivityMode.Size.Height + 1);
+                                    cboConfigFile.Location.X - 1,
+                                    cboConfigFile.Location.Y - 1,
+                                    cboConfigFile.Size.Width + 1,
+                                    cboConfigFile.Size.Height + 1);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboConnectivityMode.Location.X - 1,
+                                    cboConnectivityMode.Location.Y - 1,
+                                    cboConnectivityMode.Size.Width + 1,
+                                    cboConnectivityMode.Size.Height + 1);
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                                    cboEncodingType.Location.X - 1,
                                    cboEncodingType.Location.Y - 1,
@@ -340,254 +259,63 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
-        private void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
+            MainSettings.SenderThinkTime = (int)senderThinkTimeNumericUpDown.Value;
         }
 
-        private void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void receiverThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
+            MainSettings.ReceiverThinkTime = (int)receiverThinkTimeNumericUpDown.Value;
         }
 
-        private void useAscii_CheckedChanged(object sender, EventArgs e)
+        void useAscii_CheckedChanged(object sender, EventArgs e)
         {
-            UseAscii = useAsciiCheckBox.Checked;
+            MainSettings.UseAscii = useAsciiCheckBox.Checked;
         }
 
-        private void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
+        void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
+            MainSettings.MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
         }
 
-        private void txtLabel_TextChanged(object sender, EventArgs e)
+        void txtLabel_TextChanged(object sender, EventArgs e)
         {
-            Label = txtLabel.Text;
+            MainSettings.Label = txtLabel.Text;
         }
 
-        private void txtMessageFile_TextChanged(object sender, EventArgs e)
+        void txtMessageFile_TextChanged(object sender, EventArgs e)
         {
-            MessageFile = txtMessageFile.Text;
+            MainSettings.MessageFile = txtMessageFile.Text;
         }
 
-        private void txtMessageText_TextChanged(object sender, EventArgs e)
+        void txtMessageText_TextChanged(object sender, EventArgs e)
         {
-            MessageText = txtMessageText.Text;
+            MainSettings.MessageText = txtMessageText.Text;
         }
 
-        private void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
+        void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
             {
-                ServiceBusHelper.ConnectivityMode = connectivityMode;
+                MainSettings.ConnectivityMode = connectivityMode;
             }
         }
 
-        private void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
+        void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MessageBodyType = cboDefaultMessageBodyType.Text;
+            MainSettings.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        void btnSave_Click(object sender, EventArgs e)
         {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (configuration.AppSettings.Settings[ConfigurationParameters.LogFontSize] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.LogFontSize, LogFontSize.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.LogFontSize].Value = LogFontSize.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.TreeViewFontSize] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.TreeViewFontSize, TreeViewFontSize.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.TreeViewFontSize].Value = TreeViewFontSize.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ShowMessageCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ShowMessageCountParameter, ShowMessageCount.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ShowMessageCountParameter].Value = ShowMessageCount.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SaveMessageToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SaveMessageToFileParameter, SaveMessageToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SaveMessageToFileParameter].Value = SaveMessageToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.UseAsciiParameter, UseAscii.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.UseAsciiParameter].Value = UseAscii.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SavePropertiesToFileParameter, SavePropertiesToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SavePropertiesToFileParameter].Value = SavePropertiesToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SaveCheckpointsToFileParameter, SaveCheckpointsToFile.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SaveCheckpointsToFileParameter].Value = SaveCheckpointsToFile.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.RetryCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.RetryCountParameter, RetryCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.RetryCountParameter].Value = RetryCount.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.RetryTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.RetryTimeoutParameter, RetryTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.RetryTimeoutParameter].Value = RetryTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.TopParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.TopParameter, TopCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.TopParameter].Value = TopCount.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ReceiveTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ReceiveTimeoutParameter, ReceiveTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ReceiveTimeoutParameter].Value = ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ServerTimeoutParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ServerTimeoutParameter, ServerTimeout.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ServerTimeoutParameter].Value = ServerTimeout.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter].Value = SenderThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SenderThinkTimeParameter, SenderThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SenderThinkTimeParameter].Value = SenderThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ReceiverThinkTimeParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ReceiverThinkTimeParameter, ReceiverThinkTime.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ReceiverThinkTimeParameter].Value = ReceiverThinkTime.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MonitorRefreshIntervalParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MonitorRefreshIntervalParameter, MonitorRefreshInterval.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MonitorRefreshIntervalParameter].Value = MonitorRefreshInterval.ToString(CultureInfo.InvariantCulture);
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.PrefetchCountParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.PrefetchCountParameter, PrefetchCount.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.PrefetchCountParameter].Value = PrefetchCount.ToString(CultureInfo.InvariantCulture);
-            }
+            // Get selected items
+            MainSettings.SelectedEntities = GetSelectedEntities();
 
-            if (configuration.AppSettings.Settings[ConfigurationParameters.LabelParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.LabelParameter, Label);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.LabelParameter].Value = Label;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.FileParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.FileParameter, MessageFile);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.FileParameter].Value = MessageFile;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageParameter, MessageText);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MessageParameter].Value = MessageText;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.ConnectivityMode] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.ConnectivityMode, ServiceBusHelper.ConnectivityMode.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.ConnectivityMode].Value = ServiceBusHelper.ConnectivityMode.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.Encoding] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.Encoding, ServiceBusHelper.EncodingType.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.Encoding].Value = ServiceBusHelper.EncodingType.ToString();
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.SelectedEntitiesParameter, cboSelectedEntities.Text);
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.SelectedEntitiesParameter].Value = cboSelectedEntities.Text;
-            }
-            if (configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType] == null)
-            {
-                configuration.AppSettings.Settings.Add(ConfigurationParameters.MessageBodyType, cboDefaultMessageBodyType.SelectedIndex.ToString());
-            }
-            else
-            {
-                configuration.AppSettings.Settings[ConfigurationParameters.MessageBodyType].Value = cboDefaultMessageBodyType.SelectedIndex.ToString();
-            }
-            configuration.Save(ConfigurationSaveMode.Minimal);
+            SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
         }
 
-        private void btnOpen_Click(object sender, EventArgs e)
+        void btnOpen_Click(object sender, EventArgs e)
         {
             using (var form = new TextForm(MessageTextTitle, txtMessageText.Text))
             {
@@ -598,14 +326,277 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void cboEncoding_SelectedIndexChanged(object sender, EventArgs e)
+        void cboEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboEncodingType.SelectedItem is EncodingType)
             {
-                ServiceBusHelper.EncodingType = (EncodingType) cboEncodingType.SelectedItem;
+                MainSettings.EncodingType = (EncodingType)cboEncodingType.SelectedItem;
             }
+        }
+        void btnOpenConfig_Click(object sender, EventArgs e)
+        {
+            var selected = GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex);
+
+            if (selected == ConfigFileUse.None)
+            {
+                MessageBox.Show("No file was selected in the list.", "No file opened",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Open the file(s) depending on what's selected. Create an instance of the 
+            // TwoFilesConfiguration just to get the paths
+            var configuration = TwoFilesConfiguration.Create(selected);
+
+            if (cboConfigFile.SelectedIndex == ApplicationConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the application config file
+                Process.Start(configuration.ApplicationFilePath);
+            }
+
+            if (cboConfigFile.SelectedIndex == UserConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the user config file. It might not exist though
+                if (File.Exists(configuration.UserConfigFilePath))
+                {
+                    Process.Start(configuration.UserConfigFilePath);
+                }
+                else
+                {
+                    MessageBox.Show($"The file {configuration.UserConfigFilePath} does not exist. Click the Save"
+                        + " button to create it.",
+                        "File does exist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        void cboConfigFile_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            // Check if there is a difference compared to the configuration we are switching to
+            var defaultProperties = new MainSettings();
+
+            defaultProperties.SetDefault();
+            var resultingProperties = ConfigurationHelper.GetMainProperties(
+                GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex), defaultProperties, null);
+
+            if (MainSettings.Equals(resultingProperties))
+            {
+                lastConfigFileIndex = cboConfigFile.SelectedIndex;
+                ConfigFileUse = GetConfigFileUseFromUIIndex(lastConfigFileIndex);
+                return;
+            }
+
+            var answer = MessageBox.Show("One or more settings are different in the configuration file selected. " +
+                    "Do you want to use the settings from "
+                    + $"{ConfigUseForUI[cboConfigFile.SelectedIndex]}?",
+                    "Use new config file settings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            switch (answer)
+            {
+                case DialogResult.Yes:
+                    GetAndShowProperties(cboConfigFile.SelectedIndex);
+                    break;
+
+                case DialogResult.No:
+                    break;
+
+                case DialogResult.Cancel:
+                    cboConfigFile.SelectedIndex = lastConfigFileIndex;
+                    return;  // Don't do anything else
+
+                default:
+                    throw new InvalidDataException("Unexpected value returned from MessageBox.");
+            }
+
+            // We get if either Yes or No was selected
+            lastConfigFileIndex = cboConfigFile.SelectedIndex;
+            ConfigFileUse = GetConfigFileUseFromUIIndex(lastConfigFileIndex);
         }
         #endregion
 
+        #region Private methods
+        int GetIndexForConfigFileUseUIString(ConfigFileUse configFileUse)
+        {
+            switch (configFileUse)
+            {
+                case ConfigFileUse.None:
+                case ConfigFileUse.ApplicationConfig:
+                    return ApplicationConfigFileIndex;
+
+                case ConfigFileUse.UserConfig:
+                    return UserConfigFileIndex;
+
+                case ConfigFileUse.BothConfig:
+                    return BothConfigFileIndex;
+
+                default:
+                    throw new InvalidDataException("Unexpexted value passed to " +
+                                                   nameof(GetIndexForConfigFileUseUIString));
+            }
+        }
+
+        ConfigFileUse GetConfigFileUseFromUIIndex(int selectedIndex)
+        {
+            switch (selectedIndex)
+            {
+                case ApplicationConfigFileIndex:
+                    return ConfigFileUse.ApplicationConfig;
+
+                case UserConfigFileIndex:
+                    return ConfigFileUse.UserConfig;
+
+                case BothConfigFileIndex:
+                    return ConfigFileUse.BothConfig;
+
+                default:
+                    return ConfigFileUse.None;
+            }
+        }
+
+        void SaveSettings(ConfigFileUse configFileUse)
+        {
+            var defaultSettings = MainSettings.GetDefault();
+            var readSettings = ConfigurationHelper.GetMainProperties(configFileUse,
+                defaultSettings, writeToLog: null);
+            var configuration = TwoFilesConfiguration.Create(configFileUse);
+
+            configuration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.LogFontSize,
+                MainSettings.LogFontSize);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.TreeViewFontSize,
+                MainSettings.TreeViewFontSize);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ShowMessageCountParameter,
+                MainSettings.ShowMessageCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.SaveMessageToFileParameter,
+                MainSettings.SaveMessageToFile);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.UseAsciiParameter,
+                MainSettings.UseAscii);
+            SaveSetting(configuration, readSettings,
+                ConfigurationParameters.SavePropertiesToFileParameter,
+                MainSettings.SavePropertiesToFile);
+            SaveSetting(configuration, readSettings,
+                ConfigurationParameters.SaveCheckpointsToFileParameter,
+                MainSettings.SaveCheckpointsToFile);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.RetryCountParameter,
+                MainSettings.RetryCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.RetryTimeoutParameter,
+                MainSettings.RetryTimeout);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.TopParameter,
+                MainSettings.TopCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ReceiveTimeoutParameter,
+                MainSettings.ReceiveTimeout);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ServerTimeoutParameter,
+                MainSettings.ServerTimeout);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.SenderThinkTimeParameter,
+                MainSettings.SenderThinkTime);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ReceiverThinkTimeParameter,
+                MainSettings.ReceiverThinkTime);
+            SaveSetting(configuration, readSettings,
+                ConfigurationParameters.MonitorRefreshIntervalParameter,
+                MainSettings.MonitorRefreshInterval);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.PrefetchCountParameter,
+                MainSettings.PrefetchCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.LabelParameter,
+                MainSettings.Label);
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.MessageParameter,
+                MainSettings.MessageText);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.FileParameter,
+                MainSettings.MessageFile);
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ConnectivityMode,
+                MainSettings.ConnectivityMode);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.Encoding,
+                MainSettings.EncodingType);
+
+            SaveListSetting(configuration, readSettings, ConfigurationParameters.SelectedEntitiesParameter,
+                MainSettings.SelectedEntities);
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.MessageBodyType,
+                MainSettings.MessageBodyType);
+
+            configuration.Save();
+        }
+
+        void SaveSetting<T>(TwoFilesConfiguration configuration, MainSettings savedSettings,
+            string setting, T runningValue)
+        {
+            if (!savedSettings.GetValue(setting).Equals(runningValue))
+            {
+                configuration.SetValue(setting, runningValue);
+            }
+        }
+
+        void SaveListSetting(TwoFilesConfiguration configuration, MainSettings savedSettings,
+            string setting, List<string> runningList)
+        {
+            var savedList = savedSettings.GetValue(setting);
+
+            if (savedList != null && !savedList.Equals(runningList))
+            {
+                var listAsString = string.Join(",", runningList);
+                configuration.SetValue(setting, listAsString);
+            }
+        }
+
+        void GetAndShowProperties(int configFileUIIndex)
+        {
+            var configFileUse = GetConfigFileUseFromUIIndex(configFileUIIndex);
+            var defaultProperties = new MainSettings();
+
+            defaultProperties.SetDefault();
+
+            var readProperties = ConfigurationHelper.GetMainProperties(configFileUse, defaultProperties, writeToLog: null);
+
+            ShowSettings(readProperties);
+        }
+
+        void ShowSettings(MainSettings mainSettings)
+        {
+            txtLabel.Text = mainSettings.Label;
+            txtMessageFile.Text = mainSettings.MessageFile;
+            txtMessageText.Text = mainSettings.MessageText;
+            logNumericUpDown.Value = mainSettings.LogFontSize;
+            treeViewNumericUpDown.Value = mainSettings.TreeViewFontSize;
+            retryCountNumericUpDown.Value = mainSettings.RetryCount;
+            retryTimeoutNumericUpDown.Value = mainSettings.RetryTimeout;
+            receiveTimeoutNumericUpDown.Value = mainSettings.ReceiveTimeout;
+            serverTimeoutNumericUpDown.Value = mainSettings.ServerTimeout;
+            senderThinkTimeNumericUpDown.Value = mainSettings.SenderThinkTime;
+            receiverThinkTimeNumericUpDown.Value = mainSettings.ReceiverThinkTime;
+            monitorRefreshIntervalNumericUpDown.Value = mainSettings.MonitorRefreshInterval;
+            prefetchCountNumericUpDown.Value = mainSettings.PrefetchCount;
+            topNumericUpDown.Value = mainSettings.TopCount;
+            showMessageCountCheckBox.Checked = mainSettings.ShowMessageCount;
+            savePropertiesToFileCheckBox.Checked = mainSettings.SavePropertiesToFile;
+            saveMessageToFileCheckBox.Checked = mainSettings.SaveMessageToFile;
+            saveCheckpointsToFileCheckBox.Checked = mainSettings.SaveCheckpointsToFile;
+            useAsciiCheckBox.Checked = mainSettings.UseAscii;
+
+            cboConnectivityMode.SelectedItem = mainSettings.ConnectivityMode;
+            cboEncodingType.SelectedItem = mainSettings.EncodingType;
+
+            foreach (var item in mainSettings.SelectedEntities)
+            {
+                cboSelectedEntities.CheckBoxItems[item].Checked = true;
+            }
+
+            if (!Enum.TryParse<BodyType>(mainSettings.MessageBodyType, true, out var bodyType))
+            {
+                bodyType = BodyType.Stream;
+            }
+
+            cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
+        }
+
+        List<string> GetSelectedEntities()
+        {
+            return cboSelectedEntities.CheckBoxItems.
+                Where(i => i.Checked).Select(i => i.Text).ToList();
+        }
+        #endregion
     }
-} 
+}

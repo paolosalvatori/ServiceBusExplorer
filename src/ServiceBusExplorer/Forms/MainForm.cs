@@ -68,19 +68,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         // Messages
         //***************************
-        private const string ServiceBusNamespacesNotConfigured = "Service bus accounts have not been properly configured in the configuration file.";
-        private const string ServiceBusNamespaceIsNullOrEmpty = "The connection string for service bus entry {0} is null or empty.";
-        private const string ServiceBusNamespaceIsWrong = "The connection string for service bus namespace {0} is in the wrong format.";
-        private const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the uri and namespace for the service bus entry {0} is null or empty.";
-        private const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceRuntimePortIsNullOrEmpty = "The runtime port for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceManagementPortIsNullOrEmpty = "The management port for the service bus namespace {0} is null or empty.";
-        private const string ServiceBusNamespaceEndpointUriIsInvalid = "The endpoint uri for the service bus namespace {0} is invalid.";
-        private const string ServiceBusNamespaceSharedAccessKeyNameIsInvalid = "The SharedAccessKeyName for the service bus namespace {0} is invalid.";
-        private const string ServiceBusNamespaceSharedAccessKeyIsInvalid = "The SharedAccessKey for the service bus namespace {0} is invalid.";
         private const string QueueRetrievedFormat = "The queue {0} has been successfully retrieved.";
         private const string TopicRetrievedFormat = "The topic {0} has been successfully retrieved.";
         private const string RelayRetrievedFormat = "The relay {0} has been successfully retrieved.";
@@ -146,8 +133,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string BrokeredMessageGenerators = "brokeredMessageGenerators";
         private const string EventDataGenerators = "eventDataGenerators";
         private const string AllEntities = "Entities";
-        private const string QueueEntities = "Queues";
-        private const string TopicEntities = "Topics";
         private const string SubscriptionEntities = "Subscriptions";
         private const string PartitionEntities = "Partitions";
         private const string ConsumerGroupEntities = "Consumer Groups";
@@ -155,9 +140,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string FilteredTopicEntities = "Topics (Filtered)";
         private const string FilteredSubscriptionEntities = "Subscriptions (Filtered)";
         private const string RuleEntities = "Rules";
-        private const string RelayEntities = "Relays";
-        private const string EventHubEntities = "Event Hubs";
-        private const string NotificationHubEntities = "Notification Hubs";
         private const string QueueEntity = "Queue";
         private const string TopicEntity = "Topic";
         private const string SubscriptionEntity = "Subscription";
@@ -174,8 +156,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string XmlExtension = "xml";
         private const string SaveAsFilter = "Text Documents|*.txt";
         private const string XmlFilter = "XML Files|*.xml";
-        private const string DefaultMessageText = "Hi mate, how are you?";
-        private const string DefaultLabel = "Service Bus Explorer";
         private const string ImportToolStripMenuItemName = "importEntityMenuItem2";
         private const string ImportToolStripMenuItemText = "Import Entities";
         private const string ImportToolStripMenuItemToolTipText = "Import entity definition from file.";
@@ -186,29 +166,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
         private const string DefaultConsumerGroupName = "$Default";
-
-        //***************************
-        // Parameters
-        //***************************
-        private const string ConnectionStringUri = "uri";
-        private const string ConnectionStringNameSpace = "namespace";
-        private const string ConnectionStringServicePath = "servicepath";
-        private const string ConnectionStringIssuerName = "issuername";
-        private const string ConnectionStringIssuerSecret = "issuersecret";
-        private const string ConnectionStringOwner = "owner";
-        private const string ConnectionStringEndpoint = "endpoint";
-        private const string ConnectionStringSharedAccessKeyName = "sharedaccesskeyname";
-        private const string ConnectionStringSharedAccessKey = "sharedaccesskey";
-        private const string ConnectionStringStsEndpoint = "stsendpoint";
-        private const string ConnectionStringRuntimePort = "runtimeport";
-        private const string ConnectionStringManagementPort = "managementport";
-        private const string ConnectionStringWindowsUsername = "windowsusername";
-        private const string ConnectionStringWindowsDomain = "windowsdomain";
-        private const string ConnectionStringWindowsPassword = "windowspassword";
-        private const string ConnectionStringSharedSecretIssuer = "sharedsecretissuer";
-        private const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
-        private const string ConnectionStringTransportType = "transporttype";
-        private const string ConnectionStringEntityPath = "entitypath";
 
         //***************************
         // Icons
@@ -255,12 +212,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private string relayMessageText;
         private string messageFile;
         private string label;
-        private string microsoftServiceBusConnectionString;
         private bool importing;
         private readonly int mainSplitterDistance;
         private readonly int splitterContainerDistance;
-        private float treeViewFontSize;
-        private float logFontSize;
+        private ConfigFileUse configFileUse;
+        private decimal treeViewFontSize;
+        private decimal logFontSize;
         private int topCount = 10;
         private int receiveTimeout = 1;
         private int serverTimeout = 5;
@@ -278,7 +235,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private readonly string argumentValue;
         private List<string> selectedEntites = new List<string>();
         private string messageBodyType = BodyType.Stream.ToString();
-        private readonly List<string> entities = new List<string> { QueueEntities, TopicEntities, EventHubEntities, NotificationHubEntities, RelayEntities };
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
@@ -305,8 +261,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             });
             mainSplitterDistance = mainSplitContainer.SplitterDistance;
             splitterContainerDistance = splitContainer.SplitterDistance;
-            treeViewFontSize = serviceBusTreeView.Font.Size;
-            logFontSize = lstLog.Font.Size;
+            treeViewFontSize = (decimal)serviceBusTreeView.Font.Size;
+            logFontSize = (decimal)lstLog.Font.Size;
             Trace.Listeners.Add(new LogTraceListener());
             mainSingletonMainForm = this;
             serviceBusHelper = new ServiceBusHelper(WriteToLog);
@@ -315,6 +271,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
+            configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+
             GetServiceBusNamespacesFromConfiguration();
             GetServiceBusNamespaceFromEnvironmentVariable();
             GetBrokeredMessageInspectorsFromConfiguration();
@@ -400,59 +358,89 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// <param name="e">System.EventArgs parameter</param>
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var optionForm = new OptionForm(label,
-                                                   messageFile,
-                                                   messageText,
-                                                   (decimal)lstLog.Font.Size,
-                                                   (decimal)serviceBusTreeView.Font.Size,
-                                                   RetryHelper.RetryCount,
-                                                   RetryHelper.RetryTimeout,
-                                                   receiveTimeout,
-                                                   serverTimeout,
-                                                   senderThinkTime,
-                                                   receiverThinkTime,
-                                                   monitorRefreshInterval,
-                                                   prefetchCount,
-                                                   topCount,
-                                                   showMessageCount,
-                                                   saveMessageToFile,
-                                                   savePropertiesToFile,
-                                                   saveCheckpointsToFile,
-                                                   useAscii,
-                                                   entities,
-                                                   selectedEntites,
-                                                   messageBodyType))
+            var mainSettings = new MainSettings
+            {
+                LogFontSize = (decimal)lstLog.Font.Size,
+                TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
+                RetryCount = RetryHelper.RetryCount,
+                RetryTimeout = RetryHelper.RetryTimeout,
+                ReceiveTimeout = receiveTimeout,
+                ServerTimeout = serverTimeout,
+                PrefetchCount = prefetchCount,
+                TopCount = topCount,
+                SenderThinkTime = senderThinkTime,
+                ReceiverThinkTime = receiverThinkTime,
+                MonitorRefreshInterval = monitorRefreshInterval,
+
+                ShowMessageCount = showMessageCount,
+                UseAscii = useAscii,
+                SaveMessageToFile = saveMessageToFile,
+                SavePropertiesToFile = savePropertiesToFile,
+                SaveCheckpointsToFile = saveCheckpointsToFile,
+
+                Label = label,
+                MessageFile = messageFile,
+                MessageText = messageText,
+
+                SelectedEntities = selectedEntites,
+                MessageBodyType = messageBodyType,
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                EncodingType = ServiceBusHelper.EncodingType
+            };
+
+            var lastConfigFileUse = configFileUse;
+
+            using (var optionForm = new OptionForm(mainSettings, configFileUse))
             {
                 if (optionForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
-                label = optionForm.Label;
-                messageFile = optionForm.MessageFile;
-                messageText = optionForm.MessageText;
-                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.LogFontSize);
-                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
-                                                   (float)optionForm.TreeViewFontSize);
-                RetryHelper.RetryCount = optionForm.RetryCount;
-                RetryHelper.RetryTimeout = optionForm.RetryTimeout;
-                receiveTimeout = optionForm.ReceiveTimeout;
-                serverTimeout = optionForm.ServerTimeout;
-                senderThinkTime = optionForm.SenderThinkTime;
-                receiverThinkTime = optionForm.ReceiverThinkTime;
-                monitorRefreshInterval = optionForm.MonitorRefreshInterval;
-                prefetchCount = optionForm.PrefetchCount;
-                topCount = optionForm.TopCount;
-                if (showMessageCount != optionForm.ShowMessageCount)
+
+                configFileUse = optionForm.ConfigFileUse;
+
+                if (lastConfigFileUse != configFileUse)
                 {
-                    showMessageCount = optionForm.ShowMessageCount;
+                    // Refresh the ServiceBus namespaces
+                    GetServiceBusNamespacesFromConfiguration();
+                    GetServiceBusNamespaceFromEnvironmentVariable();
+
+                    // Then update the shortcut menus
+                    UpdateSavedConnectionsMenu();
+                }
+
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
+                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
+                    (float)optionForm.MainSettings.TreeViewFontSize);
+                RetryHelper.RetryCount = optionForm.MainSettings.RetryCount;
+                RetryHelper.RetryTimeout = optionForm.MainSettings.RetryTimeout;
+                receiveTimeout = optionForm.MainSettings.ReceiveTimeout;
+                serverTimeout = optionForm.MainSettings.ServerTimeout;
+                prefetchCount = optionForm.MainSettings.PrefetchCount;
+                topCount = optionForm.MainSettings.TopCount;
+                senderThinkTime = optionForm.MainSettings.SenderThinkTime;
+                receiverThinkTime = optionForm.MainSettings.ReceiverThinkTime;
+                monitorRefreshInterval = optionForm.MainSettings.MonitorRefreshInterval;
+
+                if (showMessageCount != optionForm.MainSettings.ShowMessageCount)
+                {
+                    showMessageCount = optionForm.MainSettings.ShowMessageCount;
                     GetEntities(EntityType.All);
                 }
-                saveMessageToFile = optionForm.SaveMessageToFile;
-                savePropertiesToFile = optionForm.SavePropertiesToFile;
-                saveCheckpointsToFile = optionForm.SaveCheckpointsToFile;
-                useAscii = optionForm.UseAscii;
-                selectedEntites = optionForm.SelectedEntities;
-                messageBodyType = optionForm.MessageBodyType;
+
+                useAscii = optionForm.MainSettings.UseAscii;
+                saveMessageToFile = optionForm.MainSettings.SaveMessageToFile;
+                savePropertiesToFile = optionForm.MainSettings.SavePropertiesToFile;
+                saveCheckpointsToFile = optionForm.MainSettings.SaveCheckpointsToFile;
+
+                label = optionForm.MainSettings.Label;
+                messageFile = optionForm.MainSettings.MessageFile;
+                messageText = optionForm.MainSettings.MessageText;
+
+                selectedEntites = optionForm.MainSettings.SelectedEntities;
+                messageBodyType = optionForm.MainSettings.MessageBodyType;
+                ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
+                ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
             }
         }
 
@@ -557,7 +545,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             queueName = queueDescription.Path;
                         }
                     }
-                    var queueListNode = FindNode(QueueEntities, rootNode);
+                    var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                     if (!string.IsNullOrWhiteSpace(queueName))
                     {
                         DeleteNode(queueName, queueListNode);
@@ -587,7 +575,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             topicName = topicDescription.Path;
                         }
                     }
-                    var topicListNode = FindNode(TopicEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     if (!string.IsNullOrWhiteSpace(topicName))
                     {
                         DeleteNode(topicName, topicListNode);
@@ -617,7 +605,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             relayName = relayDescription.Path;
                         }
                     }
-                    var relayListNode = FindNode(RelayEntities, rootNode);
+                    var relayListNode = FindNode(Constants.RelayEntities, rootNode);
                     if (!string.IsNullOrWhiteSpace(relayName))
                     {
                         DeleteNode(relayName, relayListNode);
@@ -647,7 +635,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             eventHubName = eventHubDescription.Path;
                         }
                     }
-                    var eventHubListNode = FindNode(EventHubEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     if (!string.IsNullOrWhiteSpace(eventHubName))
                     {
                         DeleteNode(eventHubName, eventHubListNode);
@@ -677,7 +665,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             notificationHubName = notificationHubDescription.Path;
                         }
                     }
-                    var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
+                    var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     if (!string.IsNullOrWhiteSpace(notificationHubName))
                     {
                         DeleteNode(notificationHubName, notificationHubListNode);
@@ -694,7 +682,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 // SubscriptionDescription Entity
                 if (args.EntityType == EntityType.Subscription)
                 {
-                    var topicListNode = FindNode(TopicEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var subscription = args.EntityInstance as SubscriptionDescription;
                     if (subscription != null &&
                         !string.IsNullOrWhiteSpace(subscription.TopicPath))
@@ -749,7 +737,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 // RuleDescription Entity
                 if (args.EntityType == EntityType.Rule)
                 {
-                    var topicListNode = FindNode(TopicEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var wrapper = args.EntityInstance as RuleWrapper;
                     if (wrapper != null &&
                         wrapper.RuleDescription != null &&
@@ -819,7 +807,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 // ConsumerGroupDescription Entity
                 if (args.EntityType == EntityType.ConsumerGroup)
                 {
-                    var eventHubListNode = FindNode(EventHubEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     var notificationHub = args.EntityInstance as ConsumerGroupDescription;
                     if (notificationHub != null &&
                         !string.IsNullOrWhiteSpace(notificationHub.EventHubPath))
@@ -899,7 +887,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var queue = args.EntityInstance as QueueDescription;
                     if (queue != null)
                     {
-                        var queueListNode = FindNode(QueueEntities, rootNode);
+                        var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                         var node = CreateNode(queue.Path, queue, queueListNode, false);
                         if (node == null)
                         {
@@ -926,7 +914,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var topic = args.EntityInstance as TopicDescription;
                     if (topic != null)
                     {
-                        var topicListNode = FindNode(TopicEntities, rootNode);
+                        var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                         var node = CreateNode(topic.Path, topic, topicListNode, false);
                         if (node == null)
                         {
@@ -953,7 +941,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var relay = args.EntityInstance as RelayDescription;
                     if (relay != null)
                     {
-                        var relayListNode = FindNode(RelayEntities, rootNode);
+                        var relayListNode = FindNode(Constants.RelayEntities, rootNode);
                         var node = CreateNode(relay.Path, relay, relayListNode, false);
                         if (node == null)
                         {
@@ -980,7 +968,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var eventHub = args.EntityInstance as EventHubDescription;
                     if (eventHub != null)
                     {
-                        var eventHubListNode = FindNode(EventHubEntities, rootNode);
+                        var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                         var node = CreateNode(eventHub.Path, eventHub, eventHubListNode, false);
                         if (node == null)
                         {
@@ -1007,7 +995,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var notificationHub = args.EntityInstance as NotificationHubDescription;
                     if (notificationHub != null)
                     {
-                        var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
+                        var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                         var node = CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, false);
                         if (node == null)
                         {
@@ -1038,7 +1026,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    var topicListNode = FindNode(TopicEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var topicNode = FindNode(wrapper.TopicDescription.Path, topicListNode);
                     if (topicNode != null)
                     {
@@ -1105,7 +1093,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    var topicListNode = FindNode(TopicEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var topicNode = FindNode(wrapper.SubscriptionDescription.TopicPath, topicListNode);
                     if (topicNode != null)
                     {
@@ -1148,7 +1136,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    var eventHubListNode = FindNode(EventHubEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     var eventHubNode = FindNode(consumerGroupDescription.EventHubPath, eventHubListNode);
                     if (eventHubNode != null)
                     {
@@ -1328,7 +1316,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper))
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
@@ -1340,7 +1328,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
                     {
-                        var serviceBusNamespace = GetServiceBusNamespace(connectForm.Key ?? "Manual", connectForm.ConnectionString);
+                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
+                            connectForm.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
                     }
                     else
@@ -1452,11 +1441,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     return;
                 }
                 Cursor.Current = Cursors.WaitCursor;
-                var queueListNode = FindNode(QueueEntities, rootNode);
-                var topicListNode = FindNode(TopicEntities, rootNode);
-                var relayListNode = FindNode(RelayEntities, rootNode);
-                var eventHubListNode = FindNode(EventHubEntities, rootNode);
-                var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                var relayListNode = FindNode(Constants.RelayEntities, rootNode);
+                var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
 
                 // Root
                 if (serviceBusTreeView.SelectedNode == rootNode)
@@ -1484,7 +1473,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     var queueList = new List<IExtensibleDataObject>();
                     GetQueueList(queueList, queueListNode);
-                    ExportEntities(queueList, QueueEntities, null);
+                    ExportEntities(queueList, Constants.QueueEntities, null);
                     return;
                 }
                 // Topics
@@ -1492,7 +1481,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     var topicList = new List<IExtensibleDataObject>();
                     GetTopicList(topicList, topicListNode);
-                    ExportEntities(topicList, TopicEntities, null);
+                    ExportEntities(topicList, Constants.TopicEntities, null);
                     return;
                 }
                 // Relays
@@ -1500,7 +1489,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     var relayList = new List<IExtensibleDataObject>();
                     GetRelayList(relayList, relayListNode);
-                    ExportEntities(relayList, RelayEntities, null);
+                    ExportEntities(relayList, Constants.RelayEntities, null);
                     return;
                 }
                 // EventHubs
@@ -1508,7 +1497,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     var eventHubList = new List<IExtensibleDataObject>();
                     GetEventHubList(eventHubList, eventHubListNode);
-                    ExportEntities(eventHubList, EventHubEntities, null);
+                    ExportEntities(eventHubList, Constants.EventHubEntities, null);
                     return;
                 }
                 // NotificationHubs
@@ -1516,7 +1505,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     var notificationHubList = new List<IExtensibleDataObject>();
                     GetNotificationHubList(notificationHubList, notificationHubListNode);
-                    ExportEntities(notificationHubList, NotificationHubEntities, null);
+                    ExportEntities(notificationHubList, Constants.NotificationHubEntities, null);
                     return;
                 }
                 // Check that serviceBusTreeView.SelectedNode.Tag is not null
@@ -1534,7 +1523,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         GetQueueList(queueList, serviceBusTreeView.SelectedNode);
                         ExportEntities(queueList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
-                                       QueueEntities);
+                                       Constants.QueueEntities);
                     }
                     else if (urlSegmentWrapper.EntityType == EntityType.Topic)
                     {
@@ -1542,7 +1531,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         GetTopicList(topicList, serviceBusTreeView.SelectedNode);
                         ExportEntities(topicList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
-                                       TopicEntities);
+                                       Constants.TopicEntities);
                     }
                     else
                     {
@@ -1550,7 +1539,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         GetRelayList(relayList, serviceBusTreeView.SelectedNode);
                         ExportEntities(relayList,
                                        FormatAbsolutePathForExport(urlSegmentWrapper.Uri),
-                                       RelayEntities);
+                                       Constants.RelayEntities);
                     }
                     return;
                 }
@@ -1653,7 +1642,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
                     using (var parameterForm = new ParameterForm($"Enter a new name for the {queueDescription.Path} queue.",
                             new List<string> { "Name" },
-                            new List<string> { queueDescription.Path},
+                            new List<string> { queueDescription.Path },
                             new List<bool> { false }))
                     {
                         if (parameterForm.ShowDialog() != DialogResult.OK)
@@ -1700,11 +1689,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 serviceBusTreeView.SuspendDrawing();
                 serviceBusTreeView.SuspendLayout();
                 serviceBusTreeView.BeginUpdate();
-                var queueListNode = FindNode(QueueEntities, rootNode);
-                var topicListNode = FindNode(TopicEntities, rootNode);
-                var eventHubListNode = FindNode(EventHubEntities, rootNode);
-                var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
-                var relayServiceListNode = FindNode(RelayEntities, rootNode);
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
+                var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
                 if (serviceBusTreeView.SelectedNode != null)
                 {
                     // Queues
@@ -2042,7 +2031,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (subscriptionWrapper != null)
                     {
                         var wrapper = subscriptionWrapper;
-                        var subscriptionDescription = serviceBusHelper.GetSubscription(wrapper.SubscriptionDescription.TopicPath,wrapper.SubscriptionDescription.Name);
+                        var subscriptionDescription = serviceBusHelper.GetSubscription(wrapper.SubscriptionDescription.TopicPath, wrapper.SubscriptionDescription.Name);
                         wrapper = new SubscriptionWrapper(subscriptionDescription, wrapper.TopicDescription);
                         if (subscriptionDescription.Status == EntityStatus.Active)
                         {
@@ -2147,7 +2136,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
                 if (topicDescription != null)
                 {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path),false);
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path), false);
                 }
 
                 RefreshIndividualSubscription(subscriptionDescription, subscriptionNode);
@@ -2164,28 +2153,28 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (serviceBusTreeView.SelectedNode != null)
                 {
                     // Queues Node (Create New QueueDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == QueueEntities)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.QueueEntities)
                     {
                         panelMain.HeaderText = CreateQueue;
                         ShowQueue(null, null);
                         return;
                     }
                     // Topics Node (Create New TopicDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == TopicEntities)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.TopicEntities)
                     {
                         panelMain.HeaderText = CreateTopic;
                         ShowTopic(null, null);
                         return;
                     }
                     // Relays Node (Create New RelayDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == RelayEntities)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.RelayEntities)
                     {
                         panelMain.HeaderText = CreateRelay;
                         ShowRelay(null, null);
                         return;
                     }
                     // EventHubs Node (Create New EventHubDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == EventHubEntities)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.EventHubEntities)
                     {
                         panelMain.HeaderText = CreateEventHub;
                         ShowEventHub(null);
@@ -2203,7 +2192,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         return;
                     }
                     // NotificationHubs Node (Create New NotificationHubDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == NotificationHubEntities)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.NotificationHubEntities)
                     {
                         panelMain.HeaderText = CreateNotificationHub;
                         ShowNotificationHub(null);
@@ -2315,11 +2304,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Cursor.Current = Cursors.WaitCursor;
                 if (serviceBusTreeView.SelectedNode != null)
                 {
-                    var queueListNode = FindNode(QueueEntities, rootNode);
-                    var topicListNode = FindNode(TopicEntities, rootNode);
-                    var relayServiceListNode = FindNode(RelayEntities, rootNode);
-                    var eventHubListNode = FindNode(EventHubEntities, rootNode);
-                    var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
+                    var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                    var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
 
                     // Root Node
                     if (serviceBusTreeView.SelectedNode == rootNode)
@@ -3153,11 +3142,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 serviceBusTreeView.SuspendDrawing();
                 serviceBusTreeView.SuspendLayout();
                 serviceBusTreeView.BeginUpdate();
-                var queueListNode = FindNode(QueueEntities, rootNode);
-                var topicListNode = FindNode(TopicEntities, rootNode);
-                var eventHubListNode = FindNode(EventHubEntities, rootNode);
-                var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
-                var relayServiceListNode = FindNode(RelayEntities, rootNode);
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
+                var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
                 actionsToolStripMenuItem.DropDownItems.Clear();
                 actionsToolStripMenuItem.DropDownItems.Add(createIoTHubListenerMenuItem);
                 actionsToolStripMenuItem.DropDownItems.Add(createEventHubListenerMenuItem);
@@ -3396,322 +3385,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        public static ServiceBusNamespace GetServiceBusNamespace(string key, string connectionString)
-        {
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsNullOrEmpty, key));
-                return null;
-            }
-
-            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString");
-            var toLower = connectionString.ToLower();
-            var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
-
-            if (toLower.Contains(ConnectionStringEndpoint) &&
-                toLower.Contains(ConnectionStringSharedAccessKeyName) &&
-                toLower.Contains(ConnectionStringSharedAccessKey))
-            {
-                if (parameters.Count < 3)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-
-                if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
-                }
-                var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
-
-                if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
-                }
-                var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
-
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                string entityPath = string.Empty;
-                if (parameters.ContainsKey(ConnectionStringEntityPath))
-                {
-                    entityPath = parameters[ConnectionStringEntityPath];
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, entityPath, isUserCreated);
-            }
-
-            if (toLower.Contains(ConnectionStringRuntimePort) ||
-                toLower.Contains(ConnectionStringManagementPort) ||
-                toLower.Contains(ConnectionStringWindowsUsername) ||
-                toLower.Contains(ConnectionStringWindowsDomain) ||
-                toLower.Contains(ConnectionStringWindowsPassword))
-            {
-                if (!toLower.Contains(ConnectionStringEndpoint) ||
-                    !toLower.Contains(ConnectionStringStsEndpoint) ||
-                    !toLower.Contains(ConnectionStringRuntimePort) ||
-                    !toLower.Contains(ConnectionStringManagementPort))
-                {
-                    return null;
-                }
-
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                if (string.IsNullOrWhiteSpace(stsEndpoint))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceStsEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var runtimePort = parameters.ContainsKey(ConnectionStringRuntimePort) ?
-                                  parameters[ConnectionStringRuntimePort] :
-                                  null;
-
-                if (string.IsNullOrWhiteSpace(runtimePort))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceRuntimePortIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var managementPort = parameters.ContainsKey(ConnectionStringManagementPort) ?
-                                     parameters[ConnectionStringManagementPort] :
-                                     null;
-
-                if (string.IsNullOrWhiteSpace(managementPort))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceManagementPortIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var windowsDomain = parameters.ContainsKey(ConnectionStringWindowsDomain) ?
-                                    parameters[ConnectionStringWindowsDomain] :
-                                    null;
-
-                var windowsUsername = parameters.ContainsKey(ConnectionStringWindowsUsername) ?
-                                      parameters[ConnectionStringWindowsUsername] :
-                                      null;
-
-                var windowsPassword = parameters.ContainsKey(ConnectionStringWindowsPassword) ?
-                                      parameters[ConnectionStringWindowsPassword] :
-                                      null;
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType, isUserCreated);
-            }
-
-            if (toLower.Contains(ConnectionStringEndpoint) &&
-                toLower.Contains(ConnectionStringSharedSecretIssuer) &&
-                toLower.Contains(ConnectionStringSharedSecretValue))
-            {
-                if (parameters.Count < 3)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-                var issuerName = parameters.ContainsKey(ConnectionStringSharedSecretIssuer) ?
-                                     parameters[ConnectionStringSharedSecretIssuer] :
-                                     ConnectionStringOwner;
-
-                if (!parameters.ContainsKey(ConnectionStringSharedSecretValue) ||
-                    string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedSecretValue]))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
-                    return null;
-
-                }
-                var issuerSecret = parameters[ConnectionStringSharedSecretValue];
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, issuerName, issuerSecret, stsEndpoint, transportType);
-            }
-            else
-            {
-                if (parameters.Count < 4)
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-
-                var uriString = parameters.ContainsKey(ConnectionStringUri) ?
-                                    parameters[ConnectionStringUri] :
-                                    null;
-
-                if (string.IsNullOrWhiteSpace(uriString) && !parameters.ContainsKey(ConnectionStringNameSpace))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
-                    return null;
-                }
-
-                var ns = parameters[ConnectionStringNameSpace];
-
-                var servicePath = parameters.ContainsKey(ConnectionStringServicePath) ?
-                                      parameters[ConnectionStringServicePath] :
-                                      null;
-
-                if (!parameters.ContainsKey(ConnectionStringIssuerName))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
-                    return null;
-                }
-                var issuerName = parameters.ContainsKey(ConnectionStringIssuerName) ?
-                                     parameters[ConnectionStringIssuerName] :
-                                     ConnectionStringOwner;
-
-                if (!parameters.ContainsKey(ConnectionStringIssuerSecret) ||
-                    string.IsNullOrWhiteSpace(parameters[ConnectionStringIssuerSecret]))
-                {
-                    StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
-                    return null;
-
-                }
-                var issuerSecret = parameters[ConnectionStringIssuerSecret];
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
-            }
-        }
-
         private void GetServiceBusNamespacesFromConfiguration()
         {
             try
             {
-                if (serviceBusHelper == null)
-                {
-                    return;
-                }
-                var hashtable = ConfigurationManager.GetSection(ServiceBusNamespaces) as Hashtable;
-
-                if (hashtable == null || hashtable.Count == 0)
-                {
-                    WriteToLog(ServiceBusNamespacesNotConfigured);
-                }
-                serviceBusHelper.ServiceBusNamespaces = new Dictionary<string, ServiceBusNamespace>();
-                if (hashtable == null)
-                {
-                    return;
-                }
-                var e = hashtable.GetEnumerator();
-
-                while (e.MoveNext())
-                {
-                    if (!(e.Key is string) || !(e.Value is string))
-                    {
-                        continue;
-                    }
-                    var serviceBusNamespace = GetServiceBusNamespace((string) e.Key, (string) e.Value);
-                    if (serviceBusNamespace != null)
-                    {
-                        serviceBusHelper.ServiceBusNamespaces.Add((string) e.Key, serviceBusNamespace);
-                    }
-                }
-                microsoftServiceBusConnectionString = ConfigurationManager.AppSettings[ConfigurationParameters.MicrosoftServiceBusConnectionString];
-                if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
-                {
-                    var serviceBusNamespace = GetServiceBusNamespace(ConfigurationParameters.MicrosoftServiceBusConnectionString, microsoftServiceBusConnectionString);
-                    if (serviceBusNamespace != null)
-                    {
-                        serviceBusHelper.ServiceBusNamespaces.Add(ConfigurationParameters.MicrosoftServiceBusConnectionString, serviceBusNamespace);
-                    }
-                }
+                var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+                serviceBusHelper.ServiceBusNamespaces =
+                    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
             }
             catch (Exception ex)
             {
@@ -3725,7 +3405,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 const string key = @"HKEY_CURRENT_USER\Environment connection string";
-                serviceBusHelper.ServiceBusNamespaces.Add(key, GetServiceBusNamespace(key, connectionString));
+                serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, connectionString, StaticWriteToLog));
             }
         }
 
@@ -3754,7 +3434,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageInspector)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3805,7 +3485,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IEventDataInspector)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3856,7 +3536,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageGenerator)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3907,7 +3587,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     try
                     {
-                        var type = Type.GetType((string) e.Value);
+                        var type = Type.GetType((string)e.Value);
                         if (type != null && type.GetInterfaces().Contains(typeof(IEventDataGenerator)))
                         {
                             if (type.GetConstructor(BindingFlags.Instance |
@@ -3933,170 +3613,131 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespaceSettingsFromConfiguration()
+        void GetServiceBusNamespaceSettingsFromConfiguration()
         {
             if (serviceBusHelper == null)
             {
                 return;
             }
-            var parameter = ConfigurationManager.AppSettings[ConfigurationParameters.DebugFlagParameter];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var currentSettings = new MainSettings
             {
-                bool debug;
-                if (bool.TryParse(parameter, out debug))
-                {
-                    serviceBusHelper.TraceEnabled = debug;
-                    RetryHelper.TraceEnabled = debug;
-                }
-            }
-            messageBodyType = ConfigurationManager.AppSettings[ConfigurationParameters.MessageBodyType];
-            if (!Enum.TryParse<BodyType>(messageBodyType, true, out var bodyType))
+                LogFontSize = logFontSize,
+                TreeViewFontSize = treeViewFontSize,
+                RetryCount = RetryHelper.RetryCount,
+                RetryTimeout = RetryHelper.RetryTimeout,
+                ReceiveTimeout = receiveTimeout,
+                ServerTimeout = serverTimeout,
+                PrefetchCount = prefetchCount,
+                TopCount = topCount,
+                SenderThinkTime = senderThinkTime,
+                ReceiverThinkTime = receiverThinkTime,
+                MonitorRefreshInterval = monitorRefreshInterval,
+                ShowMessageCount = showMessageCount,
+                UseAscii = useAscii,
+                SaveMessageToFile = saveMessageToFile,
+                SavePropertiesToFile = savePropertiesToFile,
+                SaveCheckpointsToFile = saveCheckpointsToFile,
+                Label = label,
+                MessageFile = messageFile,
+                MessageText = messageText,
+                SelectedEntities = selectedEntites,
+                MessageBodyType = messageBodyType,
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode
+            };
+
+            var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
+
+            var tempLogFontSize = readSettings.LogFontSize;
+            if (tempLogFontSize != logFontSize)
             {
-                messageBodyType = BodyType.Stream.ToString();
+                logFontSize = tempLogFontSize;
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.ConnectivityMode];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var tempTreeViewFontSize = readSettings.TreeViewFontSize;
+            if (tempTreeViewFontSize != treeViewFontSize)
             {
-                ConnectivityMode connectivityMode;
-                if (Enum.TryParse(parameter, true, out connectivityMode))
-                {
-                    ServiceBusHelper.ConnectivityMode = connectivityMode;
-                }
+                treeViewFontSize = tempTreeViewFontSize;
+                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.Encoding];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            RetryHelper.RetryCount = readSettings.RetryCount;
+            RetryHelper.RetryTimeout = readSettings.RetryTimeout;
+
+            var tempReceiveTimeout = readSettings.ReceiveTimeout;
+            if (tempReceiveTimeout >= 0)
             {
-                EncodingType encodingType;
-                if (Enum.TryParse(parameter, true, out encodingType))
-                {
-                    ServiceBusHelper.EncodingType = encodingType;
-                }
+                receiveTimeout = tempReceiveTimeout;
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.ShowMessageCountParameter];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var tempServerTimeout = readSettings.ServerTimeout;
+            if (tempServerTimeout >= 0)
             {
-                bool.TryParse(parameter, out showMessageCount);
+                serverTimeout = tempServerTimeout;
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SaveMessageToFileParameter];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var tempPrefetchCount = readSettings.PrefetchCount;
+            if (tempPrefetchCount >= 0)
             {
-                bool.TryParse(parameter, out saveMessageToFile);
+                prefetchCount = tempPrefetchCount;
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SavePropertiesToFileParameter];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var tempTopValue = readSettings.TopCount;
+            if (tempTopValue > 0)
             {
-                bool.TryParse(parameter, out savePropertiesToFile);
+                topCount = tempTopValue;
             }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SaveCheckpointsToFileParameter];
-            if (!string.IsNullOrWhiteSpace(parameter))
+
+            var tempSenderThinkTime = readSettings.SenderThinkTime;
+            if (tempSenderThinkTime >= 0)
             {
-                bool.TryParse(parameter, out saveCheckpointsToFile);
+                senderThinkTime = tempSenderThinkTime;
             }
-            var scheme = ConfigurationManager.AppSettings[ConfigurationParameters.SchemeParameter];
-            if (!string.IsNullOrWhiteSpace(scheme))
+
+            var tempReceiverThinkTime = readSettings.ReceiverThinkTime;
+            if (tempReceiverThinkTime >= 0)
             {
-                serviceBusHelper.Scheme = scheme;
+                receiverThinkTime = tempReceiverThinkTime;
             }
-            messageText = MessageAndPropertiesHelper.ReadMessage();
-            if (string.IsNullOrWhiteSpace(messageText))
+
+            var tempMonitorRefreshIntervalValue = readSettings.MonitorRefreshInterval;
+            if (tempMonitorRefreshIntervalValue >= 0)
             {
-                messageText = ConfigurationManager.AppSettings[ConfigurationParameters.MessageParameter];
-                if (string.IsNullOrWhiteSpace(messageText))
-                {
-                    messageText = DefaultMessageText;
-                }
+                monitorRefreshInterval = tempMonitorRefreshIntervalValue;
             }
+
+            showMessageCount = readSettings.ShowMessageCount;
+            useAscii = readSettings.UseAscii;
+            saveMessageToFile = readSettings.SaveMessageToFile;
+            savePropertiesToFile = readSettings.SavePropertiesToFile;
+            saveCheckpointsToFile = readSettings.SaveCheckpointsToFile;
+
+            label = readSettings.Label;
+
+            messageText = readSettings.MessageText;
+            messageFile = readSettings.MessageFile;
+
+            selectedEntites = readSettings.SelectedEntities;
+            messageBodyType = readSettings.MessageBodyType;
+            ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
+            ServiceBusHelper.EncodingType = readSettings.EncodingType;
+
+            // Get values for settings that are not part of MainSettings
+            // configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+
+            var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+
+            serviceBusHelper.TraceEnabled =
+                configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,
+                    serviceBusHelper.TraceEnabled);
+
+            serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
+                serviceBusHelper.Scheme);
             relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
-            messageFile = ConfigurationManager.AppSettings[ConfigurationParameters.FileParameter];
-            if (!string.IsNullOrWhiteSpace(messageFile) &&
-                File.Exists(messageFile))
-            {
-                using (var streamReader = new StreamReader(messageFile))
-                {
-                    var text = streamReader.ReadToEnd();
-                    if (!string.IsNullOrWhiteSpace(text))
-                    {
-                        messageText = text;
-                    }
-                }
-            }
-            label = ConfigurationManager.AppSettings[ConfigurationParameters.LabelParameter];
-            if (string.IsNullOrWhiteSpace(label))
-            {
-                label = DefaultLabel;
-            }
 
-            var logFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.LogFontSize];
-            float tempFloat;
+            var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
-            if (Single.TryParse(logFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out tempFloat))
-            {
-                logFontSize = tempFloat;
-                lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
-            }
-
-            var treeViewFontSizeValue = ConfigurationManager.AppSettings[ConfigurationParameters.TreeViewFontSize];
-            if (Single.TryParse(treeViewFontSizeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out  tempFloat))
-            {
-                treeViewFontSize = tempFloat;
-                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
-            }
-
-            var retryCountValue = ConfigurationManager.AppSettings[ConfigurationParameters.RetryCountParameter];
-            int retryCount;
-            if (int.TryParse(retryCountValue, out  retryCount))
-            {
-                RetryHelper.RetryCount = retryCount;
-            }
-            var retryTimeoutValue = ConfigurationManager.AppSettings[ConfigurationParameters.RetryTimeoutParameter];
-            int retryTimeout;
-            if (int.TryParse(retryTimeoutValue, out  retryTimeout))
-            {
-                RetryHelper.RetryTimeout = retryTimeout;
-            }
-            var receiveTimeoutValue = ConfigurationManager.AppSettings[ConfigurationParameters.ReceiveTimeoutParameter];
-            int receiveTimeoutTemp;
-            if (int.TryParse(receiveTimeoutValue, out  receiveTimeoutTemp) && receiveTimeoutTemp >= 0)
-            {
-                receiveTimeout = receiveTimeoutTemp;
-            }
-            var serverTimeoutValue = ConfigurationManager.AppSettings[ConfigurationParameters.ServerTimeoutParameter];
-            int serverTimeoutTemp;
-            if (int.TryParse(serverTimeoutValue, out  serverTimeoutTemp) && serverTimeoutTemp >= 0)
-            {
-                serverTimeout = serverTimeoutTemp;
-            }
-            var senderThinkTimeValue = ConfigurationManager.AppSettings[ConfigurationParameters.SenderThinkTimeParameter];
-            int senderThinkTimeTemp;
-            if (int.TryParse(senderThinkTimeValue, out  senderThinkTimeTemp) && senderThinkTimeTemp >= 0)
-            {
-                senderThinkTime = senderThinkTimeTemp;
-            }
-            var receiverThinkTimeValue = ConfigurationManager.AppSettings[ConfigurationParameters.ReceiverThinkTimeParameter];
-            int receiverThinkTimeTemp;
-            if (int.TryParse(receiverThinkTimeValue, out  receiverThinkTimeTemp) && receiverThinkTimeTemp >= 0)
-            {
-                receiverThinkTime = receiverThinkTimeTemp;
-            }
-            var monitorRefreshIntervalValue = ConfigurationManager.AppSettings[ConfigurationParameters.MonitorRefreshIntervalParameter];
-            int monitorRefreshIntervalTemp;
-            if (int.TryParse(monitorRefreshIntervalValue, out  monitorRefreshIntervalTemp) && monitorRefreshIntervalTemp >= 0)
-            {
-                monitorRefreshInterval = monitorRefreshIntervalTemp;
-            }
-            var prefetchCountValue = ConfigurationManager.AppSettings[ConfigurationParameters.PrefetchCountParameter];
-            int prefetchCountTemp;
-            if (int.TryParse(prefetchCountValue, out  prefetchCountTemp) && prefetchCountTemp >= 0)
-            {
-                prefetchCount = prefetchCountTemp;
-            }
-            var topValue = ConfigurationManager.AppSettings[ConfigurationParameters.TopParameter];
-            int topTemp;
-            if (int.TryParse(topValue, out  topTemp) && topTemp > 0)
-            {
-                topCount = topTemp;
-            }
-            var messageDeferProvider = ConfigurationManager.AppSettings[ConfigurationParameters.MessageDeferProviderParameter];
             if (!string.IsNullOrWhiteSpace(messageDeferProvider))
             {
                 try
@@ -4108,34 +3749,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         serviceBusHelper.MessageDeferProviderType = type;
                     }
                 }
-                // ReSharper disable EmptyGeneralCatchClause
                 catch (Exception)
-                // ReSharper restore EmptyGeneralCatchClause
                 {
+                    // Comment to avoid ReSharper warning
                 }
-            }
-            parameter = ConfigurationManager.AppSettings[ConfigurationParameters.SelectedEntitiesParameter];
-            if (!string.IsNullOrEmpty(parameter))
-            {
-                var items = parameter.Split(',').Select(item => item.Trim()).ToList();
-                if (items.Count == 0)
-                {
-                    GetDefaultSelectedEntities();
-                }
-                else
-                {
-                    foreach (var item in items)
-                    {
-                        if (entities.Contains(item, StringComparer.OrdinalIgnoreCase))
-                        {
-                            selectedEntites.Add(item);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                GetDefaultSelectedEntities();
             }
         }
 
@@ -4145,11 +3762,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 EventProcessorCheckpointHelper.ReadCheckpoints();
             }
-        }
-
-        private void GetDefaultSelectedEntities()
-        {
-            selectedEntites.AddRange(entities);
         }
 
         private void SetControlSize(Control control)
@@ -4335,14 +3947,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
-        public List<string> Entities
-        {
-            get
-            {
-                return entities;
-            }
-        }
-
         public List<string> SelectedEntities
         {
             get
@@ -4500,7 +4104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             return false;
         }
-        
+
 
         private void CreateLeafNode(Uri uri, TreeNode parentNode, string parentTitle)
         {
@@ -4605,43 +4209,43 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     serviceBusTreeView.SuspendDrawing();
                     serviceBusTreeView.SuspendLayout();
                     serviceBusTreeView.BeginUpdate();
-                    var queueListNode = FindNode(QueueEntities, rootNode);
-                    var topicListNode = FindNode(TopicEntities, rootNode);
-                    var eventHubListNode = FindNode(EventHubEntities, rootNode);
-                    var notificationHubListNode = FindNode(NotificationHubEntities, rootNode);
-                    var relayServiceListNode = FindNode(RelayEntities, rootNode);
+                    var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                    var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
+                    var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();
                         rootNode = serviceBusTreeView.Nodes.Add(serviceBusHelper.NamespaceUri.AbsoluteUri, serviceBusHelper.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
                         rootNode.ContextMenuStrip = rootContextMenuStrip;
-                        if (selectedEntites.Contains(QueueEntities))
+                        if (selectedEntites.Contains(Constants.QueueEntities))
                         {
-                            queueListNode = rootNode.Nodes.Add(QueueEntities, QueueEntities, QueueListIconIndex, QueueListIconIndex);
+                            queueListNode = rootNode.Nodes.Add(Constants.QueueEntities, Constants.QueueEntities, QueueListIconIndex, QueueListIconIndex);
                             queueListNode.ContextMenuStrip = queuesContextMenuStrip;
                         }
-                        if (selectedEntites.Contains(TopicEntities))
+                        if (selectedEntites.Contains(Constants.TopicEntities))
                         {
-                            topicListNode = rootNode.Nodes.Add(TopicEntities, TopicEntities, TopicListIconIndex, TopicListIconIndex);
+                            topicListNode = rootNode.Nodes.Add(Constants.TopicEntities, Constants.TopicEntities, TopicListIconIndex, TopicListIconIndex);
                             topicListNode.ContextMenuStrip = topicsContextMenuStrip;
                         }
 
                         // NOTE: Relays are not actually supported by Service Bus for Windows Server
                         if (serviceBusHelper.IsCloudNamespace)
                         {
-                            if (selectedEntites.Contains(EventHubEntities))
+                            if (selectedEntites.Contains(Constants.EventHubEntities))
                             {
-                                eventHubListNode = rootNode.Nodes.Add(EventHubEntities, EventHubEntities, EventHubListIconIndex, EventHubListIconIndex);
+                                eventHubListNode = rootNode.Nodes.Add(Constants.EventHubEntities, Constants.EventHubEntities, EventHubListIconIndex, EventHubListIconIndex);
                                 eventHubListNode.ContextMenuStrip = eventHubsContextMenuStrip;
                             }
-                            if (selectedEntites.Contains(NotificationHubEntities))
+                            if (selectedEntites.Contains(Constants.NotificationHubEntities))
                             {
-                                notificationHubListNode = rootNode.Nodes.Add(NotificationHubEntities, NotificationHubEntities, NotificationHubListIconIndex, NotificationHubListIconIndex);
+                                notificationHubListNode = rootNode.Nodes.Add(Constants.NotificationHubEntities, Constants.NotificationHubEntities, NotificationHubListIconIndex, NotificationHubListIconIndex);
                                 notificationHubListNode.ContextMenuStrip = notificationHubsContextMenuStrip;
                             }
-                            if (selectedEntites.Contains(RelayEntities))
+                            if (selectedEntites.Contains(Constants.RelayEntities))
                             {
-                                relayServiceListNode = rootNode.Nodes.Add(RelayEntities, RelayEntities, RelayListIconIndex, RelayListIconIndex);
+                                relayServiceListNode = rootNode.Nodes.Add(Constants.RelayEntities, Constants.RelayEntities, RelayListIconIndex, RelayListIconIndex);
                                 relayServiceListNode.ContextMenuStrip = relayServicesContextMenuStrip;
                             }
                         }
@@ -4649,7 +4253,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     updating = true;
                     if (serviceBusHelper.IsCloudNamespace)
                     {
-                        if (selectedEntites.Contains(EventHubEntities) &&
+                        if (selectedEntites.Contains(Constants.EventHubEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.EventHub))
                         {
@@ -4684,7 +4288,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
-                        if (selectedEntites.Contains(NotificationHubEntities) &&
+                        if (selectedEntites.Contains(Constants.NotificationHubEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.NotificationHub))
                         {
@@ -4728,7 +4332,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                             }
                         }
-                        if (selectedEntites.Contains(RelayEntities) &&
+                        if (selectedEntites.Contains(Constants.RelayEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.Relay))
                         {
@@ -4736,7 +4340,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 var relayServices = serviceBusHelper.GetRelays();
 
-                                relayServiceListNode.Text = RelayEntities;
+                                relayServiceListNode.Text = Constants.RelayEntities;
 
                                 relayServiceListNode.Nodes.Clear();
                                 if (relayServices != null)
@@ -4765,7 +4369,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         }
                     }
 
-                    if (selectedEntites.Contains(QueueEntities) &&
+                    if (selectedEntites.Contains(Constants.QueueEntities) &&
                         (entityType == EntityType.All ||
                          entityType == EntityType.Queue))
                     {
@@ -4773,7 +4377,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
-                                ? QueueEntities
+                                ? Constants.QueueEntities
                                 : FilteredQueueEntities;
 
                             queueListNode.Nodes.Clear();
@@ -4795,13 +4399,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(queueListNode);
                             }
                         }
-                        catch (Exception ex) when(FilterOutException(ex))
+                        catch (Exception ex) when (FilterOutException(ex))
                         {
                             WriteToLog($"Failed to retrieve Service Bus queues. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
-                    if (selectedEntites.Contains(TopicEntities) &&
+                    if (selectedEntites.Contains(Constants.TopicEntities) &&
                         (entityType == EntityType.All ||
                          entityType == EntityType.Topic))
                     {
@@ -4809,7 +4413,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
-                                ? TopicEntities
+                                ? Constants.TopicEntities
                                 : FilteredTopicEntities;
                             topicListNode.Nodes.Clear();
                             if (topics != null)
@@ -6276,8 +5880,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             mainSplitContainer.SplitterDistance = mainSplitterDistance;
             splitContainer.SplitterDistance = splitterContainerDistance;
-            lstLog.Font = new Font(lstLog.Font.FontFamily, logFontSize);
-            serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, treeViewFontSize);
+            lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
+            serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
         }
 
         private void receiveMessages_Click(object sender, EventArgs e)
@@ -6452,7 +6056,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (saveMessageToFile)
             {
                 MessageAndPropertiesHelper.WriteMessage(messageText);
-                MessageAndPropertiesHelper.WriteMessage(relayMessageText);
+                MessageAndPropertiesHelper.WriteRelayMessage(relayMessageText);
             }
             if (savePropertiesToFile)
             {
@@ -6466,8 +6070,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void filterEntity_Click(object sender, EventArgs e)
         {
-            var queueListNode = FindNode(QueueEntities, rootNode);
-            var topicListNode = FindNode(TopicEntities, rootNode);
+            var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+            var topicListNode = FindNode(Constants.TopicEntities, rootNode);
 
             // Queues
             if (serviceBusTreeView.SelectedNode == queueListNode)
@@ -6727,14 +6331,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     var ns = item.Value;
                     if (ns != null)
                     {
-                        var serviceBusNamespace = GetServiceBusNamespace(item.Key, ns.ConnectionString);
+                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
                     }
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
                     string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    var serviceBusNamespace = GetServiceBusNamespace("Manual", argumentValue);
+                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
                 }
                 panelMain.Controls.Clear();
@@ -6774,9 +6378,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             try
             {
                 using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group",
-                                                             new List<string> {"IoT Hub Connection String", "Endpoint", "Consumer Group"},
-                                                             new List<string>{null, "messages/events", "$Default" },
-                                                             new List<bool>{false, false, false}))
+                                                             new List<string> { "IoT Hub Connection String", "Endpoint", "Consumer Group" },
+                                                             new List<string> { null, "messages/events", "$Default" },
+                                                             new List<bool> { false, false, false }))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
                     {

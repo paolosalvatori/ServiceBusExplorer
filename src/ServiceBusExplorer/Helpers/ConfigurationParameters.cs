@@ -27,6 +27,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         //***************************
         // Parameters
         //***************************
+        public const string ConfigurationConfigFileParameter = "ConfigFile";
         public const string DebugFlagParameter = "debug";
         public const string ShowMessageCountParameter = "showMessageCount";
         public const string SaveMessageToFileParameter = "saveMessageToFile";
