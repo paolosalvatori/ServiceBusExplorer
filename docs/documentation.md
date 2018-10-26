@@ -1575,7 +1575,7 @@ Properties:&nbsp;
 <p><strong>Update</strong>: 19 September 2014</p>
 <p>This version introduces the following updates:</p>
 <ul>
-<li>The code of the Service Bus Explorer is now avalable on <a href="https://github.com/paolosalvatori/ServiceBusExplorer"> GitHub</a> as a public project! </li>
+<li>The code of the Service Bus Explorer is now available on <a href="https://github.com/paolosalvatori/ServiceBusExplorer"> GitHub</a> as a public project! </li>
 <li>Updated Microsoft.ServiceBus.dll to version 2.4.3.0. </li>
 <li>Added controls to specify the <strong>epoch</strong> and <strong>offsetInclusive </strong>parameters for the <strong>CreateReceiverAsync </strong>method of the <a href="http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.eventhubconsumergroup.aspx"> EventHubConsumerGroup </a>class. </li>
 </ul>
@@ -2376,7 +2376,7 @@ Properties:&nbsp;
 <ul>
 <li>Fixed visualization of event data properties in the <strong>Consumer Group / Partition Listener </strong>control (<strong>PartitionListenerControl</strong>). </li>
 <li>Greatly improved message tracking&nbsp;in the&nbsp;<strong>Consumer Group / Partition Listener&nbsp;</strong>control (<strong>PartitionListenerControl</strong>). </li>
-<li>Fixed and extended&nbsp;<strong>Clear </strong>funtionality in the&nbsp;<strong>Consumer Group / Partition Listener&nbsp;</strong>control (<strong>PartitionListenerControl</strong>). </li>
+<li>Fixed and extended&nbsp;<strong>Clear </strong>functionality in the&nbsp;<strong>Consumer Group / Partition Listener&nbsp;</strong>control (<strong>PartitionListenerControl</strong>). </li>
 <li>Added the <strong>All </strong>item to <strong>Metrics</strong>. When <strong> All </strong>is selected, the tool will retrieve all the metrics for the selected entity. See point <strong>1</strong> in the picture below. </li>
 <li>Added the possibility to delete a single metric query by pressing the delete button at the end of the row. See point <strong>2 </strong>in the picture below. </li>
 </ul>

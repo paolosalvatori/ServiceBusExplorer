@@ -386,6 +386,8 @@
     </Compile>
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\ConfigurationHelper.cs" />
+    <Compile Include="Helpers\MainSettings.cs" />
+    <Compile Include="Helpers\TwoFilesConfiguration.cs" />
     <Compile Include="Helpers\UserPropertyWrapper.cs" />
     <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
     <Compile Include="Helpers\DeadLetterMessageHandler.cs" />
@@ -508,6 +510,7 @@
     <Compile Include="Helpers\UrlSegmentWrapper.cs" />
     <Compile Include="Helpers\WindowsNotificationXmlBuilder.cs" />
     <Compile Include="Helpers\XmlHelper.cs" />
+    <Compile Include="Helpers\XmlLinqExtensions.cs" />
     <Compile Include="Helpers\XmlSerializerHelper.cs" />
     <Compile Include="Helpers\LogEventDataInspector.cs" />
     <Compile Include="Helpers\ZipEventDataInspector.cs" />

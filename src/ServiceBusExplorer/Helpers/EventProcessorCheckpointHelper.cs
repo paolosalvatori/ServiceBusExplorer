@@ -82,10 +82,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// </summary>
         public static void WriteCheckpoints()
         {
-            if (itemList.Count == 0)
+            if (null == itemList || itemList.Count == 0)
             {
                 return;
             }
+
             JsonSerializerHelper.Serialize(itemList, Formatting.Indented);
             WriteFile(filePath, JsonSerializerHelper.Serialize(itemList, Formatting.Indented));
         }

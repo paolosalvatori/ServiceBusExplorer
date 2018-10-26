@@ -1,153 +1,201 @@
-﻿using System;
+﻿#region Copyright
+//=======================================================================================
+// Microsoft Azure Customer Advisory Team 
+//
+// This sample is supplemental to the technical guidance published on my personal
+// blog at http://blogs.msdn.com/b/paolos/. 
+// 
+// Author: Paolo Salvatori
+//=======================================================================================
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// 
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+// http://www.apache.org/licenses/LICENSE-2.0
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+//=======================================================================================
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class ConfigurationHelper
     {
-        private static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
+        static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
+
+        static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
+            Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
 
         #region Public methods
 
-        public static void UpdateServiceBusNamespace(string key, string newKey = null, string newValue = null)
+        public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
+            WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            UpdateServiceBusElement(configuration, key, newKey, newValue);
-
-            // Update config file for development
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            { 
-                UpdateServiceBusElement(configuration, key, newKey, newValue);
-            }
+            configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
-        public static void AddServiceBusNamespace(string key, string value)
+        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
-            AddServiceBusElement(configuration, key, value);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            {
-                AddServiceBusElement(configuration, key, value);
-            }
+            configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
         }
 
-        public static void RemoveServiceBusNamespace(string key)
+        public static void RemoveServiceBusNamespace(ConfigFileUse configFileUse, string key, WriteToLogDelegate writeToLog)
         {
-            var configuration = GetExeConfiguration();
-            RemoveServiceBusElement(configuration, key);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            configuration = GetDevelopmentConfiguration();
-            if (configuration != null)
-            {
-                RemoveServiceBusElement(configuration, key);
-            }
+            configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
         }
-        
+
+        public static MainSettings GetMainProperties(ConfigFileUse configFileUse,
+            MainSettings currentSettings, WriteToLogDelegate writeToLog)
+        {
+            var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
+
+            return GetMainSettingsUsingConfiguration(configuration, currentSettings, writeToLog);
+        }
+
         #endregion
 
-        #region Private methods
-
-        private static void AddServiceBusElement(Configuration configuration, string key, string value)
+        #region Public static properties
+        public static List<string> Entities
         {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(xml);
-            var node = xmlDocument.CreateElement("add");
-            node.SetAttribute("key", key);
-            node.SetAttribute("value", value);
-            xmlDocument.DocumentElement?.AppendChild(node);
+            get
+            {
+                return entities;
+            }
+        }
+        #endregion
 
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
+        #region Private static methods
+        static List<string> GetEntitiesAsList(string parameter)
+        {
+            return parameter.Split(',').Select(item => item.Trim()).ToList();
         }
 
-        private static void RemoveServiceBusElement(Configuration configuration, string key)
+        static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
         {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
+            var selectedEntities = new List<string>();
+            var parameter = configuration.GetStringValue(ConfigurationParameters.SelectedEntitiesParameter);
 
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            if (!string.IsNullOrEmpty(parameter))
             {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
+                List<string> items = GetEntitiesAsList(parameter);
+                if (items.Count == 0)
                 {
-                    child.ParentNode.RemoveChild(child);
-                    break;
+                    GetDefaultSelectedEntities(selectedEntities, entities);
+                }
+                else
+                {
+                    foreach (var item in items)
+                    {
+                        if (entities.Contains(item, StringComparer.OrdinalIgnoreCase))
+                        {
+                            selectedEntities.Add(item);
+                        }
+                    }
                 }
             }
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
-        }
-
-        private static void UpdateServiceBusElement(Configuration configuration, string key, string newKey, string newValue)
-        {
-            var configurationSection = configuration.Sections[SERVICEBUS_SECTION_NAME];
-            configurationSection.SectionInformation.ForceSave = true;
-            var xml = configurationSection.SectionInformation.GetRawXml();
-            var xmlDocument = new XmlDocument();
-
-            xmlDocument.LoadXml(xml);
-
-            foreach (XmlElement child in xmlDocument.DocumentElement.ChildNodes)
+            else
             {
-                if (child.LocalName == "add" && child.GetAttribute("key") == key)
-                {
-                    if (!string.IsNullOrEmpty(newKey)) child.SetAttribute("key", newKey);
-                    if (!string.IsNullOrEmpty(newValue)) child.SetAttribute("value", newValue);
-                    break;
-                }
+                GetDefaultSelectedEntities(selectedEntities, entities);
             }
 
-            configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-            configuration.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(SERVICEBUS_SECTION_NAME);
+            return selectedEntities;
         }
 
-        private static Configuration GetExeConfiguration()
+        static void GetDefaultSelectedEntities(List<string> selectedEntities, List<string> entities)
         {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var directory = Path.GetDirectoryName(configuration.FilePath);
-            if (string.IsNullOrEmpty(directory))
-            {
-                throw new ArgumentNullException("The directory of the configuration file cannot be null.");
-            }
-            return configuration;
+            selectedEntities.AddRange(entities);
         }
 
-        private static Configuration GetDevelopmentConfiguration()
+        static MainSettings GetMainSettingsUsingConfiguration(TwoFilesConfiguration configuration,
+            MainSettings currentSettings, WriteToLogDelegate writeToLog)
         {
-            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var directory = Path.GetDirectoryName(configuration.FilePath);
-            var appConfig = Path.Combine(directory, "..\\..\\App.config");
-            if (File.Exists(appConfig))
-            {
-                var exeConfigurationFileMap = new ExeConfigurationFileMap
-                {
-                    ExeConfigFilename = appConfig
-                };
-                configuration = ConfigurationManager.OpenMappedExeConfiguration(exeConfigurationFileMap, ConfigurationUserLevel.None);
-                return configuration;
-            }
-            return null;
-        }
+            var resultProperties = new MainSettings();
 
-        #endregion  
+            resultProperties.LogFontSize = configuration.GetDecimalValue(ConfigurationParameters.LogFontSize,
+                currentSettings.LogFontSize, writeToLog);
+
+            resultProperties.TreeViewFontSize = configuration.GetDecimalValue(ConfigurationParameters.TreeViewFontSize,
+                currentSettings.TreeViewFontSize, writeToLog);
+
+            resultProperties.RetryCount = configuration.GetIntValue(ConfigurationParameters.RetryCountParameter,
+                currentSettings.RetryCount, writeToLog);
+
+            resultProperties.RetryTimeout = configuration.GetIntValue(ConfigurationParameters.RetryTimeoutParameter,
+                currentSettings.RetryTimeout, writeToLog);
+
+            resultProperties.ReceiveTimeout = configuration.GetIntValue(ConfigurationParameters.ReceiveTimeoutParameter,
+                currentSettings.ReceiveTimeout, writeToLog);
+
+            resultProperties.ServerTimeout = configuration.GetIntValue(ConfigurationParameters.ServerTimeoutParameter,
+                currentSettings.ServerTimeout, writeToLog);
+
+            resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
+                currentSettings.PrefetchCount, writeToLog);
+
+            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, 
+                currentSettings.TopCount, writeToLog);
+
+            resultProperties.SenderThinkTime = configuration.GetIntValue
+                (ConfigurationParameters.SenderThinkTimeParameter, currentSettings.SenderThinkTime, writeToLog);
+
+            resultProperties.ReceiverThinkTime = configuration.GetIntValue
+                (ConfigurationParameters.ReceiverThinkTimeParameter, currentSettings.ReceiverThinkTime, writeToLog);
+
+            resultProperties.MonitorRefreshInterval = configuration.GetIntValue
+                (ConfigurationParameters.MonitorRefreshIntervalParameter, 
+                currentSettings.MonitorRefreshInterval, writeToLog);
+
+            resultProperties.ShowMessageCount = configuration.GetBoolValue
+                (ConfigurationParameters.ShowMessageCountParameter,
+                currentSettings.ShowMessageCount, writeToLog);
+
+            resultProperties.UseAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter,
+                currentSettings.UseAscii, writeToLog);
+
+            resultProperties.SaveMessageToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SaveMessageToFileParameter, currentSettings.SaveMessageToFile, writeToLog);
+
+            resultProperties.SavePropertiesToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SavePropertiesToFileParameter,
+                currentSettings.SavePropertiesToFile, writeToLog);
+
+            resultProperties.SaveCheckpointsToFile = configuration.GetBoolValue
+                (ConfigurationParameters.SaveCheckpointsToFileParameter,
+                currentSettings.SaveCheckpointsToFile, writeToLog);
+
+            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, 
+                MainSettings.DefaultLabel);
+
+            MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
+                out string messageText, out string messageFile);
+            resultProperties.MessageText = messageText;
+            resultProperties.MessageFile = messageFile;
+
+            resultProperties.SelectedEntities = ConfigurationHelper.GetSelectedEntities(configuration);
+
+            resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
+                BodyType.Stream.ToString());
+
+            resultProperties.ConnectivityMode = configuration.GetEnumValue
+                (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
+
+            resultProperties.EncodingType = configuration.GetEnumValue
+                (ConfigurationParameters.Encoding, currentSettings.EncodingType, writeToLog);
+
+            return resultProperties;
+        }
+        #endregion
     }
 }
