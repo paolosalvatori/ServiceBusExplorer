@@ -42,11 +42,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleConsumerGroupControl : UserControl
     {
-        #region DllImports
-        [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
-        #endregion
-
         #region Private Constants
         //***************************
         // Formats
@@ -456,7 +451,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var textBox = sender as TextBox;
             if (textBox != null)
             {
-                HideCaret(textBox.Handle);
+                NativeMethods.HideCaret(textBox.Handle);
             }
         }
 

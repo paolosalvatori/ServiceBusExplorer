@@ -384,6 +384,7 @@
     <Compile Include="Forms\DeleteForm.Designer.cs">
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\ConfigurationHelper.cs" />
     <Compile Include="Helpers\MainSettings.cs" />
@@ -510,6 +511,7 @@
     <Compile Include="Helpers\UrlSegmentWrapper.cs" />
     <Compile Include="Helpers\WindowsNotificationXmlBuilder.cs" />
     <Compile Include="Helpers\XmlHelper.cs" />
+    <Compile Include="Helpers\NativeMethods.cs" />
     <Compile Include="Helpers\XmlLinqExtensions.cs" />
     <Compile Include="Helpers\XmlSerializerHelper.cs" />
     <Compile Include="Helpers\LogEventDataInspector.cs" />

@@ -33,7 +33,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     {
         public static ScrollBars GetVisibleScrollbars(Control ctl)
         {
-            var wndStyle = Win32.GetWindowLong(ctl.Handle, Win32.GwlStyle);
+            var wndStyle = NativeMethods.GetWindowLong(ctl.Handle, Win32.GwlStyle);
             var hsVisible = (wndStyle & Win32.WsHscroll) != 0;
             var vsVisible = (wndStyle & Win32.WsVscroll) != 0;
 
@@ -51,8 +51,5 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         // window style constants for scrollbars
         public const int WsVscroll = 0x00200000;
         public const int WsHscroll = 0x00100000;
-
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
     }
 }

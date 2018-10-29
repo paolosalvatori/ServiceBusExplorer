@@ -47,11 +47,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class PartitionListenerControl : UserControl
     {
-        #region DllImports
-        [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
-        #endregion
-
         #region Private Constants
         //***************************
         // Formats
@@ -1096,7 +1091,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
             var textBox = sender as TextBox;
             if (textBox != null)
             {
-                HideCaret(textBox.Handle);
+                NativeMethods.HideCaret(textBox.Handle);
             }
         }
 
