@@ -22,35 +22,23 @@
 #region Using Directives
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    public static class ControlHelper 
-    {     
-        #region Redraw Suspend/Resume
-        private const int WmSetredraw = 0xB;      
-        public static void SuspendDrawing(this Control target)     
-        {
-            NativeMethods.SendMessage(target.Handle, WmSetredraw, 0, 0);     
-        }      
-        
-        public static void ResumeDrawing(this Control target) 
-        { 
-            ResumeDrawing(target, true); 
-        }     
+    internal static class NativeMethods
+    {
+        #region DllImports
 
-        public static void ResumeDrawing(this Control target, bool redraw)     
-        {         
-            NativeMethods.SendMessage(target.Handle, WmSetredraw, 1, 0);          
-            if (redraw)         
-            {             
-                target.Refresh();         
-            }     
-        }     
-        #endregion 
-    } 
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        internal static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+
+        #endregion
+    }
 }
