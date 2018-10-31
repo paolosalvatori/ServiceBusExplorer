@@ -830,7 +830,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
+            this.mainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.mainPanel.Controls.Add(this.btnOpenConfig);
             this.mainPanel.Controls.Add(this.cboConfigFile);
             this.mainPanel.Controls.Add(this.label1);
