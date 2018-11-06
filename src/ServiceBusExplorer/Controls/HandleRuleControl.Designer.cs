@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     partial class HandleRuleControl
     {
@@ -19,13 +19,9 @@
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.grouperName = new Grouper();
-            this.txtName = new System.Windows.Forms.TextBox();
-            this.grouperFilter = new Grouper();
-            this.txtFilterExpression = new System.Windows.Forms.TextBox();
-            this.grouperFilterType = new Grouper();
-            this.grouperCorrelationFilter = new Grouper();
+            this.grouperFilterType = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.checkBoxIsCorrelationFilter = new System.Windows.Forms.CheckBox();
+            this.grouperCorrelationFilter = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.txtCorrelationFilterTo = new System.Windows.Forms.TextBox();
             this.lblCorrelationFilterTo = new System.Windows.Forms.Label();
             this.txtCorrelationFilterSessionId = new System.Windows.Forms.TextBox();
@@ -43,20 +39,24 @@
             this.txtCorrelationFilterContentType = new System.Windows.Forms.TextBox();
             this.lblCorrelationFilterContentType = new System.Windows.Forms.Label();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperAction = new Grouper();
-            this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
-            this.grouperIsDefault = new Grouper();
-            this.checkBoxDefault = new System.Windows.Forms.CheckBox();
-            this.grouperCreatedAt = new Grouper();
+            this.grouperCreatedAt = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.txtCreatedAt = new System.Windows.Forms.TextBox();
-            this.grouperName.SuspendLayout();
-            this.grouperFilter.SuspendLayout();
+            this.grouperIsDefault = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.checkBoxDefault = new System.Windows.Forms.CheckBox();
+            this.grouperAction = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
+            this.grouperFilter = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtFilterExpression = new System.Windows.Forms.TextBox();
+            this.grouperName = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.txtName = new System.Windows.Forms.TextBox();
             this.grouperFilterType.SuspendLayout();
             this.grouperCorrelationFilter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).BeginInit();
-            this.grouperAction.SuspendLayout();
-            this.grouperIsDefault.SuspendLayout();
             this.grouperCreatedAt.SuspendLayout();
+            this.grouperIsDefault.SuspendLayout();
+            this.grouperAction.SuspendLayout();
+            this.grouperFilter.SuspendLayout();
+            this.grouperName.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCreateDelete
@@ -97,88 +97,12 @@
             this.btnCancel.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCancel.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // grouperName
-            // 
-            this.grouperName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperName.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperName.BorderThickness = 1F;
-            this.grouperName.Controls.Add(this.txtName);
-            this.grouperName.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperName.ForeColor = System.Drawing.Color.White;
-            this.grouperName.GroupImage = null;
-            this.grouperName.GroupTitle = "Name";
-            this.grouperName.Location = new System.Drawing.Point(16, 8);
-            this.grouperName.Name = "grouperName";
-            this.grouperName.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperName.PaintGroupBox = true;
-            this.grouperName.RoundCorners = 4;
-            this.grouperName.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperName.ShadowControl = false;
-            this.grouperName.ShadowThickness = 1;
-            this.grouperName.Size = new System.Drawing.Size(460, 80);
-            this.grouperName.TabIndex = 0;
-            // 
-            // txtName
-            // 
-            this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtName.BackColor = System.Drawing.SystemColors.Window;
-            this.txtName.Location = new System.Drawing.Point(16, 40);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(428, 20);
-            this.txtName.TabIndex = 0;
-            // 
-            // grouperFilter
-            // 
-            this.grouperFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperFilter.BorderThickness = 1F;
-            this.grouperFilter.Controls.Add(this.txtFilterExpression);
-            this.grouperFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperFilter.ForeColor = System.Drawing.Color.White;
-            this.grouperFilter.GroupImage = null;
-            this.grouperFilter.GroupTitle = "Filter";
-            this.grouperFilter.Location = new System.Drawing.Point(16, 96);
-            this.grouperFilter.Name = "grouperFilter";
-            this.grouperFilter.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperFilter.PaintGroupBox = true;
-            this.grouperFilter.RoundCorners = 4;
-            this.grouperFilter.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperFilter.ShadowControl = false;
-            this.grouperFilter.ShadowThickness = 1;
-            this.grouperFilter.Size = new System.Drawing.Size(460, 256);
-            this.grouperFilter.TabIndex = 3;
-            // 
-            // txtFilterExpression
-            // 
-            this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFilterExpression.BackColor = System.Drawing.SystemColors.Window;
-            this.txtFilterExpression.Location = new System.Drawing.Point(16, 32);
-            this.txtFilterExpression.Multiline = true;
-            this.txtFilterExpression.Name = "txtFilterExpression";
-            this.txtFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtFilterExpression.Size = new System.Drawing.Size(428, 208);
-            this.txtFilterExpression.TabIndex = 0;
-            // 
             // grouperFilterType
             // 
             this.grouperFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilterType.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilterType.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilterType.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperFilterType.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFilterType.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilterType.BorderThickness = 1F;
             this.grouperFilterType.Controls.Add(this.checkBoxIsCorrelationFilter);
@@ -187,7 +111,7 @@
             this.grouperFilterType.ForeColor = System.Drawing.Color.White;
             this.grouperFilterType.GroupImage = null;
             this.grouperFilterType.GroupTitle = "Filter Type";
-            this.grouperFilterType.Location = new System.Drawing.Point(728, 8);
+            this.grouperFilterType.Location = new System.Drawing.Point(685, 8);
             this.grouperFilterType.Name = "grouperFilterType";
             this.grouperFilterType.Padding = new System.Windows.Forms.Padding(20);
             this.grouperFilterType.PaintGroupBox = true;
@@ -195,17 +119,30 @@
             this.grouperFilterType.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperFilterType.ShadowControl = false;
             this.grouperFilterType.ShadowThickness = 1;
-            this.grouperFilterType.Size = new System.Drawing.Size(104, 80);
+            this.grouperFilterType.Size = new System.Drawing.Size(137, 80);
             this.grouperFilterType.TabIndex = 2;
+            // 
+            // checkBoxIsCorrelationFilter
+            // 
+            this.checkBoxIsCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxIsCorrelationFilter.AutoSize = true;
+            this.checkBoxIsCorrelationFilter.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxIsCorrelationFilter.Location = new System.Drawing.Point(16, 36);
+            this.checkBoxIsCorrelationFilter.Name = "checkBoxIsCorrelationFilter";
+            this.checkBoxIsCorrelationFilter.Size = new System.Drawing.Size(99, 21);
+            this.checkBoxIsCorrelationFilter.TabIndex = 8;
+            this.checkBoxIsCorrelationFilter.Text = "Correlation";
+            this.checkBoxIsCorrelationFilter.UseVisualStyleBackColor = true;
+            this.checkBoxIsCorrelationFilter.CheckedChanged += new System.EventHandler(this.checkBoxIsCorrelationFilter_CheckedChanged);
             // 
             // grouperCorrelationFilter
             // 
-            this.grouperCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCorrelationFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCorrelationFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCorrelationFilter.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperCorrelationFilter.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCorrelationFilter.BorderThickness = 1F;
             this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterTo);
@@ -247,7 +184,7 @@
             this.txtCorrelationFilterTo.Location = new System.Drawing.Point(128, 228);
             this.txtCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterTo.Name = "txtCorrelationFilterTo";
-            this.txtCorrelationFilterTo.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterTo.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterTo.TabIndex = 15;
             // 
             // lblCorrelationFilterTo
@@ -257,7 +194,7 @@
             this.lblCorrelationFilterTo.Location = new System.Drawing.Point(16, 228);
             this.lblCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterTo.Name = "lblCorrelationFilterTo";
-            this.lblCorrelationFilterTo.Size = new System.Drawing.Size(36, 26);
+            this.lblCorrelationFilterTo.Size = new System.Drawing.Size(25, 17);
             this.lblCorrelationFilterTo.TabIndex = 14;
             this.lblCorrelationFilterTo.Text = "To";
             // 
@@ -266,7 +203,7 @@
             this.txtCorrelationFilterSessionId.Location = new System.Drawing.Point(128, 200);
             this.txtCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterSessionId.Name = "txtCorrelationFilterSessionId";
-            this.txtCorrelationFilterSessionId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterSessionId.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterSessionId.TabIndex = 13;
             // 
             // lblCorrelationFilterSessionId
@@ -276,7 +213,7 @@
             this.lblCorrelationFilterSessionId.Location = new System.Drawing.Point(16, 200);
             this.lblCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterSessionId.Name = "lblCorrelationFilterSessionId";
-            this.lblCorrelationFilterSessionId.Size = new System.Drawing.Size(108, 26);
+            this.lblCorrelationFilterSessionId.Size = new System.Drawing.Size(69, 17);
             this.lblCorrelationFilterSessionId.TabIndex = 12;
             this.lblCorrelationFilterSessionId.Text = "SessionId";
             // 
@@ -285,7 +222,7 @@
             this.txtCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(128, 172);
             this.txtCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterReplyToSessionId.Name = "txtCorrelationFilterReplyToSessionId";
-            this.txtCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterReplyToSessionId.TabIndex = 11;
             // 
             // lblCorrelationFilterReplyToSessionId
@@ -295,7 +232,7 @@
             this.lblCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(16, 172);
             this.lblCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterReplyToSessionId.Name = "lblCorrelationFilterReplyToSessionId";
-            this.lblCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(188, 26);
+            this.lblCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(122, 17);
             this.lblCorrelationFilterReplyToSessionId.TabIndex = 10;
             this.lblCorrelationFilterReplyToSessionId.Text = "ReplyToSessionId";
             // 
@@ -304,7 +241,7 @@
             this.txtCorrelationFilterReplyTo.Location = new System.Drawing.Point(128, 144);
             this.txtCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterReplyTo.Name = "txtCorrelationFilterReplyTo";
-            this.txtCorrelationFilterReplyTo.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterReplyTo.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterReplyTo.TabIndex = 9;
             // 
             // lblCorrelationFilterReplyTo
@@ -314,7 +251,7 @@
             this.lblCorrelationFilterReplyTo.Location = new System.Drawing.Point(16, 144);
             this.lblCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterReplyTo.Name = "lblCorrelationFilterReplyTo";
-            this.lblCorrelationFilterReplyTo.Size = new System.Drawing.Size(92, 26);
+            this.lblCorrelationFilterReplyTo.Size = new System.Drawing.Size(61, 17);
             this.lblCorrelationFilterReplyTo.TabIndex = 8;
             this.lblCorrelationFilterReplyTo.Text = "ReplyTo";
             // 
@@ -323,7 +260,7 @@
             this.txtCorrelationFilterMessageId.Location = new System.Drawing.Point(128, 116);
             this.txtCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterMessageId.Name = "txtCorrelationFilterMessageId";
-            this.txtCorrelationFilterMessageId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterMessageId.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterMessageId.TabIndex = 7;
             // 
             // lblCorrelationFilterMessageId
@@ -333,7 +270,7 @@
             this.lblCorrelationFilterMessageId.Location = new System.Drawing.Point(16, 116);
             this.lblCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterMessageId.Name = "lblCorrelationFilterMessageId";
-            this.lblCorrelationFilterMessageId.Size = new System.Drawing.Size(118, 26);
+            this.lblCorrelationFilterMessageId.Size = new System.Drawing.Size(76, 17);
             this.lblCorrelationFilterMessageId.TabIndex = 6;
             this.lblCorrelationFilterMessageId.Text = "MessageId";
             // 
@@ -342,7 +279,7 @@
             this.txtCorrelationFilterLabel.Location = new System.Drawing.Point(128, 88);
             this.txtCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterLabel.Name = "txtCorrelationFilterLabel";
-            this.txtCorrelationFilterLabel.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterLabel.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterLabel.TabIndex = 5;
             // 
             // lblCorrelationFilterLabel
@@ -352,7 +289,7 @@
             this.lblCorrelationFilterLabel.Location = new System.Drawing.Point(16, 88);
             this.lblCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterLabel.Name = "lblCorrelationFilterLabel";
-            this.lblCorrelationFilterLabel.Size = new System.Drawing.Size(65, 26);
+            this.lblCorrelationFilterLabel.Size = new System.Drawing.Size(43, 17);
             this.lblCorrelationFilterLabel.TabIndex = 4;
             this.lblCorrelationFilterLabel.Text = "Label";
             // 
@@ -361,7 +298,7 @@
             this.txtCorrelationFilterCorrelationId.Location = new System.Drawing.Point(128, 60);
             this.txtCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterCorrelationId.Name = "txtCorrelationFilterCorrelationId";
-            this.txtCorrelationFilterCorrelationId.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterCorrelationId.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterCorrelationId.TabIndex = 3;
             // 
             // lblCorrelationFilterCorrelationId
@@ -371,7 +308,7 @@
             this.lblCorrelationFilterCorrelationId.Location = new System.Drawing.Point(16, 60);
             this.lblCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterCorrelationId.Name = "lblCorrelationFilterCorrelationId";
-            this.lblCorrelationFilterCorrelationId.Size = new System.Drawing.Size(136, 26);
+            this.lblCorrelationFilterCorrelationId.Size = new System.Drawing.Size(88, 17);
             this.lblCorrelationFilterCorrelationId.TabIndex = 2;
             this.lblCorrelationFilterCorrelationId.Text = "CorrelationId";
             // 
@@ -380,7 +317,7 @@
             this.txtCorrelationFilterContentType.Location = new System.Drawing.Point(128, 32);
             this.txtCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterContentType.Name = "txtCorrelationFilterContentType";
-            this.txtCorrelationFilterContentType.Size = new System.Drawing.Size(250, 32);
+            this.txtCorrelationFilterContentType.Size = new System.Drawing.Size(250, 23);
             this.txtCorrelationFilterContentType.TabIndex = 1;
             // 
             // lblCorrelationFilterContentType
@@ -390,15 +327,13 @@
             this.lblCorrelationFilterContentType.Location = new System.Drawing.Point(16, 32);
             this.lblCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterContentType.Name = "lblCorrelationFilterContentType";
-            this.lblCorrelationFilterContentType.Size = new System.Drawing.Size(135, 26);
+            this.lblCorrelationFilterContentType.Size = new System.Drawing.Size(89, 17);
             this.lblCorrelationFilterContentType.TabIndex = 0;
             this.lblCorrelationFilterContentType.Text = "ContentType";
             // 
             // authorizationRulesDataGridView
             // 
             this.authorizationRulesDataGridView.AllowUserToResizeRows = false;
-            this.authorizationRulesDataGridView.AllowUserToAddRows = true;
-            this.authorizationRulesDataGridView.AllowUserToDeleteRows = true;
             this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -417,14 +352,88 @@
             this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
             this.authorizationRulesDataGridView.Resize += new System.EventHandler(this.authorizationRulesDataGridView_Resize);
             // 
+            // grouperCreatedAt
+            // 
+            this.grouperCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperCreatedAt.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCreatedAt.BorderThickness = 1F;
+            this.grouperCreatedAt.Controls.Add(this.txtCreatedAt);
+            this.grouperCreatedAt.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCreatedAt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperCreatedAt.ForeColor = System.Drawing.Color.White;
+            this.grouperCreatedAt.GroupImage = null;
+            this.grouperCreatedAt.GroupTitle = "Created At";
+            this.grouperCreatedAt.Location = new System.Drawing.Point(492, 8);
+            this.grouperCreatedAt.Name = "grouperCreatedAt";
+            this.grouperCreatedAt.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperCreatedAt.PaintGroupBox = true;
+            this.grouperCreatedAt.RoundCorners = 4;
+            this.grouperCreatedAt.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperCreatedAt.ShadowControl = false;
+            this.grouperCreatedAt.ShadowThickness = 1;
+            this.grouperCreatedAt.Size = new System.Drawing.Size(187, 80);
+            this.grouperCreatedAt.TabIndex = 1;
+            // 
+            // txtCreatedAt
+            // 
+            this.txtCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCreatedAt.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreatedAt.Location = new System.Drawing.Point(16, 40);
+            this.txtCreatedAt.Name = "txtCreatedAt";
+            this.txtCreatedAt.ReadOnly = true;
+            this.txtCreatedAt.Size = new System.Drawing.Size(155, 23);
+            this.txtCreatedAt.TabIndex = 0;
+            // 
+            // grouperIsDefault
+            // 
+            this.grouperIsDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperIsDefault.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperIsDefault.BorderThickness = 1F;
+            this.grouperIsDefault.Controls.Add(this.checkBoxDefault);
+            this.grouperIsDefault.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperIsDefault.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperIsDefault.ForeColor = System.Drawing.Color.White;
+            this.grouperIsDefault.GroupImage = null;
+            this.grouperIsDefault.GroupTitle = "Is Default?";
+            this.grouperIsDefault.Location = new System.Drawing.Point(828, 8);
+            this.grouperIsDefault.Name = "grouperIsDefault";
+            this.grouperIsDefault.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperIsDefault.PaintGroupBox = true;
+            this.grouperIsDefault.RoundCorners = 4;
+            this.grouperIsDefault.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperIsDefault.ShadowControl = false;
+            this.grouperIsDefault.ShadowThickness = 1;
+            this.grouperIsDefault.Size = new System.Drawing.Size(124, 80);
+            this.grouperIsDefault.TabIndex = 2;
+            // 
+            // checkBoxDefault
+            // 
+            this.checkBoxDefault.AutoSize = true;
+            this.checkBoxDefault.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxDefault.Location = new System.Drawing.Point(16, 40);
+            this.checkBoxDefault.Name = "checkBoxDefault";
+            this.checkBoxDefault.Size = new System.Drawing.Size(75, 21);
+            this.checkBoxDefault.TabIndex = 0;
+            this.checkBoxDefault.Text = "Default";
+            this.checkBoxDefault.UseVisualStyleBackColor = true;
+            this.checkBoxDefault.CheckedChanged += new System.EventHandler(this.checkBoxDefault_CheckedChanged);
+            // 
             // grouperAction
             // 
-            this.grouperAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAction.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAction.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
+            this.grouperAction.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperAction.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAction.BorderThickness = 1F;
             this.grouperAction.Controls.Add(this.txtSqlFilterAction);
@@ -446,8 +455,8 @@
             // 
             // txtSqlFilterAction
             // 
-            this.txtSqlFilterAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSqlFilterAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSqlFilterAction.BackColor = System.Drawing.SystemColors.Window;
             this.txtSqlFilterAction.Location = new System.Drawing.Point(16, 32);
@@ -457,97 +466,85 @@
             this.txtSqlFilterAction.Size = new System.Drawing.Size(428, 208);
             this.txtSqlFilterAction.TabIndex = 0;
             // 
-            // grouperIsDefault
+            // grouperFilter
             // 
-            this.grouperIsDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperIsDefault.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperIsDefault.BorderThickness = 1F;
-            this.grouperIsDefault.Controls.Add(this.checkBoxDefault);
-            this.grouperIsDefault.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperIsDefault.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperIsDefault.ForeColor = System.Drawing.Color.White;
-            this.grouperIsDefault.GroupImage = null;
-            this.grouperIsDefault.GroupTitle = "Is Default?";
-            this.grouperIsDefault.Location = new System.Drawing.Point(848, 8);
-            this.grouperIsDefault.Name = "grouperIsDefault";
-            this.grouperIsDefault.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperIsDefault.PaintGroupBox = true;
-            this.grouperIsDefault.RoundCorners = 4;
-            this.grouperIsDefault.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperIsDefault.ShadowControl = false;
-            this.grouperIsDefault.ShadowThickness = 1;
-            this.grouperIsDefault.Size = new System.Drawing.Size(104, 80);
-            this.grouperIsDefault.TabIndex = 2;
-            // 
-            // checkBoxDefault
-            // 
-            this.checkBoxDefault.AutoSize = true;
-            this.checkBoxDefault.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxDefault.Location = new System.Drawing.Point(16, 40);
-            this.checkBoxDefault.Name = "checkBoxDefault";
-            this.checkBoxDefault.Size = new System.Drawing.Size(60, 17);
-            this.checkBoxDefault.TabIndex = 0;
-            this.checkBoxDefault.Text = "Default";
-            this.checkBoxDefault.UseVisualStyleBackColor = true;
-            this.checkBoxDefault.CheckedChanged += new System.EventHandler(this.checkBoxDefault_CheckedChanged);
-            // 
-            // grouperCreatedAt
-            // 
-            this.grouperCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCreatedAt.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperCreatedAt.BorderThickness = 1F;
-            this.grouperCreatedAt.Controls.Add(this.txtCreatedAt);
-            this.grouperCreatedAt.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperCreatedAt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperCreatedAt.ForeColor = System.Drawing.Color.White;
-            this.grouperCreatedAt.GroupImage = null;
-            this.grouperCreatedAt.GroupTitle = "Created At";
-            this.grouperCreatedAt.Location = new System.Drawing.Point(492, 8);
-            this.grouperCreatedAt.Name = "grouperCreatedAt";
-            this.grouperCreatedAt.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperCreatedAt.PaintGroupBox = true;
-            this.grouperCreatedAt.RoundCorners = 4;
-            this.grouperCreatedAt.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperCreatedAt.ShadowControl = false;
-            this.grouperCreatedAt.ShadowThickness = 1;
-            this.grouperCreatedAt.Size = new System.Drawing.Size(220, 80);
-            this.grouperCreatedAt.TabIndex = 1;
+            this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperFilter.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilter.BorderThickness = 1F;
+            this.grouperFilter.Controls.Add(this.txtFilterExpression);
+            this.grouperFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperFilter.ForeColor = System.Drawing.Color.White;
+            this.grouperFilter.GroupImage = null;
+            this.grouperFilter.GroupTitle = "Filter";
+            this.grouperFilter.Location = new System.Drawing.Point(16, 96);
+            this.grouperFilter.Name = "grouperFilter";
+            this.grouperFilter.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperFilter.PaintGroupBox = true;
+            this.grouperFilter.RoundCorners = 4;
+            this.grouperFilter.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperFilter.ShadowControl = false;
+            this.grouperFilter.ShadowThickness = 1;
+            this.grouperFilter.Size = new System.Drawing.Size(460, 256);
+            this.grouperFilter.TabIndex = 3;
             // 
-            // txtCreatedAt
+            // txtFilterExpression
             // 
-            this.txtCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCreatedAt.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCreatedAt.Location = new System.Drawing.Point(16, 40);
-            this.txtCreatedAt.Name = "txtCreatedAt";
-            this.txtCreatedAt.ReadOnly = true;
-            this.txtCreatedAt.Size = new System.Drawing.Size(188, 20);
-            this.txtCreatedAt.TabIndex = 0;
+            this.txtFilterExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtFilterExpression.Location = new System.Drawing.Point(16, 32);
+            this.txtFilterExpression.Multiline = true;
+            this.txtFilterExpression.Name = "txtFilterExpression";
+            this.txtFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtFilterExpression.Size = new System.Drawing.Size(428, 208);
+            this.txtFilterExpression.TabIndex = 0;
             // 
-            // checkBoxIsCorrelationFilter
+            // grouperName
             // 
-            this.checkBoxIsCorrelationFilter.AutoSize = true;
-            this.checkBoxIsCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxIsCorrelationFilter.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxIsCorrelationFilter.Location = new System.Drawing.Point(16, 40);
-            this.checkBoxIsCorrelationFilter.Name = "checkBoxIsCorrelationFilter";
-            this.checkBoxIsCorrelationFilter.Size = new System.Drawing.Size(90, 17);
-            this.checkBoxIsCorrelationFilter.TabIndex = 8;
-            this.checkBoxIsCorrelationFilter.Text = "Correlation";
-            this.checkBoxIsCorrelationFilter.UseVisualStyleBackColor = true;
-            this.checkBoxIsCorrelationFilter.CheckedChanged += new System.EventHandler(this.checkBoxIsCorrelationFilter_CheckedChanged);
+            this.grouperName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperName.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperName.BorderThickness = 1F;
+            this.grouperName.Controls.Add(this.txtName);
+            this.grouperName.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperName.ForeColor = System.Drawing.Color.White;
+            this.grouperName.GroupImage = null;
+            this.grouperName.GroupTitle = "Name";
+            this.grouperName.Location = new System.Drawing.Point(16, 8);
+            this.grouperName.Name = "grouperName";
+            this.grouperName.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperName.PaintGroupBox = true;
+            this.grouperName.RoundCorners = 4;
+            this.grouperName.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperName.ShadowControl = false;
+            this.grouperName.ShadowThickness = 1;
+            this.grouperName.Size = new System.Drawing.Size(460, 80);
+            this.grouperName.TabIndex = 0;
+            // 
+            // txtName
+            // 
+            this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtName.BackColor = System.Drawing.SystemColors.Window;
+            this.txtName.Location = new System.Drawing.Point(16, 40);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(428, 23);
+            this.txtName.TabIndex = 0;
             // 
             // HandleRuleControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.Controls.Add(this.grouperFilterType);
             this.Controls.Add(this.grouperCorrelationFilter);
@@ -561,22 +558,21 @@
             this.Name = "HandleRuleControl";
             this.Size = new System.Drawing.Size(968, 400);
             this.Resize += new System.EventHandler(this.HandleRuleControl_Resize);
-            this.grouperName.ResumeLayout(false);
-            this.grouperName.PerformLayout();
-            this.grouperFilter.ResumeLayout(false);
-            this.grouperFilter.PerformLayout();
             this.grouperFilterType.ResumeLayout(false);
             this.grouperFilterType.PerformLayout();
-
-            ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
             this.grouperCorrelationFilter.ResumeLayout(false);
             this.grouperCorrelationFilter.PerformLayout();
-            this.grouperAction.ResumeLayout(false);
-            this.grouperAction.PerformLayout();
-            this.grouperIsDefault.ResumeLayout(false);
-            this.grouperIsDefault.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
             this.grouperCreatedAt.ResumeLayout(false);
             this.grouperCreatedAt.PerformLayout();
+            this.grouperIsDefault.ResumeLayout(false);
+            this.grouperIsDefault.PerformLayout();
+            this.grouperAction.ResumeLayout(false);
+            this.grouperAction.PerformLayout();
+            this.grouperFilter.ResumeLayout(false);
+            this.grouperFilter.PerformLayout();
+            this.grouperName.ResumeLayout(false);
+            this.grouperName.PerformLayout();
             this.ResumeLayout(false);
 
         }
