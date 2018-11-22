@@ -118,8 +118,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.panelLog);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1008, 696);
-            this.mainSplitContainer.SplitterDistance = 504;
+            this.mainSplitContainer.Size = new System.Drawing.Size(1008, 717);
+            this.mainSplitContainer.SplitterDistance = 519;
             this.mainSplitContainer.TabIndex = 3;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -140,7 +140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(1008, 504);
+            this.panelMain.Size = new System.Drawing.Size(1008, 519);
             this.panelMain.TabIndex = 1;
             // 
             // panelLog
@@ -161,7 +161,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelLog.Name = "panelLog";
             this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1008, 188);
+            this.panelLog.Size = new System.Drawing.Size(1008, 194);
             this.panelLog.TabIndex = 1;
             // 
             // lstLog
@@ -172,17 +172,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstLog.FormattingEnabled = true;
             this.lstLog.HorizontalScrollbar = true;
-            this.lstLog.ItemHeight = 14;
+            this.lstLog.ItemHeight = 15;
             this.lstLog.Location = new System.Drawing.Point(5, 29);
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(998, 155);
+            this.lstLog.Size = new System.Drawing.Size(998, 161);
             this.lstLog.TabIndex = 4;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
             // 
             // logContextMenuStrip
             // 
+            this.logContextMenuStrip.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.logContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyAllToolStripMenuItem,
             this.copySelectedToolStripMenuItem,
@@ -193,57 +194,57 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.saveAllToolStripMenuItem,
             this.saveSelectedToolStripMenuItem});
             this.logContextMenuStrip.Name = "logContextMenuStrip";
-            this.logContextMenuStrip.Size = new System.Drawing.Size(150, 148);
+            this.logContextMenuStrip.Size = new System.Drawing.Size(165, 160);
             // 
             // copyAllToolStripMenuItem
             // 
             this.copyAllToolStripMenuItem.Name = "copyAllToolStripMenuItem";
-            this.copyAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.copyAllToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.copyAllToolStripMenuItem.Text = "Copy All";
             this.copyAllToolStripMenuItem.Click += new System.EventHandler(this.copyAllToolStripMenuItem_Click);
             // 
             // copySelectedToolStripMenuItem
             // 
             this.copySelectedToolStripMenuItem.Name = "copySelectedToolStripMenuItem";
-            this.copySelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.copySelectedToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.copySelectedToolStripMenuItem.Text = "Copy Selected";
             this.copySelectedToolStripMenuItem.Click += new System.EventHandler(this.copySelectedToolStripMenuItem_Click);
             // 
             // toolStripSeparator27
             // 
             this.toolStripSeparator27.Name = "toolStripSeparator27";
-            this.toolStripSeparator27.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator27.Size = new System.Drawing.Size(161, 6);
             // 
             // clearAllToolStripMenuItem
             // 
             this.clearAllToolStripMenuItem.Name = "clearAllToolStripMenuItem";
-            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.clearAllToolStripMenuItem.Text = "Clear All";
             this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.clearAllToolStripMenuItem_Click);
             // 
             // clearSelectedToolStripMenuItem
             // 
             this.clearSelectedToolStripMenuItem.Name = "clearSelectedToolStripMenuItem";
-            this.clearSelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.clearSelectedToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.clearSelectedToolStripMenuItem.Text = "Clear Selected";
             this.clearSelectedToolStripMenuItem.Click += new System.EventHandler(this.clearSelectedToolStripMenuItem_Click);
             // 
             // toolStripSeparator29
             // 
             this.toolStripSeparator29.Name = "toolStripSeparator29";
-            this.toolStripSeparator29.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator29.Size = new System.Drawing.Size(161, 6);
             // 
             // saveAllToolStripMenuItem
             // 
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
-            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.saveAllToolStripMenuItem.Text = "Save All";
             this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // saveSelectedToolStripMenuItem
             // 
             this.saveSelectedToolStripMenuItem.Name = "saveSelectedToolStripMenuItem";
-            this.saveSelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.saveSelectedToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.saveSelectedToolStripMenuItem.Text = "Save Selected";
             this.saveSelectedToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedToolStripMenuItem_Click);
             // 
@@ -259,7 +260,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(164, 24);
             this.exitToolStripMenuItem.Text = "&Close";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -297,7 +298,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(288, 24);
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -333,6 +334,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // mainMenuStrip
             // 
             this.mainMenuStrip.BackColor = System.Drawing.Color.Transparent;
+            this.mainMenuStrip.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.toolStripMenuItem3,
@@ -340,7 +342,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem9});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(1040, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1040, 27);
             this.mainMenuStrip.TabIndex = 25;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -349,14 +351,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem2});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(41, 23);
             this.toolStripMenuItem1.Text = "&File";
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(145, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(164, 24);
             this.toolStripMenuItem2.Text = "&Close";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -366,14 +368,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem4,
             this.toolStripMenuItem5});
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(39, 20);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(44, 23);
             this.toolStripMenuItem3.Text = "&Edit";
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
             this.toolStripMenuItem4.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(186, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(211, 24);
             this.toolStripMenuItem4.Text = "Clear Log";
             this.toolStripMenuItem4.Click += new System.EventHandler(this.clearLog_Click);
             // 
@@ -381,7 +383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
             this.toolStripMenuItem5.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(186, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(211, 24);
             this.toolStripMenuItem5.Text = "Save Log As...";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.saveLogToolStripMenuItem_Click);
             // 
@@ -392,14 +394,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem8});
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(44, 20);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(50, 23);
             this.toolStripMenuItem6.Text = "&View";
             // 
             // toolStripMenuItem7
             // 
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
             this.toolStripMenuItem7.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(212, 22);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(244, 24);
             this.toolStripMenuItem7.Text = "Set Default Layout";
             this.toolStripMenuItem7.Click += new System.EventHandler(this.setDefaultLayouToolStripMenuItem_Click);
             // 
@@ -410,7 +412,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem8.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
             this.toolStripMenuItem8.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(212, 22);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(244, 24);
             this.toolStripMenuItem8.Text = "&Log Window";
             this.toolStripMenuItem8.Click += new System.EventHandler(this.logWindowToolStripMenuItem_Click);
             // 
@@ -419,14 +421,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem9.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem10});
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(44, 20);
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(49, 23);
             this.toolStripMenuItem9.Text = "&Help";
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
             this.toolStripMenuItem10.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(288, 24);
             this.toolStripMenuItem10.Text = "&About Service Bus Explorer";
             this.toolStripMenuItem10.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -446,7 +448,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(1040, 753);
+            this.ClientSize = new System.Drawing.Size(1040, 774);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.mainSplitContainer);

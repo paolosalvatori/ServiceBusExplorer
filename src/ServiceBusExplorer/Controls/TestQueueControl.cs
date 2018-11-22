@@ -731,11 +731,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 {
                                     var factory = serviceBusHelper.CreateMessagingFactory();
                                     senderFactories.Add(factory);
-                                    messageSenderCollection.Add(factory.CreateMessageSender(queueDescription.Path));
+                                    Func<MessageSender> senderFactory = () => factory.CreateMessageSender(queueDescription.Path);
+                                    if (checkBoxSenderSendVia.Checked)
+                                    {
+                                        senderFactory = () => factory.CreateMessageSender(queueDescription.Path, txtSenderSendVia.Text);
+                                    }
+                                    messageSenderCollection.Add(senderFactory());
                                 }
                                 else
                                 {
-                                    messageSenderCollection.Add(serviceBusHelper.MessagingFactory.CreateMessageSender(queueDescription.Path));
+                                    Func<MessageSender> senderFactory = () => serviceBusHelper.MessagingFactory.CreateMessageSender(queueDescription.Path);
+                                    if (checkBoxSenderSendVia.Checked)
+                                    {
+                                        senderFactory = () => serviceBusHelper.MessagingFactory.CreateMessageSender(queueDescription.Path, txtSenderSendVia.Text);
+                                    }
+
+                                    messageSenderCollection.Add(senderFactory());
                                 }
                             }
                             isSenderFaulted = false;
@@ -1879,6 +1890,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void checkBoxSenderThinkTime_CheckedChanged(object sender, EventArgs e)
         {
             txtSenderThinkTime.Enabled = checkBoxSenderThinkTime.Checked;
+        }
+
+        private void checkBoxSenderSendVia_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSenderSendVia.Enabled = checkBoxSenderSendVia.Checked;
+            messageSenderCollection?.Clear();
+        }
+
+        private void txtSenderSendVia_TextChanged(object sender, EventArgs e)
+        {
+            messageSenderCollection?.Clear();
         }
 
         private void checkBoxReceiverThinkTime_CheckedChanged(object sender, EventArgs e)

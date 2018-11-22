@@ -709,11 +709,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             {
                                 var factory = serviceBusHelper.CreateMessagingFactory();
                                 senderFactories.Add(factory);
-                                messageSenderCollection.Add(factory.CreateMessageSender(topic.Path));
+                                Func<MessageSender> senderFactory = () => factory.CreateMessageSender(topic.Path);
+                                if (checkBoxSenderSendVia.Checked)
+                                {
+                                    senderFactory = () => factory.CreateMessageSender(topic.Path, txtSenderSendVia.Text);
+                                }
+                                messageSenderCollection.Add(senderFactory());
                             }
                             else
                             {
-                                messageSenderCollection.Add(serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path));
+                                Func<MessageSender> senderFactory = () => serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path);
+                                if (checkBoxSenderSendVia.Checked)
+                                {
+                                    senderFactory = () => serviceBusHelper.MessagingFactory.CreateMessageSender(topic.Path, txtSenderSendVia.Text);
+                                }
+
+                                messageSenderCollection.Add(senderFactory());
                             }
                         }
                         isSenderFaulted = false;
@@ -1879,6 +1890,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                    propertiesDataGridView.Size.Width + 1,
                                    propertiesDataGridView.Size.Height + 1);
         }
+
         private void checkBoxSenderThinkTime_CheckedChanged(object sender, EventArgs e)
         {
             txtSenderThinkTime.Enabled = checkBoxSenderThinkTime.Checked;
@@ -1887,6 +1899,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void checkBoxReceiverThinkTime_CheckedChanged(object sender, EventArgs e)
         {
             txtReceiverThinkTime.Enabled = checkBoxReceiverThinkTime.Checked;
+        }
+
+        private void checkBoxSenderSendVia_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSenderSendVia.Enabled = checkBoxSenderSendVia.Checked;
+            messageSenderCollection?.Clear();
+        }
+
+        private void txtSenderSendVia_TextChanged(object sender, EventArgs e)
+        {
+            messageSenderCollection?.Clear();
         }
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
