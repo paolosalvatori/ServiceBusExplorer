@@ -31,6 +31,10 @@ Here are some guidelines concerning contributions:
 
 If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
 
+# Development Environment
+
+Visual Studio 2017 15.7 or later is required to build the solution.
+
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
 
