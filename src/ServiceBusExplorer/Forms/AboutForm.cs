@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Properties;
 
 #endregion
@@ -208,7 +209,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void AboutForm_Load(object sender, EventArgs e)
         {
             Text = $"About {MainForm.SingletonMainForm.Text}";
-            lblVersion.Text = $"Version: {MainForm.SingletonMainForm.Version}";
+            var version = VersionProvider.GetVersion();
+            lblVersion.Text = version;
         }
         #endregion 
     }
