@@ -181,6 +181,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private ServiceBus.TokenProvider tokenProvider;
         private NotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
+        private ServiceBusNamespaceType connectionStringType;
         private Uri atomFeedUri;
         private string ns;
         private string servicePath;
@@ -267,12 +268,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
             get
             {
                 string uri;
-                return namespaceUri != null &&
+                return connectionStringType == ServiceBusNamespaceType.Cloud ||
+                      (namespaceUri != null &&
                        !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
                        (uri.Contains(CloudServiceBusPostfix) ||
                         uri.Contains(TestServiceBusPostFix) ||
                         uri.Contains(GermanyServiceBusPostfix) ||
-                        uri.Contains(ChinaServiceBusPostfix));
+                        uri.Contains(ChinaServiceBusPostfix)));
             }
         }
 
@@ -901,6 +903,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
                 // Create the service URI using the uri specified in the Connect form
                 namespaceUri = new Uri(uri);
+                connectionStringType = ServiceBusNamespaceType.Cloud;
                 if (!string.IsNullOrWhiteSpace(namespaceUri.Host) &&
                     namespaceUri.Host.Contains('.'))
                 {
@@ -1080,6 +1083,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 }
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
+                connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
                 atomFeedUri = new Uri($"{Uri.UriSchemeHttp}://{namespaceUri.Host}");
 
