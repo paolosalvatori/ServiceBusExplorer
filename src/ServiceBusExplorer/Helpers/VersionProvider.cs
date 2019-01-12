@@ -1,27 +1,32 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using Microsoft.ServiceBus;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     static class VersionProvider
     {
-        public static string GetVersion()
+        public static string GetExeVersion()
         {
-            var versionInfo = GetFileVersionInfo();
+            var assembly = Assembly.GetExecutingAssembly();
 
-            return $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
+            return GetFormattedFileVersion(assembly);
         }
 
-        public static string GetVersionWithSha()
+        public static string GetServiceBusClientVersion()
         {
-            return GetFileVersionInfo().ProductVersion;
+            var assembly = Assembly.GetAssembly(typeof(NamespaceManager));
+
+            return GetFormattedFileVersion(assembly);
         }
 
-        private static FileVersionInfo GetFileVersionInfo()
+        static string GetFormattedFileVersion(Assembly assembly)
         {
-            var asm = Assembly.GetExecutingAssembly();
-            var versionInfo = FileVersionInfo.GetVersionInfo(asm.Location);
-            return versionInfo;
+            var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+            return "Version: " + 
+                $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}";
         }
     }
 }

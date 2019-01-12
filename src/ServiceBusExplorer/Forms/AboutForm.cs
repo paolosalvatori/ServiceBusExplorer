@@ -156,6 +156,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             base.OnSizeChanged(e);
         }
 
+        private void siteLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/paolosalvatori/ServiceBusExplorer");
+        }
+
         private void mailLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("mailto:paolos@microsoft.com?subject=Service%20Bus%20Explorer%20Feedback");
@@ -209,10 +214,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void AboutForm_Load(object sender, EventArgs e)
         {
             Text = $"About {MainForm.SingletonMainForm.Text}";
-            var version = VersionProvider.GetVersion();
-            lblVersion.Text = version;
+            lblExeVersion.Text = VersionProvider.GetExeVersion();
+            lblClientVersion.Text = VersionProvider.GetServiceBusClientVersion();
         }
-        #endregion 
+        #endregion
     }
 
     public class Shape
