@@ -409,7 +409,6 @@
     <Compile Include="Helpers\OnOffDeviceEventDataGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceEventDataGenerator.cs" />
-    <Compile Include="Helpers\VersionHelper.cs" />
     <Compile Include="Helpers\VersionProvider.cs" />
     <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
     <Compile Include="Helpers\MonitorRuleList.cs" />
@@ -607,6 +606,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConnectForm.resx">
       <DependentUpon>ConnectForm.cs</DependentUpon>
@@ -640,7 +640,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GitVersion.CommandLine" Version="3.6.5" PrivateAssets="all" />
-    <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />    
+    <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.16.0.234" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
