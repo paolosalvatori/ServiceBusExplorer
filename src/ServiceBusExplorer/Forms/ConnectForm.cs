@@ -67,6 +67,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string SharedSecretIssuerSecretLabel = "Shared Secret Issuer Secret:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
+        private const string replacementText = "{replace}";
 
         //***************************
         // Tooltips
@@ -86,7 +87,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Private Instance Fields
 
         private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ConfigFileUse configFileUse;
         private bool isIssuerName;
+        private bool ignoreSelectedIndexChange;
 
         #endregion
 
@@ -99,9 +102,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         #region Public Constructor
 
-        public ConnectForm(ServiceBusHelper serviceBusHelper)
+        public ConnectForm(ServiceBusHelper serviceBusHelper, ConfigFileUse configFileUse)
         {
             InitializeComponent();
+
+            this.configFileUse = configFileUse;
+            SetConfigFileUseLabelText(lblConfigFileUse);            
+            
             this.serviceBusHelper = serviceBusHelper;
             cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
             cboServiceBusNamespace.Items.Add(EnterConnectionString);
@@ -133,7 +140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             (cboServiceBusNamespace.Text == EnterConnectionString &&
                              !string.IsNullOrWhiteSpace(connectionString));
 
-            foreach (var item in MainForm.SingletonMainForm.Entities)
+            foreach (var item in ConfigurationHelper.Entities)
             {
                 cboSelectedEntities.Items.Add(item);
             }
@@ -142,6 +149,35 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
+        }
+
+        void SetConfigFileUseLabelText(Label label)
+        {
+            var originalConfigFileUseInfo = label.Text;
+
+            string replacement;
+
+            switch(configFileUse)
+            {
+                case ConfigFileUse.ApplicationConfig:
+                    replacement = "The application config file";
+                    break;
+
+                case ConfigFileUse.UserConfig:
+                    replacement = "The user config file";
+                    break;
+
+                case ConfigFileUse.BothConfig:
+                    replacement = "The application config file and the user config file";
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unexpected value, {configFileUse} in method " +
+                        $"{nameof(SetConfigFileUseLabelText)}.");
+            }
+
+            var updatedConfigFileUseInfo = originalConfigFileUseInfo.Replace(replacementText, replacement);
+            label.Text = updatedConfigFileUseInfo;
         }
 
         #endregion
@@ -203,7 +239,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             {
                 Uri = txtUri.Text;
                 Namespace = txtNamespace.Text;
-                TransportType = (TransportType) cboTransportType.SelectedItem;
+                TransportType = (TransportType)cboTransportType.SelectedItem;
                 EntityPath = txtEntityPath.Text;
 
                 if (isIssuerName)
@@ -241,7 +277,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
             }
             DialogResult = DialogResult.OK;
-            ConnectivityMode = (ConnectivityMode) cboConnectivityMode.SelectedItem;
+            ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
             FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
             FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
             FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
@@ -304,6 +340,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void cboServiceBusNamespace_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ignoreSelectedIndexChange)
+            {
+                return;
+            }
+
             var connectionStringType = cboServiceBusNamespace.SelectedIndex > 1
                 ? serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType
                 : ServiceBusNamespaceType.Custom;
@@ -313,6 +354,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 ? cboServiceBusNamespace.Text
                 : null;
 
+            btnRename.Visible = false;
+            btnDelete.Visible = false;
             btnSave.Visible = cboServiceBusNamespace.Text == EnterConnectionString;
 
             var containsStsEndpoint = !string.IsNullOrWhiteSpace(Key) &&
@@ -339,6 +382,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 return;
             }
             var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            btnRename.Visible = ns.UserCreated;
+            btnDelete.Visible = ns.UserCreated;
+
             if (ns == null)
             {
                 return;
@@ -407,7 +453,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    var transportType = (TransportType) cboTransportType.SelectedItem;
+                    var transportType = (TransportType)cboTransportType.SelectedItem;
                     value = value.Replace(parameters[ConnectionStringRuntimePort],
                         transportType == TransportType.Amqp
                             ? DefaultAmqpRuntimePort
@@ -587,49 +633,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         return;
                     }
                     var value = txtUri.Text;
-                    var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                    var configurationSection = configuration.Sections["serviceBusNamespaces"];
-                    var directory = Path.GetDirectoryName(configuration.FilePath);
-                    if (string.IsNullOrEmpty(directory))
-                    {
-                        MainForm.StaticWriteToLog("The directory of the configuration file cannot be null.");
-                        return;
-                    }
-                    var appConfig = Path.Combine(directory, "..\\..\\App.config");
-                    configurationSection.SectionInformation.ForceSave = true;
-                    var xml = configurationSection.SectionInformation.GetRawXml();
-                    var xmlDocument = new XmlDocument();
-                    xmlDocument.LoadXml(xml);
-                    var node = xmlDocument.CreateElement("add");
-                    node.SetAttribute("key", key);
-                    node.SetAttribute("value", value);
-                    xmlDocument.DocumentElement?.AppendChild(node);
-                    configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-                    configuration.Save(ConfigurationSaveMode.Modified);
-                    ConfigurationManager.RefreshSection("serviceBusNamespaces");
 
-                    if (File.Exists(appConfig))
+                    try
                     {
-                        var exeConfigurationFileMap = new ExeConfigurationFileMap
-                        {
-                            ExeConfigFilename = appConfig
-                        };
-                        configuration = ConfigurationManager.OpenMappedExeConfiguration(exeConfigurationFileMap, ConfigurationUserLevel.None);
-                        configurationSection = configuration.Sections["serviceBusNamespaces"];
-                        configurationSection.SectionInformation.ForceSave = true;
-                        xml = configurationSection.SectionInformation.GetRawXml();
-                        xmlDocument = new XmlDocument();
-                        xmlDocument.LoadXml(xml);
-                        node = xmlDocument.CreateElement("add");
-                        node.SetAttribute("key", key);
-                        node.SetAttribute("value", value);
-                        xmlDocument.DocumentElement?.AppendChild(node);
-                        configurationSection.SectionInformation.SetRawXml(xmlDocument.OuterXml);
-                        configuration.Save(ConfigurationSaveMode.Modified);
-                        ConfigurationManager.RefreshSection("serviceBusNamespaces");
+                        ConfigurationHelper.AddServiceBusNamespace(configFileUse, key, value, MainForm.StaticWriteToLog);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        MainForm.StaticWriteToLog(ex.Message);
                     }
 
-                    serviceBusHelper.ServiceBusNamespaces.Add(key, MainForm.GetServiceBusNamespace(key, value));
+                    serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog));
                     cboServiceBusNamespace.Items.Clear();
                     cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
                     cboServiceBusNamespace.Items.Add(EnterConnectionString);
@@ -657,6 +671,73 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
+
+        private void btnRename_Click(object sender, EventArgs e)
+        {
+            var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            var key = cboServiceBusNamespace.Text;
+
+            using (var parameterForm = new ParameterForm("Enter the new key for the Service Bus namespace",
+                   new List<string> { "Key" },
+                   new List<string> { key },
+                   new List<bool> { false }))
+            {
+                if (parameterForm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                var newKey = parameterForm.ParameterValues[0];
+                if (newKey == key)
+                {
+                    MainForm.StaticWriteToLog("The new key of the Service Bus namespace was the same as before.");
+                    return;
+                }
+
+                var existingKeys = serviceBusHelper.ServiceBusNamespaces.Keys;
+                if (existingKeys.Contains(newKey))
+                {
+                    MainForm.StaticWriteToLog("A Service Bus namespace key must be unique");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(newKey))
+                {
+                    MainForm.StaticWriteToLog("The key of the Service Bus namespace cannot be null.");
+                    return;
+                }
+
+                var itemIndex = cboServiceBusNamespace.SelectedIndex;
+                ConfigurationHelper.UpdateServiceBusNamespace(configFileUse, key, newKey, newValue: null, MainForm.StaticWriteToLog);
+
+                ignoreSelectedIndexChange = true;
+                serviceBusHelper.ServiceBusNamespaces.Remove(key);
+                serviceBusHelper.ServiceBusNamespaces[newKey] = ns;
+                cboServiceBusNamespace.Items[itemIndex] = newKey.GetHashCode();
+                cboServiceBusNamespace.Items[itemIndex] = newKey;
+                cboServiceBusNamespace.Text = newKey;
+                ignoreSelectedIndexChange = false;
+
+                MainForm.StaticWriteToLog($"Renamed '{key}' to '{newKey}'");
+            }
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            var key = cboServiceBusNamespace.Text;
+            using (var deleteForm = new DeleteForm($"Really delete Service Bus Namespace '{cboServiceBusNamespace.Text}'?"))
+            {
+                if (deleteForm.ShowDialog() == DialogResult.OK)
+                {
+                    ConfigurationHelper.RemoveServiceBusNamespace(configFileUse, key, MainForm.StaticWriteToLog);
+                    cboServiceBusNamespace.Items.RemoveAt(cboServiceBusNamespace.SelectedIndex);
+                    cboServiceBusNamespace.SelectedIndex = 0;
+
+                    serviceBusHelper.ServiceBusNamespaces.Remove(key);
+                }
+            }
+        }
+
         #endregion
     }
 }

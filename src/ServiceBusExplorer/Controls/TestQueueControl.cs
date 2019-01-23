@@ -39,6 +39,7 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Cursor = System.Windows.Forms.Cursor;
+using FastColoredTextBoxNS;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
@@ -240,6 +241,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 cboReceiverInspector.SelectedIndex = 0;
                 cboBrokeredMessageGeneratorType.Items.Add(SelectBrokeredMessageGenerator);
                 cboBrokeredMessageGeneratorType.SelectedIndex = 0;
+                cboMessageFormat.Items.AddRange(new[] { "Text", "JSON", "XML" });
+                cboMessageFormat.SelectedIndex = 0;
 
                 if (serviceBusHelper != null)
                 {
@@ -285,7 +288,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 bindingSource.DataSource = MessagePropertyInfo.Properties;
 
                 // Initialize body type combo
-                cboBodyType.SelectedIndex = 0;
+                cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
                 // Initialize the DataGridView.
                 propertiesDataGridView.AutoGenerateColumns = false;
@@ -346,12 +349,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                txtMessageText.Text = !string.IsNullOrWhiteSpace(mainForm?.MessageText) ?
-                                      JsonSerializerHelper.Indent(XmlHelper.Indent(mainForm.MessageText)) :
-                                      DefaultMessageText;
+                LanguageDetector.SetFormattedMessage(serviceBusHelper,
+                                                     mainForm != null &&
+                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
+                                                     mainForm.MessageText :
+                                                     DefaultMessageText,
+                                                     txtMessageText);
+
                 txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
                                 mainForm.Label :
                                 DefaultMessageText;
+
                 txtMessageId.Text = Guid.NewGuid().ToString();
                 if (queueDescription.RequiresSession)
                 {
@@ -1501,7 +1509,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         return;
                     }
-                    txtMessageText.Text = XmlHelper.Indent(text);
+                    LanguageDetector.SetFormattedMessage(serviceBusHelper, text, txtMessageText);
                     if (mainForm != null)
                     {
                         mainForm.MessageText = text;
@@ -1613,14 +1621,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         chart.Series["ReceiverThroughput"].Points.AddXY(receiverMessageNumber, receiverMessagesPerSecond);
                     }
                 }
-            }
-        }
-
-        private void txtMessageText_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
             }
         }
 
@@ -1897,7 +1897,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
 
-            if (Char.IsDigit(e.KeyChar))
+            if (char.IsDigit(e.KeyChar))
             {
                 // Digits are OK
             }
@@ -2142,6 +2142,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
             }
         }
+
+        private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
+            {
+                mainForm.MessageText = txtMessageText.Text;
+            }
+        }
+
+        private void grouperMessageFormat_CustomPaint(PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                   cboMessageFormat.Location.X - 1,
+                                   cboMessageFormat.Location.Y - 1,
+                                   cboMessageFormat.Size.Width + 1,
+                                   cboMessageFormat.Size.Height + 1);
+        }
+
+        private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LanguageDetector.SetFormattedMessage(cboMessageFormat.Text, txtMessageText);
+        }
+
         #endregion
     }
 }

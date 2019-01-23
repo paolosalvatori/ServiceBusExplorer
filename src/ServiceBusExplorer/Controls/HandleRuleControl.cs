@@ -22,8 +22,11 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
@@ -35,12 +38,7 @@ using Microsoft.ServiceBus.Messaging;
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleRuleControl : UserControl
-    {
-        #region DllImports
-        [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
-        #endregion
-
+    {   
         #region Private Constants
         //***************************
         // Formats
@@ -73,6 +71,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         bool? isFirstRule;
+        BindingList<UserPropertyWrapper> userPropertyBindingList;
         #endregion
 
         #region Public Constructors
@@ -83,6 +82,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.ruleWrapper = ruleWrapper;
             this.isFirstRule = isFirstRule;
             InitializeComponent();
+            InitializeControls();
             InitializeData();
         } 
         #endregion
@@ -92,6 +92,41 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #endregion
 
         #region Private Methods
+        private void InitializeControls()
+        {
+            // Set Grid style
+            authorizationRulesDataGridView.EnableHeadersVisualStyles = false;
+
+            // Set the selection background color for all the cells.
+            authorizationRulesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            authorizationRulesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            authorizationRulesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            authorizationRulesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            authorizationRulesDataGridView.AutoGenerateColumns = false;
+            if (authorizationRulesDataGridView.Columns.Count == 0)
+            {
+                authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "Property Name", DataPropertyName = "Name" });
+                authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "Value", DataPropertyName = "Value" });
+            }
+            authorizationRulesDataGridView_Resize(authorizationRulesDataGridView, EventArgs.Empty);
+        }
+
         private void InitializeData()
         {
             if (ruleWrapper != null &&
@@ -104,6 +139,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtCreatedAt.BackColor = SystemColors.Window;
                 checkBoxDefault.Checked = ruleWrapper.RuleDescription.Name == RuleDescription.DefaultRuleName;
                 checkBoxDefault.Enabled = false;
+                checkBoxIsCorrelationFilter.Enabled = false;
 
                 SetReadOnly(this);
 
@@ -115,12 +151,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 if (ruleWrapper.RuleDescription.Filter is SqlFilter sqlFilter)
                 {
                     txtFilterExpression.Text = sqlFilter.SqlExpression ?? string.Empty;
+                    checkBoxIsCorrelationFilter.Checked = false;
                 }
 
                 if (ruleWrapper.RuleDescription.Filter is CorrelationFilter correlationFilter)
                 {
                     var value = correlationFilter.ToString();
                     txtFilterExpression.Text = value.Replace("CorrelationFilter: ", string.Empty);
+                    checkBoxIsCorrelationFilter.Checked = true;
+                    txtCorrelationFilterContentType.Text = correlationFilter.ContentType;
+                    txtCorrelationFilterCorrelationId.Text = correlationFilter.CorrelationId;
+                    txtCorrelationFilterLabel.Text = correlationFilter.Label;
+                    txtCorrelationFilterMessageId.Text = correlationFilter.MessageId;
+                    txtCorrelationFilterReplyTo.Text = correlationFilter.ReplyTo;
+                    txtCorrelationFilterReplyToSessionId.Text = correlationFilter.ReplyToSessionId;
+                    txtCorrelationFilterSessionId.Text = correlationFilter.SessionId;
+                    txtCorrelationFilterTo.Text = correlationFilter.To;
+
+                    var wrappedUserProperties = correlationFilter.Properties.Select((prop) => new UserPropertyWrapper(prop)).ToList();
+                    userPropertyBindingList = new BindingList<UserPropertyWrapper>(wrappedUserProperties)
+                    {
+                        AllowNew = false,
+                        AllowEdit = false,
+                        AllowRemove = false
+                    };
                 }
 
                 if (ruleWrapper.RuleDescription.Action is SqlRuleAction action)
@@ -140,7 +194,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     checkBoxDefault.Checked = isFirstRule.Value;
                 }
+
+                userPropertyBindingList = new BindingList<UserPropertyWrapper>()
+                {
+                    AllowNew = true,
+                    AllowEdit = true,
+                    AllowRemove = true
+                };
             }
+            authorizationRulesDataGridView.DataSource = userPropertyBindingList;
             txtName.Focus();
         }
 
@@ -148,7 +210,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             if (sender is TextBox textBox)
             {
-                HideCaret(textBox.Handle);
+                NativeMethods.HideCaret(textBox.Handle);
             }
         }
 
@@ -207,9 +269,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var ruleDescription = new RuleDescription(txtName.Text);
 
-                if (!string.IsNullOrWhiteSpace(txtFilterExpression.Text))
+                if (checkBoxIsCorrelationFilter.Checked)
                 {
-                    ruleDescription.Filter = new SqlFilter(txtFilterExpression.Text);
+                    var filter = new CorrelationFilter()
+                    {
+                        ContentType = (!string.IsNullOrWhiteSpace(txtCorrelationFilterContentType.Text) ? txtCorrelationFilterContentType.Text : null),
+                        CorrelationId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterCorrelationId.Text) ? txtCorrelationFilterCorrelationId.Text : null),
+                        Label = (!string.IsNullOrWhiteSpace(txtCorrelationFilterLabel.Text) ? txtCorrelationFilterLabel.Text : null),
+                        MessageId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterMessageId.Text) ? txtCorrelationFilterMessageId.Text : null),
+                        ReplyTo = (!string.IsNullOrWhiteSpace(txtCorrelationFilterReplyTo.Text) ? txtCorrelationFilterReplyTo.Text : null),
+                        ReplyToSessionId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterReplyToSessionId.Text) ? txtCorrelationFilterReplyToSessionId.Text : null),
+                        SessionId = (!string.IsNullOrWhiteSpace(txtCorrelationFilterSessionId.Text) ? txtCorrelationFilterSessionId.Text : null),
+                        To = (!string.IsNullOrWhiteSpace(txtCorrelationFilterTo.Text) ? txtCorrelationFilterTo.Text : null)
+                    };
+                    if (userPropertyBindingList != null)
+                    {
+                        foreach (var prop in userPropertyBindingList)
+                        {
+                            filter.Properties.Add(prop.Name, prop.Value);
+                        }
+                    }
+                    ruleDescription.Filter = filter;
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(txtFilterExpression.Text))
+                    {
+                        ruleDescription.Filter = new SqlFilter(txtFilterExpression.Text);
+                    }
                 }
                 if (!string.IsNullOrWhiteSpace(txtSqlFilterAction.Text))
                 {
@@ -253,6 +340,51 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
+        void checkBoxIsCorrelationFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            grouperFilter.Visible = !checkBoxIsCorrelationFilter.Checked;
+            grouperCorrelationFilter.Visible = checkBoxIsCorrelationFilter.Checked;
+        }
+
+        private void authorizationRulesDataGridView_Resize(object sender, EventArgs e)
+        {
+            try
+            {
+                authorizationRulesDataGridView.SuspendDrawing();
+                authorizationRulesDataGridView.SuspendLayout();
+                if (authorizationRulesDataGridView.Columns["Property Name"] == null ||
+                    authorizationRulesDataGridView.Columns["Value"] == null)
+                {
+                    return;
+                }
+
+                var width = authorizationRulesDataGridView.Width - 24;
+                var verticalScrollbar = authorizationRulesDataGridView.Controls.OfType<VScrollBar>().First();
+                if (verticalScrollbar.Visible)
+                {
+                    width -= verticalScrollbar.Width;
+                }
+                int columnWidth = width / 2;
+                authorizationRulesDataGridView.Columns["Property Name"].Width = columnWidth;
+                authorizationRulesDataGridView.Columns["Value"].Width = columnWidth;
+            }
+            finally
+            {
+                authorizationRulesDataGridView.ResumeLayout();
+                authorizationRulesDataGridView.ResumeDrawing();
+            }
+        }
+
+        private void authorizationRulesDataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            authorizationRulesDataGridView_Resize(sender, null);
+        }
+
+        private void authorizationRulesDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            authorizationRulesDataGridView_Resize(sender, null);
+        }
+
         void HandleRuleControl_Resize(object sender, EventArgs e)
         {
             var width = (Size.Width - 48) / 2;
@@ -262,10 +394,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             grouperAction.Location = new Point(grouperFilter.Location.X + width + 16, 
                                                          grouperAction.Location.Y);
             grouperName.Size = new Size(width, grouperName.Size.Height);
-            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperIsDefault.Size.Width - 64, 
+            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - 80, 
                                              grouperCreatedAt.Size.Height);
             grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + 16,
                                                   grouperCreatedAt.Location.Y);
+            grouperCorrelationFilter.Size = new Size(width, height);
         }
 
         void button_MouseEnter(object sender, EventArgs e)

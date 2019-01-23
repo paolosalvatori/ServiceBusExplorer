@@ -42,11 +42,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleEventHubControl : UserControl
     {
-        #region DllImports
-        [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
-        #endregion
-
         #region Private Constants
         //***************************
         // Formats
@@ -211,7 +206,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 toolTip.SetToolTip(txtPath, PathTooltip);
                 toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
-                toolTip.SetToolTip(txtMessageRetentionInDays, MessageRetentionInDaysTooltip);
+                toolTip.SetToolTip(trackBarMessageRetentionInDays, MessageRetentionInDaysTooltip);
                 toolTip.SetToolTip(trackBarPartitionCount, PartitionCountTooltip);
 
                 propertyListView.ContextMenuStrip = entityInformationContextMenuStrip;
@@ -220,7 +215,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 // Set Defaults
                 var eventHub = new EventHubDescription("DUMMY");
-                txtMessageRetentionInDays.Text = eventHub.MessageRetentionInDays.ToString(CultureInfo.InvariantCulture);
+                trackBarMessageRetentionInDays.Value = (int)eventHub.MessageRetentionInDays;
                 trackBarPartitionCount.Value = eventHub.PartitionCount;
 
                 // Initialize buttons
@@ -319,7 +314,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             // MessageRetentionInDays
-            txtMessageRetentionInDays.Text = eventHubDescription.MessageRetentionInDays.ToString(CultureInfo.InvariantCulture);
+            trackBarMessageRetentionInDays.Value = (int)eventHubDescription.MessageRetentionInDays;
 
             // PartitionCount
             trackBarPartitionCount.Value = eventHubDescription.PartitionCount;
@@ -355,10 +350,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             UserMetadata = txtUserMetadata.Text
                         };
 
-                    if (!string.IsNullOrEmpty(txtMessageRetentionInDays.Text))
-                    {
-                        description.MessageRetentionInDays = txtMessageRetentionInDays.IntegerValue;
-                    }
+                    description.MessageRetentionInDays = trackBarMessageRetentionInDays.Value;
 
                     description.PartitionCount = trackBarPartitionCount.Value;
 
@@ -479,10 +471,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     eventHubDescription.UserMetadata = txtUserMetadata.Text;
 
-                    if (!string.IsNullOrEmpty(txtMessageRetentionInDays.Text))
-                    {
-                        eventHubDescription.MessageRetentionInDays = txtMessageRetentionInDays.IntegerValue;
-                    }
+                    eventHubDescription.MessageRetentionInDays = trackBarMessageRetentionInDays.Value;
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
                     if (bindingList != null)
@@ -576,7 +565,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var textBox = sender as TextBox;
             if (textBox != null)
             {
-                HideCaret(textBox.Handle);
+                NativeMethods.HideCaret(textBox.Handle);
             }
         }
 
@@ -978,6 +967,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 HandleException(ex);
             }
+        }
+
+        private void trackBarMessageRetentionInDays_ValueChanged(object sender, decimal value)
+        {
+            lblMessageRetentionInDaysValue.Text = trackBarMessageRetentionInDays.Value.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private void txtPath_TextChanged(object sender, EventArgs e)
+        {
+            txtPath.Text = txtPath.Text.ToLower();
+            txtPath.SelectionStart = txtPath.Text.Length;
         }
 
         #endregion

@@ -42,11 +42,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     public partial class HandleConsumerGroupControl : UserControl
     {
-        #region DllImports
-        [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
-        #endregion
-
         #region Private Constants
         //***************************
         // Formats
@@ -456,7 +451,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var textBox = sender as TextBox;
             if (textBox != null)
             {
-                HideCaret(textBox.Handle);
+                NativeMethods.HideCaret(textBox.Handle);
             }
         }
 
@@ -788,6 +783,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void btnGetPartitions_Click(object sender, EventArgs e)
         {
             GetPartitions();
+        }
+
+        private void txtName_TextChanged(object sender, EventArgs e)
+        {
+            txtName.Text = txtName.Text.ToLower();
+            txtName.SelectionStart = txtName.Text.Length;
         }
         #endregion
     }

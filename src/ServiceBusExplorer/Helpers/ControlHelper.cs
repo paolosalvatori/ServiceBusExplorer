@@ -32,12 +32,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
     public static class ControlHelper 
     {     
         #region Redraw Suspend/Resume
-        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]     
-        private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);     
         private const int WmSetredraw = 0xB;      
         public static void SuspendDrawing(this Control target)     
-        {         
-            SendMessage(target.Handle, WmSetredraw, 0, 0);     
+        {
+            NativeMethods.SendMessage(target.Handle, WmSetredraw, 0, 0);     
         }      
         
         public static void ResumeDrawing(this Control target) 
@@ -47,7 +45,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
         public static void ResumeDrawing(this Control target, bool redraw)     
         {         
-            SendMessage(target.Handle, WmSetredraw, 1, 0);          
+            NativeMethods.SendMessage(target.Handle, WmSetredraw, 1, 0);          
             if (redraw)         
             {             
                 target.Refresh();         

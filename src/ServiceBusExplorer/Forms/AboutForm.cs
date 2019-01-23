@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Properties;
 
 #endregion
@@ -155,6 +156,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             base.OnSizeChanged(e);
         }
 
+        private void siteLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/paolosalvatori/ServiceBusExplorer");
+        }
+
         private void mailLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("mailto:paolos@microsoft.com?subject=Service%20Bus%20Explorer%20Feedback");
@@ -208,7 +214,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void AboutForm_Load(object sender, EventArgs e)
         {
             Text = $"About {MainForm.SingletonMainForm.Text}";
-            lblVersion.Text = $"Version: {MainForm.SingletonMainForm.Version}";
+            lblExeVersion.Text = VersionProvider.GetExeVersion();
+            lblClientVersion.Text = VersionProvider.GetServiceBusClientVersion();
         }
         #endregion
     }

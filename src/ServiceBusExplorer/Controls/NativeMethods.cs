@@ -78,5 +78,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             public Size minTrackSize;
             public Size maxTrackSize;
         }
+
+        #region DllImports
+
+        [DllImport("user32.dll")]
+        internal static extern bool HideCaret(IntPtr hWnd);
+
+        #endregion
     }
 }

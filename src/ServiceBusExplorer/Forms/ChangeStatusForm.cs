@@ -87,6 +87,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
-        #endregion
+        #endregion 
     }
 }

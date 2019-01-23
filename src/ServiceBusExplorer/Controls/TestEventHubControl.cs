@@ -32,12 +32,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
+using FastColoredTextBoxNS;
+
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
@@ -180,6 +181,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 cboSenderInspector.SelectedIndex = 0;
                 cboEventDataGeneratorType.Items.Add(SelectEventDataGenerator);
                 cboEventDataGeneratorType.SelectedIndex = 0;
+                cboMessageFormat.Items.AddRange(new[] { "Text", "JSON", "XML" });
+                cboMessageFormat.SelectedIndex = 0;
+
+                grouperMessageProperties.Size = new Size(splitContainer.Panel2.Width, grouperMessageProperties.Size.Height);
 
                 if (serviceBusHelper != null)
                 {
@@ -283,10 +288,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-                txtMessageText.Text = mainForm != null &&
-                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                      XmlHelper.Indent(mainForm.MessageText) :
-                                      DefaultMessageText;
+                LanguageDetector.SetFormattedMessage(serviceBusHelper,
+                                                     mainForm != null && 
+                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
+                                                     mainForm.MessageText :
+                                                     DefaultMessageText, 
+                                                     txtMessageText);
+
                 txtPartitionKey.Text = Guid.NewGuid().ToString();
                 txtMessageCount.Text = DefaultMessageCount;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
@@ -987,14 +995,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void txtMessageText_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
-        }
-
         private void SetGraphLayout()
         {
             chart.Series.Clear();
@@ -1365,6 +1365,34 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void checkBoxSendBatch_CheckedChanged(object sender, EventArgs e)
         {
             txtSendBatchSize.Enabled = checkBoxSendBatch.Checked;
+        }
+
+        private void grouperMessageFormat_CustomPaint(PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                   cboMessageFormat.Location.X - 1,
+                                   cboMessageFormat.Location.Y - 1,
+                                   cboMessageFormat.Size.Width + 1,
+                                   cboMessageFormat.Size.Height + 1);
+        }
+
+        private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
+            {
+                mainForm.MessageText = txtMessageText.Text;
+            }
+        }
+
+        private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LanguageDetector.SetFormattedMessage(cboMessageFormat.Text, txtMessageText);
+        }
+
+        private void grouperPartitionKey_CustomPaint(PaintEventArgs e)
+        {
+            grouperPartitionKey.Location = new Point(0, splitContainer.Panel2.Height - grouperPartitionKey.Size.Height - 16);
+            grouperPartitionKey.Size = new Size(splitContainer.Panel2.Width, grouperPartitionKey.Size.Height);
         }
         #endregion
     }

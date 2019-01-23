@@ -31,6 +31,10 @@ Here are some guidelines concerning contributions:
 
 If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
 
+# Development Environment
+
+Visual Studio 2017 15.7 or later is required to build the solution.
+
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
 
@@ -49,7 +53,7 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
 
 # GitHub
-The source code of the tool is now availale on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
+The source code of the tool is now available on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
 
 <a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png).</a>
 
