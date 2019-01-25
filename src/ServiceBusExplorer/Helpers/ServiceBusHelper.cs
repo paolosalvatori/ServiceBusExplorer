@@ -1872,14 +1872,38 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
                     var taskList = new List<Task>();
-                    var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetQueuesAsync() : namespaceManager.GetQueuesAsync(filter);
-                    taskList.Add(task);
-                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                    Task.WaitAny(taskList.ToArray());
-                    if (task.IsCompleted)
+                    //Documentation states AND is the only logical clause allowed in the filter (And FYI a maximum of only 3 filter expressions allowed)
+                    //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
+                    //Split on ' OR ' and combine queues returned
+                    IEnumerable<QueueDescription> queues = new List<QueueDescription>();
+                    var tasksCompleted = true;
+                    var filters = new List<string>();
+                    if (string.IsNullOrWhiteSpace(filter))
                     {
-                        return task.Result;
+                        filters.Add(filter);
                     }
+                    else
+                    {
+                        filters = filter.ToLowerInvariant().Split(new[] { " or " }, StringSplitOptions.None).ToList();
+                    }
+                    foreach (var splitFilter in filters)
+                    {
+                        var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetQueuesAsync() : namespaceManager.GetQueuesAsync(splitFilter);
+                        taskList.Add(task);
+                        taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                        Task.WaitAny(taskList.ToArray());
+                        if (task.IsCompleted)
+                        {
+                            queues = queues.Union(task.Result);
+                            taskList.Clear();
+                        }
+                        else
+                        {
+                            tasksCompleted = false;
+                            break;
+                        }
+                    }
+                    if (tasksCompleted) return queues;
                     throw new TimeoutException();
                 }
 
@@ -2002,26 +2026,42 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (namespaceManager != null)
             {
+                //Documentation states AND is the only logical clause allowed in the filter
+                //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.gettopicsasync?view=azure-dotnet
+                //Split on ' OR ' and combine queues returned
                 var taskList = new List<Task>();
                 if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
-                    Task<IEnumerable<TopicDescription>> task;
+                    IEnumerable<TopicDescription> topics = new List<TopicDescription>();
+                    var tasksCompleted = true;
+                    var filters = new List<string>();
                     if (string.IsNullOrWhiteSpace(filter))
                     {
-                        task = namespaceManager.GetTopicsAsync();
+                        filters.Add(filter);                        
                     }
                     else
                     {
-                        task = namespaceManager.GetTopicsAsync(filter);
+                        filters = filter.ToLowerInvariant().Split(new[] { " or " }, StringSplitOptions.None).ToList();
                     }
 
-                    taskList.Add(task);
-                    taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
-                    Task.WaitAny(taskList.ToArray());
-                    if (task.IsCompleted)
+                    foreach (var splitFilter in filters)
                     {
-                        return task.Result;
+                        var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetTopicsAsync() : namespaceManager.GetTopicsAsync(splitFilter);
+                        taskList.Add(task);
+                        taskList.Add(Task.Delay(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ServerTimeout)));
+                        Task.WaitAny(taskList.ToArray());
+                        if (task.IsCompleted)
+                        {
+                            topics = topics.Union(task.Result);
+                            taskList.Clear();
+                        }
+                        else
+                        {
+                            tasksCompleted = false;
+                            break;
+                        }
                     }
+                    if (tasksCompleted) return topics;
                     throw new TimeoutException();
                 }
 
