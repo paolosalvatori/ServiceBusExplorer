@@ -1876,7 +1876,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
                     //Split on ' OR ' and combine queues returned
                     IEnumerable<QueueDescription> queues = new List<QueueDescription>();
-                    var tasksCompleted = true;
                     var filters = new List<string>();
                     if (string.IsNullOrWhiteSpace(filter))
                     {
@@ -1899,12 +1898,10 @@ namespace Microsoft.Azure.ServiceBusExplorer
                         }
                         else
                         {
-                            tasksCompleted = false;
-                            break;
+                            throw new TimeoutException();
                         }
                     }
-                    if (tasksCompleted) return queues;
-                    throw new TimeoutException();
+                    return queues;                    
                 }
 
                 return new List<QueueDescription> {
@@ -2033,7 +2030,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
                     IEnumerable<TopicDescription> topics = new List<TopicDescription>();
-                    var tasksCompleted = true;
                     var filters = new List<string>();
                     if (string.IsNullOrWhiteSpace(filter))
                     {
@@ -2057,12 +2053,10 @@ namespace Microsoft.Azure.ServiceBusExplorer
                         }
                         else
                         {
-                            tasksCompleted = false;
-                            break;
+                            throw new TimeoutException();
                         }
                     }
-                    if (tasksCompleted) return topics;
-                    throw new TimeoutException();
+                    return topics;                    
                 }
 
                 return new List<TopicDescription> {
