@@ -38,16 +38,28 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         private const string EnableFormat = "This operation will enable the {0} {1}. Do you want to continue?";
         private const string DisableFormat = "This operation will disable the {0} {1}. Do you want to continue?";
+        private const string SetStatusFormat = "This operation will set the status of the {0} {1} to {2}. Do you want to continue?";
         private const string Unknown = "Unknown";
         #endregion
 
         #region Public Constructor
-        public ChangeStatusForm(string entityName, string entityType, EntityStatus status)
+        public ChangeStatusForm(string entityName, string entityType, EntityStatus desiredStatus)
         {
             InitializeComponent();
-            lblMessage.Text = string.Format(status == EntityStatus.Active ? DisableFormat : EnableFormat,
-                                            entityType ?? Unknown,
-                                            entityName ?? Unknown);
+            
+            if (desiredStatus == EntityStatus.Active)
+            {
+                lblMessage.Text = string.Format(EnableFormat, entityType ?? Unknown, entityName ?? Unknown);
+            }
+            else if (desiredStatus == EntityStatus.Disabled)
+            {
+                lblMessage.Text = string.Format(DisableFormat, entityType ?? Unknown, entityName ?? Unknown);
+            }
+            else
+            {
+                lblMessage.Text = string.Format(SetStatusFormat, entityType ?? Unknown, entityName ?? Unknown, desiredStatus.ToString());
+            }
+            
             Width = lblMessage.Width + 72;
         }
         #endregion

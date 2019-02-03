@@ -1,5 +1,7 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.ServiceBus.Messaging;
+using System.Windows.Forms;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -1448,8 +1450,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
             this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.changeStatusQueueMenuItem.Text = "Change Status Queue";
-            this.changeStatusQueueMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
+            this.changeStatusQueueMenuItem.Text = "Set Status";
+            this.changeStatusQueueMenuItem.DropDownOpening += changeStatusQueueMenuItem_DropDownOpening;
+            this.changeStatusQueueMenuItem.DropDownItemClicked += changeStatusQueue_Click;
+            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Active.ToString())
+                .Tag = EntityStatus.Active;
+            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Disabled.ToString())
+                .Tag = EntityStatus.Disabled;
+            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.SendDisabled.ToString())
+                .Tag = EntityStatus.SendDisabled;
+            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.ReceiveDisabled.ToString())
+                .Tag = EntityStatus.ReceiveDisabled;
+
             // 
             // deleteQueueMenuItem
             // 
@@ -2804,7 +2816,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.PerformLayout();
 
         }
-
+        
         #endregion
 
         private System.Windows.Forms.ImageList imageList;
