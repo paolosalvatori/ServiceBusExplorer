@@ -2700,7 +2700,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 }
                 else
                 {
-                    throw new ApplicationException("Not supported for entity types other than queues.");
+                    throw new NotSupportedException("Not supported for entity types other than queues.");
                 }
             }
             catch (Exception ex)
@@ -2734,7 +2734,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                     else
                     {
-                        throw new ApplicationException("Not supported for entity types other than queues.");
+                        throw new NotSupportedException("Not supported for entity types other than queues.");
                     }
                 }
             }
