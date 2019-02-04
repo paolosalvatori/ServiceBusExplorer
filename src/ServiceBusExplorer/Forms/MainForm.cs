@@ -114,8 +114,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string DeleteAllNotificationHubs = "All the notification hubs will be permanently deleted.";
         private const string EntitiesExported = "Selected entities have been exported to {0}.";
         private const string EntitiesImported = "Entities have been imported from {0}.";
-        private const string EnableQueue = "Enable Queue";
-        private const string DisableQueue = "Disable Queue";
         private const string EnableTopic = "Enable Topic";
         private const string DisableTopic = "Disable Topic";
         private const string EnableSubscription = "Enable Subscription";
@@ -2684,6 +2682,72 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        private void changeStatusQueueMenuItem_DropDownOpening(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var tag = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                if (tag != null)
+                {
+                    // Put a check against the item that reflects the current status of the queue
+                    var queueDescription = serviceBusHelper.GetQueue(tag.Path);
+                    var status = queueDescription.Status;
+                    foreach (var dropDownItem in changeStatusQueueMenuItem.DropDownItems)
+                    {
+                        var dropDownMenuItem = dropDownItem as ToolStripMenuItem;
+                        dropDownMenuItem.Checked = (EntityStatus)dropDownMenuItem.Tag == status;
+                    }
+                }
+                else
+                {
+                    throw new NotSupportedException("Not supported for entity types other than queues.");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void changeStatusQueue_Click(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                if (serviceBusHelper != null &&
+                    serviceBusTreeView.SelectedNode != null)
+                {
+                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                    {
+                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+
+                        var desiredStatus = (EntityStatus)e.ClickedItem.Tag;
+                        using (var changeStatusForm = new ChangeStatusForm(queueDescription.Path, QueueEntity.ToLower(), desiredStatus))
+                        {
+                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                            {
+                                queueDescription.Status = (EntityStatus)e.ClickedItem.Tag;
+                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                refreshEntity_Click(null, null);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Not supported for entity types other than queues.");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
         private async void changeStatusEntity_Click(object sender, EventArgs e)
         {
             try
@@ -2696,23 +2760,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                     {
                         var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                        using (var changeStatusForm = new ChangeStatusForm(queueDescription.Path, QueueEntity.ToLower(), queueDescription.Status))
+                        using (var changeQueueStatusForm = new ChangeQueueStatusForm(queueDescription.Status))
                         {
-                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                            if (changeQueueStatusForm.ShowDialog() == DialogResult.OK)
                             {
-                                queueDescription.Status = queueDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
+                                queueDescription.Status = changeQueueStatusForm.EntityStatus;
                                 serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
                                 refreshEntity_Click(null, null);
-                                changeStatusQueueMenuItem.Text = queueDescription.Status == EntityStatus.Active
-                                                                     ? DisableQueue
-                                                                     : EnableQueue;
-                                var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusQueueMenuItem];
-                                if (item != null)
-                                {
-                                    item.Text = changeStatusQueueMenuItem.Text;
-                                }
                             }
                         }
                         return;
@@ -2721,13 +2775,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
                     {
                         var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                        using (var changeStatusForm = new ChangeStatusForm(topicDescription.Path, TopicEntity.ToLower(), topicDescription.Status))
+                        var desiredStatus = topicDescription.Status == EntityStatus.Active
+                                                          ? EntityStatus.Disabled
+                                                          : EntityStatus.Active;
+                        using (var changeStatusForm = new ChangeStatusForm(topicDescription.Path, TopicEntity.ToLower(), desiredStatus))
                         {
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
-                                topicDescription.Status = topicDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
+                                topicDescription.Status = desiredStatus;
                                 serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
                                 refreshEntity_Click(null, null);
                                 changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
@@ -2750,13 +2805,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         if (wrapper.TopicDescription != null &&
                             wrapper.SubscriptionDescription != null)
                         {
-                            using (var changeStatusForm = new ChangeStatusForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower(), wrapper.SubscriptionDescription.Status))
+                            var desiredStatus = wrapper.SubscriptionDescription.Status = wrapper.SubscriptionDescription.Status == EntityStatus.Active
+                                                                             ? EntityStatus.Disabled
+                                                                             : EntityStatus.Active;
+                            using (var changeStatusForm = new ChangeStatusForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower(), desiredStatus))
                             {
                                 if (changeStatusForm.ShowDialog() == DialogResult.OK)
                                 {
-                                    wrapper.SubscriptionDescription.Status = wrapper.SubscriptionDescription.Status == EntityStatus.Active
-                                                                             ? EntityStatus.Disabled
-                                                                             : EntityStatus.Active;
+                                    wrapper.SubscriptionDescription.Status = desiredStatus;
                                     serviceBusHelper.NamespaceManager.UpdateSubscription(wrapper.SubscriptionDescription);
                                     refreshEntity_Click(null, null);
                                     changeStatusSubscriptionMenuItem.Text = wrapper.SubscriptionDescription.Status == EntityStatus.Active
@@ -2775,13 +2831,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
                     {
                         var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
-                        using (var changeStatusForm = new ChangeStatusForm(eventHubDescription.Path, EventHubEntity.ToLower(), eventHubDescription.Status))
+                        var desiredStatus = eventHubDescription.Status = eventHubDescription.Status == EntityStatus.Active
+                                                          ? EntityStatus.Disabled
+                                                          : EntityStatus.Active;
+                        using (var changeStatusForm = new ChangeStatusForm(eventHubDescription.Path, EventHubEntity.ToLower(), desiredStatus))
                         {
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
-                                eventHubDescription.Status = eventHubDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
+                                eventHubDescription.Status = desiredStatus;
                                 await serviceBusHelper.NamespaceManager.UpdateEventHubAsync(eventHubDescription);
                                 refreshEntity_Click(null, null);
                                 changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active
@@ -3255,7 +3312,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 if (node.Tag is QueueDescription)
                 {
                     var queueDescription = node.Tag as QueueDescription;
-                    changeStatusQueueMenuItem.Text = queueDescription.Status == EntityStatus.Active ? DisableQueue : EnableQueue;
                     getQueueMessageSessionsMenuItem.Visible = queueDescription.RequiresSession;
                     getQueueMessageSessionsSeparator.Visible = queueDescription.RequiresSession;
                     queueReceiveMessagesMenuItem.Visible = string.IsNullOrWhiteSpace(queueDescription.ForwardTo);

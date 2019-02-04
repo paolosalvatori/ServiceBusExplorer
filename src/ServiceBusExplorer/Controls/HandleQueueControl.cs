@@ -77,6 +77,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string CancelText = "Cancel";
         private const string EnableText = "Enable";
         private const string DisableText = "Disable";
+        private const string StatusText = "Status";
         private const string UserMetadata = "User Metadata";
         private const string MaxGigabytes = "MAX";
         private const string MessageId = "MessageId";
@@ -1113,7 +1114,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // Initialize buttons
             btnCreateDelete.Text = DeleteText;
             btnCancelUpdate.Text = UpdateText;
-            btnChangeStatus.Text = queueDescription.Status == EntityStatus.Active ? DisableText : EnableText;
+            btnChangeStatus.Text = StatusText;
             btnRefresh.Visible = true;
             btnChangeStatus.Visible = true;
             btnMessages.Visible = true;
