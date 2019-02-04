@@ -3512,9 +3512,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     Application.UseWaitCursor = false;
                 }
-
-                MainForm.SingletonMainForm.RefreshQueues();
-                MainForm.SingletonMainForm.RefreshTopics();
             }
         }
 
