@@ -183,8 +183,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // The value for alternating rows overrides the value for all rows. 
             propertiesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
             propertiesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            //propertiesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-            //propertiesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
             propertiesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
@@ -226,12 +224,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusHelper = serviceBusHelper;
             this.writeToLog = writeToLog;
             InitializeComponent();
+
+            // Make it just a small dialog with the controls on one row
             messagesSplitContainer.Visible = false;
             btnSave.Visible = false;
             btnSubmit.Location = btnSave.Location;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Size = new Size(Size.Width - 104, 80);
+            int moveRightInPixels = btnClose.Left - btnSubmit.Left;
+            Size = new Size(Size.Width - moveRightInPixels, 80);
+            lblBody.Left += moveRightInPixels;
+            cboBodyType.Left += moveRightInPixels;
+            chkNewMessageId.Left += moveRightInPixels;
+            chkRemove.Left += moveRightInPixels;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
 
             cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
