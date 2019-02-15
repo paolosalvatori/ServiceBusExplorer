@@ -130,11 +130,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 case "DateTime":
                     return Convert.ChangeType(value, typeof(DateTime));
                 case "TimeSpan":
-                    if (value is string valueString)
-                    {
-                        return TimeSpan.Parse(valueString);
-                    }
-                    break;
+                    return TimeSpan.Parse((string)value);
                 case "Guid":
                     return new Guid(value.ToString());
             }
