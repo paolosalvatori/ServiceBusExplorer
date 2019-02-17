@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -91,7 +91,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private Static Fields
-        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "TimeSpan", "String" };
         #endregion
 
         #region Public Properties
@@ -175,12 +175,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             propertiesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
             propertiesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
             propertiesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-            // Set the background color for all rows and for alternating rows.  
-            // The value for alternating rows overrides the value for all rows. 
+            // Set the background color for all rows and for alternating rows.
+            // The value for alternating rows overrides the value for all rows.
             propertiesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
             propertiesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
