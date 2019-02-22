@@ -21,6 +21,8 @@
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
+    using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
     partial class ClipboardForm
     {
         /// <summary>
@@ -64,10 +66,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnCopy
             // 
             this.btnCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCopy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCopy.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCopy.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCopy.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCopy.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnCopy.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCopy.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCopy.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnCopy.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCopy.Location = new System.Drawing.Point(144, 72);
             this.btnCopy.Name = "btnCopy";
@@ -82,10 +84,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnCancel.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancel.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancel.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(224, 72);
             this.btnCancel.Name = "btnCancel";
@@ -132,7 +134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.ClientSize = new System.Drawing.Size(312, 108);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.btnCancel);

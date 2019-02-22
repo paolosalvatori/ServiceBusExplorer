@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 #endregion
 
@@ -73,7 +74,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         
         private void mainPanel_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
+            e.Graphics.DrawLine(new Pen(CustomColorHelper.CreateThemeColor3(this), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
         #endregion 
     }

@@ -20,6 +20,7 @@
 #endregion
 
 using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -129,8 +130,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelMain.HeaderColor1 = CustomColorHelper.CreateThemeColor2(this);;
+            this.panelMain.HeaderColor2 = CustomColorHelper.CreateThemeColor3(this);;
             this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelMain.HeaderHeight = 24;
             this.panelMain.HeaderText = "Entity";
@@ -150,8 +151,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelLog.Controls.Add(this.lstLog);
             this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelLog.HeaderColor1 = CustomColorHelper.CreateThemeColor2(this);;
+            this.panelLog.HeaderColor2 = CustomColorHelper.CreateThemeColor3(this);;
             this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelLog.HeaderHeight = 24;
             this.panelLog.HeaderText = "Log";
@@ -445,7 +446,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.ClientSize = new System.Drawing.Size(1040, 753);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainMenuStrip);

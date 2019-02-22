@@ -20,6 +20,7 @@
 #endregion
 
 using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -107,10 +108,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOk.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOk.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOk.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(821, 527);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4);
@@ -126,10 +127,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnCancel.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancel.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancel.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(928, 527);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
@@ -145,11 +146,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnClearSubscriptionFilterExpression
             // 
             this.btnClearSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSubscriptionFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearSubscriptionFilterExpression.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.btnClearSubscriptionFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnClearSubscriptionFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearSubscriptionFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearSubscriptionFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
@@ -169,11 +170,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnClearTopicFilterExpression
             // 
             this.btnClearTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearTopicFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearTopicFilterExpression.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.btnClearTopicFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearTopicFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearTopicFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearTopicFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearTopicFilterExpression.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearTopicFilterExpression.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearTopicFilterExpression.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnClearTopicFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearTopicFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearTopicFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
@@ -193,11 +194,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnClearQueueFilterExpression
             // 
             this.btnClearQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearQueueFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearQueueFilterExpression.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.btnClearQueueFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearQueueFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearQueueFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearQueueFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearQueueFilterExpression.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearQueueFilterExpression.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnClearQueueFilterExpression.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnClearQueueFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearQueueFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearQueueFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
@@ -217,10 +218,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnOpenSubscriptionFilterForm
             // 
             this.btnOpenSubscriptionFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenSubscriptionFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenSubscriptionFilterForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenSubscriptionFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenSubscriptionFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenSubscriptionFilterForm.Location = new System.Drawing.Point(395, 234);
@@ -251,10 +252,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnOpenTopicFilterForm
             // 
             this.btnOpenTopicFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenTopicFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenTopicFilterForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenTopicFilterForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenTopicFilterForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenTopicFilterForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenTopicFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenTopicFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenTopicFilterForm.Location = new System.Drawing.Point(395, 175);
@@ -273,10 +274,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnOpenQueueFilterForm
             // 
             this.btnOpenQueueFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenQueueFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenQueueFilterForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenQueueFilterForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenQueueFilterForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenQueueFilterForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenQueueFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenQueueFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenQueueFilterForm.Location = new System.Drawing.Point(395, 116);
@@ -385,10 +386,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnSave.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnSave.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnSave.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Location = new System.Drawing.Point(715, 527);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4);
@@ -405,10 +406,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnRename
             // 
             this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRename.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRename.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRename.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRename.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRename.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnRename.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnRename.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnRename.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnRename.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRename.Location = new System.Drawing.Point(21, 527);
             this.btnRename.Margin = new System.Windows.Forms.Padding(4);
@@ -423,10 +424,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDelete.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnDelete.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnDelete.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnDelete.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDelete.Location = new System.Drawing.Point(125, 527);
             this.btnDelete.Margin = new System.Windows.Forms.Padding(4);
@@ -440,13 +441,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // grouperConfigFileUse
             // 
-            this.grouperConfigFileUse.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperConfigFileUse.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperConfigFileUse.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperConfigFileUse.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperConfigFileUse.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperConfigFileUse.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperConfigFileUse.BorderThickness = 1F;
             this.grouperConfigFileUse.Controls.Add(this.lblConfigFileUse);
-            this.grouperConfigFileUse.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperConfigFileUse.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperConfigFileUse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperConfigFileUse.ForeColor = System.Drawing.Color.White;
             this.grouperConfigFileUse.GroupImage = null;
@@ -477,10 +478,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // grouperFilters
             // 
-            this.grouperFilters.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperFilters.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperFilters.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperFilters.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperFilters.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilters.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperFilters.BorderThickness = 1F;
             this.grouperFilters.Controls.Add(this.lblSelectedEntities);
             this.grouperFilters.Controls.Add(this.cboSelectedEntities);
@@ -496,7 +497,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperFilters.Controls.Add(this.lblQueueFilterExpression);
             this.grouperFilters.Controls.Add(this.txtTopicFilterExpression);
             this.grouperFilters.Controls.Add(this.lblTopicFilterExpression);
-            this.grouperFilters.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilters.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperFilters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperFilters.ForeColor = System.Drawing.Color.White;
             this.grouperFilters.GroupImage = null;
@@ -574,10 +575,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // grouperServiceBusNamespaceSettings
             // 
-            this.grouperServiceBusNamespaceSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperServiceBusNamespaceSettings.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperServiceBusNamespaceSettings.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperServiceBusNamespaceSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperServiceBusNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperServiceBusNamespaceSettings.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperServiceBusNamespaceSettings.BorderThickness = 1F;
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboTransportType);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblTransportType);
@@ -593,7 +594,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNamespace);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtEntityPath);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblEntityPath);
-            this.grouperServiceBusNamespaceSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperServiceBusNamespaceSettings.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperServiceBusNamespaceSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperServiceBusNamespaceSettings.ForeColor = System.Drawing.Color.White;
             this.grouperServiceBusNamespaceSettings.GroupImage = null;
@@ -726,13 +727,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // grouperServiceBusNamespaces
             // 
-            this.grouperServiceBusNamespaces.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperServiceBusNamespaces.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperServiceBusNamespaces.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperServiceBusNamespaces.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperServiceBusNamespaces.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperServiceBusNamespaces.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperServiceBusNamespaces.BorderThickness = 1F;
             this.grouperServiceBusNamespaces.Controls.Add(this.cboServiceBusNamespace);
-            this.grouperServiceBusNamespaces.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperServiceBusNamespaces.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperServiceBusNamespaces.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperServiceBusNamespaces.ForeColor = System.Drawing.Color.White;
             this.grouperServiceBusNamespaces.GroupImage = null;
@@ -769,7 +770,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.ClientSize = new System.Drawing.Size(1045, 568);
             this.Controls.Add(this.grouperConfigFileUse);
             this.Controls.Add(this.btnDelete);

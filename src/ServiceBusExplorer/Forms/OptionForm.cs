@@ -256,7 +256,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                     cboDefaultMessageBodyType.Location.Y - 1,
                                     cboDefaultMessageBodyType.Size.Width + 1,
                                     cboDefaultMessageBodyType.Size.Height + 1);
-            e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
+            e.Graphics.DrawLine(new Pen(CustomColorHelper.CreateThemeColor3(this), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
         void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)

@@ -1,5 +1,7 @@
 ﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
+    using Microsoft.Azure.ServiceBusExplorer.Helpers;
+
     partial class HandleQueueControl
     {
         /// <summary> 
@@ -281,10 +283,10 @@
             // btnChangeStatus
             // 
             this.btnChangeStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnChangeStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnChangeStatus.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnChangeStatus.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnChangeStatus.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnChangeStatus.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnChangeStatus.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnChangeStatus.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnChangeStatus.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnChangeStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChangeStatus.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnChangeStatus.Location = new System.Drawing.Point(756, 504);
@@ -300,10 +302,10 @@
             // btnCancelUpdate
             // 
             this.btnCancelUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancelUpdate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancelUpdate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancelUpdate.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnCancelUpdate.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancelUpdate.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancelUpdate.Location = new System.Drawing.Point(915, 504);
@@ -319,10 +321,10 @@
             // btnCreateDelete
             // 
             this.btnCreateDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnCreateDelete.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateDelete.Location = new System.Drawing.Point(836, 504);
@@ -338,10 +340,10 @@
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRefresh.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnRefresh.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnRefresh.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnRefresh.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefresh.Location = new System.Drawing.Point(676, 504);
@@ -377,7 +379,7 @@
             // 
             // tabPageDescription
             // 
-            this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageDescription.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageDescription.Controls.Add(this.grouperAutoDeleteOnIdle);
             this.tabPageDescription.Controls.Add(this.grouperQueueInformation);
             this.tabPageDescription.Controls.Add(this.groupergrouperDefaultMessageTimeToLive);
@@ -395,10 +397,10 @@
             // 
             // grouperAutoDeleteOnIdle
             // 
-            this.grouperAutoDeleteOnIdle.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperAutoDeleteOnIdle.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperAutoDeleteOnIdle.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperAutoDeleteOnIdle.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAutoDeleteOnIdle.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAutoDeleteOnIdle.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperAutoDeleteOnIdle.BorderThickness = 1F;
             this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleMilliseconds);
             this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleMilliseconds);
@@ -410,7 +412,7 @@
             this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleDays);
             this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleHours);
             this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleDays);
-            this.grouperAutoDeleteOnIdle.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAutoDeleteOnIdle.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperAutoDeleteOnIdle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperAutoDeleteOnIdle.ForeColor = System.Drawing.Color.White;
             this.grouperAutoDeleteOnIdle.GroupImage = null;
@@ -526,13 +528,13 @@
             this.grouperQueueInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperQueueInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperQueueInformation.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperQueueInformation.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperQueueInformation.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperQueueInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueInformation.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueInformation.BorderThickness = 1F;
             this.grouperQueueInformation.Controls.Add(this.propertyListView);
-            this.grouperQueueInformation.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueInformation.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperQueueInformation.ForeColor = System.Drawing.Color.White;
             this.grouperQueueInformation.GroupImage = null;
@@ -580,10 +582,10 @@
             // 
             // groupergrouperDefaultMessageTimeToLive
             // 
-            this.groupergrouperDefaultMessageTimeToLive.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.groupergrouperDefaultMessageTimeToLive.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientColor = System.Drawing.Color.White;
             this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.groupergrouperDefaultMessageTimeToLive.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.groupergrouperDefaultMessageTimeToLive.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.groupergrouperDefaultMessageTimeToLive.BorderThickness = 1F;
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveMilliseconds);
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveMilliseconds);
@@ -595,7 +597,7 @@
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveDays);
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveHours);
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveDays);
-            this.groupergrouperDefaultMessageTimeToLive.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.groupergrouperDefaultMessageTimeToLive.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.groupergrouperDefaultMessageTimeToLive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.groupergrouperDefaultMessageTimeToLive.ForeColor = System.Drawing.Color.White;
             this.groupergrouperDefaultMessageTimeToLive.GroupImage = null;
@@ -710,13 +712,13 @@
             // 
             this.grouperQueueSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.grouperQueueSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperQueueSettings.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperQueueSettings.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperQueueSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperQueueSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueSettings.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueSettings.BorderThickness = 1F;
             this.grouperQueueSettings.Controls.Add(this.checkedListBox);
-            this.grouperQueueSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueSettings.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperQueueSettings.ForeColor = System.Drawing.Color.White;
             this.grouperQueueSettings.GroupImage = null;
@@ -761,10 +763,10 @@
             // 
             this.grouperQueueProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.grouperQueueProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperQueueProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperQueueProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperQueueProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperQueueProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueProperties.BorderThickness = 1F;
             this.grouperQueueProperties.Controls.Add(this.btnOpenForwardDeadLetteredMessagesToForm);
             this.grouperQueueProperties.Controls.Add(this.lblForwardDeadLetteredMessagesTo);
@@ -780,7 +782,7 @@
             this.grouperQueueProperties.Controls.Add(this.txtForwardTo);
             this.grouperQueueProperties.Controls.Add(this.lblMaxDeliveryCount);
             this.grouperQueueProperties.Controls.Add(this.txtMaxDeliveryCount);
-            this.grouperQueueProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperQueueProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperQueueProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperQueueProperties.ForeColor = System.Drawing.Color.White;
             this.grouperQueueProperties.GroupImage = null;
@@ -799,10 +801,10 @@
             // btnOpenForwardDeadLetteredMessagesToForm
             // 
             this.btnOpenForwardDeadLetteredMessagesToForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenForwardDeadLetteredMessagesToForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenForwardDeadLetteredMessagesToForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenForwardDeadLetteredMessagesToForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenForwardDeadLetteredMessagesToForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenForwardDeadLetteredMessagesToForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenForwardDeadLetteredMessagesToForm.Location = new System.Drawing.Point(256, 224);
@@ -902,10 +904,10 @@
             // btnOpenDescriptionForm
             // 
             this.btnOpenDescriptionForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenDescriptionForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenDescriptionForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(256, 136);
@@ -920,10 +922,10 @@
             // btnOpenForwardToForm
             // 
             this.btnOpenForwardToForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenForwardToForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenForwardToForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenForwardToForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenForwardToForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenForwardToForm.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnOpenForwardToForm.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenForwardToForm.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnOpenForwardToForm.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnOpenForwardToForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenForwardToForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenForwardToForm.Location = new System.Drawing.Point(256, 180);
@@ -978,10 +980,10 @@
             // 
             // grouperLockDuration
             // 
-            this.grouperLockDuration.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperLockDuration.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperLockDuration.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperLockDuration.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperLockDuration.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperLockDuration.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperLockDuration.BorderThickness = 1F;
             this.grouperLockDuration.Controls.Add(this.lblLockDurationMilliseconds);
             this.grouperLockDuration.Controls.Add(this.txtLockDurationMilliseconds);
@@ -993,7 +995,7 @@
             this.grouperLockDuration.Controls.Add(this.lblLockDurationDays);
             this.grouperLockDuration.Controls.Add(this.txtLockDurationHours);
             this.grouperLockDuration.Controls.Add(this.txtLockDurationDays);
-            this.grouperLockDuration.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperLockDuration.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperLockDuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperLockDuration.ForeColor = System.Drawing.Color.White;
             this.grouperLockDuration.GroupImage = null;
@@ -1106,10 +1108,10 @@
             // 
             // grouperDuplicateDetectionHistoryTimeWindow
             // 
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.lblDuplicateDetectionHistoryTimeWindowMilliseconds);
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.txtDuplicateDetectionHistoryTimeWindowMilliseconds);
@@ -1121,7 +1123,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.lblDuplicateDetectionHistoryTimeWindowDays);
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.txtDuplicateDetectionHistoryTimeWindowHours);
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.txtDuplicateDetectionHistoryTimeWindowDays);
-            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDuplicateDetectionHistoryTimeWindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.Color.White;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
@@ -1234,14 +1236,14 @@
             // 
             // grouperPath
             // 
-            this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperPath.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperPath.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperPath.BorderThickness = 1F;
             this.grouperPath.Controls.Add(this.lblRelativeURI);
             this.grouperPath.Controls.Add(this.txtPath);
-            this.grouperPath.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperPath.ForeColor = System.Drawing.Color.White;
             this.grouperPath.GroupImage = null;
@@ -1280,7 +1282,7 @@
             // 
             // tabPageAuthorization
             // 
-            this.tabPageAuthorization.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageAuthorization.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageAuthorization.Controls.Add(this.grouperAuthorizationRuleList);
             this.tabPageAuthorization.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAuthorization.Location = new System.Drawing.Point(4, 22);
@@ -1294,13 +1296,13 @@
             this.grouperAuthorizationRuleList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperAuthorizationRuleList.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperAuthorizationRuleList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAuthorizationRuleList.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperAuthorizationRuleList.BorderThickness = 1F;
             this.grouperAuthorizationRuleList.Controls.Add(this.authorizationRulesDataGridView);
-            this.grouperAuthorizationRuleList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAuthorizationRuleList.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperAuthorizationRuleList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperAuthorizationRuleList.ForeColor = System.Drawing.Color.White;
             this.grouperAuthorizationRuleList.GroupImage = null;
@@ -1324,10 +1326,10 @@
             this.authorizationRulesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.BackgroundColor = CustomColorHelper.CreateThemeColor3(this);;
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.GridColor = CustomColorHelper.CreateThemeColor3(this);;
             this.authorizationRulesDataGridView.Location = new System.Drawing.Point(16, 32);
             this.authorizationRulesDataGridView.MultiSelect = false;
             this.authorizationRulesDataGridView.Name = "authorizationRulesDataGridView";
@@ -1348,7 +1350,7 @@
             // 
             // tabPageMessages
             // 
-            this.tabPageMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageMessages.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageMessages.Controls.Add(this.messagesSplitContainer);
             this.tabPageMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageMessages.Location = new System.Drawing.Point(4, 22);
@@ -1400,14 +1402,14 @@
             // 
             // grouperMessageList
             // 
-            this.grouperMessageList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageList.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperMessageList.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperMessageList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageList.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageList.BorderThickness = 1F;
             this.grouperMessageList.Controls.Add(this.pictFindMessages);
             this.grouperMessageList.Controls.Add(this.messagesDataGridView);
-            this.grouperMessageList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageList.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperMessageList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageList.ForeColor = System.Drawing.Color.White;
@@ -1445,10 +1447,10 @@
             this.messagesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.messagesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.messagesDataGridView.BackgroundColor = CustomColorHelper.CreateThemeColor3(this);;
             this.messagesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.messagesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.messagesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.messagesDataGridView.GridColor = CustomColorHelper.CreateThemeColor3(this);;
             this.messagesDataGridView.Location = new System.Drawing.Point(17, 33);
             this.messagesDataGridView.Name = "messagesDataGridView";
             this.messagesDataGridView.ReadOnly = true;
@@ -1472,13 +1474,13 @@
             // 
             // grouperMessageText
             // 
-            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageText.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperMessageText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageText.BorderThickness = 1F;
             this.grouperMessageText.Controls.Add(this.txtMessageText);
-            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageText.ForeColor = System.Drawing.Color.White;
@@ -1551,13 +1553,13 @@
             // 
             // grouperMessageSystemProperties
             // 
-            this.grouperMessageSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageSystemProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperMessageSystemProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperMessageSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageSystemProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageSystemProperties.BorderThickness = 1F;
             this.grouperMessageSystemProperties.Controls.Add(this.messagePropertyGrid);
-            this.grouperMessageSystemProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageSystemProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageSystemProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperMessageSystemProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageSystemProperties.ForeColor = System.Drawing.Color.White;
@@ -1582,7 +1584,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagePropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.messagePropertyGrid.HelpVisible = false;
-            this.messagePropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.messagePropertyGrid.LineColor = CustomColorHelper.CreateThemeColor1(this);
             this.messagePropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyGrid.Name = "messagePropertyGrid";
             this.messagePropertyGrid.Size = new System.Drawing.Size(281, 164);
@@ -1591,13 +1593,13 @@
             // 
             // grouperMessageCustomProperties
             // 
-            this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageCustomProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperMessageCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageCustomProperties.BorderThickness = 1F;
             this.grouperMessageCustomProperties.Controls.Add(this.messagePropertyListView);
-            this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
@@ -1647,7 +1649,7 @@
             // 
             // tabPageDeadletter
             // 
-            this.tabPageDeadletter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageDeadletter.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageDeadletter.Controls.Add(this.deadletterSplitContainer);
             this.tabPageDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDeadletter.Location = new System.Drawing.Point(4, 22);
@@ -1699,14 +1701,14 @@
             // 
             // grouperDeadletterList
             // 
-            this.grouperDeadletterList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDeadletterList.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperDeadletterList.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperDeadletterList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDeadletterList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterList.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterList.BorderThickness = 1F;
             this.grouperDeadletterList.Controls.Add(this.pictFindDeadletter);
             this.grouperDeadletterList.Controls.Add(this.deadletterDataGridView);
-            this.grouperDeadletterList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterList.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperDeadletterList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperDeadletterList.ForeColor = System.Drawing.Color.White;
@@ -1744,10 +1746,10 @@
             this.deadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.deadletterDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.deadletterDataGridView.BackgroundColor = CustomColorHelper.CreateThemeColor3(this);;
             this.deadletterDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.deadletterDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.deadletterDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.deadletterDataGridView.GridColor = CustomColorHelper.CreateThemeColor3(this);;
             this.deadletterDataGridView.Location = new System.Drawing.Point(17, 33);
             this.deadletterDataGridView.Name = "deadletterDataGridView";
             this.deadletterDataGridView.ReadOnly = true;
@@ -1771,13 +1773,13 @@
             // 
             // grouperDeadletterText
             // 
-            this.grouperDeadletterText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDeadletterText.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperDeadletterText.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperDeadletterText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDeadletterText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterText.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterText.BorderThickness = 1F;
             this.grouperDeadletterText.Controls.Add(this.txtDeadletterText);
-            this.grouperDeadletterText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterText.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperDeadletterText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperDeadletterText.ForeColor = System.Drawing.Color.White;
@@ -1850,13 +1852,13 @@
             // 
             // grouperDeadletterSystemProperties
             // 
-            this.grouperDeadletterSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDeadletterSystemProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperDeadletterSystemProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperDeadletterSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDeadletterSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterSystemProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterSystemProperties.BorderThickness = 1F;
             this.grouperDeadletterSystemProperties.Controls.Add(this.propertyGrid1);
-            this.grouperDeadletterSystemProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterSystemProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterSystemProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperDeadletterSystemProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperDeadletterSystemProperties.ForeColor = System.Drawing.Color.White;
@@ -1881,7 +1883,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid1.BackColor = System.Drawing.SystemColors.Window;
             this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.propertyGrid1.LineColor = CustomColorHelper.CreateThemeColor1(this);
             this.propertyGrid1.Location = new System.Drawing.Point(16, 32);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(281, 164);
@@ -1890,13 +1892,13 @@
             // 
             // grouperDeadletterCustomProperties
             // 
-            this.grouperDeadletterCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDeadletterCustomProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperDeadletterCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperDeadletterCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDeadletterCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterCustomProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterCustomProperties.BorderThickness = 1F;
             this.grouperDeadletterCustomProperties.Controls.Add(this.deadletterPropertyListView);
-            this.grouperDeadletterCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDeadletterCustomProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperDeadletterCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperDeadletterCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperDeadletterCustomProperties.ForeColor = System.Drawing.Color.White;
@@ -1946,7 +1948,7 @@
             // 
             // tabPageTransferDeadletter
             // 
-            this.tabPageTransferDeadletter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageTransferDeadletter.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageTransferDeadletter.Controls.Add(this.transferDeadletterSplitContainer);
             this.tabPageTransferDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageTransferDeadletter.Location = new System.Drawing.Point(4, 22);
@@ -1997,14 +1999,14 @@
             // 
             // grouperTransferDeadletterList
             // 
-            this.grouperTransferDeadletterList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperTransferDeadletterList.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperTransferDeadletterList.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperTransferDeadletterList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTransferDeadletterList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterList.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterList.BorderThickness = 1F;
             this.grouperTransferDeadletterList.Controls.Add(this.pictureBox1);
             this.grouperTransferDeadletterList.Controls.Add(this.transferDeadletterDataGridView);
-            this.grouperTransferDeadletterList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterList.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperTransferDeadletterList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperTransferDeadletterList.ForeColor = System.Drawing.Color.White;
@@ -2039,10 +2041,10 @@
             this.transferDeadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.transferDeadletterDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.transferDeadletterDataGridView.BackgroundColor = CustomColorHelper.CreateThemeColor3(this);;
             this.transferDeadletterDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.transferDeadletterDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.transferDeadletterDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.transferDeadletterDataGridView.GridColor = CustomColorHelper.CreateThemeColor3(this);;
             this.transferDeadletterDataGridView.Location = new System.Drawing.Point(17, 33);
             this.transferDeadletterDataGridView.Name = "transferDeadletterDataGridView";
             this.transferDeadletterDataGridView.ReadOnly = true;
@@ -2066,13 +2068,13 @@
             // 
             // grouperTransferDeadletterText
             // 
-            this.grouperTransferDeadletterText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperTransferDeadletterText.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperTransferDeadletterText.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperTransferDeadletterText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTransferDeadletterText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterText.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterText.BorderThickness = 1F;
             this.grouperTransferDeadletterText.Controls.Add(this.txtTransferDeadletterText);
-            this.grouperTransferDeadletterText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterText.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperTransferDeadletterText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperTransferDeadletterText.ForeColor = System.Drawing.Color.White;
@@ -2145,13 +2147,13 @@
             // 
             // grouperTransferDeadletterSystemProperties
             // 
-            this.grouperTransferDeadletterSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperTransferDeadletterSystemProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperTransferDeadletterSystemProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperTransferDeadletterSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTransferDeadletterSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterSystemProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterSystemProperties.BorderThickness = 1F;
             this.grouperTransferDeadletterSystemProperties.Controls.Add(this.transferDeadletterPropertyGrid);
-            this.grouperTransferDeadletterSystemProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterSystemProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterSystemProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperTransferDeadletterSystemProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperTransferDeadletterSystemProperties.ForeColor = System.Drawing.Color.White;
@@ -2176,7 +2178,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transferDeadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.transferDeadletterPropertyGrid.HelpVisible = false;
-            this.transferDeadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.transferDeadletterPropertyGrid.LineColor = CustomColorHelper.CreateThemeColor1(this);
             this.transferDeadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.transferDeadletterPropertyGrid.Name = "transferDeadletterPropertyGrid";
             this.transferDeadletterPropertyGrid.Size = new System.Drawing.Size(281, 164);
@@ -2185,13 +2187,13 @@
             // 
             // grouperTransferDeadletterCustomProperties
             // 
-            this.grouperTransferDeadletterCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperTransferDeadletterCustomProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperTransferDeadletterCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperTransferDeadletterCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTransferDeadletterCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterCustomProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterCustomProperties.BorderThickness = 1F;
             this.grouperTransferDeadletterCustomProperties.Controls.Add(this.transferDeadletterPropertyListView);
-            this.grouperTransferDeadletterCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTransferDeadletterCustomProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperTransferDeadletterCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperTransferDeadletterCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperTransferDeadletterCustomProperties.ForeColor = System.Drawing.Color.White;
@@ -2241,7 +2243,7 @@
             // 
             // tabPageSessions
             // 
-            this.tabPageSessions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageSessions.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.tabPageSessions.Controls.Add(this.sessionListStateSplitContainer);
             this.tabPageSessions.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageSessions.Location = new System.Drawing.Point(4, 22);
@@ -2293,13 +2295,13 @@
             // 
             // grouperSessionList
             // 
-            this.grouperSessionList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperSessionList.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperSessionList.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperSessionList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperSessionList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionList.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionList.BorderThickness = 1F;
             this.grouperSessionList.Controls.Add(this.sessionsDataGridView);
-            this.grouperSessionList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionList.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperSessionList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperSessionList.ForeColor = System.Drawing.Color.White;
@@ -2325,10 +2327,10 @@
             this.sessionsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.sessionsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.sessionsDataGridView.BackgroundColor = CustomColorHelper.CreateThemeColor3(this);;
             this.sessionsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.sessionsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.sessionsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.sessionsDataGridView.GridColor = CustomColorHelper.CreateThemeColor3(this);;
             this.sessionsDataGridView.Location = new System.Drawing.Point(17, 33);
             this.sessionsDataGridView.MultiSelect = false;
             this.sessionsDataGridView.Name = "sessionsDataGridView";
@@ -2350,13 +2352,13 @@
             // 
             // grouperSessionState
             // 
-            this.grouperSessionState.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperSessionState.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperSessionState.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperSessionState.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperSessionState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionState.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionState.BorderThickness = 1F;
             this.grouperSessionState.Controls.Add(this.txtSessionState);
-            this.grouperSessionState.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionState.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionState.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperSessionState.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperSessionState.ForeColor = System.Drawing.Color.White;
@@ -2388,13 +2390,13 @@
             // 
             // grouperSessionProperties
             // 
-            this.grouperSessionProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperSessionProperties.BackgroundColor = CustomColorHelper.CreateThemeColor1(this);
             this.grouperSessionProperties.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperSessionProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperSessionProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionProperties.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionProperties.BorderThickness = 1F;
             this.grouperSessionProperties.Controls.Add(this.sessionPropertyGrid);
-            this.grouperSessionProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperSessionProperties.CustomGroupBoxColor = CustomColorHelper.CreateThemeColor3(this);;
             this.grouperSessionProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperSessionProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperSessionProperties.ForeColor = System.Drawing.Color.White;
@@ -2419,7 +2421,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sessionPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.sessionPropertyGrid.HelpVisible = false;
-            this.sessionPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.sessionPropertyGrid.LineColor = CustomColorHelper.CreateThemeColor1(this);
             this.sessionPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.sessionPropertyGrid.Name = "sessionPropertyGrid";
             this.sessionPropertyGrid.Size = new System.Drawing.Size(281, 384);
@@ -2429,10 +2431,10 @@
             // btnSessions
             // 
             this.btnSessions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSessions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSessions.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSessions.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSessions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSessions.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnSessions.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnSessions.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnSessions.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnSessions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSessions.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnSessions.Location = new System.Drawing.Point(358, 504);
@@ -2446,10 +2448,10 @@
             // btnMessages
             // 
             this.btnMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMessages.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnMessages.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnMessages.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnMessages.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnMessages.Location = new System.Drawing.Point(438, 504);
@@ -2463,10 +2465,10 @@
             // btnDeadletter
             // 
             this.btnDeadletter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeadletter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnDeadletter.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDeadletter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDeadletter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDeadletter.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnDeadletter.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnDeadletter.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnDeadletter.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnDeadletter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnDeadletter.Location = new System.Drawing.Point(518, 504);
@@ -2586,10 +2588,10 @@
             // btnPurgeDeadletterQueueMessages
             // 
             this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(279, 504);
@@ -2605,10 +2607,10 @@
             // btnPurgeMessages
             // 
             this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPurgeMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPurgeMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnPurgeMessages.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnPurgeMessages.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnPurgeMessages.Location = new System.Drawing.Point(200, 504);
@@ -2624,10 +2626,10 @@
             // btnTransferDeadletterQueue
             // 
             this.btnTransferDeadletterQueue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTransferDeadletterQueue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnTransferDeadletterQueue.BackColor = CustomColorHelper.CreateThemeColor1(this);
+            this.btnTransferDeadletterQueue.FlatAppearance.BorderColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnTransferDeadletterQueue.FlatAppearance.MouseDownBackColor = CustomColorHelper.CreateThemeColor3(this);;
+            this.btnTransferDeadletterQueue.FlatAppearance.MouseOverBackColor = CustomColorHelper.CreateThemeColor3(this);;
             this.btnTransferDeadletterQueue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnTransferDeadletterQueue.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnTransferDeadletterQueue.Location = new System.Drawing.Point(597, 504);
@@ -2690,7 +2692,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.deadletterPropertyGrid.HelpVisible = false;
-            this.deadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.deadletterPropertyGrid.LineColor = CustomColorHelper.CreateThemeColor1(this);
             this.deadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.deadletterPropertyGrid.Name = "deadletterPropertyGrid";
             this.deadletterPropertyGrid.Size = new System.Drawing.Size(281, 384);
@@ -2701,7 +2703,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = CustomColorHelper.CreateThemeColor1(this);
             this.Controls.Add(this.btnTransferDeadletterQueue);
             this.Controls.Add(this.btnPurgeMessages);
             this.Controls.Add(this.btnPurgeDeadletterQueueMessages);

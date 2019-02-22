@@ -248,8 +248,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// <summary>
         /// Initializes a new instance of the MainForm class.
         /// </summary>
-        public MainForm()
+        public MainForm(bool darkThemed)
         {
+            IsDarkThemed = darkThemed;
             InitializeComponent();
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
@@ -341,11 +342,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="argument">Argument type (n or c).</param>
         /// <param name="value">Argument value</param>
-        public MainForm(string argument, string value)
-            : this()
+        public MainForm(string argument, string value, bool darkThemed)
+            : this(darkThemed)
         {
             argumentName = argument;
-            argumentValue = value;
+            argumentValue = value;            
         }
         #endregion
 
@@ -3800,6 +3801,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Public Properties
+
+        internal bool IsDarkThemed { get; private set; }
+        
         public List<Tuple<string, string>> FileNames
         {
             get { return fileNames; }

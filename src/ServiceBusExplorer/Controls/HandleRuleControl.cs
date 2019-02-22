@@ -103,7 +103,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = CustomColorHelper.CreateThemeColor3(this);;
 
             // Set the background color for all rows and for alternating rows.  
             // The value for alternating rows overrides the value for all rows. 
@@ -113,9 +113,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
-            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
             authorizationRulesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
             authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             authorizationRulesDataGridView.AutoGenerateColumns = false;

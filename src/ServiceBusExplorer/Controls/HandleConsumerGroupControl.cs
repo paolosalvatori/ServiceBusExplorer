@@ -237,7 +237,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-            partitionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            partitionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = CustomColorHelper.CreateThemeColor3(this);;
 
             // Set the background color for all rows and for alternating rows.  
             // The value for alternating rows overrides the value for all rows. 
@@ -247,9 +247,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             //filtersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
-            partitionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            partitionsDataGridView.RowHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
             partitionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            partitionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            partitionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
             partitionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Initialize the DataGridView.
@@ -486,7 +486,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var startX = e.ColumnIndex == 0 ? -1 : e.Bounds.X;
             var endX = e.Bounds.X + e.Bounds.Width - 1;
             // Background
-            e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
+            e.Graphics.FillRectangle(new SolidBrush(CustomColorHelper.CreateThemeColor1(this)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
             e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line

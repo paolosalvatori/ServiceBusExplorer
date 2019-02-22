@@ -57,7 +57,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
             try
             {
                 string argument = null;
-                string value = null; 
+                string value = null;
+                var darkThemed = false;
                 if (args != null && args.Length >= 2)
                 {
                     for (var i = 0; i < args.Length; i++)
@@ -99,16 +100,24 @@ namespace Microsoft.Azure.ServiceBusExplorer
                         {
                             FilterExpressionHelper.SubscriptionFilterExpression = args[i + 1];
                         }
+                        if ((string.Compare(args[i], "/darktheme", StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                             string.Compare(args[i], "-darktheme", StringComparison.InvariantCultureIgnoreCase) == 0) &&
+                            args.Length > i + 1 &&
+                            !string.IsNullOrWhiteSpace(args[i + 1]))
+                        {
+                            darkThemed = bool.Parse(args[i + 1]);
+                        }
                     }
                 }
+
                 if (!string.IsNullOrWhiteSpace(argument) &&
                     !string.IsNullOrWhiteSpace(value))
                 {
-                    Application.Run(new MainForm(argument, value));
+                    Application.Run(new MainForm(argument, value, darkThemed));
                 }
                 else
                 {
-                    Application.Run(new MainForm());
+                    Application.Run(new MainForm(darkThemed));
                 }
             }
             // ReSharper disable EmptyGeneralCatchClause

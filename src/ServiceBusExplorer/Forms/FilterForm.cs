@@ -284,7 +284,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                 // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
                 // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-                timeFilterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+                timeFilterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = CustomColorHelper.CreateThemeColor3(this);;
 
                 // Set the background color for all rows and for alternating rows.  
                 // The value for alternating rows overrides the value for all rows. 
@@ -294,9 +294,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 //filtersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 // Set the row and column header styles.
-                timeFilterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+                timeFilterDataGridView.RowHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
                 timeFilterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                timeFilterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+                timeFilterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = CustomColorHelper.CreateThemeColor1(this);
                 timeFilterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 if (String.Compare(entity, Subscription, StringComparison.OrdinalIgnoreCase) != 0)

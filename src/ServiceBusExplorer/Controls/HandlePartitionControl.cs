@@ -170,7 +170,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var startX = e.ColumnIndex == 0 ? -1 : e.Bounds.X;
             var endX = e.Bounds.X + e.Bounds.Width - 1;
             // Background
-            e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
+            e.Graphics.FillRectangle(new SolidBrush(CustomColorHelper.CreateThemeColor1(this)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
             e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
