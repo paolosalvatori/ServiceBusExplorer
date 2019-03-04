@@ -21,6 +21,11 @@
 
 #region Using Directives
 
+using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.ServiceBusExplorer.Controls;
+using Microsoft.Azure.ServiceBusExplorer.Enums;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -39,12 +44,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
-using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Controls;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
-using ConnectivityMode = Microsoft.ServiceBus.ConnectivityMode;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
@@ -236,6 +235,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
+        private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         #endregion
 
         #region Private Static Fields
@@ -2738,7 +2738,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 HandleException(ex);
             }
@@ -3046,6 +3046,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 HandleException(ex);
             }
         }
+
+        private void serviceBusTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if (treeNodesToLazyLoad != null && treeNodesToLazyLoad.Contains(e.Node))
+            {
+                treeNodesToLazyLoad.Remove(e.Node);
+                LazyLoadNode(e.Node);
+            }
+        }
         #endregion
 
         #region Public Methods
@@ -3206,6 +3215,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 actionsToolStripMenuItem.DropDownItems.Clear();
                 actionsToolStripMenuItem.DropDownItems.Add(createIoTHubListenerMenuItem);
                 actionsToolStripMenuItem.DropDownItems.Add(createEventHubListenerMenuItem);
+
+                // Ensure that the node has loaded its children
+                if (treeNodesToLazyLoad != null && treeNodesToLazyLoad.Contains(node))
+                {
+                    treeNodesToLazyLoad.Remove(node);
+                    LazyLoadNode(node);
+                }
                 // Root Node
                 if (node == rootNode)
                 {
@@ -4263,6 +4279,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     serviceBusTreeView.SuspendDrawing();
                     serviceBusTreeView.SuspendLayout();
                     serviceBusTreeView.BeginUpdate();
+                    treeNodesToLazyLoad = new List<TreeNode>();
                     var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                     var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
@@ -4479,80 +4496,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                         continue;
                                     }
                                     var entityNode = CreateNode(topic.Path, topic, topicListNode, true);
-                                    try
-                                    {
-                                        var subscriptions = serviceBusHelper.GetSubscriptions(topic,
-                                            FilterExpressionHelper.SubscriptionFilterExpression);
-                                        var subscriptionDescriptions =
-                                            subscriptions as IList<SubscriptionDescription> ?? subscriptions.ToList();
-                                        if ((subscriptions != null &&
-                                             subscriptionDescriptions.Any()) ||
-                                            !string.IsNullOrWhiteSpace(
-                                                FilterExpressionHelper.SubscriptionFilterExpression))
-                                        {
-                                            entityNode.Nodes.Clear();
-                                            var subscriptionsNode = entityNode.Nodes.Add(SubscriptionEntities,
-                                                SubscriptionEntities, SubscriptionListIconIndex,
-                                                SubscriptionListIconIndex);
-                                            subscriptionsNode.Text =
-                                                string.IsNullOrWhiteSpace(
-                                                    FilterExpressionHelper.SubscriptionFilterExpression)
-                                                    ? SubscriptionEntities
-                                                    : FilteredSubscriptionEntities;
-                                            subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
-                                            subscriptionsNode.Tag = new SubscriptionWrapper(null, topic,
-                                                FilterExpressionHelper.SubscriptionFilterExpression);
-                                            foreach (var subscription in subscriptionDescriptions)
-                                            {
-                                                var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
-                                                    showMessageCount
-                                                        ? string.Format(NameMessageCountFormat,
-                                                            subscription.Name,
-                                                            subscription.MessageCountDetails.ActiveMessageCount,
-                                                            subscription.MessageCountDetails.DeadLetterMessageCount,
-                                                            subscription.MessageCountDetails.TransferDeadLetterMessageCount)
-                                                        : subscription.Name,
-                                                    subscription.Status == EntityStatus.Active
-                                                        ? SubscriptionIconIndex
-                                                        : GreySubscriptionIconIndex,
-                                                    subscription.Status == EntityStatus.Active
-                                                        ? SubscriptionIconIndex
-                                                        : GreySubscriptionIconIndex);
-                                                subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
-                                                subscriptionNode.Tag = new SubscriptionWrapper(subscription, topic);
-                                                WriteToLog(
-                                                    string.Format(CultureInfo.CurrentCulture,
-                                                        SubscriptionRetrievedFormat, subscription.Name, topic.Path),
-                                                    false);
-                                                var rules = serviceBusHelper.GetRules(subscription);
-                                                var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
-                                                if (rules != null &&
-                                                    ruleDescriptions.Any())
-                                                {
-                                                    subscriptionNode.Nodes.Clear();
-                                                    var rulesNode = subscriptionNode.Nodes.Add(RuleEntities,
-                                                        RuleEntities, RuleListIconIndex, RuleListIconIndex);
-                                                    rulesNode.ContextMenuStrip = rulesContextMenuStrip;
-                                                    rulesNode.Tag = new RuleWrapper(null, subscription);
-                                                    foreach (var rule in ruleDescriptions)
-                                                    {
-                                                        var ruleNode = rulesNode.Nodes.Add(rule.Name, rule.Name,
-                                                            RuleIconIndex, RuleIconIndex);
-                                                        ruleNode.ContextMenuStrip = ruleContextMenuStrip;
-                                                        ruleNode.Tag = new RuleWrapper(rule, subscription);
-                                                        WriteToLog(
-                                                            string.Format(CultureInfo.CurrentCulture,
-                                                                RuleRetrievedFormat, rule.Name, subscription.Name,
-                                                                topic.Path), false);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
+                                    LazyLoadNode(entityNode);
                                 }
 
                             }
@@ -4603,6 +4547,102 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             bool FilterOutException(Exception ex)
             {
                 return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
+            }
+        }
+
+        private void LazyLoadNode(TreeNode entityNode)
+        {
+            try
+            {
+                if (entityNode.Tag is TopicDescription)
+                {
+                    var topic = (TopicDescription)entityNode.Tag;
+                    var subscriptions = serviceBusHelper.GetSubscriptions(topic,
+                        FilterExpressionHelper.SubscriptionFilterExpression);
+                    var subscriptionDescriptions =
+                        subscriptions as IList<SubscriptionDescription> ?? subscriptions.ToList();
+                    if ((subscriptions != null &&
+                         subscriptionDescriptions.Any()) ||
+                        !string.IsNullOrWhiteSpace(
+                            FilterExpressionHelper.SubscriptionFilterExpression))
+                    {
+                        entityNode.Nodes.Clear();
+                        var subscriptionsNode = entityNode.Nodes.Add(SubscriptionEntities,
+                            SubscriptionEntities, SubscriptionListIconIndex,
+                            SubscriptionListIconIndex);
+                        subscriptionsNode.Text =
+                            string.IsNullOrWhiteSpace(
+                                FilterExpressionHelper.SubscriptionFilterExpression)
+                                ? SubscriptionEntities
+                                : FilteredSubscriptionEntities;
+                        subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
+                        subscriptionsNode.Tag = new SubscriptionWrapper(null, topic,
+                            FilterExpressionHelper.SubscriptionFilterExpression);
+                        foreach (var subscription in subscriptionDescriptions)
+                        {
+                            var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
+                                showMessageCount
+                                    ? string.Format(NameMessageCountFormat,
+                                        subscription.Name,
+                                        subscription.MessageCountDetails.ActiveMessageCount,
+                                        subscription.MessageCountDetails.DeadLetterMessageCount,
+                                        subscription.MessageCountDetails.TransferDeadLetterMessageCount)
+                                    : subscription.Name,
+                                subscription.Status == EntityStatus.Active
+                                    ? SubscriptionIconIndex
+                                    : GreySubscriptionIconIndex,
+                                subscription.Status == EntityStatus.Active
+                                    ? SubscriptionIconIndex
+                                    : GreySubscriptionIconIndex);
+                            subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
+                            subscriptionNode.Tag = new SubscriptionWrapper(subscription, topic);
+                            // All subscription nodes have a "Rules" node, so add one so that the item appears to have children.
+                            // We will Lazy Load the actual rules node if/when it is needed.
+                            subscriptionNode.Nodes.Clear();
+                            var rulesNode = subscriptionNode.Nodes.Add(RuleEntities,
+                                RuleEntities, RuleListIconIndex, RuleListIconIndex);
+                            WriteToLog(
+                                string.Format(CultureInfo.CurrentCulture,
+                                    SubscriptionRetrievedFormat, subscription.Name, topic.Path),
+                                false);
+                            treeNodesToLazyLoad.Add(subscriptionNode);
+                        }
+                    }
+                }
+                else if (entityNode.Tag is SubscriptionWrapper)
+                {
+                    var subscriptionWrapper = (SubscriptionWrapper)entityNode.Tag;
+                    TreeNode subscriptionNode = entityNode;
+                    subscriptionNode.Nodes.Clear();
+                    var subscription = subscriptionWrapper.SubscriptionDescription;
+                    var topic = subscriptionWrapper.TopicDescription;
+                    var rules = serviceBusHelper.GetRules(subscription);
+                    var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
+                    if (rules != null &&
+                        ruleDescriptions.Any())
+                    {
+                        subscriptionNode.Nodes.Clear();
+                        var rulesNode = subscriptionNode.Nodes.Add(RuleEntities,
+                            RuleEntities, RuleListIconIndex, RuleListIconIndex);
+                        rulesNode.ContextMenuStrip = rulesContextMenuStrip;
+                        rulesNode.Tag = new RuleWrapper(null, subscription);
+                        foreach (var rule in ruleDescriptions)
+                        {
+                            var ruleNode = rulesNode.Nodes.Add(rule.Name, rule.Name,
+                                RuleIconIndex, RuleIconIndex);
+                            ruleNode.ContextMenuStrip = ruleContextMenuStrip;
+                            ruleNode.Tag = new RuleWrapper(rule, subscription);
+                            WriteToLog(
+                                string.Format(CultureInfo.CurrentCulture,
+                                    RuleRetrievedFormat, rule.Name, subscription.Name,
+                                    topic.Path), false);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
             }
         }
 
