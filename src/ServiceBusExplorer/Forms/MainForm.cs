@@ -3049,11 +3049,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         private void serviceBusTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if (treeNodesToLazyLoad != null && treeNodesToLazyLoad.Contains(e.Node))
-            {
-                treeNodesToLazyLoad.Remove(e.Node);
-                LazyLoadNode(e.Node);
-            }
+            EnsureNodeHasBeenLazyLoaded(e.Node);
         }
         #endregion
 
@@ -3217,11 +3213,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 actionsToolStripMenuItem.DropDownItems.Add(createEventHubListenerMenuItem);
 
                 // Ensure that the node has loaded its children
-                if (treeNodesToLazyLoad != null && treeNodesToLazyLoad.Contains(node))
-                {
-                    treeNodesToLazyLoad.Remove(node);
-                    LazyLoadNode(node);
-                }
+                EnsureNodeHasBeenLazyLoaded(node);
                 // Root Node
                 if (node == rootNode)
                 {
@@ -4550,6 +4542,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
 
+        /// <summary>
+        /// If the node is in the list of nodes that still require LazyLoading then remove the node from the list and lazy load it.
+        /// </summary>
+        /// <param name="node"></param>
+        private void EnsureNodeHasBeenLazyLoaded(TreeNode node)
+        {
+            if (treeNodesToLazyLoad?.Remove(node) ?? false)
+            {
+                LazyLoadNode(node);
+                treeNodesToLazyLoad.Remove(node);
+            }
+        }
+
+        /// <summary>
+        /// Adds a Topic node to the 
+        /// </summary>
+        /// <param name="entityNode">If <see cref="entityNode"/>.Tag is a <see cref="TopicDescription"/> then adds the subscriptions node,
+        /// a <see cref="SubscriptionWrapper"/> node for each subscription, and an empty rules node. The <see cref="SubscriptionWrapper"/> node
+        /// is added to the list of nodes to be fully lazy loaded when the subscription node is expanded.
+        /// If <see cref="entityNode"/>.Tag is a <see cref="SubscriptionWrapper"/> then fully loads the rules node and its individual rules.
+        /// </param>
         private void LazyLoadNode(TreeNode entityNode)
         {
             try
@@ -4599,8 +4612,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             // All subscription nodes have a "Rules" node, so add one so that the item appears to have children.
                             // We will Lazy Load the actual rules node if/when it is needed.
                             subscriptionNode.Nodes.Clear();
-                            var rulesNode = subscriptionNode.Nodes.Add(RuleEntities,
-                                RuleEntities, RuleListIconIndex, RuleListIconIndex);
+                            subscriptionNode.Nodes.Add(RuleEntities, RuleEntities, RuleListIconIndex, RuleListIconIndex);
                             WriteToLog(
                                 string.Format(CultureInfo.CurrentCulture,
                                     SubscriptionRetrievedFormat, subscription.Name, topic.Path),
