@@ -4551,7 +4551,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (treeNodesToLazyLoad?.Remove(node) ?? false)
             {
                 LazyLoadNode(node);
-                treeNodesToLazyLoad.Remove(node);
             }
         }
 
