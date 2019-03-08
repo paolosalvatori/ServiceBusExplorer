@@ -127,6 +127,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             else
             {
+                txtMessageText.Language = Language.Custom;
                 txtMessageText.Text = messageText;
             }
 

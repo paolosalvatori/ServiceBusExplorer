@@ -96,7 +96,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             else
             {
-                txtMessageText.Text = messageText;
+                txtMessageText.Language = Language.Custom;
+                txtMessageText.Text = string.IsNullOrEmpty(messageText) ? "": messageText;
             }
 
             // Initialize the DataGridView.
