@@ -7,6 +7,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
     public class JsonSerializerHelperTest
     {
         [Test]
+        public void IsJson_ReturnsFalse_WhenNullInput()
+        {
+            var result = JsonSerializerHelper.IsJson(null);
+
+            Assert.AreEqual(result, false);
+        }
+
+        [Test]
         public void IndentJson_ValueIsNotJson_ReturnsOriginalString()
         {
             var myOriginalString = "This is a full text string that is not a JSON";
