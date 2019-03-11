@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -91,7 +91,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #endregion
 
         #region Private Static Fields
-        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "TimeSpan", "String" };
         #endregion
 
         #region Public Properties
@@ -127,6 +127,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
             else
             {
+                txtMessageText.Language = Language.Custom;
                 txtMessageText.Text = messageText;
             }
 
@@ -175,16 +176,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             propertiesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
             propertiesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
             propertiesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-            // Set the background color for all rows and for alternating rows.  
-            // The value for alternating rows overrides the value for all rows. 
+            // Set the background color for all rows and for alternating rows.
+            // The value for alternating rows overrides the value for all rows.
             propertiesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
             propertiesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            //propertiesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-            //propertiesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
             propertiesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
@@ -226,12 +225,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusHelper = serviceBusHelper;
             this.writeToLog = writeToLog;
             InitializeComponent();
+
+            // Make it just a small dialog with the controls on one row
             messagesSplitContainer.Visible = false;
             btnSave.Visible = false;
             btnSubmit.Location = btnSave.Location;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Size = new Size(Size.Width - 104, 80);
+            int moveRightInPixels = btnClose.Left - btnSubmit.Left;
+            Size = new Size(Size.Width - moveRightInPixels, 80);
+            lblBody.Left += moveRightInPixels;
+            cboBodyType.Left += moveRightInPixels;
+            chkNewMessageId.Left += moveRightInPixels;
+            chkRemove.Left += moveRightInPixels;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
 
             cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
 
