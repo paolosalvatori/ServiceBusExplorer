@@ -60,11 +60,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             "User Configuration File",
             "Both (User file will override)"
         };
+
+        ConfigFileUse originalConfigFileUse;
         #endregion
 
         #region Public Constructor
         public OptionForm(MainSettings mainSettings, ConfigFileUse configFileUse)
         {
+            originalConfigFileUse = configFileUse;
+
             InitializeComponent();
 
             // Put data in the list controls
@@ -460,6 +464,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var defaultSettings = MainSettings.GetDefault();
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse,
                 defaultSettings, writeToLog: null);
+
+            // Special case: if we have switched from user config file to application config file,
+            // we still have to update that particular setting in the user config file, or it won't
+            // persist through program restart.
+            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig 
+                && configFileUse == ConfigFileUse.ApplicationConfig)
+            {
+                var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
+                userConfiguration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
+                userConfiguration.Save();
+            }
+
             var configuration = TwoFilesConfiguration.Create(configFileUse);
 
             configuration.SetValue(ConfigurationParameters.ConfigurationConfigFileParameter, configFileUse);
