@@ -75,7 +75,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string ConnectionStringTooltip =
             "Microsoft Azure Service Bus\r\n"
             + "-----------------------------\r\n"
-            + "Endpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedAccessKeyName=<SAS policy name>;SharedAccessKey=<SAS policy key> \r\n"
+            + "Endpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedAccessKeyName=<SAS policy name>;SharedAccessKey=<SAS policy key>\r\n"
             + "\r\n"
             + "Service Bus for Windows Server\r\n"
             + "---------------------------------\r\n"
