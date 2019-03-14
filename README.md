@@ -11,7 +11,7 @@ The Service Bus Explorer allows users to connect to a Service Bus namespace and 
 # Installation
 ## Using [Chocolatey](https://chocolatey.org/install)
 ```
-chocolatey install ServiceBusExplorer
+choco install ServiceBusExplorer
 ```
 
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
