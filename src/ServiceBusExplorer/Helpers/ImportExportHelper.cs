@@ -185,7 +185,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
                     {
-                        using (var xmlWriter = XmlWriter.Create(stringWriter))
+                        var xmlWriterSettings = new System.Xml.XmlWriterSettings();
+                        xmlWriterSettings.Indent = true;
+                        using (var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings))
                         {
                             var queueList = entityList.Where(e => e is QueueDescription).Cast<QueueDescription>();
                             var topicList = entityList.Where(e => e is TopicDescription).Cast<TopicDescription>();
