@@ -432,7 +432,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     return BothConfigFileIndex;
 
                 default:
-                    throw new InvalidDataException("Unexpexted value passed to " +
+                    throw new InvalidDataException("Unexpected value passed to " +
                                                    nameof(GetIndexForConfigFileUseUIString));
             }
         }
