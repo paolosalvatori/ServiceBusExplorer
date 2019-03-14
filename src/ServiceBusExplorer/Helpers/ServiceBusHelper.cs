@@ -145,7 +145,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string ReadMessageDeferred = " - Read deferred message.";
         private const string MessageMovedToDeadLetterQueue = " - The message was moved to the DeadLetter queue.";
         private const string MessageReadFromDeadLetterQueue = " - The message was read from the DeadLetter queue.";
-        private const string NoMessageWasReceived = "Receiver[{0}]: no message was received";
+        private const string NoMessageWasReceived = "Receiver[{0}]: no message was received.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
         private const string SenderStatitiscsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
         private const string SenderStatitiscsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
@@ -165,7 +165,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string EventDataTemplateEnumerableCannotBeNull = "The eventDataTemplateEnumerable parameter cannot be null.";
         private const string CancellationTokenSourceCannotBeNull = "The CancellationTokenSource parameter cannot be null.";
         private const string MessageIsNotXmlOrJson = "The message is not in XML or JSON format.";
-        private const string MessageFactorySuccessfullyCreated = "MessagingFactory successfully created";
+        private const string MessageFactorySuccessfullyCreated = "MessagingFactory successfully created.";
         private const string SleepingFor = "Sleeping for [{0}] milliseconds...";
         private const string Read = "read";
         private const string Peeked = "peeked";
