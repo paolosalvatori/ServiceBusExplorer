@@ -5326,6 +5326,40 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             WriteToLog(string.Format(EntitiesExported, SaveEntityToFile(xml, path)));
         }
 
+        private void copyStringToClipboard(string str)
+        {
+            using (var form = new ClipboardForm(str))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    Clipboard.SetText(str);
+                }
+            }
+        }
+
+        private void copyNamespaceUrlMenuItem_Click(object sender, EventArgs e)
+        {
+            Uri uri = serviceBusHelper.NamespaceUri;
+            if (uri == null)
+            {
+                return;
+            }
+            var prettyUri = uri.AbsoluteUri[uri.AbsoluteUri.Length - 1] == '/'
+                          ? uri.AbsoluteUri.Substring(0, uri.AbsoluteUri.Length - 1)
+                          : uri.AbsoluteUri;
+            copyStringToClipboard(prettyUri);
+        }
+
+        private void copyConnectionStringMenuItem_Click(object sender, EventArgs e)
+        {
+            var connectionString = serviceBusHelper.ConnectionString;
+            if (connectionString == null)
+            {
+                return;
+            }
+            copyStringToClipboard(connectionString);
+        }
+
         private void copyEntityUrl_Click(object sender, EventArgs e)
         {
             if (sender is ToolStripMenuItem &&
@@ -6630,5 +6664,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             }
         }
         #endregion
+
     }
 }
