@@ -147,11 +147,11 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string MessageReadFromDeadLetterQueue = " - The message was read from the DeadLetter queue.";
         private const string NoMessageWasReceived = "Receiver[{0}]: no message was received.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
-        private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
+        private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
         private const string SenderStatisticsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
         private const string ReceiverStatisticsHeader = "Receiver[{0}]:";
-        private const string ReceiverStatisticsLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
-        private const string ReceiverStatisticsWithCompleteLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1}] Total Receive Elapsed Time (ms)=[{2}] Total Complete Elapsed Time (ms)=[{3}]";
+        private const string ReceiverStatisticsLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
+        private const string ReceiverStatisticsWithCompleteLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1:F1}] Total Receive Elapsed Time (ms)=[{2}] Total Complete Elapsed Time (ms)=[{3}]";
         private const string ReceiverStatisticsLine2 = " - Average Receive Time (ms)=[{0}] Minimum Receive Time (ms)=[{1}] Maximum Receive Time (ms)=[{2}] ";
         private const string ReceiverStatisticsLine3 = " - Average Complete Time (ms)=[{0}] Minimum Complete Time (ms)=[{1}] Maximum Complete Time (ms)=[{2}] ";
         private const string ExceptionOccurred = " - Exception occurred: {0}";
