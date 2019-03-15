@@ -642,68 +642,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
             xmlWriter.WriteEndElement();
-            switch (typeName)
-            {
-                case QueueDescriptionClass:
-                    var queueDescription = entity as QueueDescription;
-                    if (queueDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(QueueExported, queueDescription.Path));
-                    }
-                    break;
-                case TopicDescriptionClass:
-                    var topicDescription = entity as TopicDescription;
-                    if (topicDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(TopicExported, topicDescription.Path));
-                    }
-                    break;
-                case RelayDescriptionClass:
-                    var relayDescription = entity as RelayDescription;
-                    if (relayDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(RelayExported, relayDescription.Path));
-                    }
-                    break;
-                case SubscriptionDescriptionClass:
-                    var subscriptionDescription = entity as SubscriptionDescription;
-                    if (subscriptionDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(SubscriptionExported,
-                                                      subscriptionDescription.Name,
-                                                      subscriptionDescription.TopicPath));
-                    }
-                    break;
-                case RuleDescriptionClass:
-                    var ruleDescription = entity as RuleDescription;
-                    if (ruleDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(RuleExported,
-                                                      ruleDescription.Name));
-                    }
-                    break;
-                case EventHubDescriptionClass:
-                    var eventHubDescription = entity as EventHubDescription;
-                    if (eventHubDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(EventHubExported, eventHubDescription.Path));
-                    }
-                    break;
-                case ConsumerGroupDescriptionClass:
-                    var consumerGroupDescription = entity as ConsumerGroupDescription;
-                    if (consumerGroupDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(ConsumerGroupExported, consumerGroupDescription.Name));
-                    }
-                    break;
-                case NotificationHubDescriptionClass:
-                    var notificationHubDescription = entity as NotificationHubDescription;
-                    if (notificationHubDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(NotificationHubExported, notificationHubDescription.Path));
-                    }
-                    break;
-            }
         }
 
         /// <summary>
