@@ -5323,7 +5323,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var path = entityType == null ?
                        CreateFileName(string.Format(EntitiesFileNameFormat, serviceBusHelper.Namespace, entityName)) :
                        CreateFileName(string.Format(EntityFileNameFormat, serviceBusHelper.Namespace, entityName, entityType));
-            WriteToLog(string.Format(EntitiesExported, SaveEntityToFile(xml, path)));
+            var savedFile = SaveEntityToFile(xml, path);
+            if (savedFile != null)
+            {
+                WriteToLog(string.Format(EntitiesExported, savedFile));
+            }
         }
 
         private void copyStringToClipboard(string str)
