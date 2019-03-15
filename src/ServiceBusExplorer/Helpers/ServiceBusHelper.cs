@@ -134,7 +134,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string MessagePeekedButNotConsumed = "Receiver[{0}]: Message peeked, but not consumed. MessageId=[{1}] SessionId=[{2}] Label=[{3}] Size=[{4}]";
         private const string MessageSuccessfullyReceivedNoTask = "Message {0}: MessageId=[{1}] SessionId=[{2}] Label=[{3}] Size=[{4}] DeliveryCount[{5}]";
         private const string EventDataSuccessfullySent = "Sender[{0}]: EventData sent. MessageNumber=[{1}] PartitionKey=[{2}]";
-        private const string ReceiverStatitiscsLineNoTask = "Messages {0}: Count=[{1}]";
+        private const string ReceiverStatisticsLineNoTask = "Messages {0}: Count=[{1}]";
         private const string SentMessagePropertiesHeader = "Properties:";
         private const string ReceivedMessagePropertiesHeader = "Properties:";
         private const string SentMessagePayloadHeader = "Payload:";
@@ -147,13 +147,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string MessageReadFromDeadLetterQueue = " - The message was read from the DeadLetter queue.";
         private const string NoMessageWasReceived = "Receiver[{0}]: no message was received.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
-        private const string SenderStatitiscsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
-        private const string SenderStatitiscsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
+        private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
+        private const string SenderStatisticsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
         private const string ReceiverStatisticsHeader = "Receiver[{0}]:";
-        private const string ReceiverStatitiscsLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
-        private const string ReceiverStatitiscsWithCompleteLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1}] Total Receive Elapsed Time (ms)=[{2}] Total Complete Elapsed Time (ms)=[{3}]";
-        private const string ReceiverStatitiscsLine2 = " - Average Receive Time (ms)=[{0}] Minimum Receive Time (ms)=[{1}] Maximum Receive Time (ms)=[{2}] ";
-        private const string ReceiverStatitiscsLine3 = " - Average Complete Time (ms)=[{0}] Minimum Complete Time (ms)=[{1}] Maximum Complete Time (ms)=[{2}] ";
+        private const string ReceiverStatisticsLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
+        private const string ReceiverStatisticsWithCompleteLine1 = " - Message Count=[{0}] Messages Read/Sec=[{1:F1}] Total Receive Elapsed Time (ms)=[{2}] Total Complete Elapsed Time (ms)=[{3}]";
+        private const string ReceiverStatisticsLine2 = " - Average Receive Time (ms)=[{0}] Minimum Receive Time (ms)=[{1}] Maximum Receive Time (ms)=[{2}] ";
+        private const string ReceiverStatisticsLine3 = " - Average Complete Time (ms)=[{0}] Minimum Complete Time (ms)=[{1}] Maximum Complete Time (ms)=[{2}] ";
         private const string ExceptionOccurred = " - Exception occurred: {0}";
         private const string UnableToReadMessageBody = "Unable to read the message body.";
         private const string EventHubClientCannotBeNull = "The EventHubClient parameter cannot be null.";
@@ -3442,12 +3442,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 throw new Exception(builder.ToString());
             }
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             SenderStatitiscsLine1,
+                                             SenderStatisticsLine1,
                                              messagesSent,
                                              messagesPerSecond,
                                              totalElapsedTime));
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             SenderStatitiscsLine2,
+                                             SenderStatisticsLine2,
                                              averageSendTime,
                                              minimumSendTime == long.MaxValue ? 0 : minimumSendTime,
                                              maximumSendTime));
@@ -4241,12 +4241,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 builder.AppendLine(exceptionMessage);
             }
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             SenderStatitiscsLine1,
+                                             SenderStatisticsLine1,
                                              messagesSent,
                                              messagesPerSecond,
                                              totalElapsedTime));
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             SenderStatitiscsLine2,
+                                             SenderStatisticsLine2,
                                              averageSendTime,
                                              minimumSendTime == long.MaxValue ? 0 : minimumSendTime,
                                              maximumSendTime));
@@ -5000,7 +5000,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             if (messageReceiver.Mode == ReceiveMode.ReceiveAndDelete)
             {
                 builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                                 ReceiverStatitiscsLine1,
+                                                 ReceiverStatisticsLine1,
                                                  messagesReceived,
                                                  messagesPerSecond,
                                                  totalReceiveElapsedTime));
@@ -5008,21 +5008,21 @@ namespace Microsoft.Azure.ServiceBusExplorer
             else
             {
                 builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                                 ReceiverStatitiscsWithCompleteLine1,
+                                                 ReceiverStatisticsWithCompleteLine1,
                                                  messagesReceived,
                                                  messagesPerSecond,
                                                  totalReceiveElapsedTime,
                                                  totalCompleteElapsedTime));
             }
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             ReceiverStatitiscsLine2,
+                                             ReceiverStatisticsLine2,
                                              averageReceiveTime,
                                              minimumReceiveTime == long.MaxValue ? 0 : minimumReceiveTime,
                                              maximumReceiveTime));
             if (messageReceiver.Mode == ReceiveMode.PeekLock)
             {
                 builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                             ReceiverStatitiscsLine3,
+                                             ReceiverStatisticsLine3,
                                              averageCompleteTime,
                                              minimumCompleteTime == long.MaxValue ? 0 : minimumCompleteTime,
                                              maximumCompleteTime));
@@ -5630,7 +5630,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     brokeredMessageList = null;
                 }
                 var builder = new StringBuilder();
-                builder.AppendLine(string.Format(ReceiverStatitiscsLineNoTask,
+                builder.AppendLine(string.Format(ReceiverStatisticsLineNoTask,
                                                 complete ? Read : Peeked,
                                                 messageTotal));
                 var traceMessage = builder.ToString();
