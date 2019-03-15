@@ -92,8 +92,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string NoSubscriptionSelected = "No subscription has been selected.";
         private const string NoMessageSelected = "No message to send has been selected under the Files tab.";
         private const string SelectBrokeredMessageGenerator = "Select a BrokeredMessage generator...";
-        private const string InvalidJsonTemplate = "{0} is an invalid Json template. The file will be used as text message rather than a template.";
-        private const string InvalidXmlTemplate = "{0} is an invalid Xml template. The file will be used as text message rather than a template.";
+        private const string InvalidJsonTemplate = "{0} is an invalid JSON template. The file will be used as text message rather than a template.";
+        private const string InvalidXmlTemplate = "{0} is an invalid XML template. The file will be used as text message rather than a template.";
         private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
         private const string SelectBrokeredMessageGeneratorWarning = "You have to select a BrokeredMessage generator under the Generator tab before sending messages to {0}.";
 

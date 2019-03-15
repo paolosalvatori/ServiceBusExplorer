@@ -55,7 +55,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.panelTreeView = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
+            this.serviceBusTreeView = new System.Windows.Forms.TreeView();
+            this.panelMain = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.panelLog = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
+            this.lstLog = new System.Windows.Forms.ListBox();
             this.logContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +75,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.deleteEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshRootMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyNamespaceUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyConnectionStringMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator68 = new System.Windows.Forms.ToolStripSeparator();
             this.exportEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
@@ -315,22 +323,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator68 = new System.Windows.Forms.ToolStripSeparator();
-            this.copyNamespaceUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyConnectionStringMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelTreeView = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
-            this.serviceBusTreeView = new System.Windows.Forms.TreeView();
-            this.panelMain = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
-            this.panelLog = new Microsoft.Azure.ServiceBusExplorer.Controls.HeaderPanel();
-            this.lstLog = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
+            this.panelTreeView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
             this.mainSplitContainer.SuspendLayout();
+            this.panelLog.SuspendLayout();
             this.logContextMenuStrip.SuspendLayout();
             this.rootContextMenuStrip.SuspendLayout();
             this.queuesContextMenuStrip.SuspendLayout();
@@ -357,8 +359,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.relayServiceFolderContextMenuStrip.SuspendLayout();
             this.relayContextMenuStrip.SuspendLayout();
-            this.panelTreeView.SuspendLayout();
-            this.panelLog.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList
@@ -570,6 +570,64 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
+            // panelTreeView
+            // 
+            this.panelTreeView.AutoScroll = true;
+            this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelTreeView.Controls.Add(this.serviceBusTreeView);
+            this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelTreeView.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelTreeView.HeaderHeight = 24;
+            this.panelTreeView.HeaderText = "Service Bus Namespace";
+            this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
+            this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
+            this.panelTreeView.Location = new System.Drawing.Point(0, 0);
+            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelTreeView.Name = "panelTreeView";
+            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelTreeView.Size = new System.Drawing.Size(372, 570);
+            this.panelTreeView.TabIndex = 0;
+            // 
+            // serviceBusTreeView
+            // 
+            this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceBusTreeView.ImageIndex = 0;
+            this.serviceBusTreeView.ImageList = this.imageList;
+            this.serviceBusTreeView.Indent = 20;
+            this.serviceBusTreeView.ItemHeight = 20;
+            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
+            this.serviceBusTreeView.Name = "serviceBusTreeView";
+            this.serviceBusTreeView.SelectedImageIndex = 0;
+            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
+            this.serviceBusTreeView.TabIndex = 13;
+            this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
+            this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
+            this.serviceBusTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyUp);
+            // 
+            // panelMain
+            // 
+            this.panelMain.AutoScroll = true;
+            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelMain.HeaderHeight = 24;
+            this.panelMain.HeaderText = "";
+            this.panelMain.Icon = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.SmallWorld;
+            this.panelMain.IconTransparentColor = System.Drawing.Color.White;
+            this.panelMain.Location = new System.Drawing.Point(0, 0);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelMain.Name = "panelMain";
+            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelMain.Size = new System.Drawing.Size(1008, 570);
+            this.panelMain.TabIndex = 0;
+            // 
             // mainSplitContainer
             // 
             this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -590,6 +648,44 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainSplitContainer.SplitterDistance = 570;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
+            // 
+            // panelLog
+            // 
+            this.panelLog.AutoScroll = true;
+            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelLog.Controls.Add(this.lstLog);
+            this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelLog.HeaderHeight = 24;
+            this.panelLog.HeaderText = "Log";
+            this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
+            this.panelLog.IconTransparentColor = System.Drawing.Color.White;
+            this.panelLog.Location = new System.Drawing.Point(0, 0);
+            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelLog.Name = "panelLog";
+            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelLog.Size = new System.Drawing.Size(1384, 210);
+            this.panelLog.TabIndex = 0;
+            // 
+            // lstLog
+            // 
+            this.lstLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstLog.ContextMenuStrip = this.logContextMenuStrip;
+            this.lstLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lstLog.FormattingEnabled = true;
+            this.lstLog.HorizontalScrollbar = true;
+            this.lstLog.ItemHeight = 14;
+            this.lstLog.Location = new System.Drawing.Point(5, 29);
+            this.lstLog.Name = "lstLog";
+            this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lstLog.Size = new System.Drawing.Size(1374, 177);
+            this.lstLog.TabIndex = 4;
+            this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
+            this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
             // 
             // logContextMenuStrip
             // 
@@ -674,7 +770,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.expandSubTreeMenuItem1,
             this.collapseSubTreeMenuItem1});
             this.rootContextMenuStrip.Name = "rootContextMenuStrip";
-            this.rootContextMenuStrip.Size = new System.Drawing.Size(202, 220);
+            this.rootContextMenuStrip.Size = new System.Drawing.Size(202, 198);
             // 
             // deleteEntityMenuItem
             // 
@@ -697,6 +793,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(198, 6);
+            // 
+            // copyNamespaceUrlMenuItem
+            // 
+            this.copyNamespaceUrlMenuItem.Name = "copyNamespaceUrlMenuItem";
+            this.copyNamespaceUrlMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyNamespaceUrlMenuItem.Text = "Copy Namespace URL";
+            this.copyNamespaceUrlMenuItem.ToolTipText = "Copy Namespace URL to clipboard";
+            this.copyNamespaceUrlMenuItem.Click += new System.EventHandler(this.copyNamespaceUrlMenuItem_Click);
+            // 
+            // copyConnectionStringMenuItem
+            // 
+            this.copyConnectionStringMenuItem.Name = "copyConnectionStringMenuItem";
+            this.copyConnectionStringMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyConnectionStringMenuItem.Text = "Copy Connection String";
+            this.copyConnectionStringMenuItem.ToolTipText = "Copy Namespace connection string to clipboard";
+            this.copyConnectionStringMenuItem.Click += new System.EventHandler(this.copyConnectionStringMenuItem_Click);
+            // 
+            // toolStripSeparator68
+            // 
+            this.toolStripSeparator68.Name = "toolStripSeparator68";
+            this.toolStripSeparator68.Size = new System.Drawing.Size(198, 6);
             // 
             // exportEntityMenuItem
             // 
@@ -1045,16 +1162,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copySubscriptionUrlMenuItem.Name = "copySubscriptionUrlMenuItem";
             this.copySubscriptionUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copySubscriptionUrlMenuItem.Text = "Copy Subscription Url";
-            this.copySubscriptionUrlMenuItem.ToolTipText = "Copy the subscription url to the clipboard.";
+            this.copySubscriptionUrlMenuItem.Text = "Copy Subscription URL";
+            this.copySubscriptionUrlMenuItem.ToolTipText = "Copy the subscription URL to the clipboard.";
             this.copySubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // copySubscriptionDeadletterSubscriptionUrlMenuItem
             // 
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Name = "copySubscriptionDeadletterSubscriptionUrlMenuItem";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Text = "Copy Deadletter Queue Url";
-            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.ToolTipText = "Copy the deadletter queue url to the clipboard.";
+            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Text = "Copy Deadletter Queue URL";
+            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator20
@@ -1272,8 +1389,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyTopicUrlMenuItem.Name = "copyTopicUrlMenuItem";
             this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.copyTopicUrlMenuItem.Text = "Copy Topic Url";
-            this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic url to the clipboard.";
+            this.copyTopicUrlMenuItem.Text = "Copy Topic URL";
+            this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyTopicUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator18
@@ -1414,16 +1531,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyQueueUrlMenuItem.Name = "copyQueueUrlMenuItem";
             this.copyQueueUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copyQueueUrlMenuItem.Text = "Copy Queue Url";
-            this.copyQueueUrlMenuItem.ToolTipText = "Copy the queue url to the clipboard.";
+            this.copyQueueUrlMenuItem.Text = "Copy Queue URL";
+            this.copyQueueUrlMenuItem.ToolTipText = "Copy the queue URL to the clipboard.";
             this.copyQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // copyQueueDeadletterQueueUrlMenuItem
             // 
             this.copyQueueDeadletterQueueUrlMenuItem.Name = "copyQueueDeadletterQueueUrlMenuItem";
             this.copyQueueDeadletterQueueUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copyQueueDeadletterQueueUrlMenuItem.Text = "Copy Deadletter Queue Url";
-            this.copyQueueDeadletterQueueUrlMenuItem.ToolTipText = "Copy the deadletter queue url to the clipboard.";
+            this.copyQueueDeadletterQueueUrlMenuItem.Text = "Copy Deadletter Queue URL";
+            this.copyQueueDeadletterQueueUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copyQueueDeadletterQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator25
@@ -1928,8 +2045,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyUrlNotificationHubMenuItem.Name = "copyUrlNotificationHubMenuItem";
             this.copyUrlNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.copyUrlNotificationHubMenuItem.Text = "Copy Notification Hub Url";
-            this.copyUrlNotificationHubMenuItem.ToolTipText = "Copy the notification hub url to the clipboard.";
+            this.copyUrlNotificationHubMenuItem.Text = "Copy Notification Hub URL";
+            this.copyUrlNotificationHubMenuItem.ToolTipText = "Copy the notification hub URL to the clipboard.";
             this.copyUrlNotificationHubMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator26
@@ -2115,8 +2232,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyEventHubUrlMenuItem.Name = "copyEventHubUrlMenuItem";
             this.copyEventHubUrlMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.copyEventHubUrlMenuItem.Text = "Copy Event Hub Url";
-            this.copyEventHubUrlMenuItem.ToolTipText = "Copy the topic url to the clipboard.";
+            this.copyEventHubUrlMenuItem.Text = "Copy Event Hub URL";
+            this.copyEventHubUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyEventHubUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator52
@@ -2329,8 +2446,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyPartitionUrlMenuItem.Name = "copyPartitionUrlMenuItem";
             this.copyPartitionUrlMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.copyPartitionUrlMenuItem.Text = "Copy Partition Url";
-            this.copyPartitionUrlMenuItem.ToolTipText = "Copy the partition url to the clipboard.";
+            this.copyPartitionUrlMenuItem.Text = "Copy Partition URL";
+            this.copyPartitionUrlMenuItem.ToolTipText = "Copy the partition URL to the clipboard.";
             this.copyPartitionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator54
@@ -2457,8 +2574,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyConsumerGroupUrlMenuItem.Name = "copyConsumerGroupUrlMenuItem";
             this.copyConsumerGroupUrlMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.copyConsumerGroupUrlMenuItem.Text = "Copy Consumer Group Url";
-            this.copyConsumerGroupUrlMenuItem.ToolTipText = "Copy the consumer group url to the clipboard.";
+            this.copyConsumerGroupUrlMenuItem.Text = "Copy Consumer Group URL";
+            this.copyConsumerGroupUrlMenuItem.ToolTipText = "Copy the consumer group URL to the clipboard.";
             this.copyConsumerGroupUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator61
@@ -2627,8 +2744,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyRelayUrlMenuItem.Name = "copyRelayUrlMenuItem";
             this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.copyRelayUrlMenuItem.Text = "Copy Relay Url";
-            this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay url to the clipboard.";
+            this.copyRelayUrlMenuItem.Text = "Copy Relay URL";
+            this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay URL to the clipboard.";
             this.copyRelayUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator69
@@ -2651,123 +2768,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem28.Text = "Test Relay In MDI Mode";
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
-            // 
-            // toolStripSeparator68
-            // 
-            this.toolStripSeparator68.Name = "toolStripSeparator68";
-            this.toolStripSeparator68.Size = new System.Drawing.Size(198, 6);
-            // 
-            // copyNamespaceUrlMenuItem
-            // 
-            this.copyNamespaceUrlMenuItem.Name = "copyNamespaceUrlMenuItem";
-            this.copyNamespaceUrlMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.copyNamespaceUrlMenuItem.Text = "Copy Namespace Url";
-            this.copyNamespaceUrlMenuItem.ToolTipText = "Copy Namespace URL to clipboard";
-            this.copyNamespaceUrlMenuItem.Click += new System.EventHandler(this.copyNamespaceUrlMenuItem_Click);
-            // 
-            // copyConnectionStringMenuItem
-            // 
-            this.copyConnectionStringMenuItem.Name = "copyConnectionStringMenuItem";
-            this.copyConnectionStringMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.copyConnectionStringMenuItem.Text = "Copy Connection String";
-            this.copyConnectionStringMenuItem.ToolTipText = "Copy Namespace connection string to clipboard";
-            this.copyConnectionStringMenuItem.Click += new System.EventHandler(this.copyConnectionStringMenuItem_Click);
-            // 
-            // panelTreeView
-            // 
-            this.panelTreeView.AutoScroll = true;
-            this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelTreeView.Controls.Add(this.serviceBusTreeView);
-            this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelTreeView.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelTreeView.HeaderHeight = 24;
-            this.panelTreeView.HeaderText = "Service Bus Namespace";
-            this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
-            this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
-            this.panelTreeView.Location = new System.Drawing.Point(0, 0);
-            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelTreeView.Name = "panelTreeView";
-            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelTreeView.Size = new System.Drawing.Size(372, 570);
-            this.panelTreeView.TabIndex = 0;
-            // 
-            // serviceBusTreeView
-            // 
-            this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.serviceBusTreeView.ImageIndex = 0;
-            this.serviceBusTreeView.ImageList = this.imageList;
-            this.serviceBusTreeView.Indent = 20;
-            this.serviceBusTreeView.ItemHeight = 20;
-            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
-            this.serviceBusTreeView.Name = "serviceBusTreeView";
-            this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
-            this.serviceBusTreeView.TabIndex = 13;
-            this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
-            this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
-            this.serviceBusTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyUp);
-            // 
-            // panelMain
-            // 
-            this.panelMain.AutoScroll = true;
-            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelMain.HeaderHeight = 24;
-            this.panelMain.HeaderText = "";
-            this.panelMain.Icon = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.SmallWorld;
-            this.panelMain.IconTransparentColor = System.Drawing.Color.White;
-            this.panelMain.Location = new System.Drawing.Point(0, 0);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelMain.Name = "panelMain";
-            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(1008, 570);
-            this.panelMain.TabIndex = 0;
-            // 
-            // panelLog
-            // 
-            this.panelLog.AutoScroll = true;
-            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelLog.Controls.Add(this.lstLog);
-            this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelLog.HeaderHeight = 24;
-            this.panelLog.HeaderText = "Log";
-            this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
-            this.panelLog.IconTransparentColor = System.Drawing.Color.White;
-            this.panelLog.Location = new System.Drawing.Point(0, 0);
-            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelLog.Name = "panelLog";
-            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1384, 210);
-            this.panelLog.TabIndex = 0;
-            // 
-            // lstLog
-            // 
-            this.lstLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstLog.ContextMenuStrip = this.logContextMenuStrip;
-            this.lstLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lstLog.FormattingEnabled = true;
-            this.lstLog.HorizontalScrollbar = true;
-            this.lstLog.ItemHeight = 14;
-            this.lstLog.Location = new System.Drawing.Point(5, 29);
-            this.lstLog.Name = "lstLog";
-            this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1374, 177);
-            this.lstLog.TabIndex = 4;
-            this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
-            this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
             // 
             // MainForm
             // 
@@ -2794,10 +2794,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
+            this.panelTreeView.ResumeLayout(false);
             this.mainSplitContainer.Panel1.ResumeLayout(false);
             this.mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).EndInit();
             this.mainSplitContainer.ResumeLayout(false);
+            this.panelLog.ResumeLayout(false);
             this.logContextMenuStrip.ResumeLayout(false);
             this.rootContextMenuStrip.ResumeLayout(false);
             this.queuesContextMenuStrip.ResumeLayout(false);
@@ -2825,8 +2827,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.relayServiceFolderContextMenuStrip.ResumeLayout(false);
             this.relayContextMenuStrip.ResumeLayout(false);
-            this.panelTreeView.ResumeLayout(false);
-            this.panelLog.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
