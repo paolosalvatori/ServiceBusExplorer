@@ -238,6 +238,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                                  retryCount));
                     Thread.Sleep(retryTimeout);
                 }
+                catch (MessagingException ex)
+                {
+                    if (numRetries == 0 || (!ex.IsTransient))
+                    {
+                        throw;
+                    }
+                    writeToLog(string.Format(RetryingMethod,
+                                                 ex.Message,
+                                                 func.Method.Name,
+                                                 retryCount - numRetries + 1,
+                                                 retryCount));
+                    Thread.Sleep(retryTimeout);
+                }
                 catch (TimeoutException ex)
                 {
                     if (numRetries == 0)
@@ -307,6 +320,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 catch (MessagingCommunicationException ex)
                 {
                     if (numRetries == 0)
+                    {
+                        throw;
+                    }
+                    writeToLog(string.Format(RetryingMethod,
+                                                 ex.Message,
+                                                 func.Method.Name,
+                                                 retryCount - numRetries + 1,
+                                                 retryCount));
+                    Thread.Sleep(retryTimeout);
+                }
+                catch (MessagingException ex)
+                {
+                    if (numRetries == 0 || (!ex.IsTransient))
                     {
                         throw;
                     }
