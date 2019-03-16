@@ -43,6 +43,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string ActionCannotBeNull = "Action argument cannot be null.";
         private const string FuncCannotBeNull = "Func argument cannot be null.";
         private const string RetryingMethod = "Exception: {0}. Method {1}: retry {2} of {3}.";
+        private const string CaughtGenericException = "Exception type was: {0}.";
         private const int DefaultRetryCount = 10;
         private const int DefaultRetryTimeout = 100;
         #endregion
@@ -114,6 +115,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                                  action.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
+                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
                     Thread.Sleep(retryTimeout);
                 }
             } while (numRetries-- > 0);
@@ -179,6 +181,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                                  action.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
+                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
                     Thread.Sleep(retryTimeout);
                 }
             } while (numRetries-- > 0);
@@ -259,6 +262,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
+                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
                     Thread.Sleep(retryTimeout);
                 }
             } while (numRetries-- > 0);
@@ -337,6 +341,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
+                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
                     Thread.Sleep(retryTimeout);
                 }
             } while (numRetries-- > 0);
