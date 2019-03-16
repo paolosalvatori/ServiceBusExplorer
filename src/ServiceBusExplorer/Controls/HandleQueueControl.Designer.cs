@@ -120,7 +120,6 @@
             this.txtDeadletterText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.deadletterPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperDeadletterSystemProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.grouperDeadletterCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.deadletterPropertyListView = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -1855,7 +1854,7 @@
             this.grouperDeadletterSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperDeadletterSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDeadletterSystemProperties.BorderThickness = 1F;
-            this.grouperDeadletterSystemProperties.Controls.Add(this.propertyGrid1);
+            this.grouperDeadletterSystemProperties.Controls.Add(this.deadletterPropertyGrid);
             this.grouperDeadletterSystemProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDeadletterSystemProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperDeadletterSystemProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
@@ -1873,20 +1872,6 @@
             this.grouperDeadletterSystemProperties.Size = new System.Drawing.Size(314, 212);
             this.grouperDeadletterSystemProperties.TabIndex = 20;
             this.grouperDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterSystemProperties_CustomPaint);
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.propertyGrid1.BackColor = System.Drawing.SystemColors.Window;
-            this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.propertyGrid1.Location = new System.Drawing.Point(16, 32);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(281, 164);
-            this.propertyGrid1.TabIndex = 1;
-            this.propertyGrid1.ToolbarVisible = false;
             // 
             // grouperDeadletterCustomProperties
             // 
