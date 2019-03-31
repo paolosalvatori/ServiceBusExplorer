@@ -100,6 +100,7 @@
             this.messageMainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperMessageList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.pictFindMessages = new System.Windows.Forms.PictureBox();
+            this.pictFindMessagesByDate = new System.Windows.Forms.PictureBox();
             this.messagesDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -115,11 +116,13 @@
             this.deadletterMainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperDeadletterList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.pictFindDeadletter = new System.Windows.Forms.PictureBox();
+            this.pictFindDeadletterByDate = new System.Windows.Forms.PictureBox();
             this.deadletterDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperDeadletterText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.txtDeadletterText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.deadletterPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperDeadletterSystemProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.deadletterPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperDeadletterCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
             this.deadletterPropertyListView = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -180,7 +183,6 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedTransferDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deadletterPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperAutoDeleteOnIdle.SuspendLayout();
@@ -205,6 +207,7 @@
             this.messageMainSplitContainer.SuspendLayout();
             this.grouperMessageList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).BeginInit();
             this.grouperMessageText.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
@@ -225,6 +228,7 @@
             this.deadletterMainSplitContainer.SuspendLayout();
             this.grouperDeadletterList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).BeginInit();
             this.grouperDeadletterText.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).BeginInit();
@@ -1405,6 +1409,7 @@
             this.grouperMessageList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageList.BorderThickness = 1F;
             this.grouperMessageList.Controls.Add(this.pictFindMessages);
+            this.grouperMessageList.Controls.Add(this.pictFindMessagesByDate);
             this.grouperMessageList.Controls.Add(this.messagesDataGridView);
             this.grouperMessageList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1435,6 +1440,18 @@
             this.pictFindMessages.Click += new System.EventHandler(this.pictFindMessages_Click);
             this.pictFindMessages.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
             this.pictFindMessages.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            // 
+            // pictFindMessagesByDate
+            // 
+            this.pictFindMessagesByDate.Image = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.FindByDateExtension;
+            this.pictFindMessagesByDate.Location = new System.Drawing.Point(123, 0);
+            this.pictFindMessagesByDate.Name = "pictFindMessagesByDate";
+            this.pictFindMessagesByDate.Size = new System.Drawing.Size(24, 24);
+            this.pictFindMessagesByDate.TabIndex = 1;
+            this.pictFindMessagesByDate.TabStop = false;
+            this.pictFindMessagesByDate.Click += new System.EventHandler(this.pictFindMessagesByDate_Click);
+            this.pictFindMessagesByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
+            this.pictFindMessagesByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
             // 
             // messagesDataGridView
             // 
@@ -1511,13 +1528,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1704,6 +1722,7 @@
             this.grouperDeadletterList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDeadletterList.BorderThickness = 1F;
             this.grouperDeadletterList.Controls.Add(this.pictFindDeadletter);
+            this.grouperDeadletterList.Controls.Add(this.pictFindDeadletterByDate);
             this.grouperDeadletterList.Controls.Add(this.deadletterDataGridView);
             this.grouperDeadletterList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDeadletterList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1734,6 +1753,18 @@
             this.pictFindDeadletter.Click += new System.EventHandler(this.pictFindDeadletter_Click);
             this.pictFindDeadletter.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
             this.pictFindDeadletter.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            // 
+            // pictFindDeadletterByDate
+            // 
+            this.pictFindDeadletterByDate.Image = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.FindByDateExtension;
+            this.pictFindDeadletterByDate.Location = new System.Drawing.Point(123, 0);
+            this.pictFindDeadletterByDate.Name = "pictFindDeadletterByDate";
+            this.pictFindDeadletterByDate.Size = new System.Drawing.Size(24, 24);
+            this.pictFindDeadletterByDate.TabIndex = 2;
+            this.pictFindDeadletterByDate.TabStop = false;
+            this.pictFindDeadletterByDate.Click += new System.EventHandler(this.pictFindDeadletterByDate_Click);
+            this.pictFindDeadletterByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
+            this.pictFindDeadletterByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
             // 
             // deadletterDataGridView
             // 
@@ -1810,13 +1841,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1872,6 +1904,20 @@
             this.grouperDeadletterSystemProperties.Size = new System.Drawing.Size(314, 212);
             this.grouperDeadletterSystemProperties.TabIndex = 20;
             this.grouperDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterSystemProperties_CustomPaint);
+            // 
+            // deadletterPropertyGrid
+            // 
+            this.deadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.deadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.deadletterPropertyGrid.HelpVisible = false;
+            this.deadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.deadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
+            this.deadletterPropertyGrid.Name = "deadletterPropertyGrid";
+            this.deadletterPropertyGrid.Size = new System.Drawing.Size(281, 384);
+            this.deadletterPropertyGrid.TabIndex = 1;
+            this.deadletterPropertyGrid.ToolbarVisible = false;
             // 
             // grouperDeadletterCustomProperties
             // 
@@ -2098,6 +2144,7 @@
             this.txtTransferDeadletterText.CharWidth = 8;
             this.txtTransferDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTransferDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtTransferDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtTransferDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTransferDeadletterText.IsReplaceMode = false;
             this.txtTransferDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -2668,20 +2715,6 @@
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem_Click);
             // 
-            // deadletterPropertyGrid
-            // 
-            this.deadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.deadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
-            this.deadletterPropertyGrid.HelpVisible = false;
-            this.deadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.deadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
-            this.deadletterPropertyGrid.Name = "deadletterPropertyGrid";
-            this.deadletterPropertyGrid.Size = new System.Drawing.Size(281, 384);
-            this.deadletterPropertyGrid.TabIndex = 1;
-            this.deadletterPropertyGrid.ToolbarVisible = false;
-            // 
             // HandleQueueControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2730,6 +2763,7 @@
             this.messageMainSplitContainer.ResumeLayout(false);
             this.grouperMessageList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).EndInit();
             this.grouperMessageText.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
@@ -2750,6 +2784,7 @@
             this.deadletterMainSplitContainer.ResumeLayout(false);
             this.grouperDeadletterList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).EndInit();
             this.grouperDeadletterText.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).EndInit();
@@ -2916,6 +2951,8 @@
         private System.Windows.Forms.ToolStripMenuItem resubmitSelectedDeadletterInBatchModeToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictFindMessages;
         private System.Windows.Forms.PictureBox pictFindDeadletter;
+        private System.Windows.Forms.PictureBox pictFindMessagesByDate;
+        private System.Windows.Forms.PictureBox pictFindDeadletterByDate;
         private System.Windows.Forms.Button btnOpenForwardDeadLetteredMessagesToForm;
         private System.Windows.Forms.Label lblForwardDeadLetteredMessagesTo;
         private System.Windows.Forms.TextBox txtForwardDeadLetteredMessagesTo;
