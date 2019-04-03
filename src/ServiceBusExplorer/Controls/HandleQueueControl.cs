@@ -3920,94 +3920,139 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void FilterMessages()
         {
-            if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression))
+            var bindingList = new SortableBindingList<BrokeredMessage>();
+            try
             {
-                messagesBindingSource.DataSource = messageBindingList;
-                messagesDataGridView.DataSource = messagesBindingSource;
-                writeToLog(FilterExpressionRemovedMessage);
+                if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression))
+                {
+                    bindingList = messageBindingList;
+                    messagesBindingSource.DataSource = messageBindingList;
+                    messagesDataGridView.DataSource = messagesBindingSource;
+                    writeToLog(FilterExpressionRemovedMessage);
+                }
+                else
+                {
+                    var filteredList = messageBindingList.ToList();
+                    if (!string.IsNullOrWhiteSpace(messagesFilterExpression))
+                    {
+                        Filter filter;
+                        try
+                        {
+                            var sqlFilter = new SqlFilter(messagesFilterExpression);
+                            sqlFilter.Validate();
+                            filter = sqlFilter.Preprocess();
+                        }
+                        catch (Exception ex)
+                        {
+                            writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression,
+                                ex.Message));
+                            return;
+                        }
+
+                        filteredList = filteredList.Where(filter.Match).ToList();
+                    }
+
+                    if (messagesFilterFromDate != null || messagesFilterToDate != null)
+                    {
+                        filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, messagesFilterFromDate, messagesFilterToDate)).ToList();
+                    }
+
+                    bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                    {
+                        AllowEdit = false,
+                        AllowNew = false,
+                        AllowRemove = false
+                    };
+                    messagesBindingSource.DataSource = bindingList;
+                    messagesDataGridView.DataSource = messagesBindingSource;
+                    writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, messagesFilterFromDate ?? DateTime.MinValue, messagesFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+                }
             }
-            else
+            finally
             {
-                var filteredList = messageBindingList.ToList();
-                if (!string.IsNullOrWhiteSpace(messagesFilterExpression))
+                if (!bindingList.Any())
                 {
-                    Filter filter;
-                    try
-                    {
-                        var sqlFilter = new SqlFilter(messagesFilterExpression);
-                        sqlFilter.Validate();
-                        filter = sqlFilter.Preprocess();
-                    }
-                    catch (Exception ex)
-                    {
-                        writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression,
-                            ex.Message));
-                        return;
-                    }
-
-                    filteredList = filteredList.Where(filter.Match).ToList();
+                    txtMessageText.Text = string.Empty;
+                    messagePropertyListView.Items.Clear();
+                    messagePropertyGrid.SelectedObject = null;
                 }
-
-                if (messagesFilterFromDate != null || messagesFilterToDate != null)
+                else
                 {
-                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, messagesFilterFromDate, messagesFilterToDate)).ToList();
+                    if (messagesDataGridView.Rows.Count > 0)
+                    {
+                        brokeredMessage = null;
+                        messagesDataGridView_RowEnter(this, new DataGridViewCellEventArgs(0, 0));
+                    }
                 }
-
-                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                messagesBindingSource.DataSource = bindingList;
-                messagesDataGridView.DataSource = messagesBindingSource;
-                writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, messagesFilterFromDate ?? DateTime.MinValue, messagesFilterToDate ?? DateTime.MaxValue, bindingList.Count));
             }
         }
 
         private void FilterDeadletters()
         {
-            if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression))
+            var bindingList = new SortableBindingList<BrokeredMessage>();
+            try
             {
-                deadletterBindingSource.DataSource = deadletterBindingList;
-                deadletterDataGridView.DataSource = deadletterBindingSource;
-                writeToLog(FilterExpressionRemovedMessage);
+                if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression))
+                {
+                    bindingList = deadletterBindingList;
+                    deadletterBindingSource.DataSource = deadletterBindingList;
+                    deadletterDataGridView.DataSource = deadletterBindingSource;
+                    writeToLog(FilterExpressionRemovedMessage);
+                }
+                else
+                {
+                    var filteredList = deadletterBindingList.ToList();
+                    if (!string.IsNullOrWhiteSpace(deadletterFilterExpression))
+                    {
+                        Filter filter;
+                        try
+                        {
+                            var sqlFilter = new SqlFilter(deadletterFilterExpression);
+                            sqlFilter.Validate();
+                            filter = sqlFilter.Preprocess();
+                        }
+                        catch (Exception ex)
+                        {
+                            writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression,
+                                ex.Message));
+                            return;
+                        }
+
+                        filteredList = filteredList.Where(filter.Match).ToList();
+                    }
+
+                    if (deadletterFilterFromDate != null || deadletterFilterToDate != null)
+                    {
+                        filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, deadletterFilterFromDate, deadletterFilterToDate)).ToList();
+                    }
+
+                    bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                    {
+                        AllowEdit = false,
+                        AllowNew = false,
+                        AllowRemove = false
+                    };
+                    deadletterBindingSource.DataSource = bindingList;
+                    deadletterDataGridView.DataSource = deadletterBindingSource;
+                    writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, deadletterFilterFromDate ?? DateTime.MinValue, deadletterFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+                }
             }
-            else
+            finally
             {
-                var filteredList = deadletterBindingList.ToList();
-                if (!string.IsNullOrWhiteSpace(deadletterFilterExpression))
+                if (!bindingList.Any())
                 {
-                    Filter filter;
-                    try
-                    {
-                        var sqlFilter = new SqlFilter(deadletterFilterExpression);
-                        sqlFilter.Validate();
-                        filter = sqlFilter.Preprocess();
-                    }
-                    catch (Exception ex)
-                    {
-                        writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression,
-                            ex.Message));
-                        return;
-                    }
-                    filteredList = filteredList.Where(filter.Match).ToList();
+                    txtDeadletterText.Text = string.Empty;
+                    deadletterPropertyListView.Items.Clear();
+                    deadletterPropertyGrid.SelectedObject = null;
                 }
-
-                if (deadletterFilterFromDate != null || deadletterFilterToDate != null)
+                else
                 {
-                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, deadletterFilterFromDate, deadletterFilterToDate)).ToList();
+                    if (deadletterDataGridView.Rows.Count > 0)
+                    {
+                        deadletterMessage = null;
+                        deadletterDataGridView_RowEnter(this, new DataGridViewCellEventArgs(0, 0));
+                    }
                 }
-
-                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                deadletterBindingSource.DataSource = bindingList;
-                deadletterDataGridView.DataSource = deadletterBindingSource;
-                writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, deadletterFilterFromDate ?? DateTime.MinValue, deadletterFilterToDate ?? DateTime.MaxValue, bindingList.Count));
             }
         }
 
