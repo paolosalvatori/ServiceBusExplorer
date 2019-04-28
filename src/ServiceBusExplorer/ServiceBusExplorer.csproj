@@ -277,6 +277,12 @@
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Enums\FormTypeEnum.cs" />
+    <Compile Include="Forms\DateTimeRangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DateTimeRangeForm.Designer.cs">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EventDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -574,6 +580,9 @@
     <EmbeddedResource Include="Forms\CollectionEditorForm.resx">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DateTimeRangeForm.resx">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EventDataForm.resx">
       <DependentUpon>EventDataForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -697,6 +706,8 @@
     <Content Include="Images\clipboard_48.png" />
     <Content Include="Images\Document notepad Template.png" />
     <Content Include="Images\Document.png" />
+    <None Include="Images\FindByDateExtension.png" />
+    <None Include="Images\FindByDateExtensionRaised.png" />
     <Content Include="Images\groupofusers.png" />
     <Content Include="Images\groupofusers_grey.png" />
     <Content Include="Images\hub.png" />
