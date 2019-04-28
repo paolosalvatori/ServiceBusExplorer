@@ -43,7 +43,7 @@ using Microsoft.ServiceBus.Messaging;
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     /// <summary>
-    ///  This class is used to serialize and deserialize XML request.
+    ///  This class is used to serialize and deserialize XML requests.
     /// </summary>
     public static class ImportExportHelper
     {
@@ -175,7 +175,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
         /// <param name="entityList">The list of entities to serialize.</param>
-        /// <returns>A XML string.</returns>
+        /// <returns>An XML string.</returns>
         public async static Task<string> ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<IExtensibleDataObject> entityList)
         {
             if (entityList != null &&
@@ -293,7 +293,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Deserialize the xml string into an object instance.
+        /// Deserialize an XML string into an object instance.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
         /// <param name="xml">The string that must be deserialized.</param>
@@ -324,8 +324,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets the collection of properties.
         /// </summary>
         /// <param name="type">The type of the object to get the properties for.</param>
-        /// <param name="canRead">Gets a value indicating whether the property can be read.</param>
-        /// <param name="canWrite">TGets a value indicating whether the property can be written.</param>
+        /// <param name="canRead">A value indicating whether the property can be read.</param>
+        /// <param name="canWrite">A value indicating whether the property can be written.</param>
         /// <returns><see cref="PropertyDescriptorCollection"/> of bindable properties.</returns>
         private static void GetProperties(Type type, bool canRead, bool canWrite)
         {
@@ -351,7 +351,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Reads a property value from an Xml document and saves it to the propertyValue dictionary.
+        /// Reads a property value from an XML document and saves it to a propertyValue dictionary.
         /// </summary>
         /// <param name="propertyDictionary">The dictionary containing the definition of properties.</param>
         /// <param name="propertyValue">The dictionary containing the value of properties.</param>
@@ -435,7 +435,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Sets the value of the properties of an object passes as a parameter.
+        /// Sets the value of the properties of an object passed as a parameter.
         /// </summary>
         /// <typeparam name="T">The object type.</typeparam>
         /// <param name="propertyDictionary">The dictionary containing the definition of properties.</param>
@@ -452,10 +452,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Maps a class to the corresponding name of the Xml node.
+        /// Maps a class to the corresponding name of the XML node.
         /// </summary>
         /// <param name="type">A Type object.</param>
-        /// <returns>The name of the Xml node.</returns>
+        /// <returns>The name of the XML node.</returns>
         private static string MapClassToEntity(Type type)
         {
             if (type == null ||
@@ -494,7 +494,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
         /// <param name="xmlWriter">The XmlWriter object to use.</param>
         /// <param name="entity">The entity to serialize.</param>
-        /// <returns>A XML string.</returns>
+        /// <returns>An XML string.</returns>
         private async static Task SerializeEntity(ServiceBusHelper serviceBusHelper, XmlWriter xmlWriter, object entity)
         {
             if (xmlWriter == null ||
@@ -642,75 +642,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
             xmlWriter.WriteEndElement();
-            switch (typeName)
-            {
-                case QueueDescriptionClass:
-                    var queueDescription = entity as QueueDescription;
-                    if (queueDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(QueueExported, queueDescription.Path));
-                    }
-                    break;
-                case TopicDescriptionClass:
-                    var topicDescription = entity as TopicDescription;
-                    if (topicDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(TopicExported, topicDescription.Path));
-                    }
-                    break;
-                case RelayDescriptionClass:
-                    var relayDescription = entity as RelayDescription;
-                    if (relayDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(RelayExported, relayDescription.Path));
-                    }
-                    break;
-                case SubscriptionDescriptionClass:
-                    var subscriptionDescription = entity as SubscriptionDescription;
-                    if (subscriptionDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(SubscriptionExported,
-                                                      subscriptionDescription.Name,
-                                                      subscriptionDescription.TopicPath));
-                    }
-                    break;
-                case RuleDescriptionClass:
-                    var ruleDescription = entity as RuleDescription;
-                    if (ruleDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(RuleExported,
-                                                      ruleDescription.Name));
-                    }
-                    break;
-                case EventHubDescriptionClass:
-                    var eventHubDescription = entity as EventHubDescription;
-                    if (eventHubDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(EventHubExported, eventHubDescription.Path));
-                    }
-                    break;
-                case ConsumerGroupDescriptionClass:
-                    var consumerGroupDescription = entity as ConsumerGroupDescription;
-                    if (consumerGroupDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(ConsumerGroupExported, consumerGroupDescription.Name));
-                    }
-                    break;
-                case NotificationHubDescriptionClass:
-                    var notificationHubDescription = entity as NotificationHubDescription;
-                    if (notificationHubDescription != null)
-                    {
-                        MainForm.StaticWriteToLog(string.Format(NotificationHubExported, notificationHubDescription.Path));
-                    }
-                    break;
-            }
         }
 
         /// <summary>
-        /// Creates the queues which xml definition is contained in the collection passed as a parameter.
+        /// Creates the queues whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="queues">The IEnumerable<XElement/> collection containing the xml definition of the queues to create.</param>
+        /// <param name="queues">The IEnumerable<XElement/> collection containing the XML definition of the queues to create.</param>
         private static void CreateQueues(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> queues)
         {
             try
@@ -782,10 +720,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the topics which xml definition is contained in the collection passed as a parameter.
+        /// Creates the topics whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="topics">The IEnumerable<XElement/> collection containing the xml definition of the topics to create.</param>
+        /// <param name="topics">The IEnumerable<XElement/> collection containing the XML definition of the topics to create.</param>
         private static void CreateTopics(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> topics)
         {
             try
@@ -866,10 +804,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the relays which xml definition is contained in the collection passed as a parameter.
+        /// Creates the relays whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="relays">The IEnumerable<XElement/> collection containing the xml definition of the relays to create.</param>
+        /// <param name="relays">The IEnumerable<XElement/> collection containing the XML definition of the relays to create.</param>
         private static void CreateRelays(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> relays)
         {
             try
@@ -941,10 +879,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the event hubs which xml definition is contained in the collection passed as a parameter.
+        /// Creates the event hubs whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="eventHubs">The IEnumerable<XElement/> collection containing the xml definition of the event hubs to create.</param>
+        /// <param name="eventHubs">The IEnumerable<XElement/> collection containing the XML definition of the event hubs to create.</param>
         private static void CreateEventHubs(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> eventHubs)
         {
             try
@@ -1025,10 +963,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the consumer groups which xml definition is contained in the collection passed as a parameter.
+        /// Creates the consumer groups whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="consumerGroups">The IEnumerable<XElement/> collection containing the xml definition of the consumer groups to create.</param>
+        /// <param name="consumerGroups">The IEnumerable<XElement/> collection containing the XML definition of the consumer groups to create.</param>
         private static void CreateConsumerGroups(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> consumerGroups)
         {
             try
@@ -1081,11 +1019,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the subscriptions which xml definition is contained in the collection passed as a parameter.
+        /// Creates the subscriptions whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="topicDescription">A description of the topic to which to add the subscription.</param>
-        /// <param name="subscriptions">The IEnumerable<XElement/> collection containing the xml definition of the subscriptions to create.</param>
+        /// <param name="topicDescription">A description of the topic to which to add the subscriptions.</param>
+        /// <param name="subscriptions">The IEnumerable<XElement/> collection containing the XML definition of the subscriptions to create.</param>
         private static void CreateSubscriptions(ServiceBusHelper serviceBusHelper, TopicDescription topicDescription, IEnumerable<XElement> subscriptions)
         {
             try
@@ -1185,10 +1123,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the authorization rules which xml definition is contained in the collection passed as a parameter.
+        /// Creates the authorization rules whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
-        /// <param name="rules">The IEnumerable<XElement/> collection containing the xml definition of the authorization rules to create.</param>
-        /// <param name="isCloudNamespace">True if it's cloud namespace, false otherwise.</param>
+        /// <param name="rules">The IEnumerable<XElement/> collection containing the XML definition of the authorization rules to create.</param>
+        /// <param name="isCloudNamespace">True if it's a cloud namespace, false otherwise.</param>
         private static List<AuthorizationRule> CreateAuthorizationRules(IEnumerable<XElement> rules, bool isCloudNamespace)
         {
             if (rules == null)
@@ -1313,9 +1251,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the rules which xml definition is contained in the collection passed as a parameter.
+        /// Creates the rules whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
-        /// <param name="rules">The IEnumerable<XElement/> collection containing the xml definition of the rules to create.</param>
+        /// <param name="rules">The IEnumerable<XElement/> collection containing the XML definition of the rules to create.</param>
         private static List<RuleDescription> CreateRules(IEnumerable<XElement> rules)
         {
             if (rules == null)
@@ -1378,7 +1316,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the filter which xml definition is contained in the element parameter.
+        /// Creates the filter whose XML definition is contained in the element parameter.
         /// </summary>
         /// <param name="filter">The XElement containing the filter definition.</param>
         /// <returns>The filter.</returns>
@@ -1432,7 +1370,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the action which xml definition is contained in the element parameter.
+        /// Creates the action whose XML definition is contained in the element parameter.
         /// </summary>
         /// <param name="action">The XElement containing the action definition.</param>
         /// <returns>The action.</returns>
@@ -1478,10 +1416,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the apnsCredential which xml definition is contained in the element parameter.
+        /// Creates the ApnsCredential whose XML definition is contained in the element parameter.
         /// </summary>
-        /// <param name="element">The XElement containing the apnsCredential definition.</param>
-        /// <returns>The apnsCredential.</returns>
+        /// <param name="element">The XElement containing the ApnsCredential definition.</param>
+        /// <returns>The ApnsCredential.</returns>
         private static ApnsCredential CreateApnsCredential(XElement element)
         {
             if (element == null)
@@ -1523,10 +1461,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the wnsCredential which xml definition is contained in the element parameter.
+        /// Creates the WnsCredential whose XML definition is contained in the element parameter.
         /// </summary>
-        /// <param name="element">The XElement containing the wnsCredential definition.</param>
-        /// <returns>The wnsCredential.</returns>
+        /// <param name="element">The XElement containing the WnsCredential definition.</param>
+        /// <returns>The WnsCredential.</returns>
         private static WnsCredential CreateWnsCredential(XElement element)
         {
             if (element == null)
@@ -1568,10 +1506,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates the notification hubs which xml definition is contained in the collection passed as a parameter.
+        /// Creates the notification hubs whose XML definition is contained in the collection passed as a parameter.
         /// </summary>
         /// <param name="serviceBusHelper">A ServiceBusHelper object.</param>
-        /// <param name="notificationHubs">The IEnumerable<XElement/> collection containing the xml definition of the notification hubs to create.</param>
+        /// <param name="notificationHubs">The IEnumerable<XElement/> collection containing the XML definition of the notification hubs to create.</param>
         private static void CreateNotificationHubs(ServiceBusHelper serviceBusHelper, IEnumerable<XElement> notificationHubs)
         {
             try
