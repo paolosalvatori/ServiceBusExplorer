@@ -240,6 +240,12 @@
     <Compile Include="Enums\EncodingType.cs" />
     <Compile Include="Enums\EntityType.cs" />
     <Compile Include="Enums\MessageDirection.cs" />
+    <Compile Include="Forms\NewVersionAvailableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewVersionAvailableForm.Designer.cs">
+      <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ChangeQueueStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -562,6 +568,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\HandleQueueControl.resx">
       <DependentUpon>HandleQueueControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewVersionAvailableForm.resx">
+      <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>

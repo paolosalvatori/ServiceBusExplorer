@@ -21,14 +21,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return GetFormattedFileVersion(assembly);
         }
 
-        public static bool IsLatestVersion()
+        public static bool IsLatestVersion(out ReleaseInfo nextReleaseInfo)
         {
-            var nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion().GetAwaiter().GetResult();
+            nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion().GetAwaiter().GetResult();
 
             var currentVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             var currentVersion = new Version(currentVersionInfo.FileMajorPart, currentVersionInfo.FileMinorPart, currentVersionInfo.FileBuildPart);
 
-            return nextReleaseInfo.Version.CompareTo(currentVersion) > 0;
+            return currentVersion.CompareTo(nextReleaseInfo.Version) >= 0;
         }
 
         static string GetFormattedFileVersion(Assembly assembly)

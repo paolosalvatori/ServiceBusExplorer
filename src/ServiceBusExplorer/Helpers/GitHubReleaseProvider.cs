@@ -28,20 +28,40 @@
     {
         public class Release
         {
+            [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
             public Uri Url { get; set; }
+
+            [JsonProperty("html_url", NullValueHandling = NullValueHandling.Ignore)]
             public Uri HtmlUrl { get; set; }
+
+            [JsonProperty("tag_name", NullValueHandling = NullValueHandling.Ignore)]
             public string TagName { get; set; }
+
+            [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
             public string Name { get; set; }
+
+            [JsonProperty("draft", NullValueHandling = NullValueHandling.Ignore)]
             public bool? Draft { get; set; }
+
+            [JsonProperty("prerelease", NullValueHandling = NullValueHandling.Ignore)]
             public bool? Prerelease { get; set; }
+
+            [JsonProperty("assets", NullValueHandling = NullValueHandling.Ignore)]
             public List<Asset> Assets { get; set; }
+
+            [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
             public string Body { get; set; }
         }
 
         public class Asset
         {
+            [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
             public string Name { get; set; }
+
+            [JsonProperty("label", NullValueHandling = NullValueHandling.Ignore)]
             public string Label { get; set; }
+
+            [JsonProperty("browser_download_url", NullValueHandling = NullValueHandling.Ignore)]
             public Uri BrowserDownloadUrl { get; set; }
         }
 

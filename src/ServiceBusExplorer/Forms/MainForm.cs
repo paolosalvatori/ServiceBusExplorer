@@ -279,6 +279,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             GetServiceBusNamespaceSettingsFromConfiguration();
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
+
+            if (!VersionProvider.IsLatestVersion(out var releaseInfo))
+            {
+                linkLabelNewVersionAvailable.Visible = true;
+            }
+            else
+            {
+                linkLabelNewVersionAvailable.Visible = false;
+            }
         }
 
         private void UpdateSavedConnectionsMenu()
@@ -6667,7 +6676,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 HandleException(ex);
             }
         }
-        #endregion
 
+        private void linkLabelNewVersionAvailable_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (var form = new NewVersionAvailableForm())
+            {
+                form.ShowDialog();
+            }
+        }
+        #endregion
     }
 }
