@@ -279,10 +279,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             GetServiceBusNamespaceSettingsFromConfiguration();
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
+            DisplayNewVersionInformation();
+        }
 
-            if (!VersionProvider.IsLatestVersion(out var releaseInfo))
+        void DisplayNewVersionInformation()
+        {
+            if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
             {
                 linkLabelNewVersionAvailable.Visible = true;
+                linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
             }
             else
             {

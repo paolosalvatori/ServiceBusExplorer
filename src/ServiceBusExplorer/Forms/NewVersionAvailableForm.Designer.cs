@@ -65,7 +65,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.lblExeVersion.AutoSize = true;
             this.lblExeVersion.BackColor = System.Drawing.Color.Transparent;
-            this.lblExeVersion.Location = new System.Drawing.Point(237, 189);
+            this.lblExeVersion.Location = new System.Drawing.Point(22, 100);
             this.lblExeVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblExeVersion.Name = "lblExeVersion";
             this.lblExeVersion.Size = new System.Drawing.Size(108, 17);
@@ -77,7 +77,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(237, 155);
+            this.label2.Location = new System.Drawing.Point(22, 66);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(205, 20);
@@ -90,7 +90,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.labelLatestVersion.BackColor = System.Drawing.Color.Transparent;
             this.labelLatestVersion.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold);
             this.labelLatestVersion.ForeColor = System.Drawing.Color.Red;
-            this.labelLatestVersion.Location = new System.Drawing.Point(237, 220);
+            this.labelLatestVersion.Location = new System.Drawing.Point(22, 131);
             this.labelLatestVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelLatestVersion.Name = "labelLatestVersion";
             this.labelLatestVersion.Size = new System.Drawing.Size(244, 20);
@@ -102,7 +102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.linkLabelnewVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelnewVersion.AutoSize = true;
             this.linkLabelnewVersion.BackColor = System.Drawing.Color.Transparent;
-            this.linkLabelnewVersion.Location = new System.Drawing.Point(237, 254);
+            this.linkLabelnewVersion.Location = new System.Drawing.Point(22, 165);
             this.linkLabelnewVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelnewVersion.Name = "linkLabelnewVersion";
             this.linkLabelnewVersion.Size = new System.Drawing.Size(266, 17);
@@ -116,7 +116,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.labelReleaseInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelReleaseInfo.AutoSize = true;
             this.labelReleaseInfo.BackColor = System.Drawing.Color.Transparent;
-            this.labelReleaseInfo.Location = new System.Drawing.Point(237, 285);
+            this.labelReleaseInfo.Location = new System.Drawing.Point(22, 196);
             this.labelReleaseInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelReleaseInfo.Name = "labelReleaseInfo";
             this.labelReleaseInfo.Size = new System.Drawing.Size(78, 17);

@@ -21,9 +21,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             return GetFormattedFileVersion(assembly);
         }
 
-        public static bool IsLatestVersion(out ReleaseInfo nextReleaseInfo)
+        public static bool IsLatestVersion(out ReleaseInfo nextReleaseInfo, WriteToLogDelegate writeToLog = null)
         {
-            nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion().GetAwaiter().GetResult();
+            nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion(writeToLog).GetAwaiter().GetResult();
 
             var currentVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             var currentVersion = new Version(currentVersionInfo.FileMajorPart, currentVersionInfo.FileMinorPart, currentVersionInfo.FileBuildPart);

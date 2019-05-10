@@ -2772,11 +2772,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // linkLabelNewVersionAvailable
             // 
+            this.linkLabelNewVersionAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelNewVersionAvailable.AutoSize = true;
             this.linkLabelNewVersionAvailable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Red;
-            this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Red;
-            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1138, 15);
+            this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Navy;
+            this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Navy;
+            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1050, 15);
+            this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelNewVersionAvailable.Name = "linkLabelNewVersionAvailable";
             this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(174, 18);
             this.linkLabelNewVersionAvailable.TabIndex = 24;

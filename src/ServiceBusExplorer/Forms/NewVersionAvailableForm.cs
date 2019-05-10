@@ -84,7 +84,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 labelLatestVersion.Text = $"New Release {releaseInfo.Version} Available";
                 linkLabelnewVersion.Text = releaseInfo.ReleaseUri.ToString();
                 linkLabelnewVersion.Visible = true;
-                labelReleaseInfo.Text = releaseInfo.Body;
+                labelReleaseInfo.Text = releaseInfo.Body + Environment.NewLine + releaseInfo.ZipPackageUri;
                 labelReleaseInfo.Visible = true;
             }
             else
