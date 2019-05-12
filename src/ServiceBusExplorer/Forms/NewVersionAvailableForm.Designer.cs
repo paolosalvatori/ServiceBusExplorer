@@ -102,6 +102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.linkLabelnewVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelnewVersion.AutoSize = true;
             this.linkLabelnewVersion.BackColor = System.Drawing.Color.Transparent;
+            this.linkLabelnewVersion.ForeColor = System.Drawing.Color.Navy;
             this.linkLabelnewVersion.Location = new System.Drawing.Point(22, 165);
             this.linkLabelnewVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelnewVersion.Name = "linkLabelnewVersion";
