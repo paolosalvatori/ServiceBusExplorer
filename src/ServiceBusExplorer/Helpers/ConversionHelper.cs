@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         #endregion
 
         #region Static Constructor
-		static ConversionHelper()
+        static ConversionHelper()
         {
             clrToEDMMappingDictionary.Add(typeof(byte), "Edm.Byte");
             clrToEDMMappingDictionary.Add(typeof(short), "Edm.Int16");
@@ -54,8 +54,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             clrToEDMMappingDictionary.Add(typeof(Guid), "Edm.Guid");
             clrToEDMMappingDictionary.Add(typeof(DateTime), "Edm.DateTime");
             clrToEDMMappingDictionary.Add(typeof(bool), "Edm.Boolean");
-        } 
-	    #endregion
+        }
+        #endregion
 
         #region Public Static Methods
         public static object MapEDMTypeToCLRType(string type, string value, bool isNull)
@@ -129,6 +129,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return Convert.ChangeType(value, typeof(decimal));
                 case "DateTime":
                     return Convert.ChangeType(value, typeof(DateTime));
+                case "TimeSpan":
+                    if (value is TimeSpan t) return t;
+                    if (value is string st) return TimeSpan.Parse(st);
+                    return TimeSpan.Parse((string)value);
                 case "Guid":
                     return new Guid(value.ToString());
             }
@@ -143,7 +147,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 return clrToEDMMappingDictionary[type];
             }
             return null;
-        } 
+        }
         #endregion
     }
 }

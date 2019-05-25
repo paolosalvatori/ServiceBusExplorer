@@ -11,7 +11,7 @@ The Service Bus Explorer allows users to connect to a Service Bus namespace and 
 # Installation
 ## Using [Chocolatey](https://chocolatey.org/install)
 ```
-chocolatey install ServiceBusExplorer
+choco install ServiceBusExplorer
 ```
 
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
@@ -30,6 +30,10 @@ Here are some guidelines concerning contributions:
 - Write unit tests, if applicable
 
 If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
+
+# Development Environment
+
+Visual Studio 2017 15.7 or later is required to build the solution.
 
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
@@ -51,7 +55,7 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 # GitHub
 The source code of the tool is now available on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
 
-<a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png).</a>
+<a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png)</a>
 
 # Videos
 For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
@@ -60,12 +64,12 @@ For more information on how to use the Service Bus Explorer, see the following v
 - [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
 
 # Alternative Service Bus Management Tools
-Service Bus Explorer is only on of the management tools available for Azure Service Bus.
+Service Bus Explorer is only one of the management tools available for Azure Service Bus.
 
 Here are a couple of alternatives:
 
 - **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
-- **ServiceBus360** _(paid with free trial, SaaS, web based)_
+- **Serverless360** _(paid with free trial, SaaS, web based)_
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
 
 # License

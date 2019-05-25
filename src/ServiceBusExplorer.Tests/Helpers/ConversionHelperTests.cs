@@ -26,5 +26,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
             var convertedGuid = ConversionHelper.MapStringTypeToCLRType("Guid", guidStr);
             Assert.AreEqual(guidStr.ToLower(), convertedGuid.ToString());
         }
+
+        [Theory]
+        [TestCase("00:00:00")]
+        [TestCase("3:44:55")]
+        [TestCase("03:44:55")]
+        [TestCase("1:00:00:00.0000000")] // one day
+        public void MapStringTypeToCLRType_ValueIsTimeSpanString_ReturnsEqualTimespanObject(string timespanStr)
+        {
+            var convertedTimespan = ConversionHelper.MapStringTypeToCLRType("TimeSpan", timespanStr);
+            Assert.AreEqual(convertedTimespan, TimeSpan.Parse(timespanStr));
+        }
+
+        [Test]
+        public void MapStringTypeToCLRType_ValueIsTimeSpan_ReturnsEqualTimespanObject()
+        {
+            var convertedTimespan = ConversionHelper.MapStringTypeToCLRType("TimeSpan", TimeSpan.Zero);
+            Assert.AreEqual(convertedTimespan, TimeSpan.Zero);
+        }
     }
 }

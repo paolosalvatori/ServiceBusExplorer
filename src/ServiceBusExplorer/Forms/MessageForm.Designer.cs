@@ -209,7 +209,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -335,12 +334,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // cboSenderInspector
             // 
-            this.cboSenderInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.cboSenderInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboSenderInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSenderInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboSenderInspector.FormattingEnabled = true;
             this.cboSenderInspector.Location = new System.Drawing.Point(120, 509);
+            this.cboSenderInspector.MaximumSize = new System.Drawing.Size(198, 0);
             this.cboSenderInspector.Name = "cboSenderInspector";
             this.cboSenderInspector.Size = new System.Drawing.Size(198, 21);
             this.cboSenderInspector.TabIndex = 152;

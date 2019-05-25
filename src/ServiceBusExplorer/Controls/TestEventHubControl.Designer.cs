@@ -588,7 +588,7 @@
             this.radioButtonJsonTemplate.Size = new System.Drawing.Size(94, 17);
             this.radioButtonJsonTemplate.TabIndex = 18;
             this.radioButtonJsonTemplate.TabStop = true;
-            this.radioButtonJsonTemplate.Text = "Json Template";
+            this.radioButtonJsonTemplate.Text = "JSON Template";
             this.radioButtonJsonTemplate.UseVisualStyleBackColor = true;
             // 
             // radioButtonXmlTemplate
@@ -601,7 +601,7 @@
             this.radioButtonXmlTemplate.Size = new System.Drawing.Size(89, 17);
             this.radioButtonXmlTemplate.TabIndex = 17;
             this.radioButtonXmlTemplate.TabStop = true;
-            this.radioButtonXmlTemplate.Text = "Xml Template";
+            this.radioButtonXmlTemplate.Text = "XML Template";
             this.radioButtonXmlTemplate.UseVisualStyleBackColor = true;
             // 
             // radioButtonTextFile

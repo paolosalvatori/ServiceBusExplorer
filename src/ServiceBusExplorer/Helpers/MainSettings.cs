@@ -241,7 +241,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return EncodingType;
             }
 
-            throw new InvalidOperationException("Unexpected value ");
+            throw new InvalidOperationException(String.Format("Unexpected value for setting: {0}", setting));
         }
 
         #endregion

@@ -82,7 +82,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string MaxDeviceIdDescription = "Gets or sets the maximum device id.";
         private const string MinValueDescription = "Gets or sets the minimum value.";
         private const string MaxValueDescription = "Gets or sets the maximum value.";
-        private const string MessageFormatDescription = "Gets or sets the message format: Json or Xml.";
+        private const string MessageFormatDescription = "Gets or sets the message format: JSON or XML.";
         private const string CityDescription = "Gets or sets the city.";
         private const string CountryDescription = "Gets or sets the country.";
         private const string LabelDescription = "Gets or sets the Label property of the BrokeredMessage.";

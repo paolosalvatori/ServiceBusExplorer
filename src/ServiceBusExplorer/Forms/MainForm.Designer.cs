@@ -1,5 +1,5 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -36,6 +36,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +75,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.deleteEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshRootMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyNamespaceUrlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyConnectionStringMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator68 = new System.Windows.Forms.ToolStripSeparator();
             this.exportEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEntityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
@@ -319,7 +323,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
-            this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -405,6 +408,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.connectToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.connectToolStripMenuItem.Text = "&Connect";
             this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
+            // 
+            // savedConnectionsToolStripMenuItem
+            // 
+            this.savedConnectionsToolStripMenuItem.Enabled = false;
+            this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
+            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
             // 
             // toolStripSeparatorMain
             // 
@@ -594,6 +604,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusTreeView.SelectedImageIndex = 0;
             this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
             this.serviceBusTreeView.TabIndex = 13;
+            this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             this.serviceBusTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyUp);
             // 
@@ -750,18 +761,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.deleteEntityMenuItem,
             this.refreshRootMenuItem,
             this.toolStripSeparator9,
+            this.copyNamespaceUrlMenuItem,
+            this.copyConnectionStringMenuItem,
+            this.toolStripSeparator68,
             this.exportEntityMenuItem,
             this.importEntityMenuItem,
             this.toolStripSeparator15,
             this.expandSubTreeMenuItem1,
             this.collapseSubTreeMenuItem1});
             this.rootContextMenuStrip.Name = "rootContextMenuStrip";
-            this.rootContextMenuStrip.Size = new System.Drawing.Size(174, 148);
+            this.rootContextMenuStrip.Size = new System.Drawing.Size(202, 198);
             // 
             // deleteEntityMenuItem
             // 
             this.deleteEntityMenuItem.Name = "deleteEntityMenuItem";
-            this.deleteEntityMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.deleteEntityMenuItem.Size = new System.Drawing.Size(201, 22);
             this.deleteEntityMenuItem.Text = "Delete Entities";
             this.deleteEntityMenuItem.ToolTipText = "Delete the entities contained in the current namespace.";
             this.deleteEntityMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -770,7 +784,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.refreshRootMenuItem.Name = "refreshRootMenuItem";
             this.refreshRootMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRootMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.refreshRootMenuItem.Size = new System.Drawing.Size(201, 22);
             this.refreshRootMenuItem.Text = "Refresh Entities";
             this.refreshRootMenuItem.ToolTipText = "Refresh the entities contained in the current namespace.";
             this.refreshRootMenuItem.Click += new System.EventHandler(this.refreshEntityMenuItem_Click);
@@ -778,12 +792,33 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(198, 6);
+            // 
+            // copyNamespaceUrlMenuItem
+            // 
+            this.copyNamespaceUrlMenuItem.Name = "copyNamespaceUrlMenuItem";
+            this.copyNamespaceUrlMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyNamespaceUrlMenuItem.Text = "Copy Namespace URL";
+            this.copyNamespaceUrlMenuItem.ToolTipText = "Copy Namespace URL to clipboard";
+            this.copyNamespaceUrlMenuItem.Click += new System.EventHandler(this.copyNamespaceUrlMenuItem_Click);
+            // 
+            // copyConnectionStringMenuItem
+            // 
+            this.copyConnectionStringMenuItem.Name = "copyConnectionStringMenuItem";
+            this.copyConnectionStringMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyConnectionStringMenuItem.Text = "Copy Connection String";
+            this.copyConnectionStringMenuItem.ToolTipText = "Copy Namespace connection string to clipboard";
+            this.copyConnectionStringMenuItem.Click += new System.EventHandler(this.copyConnectionStringMenuItem_Click);
+            // 
+            // toolStripSeparator68
+            // 
+            this.toolStripSeparator68.Name = "toolStripSeparator68";
+            this.toolStripSeparator68.Size = new System.Drawing.Size(198, 6);
             // 
             // exportEntityMenuItem
             // 
             this.exportEntityMenuItem.Name = "exportEntityMenuItem";
-            this.exportEntityMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.exportEntityMenuItem.Size = new System.Drawing.Size(201, 22);
             this.exportEntityMenuItem.Text = "Export Entities";
             this.exportEntityMenuItem.ToolTipText = "Export entity definition to file.";
             this.exportEntityMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -791,7 +826,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // importEntityMenuItem
             // 
             this.importEntityMenuItem.Name = "importEntityMenuItem";
-            this.importEntityMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.importEntityMenuItem.Size = new System.Drawing.Size(201, 22);
             this.importEntityMenuItem.Text = "Import Entities";
             this.importEntityMenuItem.ToolTipText = "Import entity definition from file.";
             this.importEntityMenuItem.Click += new System.EventHandler(this.importEntity_Click);
@@ -799,12 +834,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(198, 6);
             // 
             // expandSubTreeMenuItem1
             // 
             this.expandSubTreeMenuItem1.Name = "expandSubTreeMenuItem1";
-            this.expandSubTreeMenuItem1.Size = new System.Drawing.Size(173, 22);
+            this.expandSubTreeMenuItem1.Size = new System.Drawing.Size(201, 22);
             this.expandSubTreeMenuItem1.Text = "Expand Subtree";
             this.expandSubTreeMenuItem1.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem1.Click += new System.EventHandler(this.expandEntity_Click);
@@ -812,7 +847,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem1
             // 
             this.collapseSubTreeMenuItem1.Name = "collapseSubTreeMenuItem1";
-            this.collapseSubTreeMenuItem1.Size = new System.Drawing.Size(173, 22);
+            this.collapseSubTreeMenuItem1.Size = new System.Drawing.Size(201, 22);
             this.collapseSubTreeMenuItem1.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem1.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem1.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1127,16 +1162,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copySubscriptionUrlMenuItem.Name = "copySubscriptionUrlMenuItem";
             this.copySubscriptionUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copySubscriptionUrlMenuItem.Text = "Copy Subscription Url";
-            this.copySubscriptionUrlMenuItem.ToolTipText = "Copy the subscription url to the clipboard.";
+            this.copySubscriptionUrlMenuItem.Text = "Copy Subscription URL";
+            this.copySubscriptionUrlMenuItem.ToolTipText = "Copy the subscription URL to the clipboard.";
             this.copySubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // copySubscriptionDeadletterSubscriptionUrlMenuItem
             // 
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Name = "copySubscriptionDeadletterSubscriptionUrlMenuItem";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Text = "Copy Deadletter Queue Url";
-            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.ToolTipText = "Copy the deadletter queue url to the clipboard.";
+            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Text = "Copy Deadletter Queue URL";
+            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator20
@@ -1354,8 +1389,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyTopicUrlMenuItem.Name = "copyTopicUrlMenuItem";
             this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.copyTopicUrlMenuItem.Text = "Copy Topic Url";
-            this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic url to the clipboard.";
+            this.copyTopicUrlMenuItem.Text = "Copy Topic URL";
+            this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyTopicUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator18
@@ -1448,8 +1483,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
             this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.changeStatusQueueMenuItem.Text = "Change Status Queue";
-            this.changeStatusQueueMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
+            this.changeStatusQueueMenuItem.Text = "Set Status";
             // 
             // deleteQueueMenuItem
             // 
@@ -1497,16 +1531,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyQueueUrlMenuItem.Name = "copyQueueUrlMenuItem";
             this.copyQueueUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copyQueueUrlMenuItem.Text = "Copy Queue Url";
-            this.copyQueueUrlMenuItem.ToolTipText = "Copy the queue url to the clipboard.";
+            this.copyQueueUrlMenuItem.Text = "Copy Queue URL";
+            this.copyQueueUrlMenuItem.ToolTipText = "Copy the queue URL to the clipboard.";
             this.copyQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // copyQueueDeadletterQueueUrlMenuItem
             // 
             this.copyQueueDeadletterQueueUrlMenuItem.Name = "copyQueueDeadletterQueueUrlMenuItem";
             this.copyQueueDeadletterQueueUrlMenuItem.Size = new System.Drawing.Size(308, 22);
-            this.copyQueueDeadletterQueueUrlMenuItem.Text = "Copy Deadletter Queue Url";
-            this.copyQueueDeadletterQueueUrlMenuItem.ToolTipText = "Copy the deadletter queue url to the clipboard.";
+            this.copyQueueDeadletterQueueUrlMenuItem.Text = "Copy Deadletter Queue URL";
+            this.copyQueueDeadletterQueueUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copyQueueDeadletterQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator25
@@ -2011,8 +2045,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyUrlNotificationHubMenuItem.Name = "copyUrlNotificationHubMenuItem";
             this.copyUrlNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.copyUrlNotificationHubMenuItem.Text = "Copy Notification Hub Url";
-            this.copyUrlNotificationHubMenuItem.ToolTipText = "Copy the notification hub url to the clipboard.";
+            this.copyUrlNotificationHubMenuItem.Text = "Copy Notification Hub URL";
+            this.copyUrlNotificationHubMenuItem.ToolTipText = "Copy the notification hub URL to the clipboard.";
             this.copyUrlNotificationHubMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator26
@@ -2198,8 +2232,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyEventHubUrlMenuItem.Name = "copyEventHubUrlMenuItem";
             this.copyEventHubUrlMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.copyEventHubUrlMenuItem.Text = "Copy Event Hub Url";
-            this.copyEventHubUrlMenuItem.ToolTipText = "Copy the topic url to the clipboard.";
+            this.copyEventHubUrlMenuItem.Text = "Copy Event Hub URL";
+            this.copyEventHubUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyEventHubUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator52
@@ -2412,8 +2446,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyPartitionUrlMenuItem.Name = "copyPartitionUrlMenuItem";
             this.copyPartitionUrlMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.copyPartitionUrlMenuItem.Text = "Copy Partition Url";
-            this.copyPartitionUrlMenuItem.ToolTipText = "Copy the partition url to the clipboard.";
+            this.copyPartitionUrlMenuItem.Text = "Copy Partition URL";
+            this.copyPartitionUrlMenuItem.ToolTipText = "Copy the partition URL to the clipboard.";
             this.copyPartitionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator54
@@ -2540,8 +2574,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyConsumerGroupUrlMenuItem.Name = "copyConsumerGroupUrlMenuItem";
             this.copyConsumerGroupUrlMenuItem.Size = new System.Drawing.Size(246, 22);
-            this.copyConsumerGroupUrlMenuItem.Text = "Copy Consumer Group Url";
-            this.copyConsumerGroupUrlMenuItem.ToolTipText = "Copy the consumer group url to the clipboard.";
+            this.copyConsumerGroupUrlMenuItem.Text = "Copy Consumer Group URL";
+            this.copyConsumerGroupUrlMenuItem.ToolTipText = "Copy the consumer group URL to the clipboard.";
             this.copyConsumerGroupUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator61
@@ -2710,8 +2744,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.copyRelayUrlMenuItem.Name = "copyRelayUrlMenuItem";
             this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.copyRelayUrlMenuItem.Text = "Copy Relay Url";
-            this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay url to the clipboard.";
+            this.copyRelayUrlMenuItem.Text = "Copy Relay URL";
+            this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay URL to the clipboard.";
             this.copyRelayUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
             // 
             // toolStripSeparator69
@@ -2735,13 +2769,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
             // 
-            // savedConnectionsToolStripMenuItem
-            // 
-            this.savedConnectionsToolStripMenuItem.Enabled = false;
-            this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
-            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2757,9 +2784,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.KeyPreview = true;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Service Bus Explorer 1.0.0";
+            this.Text = "Service Bus Explorer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
@@ -3095,6 +3121,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem renameQueueMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameTopicMenuItem;
         private System.Windows.Forms.ToolStripMenuItem savedConnectionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyNamespaceUrlMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyConnectionStringMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator68;
     }
 }
 

@@ -109,9 +109,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <returns>Returns true if the object is in JSON format, false otherwise.</returns>
         public static bool IsJson(string item)
         {
-            if (item == null)
+            if (string.IsNullOrEmpty(item))
             {
-                throw new ArgumentException("The item argument cannot be null.");
+                return false;
             }
             try
             {

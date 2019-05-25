@@ -140,7 +140,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             else
             {
-                textBox.Text = message;
+                textBox.Language = Language.Custom;
+                textBox.Text = string.IsNullOrEmpty(message) ? "" : message;
             }
         }
         #endregion

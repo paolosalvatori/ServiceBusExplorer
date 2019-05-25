@@ -59,14 +59,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         const string ServiceBusNamespacesNotConfigured = "Service bus accounts have not been properly configured in the configuration file.";
         const string ServiceBusNamespaceIsNullOrEmpty = "The connection string for service bus entry {0} is null or empty.";
         const string ServiceBusNamespaceIsWrong = "The connection string for service bus namespace {0} is in the wrong format.";
-        const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the uri and namespace for the service bus entry {0} is null or empty.";
+        const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the URI and namespace for the service bus entry {0} is null or empty.";
         const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceRuntimePortIsNullOrEmpty = "The runtime port for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceManagementPortIsNullOrEmpty = "The management port for the service bus namespace {0} is null or empty.";
-        const string ServiceBusNamespaceEndpointUriIsInvalid = "The endpoint uri for the service bus namespace {0} is invalid.";
+        const string ServiceBusNamespaceEndpointUriIsInvalid = "The endpoint URI for the service bus namespace {0} is invalid.";
         const string ServiceBusNamespaceSharedAccessKeyNameIsInvalid = "The SharedAccessKeyName for the service bus namespace {0} is invalid.";
         const string ServiceBusNamespaceSharedAccessKeyIsInvalid = "The SharedAccessKey for the service bus namespace {0} is invalid.";
 

@@ -60,7 +60,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -71,52 +71,17 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
       <HintPath>Libraries\FastColoredTextBox.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Azure.NotificationHubs">
-      <HintPath>..\packages\Microsoft.Azure.NotificationHubs.2.16.0.234\lib\net45-full\Microsoft.Azure.NotificationHubs.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Azure.Services.AppAuthentication, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\lib\net452\Microsoft.Azure.Services.AppAuthentication.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.2.4\lib\net451\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.4\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.4\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.ServiceBus.5.0.0\lib\net46\Microsoft.ServiceBus.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Design" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
@@ -275,6 +240,12 @@
     <Compile Include="Enums\EncodingType.cs" />
     <Compile Include="Enums\EntityType.cs" />
     <Compile Include="Enums\MessageDirection.cs" />
+    <Compile Include="Forms\ChangeQueueStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChangeQueueStatusForm.Designer.cs">
+      <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ConnectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -306,6 +277,12 @@
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Enums\FormTypeEnum.cs" />
+    <Compile Include="Forms\DateTimeRangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DateTimeRangeForm.Designer.cs">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EventDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -444,7 +421,6 @@
     <Compile Include="Helpers\OnOffDeviceEventDataGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceEventDataGenerator.cs" />
-    <Compile Include="Helpers\VersionHelper.cs" />
     <Compile Include="Helpers\VersionProvider.cs" />
     <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
     <Compile Include="Helpers\MonitorRuleList.cs" />
@@ -589,6 +565,9 @@
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChangeQueueStatusForm.resx">
+      <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ClipboardForm.resx">
       <DependentUpon>ClipboardForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -600,6 +579,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CollectionEditorForm.resx">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DateTimeRangeForm.resx">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EventDataForm.resx">
       <DependentUpon>EventDataForm.cs</DependentUpon>
@@ -642,6 +624,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConnectForm.resx">
       <DependentUpon>ConnectForm.cs</DependentUpon>
@@ -654,9 +637,6 @@
     <None Include="..\..\App.config">
       <SubType>Designer</SubType>
       <Link>App.config</Link>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -676,7 +656,16 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="GitVersion.CommandLine" Version="3.6.5" PrivateAssets="all" />
+    <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.16.0.234" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.4" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="5.0.0" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Add.ico" />
     <Content Include="Icons\Add.png" />
@@ -717,6 +706,8 @@
     <Content Include="Images\clipboard_48.png" />
     <Content Include="Images\Document notepad Template.png" />
     <Content Include="Images\Document.png" />
+    <None Include="Images\FindByDateExtension.png" />
+    <None Include="Images\FindByDateExtensionRaised.png" />
     <Content Include="Images\groupofusers.png" />
     <Content Include="Images\groupofusers_grey.png" />
     <Content Include="Images\hub.png" />
@@ -767,15 +758,6 @@
     <None Include="Images\MicrosoftAzureWhiteLogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets'))" />
-  </Target>
-  <Import Project="..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets" Condition="Exists('..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

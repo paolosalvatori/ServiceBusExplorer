@@ -73,9 +73,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         // Tooltips
         //***************************
         private const string ConnectionStringTooltip =
-            "Microsoft Azure Service Bus\r\n-----------------------------\r\nEndpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedSecretIssuer=<issuer>;SharedSecretValue=<secret>\r\n\r\nService Bus for Windows Server\r\n---------------------------------\r\nEndpoint=sb://<machinename>/<servicebusnamespace>;StsEndpoint=https://<machinename>:9355/<servicebusnamespace>;\r\nRuntimePort=9354;ManagementPort=9355;WindowsUsername=<username>;WindowsDomain=<domain/machinename>;WindowsPassword=<password>";
+            "Microsoft Azure Service Bus\r\n"
+            + "-----------------------------\r\n"
+            + "Endpoint=sb://<servicebusnamespace>.servicebus.windows.net/;SharedAccessKeyName=<SAS policy name>;SharedAccessKey=<SAS policy key>\r\n"
+            + "\r\n"
+            + "Service Bus for Windows Server\r\n"
+            + "---------------------------------\r\n"
+            + "Endpoint=sb://<machinename>/<servicebusnamespace>;StsEndpoint=https://<machinename>:9355/<servicebusnamespace>;\r\n"
+            + "RuntimePort=9354;ManagementPort=9355;WindowsUsername=<username>;WindowsDomain=<domain/machinename>;WindowsPassword=<password>";
 
-        private const string UriTooltip = "Gets or sets the Uri of the service bus namespace endpoint.";
+        private const string UriTooltip = "Gets or sets the URI of the service bus namespace endpoint.";
 
         //***************************
         // Messages
