@@ -60,7 +60,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -71,7 +71,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
@@ -236,10 +239,12 @@
     <Compile Include="Controls\HandleQueueControl.Designer.cs">
       <DependentUpon>HandleQueueControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Enums\DirectionType.cs" />
-    <Compile Include="Enums\EncodingType.cs" />
-    <Compile Include="Enums\EntityType.cs" />
-    <Compile Include="Enums\MessageDirection.cs" />
+    <Compile Include="Forms\ChangeQueueStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChangeQueueStatusForm.Designer.cs">
+      <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ConnectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -270,7 +275,12 @@
     <Compile Include="Forms\CollectionEditorForm.Designer.cs">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Enums\FormTypeEnum.cs" />
+    <Compile Include="Forms\DateTimeRangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DateTimeRangeForm.Designer.cs">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EventDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -350,139 +360,47 @@
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Helpers\AttributeList.cs" />
-    <Compile Include="Helpers\ConfigurationHelper.cs" />
-    <Compile Include="Helpers\MainSettings.cs" />
-    <Compile Include="Helpers\TwoFilesConfiguration.cs" />
-    <Compile Include="Helpers\UserPropertyWrapper.cs" />
-    <Compile Include="Helpers\DataGridViewDeleteButtonCell.cs" />
-    <Compile Include="Helpers\DeadLetterMessageHandler.cs" />
-    <Compile Include="Helpers\EventProcessorCheckpointHelper.cs" />
-    <Compile Include="Helpers\EventProcessorCheckpointInfo.cs" />
-    <Compile Include="Helpers\CustomMessageSessionAsyncHandler.cs" />
-    <Compile Include="Helpers\CustomMessageSessionAsyncHandlerConfiguration.cs" />
-    <Compile Include="Helpers\CustomMessageSessionAsyncHandlerFactory.cs" />
-    <Compile Include="Helpers\EventDataExtensions.cs" />
-    <Compile Include="Helpers\BrokeredMessageExtensions.cs" />
-    <Compile Include="Helpers\CategorySorter.cs" />
-    <Compile Include="Helpers\CircularList.cs" />
-    <Compile Include="Helpers\ClassResourceAttribute.cs" />
-    <Compile Include="Helpers\Constants.cs" />
-    <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\ConversionHelper.cs" />
-    <Compile Include="Helpers\CustomCollectionEditor.cs" />
-    <Compile Include="Helpers\CustomTextEditor.cs" />
-    <Compile Include="Helpers\BrokeredMessageTemplate.cs" />
-    <Compile Include="Helpers\EventDataTemplate.cs" />
-    <Compile Include="Helpers\EventProcessor.cs" />
-    <Compile Include="Helpers\EventProcessorCheckpointManager.cs" />
-    <Compile Include="Helpers\EventProcessorFactory.cs" />
-    <Compile Include="Helpers\EventProcessorFactoryConfiguration.cs" />
-    <Compile Include="Helpers\ExpressionBuilder.cs" />
-    <Compile Include="Helpers\GenericCopier.cs" />
-    <Compile Include="Helpers\IBrokeredMessageGenerator.cs" />
-    <Compile Include="Helpers\IEventDataGenerator.cs" />
-    <Compile Include="Helpers\IEventDataInspector.cs" />
-    <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
-    <Compile Include="Helpers\LanguageDetector.cs" />
-    <Compile Include="Helpers\LockDurationTooLowException.cs" />
-    <Compile Include="Helpers\LogBrokeredMessageInspector.cs" />
-    <Compile Include="Helpers\MessagingPurger.cs" />
-    <Compile Include="Helpers\MessageSerializationHelper.cs" />
-    <Compile Include="Helpers\NotificationHubAuthorizationRuleWrapper.cs" />
-    <Compile Include="Helpers\OnOffDeviceBrokeredMessageGenerator.cs" />
-    <Compile Include="Helpers\PropertyComparer.cs" />
-    <Compile Include="Helpers\TopicDescriptionExtensions.cs" />
-    <Compile Include="Helpers\QueueDescriptionExtensions.cs" />
-    <Compile Include="Helpers\ReadOnlyEditor.cs" />
-    <Compile Include="Helpers\ReadOnlyList.cs" />
-    <Compile Include="Helpers\RegistrationInfo.cs" />
-    <Compile Include="Helpers\ScrollBarHelper.cs" />
-    <Compile Include="Helpers\SortableBindingList.cs" />
-    <Compile Include="Helpers\StringBodyWriter.cs" />
-    <Compile Include="Helpers\OnOffDeviceEventDataGenerator.cs" />
-    <Compile Include="Helpers\ThresholdDeviceBrokeredMessageGenerator.cs" />
-    <Compile Include="Helpers\ThresholdDeviceEventDataGenerator.cs" />
-    <Compile Include="Helpers\VersionProvider.cs" />
-    <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
-    <Compile Include="Helpers\MonitorRuleList.cs" />
-    <Compile Include="Helpers\MonitorInfo.cs" />
-    <Compile Include="Helpers\CustomColorHelper.cs" />
-    <Compile Include="Helpers\CustomComponentModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Helpers\CustomDataContractBinarySerializer.cs" />
-    <Compile Include="Helpers\CustomMessageHeaderInfo.cs" />
-    <Compile Include="Helpers\CustomObject.cs" />
-    <Compile Include="Helpers\CustomPropertyDescriptor.cs" />
-    <Compile Include="Helpers\CustomSortOrder.cs" />
-    <Compile Include="Helpers\CustomStyleHelper.cs" />
-    <Compile Include="Helpers\CustomTypeDescriptionProvider.cs" />
-    <Compile Include="Helpers\JsonSerializerHelper.cs" />
-    <Compile Include="Helpers\JsonTimestampHelper.cs" />
-    <Compile Include="Helpers\DynamicCustomTypeDescriptor.cs" />
-    <Compile Include="Helpers\FilterExpressionHelper.cs" />
-    <Compile Include="Helpers\MessageAndPropertiesHelper.cs" />
-    <Compile Include="Helpers\MonitorRule.cs" />
-    <Compile Include="Helpers\NotificationInfo.cs" />
-    <Compile Include="Helpers\ConfigurationParameters.cs" />
-    <Compile Include="Helpers\PropertyFlags.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Helpers\EnumResourceAttribute.cs" />
-    <Compile Include="Helpers\IdAttribute.cs" />
-    <Compile Include="Helpers\IMessageDeferProvider.cs" />
-    <Compile Include="Helpers\InMemoryMessageDeferProvider.cs" />
-    <Compile Include="Helpers\IResourceAttribute.cs" />
-    <Compile Include="Helpers\MessagePropertyInfo.cs" />
-    <Compile Include="Helpers\PropertyDescriptorList.cs" />
-    <Compile Include="Helpers\PropertyResourceAttribute.cs" />
-    <Compile Include="Helpers\PropertySorter.cs" />
-    <Compile Include="Helpers\PropertyStateFlagsAttribute.cs" />
-    <Compile Include="Helpers\PropertyValuePaintEditor.cs" />
-    <Compile Include="Helpers\ProviderInstaller.cs" />
-    <Compile Include="Helpers\RelayWrapper.cs" />
-    <Compile Include="Helpers\RetryHelper.cs" />
-    <Compile Include="Helpers\RuleWrapper.cs" />
-    <Compile Include="Helpers\ImportExportHelper.cs" />
-    <Compile Include="Helpers\ServiceBusBindingHelper.cs" />
-    <Compile Include="Helpers\AuthorizationRuleWrapper.cs" />
-    <Compile Include="Helpers\SimpleSite.cs" />
-    <Compile Include="Helpers\StandardValueAttribute.cs" />
-    <Compile Include="Helpers\StandardValueEditor.cs" />
-    <Compile Include="Helpers\StandardValuesConverter.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Helpers\SubscriptionWrapper.cs" />
-    <Compile Include="Helpers\LogTraceListener.cs" />
-    <Compile Include="Helpers\ServiceBusHelperEventArgs.cs" />
-    <Compile Include="Helpers\ServiceBusNamespace.cs" />
-    <Compile Include="Helpers\ServiceBusHelper.cs" />
+    <Compile Include="UIHelpers\CategorySorter.cs" />
+    <Compile Include="UIHelpers\ControlHelper.cs" />
+    <Compile Include="UIHelpers\CustomCollectionEditor.cs" />
+    <Compile Include="UIHelpers\CustomColorHelper.cs" />
+    <Compile Include="UIHelpers\CustomComponentModel.cs" />
+    <Compile Include="UIHelpers\CustomObject.cs" />
+    <Compile Include="UIHelpers\CustomPropertyDescriptor.cs" />
+    <Compile Include="UIHelpers\CustomStyleHelper.cs" />
+    <Compile Include="UIHelpers\CustomTextEditor.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\TimeFilterInfo.cs" />
-    <Compile Include="Helpers\TimeSpanExtensions.cs" />
-    <Compile Include="Helpers\TreeViewHelper.cs" />
-    <Compile Include="Helpers\UrlSegmentWrapper.cs" />
-    <Compile Include="Helpers\WindowsNotificationXmlBuilder.cs" />
-    <Compile Include="Helpers\XmlHelper.cs" />
-    <Compile Include="Helpers\NativeMethods.cs" />
-    <Compile Include="Helpers\XmlLinqExtensions.cs" />
-    <Compile Include="Helpers\XmlSerializerHelper.cs" />
-    <Compile Include="Helpers\LogEventDataInspector.cs" />
-    <Compile Include="Helpers\ZipEventDataInspector.cs" />
-    <Compile Include="Helpers\ZipBrokeredMessageInspector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIHelpers\DataGridViewDeleteButtonCell.cs" />
+    <Compile Include="UIHelpers\DynamicCustomTypeDescriptor.cs" />
+    <Compile Include="UIHelpers\EventProcessor.cs" />
+    <Compile Include="UIHelpers\EventProcessorFactory.cs" />
+    <Compile Include="UIHelpers\EventProcessorFactoryConfiguration.cs" />
+    <Compile Include="UIHelpers\LanguageDetector.cs" />
+    <Compile Include="UIHelpers\MonitorRule.cs" />
+    <Compile Include="UIHelpers\MonitorRuleList.cs" />
+    <Compile Include="UIHelpers\NativeMethods.cs" />
+    <Compile Include="UIHelpers\PropertyDescriptorList.cs" />
+    <Compile Include="UIHelpers\PropertySorter.cs" />
+    <Compile Include="UIHelpers\PropertyValuePaintEditor.cs" />
+    <Compile Include="UIHelpers\ProviderInstaller.cs" />
+    <Compile Include="UIHelpers\ReadOnlyEditor.cs" />
+    <Compile Include="UIHelpers\ScrollBarHelper.cs" />
+    <Compile Include="UIHelpers\StandardValueEditor.cs" />
+    <Compile Include="UIHelpers\StandardValuesConverter.cs" />
+    <Compile Include="UIHelpers\TreeViewHelper.cs" />
     <EmbeddedResource Include="Controls\HandleConsumerGroupControl.resx">
       <DependentUpon>HandleConsumerGroupControl.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -553,6 +471,9 @@
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChangeQueueStatusForm.resx">
+      <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ClipboardForm.resx">
       <DependentUpon>ClipboardForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -564,6 +485,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CollectionEditorForm.resx">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DateTimeRangeForm.resx">
+      <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EventDataForm.resx">
       <DependentUpon>EventDataForm.cs</DependentUpon>
@@ -620,6 +544,10 @@
       <SubType>Designer</SubType>
       <Link>App.config</Link>
     </None>
+    <AdditionalFiles Include="..\DependencyValidation1\DependencyValidation1.layerdiagram">
+      <Link>DependencyValidation1.layerdiagram</Link>
+      <Visible>False</Visible>
+    </AdditionalFiles>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -643,10 +571,16 @@
     <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.16.0.234" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
+    <PackageReference Include="Microsoft.DependencyValidation.Analyzers">
+      <Version>0.10.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
+      <Version>4.5.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.4" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="5.0.0" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Add.ico" />
@@ -688,6 +622,8 @@
     <Content Include="Images\clipboard_48.png" />
     <Content Include="Images\Document notepad Template.png" />
     <Content Include="Images\Document.png" />
+    <None Include="Images\FindByDateExtension.png" />
+    <None Include="Images\FindByDateExtensionRaised.png" />
     <Content Include="Images\groupofusers.png" />
     <Content Include="Images\groupofusers_grey.png" />
     <Content Include="Images\hub.png" />
@@ -737,6 +673,37 @@
     <None Include="Images\MicrosoftAzureLogo.png" />
     <None Include="Images\MicrosoftAzureWhiteLogo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{d1ae04a9-ee81-4a2c-b235-df9aad821012}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventHubs\EventHubs.csproj">
+      <Project>{7eb5ea53-5031-4e4e-b78c-38d370af9a9f}</Project>
+      <Name>EventHubs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NotificationHub\NotificationHub.csproj">
+      <Project>{a82872b5-5a0e-49ed-bd6a-daac7b07a2ff}</Project>
+      <Name>NotificationHub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relay\Relay.csproj">
+      <Project>{c6f6fa8e-2003-421d-8f06-aaf6bf205f01}</Project>
+      <Name>Relay</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj">
+      <Project>{6e3c130a-6b47-47d1-84df-7270977e8857}</Project>
+      <Name>ServiceBus</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToMigrate\ToMigrate.csproj">
+      <Project>{82070314-a7e4-437e-81de-bdb558d2af15}</Project>
+      <Name>ToMigrate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

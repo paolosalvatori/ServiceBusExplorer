@@ -44,6 +44,8 @@ using FastColoredTextBoxNS;
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     using Enums;
+    using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+    using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 
     public partial class TestEventHubControl : UserControl
     {
@@ -78,8 +80,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string SenderThinkTimeMustBeANumber = "The Sender Think Time field must be an integer number greater than zero.";
         private const string NoMessageSelected = "No message to send has been selected.";
         private const string SelectEventDataGenerator = "Select an EventData generator...";
-        private const string InvalidJsonTemplate = "{0} is an invalid Json template. The file will be used as text message rather than a template.";
-        private const string InvalidXmlTemplate = "{0} is an invalid Xml template. The file will be used as text message rather than a template.";
+        private const string InvalidJsonTemplate = "{0} is an invalid JSON template. The file will be used as text message rather than a template.";
+        private const string InvalidXmlTemplate = "{0} is an invalid XML template. The file will be used as text message rather than a template.";
         private const string SelectEventDataInspector = "Select an EventData inspector...";
         private const string ConnectionStringCannotBeNull = "The namespace connection string cannot be null.";
 

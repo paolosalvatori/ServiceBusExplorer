@@ -39,6 +39,7 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
 
 // ReSharper disable CoVariantArrayConversion
 #endregion

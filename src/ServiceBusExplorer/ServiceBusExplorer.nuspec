@@ -1,7 +1,7 @@
 <package>
   <metadata>
     <id>servicebusexplorer</id>
-    <title>ServiceBusExplorer</title>
+    <title>Service Bus Explorer</title>
     <version>$version$</version>
     <authors>Paolo Salvatori</authors>
     <owners>Paolo Salvatori</owners>

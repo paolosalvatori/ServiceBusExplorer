@@ -83,6 +83,26 @@ namespace Microsoft.Azure.ServiceBusExplorer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap FindByDateExtension {
+            get {
+                object obj = ResourceManager.GetObject("FindByDateExtension", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap FindByDateExtensionRaised {
+            get {
+                object obj = ResourceManager.GetObject("FindByDateExtensionRaised", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap FindExtension {
             get {
                 object obj = ResourceManager.GetObject("FindExtension", resourceCulture);

@@ -29,13 +29,12 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
 using Microsoft.ServiceBus.Messaging;
-using FastColoredTextBoxNS;
 
 #endregion
 
@@ -125,7 +124,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string FilterExpressionTitle = "Define Filter Expression";
         private const string FilterExpressionLabel = "Filter Expression";
         private const string FilterExpressionNotValidMessage = "The filter expression [{0}] is not valid: {1}";
-        private const string FilterExpressionAppliedMessage = "The filter expression [{0}] has been successfully applied. [{1}] messages retrieved.";
+        private const string FilterExpressionAppliedMessage =
+            "The filter expression [{0}] from {1} to {2} has been successfully applied. [{3}] messages retrieved.";
         private const string FilterExpressionRemovedMessage = "The filter expression has been removed.";
 
         //***************************
@@ -193,6 +193,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private bool sorting;
         private string messagesFilterExpression;
         private string deadletterFilterExpression;
+        private DateTime? messagesFilterFromDate;
+        private DateTime? messagesFilterToDate;
+        private DateTime? deadletterFilterFromDate;
+        private DateTime? deadletterFilterToDate;
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
@@ -2601,6 +2605,176 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             MainForm.SingletonMainForm.RefreshTopics();
         }
 
+        private void pictFindMessagesByDate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                messagesDataGridView.SuspendDrawing();
+                messagesDataGridView.SuspendLayout();
+                if (messageBindingList == null)
+                {
+                    return;
+                }
+                using (var form = new DateTimeRangeForm(messagesFilterFromDate, messagesFilterToDate))
+                {
+                    if (form.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    messagesFilterFromDate = form.DateTimeFrom;
+                    messagesFilterToDate = form.DateTimeTo;
+                    FilterMessages();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                messagesDataGridView.ResumeLayout();
+                messagesDataGridView.ResumeDrawing();
+            }
+        }
+
+        private void pictFindDeadletterByDate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                deadletterDataGridView.SuspendDrawing();
+                deadletterDataGridView.SuspendLayout();
+                if (deadletterBindingList == null)
+                {
+                    return;
+                }
+                using (var form = new DateTimeRangeForm(deadletterFilterFromDate, deadletterFilterToDate))
+                {
+                    if (form.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    deadletterFilterFromDate = form.DateTimeFrom;
+                    deadletterFilterToDate = form.DateTimeTo;
+                    FilterDeadletters();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                deadletterDataGridView.ResumeLayout();
+                deadletterDataGridView.ResumeDrawing();
+            }
+        }
+
+        private void FilterMessages()
+        {
+            if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression))
+            {
+                messagesBindingSource.DataSource = messageBindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
+                writeToLog(FilterExpressionRemovedMessage);
+            }
+            else
+            {
+                var filteredList = messageBindingList.ToList();
+                if (!string.IsNullOrWhiteSpace(messagesFilterExpression))
+                {
+                    Filter filter;
+                    try
+                    {
+                        var sqlFilter = new SqlFilter(messagesFilterExpression);
+                        sqlFilter.Validate();
+                        filter = sqlFilter.Preprocess();
+                    }
+                    catch (Exception ex)
+                    {
+                        writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression,
+                            ex.Message));
+                        return;
+                    }
+
+                    filteredList = filteredList.Where(filter.Match).ToList();
+                }
+
+                if (messagesFilterFromDate != null || messagesFilterToDate != null)
+                {
+                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, messagesFilterFromDate, messagesFilterToDate)).ToList();
+                }
+
+                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                messagesBindingSource.DataSource = bindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
+                writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, messagesFilterFromDate ?? DateTime.MinValue, messagesFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+            }
+        }
+
+        private void FilterDeadletters()
+        {
+            if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression))
+            {
+                deadletterBindingSource.DataSource = deadletterBindingList;
+                deadletterDataGridView.DataSource = deadletterBindingSource;
+                writeToLog(FilterExpressionRemovedMessage);
+            }
+            else
+            {
+                var filteredList = deadletterBindingList.ToList();
+                if (!string.IsNullOrWhiteSpace(deadletterFilterExpression))
+                {
+                    Filter filter;
+                    try
+                    {
+                        var sqlFilter = new SqlFilter(deadletterFilterExpression);
+                        sqlFilter.Validate();
+                        filter = sqlFilter.Preprocess();
+                    }
+                    catch (Exception ex)
+                    {
+                        writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression,
+                            ex.Message));
+                        return;
+                    }
+                    filteredList = filteredList.Where(filter.Match).ToList();
+                }
+
+                if (deadletterFilterFromDate != null || deadletterFilterToDate != null)
+                {
+                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, deadletterFilterFromDate, deadletterFilterToDate)).ToList();
+                }
+
+                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                deadletterBindingSource.DataSource = bindingList;
+                deadletterDataGridView.DataSource = deadletterBindingSource;
+                writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, deadletterFilterFromDate ?? DateTime.MinValue, deadletterFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+            }
+        }
+
+        private static bool IsWithinDateTimeRange(BrokeredMessage message, DateTime? fromDateTime, DateTime? toDateTime)
+        {
+            if (message.EnqueuedTimeUtc < (fromDateTime ?? DateTime.MinValue))
+            {
+                return false;
+            }
+            if (message.EnqueuedTimeUtc > (toDateTime ?? DateTime.MaxValue))
+            {
+                return false;
+            }
+            return true;
+        }
+
         private void pictFindMessages_Click(object sender, EventArgs e)
         {
             try
@@ -2619,37 +2793,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         return;
                     }
                     messagesFilterExpression = form.Content;
-                    if (string.IsNullOrWhiteSpace(messagesFilterExpression))
-                    {
-                        messagesBindingSource.DataSource = messageBindingList;
-                        messagesDataGridView.DataSource = messagesBindingSource;
-                        writeToLog(FilterExpressionRemovedMessage);
-                    }
-                    else
-                    {
-                        Filter filter;
-                        try
-                        {
-                            var sqlFilter = new SqlFilter(messagesFilterExpression);
-                            sqlFilter.Validate();
-                            filter = sqlFilter.Preprocess();
-                        }
-                        catch (Exception ex)
-                        {
-                            writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression, ex.Message));
-                            return;
-                        }
-                        var filteredList = messageBindingList.Where(filter.Match).ToList();
-                        var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                        {
-                            AllowEdit = false,
-                            AllowNew = false,
-                            AllowRemove = false
-                        };
-                        messagesBindingSource.DataSource = bindingList;
-                        messagesDataGridView.DataSource = messagesBindingSource;
-                        writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, bindingList.Count));
-                    }
+                    FilterMessages();
                 }
             }
             catch (Exception ex)
@@ -2681,37 +2825,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         return;
                     }
                     deadletterFilterExpression = form.Content;
-                    if (string.IsNullOrWhiteSpace(deadletterFilterExpression))
-                    {
-                        deadletterBindingSource.DataSource = deadletterBindingList;
-                        deadletterDataGridView.DataSource = deadletterBindingSource;
-                        writeToLog(FilterExpressionRemovedMessage);
-                    }
-                    else
-                    {
-                        Filter filter;
-                        try
-                        {
-                            var sqlFilter = new SqlFilter(deadletterFilterExpression);
-                            sqlFilter.Validate();
-                            filter = sqlFilter.Preprocess();
-                        }
-                        catch (Exception ex)
-                        {
-                            writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression, ex.Message));
-                            return;
-                        }
-                        var filteredList = deadletterBindingList.Where(filter.Match).ToList();
-                        var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                        {
-                            AllowEdit = false,
-                            AllowNew = false,
-                            AllowRemove = false
-                        };
-                        deadletterBindingSource.DataSource = bindingList;
-                        deadletterDataGridView.DataSource = deadletterBindingSource;
-                        writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, bindingList.Count));
-                    }
+                    FilterDeadletters();
                 }
             }
             catch (Exception ex)
@@ -2740,6 +2854,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (pictureBox != null)
             {
                 pictureBox.Image = Properties.Resources.FindExtension;
+            }
+        }
+
+        private void pictureBoxByDate_MouseEnter(object sender, EventArgs e)
+        {
+            var pictureBox = sender as PictureBox;
+            if (pictureBox != null)
+            {
+                pictureBox.Image = Properties.Resources.FindByDateExtensionRaised;
+            }
+        }
+
+        private void pictureBoxByDate_MouseLeave(object sender, EventArgs e)
+        {
+            var pictureBox = sender as PictureBox;
+            if (pictureBox != null)
+            {
+                pictureBox.Image = Properties.Resources.FindByDateExtension;
             }
         }
 
@@ -2868,7 +3000,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, 
+                        MainForm.SingletonMainForm.UseAscii, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }
@@ -2948,7 +3081,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                        MainForm.SingletonMainForm.UseAscii, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }

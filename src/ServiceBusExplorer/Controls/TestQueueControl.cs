@@ -40,11 +40,13 @@ using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Cursor = System.Windows.Forms.Cursor;
 using FastColoredTextBoxNS;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
-    public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
+    //public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
 
     public partial class TestQueueControl : UserControl
     {
@@ -94,8 +96,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string FilterExpressionIsNotValid = "The filter expression is not valid.";
         private const string NoMessageSelected = "No message to send has been selected under the Files tab.";
         private const string SelectBrokeredMessageGenerator = "Select a BrokeredMessage generator...";
-        private const string InvalidJsonTemplate = "{0} is an invalid Json template. The file will be used as text message rather than a template.";
-        private const string InvalidXmlTemplate = "{0} is an invalid Xml template. The file will be used as text message rather than a template.";
+        private const string InvalidJsonTemplate = "{0} is an invalid JSON template. The file will be used as text message rather than a template.";
+        private const string InvalidXmlTemplate = "{0} is an invalid XML template. The file will be used as text message rather than a template.";
         private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
         private const string SelectBrokeredMessageGeneratorWarning = "You have to select a BrokeredMessage generator under the Generator tab before sending messages to {0}.";
 
