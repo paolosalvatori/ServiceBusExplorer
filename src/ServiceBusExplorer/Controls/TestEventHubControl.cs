@@ -37,7 +37,6 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
-using FastColoredTextBoxNS;
 
 #endregion
 

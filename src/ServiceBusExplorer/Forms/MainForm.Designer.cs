@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
-using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
