@@ -62,6 +62,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             var clone = message.Clone();
             BodyStreamPropertyInfo.SetValue(clone, stream);
+            clone.Properties.Clear();
             return clone;
         }
 
@@ -72,6 +73,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             writer.Write(text);
             writer.Flush();
             var clone = message.Clone();
+            clone.Properties.Clear();
             BodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
         }
@@ -80,16 +82,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         {
             var bytes = Encoding.UTF8.GetBytes(text);
             var message = new BrokeredMessage(bytes);
-
-            // Copy all custom properties
-            foreach (var header in originalMessage.Properties)
-            {
-                // Recovery header should not be included
-                if (header.Key != "NServiceBus.Transport.Recovery")
-                {
-                    message.Properties[header.Key] = header.Value;
-                }
-            }
 
             // Required standard properties
             message.CorrelationId = originalMessage.CorrelationId;
