@@ -72,6 +72,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public bool Peek { get; private set; }
         public bool All { get; private set; }
         public string Inspector { get; private set; }
+        public long? SequenceNumber { get; private set; }
         #endregion
 
         #region Event Handlers
@@ -87,6 +88,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (cboReceiverInspector.SelectedIndex > 0)
             {
                 Inspector = cboReceiverInspector.Text;
+            }
+
+            if (txtSequenceNumber.Enabled && !string.IsNullOrEmpty(txtSequenceNumber.Text))
+            {
+                if (long.TryParse(txtSequenceNumber.Text, out var sequenceNumber))
+                {
+                    SequenceNumber = sequenceNumber;
+                }
             }
             Close();
         }
@@ -171,10 +180,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void receiveMode_CheckedChanged(object sender, EventArgs e)
         {
             btnAll.Enabled = btnReceive.Checked;
+            
             if (btnPeek.Checked)
             {
                 btnTop.Checked = true;
             }
+
+            txtSequenceNumber.Enabled = btnPeek.Checked;
         }
         
         private void grouperInspector_CustomPaint(PaintEventArgs e)
