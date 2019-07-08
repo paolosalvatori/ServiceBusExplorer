@@ -365,11 +365,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     if (queueDescription.EnablePartitioning)
                     {
                         ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count,
-                            messageInspector, receiveModeForm.SequenceNumber);
+                            messageInspector, receiveModeForm.FromSequenceNumber);
                     }
                     else
                     {
-                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.SequenceNumber);
+                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                     }
                 }
             }
@@ -379,11 +379,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             if (queueDescription.EnablePartitioning)
             {
-                ReadMessagesOneAtTheTime(false, true, numberOfMessages, null, null);
+                ReadMessagesOneAtTheTime(false, true, numberOfMessages, null);
             }
             else
             {
-                GetMessages(false, true, numberOfMessages, null, null);
+                GetMessages(false, true, numberOfMessages, null);
             }
         }
 
@@ -458,11 +458,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     : null;
                 if (queueDescription.EnablePartitioning)
                 {
-                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.SequenceNumber);
+                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.SequenceNumber);
+                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
             }
         }
@@ -483,11 +483,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     : null;
                 if (queueDescription.EnablePartitioning)
                 {
-                    ReadTransferDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.SequenceNumber);
+                    ReadTransferDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetTransferDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.SequenceNumber);
+                    GetTransferDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
             }
         }
@@ -1338,7 +1338,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null)
         {
             try
             {
@@ -1358,9 +1358,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         IEnumerable<BrokeredMessage> messageEnumerable;
 
-                        if (totalRetrieved == 0 && sequenceNumber.HasValue)
+                        if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messageEnumerable = queueClient.PeekBatch(sequenceNumber.Value, count);
+                            messageEnumerable = queueClient.PeekBatch(fromSequenceNumber.Value, count);
                         }
                         else
                         {
@@ -1459,7 +1459,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (NotSupportedException)
             {
-                ReadMessagesOneAtTheTime(peek, all, count, messageInspector, sequenceNumber);
+                ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1475,7 +1475,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null)
         {
             try
             {
@@ -1488,9 +1488,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         BrokeredMessage message;
 
-                        if (i == 0 && sequenceNumber.HasValue)
+                        if (i == 0 && fromSequenceNumber.HasValue)
                         {
-                            message = queueClient.Peek(sequenceNumber.Value);
+                            message = queueClient.Peek(fromSequenceNumber.Value);
                         }
                         else
                         {
@@ -1582,7 +1582,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1604,9 +1604,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         IEnumerable<BrokeredMessage> messages;
 
-                        if (retrieved == 0 && sequenceNumber.HasValue)
+                        if (retrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messages = queueClient.PeekBatch(sequenceNumber.Value, all
+                            messages = queueClient.PeekBatch(fromSequenceNumber.Value, all
                                 ? MainForm.SingletonMainForm.TopCount
                                 : count - totalRetrieved);
                         }
@@ -1703,7 +1703,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (NotSupportedException)
             {
-                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, sequenceNumber);
+                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1719,7 +1719,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1741,9 +1741,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         IEnumerable<BrokeredMessage> messages;
 
-                        if (retrieved == 0 && sequenceNumber.HasValue)
+                        if (retrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messages = queueClient.PeekBatch(sequenceNumber.Value, all
+                            messages = queueClient.PeekBatch(fromSequenceNumber.Value, all
                                 ? MainForm.SingletonMainForm.TopCount
                                 : count - totalRetrieved);
                         }
@@ -1840,7 +1840,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (NotSupportedException)
             {
-                ReadTransferDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, sequenceNumber);
+                ReadTransferDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1856,7 +1856,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1870,9 +1870,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         BrokeredMessage message;
 
-                        if (i == 0 && sequenceNumber.HasValue)
+                        if (i == 0 && fromSequenceNumber.HasValue)
                         {
-                            message = queueClient.Peek(sequenceNumber.Value);
+                            message = queueClient.Peek(fromSequenceNumber.Value);
                         }
                         else
                         {
@@ -1949,7 +1949,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? sequenceNumber)
+        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1963,9 +1963,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         BrokeredMessage message;
 
-                        if (i == 0 && sequenceNumber.HasValue)
+                        if (i == 0 && fromSequenceNumber.HasValue)
                         {
-                            message = queueClient.Peek(sequenceNumber.Value);
+                            message = queueClient.Peek(fromSequenceNumber.Value);
                         }
                         else
                         {

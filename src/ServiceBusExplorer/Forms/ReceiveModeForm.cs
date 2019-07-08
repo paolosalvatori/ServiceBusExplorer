@@ -72,7 +72,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public bool Peek { get; private set; }
         public bool All { get; private set; }
         public string Inspector { get; private set; }
-        public long? SequenceNumber { get; private set; }
+        public long? FromSequenceNumber { get; private set; }
         #endregion
 
         #region Event Handlers
@@ -90,11 +90,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Inspector = cboReceiverInspector.Text;
             }
 
-            if (txtSequenceNumber.Enabled && !string.IsNullOrEmpty(txtSequenceNumber.Text))
+            if (txtFromSequenceNumber.Enabled && !string.IsNullOrEmpty(txtFromSequenceNumber.Text))
             {
-                if (long.TryParse(txtSequenceNumber.Text, out var sequenceNumber))
+                if (long.TryParse(txtFromSequenceNumber.Text, out var fromSequenceNumber))
                 {
-                    SequenceNumber = sequenceNumber;
+                    FromSequenceNumber = fromSequenceNumber;
                 }
             }
             Close();
@@ -186,7 +186,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 btnTop.Checked = true;
             }
 
-            txtSequenceNumber.Enabled = btnPeek.Checked;
+            txtFromSequenceNumber.Enabled = btnPeek.Checked;
         }
         
         private void grouperInspector_CustomPaint(PaintEventArgs e)

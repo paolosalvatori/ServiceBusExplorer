@@ -67,7 +67,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnReceive = new System.Windows.Forms.RadioButton();
             this.btnPeek = new System.Windows.Forms.RadioButton();
             this.grouperFrom = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.txtSequenceNumber = new System.Windows.Forms.TextBox();
+            this.txtFromSequenceNumber = new System.Windows.Forms.TextBox();
             this.mainPanel.SuspendLayout();
             this.grouperInspector.SuspendLayout();
             this.grouperMessages.SuspendLayout();
@@ -281,7 +281,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.grouperFrom.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFrom.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFrom.BorderThickness = 1F;
-            this.grouperFrom.Controls.Add(this.txtSequenceNumber);
+            this.grouperFrom.Controls.Add(this.txtFromSequenceNumber);
             this.grouperFrom.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFrom.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperFrom.ForeColor = System.Drawing.Color.White;
@@ -300,12 +300,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             // txtSequenceNumber
             // 
-            this.txtSequenceNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtFromSequenceNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSequenceNumber.Location = new System.Drawing.Point(15, 32);
-            this.txtSequenceNumber.Name = "txtSequenceNumber";
-            this.txtSequenceNumber.Size = new System.Drawing.Size(177, 20);
-            this.txtSequenceNumber.TabIndex = 42;
+            this.txtFromSequenceNumber.Location = new System.Drawing.Point(15, 32);
+            this.txtFromSequenceNumber.Name = "txtFromSequenceNumber";
+            this.txtFromSequenceNumber.Size = new System.Drawing.Size(177, 20);
+            this.txtFromSequenceNumber.TabIndex = 42;
             // 
             // ReceiveModeForm
             // 
@@ -352,6 +352,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private Grouper grouperInspector;
         private System.Windows.Forms.ComboBox cboReceiverInspector;
         private Grouper grouperFrom;
-        private System.Windows.Forms.TextBox txtSequenceNumber;
+        private System.Windows.Forms.TextBox txtFromSequenceNumber;
     }
 }
