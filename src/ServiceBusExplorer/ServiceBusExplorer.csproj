@@ -73,6 +73,9 @@
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
       <HintPath>Libraries\FastColoredTextBox.dll</HintPath>
@@ -648,6 +651,7 @@
       <SubType>Designer</SubType>
       <Link>App.config</Link>
     </None>
+    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
