@@ -87,5 +87,6 @@ namespace ServiceBusExplorer.Helpers
         public static readonly Type MessageType = typeof(BrokeredMessage);
         public static readonly Type GuidType = typeof(Guid);
         public static readonly Type ObjectType = typeof(object);
+        public static readonly List<string> AlwaysOmittedProperties = new List<string> {"deadletterreason", "deadlettererrordescription", "nservicebus.transport.recovery"};
     }
 }
