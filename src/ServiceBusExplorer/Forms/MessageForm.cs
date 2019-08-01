@@ -214,7 +214,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             btnSave.Visible = false;
             btnSubmit.Location = btnSave.Location;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            int moveRightInPixels = btnClose.Left - btnSubmit.Left;
+            var moveRightInPixels = btnClose.Left - btnSubmit.Left;
             Size = new Size(Size.Width - moveRightInPixels, 80);
             lblBody.Left += moveRightInPixels;
             cboBodyType.Left += moveRightInPixels;
@@ -371,7 +371,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                      Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
                                                      Scheme = "sb"
                                                  }.Uri;
-                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text),
+                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text, messagesSplitContainer.Visible),
                                                                                                0,
                                                                                                false,
                                                                                                false,
@@ -383,8 +383,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
-                                                      brokeredMessage.Clone(txtMessageText.Text);
+                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
+                                                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
                                 }
                                 else
                                 {
@@ -392,8 +392,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      message.CloneWithByteArrayBodyType(messageText) :
-                                                      message.Clone(messageText);
+                                                      message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
+                                                      message.Clone(messageText, messagesSplitContainer.Visible);
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
@@ -413,10 +413,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 try
                                 {
-                                    if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
-                                        StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                                        string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
-                                        StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    if (Constants.AlwaysOmittedProperties.Contains(messagePropertyInfo.Key.ToLower()))
                                     {
                                         continue;
                                     }
