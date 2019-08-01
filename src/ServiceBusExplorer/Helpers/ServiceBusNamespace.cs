@@ -63,6 +63,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
+        const string ServiceBusNamespaceEndpointPrefixedWithSb = "The endpoint for the service bus namespace {0} is being automatically prefixed with \"sb://\".";
         const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceRuntimePortIsNullOrEmpty = "The runtime port for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceManagementPortIsNullOrEmpty = "The management port for the service bus namespace {0} is null or empty.";
@@ -267,6 +268,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
                     return null;
+                }
+
+                if (!endpoint.Contains("://"))
+                {
+                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
+                    endpoint = "sb://" + endpoint;
                 }
 
                 var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
