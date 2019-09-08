@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 
 #endregion
@@ -131,7 +132,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     return Convert.ChangeType(value, typeof(DateTime));
                 case "TimeSpan":
                     if (value is TimeSpan t) return t;
-                    if (value is string st) return TimeSpan.Parse(st);
+                    if (value is string st) return TimeSpan.Parse(st, CultureInfo.InvariantCulture);
                     return TimeSpan.Parse((string)value);
                 case "Guid":
                     return new Guid(value.ToString());

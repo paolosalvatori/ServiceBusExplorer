@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Azure.ServiceBusExplorer.Tests</RootNamespace>
     <AssemblyName>Microsoft.Azure.ServiceBusExplorer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -44,8 +44,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\DependencyValidation1.layerdiagram">
-      <Link>DependencyValidation1.layerdiagram</Link>
+    <AdditionalFiles Include="..\DependencyValidation1\UIDependencyValidation.layerdiagram">
+      <Link>UIDependencyValidation.layerdiagram</Link>
+      <Visible>False</Visible>
+    </AdditionalFiles>
+    <AdditionalFiles Include="..\DependencyValidation1\AssembliesDependencyValidation.layerdiagram">
+      <Link>AssembliesDependencyValidation.layerdiagram</Link>
       <Visible>False</Visible>
     </AdditionalFiles>
     <None Include="app.config" />

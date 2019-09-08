@@ -1,16 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="73888639-2307-4e51-b017-4051561aaee4" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
   <layers>
-    <layer Id="f4fbfa55-3507-4e59-b66e-4c9575b19c03" name="EventHubs">
-      <references>
-        <reference Id="1374fa14-a9ae-456e-9f2b-391725f90640" name="EventHubs">
-          <ArtifactNode Label="EventHubs" Category="CodeSchema_Namespace" Id="(Namespace=EventHubs)" />
-          <ExpandedNode Id="(Namespace=EventHubs)" Label="EventHubs" Category="CodeSchema_Namespace">
-            <LinkCategory Ref="Represents" />
-          </ExpandedNode>
-        </reference>
-      </references>
-    </layer>
     <layer Id="84186057-3985-40e8-8040-3bf652b82b70" name="Microsoft.Azure.ServiceBusExplorer.Forms">
       <dependencyToLayers>
         <dependencyFromLayerToLayer Id="d80bb9db-0e71-4ab3-8834-67742da113ee" direction="Forward">
