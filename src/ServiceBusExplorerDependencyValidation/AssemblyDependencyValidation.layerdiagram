@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="1ca1b2a8-1263-4575-8ee9-464acb4c3831" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <layers>
+    <layer Id="ff9da483-69ec-4f43-91d9-b063bc751346" name="Common">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="0976e1db-efb7-4f62-943f-acfa9b969fa4" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="5bc96ea9-29ad-4a03-94c9-4226c8723933" name="Common">
+          <ArtifactNode Label="Common" Category="CodeSchema_Project" Id="(Assembly=../Common/Common.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=Common)" Label="Common.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="3d57b712-ee5e-4ee9-9f41-37a4d89de2fa" name="EventHubs">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="aaefb7fd-5352-4229-8ec6-dba2007d7188" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="28bba1a8-ad5a-41e0-a2d2-fa5db7096aaf" name="EventHubs">
+          <ArtifactNode Label="EventHubs" Category="CodeSchema_Project" Id="(Assembly=../EventHubs/EventHubs.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=EventHubs)" Label="EventHubs.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="fb250df9-fb9b-40d6-9a78-ebac62dce97f" name="NotificationHubs">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="f6a816fa-2858-4bd5-a8e1-565608a061ae" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="8ef1dc00-5a56-4627-a3dc-0d7877dabd02" name="NotificationHubs">
+          <ArtifactNode Label="NotificationHubs" Category="CodeSchema_Project" Id="(Assembly=../NotificationHubs/NotificationHubs.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=NotificationHub)" Label="NotificationHub.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="7e6162d7-2317-4273-9548-925367ab7b46" name="Relay">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="78b0b99b-185e-44cc-b9fd-bd4ea47250be" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="2f2453e2-9498-42d8-9c54-6314adf8ba6d" name="Relay">
+          <ArtifactNode Label="Relay" Category="CodeSchema_Project" Id="(Assembly=../Relay/Relay.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=Relay)" Label="Relay.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="5fa30dad-6227-4d6a-911f-b93379b92e6d" name="ServiceBus">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="7bba31eb-d04b-4a05-b902-f39f7cd503e8" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="4ce7ebef-e31c-46e1-a4f7-ef11ee88d5e2" name="ServiceBus">
+          <ArtifactNode Label="ServiceBus" Category="CodeSchema_Project" Id="(Assembly=../ServiceBus/ServiceBus.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=ServiceBus)" Label="ServiceBus.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="b63ec0d7-d1c1-4c34-8694-691ec06334ac" name="ServiceBusExplorer">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="4fd095fb-bb17-4348-a4d6-6a3dfda448a9" direction="Forward">
+          <layerMoniker Id="ff9da483-69ec-4f43-91d9-b063bc751346" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="a0ec813e-7c43-414f-8d62-72fb88f51194" direction="Forward">
+          <layerMoniker Id="3d57b712-ee5e-4ee9-9f41-37a4d89de2fa" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="8e3528b0-c375-45cb-9b90-aee7f366e3d6" direction="Forward">
+          <layerMoniker Id="5fa30dad-6227-4d6a-911f-b93379b92e6d" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="0737829e-9444-47c3-853e-58b33960716c" direction="Forward">
+          <layerMoniker Id="7e6162d7-2317-4273-9548-925367ab7b46" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="ca8b32fa-4861-4fe7-a613-1073425213d1" direction="Forward">
+          <layerMoniker Id="fb250df9-fb9b-40d6-9a78-ebac62dce97f" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="3a549507-a7e8-4532-9063-b75369f383e9" direction="Forward">
+          <layerMoniker Id="27d18e0f-caef-463f-abba-4808a74a26a5" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="3f418700-87e3-4d45-ac93-958c306ab85f" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="cf16eea8-06c1-4e54-b966-49f1932458af" name="ServiceBusExplorer">
+          <ArtifactNode Label="ServiceBusExplorer" Category="CodeSchema_Project" Id="(Assembly=../ServiceBusExplorer/ServiceBusExplorer.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=ServiceBusExplorer)" Label="ServiceBusExplorer.exe" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.exe" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="27d18e0f-caef-463f-abba-4808a74a26a5" name="ToMigrate">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="5d9a46c3-108c-4181-9f1a-978770e81046" direction="Forward">
+          <layerMoniker Id="ff9da483-69ec-4f43-91d9-b063bc751346" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="d20565bc-4343-45cf-a7c8-520c4c2ae9ca" direction="Forward">
+          <layerMoniker Id="2bad2195-216e-498b-a1b2-23439a98904d" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="93c72116-c7ba-4598-8889-510c2324638e" name="ToMigrate">
+          <ArtifactNode Label="ToMigrate" Category="CodeSchema_Project" Id="(Assembly=../ToMigrate/ToMigrate.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=ToMigrate)" Label="ToMigrate.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="2bad2195-216e-498b-a1b2-23439a98904d" name="Utilities">
+      <references>
+        <reference Id="e06517f7-ebee-4a64-80d0-cf9838581354" name="Utilities">
+          <ArtifactNode Label="Utilities" Category="CodeSchema_Project" Id="(Assembly=../Utilities/Utilities.csproj)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=Utilities)" Label="Utilities.dll" Category="CodeSchema_Assembly">
+            <Category Ref="FileSystem.Category.FileOfType.dll" />
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+  </layers>
+</layerModel>

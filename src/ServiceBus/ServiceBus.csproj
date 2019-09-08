@@ -4,6 +4,20 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\AssemblyDependencyValidation.layerdiagram" Link="AssemblyDependencyValidation.layerdiagram">
+      <Visible>False</Visible>
+    </AdditionalFiles>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram" Link="ExeInternalDependencyValidation.layerdiagram">
+      <Visible>False</Visible>
+    </AdditionalFiles>
+  </ItemGroup>
+
  
 
 
@@ -14,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.0.0" />
+    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.10.0" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="5eb41373-c3b8-4f11-8d64-8222ab2bdc16" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <layers>
+    <layer Id="6cec1ae5-5a5e-4299-875e-91865545fd84" name="Microsoft.Azure.ServiceBusExplorer.Properties">
+      <references>
+        <reference Id="738ce8c3-c1b2-4f10-824f-cbaee1d6e580" name="Microsoft.Azure.ServiceBusExplorer.Properties">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.Properties" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Properties)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Properties)" Label="Microsoft.Azure.ServiceBusExplorer.Properties" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="be632669-3e84-4e98-b9f5-3043edbbb2fa" name="Microsoft.Azure.ServiceBusExplorer.Forms">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="56f34911-3126-4cff-ba29-70556294a74c" direction="Bidirectional">
+          <layerMoniker Id="cc42f403-5e44-4bf1-a988-b9c6d229f1d6" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="0ff78b5c-849c-4002-85ce-f2791db40dcb" direction="Forward">
+          <layerMoniker Id="6cec1ae5-5a5e-4299-875e-91865545fd84" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="a76c3628-3b91-4b4f-a25e-682856b4da21" direction="Forward">
+          <layerMoniker Id="5cc411ee-47a0-49db-acb5-45a4af0d60ea" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="5fb2cca1-dbc9-458c-8f30-a951e97abc61" direction="Forward">
+          <layerMoniker Id="df9db6b9-3897-4a60-8b63-8d7c896cb8d2" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="24a26000-1aec-4a8e-b726-476e35381376" direction="Forward">
+          <layerMoniker Id="fb47a221-75e6-4f60-a1a7-28bef4603df5" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="74d6581c-0caf-4700-8238-3f4c6197b740" name="Microsoft.Azure.ServiceBusExplorer.Forms">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.Forms" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Forms)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Forms)" Label="Microsoft.Azure.ServiceBusExplorer.Forms" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="cc42f403-5e44-4bf1-a988-b9c6d229f1d6" name="Microsoft.Azure.ServiceBusExplorer.Controls">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="5404a81d-1e55-4887-a448-32408229bcf6" direction="Bidirectional">
+          <layerMoniker Id="1b16e8bd-3614-4c1c-9279-d89ac677a02e" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="148ff5af-6804-41ea-ae25-06c20b3b1bbf" direction="Bidirectional">
+          <layerMoniker Id="df9db6b9-3897-4a60-8b63-8d7c896cb8d2" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="401e221e-308c-4db0-9412-4c8e57f918a2" direction="Forward">
+          <layerMoniker Id="6cec1ae5-5a5e-4299-875e-91865545fd84" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="f61a83e0-4be2-4b94-b741-6bc7ba1abfbb" direction="Forward">
+          <layerMoniker Id="5cc411ee-47a0-49db-acb5-45a4af0d60ea" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="86518350-ed50-4324-ba43-4fa7b20fb38e" direction="Forward">
+          <layerMoniker Id="fb47a221-75e6-4f60-a1a7-28bef4603df5" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="2dc86c0a-935a-444f-9635-65490be024c6" name="Microsoft.Azure.ServiceBusExplorer.Controls">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.Controls" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Controls)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Controls)" Label="Microsoft.Azure.ServiceBusExplorer.Controls" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="1b16e8bd-3614-4c1c-9279-d89ac677a02e" name="Microsoft.Azure.ServiceBusExplorer.UIHelpers">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="e038218c-f3b6-4c06-895e-0c68b8f01d19" direction="Forward">
+          <layerMoniker Id="5cc411ee-47a0-49db-acb5-45a4af0d60ea" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="ae907614-0b00-47a4-a2de-6b07aa2274bb" direction="Forward">
+          <layerMoniker Id="df9db6b9-3897-4a60-8b63-8d7c896cb8d2" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="a0027949-74e2-441c-b73a-2a1b305ae169" direction="Bidirectional">
+          <layerMoniker Id="be632669-3e84-4e98-b9f5-3043edbbb2fa" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="2807f9a3-ac06-423b-96fa-1e86763ec2aa" name="Microsoft.Azure.ServiceBusExplorer.UIHelpers">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.UIHelpers" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.UIHelpers)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.UIHelpers)" Label="Microsoft.Azure.ServiceBusExplorer.UIHelpers" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="df9db6b9-3897-4a60-8b63-8d7c896cb8d2" name="Microsoft.Azure.ServiceBusExplorer.Helpers">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="91bb8628-a3a1-4138-889e-2602e8ebefc5" direction="Forward">
+          <layerMoniker Id="fb47a221-75e6-4f60-a1a7-28bef4603df5" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="3f88b558-5e8d-4abc-841e-7a702295096e" direction="Forward">
+          <layerMoniker Id="5cc411ee-47a0-49db-acb5-45a4af0d60ea" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <references>
+        <reference Id="ddde16e8-9939-4155-b73b-4ffd364d6510" name="Microsoft.Azure.ServiceBusExplorer.Helpers">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.Helpers" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Helpers)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Helpers)" Label="Microsoft.Azure.ServiceBusExplorer.Helpers" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="fb47a221-75e6-4f60-a1a7-28bef4603df5" name="Microsoft.Azure.ServiceBusExplorer.Enums">
+      <references>
+        <reference Id="e0b89467-5cdc-4d21-b7ba-e4cd0980ac10" name="Microsoft.Azure.ServiceBusExplorer.Enums">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer.Enums" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Enums)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer.Enums)" Label="Microsoft.Azure.ServiceBusExplorer.Enums" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+    <layer Id="5cc411ee-47a0-49db-acb5-45a4af0d60ea" name="Microsoft.Azure.ServiceBusExplorer">
+      <references>
+        <reference Id="8e7d5860-668a-48fa-b6aa-85eccd04e85c" name="Microsoft.Azure.ServiceBusExplorer">
+          <ArtifactNode Label="Microsoft.Azure.ServiceBusExplorer" Category="CodeSchema_Namespace" Id="(Namespace=Microsoft.Azure.ServiceBusExplorer)" />
+          <ExpandedNode Id="(Namespace=Microsoft.Azure.ServiceBusExplorer)" Label="Microsoft.Azure.ServiceBusExplorer" Category="CodeSchema_Namespace">
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+  </layers>
+</layerModel>
