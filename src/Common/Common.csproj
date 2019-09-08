@@ -4,32 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\DependencyValidation1.layerdiagram" Link="DependencyValidation1.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\UIDependencyValidation.layerdiagram" Link="UIDependencyValidation.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\DependencyValidation2.layerdiagram" Link="DependencyValidation2.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\AssembliesDependencyValidation.layerdiagram" Link="AssembliesDependencyValidation.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.10.0" />
-  </ItemGroup>
 
 </Project>

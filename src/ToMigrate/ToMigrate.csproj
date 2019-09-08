@@ -186,20 +186,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\DependencyValidation1\UIDependencyValidation.layerdiagram">
-      <Link>UIDependencyValidation.layerdiagram</Link>
+    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\MainDependencyValidation.layerdiagram">
+      <Link>MainDependencyValidation.layerdiagram</Link>
       <Visible>False</Visible>
     </AdditionalFiles>
-    <AdditionalFiles Include="..\DependencyValidation1\AssembliesDependencyValidation.layerdiagram">
-      <Link>AssembliesDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.DependencyValidation.Analyzers.0.10.0\analyzers\dotnet\cs\Microsoft.DependencyValidation.Analyzers.resources.dll" />
-    <Analyzer Include="..\packages\Microsoft.DependencyValidation.Analyzers.0.10.0\analyzers\dotnet\Microsoft.DependencyValidation.Analyzers.dll" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets" Condition="Exists('..\packages\Microsoft.Azure.Services.AppAuthentication.1.0.3\build\Microsoft.Azure.Services.AppAuthentication.targets')" />
