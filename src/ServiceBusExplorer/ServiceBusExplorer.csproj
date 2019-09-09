@@ -709,6 +709,10 @@
       <Project>{7eb5ea53-5031-4e4e-b78c-38d370af9a9f}</Project>
       <Name>EventHubs</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj">
+      <Project>{a82872b5-5a0e-49ed-bd6a-daac7b07a2ff}</Project>
+      <Name>NotificationHubs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relay\Relay.csproj">
       <Project>{c6f6fa8e-2003-421d-8f06-aaf6bf205f01}</Project>
       <Name>Relay</Name>

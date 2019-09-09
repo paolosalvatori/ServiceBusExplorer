@@ -78,5 +78,10 @@
       <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="AssembliesGraph.dgml">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
