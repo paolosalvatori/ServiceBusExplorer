@@ -183,6 +183,12 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedTransferDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperAutoDeleteOnIdle.SuspendLayout();
@@ -559,6 +565,7 @@
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameColumnHeader,
             this.valueColumnHeader});
+            this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
@@ -1528,14 +1535,13 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1640,6 +1646,7 @@
             this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
+            this.messagePropertyListView.HideSelection = false;
             this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyListView.Name = "messagePropertyListView";
             this.messagePropertyListView.OwnerDraw = true;
@@ -1841,14 +1848,13 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1953,6 +1959,7 @@
             this.deadletterPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4});
+            this.deadletterPropertyListView.HideSelection = false;
             this.deadletterPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.deadletterPropertyListView.Name = "deadletterPropertyListView";
             this.deadletterPropertyListView.OwnerDraw = true;
@@ -2144,7 +2151,6 @@
             this.txtTransferDeadletterText.CharWidth = 8;
             this.txtTransferDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTransferDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtTransferDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtTransferDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTransferDeadletterText.IsReplaceMode = false;
             this.txtTransferDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -2249,6 +2255,7 @@
             this.transferDeadletterPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader5,
             this.columnHeader6});
+            this.transferDeadletterPropertyListView.HideSelection = false;
             this.transferDeadletterPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.transferDeadletterPropertyListView.Name = "transferDeadletterPropertyListView";
             this.transferDeadletterPropertyListView.OwnerDraw = true;
@@ -2517,9 +2524,11 @@
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
             this.toolStripSeparator1,
             this.saveSelectedMessageToolStripMenuItem,
-            this.saveSelectedMessagesToolStripMenuItem});
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem,
+            this.saveSelectedMessagesToolStripMenuItem,
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 98);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 142);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -2562,11 +2571,13 @@
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
             this.toolStripSeparator2,
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem,
             this.saveSelectedDeadletteredMessagesToolStripMenuItem,
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem,
             this.deleteSelectedMessageToolStripMenuItem,
             this.deleteSelectedMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 208);
             // 
             // repairAndResubmitDeadletterToolStripMenuItem
             // 
@@ -2678,9 +2689,11 @@
             this.resubmitSelectedTransferDeadletterInBatchModeToolStripMenuItem,
             this.toolStripSeparator3,
             this.saveSelectedTransferDeadletteredMessageToolStripMenuItem,
-            this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem});
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem,
+            this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem,
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem});
             this.transferDeadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.transferDeadletterContextMenuStrip.Size = new System.Drawing.Size(306, 98);
+            this.transferDeadletterContextMenuStrip.Size = new System.Drawing.Size(306, 142);
             this.transferDeadletterContextMenuStrip.Click += new System.EventHandler(this.resubmitSelectedTransferDeadletterMessagesInBatchModeToolStripMenuItem_Click);
             // 
             // repairAndResubmitTransferDeadletterToolStripMenuItem
@@ -2714,6 +2727,42 @@
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem_Click);
+            // 
+            // saveSelectedMessageBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedMessageBodyAsFileToolStripMenuItem";
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            // 
+            // saveSelectedMessagesBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedMessagesBodyAsFileToolStripMenuItem";
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages as File";
+            // 
+            // saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem";
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            // 
+            // saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem";
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Body as File";
+            // 
+            // saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem";
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            // 
+            // saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem
+            // 
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem";
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Body as File";
             // 
             // HandleQueueControl
             // 
@@ -3009,5 +3058,11 @@
         private System.Windows.Forms.ListView transferDeadletterPropertyListView;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedMessageBodyAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedMessagesBodyAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem;
     }
 }
