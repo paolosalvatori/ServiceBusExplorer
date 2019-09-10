@@ -23,28 +23,75 @@
 
 #region Using Directives
 
-using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Windows.Forms;
-using System.Linq;
-using Microsoft.ServiceBus.Messaging;
-using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-
 #endregion
 
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows.Forms;
+    using Forms;
+    using Helpers;
+    using Properties;
+    using ServiceBus.Messaging;
+
     public partial class HandleQueueControl : UserControl
     {
+        #region Public Constructors
+
+        public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
+                                  QueueDescription queueDescription, string path)
+        {
+            this.writeToLog = writeToLog;
+            this.serviceBusHelper = serviceBusHelper;
+            this.path = path;
+            this.queueDescription = queueDescription;
+
+            InitializeComponent();
+            InitializeControls();
+        }
+
+        #endregion
+
+        void saveSelectedMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void saveSelectedMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         #region Private Constants
 
         //***************************
@@ -307,31 +354,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #region Private Static Fields
 
         private static readonly List<string> ClaimTypes = new List<string>
-        {
-            "NameIdentifier",
-            "Upn",
-            "Role",
-            "SharedAccessKey"
-        };
+                                                          {
+                                                              "NameIdentifier",
+                                                              "Upn",
+                                                              "Role",
+                                                              "SharedAccessKey"
+                                                          };
 
         private static readonly List<string> Operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
         private static readonly List<string> TimeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
-
-        #endregion
-
-        #region Public Constructors
-
-        public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            QueueDescription queueDescription, string path)
-        {
-            this.writeToLog = writeToLog;
-            this.serviceBusHelper = serviceBusHelper;
-            this.path = path;
-            this.queueDescription = queueDescription;
-
-            InitializeComponent();
-            InitializeControls();
-        }
 
         #endregion
 
@@ -396,6 +427,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
+
             try
             {
                 Application.UseWaitCursor = true;
@@ -424,6 +456,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return 0;
                 }
             }
+
             try
             {
                 Application.UseWaitCursor = true;
@@ -450,6 +483,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 txtDeadletterText.Text = string.Empty;
                 deadletterPropertyListView.Items.Clear();
                 deadletterPropertyGrid.SelectedObject = null;
@@ -475,6 +509,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 txtTransferDeadletterText.Text = string.Empty;
                 transferDeadletterPropertyListView.Items.Clear();
                 transferDeadletterPropertyGrid.SelectedObject = null;
@@ -521,6 +556,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 Cursor.Current = Cursors.WaitCursor;
                 if (mainTabControl.TabPages[SessionsTabPage] == null)
                 {
@@ -529,18 +565,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var messageSessions = sessionEnumerable as MessageSession[] ?? sessionEnumerable.ToArray();
                 sessionBindingList = new SortableBindingList<MessageSession>(messageSessions)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
+                                     {
+                                         AllowEdit = false,
+                                         AllowNew = false,
+                                         AllowRemove = false
+                                     };
                 writeToLog(string.Format(SessionsGotFromTheQueue, sessionBindingList.Count, queueDescription.Path));
                 sessionsBindingSource.DataSource = sessionBindingList;
                 sessionsDataGridView.DataSource = sessionsBindingSource;
 
                 sessionListStateSplitContainer.SplitterDistance = sessionListStateSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          sessionListStateSplitContainer.SplitterWidth;
+                                                                  GrouperMessagePropertiesWith -
+                                                                  sessionListStateSplitContainer.SplitterWidth;
                 sessionMainSplitContainer.SplitterDistance =
                     sessionMainSplitContainer.Size.Height / 2 - 8;
 
@@ -630,77 +666,78 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (authorizationRulesDataGridView.Columns.Count == 0)
             {
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "IssuerName",
-                    DataPropertyName = "IssuerName"
-                });
+                                                           {
+                                                               Name = "IssuerName",
+                                                               DataPropertyName = "IssuerName"
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewComboBoxColumn
-                {
-                    Name = "ClaimType",
-                    DataPropertyName = "ClaimType",
-                    DataSource = ClaimTypes,
-                    FlatStyle = FlatStyle.Flat
-                });
+                                                           {
+                                                               Name = "ClaimType",
+                                                               DataPropertyName = "ClaimType",
+                                                               DataSource = ClaimTypes,
+                                                               FlatStyle = FlatStyle.Flat
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "ClaimValue",
-                    DataPropertyName = "ClaimValue"
-                });
+                                                           {
+                                                               Name = "ClaimValue",
+                                                               DataPropertyName = "ClaimValue"
+                                                           });
                 if (serviceBusHelper.IsCloudNamespace)
                 {
                     authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                    {
-                        Name = "KeyName",
-                        DataPropertyName = "KeyName"
-                    });
+                                                               {
+                                                                   Name = "KeyName",
+                                                                   DataPropertyName = "KeyName"
+                                                               });
                     authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                    {
-                        Name = "PrimaryKey",
-                        DataPropertyName = "PrimaryKey"
-                    });
+                                                               {
+                                                                   Name = "PrimaryKey",
+                                                                   DataPropertyName = "PrimaryKey"
+                                                               });
                     authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                    {
-                        Name = "SecondaryKey",
-                        DataPropertyName = "SecondaryKey"
-                    });
+                                                               {
+                                                                   Name = "SecondaryKey",
+                                                                   DataPropertyName = "SecondaryKey"
+                                                               });
                 }
+
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
-                {
-                    Name = "Manage",
-                    DataPropertyName = "Manage",
-                    Width = 50
-                });
+                                                           {
+                                                               Name = "Manage",
+                                                               DataPropertyName = "Manage",
+                                                               Width = 50
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
-                {
-                    Name = "Send",
-                    DataPropertyName = "Send",
-                    Width = 50
-                });
+                                                           {
+                                                               Name = "Send",
+                                                               DataPropertyName = "Send",
+                                                               Width = 50
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
-                {
-                    Name = "Listen",
-                    DataPropertyName = "Listen",
-                    Width = 50
-                });
+                                                           {
+                                                               Name = "Listen",
+                                                               DataPropertyName = "Listen",
+                                                               Width = 50
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Revision",
-                    DataPropertyName = "Revision",
-                    Width = 50,
-                    ReadOnly = true
-                });
+                                                           {
+                                                               Name = "Revision",
+                                                               DataPropertyName = "Revision",
+                                                               Width = 50,
+                                                               ReadOnly = true
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "CreatedTime",
-                    DataPropertyName = "CreatedTime",
-                    ReadOnly = true
-                });
+                                                           {
+                                                               Name = "CreatedTime",
+                                                               DataPropertyName = "CreatedTime",
+                                                               ReadOnly = true
+                                                           });
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "ModifiedTime",
-                    DataPropertyName = "ModifiedTime",
-                    ReadOnly = true
-                });
+                                                           {
+                                                               Name = "ModifiedTime",
+                                                               DataPropertyName = "ModifiedTime",
+                                                               ReadOnly = true
+                                                           });
             }
 
 
@@ -735,56 +772,56 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 // Create the MessageId column
                 var textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
+                                    {
+                                        DataPropertyName = MessageId,
+                                        Name = MessageId,
+                                        Width = 120
+                                    };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the SequenceNumber column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = SequenceNumberValue,
+                                    Name = SequenceNumberName,
+                                    Width = 52
+                                };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Size column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = MessageSize,
+                                    Name = MessageSize,
+                                    Width = 52
+                                };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Label column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = Label,
+                                    Name = Label,
+                                    Width = 120
+                                };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = EnqueuedTimeUtc,
+                                    Name = EnqueuedTimeUtc,
+                                    Width = 120
+                                };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the ExpiresAtUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = ExpiresAtUtc,
+                                    Name = ExpiresAtUtc,
+                                    Width = 120
+                                };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
                 // Set the selection background color for all the cells.
@@ -815,38 +852,38 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 // Create the SessionId column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SessionId,
-                    Name = SessionId,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = SessionId,
+                                    Name = SessionId,
+                                    Width = 120
+                                };
                 sessionsDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Path column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Path,
-                    Name = Path,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = Path,
+                                    Name = Path,
+                                    Width = 120
+                                };
                 sessionsDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Mode column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Mode,
-                    Name = Mode,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = Mode,
+                                    Name = Mode,
+                                    Width = 120
+                                };
                 sessionsDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the BatchFlushInterval column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = BatchFlushInterval,
-                    Name = BatchFlushInterval,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = BatchFlushInterval,
+                                    Name = BatchFlushInterval,
+                                    Width = 120
+                                };
                 sessionsDataGridView.Columns.Add(textBoxColumn);
 
                 // Set the selection background color for all the cells.
@@ -877,56 +914,56 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 // Create the MessageId column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = MessageId,
+                                    Name = MessageId,
+                                    Width = 120
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the SequenceNumber column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = SequenceNumberValue,
+                                    Name = SequenceNumberName,
+                                    Width = 52
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Size column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = MessageSize,
+                                    Name = MessageSize,
+                                    Width = 52
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Label column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = Label,
+                                    Name = Label,
+                                    Width = 120
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = EnqueuedTimeUtc,
+                                    Name = EnqueuedTimeUtc,
+                                    Width = 120
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the ExpiresAtUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = ExpiresAtUtc,
+                                    Name = ExpiresAtUtc,
+                                    Width = 120
+                                };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Set the selection background color for all the cells.
@@ -957,56 +994,56 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 // Create the MessageId column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = MessageId,
+                                    Name = MessageId,
+                                    Width = 120
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the SequenceNumber column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = SequenceNumberValue,
+                                    Name = SequenceNumberName,
+                                    Width = 52
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Size column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
+                                {
+                                    DataPropertyName = MessageSize,
+                                    Name = MessageSize,
+                                    Width = 52
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Label column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = Label,
+                                    Name = Label,
+                                    Width = 120
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = EnqueuedTimeUtc,
+                                    Name = EnqueuedTimeUtc,
+                                    Width = 120
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the ExpiresAtUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
+                                {
+                                    DataPropertyName = ExpiresAtUtc,
+                                    Name = ExpiresAtUtc,
+                                    Width = 120
+                                };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
                 // Set the selection background color for all the cells.
@@ -1077,11 +1114,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-                {
-                    AllowEdit = true,
-                    AllowNew = true,
-                    AllowRemove = true
-                };
+                                  {
+                                      AllowEdit = true,
+                                      AllowNew = true,
+                                      AllowRemove = true
+                                  };
                 bindingList.ListChanged += bindingList_ListChanged;
                 authorizationRulesBindingSource.DataSource = bindingList;
                 authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
@@ -1090,6 +1127,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     txtPath.Text = path;
                 }
+
                 txtPath.Focus();
             }
         }
@@ -1128,6 +1166,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 btnPurgeDeadletterQueueMessages.Location = btnSessions.Location;
                 buttonsMoved = true;
             }
+
             btnDeadletter.Visible = true;
 
             // Authorization Rules
@@ -1136,22 +1175,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 var enumerable = queueDescription.Authorization.Select(r => new AuthorizationRuleWrapper(r));
                 bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
-                {
-                    AllowEdit = true,
-                    AllowNew = true,
-                    AllowRemove = true
-                };
-
+                              {
+                                  AllowEdit = true,
+                                  AllowNew = true,
+                                  AllowRemove = true
+                              };
             }
             else
             {
                 bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-                {
-                    AllowEdit = true,
-                    AllowNew = true,
-                    AllowRemove = true
-                };
+                              {
+                                  AllowEdit = true,
+                                  AllowNew = true,
+                                  AllowRemove = true
+                              };
             }
+
             bindingList.ListChanged += bindingList_ListChanged;
             authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper>(bindingList);
             authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
@@ -1160,42 +1199,42 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
 
             propertyList.AddRange(new[]
-            {
-                new[] {Status, queueDescription.Status.ToString()},
-                new[] {IsReadOnly, queueDescription.IsReadOnly.ToString()},
-                new[] {SizeInBytes, queueDescription.SizeInBytes.ToString("N0")},
-                new[] {CreatedAt, queueDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                new[] {AccessedAt, queueDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
-                new[] {UpdatedAt, queueDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
-                new[]
-                {
-                    ActiveMessageCount,
-                    queueDescription.MessageCountDetails.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-                },
-                new[]
-                {
-                    DeadletterCount,
-                    queueDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
-                        CultureInfo.CurrentCulture)
-                },
-                new[]
-                {
-                    ScheduledMessageCount,
-                    queueDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-                },
-                new[]
-                {
-                    TransferMessageCount,
-                    queueDescription.MessageCountDetails.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-                },
-                new[]
-                {
-                    TransferDeadLetterMessageCount,
-                    queueDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
-                        CultureInfo.CurrentCulture)
-                },
-                new[] {MessageCount, queueDescription.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
-            });
+                                  {
+                                      new[] { Status, queueDescription.Status.ToString() },
+                                      new[] { IsReadOnly, queueDescription.IsReadOnly.ToString() },
+                                      new[] { SizeInBytes, queueDescription.SizeInBytes.ToString("N0") },
+                                      new[] { CreatedAt, queueDescription.CreatedAt.ToString(CultureInfo.CurrentCulture) },
+                                      new[] { AccessedAt, queueDescription.AccessedAt.ToString(CultureInfo.CurrentCulture) },
+                                      new[] { UpdatedAt, queueDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture) },
+                                      new[]
+                                      {
+                                          ActiveMessageCount,
+                                          queueDescription.MessageCountDetails.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                                      },
+                                      new[]
+                                      {
+                                          DeadletterCount,
+                                          queueDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
+                                              CultureInfo.CurrentCulture)
+                                      },
+                                      new[]
+                                      {
+                                          ScheduledMessageCount,
+                                          queueDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                                      },
+                                      new[]
+                                      {
+                                          TransferMessageCount,
+                                          queueDescription.MessageCountDetails.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                                      },
+                                      new[]
+                                      {
+                                          TransferDeadLetterMessageCount,
+                                          queueDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
+                                              CultureInfo.CurrentCulture)
+                                      },
+                                      new[] { MessageCount, queueDescription.MessageCount.ToString("N0", CultureInfo.CurrentCulture) }
+                                  });
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
@@ -1224,7 +1263,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                     i < queueDescription.ForwardTo.Length - 1
                     ? queueDescription.ForwardTo.Substring(queueDescription.ForwardTo.LastIndexOf('/') + 1)
                     : queueDescription.ForwardTo;
-
             }
 
             // ForwardDeadLetteredMessagesTo
@@ -1238,14 +1276,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         ? queueDescription.ForwardDeadLetteredMessagesTo.Substring(
                             queueDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1)
                         : queueDescription.ForwardDeadLetteredMessagesTo;
-
             }
 
             // MaxQueueSizeInBytes
             trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
                 ? queueDescription.MaxSizeInGigabytes()
                 : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
-                ? 11 : queueDescription.MaxSizeInGigabytes();
+                    ? 11
+                    : queueDescription.MaxSizeInGigabytes();
 
             // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
             if (queueDescription.MaxSizeInGigabytes() > 5)
@@ -1371,6 +1409,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             break;
                         }
+
                         var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
                         var partialList = messageInspector != null
                             ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
@@ -1382,6 +1421,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             break;
                         }
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1415,19 +1455,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
+                                     {
+                                         AllowEdit = false,
+                                         AllowNew = false,
+                                         AllowRemove = false
+                                     };
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
 
@@ -1442,10 +1485,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] == null)
                 {
                     EnablePage(MessagesTabPage);
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] != null)
                 {
                     mainTabControl.SelectTab(MessagesTabPage);
@@ -1503,9 +1548,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             {
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
+
                             brokeredMessages.Add(message);
                         }
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1536,19 +1583,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.Add(messageInspector != null
                             ? messageInspector.AfterReceiveMessage(message)
                             : message);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
+                                     {
+                                         AllowEdit = false,
+                                         AllowNew = false,
+                                         AllowRemove = false
+                                     };
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
                 messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
@@ -1561,10 +1611,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] == null)
                 {
                     EnablePage(MessagesTabPage);
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] != null)
                 {
                     mainTabControl.SelectTab(MessagesTabPage);
@@ -1623,11 +1675,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1647,11 +1701,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     //if (!queueDescription.EnablePartitioning)
                     //{
                     //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
@@ -1669,11 +1725,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
 
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = true
-                };
+                                        {
+                                            AllowEdit = false,
+                                            AllowNew = false,
+                                            AllowRemove = true
+                                        };
 
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
@@ -1688,10 +1744,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] == null)
                 {
                     EnablePage(DeadletterTabPage);
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] != null)
                 {
                     mainTabControl.SelectTab(DeadletterTabPage);
@@ -1760,11 +1818,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1784,11 +1844,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     //if (!queueDescription.EnablePartitioning)
                     //{
                     //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
@@ -1806,18 +1868,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
 
                 transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
+                                                {
+                                                    AllowEdit = false,
+                                                    AllowNew = false,
+                                                    AllowRemove = false
+                                                };
 
                 transferDeadletterBindingSource.DataSource = transferDeadletterBindingList;
                 transferDeadletterDataGridView.DataSource = transferDeadletterBindingSource;
 
                 transferDeadletterSplitContainer.SplitterDistance = transferDeadletterSplitContainer.Width -
-                                                            GrouperMessagePropertiesWith -
-                                                            transferDeadletterSplitContainer.SplitterWidth;
+                                                                    GrouperMessagePropertiesWith -
+                                                                    transferDeadletterSplitContainer.SplitterWidth;
                 transferMainSplitContainer.SplitterDistance = transferMainSplitContainer.Size.Height / 2 - 8;
 
 
@@ -1825,10 +1887,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[TransferDeadletterTabPage] == null)
                 {
                     EnablePage(TransferDeadletterTabPage);
                 }
+
                 if (mainTabControl.TabPages[TransferDeadletterTabPage] != null)
                 {
                     mainTabControl.SelectTab(TransferDeadletterTabPage);
@@ -1883,12 +1947,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         if (messageInspector != null)
                         {
                             message = messageInspector.AfterReceiveMessage(message);
                         }
+
                         brokeredMessages.Add(message);
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1904,19 +1971,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.Add(messageInspector != null
                             ? messageInspector.AfterReceiveMessage(message)
                             : message);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = true
-                };
+                                        {
+                                            AllowEdit = false,
+                                            AllowNew = false,
+                                            AllowRemove = true
+                                        };
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
 
@@ -1930,10 +2000,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] == null)
                 {
                     EnablePage(DeadletterTabPage);
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] != null)
                 {
                     mainTabControl.SelectTab(DeadletterTabPage);
@@ -1976,12 +2048,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         if (messageInspector != null)
                         {
                             message = messageInspector.AfterReceiveMessage(message);
                         }
+
                         brokeredMessages.Add(message);
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
@@ -1997,34 +2072,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         brokeredMessages.Add(messageInspector != null
                             ? messageInspector.AfterReceiveMessage(message)
                             : message);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
+                                                {
+                                                    AllowEdit = false,
+                                                    AllowNew = false,
+                                                    AllowRemove = false
+                                                };
                 transferDeadletterBindingSource.DataSource = transferDeadletterBindingList;
                 transferDeadletterDataGridView.DataSource = transferDeadletterBindingSource;
 
                 transferDeadletterSplitContainer.SplitterDistance = transferDeadletterSplitContainer.Width -
-                                                            GrouperMessagePropertiesWith -
-                                                            transferDeadletterSplitContainer.SplitterWidth;
+                                                                    GrouperMessagePropertiesWith -
+                                                                    transferDeadletterSplitContainer.SplitterWidth;
 
                 if (!peek)
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[TransferDeadletterTabPage] == null)
                 {
                     EnablePage(TransferDeadletterTabPage);
                 }
+
                 if (mainTabControl.TabPages[TransferDeadletterTabPage] != null)
                 {
                     mainTabControl.SelectTab(TransferDeadletterTabPage);
@@ -2048,6 +2128,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (btnCreateDelete.Text == DeleteText)
                 {
                     using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
@@ -2060,7 +2141,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 else
                 {
-
                     if (string.IsNullOrWhiteSpace(txtPath.Text))
                     {
                         writeToLog(PathCannotBeNull);
@@ -2084,16 +2164,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     var description = new QueueDescription(txtPath.Text)
-                    {
-                        UserMetadata = txtUserMetadata.Text,
-                        ForwardTo = txtForwardTo.Text,
-                        ForwardDeadLetteredMessagesTo = txtForwardDeadLetteredMessagesTo.Text,
-                        MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
-                            ? trackBarMaxQueueSize.Value * 1024
-                            : trackBarMaxQueueSize.Value == trackBarMaxQueueSize.Maximum
-                                ? SeviceBusForWindowsServerMaxQueueSize
-                                : trackBarMaxQueueSize.Value * 1024
-                    };
+                                      {
+                                          UserMetadata = txtUserMetadata.Text,
+                                          ForwardTo = txtForwardTo.Text,
+                                          ForwardDeadLetteredMessagesTo = txtForwardDeadLetteredMessagesTo.Text,
+                                          MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
+                                              ? trackBarMaxQueueSize.Value * 1024
+                                              : trackBarMaxQueueSize.Value == trackBarMaxQueueSize.Maximum
+                                                  ? SeviceBusForWindowsServerMaxQueueSize
+                                                  : trackBarMaxQueueSize.Value * 1024
+                                      };
 
                     if (!string.IsNullOrWhiteSpace(txtMaxDeliveryCount.Text))
                     {
@@ -2128,6 +2208,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
@@ -2136,6 +2217,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
@@ -2144,6 +2226,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
@@ -2152,6 +2235,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
@@ -2160,6 +2244,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         description.DefaultMessageTimeToLive = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
@@ -2183,6 +2268,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowHours.Text, out hours))
@@ -2191,6 +2277,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMinutes.Text, out minutes))
@@ -2199,6 +2286,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowSeconds.Text, out seconds))
@@ -2207,6 +2295,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text, out milliseconds))
@@ -2215,6 +2304,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         description.DuplicateDetectionHistoryTimeWindow = new TimeSpan(days, hours, minutes, seconds,
                             milliseconds);
                     }
@@ -2239,6 +2329,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationHours.Text))
                         {
                             if (!int.TryParse(txtLockDurationHours.Text, out hours))
@@ -2247,6 +2338,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text))
                         {
                             if (!int.TryParse(txtLockDurationMinutes.Text, out minutes))
@@ -2255,6 +2347,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text))
                         {
                             if (!int.TryParse(txtLockDurationSeconds.Text, out seconds))
@@ -2263,6 +2356,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
                         {
                             if (!int.TryParse(txtLockDurationMilliseconds.Text, out milliseconds))
@@ -2271,6 +2365,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         description.LockDuration = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
@@ -2294,6 +2389,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
@@ -2302,6 +2398,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
@@ -2310,6 +2407,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
@@ -2318,6 +2416,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
@@ -2326,6 +2425,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         description.AutoDeleteOnIdle = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
@@ -2337,6 +2437,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
                         description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     }
+
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
                     description.RequiresSession = checkedListBox.GetItemChecked(RequiresSessionIndex);
@@ -2361,6 +2462,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                     continue;
                                 }
                             }
+
                             var rightList = new List<AccessRights>();
                             if (rule.Manage)
                             {
@@ -2372,11 +2474,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 {
                                     rightList.Add(AccessRights.Send);
                                 }
+
                                 if (rule.Listen)
                                 {
                                     rightList.Add(AccessRights.Listen);
                                 }
                             }
+
                             if (serviceBusHelper.IsCloudNamespace)
                             {
                                 if (string.IsNullOrWhiteSpace(rule.SecondaryKey))
@@ -2420,6 +2524,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
             if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
@@ -2433,18 +2538,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             if (e.Index == EnablePartitioningIndex)
             {
                 e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
+
             if (e.Index == RequiresSessionIndex)
             {
                 e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
             }
+
             if (e.Index == RequiresDuplicateDetectionIndex)
             {
                 e.NewValue = queueDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
             }
+
             if (e.Index == IsAnonymousAccessibleIndex)
             {
                 e.NewValue = queueDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
@@ -2517,6 +2626,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
@@ -2525,6 +2635,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
@@ -2533,6 +2644,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
@@ -2541,6 +2653,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
                         {
                             if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
@@ -2549,6 +2662,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                         if (!timeSpan.IsMaxValue())
                         {
@@ -2576,6 +2690,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowHours.Text, out hours))
@@ -2584,6 +2699,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMinutes.Text, out minutes))
@@ -2592,6 +2708,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowSeconds.Text, out seconds))
@@ -2600,6 +2717,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
                         {
                             if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text, out milliseconds))
@@ -2608,6 +2726,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         queueDescription.DuplicateDetectionHistoryTimeWindow = new TimeSpan(days, hours, minutes,
                             seconds, milliseconds);
                     }
@@ -2632,6 +2751,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationHours.Text))
                         {
                             if (!int.TryParse(txtLockDurationHours.Text, out hours))
@@ -2640,6 +2760,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text))
                         {
                             if (!int.TryParse(txtLockDurationMinutes.Text, out minutes))
@@ -2648,6 +2769,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text))
                         {
                             if (!int.TryParse(txtLockDurationSeconds.Text, out seconds))
@@ -2656,6 +2778,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
                         {
                             if (!int.TryParse(txtLockDurationMilliseconds.Text, out milliseconds))
@@ -2664,6 +2787,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         queueDescription.LockDuration = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
@@ -2687,6 +2811,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
@@ -2695,6 +2820,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
@@ -2703,6 +2829,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
@@ -2711,6 +2838,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
                         {
                             if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
@@ -2719,6 +2847,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 return;
                             }
                         }
+
                         var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                         if (!timeSpan.IsMaxValue())
                         {
@@ -2755,11 +2884,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                     continue;
                                 }
                             }
+
                             var rightList = new List<AccessRights>();
                             if (rule.Manage)
                             {
                                 rightList.AddRange(new[]
-                                    {AccessRights.Manage, AccessRights.Send, AccessRights.Listen});
+                                                   { AccessRights.Manage, AccessRights.Send, AccessRights.Listen });
                             }
                             else
                             {
@@ -2767,11 +2897,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 {
                                     rightList.Add(AccessRights.Send);
                                 }
+
                                 if (rule.Listen)
                                 {
                                     rightList.Add(AccessRights.Listen);
                                 }
                             }
+
                             if (serviceBusHelper.IsCloudNamespace)
                             {
                                 if (string.IsNullOrWhiteSpace(rule.PrimaryKey) &&
@@ -2912,7 +3044,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 e.Bounds.Height - 1);
             // Right vertical line
             e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
+            var roundedFontSize = (float) Math.Round(e.Font.SizeInPoints);
             var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width,
                 roundedFontSize + 6);
             e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
@@ -2937,6 +3069,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             try
             {
                 listView.SuspendDrawing();
@@ -2947,6 +3080,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     width -= 17;
                 }
+
                 listView.Columns[1].Width = width;
             }
             finally
@@ -3086,6 +3220,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             mainTabControl.TabPages.Add(page);
             hiddenPages.Remove(page);
         }
@@ -3097,6 +3232,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             mainTabControl.TabPages.Remove(page);
             hiddenPages.Add(page);
         }
@@ -3129,11 +3265,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             var dataGridView = sender as DataGridView;
             if (dataGridView == null || dataGridView.ColumnCount == 0)
             {
                 return;
             }
+
             try
             {
                 dataGridView.SuspendDrawing();
@@ -3146,11 +3284,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         width -= verticalScrollbar.Width;
                     }
+
                     dataGridView.Columns[1].Width = width;
                 }
+
                 if ((dataGridView == messagesDataGridView ||
-                    dataGridView == deadletterDataGridView ||
-                    dataGridView == transferDeadletterDataGridView) &&
+                     dataGridView == deadletterDataGridView ||
+                     dataGridView == transferDeadletterDataGridView) &&
                     dataGridView.ColumnCount == 6)
                 {
                     var width = dataGridView.Width -
@@ -3162,17 +3302,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         width -= verticalScrollbar.Width;
                     }
+
                     var columnWidth = width / 4;
                     dataGridView.Columns[0].Width = columnWidth - 20;
                     dataGridView.Columns[3].Width = columnWidth;
                     dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
+
                 if (dataGridView != sessionsDataGridView ||
                     dataGridView.ColumnCount != 4)
                 {
                     return;
                 }
+
                 {
                     var width = dataGridView.Width - dataGridView.RowHeadersWidth;
                     var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
@@ -3180,12 +3323,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         width -= verticalScrollbar.Width;
                     }
+
                     const int columnNumber = 4;
                     var columnWidth = width / columnNumber;
                     for (var i = 0; i < 3; i++)
                     {
                         dataGridView.Columns[i].Width = columnWidth;
                     }
+
                     dataGridView.Columns[3].Width = columnWidth + (width - (columnWidth * columnNumber));
                 }
             }
@@ -3216,10 +3361,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (brokeredMessage == bindingList[e.RowIndex])
                 {
                     return;
                 }
+
                 brokeredMessage = bindingList[e.RowIndex];
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
@@ -3246,6 +3393,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             var messageSession = bindingList[e.RowIndex];
             sessionPropertyGrid.SelectedObject = messageSession;
             var stream = messageSession.GetState();
@@ -3254,6 +3402,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtSessionState.Text = string.Empty;
                 return;
             }
+
             using (stream)
             {
                 using (var reader = new StreamReader(stream))
@@ -3330,7 +3479,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void deadletterTabPage_Resize(object sender, EventArgs e)
         {
-
         }
 
         private void btnDeadletter_Click(object sender, EventArgs e)
@@ -3351,10 +3499,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             if (deadletterMessage == bindingList[e.RowIndex])
             {
                 return;
             }
+
             deadletterMessage = bindingList[e.RowIndex];
             deadletterPropertyGrid.SelectedObject = deadletterMessage;
 
@@ -3373,10 +3523,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             if (transferDeadletterMessage == bindingList[e.RowIndex])
             {
                 return;
             }
+
             transferDeadletterMessage = bindingList[e.RowIndex];
             transferDeadletterPropertyGrid.SelectedObject = transferDeadletterMessage;
 
@@ -3413,7 +3565,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             else if (e.KeyChar == ' ')
             {
-
             }
             else
             {
@@ -3440,6 +3591,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var width = authorizationRulesDataGridView.Width -
                             authorizationRulesDataGridView.Columns["Manage"].Width -
                             authorizationRulesDataGridView.Columns["Send"].Width -
@@ -3451,6 +3603,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     width -= verticalScrollbar.Width;
                 }
+
                 int columnWidth;
                 if (serviceBusHelper.IsCloudNamespace)
                 {
@@ -3470,6 +3623,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     columnWidth = width / 5;
                     authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (4 * columnWidth);
                 }
+
                 authorizationRulesDataGridView.Columns["ClaimType"].Width = columnWidth;
                 authorizationRulesDataGridView.Columns["ClaimValue"].Width = columnWidth;
                 authorizationRulesDataGridView.Columns["CreatedTime"].Width = columnWidth;
@@ -3504,19 +3658,21 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             if (authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Manage")
             {
-                if (!(bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
+                if (!(bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value)
                 {
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value = true;
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Send"].Value = true;
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Listen"].Value = true;
                 }
+
                 return;
             }
+
             if ((authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Send" ||
                  authorizationRulesDataGridView.Columns[e.ColumnIndex].Name == "Listen"))
             {
-                if ((bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value &&
-                    (bool)authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value)
+                if ((bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value &&
+                    (bool) authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value)
                 {
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
                     authorizationRulesDataGridView.Rows[e.RowIndex].Cells["Manage"].Value = false;
@@ -3541,11 +3697,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
             if (bindingList == null)
             {
                 return;
             }
+
             using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
@@ -3558,11 +3716,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
             if (bindingList == null)
             {
                 return;
             }
+
             using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
@@ -3588,11 +3748,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
             if (bindingList == null)
             {
                 return;
             }
+
             using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
@@ -3626,14 +3788,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
             messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - messagePropertyListView.Location.X * 2,
-                                                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
-                                                    messagePropertyListView.Location.X);
+                grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
+                messagePropertyListView.Location.X);
         }
 
         private void grouperMessageSystemProperties_CustomPaint(PaintEventArgs obj)
         {
             messagePropertyGrid.Size = new Size(grouperMessageSystemProperties.Size.Width - messagePropertyGrid.Location.X * 2,
-                                                grouperMessageSystemProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
+                grouperMessageSystemProperties.Size.Height - messagePropertyGrid.Location.Y - messagePropertyGrid.Location.X);
         }
 
         private void grouperDeadletterText_CustomPaint(PaintEventArgs obj)
@@ -3700,6 +3862,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
@@ -3723,8 +3886,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                                                                      .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -3748,19 +3912,19 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                .Select(r => r.DataBoundItem as BrokeredMessage);
+                                                 .Select(r => r.DataBoundItem as BrokeredMessage);
 
             string confirmationText;
 
             if (messages.Count() == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"deadletter subqueue for the {queueDescription.Path} queue?";
+                                   $"deadletter subqueue for the {queueDescription.Path} queue?";
             }
             else
             {
                 confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"deadletter subqueue for {queueDescription.Path} queue?";
+                                   $"deadletter subqueue for {queueDescription.Path} queue?";
             }
 
             using (var deleteForm = new DeleteForm(confirmationText))
@@ -3813,6 +3977,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             deadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
 
@@ -3833,6 +3998,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
+
             transferDeadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = transferDeadletterDataGridView.SelectedRows.Count > 1;
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
@@ -3849,7 +4015,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         }
 
         private void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
-            EventArgs e)
+                                                                                          EventArgs e)
         {
             try
             {
@@ -3857,8 +4023,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new MessageForm(queueDescription, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                                                                                          .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
@@ -3885,7 +4052,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         }
 
         private void resubmitSelectedTransferDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
-            EventArgs e)
+                                                                                                  EventArgs e)
         {
             try
             {
@@ -3893,8 +4060,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new MessageForm(transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                                                                                .Select(r => (BrokeredMessage) r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -3915,6 +4083,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new TextForm(FilterExpressionTitle, FilterExpressionLabel, messagesFilterExpression))
                 {
                     form.Size = new Size(600, 200);
@@ -3922,6 +4091,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         return;
                     }
+
                     messagesFilterExpression = form.Content;
                     FilterMessages();
                 }
@@ -3947,12 +4117,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new DateTimeRangeForm(messagesFilterFromDate, messagesFilterToDate))
                 {
                     if (form.ShowDialog() != DialogResult.OK)
                     {
                         return;
                     }
+
                     messagesFilterFromDate = form.DateTimeFrom;
                     messagesFilterToDate = form.DateTimeTo;
                     FilterMessages();
@@ -3975,10 +4147,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return false;
             }
+
             if (message.EnqueuedTimeUtc > (toDateTime ?? DateTime.MaxValue))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -4022,11 +4196,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                    {
-                        AllowEdit = false,
-                        AllowNew = false,
-                        AllowRemove = false
-                    };
+                                  {
+                                      AllowEdit = false,
+                                      AllowNew = false,
+                                      AllowRemove = false
+                                  };
                     messagesBindingSource.DataSource = bindingList;
                     messagesDataGridView.DataSource = messagesBindingSource;
                     writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, messagesFilterFromDate ?? DateTime.MinValue, messagesFilterToDate ?? DateTime.MaxValue, bindingList.Count));
@@ -4091,11 +4265,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                    {
-                        AllowEdit = false,
-                        AllowNew = false,
-                        AllowRemove = false
-                    };
+                                  {
+                                      AllowEdit = false,
+                                      AllowNew = false,
+                                      AllowRemove = false
+                                  };
                     deadletterBindingSource.DataSource = bindingList;
                     deadletterDataGridView.DataSource = deadletterBindingSource;
                     writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, deadletterFilterFromDate ?? DateTime.MinValue, deadletterFilterToDate ?? DateTime.MaxValue, bindingList.Count));
@@ -4130,12 +4304,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new DateTimeRangeForm(deadletterFilterFromDate, deadletterFilterToDate))
                 {
                     if (form.ShowDialog() != DialogResult.OK)
                     {
                         return;
                     }
+
                     deadletterFilterFromDate = form.DateTimeFrom;
                     deadletterFilterToDate = form.DateTimeTo;
                     FilterDeadletters();
@@ -4162,6 +4338,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new TextForm(FilterExpressionTitle, FilterExpressionLabel, deadletterFilterExpression)
                 )
                 {
@@ -4170,6 +4347,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     {
                         return;
                     }
+
                     deadletterFilterExpression = form.Content;
                     FilterDeadletters();
                 }
@@ -4190,7 +4368,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var pictureBox = sender as PictureBox;
             if (pictureBox != null)
             {
-                pictureBox.Image = Properties.Resources.FindExtensionRaised;
+                pictureBox.Image = Resources.FindExtensionRaised;
             }
         }
 
@@ -4199,7 +4377,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var pictureBox = sender as PictureBox;
             if (pictureBox != null)
             {
-                pictureBox.Image = Properties.Resources.FindExtension;
+                pictureBox.Image = Resources.FindExtension;
             }
         }
 
@@ -4208,7 +4386,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var pictureBox = sender as PictureBox;
             if (pictureBox != null)
             {
-                pictureBox.Image = Properties.Resources.FindByDateExtensionRaised;
+                pictureBox.Image = Resources.FindByDateExtensionRaised;
             }
         }
 
@@ -4217,7 +4395,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var pictureBox = sender as PictureBox;
             if (pictureBox != null)
             {
-                pictureBox.Image = Properties.Resources.FindByDateExtension;
+                pictureBox.Image = Resources.FindByDateExtension;
             }
         }
 
@@ -4259,7 +4437,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             e.Cancel = true;
         }
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -4293,15 +4471,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
                 if (bindingList == null)
                 {
                     return;
                 }
+
                 if (string.IsNullOrWhiteSpace(txtMessageText.Text))
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4311,10 +4492,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     writer.Write(MessageSerializationHelper.Serialize(bindingList[currentMessageRowIndex], txtMessageText.Text));
@@ -4334,14 +4517,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var messages =
                     messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
+                                        .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4351,10 +4536,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
@@ -4375,15 +4562,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
                 if (bindingList == null)
                 {
                     return;
                 }
+
                 if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4393,10 +4583,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     writer.Write(MessageSerializationHelper.Serialize(bindingList[currentDeadletterMessageRowIndex], txtDeadletterText.Text));
@@ -4416,13 +4608,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
+                                                     .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4432,10 +4626,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
@@ -4456,15 +4652,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
                 if (bindingList == null)
                 {
                     return;
                 }
+
                 if (string.IsNullOrWhiteSpace(txtTransferDeadletterText.Text))
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4474,10 +4673,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     writer.Write(MessageSerializationHelper.Serialize(bindingList[currentTransferDeadletterMessageRowIndex],
@@ -4498,13 +4699,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
+                                                             .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
                 if (!brokeredMessages.Any())
                 {
                     return;
                 }
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4514,10 +4717,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     File.Delete(saveFileDialog.FileName);
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
@@ -4554,7 +4759,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             foreach (DataGridViewRow row in deadletterDataGridView.Rows)
             {
-                var message = (BrokeredMessage)row.DataBoundItem;
+                var message = (BrokeredMessage) row.DataBoundItem;
 
                 if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
                 {
@@ -4574,6 +4779,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             deadletterDataGridView.ClearSelection();
         }
+
         #endregion
     }
 }

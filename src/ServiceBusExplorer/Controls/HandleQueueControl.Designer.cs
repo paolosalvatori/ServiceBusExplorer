@@ -2732,37 +2732,43 @@
             // 
             this.saveSelectedMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages as File";
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
+            this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Body as File";
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
+            this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Body as File";
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Body as File";
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // HandleQueueControl
             // 
