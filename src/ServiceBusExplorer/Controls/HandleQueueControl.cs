@@ -21,14 +21,13 @@
 
 #endregion
 
-#region Using Directives
-
-#endregion
 
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
+    #region Using Directives
+
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -43,6 +42,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
     using Helpers;
     using Properties;
     using ServiceBus.Messaging;
+
+    #endregion
 
     public partial class HandleQueueControl : UserControl
     {
