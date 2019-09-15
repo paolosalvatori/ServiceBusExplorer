@@ -6,7 +6,7 @@
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
-// Author: Paolo Salvatori
+// Author: Paolo Salvatori, Sebastian Walter
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // 
