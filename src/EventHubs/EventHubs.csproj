@@ -25,8 +25,16 @@
  
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.1.0" />
     <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.10.0" />
+  </ItemGroup>
+
+
+
+ 
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

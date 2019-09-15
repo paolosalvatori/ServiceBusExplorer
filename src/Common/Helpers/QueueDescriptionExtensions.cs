@@ -19,39 +19,22 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
-
-using System.ComponentModel;
-
-#endregion
+using OldMessaging = Microsoft.ServiceBus.Messaging;
+using NewManagement = Microsoft.Azure.ServiceBus.Management;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    public class MonitorInfo
+    public static class QueueDescriptionExtensions
     {
-        #region Static Constructor
-        static MonitorInfo()
+        public static NewManagement.QueueDescription GetNewSdkQueueDescription(this OldMessaging.QueueDescription oldQueueDescription)
         {
-            MonitorInfos = new BindingList<MonitorInfo> 
-            {
-                new MonitorInfo {DisplayName = "Active Message Count", Name="ActiveMessageCount", Unit="Messages"},
-                new MonitorInfo {DisplayName = "Deadletter Message Count", Name="DeadletterMessageCount", Unit="Messages"},
-                new MonitorInfo {DisplayName = "Size in KB", Name="SizeInKB", Unit = "KB"}
-            };
-            MonitorInfos.AllowEdit = true;
-            MonitorInfos.AllowNew = true;
-            MonitorInfos.AllowRemove = true;
-        }          
-        #endregion
+            return new NewManagement.QueueDescription(oldQueueDescription.Path);
+        }
 
-        #region Public Instance Properties
-        public string DisplayName { get; set; }
-        public string Name { get; set; }
-        public string Unit { get; set; }
-        #endregion
+        public static int MaxSizeInGigabytes(this OldMessaging.QueueDescription queueDescription)
+        {
+            return (int) (queueDescription.MaxSizeInMegabytes / 1024);
+        }
 
-        #region Public Static Properties
-        public static BindingList<MonitorInfo> MonitorInfos { get; private set; }
-        #endregion
     }
 }

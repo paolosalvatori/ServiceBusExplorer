@@ -95,7 +95,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
         private const string RuleCannotBeNull = "The rule argument cannot be null.";
-        private const string PathCannotBeNull = "The path argument cannot be null or empty.";
+        protected const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
@@ -174,12 +174,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
-        private ServiceBus.NamespaceManager namespaceManager;
+        private Microsoft.ServiceBus.NamespaceManager namespaceManager;
         private NotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private ServiceBus.TokenProvider tokenProvider;
+        private Microsoft.ServiceBus.TokenProvider tokenProvider;
         private NotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
@@ -369,7 +369,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets the current namespace manager.
         /// </summary>
-        public ServiceBus.NamespaceManager NamespaceManager
+        public Microsoft.ServiceBus.NamespaceManager NamespaceManager
         {
             get
             {
@@ -591,7 +591,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the credentials of the current service bus account.
         /// </summary>
-        public ServiceBus.TokenProvider TokenProvider
+        public Microsoft.ServiceBus.TokenProvider TokenProvider
         {
             get
             {
@@ -667,15 +667,15 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the connectivity mode when connecting to namespaces
         /// </summary>
-        public static ServiceBus.ConnectivityMode ConnectivityMode
+        public static Microsoft.ServiceBus.ConnectivityMode ConnectivityMode
         {
             get
             {
-                return ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode;
+                return Microsoft.ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode;
             }
             set
             {
-                ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode = value;
+                Microsoft.ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode = value;
             }
         }
 
@@ -774,11 +774,11 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 }
 
                 // Create the service URI using the scheme, namespace and service name (optional)
-                namespaceUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme,
+                namespaceUri = Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme,
                                                                                  nameSpace,
                                                                                  path);
                 // Create the atom feed URI using the scheme, namespace and service name (optional)
-                atomFeedUri = ServiceBus.ServiceBusEnvironment.CreateServiceUri(Uri.UriSchemeHttp,
+                atomFeedUri = Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Uri.UriSchemeHttp,
                                                                                 nameSpace,
                                                                                 path);
                 Namespace = nameSpace;
@@ -787,7 +787,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 // Create shared secret credentials to to authenticate with the Access Control service, 
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
-                tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
                     notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
@@ -805,16 +805,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
-                var namespaceManagerSettings = new ServiceBus.NamespaceManagerSettings
+                var namespaceManagerSettings = new Microsoft.ServiceBus.NamespaceManagerSettings
                 {
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
                 // Set retry count
-                if (namespaceManagerSettings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (namespaceManagerSettings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
-                    namespaceManagerSettings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                    namespaceManagerSettings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
                                                                                            defaultServiceBusRetryExponential.MaximumBackoff,
                                                                                            RetryHelper.RetryCount);
                 }
@@ -840,7 +840,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
+                namespaceManager = new Microsoft.ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
                     notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
@@ -929,7 +929,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 // Create shared secret credentials to to authenticate with the Access Control service, 
                 // and acquire an access token that proves to the Service Bus insfrastructure that the 
                 // the Service Bus Explorer is authorized to access the entities in the specified namespace.
-                tokenProvider = ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
                     notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
@@ -947,16 +947,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
                 // Create and instance of the NamespaceManagerSettings which 
                 // specifies service namespace client settings and metadata.
-                var namespaceManagerSettings = new ServiceBus.NamespaceManagerSettings
+                var namespaceManagerSettings = new Microsoft.ServiceBus.NamespaceManagerSettings
                 {
                     TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
                 // Set retry count
-                if (namespaceManagerSettings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (namespaceManagerSettings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
-                    namespaceManagerSettings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                    namespaceManagerSettings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
                                                                                            defaultServiceBusRetryExponential.MaximumBackoff,
                                                                                            RetryHelper.RetryCount);
                 }
@@ -981,7 +981,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
+                namespaceManager = new Microsoft.ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
                     notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
@@ -1051,17 +1051,17 @@ namespace Microsoft.Azure.ServiceBusExplorer
                     {
                         EntityPath = string.Empty
                     };
-                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString = csBuilder.ToString());
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString = csBuilder.ToString());
                 }
                 else
                 {
-                    namespaceManager = ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
                 }
 
                 // Set retry count
-                if (namespaceManager.Settings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
-                    namespaceManager.Settings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                    namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
                                                                                             defaultServiceBusRetryExponential.MaximumBackoff,
                                                                                             RetryHelper.RetryCount);
                 }
@@ -1242,7 +1242,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var currentScheme = description.RelayType != RelayType.Http
                 ? scheme
                 : description.RequiresTransportSecurity ? "https" : "http";
-            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
+            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
         }
 
         /// <summary>
@@ -1398,7 +1398,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>The absolute uri of the event hub.</returns>
         public Uri GetEventHubUri(string eventHubPath)
         {
-            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubPath));
+            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubPath));
         }
 
         /// <summary>
@@ -1532,7 +1532,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>The absolute uri of the partition.</returns>
         public Uri GetPartitionUri(string eventHubName, string consumerGroupName, string partitionId)
         {
-            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupName, "/", partitionId));
+            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupName, "/", partitionId));
         }
 
         /// <summary>
@@ -1706,7 +1706,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>The absolute uri of the consumer group.</returns>
         public Uri GetConsumerGroupUri(string eventHubName, string consumerGroupPath)
         {
-            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupPath));
+            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupPath));
         }
 
         /// <summary>
@@ -1859,7 +1859,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <returns>The absolute uri of the notification hub.</returns>
         public Uri GetNotificationHubUri(string notificationHubPath)
         {
-            return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, notificationHubPath));
+            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, notificationHubPath));
         }
 
         /// <summary>
@@ -2269,7 +2269,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, queuePath));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, queuePath));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -2294,7 +2294,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, QueueClient.FormatDeadLetterPath(queuePath)));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, QueueClient.FormatDeadLetterPath(queuePath)));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -2319,7 +2319,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, topicPath));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, topicPath));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -2345,7 +2345,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -2371,7 +2371,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         {
             if (IsCloudNamespace)
             {
-                return ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, SubscriptionClient.FormatDeadLetterPath(topicPath, name));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, SubscriptionClient.FormatDeadLetterPath(topicPath, name));
             }
             // ReSharper disable RedundantIfElseBlock
             else
@@ -5587,6 +5587,13 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var host = namespaceUri.Host;
             var index = host.IndexOf('.');
             return host.Substring(index);
+        }
+
+        public ServiceBusHelper2 GetServiceBusHelper2()
+        {
+            var serviceBusHelper2 = new ServiceBusHelper2();
+            serviceBusHelper2.ConnectionString = ConnectionString;
+            return serviceBusHelper2;
         }
         #endregion
 

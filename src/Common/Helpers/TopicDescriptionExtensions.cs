@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    using ServiceBus.Messaging;
+    using Microsoft.ServiceBus.Messaging;
 
     public static class TopicDescriptionExtensions
     {

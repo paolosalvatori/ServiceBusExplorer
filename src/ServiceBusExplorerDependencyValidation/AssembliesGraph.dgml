@@ -1,40 +1,329 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph DataVirtualized="True" Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="(@3)" Category="CodeSchema_Assembly" Bounds="-5.65935012688984,-57.8382044268557,129,25" CodeSchemaProperty_StrongName="ToMigrate, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(82070314-a7e4-437e-81de-bdb558d2af15.OutputPath)" Group="Collapsed" Label="ToMigrate.dll" UseManualLocation="True" />
-    <Node Id="(@4)" Category="CodeSchema_Assembly" Bounds="95.5579547543777,10.4950289064776,124.433333333333,25" CodeSchemaProperty_StrongName="Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPath)" Group="Collapsed" Label="Common.dll" UseManualLocation="True" />
-    <Node Id="(@5)" Category="CodeSchema_Assembly" Bounds="-196.34935012689,69.9282257441239,165.023333333333,25" CodeSchemaProperty_StrongName="NotificationHubs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPath)" Group="Collapsed" Label="NotificationHubs.dll" UseManualLocation="True" />
-    <Node Id="(@6)" Category="CodeSchema_Assembly" Bounds="378.727954754377,81.5166450995026,131.886666666667,25" CodeSchemaProperty_StrongName="EventHubs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPath)" Group="Collapsed" Label="EventHubs.dll" />
-    <Node Id="(@7)" Category="CodeSchema_Assembly" Bounds="-341.202683460223,70.3597856528101,114.853333333333,25" CodeSchemaProperty_StrongName="Utilities, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPath)" Group="Collapsed" Label="Utilities.dll" UseManualLocation="True" />
-    <Node Id="(@8)" Category="CodeSchema_Assembly" Bounds="540.614621421044,72.3597856528101,131.54,25" CodeSchemaProperty_StrongName="ServiceBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(6e3c130a-6b47-47d1-84df-7270977e8857.OutputPath)" Group="Collapsed" Label="ServiceBus.dll" />
-    <Node Id="(@9)" Category="CodeSchema_Assembly" Bounds="245.324621421044,89.4780927137462,103.403333333333,25" CodeSchemaProperty_StrongName="Relay, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPath)" Group="Collapsed" Label="Relay.dll" />
-    <Node Id="@2" Category="CodeSchema_Assembly" Bounds="66.5500734439092,-149.306881013857,179.91,25" CodeSchemaProperty_StrongName="ServiceBusExplorer, Version=4.0.110.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPath)" Group="Collapsed" Label="ServiceBusExplorer.exe" UseManualLocation="True" />
+    <Node Id="(@27)" Category="CodeSchema_Assembly" Bounds="26.8726481242466,-11.7263967925856,124.433333333333,25" CodeSchemaProperty_StrongName="Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPath)" Group="Collapsed" Label="Common.dll" UseManualLocation="True" />
+    <Node Id="@10" Category="CodeSchema_Assembly" Bounds="-95.2633387064189,43.2173831050145,129,25" CodeSchemaProperty_StrongName="ToMigrate, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(82070314-a7e4-437e-81de-bdb558d2af15.OutputPath)" Group="Collapsed" Label="ToMigrate.dll" UseManualLocation="True" />
+    <Node Id="@12" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Drawing.dll" Group="Collapsed" Label="System.Drawing.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@14" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.ServiceModel.dll" Group="Collapsed" Label="System.ServiceModel.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@16" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Xml.dll" Group="Collapsed" Label="System.Xml.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@18" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.dll" Group="Collapsed" Label="System.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@2" Category="CodeSchema_Assembly" AssemblyTimestamp="09/13/2019 17:28:04" Bounds="103.637352926652,-67.4217151904367,179.91,25" CodeSchemaProperty_StrongName="ServiceBusExplorer, Version=4.0.110.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPath)" Group="Collapsed" Label="ServiceBusExplorer.exe" UseManualLocation="True" />
+    <Node Id="@20" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Design.dll" Group="Collapsed" Label="System.Design.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@22" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Configuration.dll" Group="Collapsed" Label="System.Configuration.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@24" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Runtime.Serialization.dll" Group="Collapsed" Label="System.Runtime.Serialization.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@26" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Windows.Forms.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Windows.Forms.DataVisualization.dll" Group="Collapsed" Label="System.Windows.Forms.DataVisualization.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@29" Category="CodeSchema_Assembly" AssemblyTimestamp="09/13/2019 17:27:33" Bounds="181.273507592197,-12.3550257155832,124.433333333333,25" CodeSchemaProperty_StrongName="Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(de07dbeb-d772-49ba-bceb-a7ce29308ae3.OutputPath)" Group="Collapsed" Label="Common.dll">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@31" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="C:\Users\erik\.nuget\packages\newtonsoft.json\12.0.2\lib\net45\Newtonsoft.Json.dll" Group="Collapsed" Label="Newtonsoft.Json.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@33" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="Microsoft.Azure.NotificationHubs, Version=2.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="C:\Users\erik\.nuget\packages\microsoft.azure.notificationhubs\2.16.0.234\lib\net45-full\Microsoft.Azure.NotificationHubs.dll" Group="Collapsed" Label="Microsoft.Azure.NotificationHubs.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@35" Category="CodeSchema_Assembly" Bounds="-290.244822121885,31.1223255236138,165.023333333333,25" CodeSchemaProperty_StrongName="NotificationHubs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPath)" Group="Collapsed" Label="NotificationHubs.dll" UseManualLocation="True" />
+    <Node Id="@37" Category="CodeSchema_Assembly" Bounds="503.426407762213,42.6402464037333,131.886666666667,25" CodeSchemaProperty_StrongName="EventHubs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPath)" Group="Collapsed" Label="EventHubs.dll" />
+    <Node Id="@39" Category="CodeSchema_Assembly" Bounds="63.6933194091835,43.2684671565985,114.853333333333,25" CodeSchemaProperty_StrongName="Utilities, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPath)" Group="Collapsed" Label="Utilities.dll" UseManualLocation="True" />
+    <Node Id="@4" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.ServiceModel.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.ServiceModel.Web.dll" Group="Collapsed" Label="System.ServiceModel.Web.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@41" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Windows.Forms.dll" Group="Collapsed" Label="System.Windows.Forms.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@43" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Web.Extensions.dll" Group="Collapsed" Label="System.Web.Extensions.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@45" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Transactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Transactions.dll" Group="Collapsed" Label="System.Transactions.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@47" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="C:\Users\erik\.nuget\packages\windowsazure.servicebus\6.0.0\lib\net462\Microsoft.ServiceBus.dll" Group="Collapsed" Label="Microsoft.ServiceBus.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@49" Category="CodeSchema_Assembly" Bounds="341.950186075849,42.6203314911659,131.54,25" CodeSchemaProperty_StrongName="ServiceBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(6e3c130a-6b47-47d1-84df-7270977e8857.OutputPath)" Group="Collapsed" Label="ServiceBus.dll" />
+    <Node Id="@51" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="FastColoredTextBox, Version=2.16.23.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\ServiceBusExplorer\Libraries\FastColoredTextBox.dll" Group="Collapsed" Label="FastColoredTextBox.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@53" Category="CodeSchema_Assembly" Bounds="208.56558301128,42.6444226137118,103.403333333333,25" CodeSchemaProperty_StrongName="Relay, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPath)" Group="Collapsed" Label="Relay.dll" />
+    <Node Id="@6" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\mscorlib.dll" Group="Collapsed" Label="mscorlib.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@8" Category="CodeSchema_Assembly" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(FxReferenceAssemblies)\.NETFramework\v4.6.2\System.Core.dll" Group="Collapsed" Label="System.Core.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="_standardGraphExternalsGroup" Category="Externals" Bounds="141.594993267945,98.2322819972102,86.99,25" Group="Collapsed" Label="Externals" LayoutSettings="List" />
   </Nodes>
   <Links>
-    <Link Source="@2" Target="(@3)" Category="References" Bounds="78.7562654151682,-124.306881013857,64.40210465238,60.3164905560558" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="3492">
+    <Link Source="@10" Target="@6" Category="CodeSchema_AttributeUse" IsTargetVirtualized="True" Weight="14" />
+    <Link Source="@2" Target="(@27)" Category="CodeMap_ProjectReference" Bounds="120.485501628665,-42.3797685088342,49.6397053918937,26.4196757430438" />
+    <Link Source="@2" Target="@12" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="11044">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@2" Target="@14" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="89">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@2" Target="@16" Category="CodeSchema_AttributeUse" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="22">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@2" Target="@18" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1351">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@2" Target="@20" Category="InheritsFrom" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@2" Target="@22" Category="CodeSchema_Calls" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="4">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@2" Target="@24" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="15">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@2" Target="@26" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1185">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@2" Target="@29" Category="References" Bounds="204.946926572042,-42.3797685088342,21.159614989363,23.333195005508" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="3492">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_ReturnTypeLink" />
     </Link>
-    <Link Source="@2" Target="(@4)" Category="CodeMap_ProjectReference" Bounds="156.604379827181,-124.306881013857,0.999436870916639,125.802193925514" />
-    <Link Source="@2" Target="(@5)" Category="CodeMap_ProjectReference" Bounds="-100.885780334473,-124.306884765625,225.735092163086,186.674034118652" />
-    <Link Source="@2" Target="(@6)" Category="CodeMap_ProjectReference" Bounds="172.110405117417,-124.306881013857,249.931188254621,200.196953102026" />
-    <Link Source="@2" Target="(@7)" Category="CodeMap_ProjectReference" Bounds="-251.482360839844,-124.306884765625,381.368347167969,190.548599243164" />
-    <Link Source="@2" Target="(@8)" Category="CodeMap_ProjectReference" Bounds="181.874220886229,-124.306881013857,391.068050824867,192.688802271547" />
-    <Link Source="@2" Target="(@9)" Category="CodeMap_ProjectReference" Bounds="163.861127535702,-124.306881013857,121.244490323247,206.028410086265" />
+    <Link Source="@2" Target="@31" Category="CodeMap_ExternalReference" />
+    <Link Source="@2" Target="@33" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="629">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@2" Target="@35" Category="CodeMap_ProjectReference" Bounds="-148.124376941949,-42.3797685088342,290.782375866065,71.3354377272737" />
+    <Link Source="@2" Target="@37" Category="CodeMap_ProjectReference" Bounds="236.318388433202,-42.3797685088342,281.770577907087,82.4719405429398" />
+    <Link Source="@2" Target="@39" Category="CodeMap_ProjectReference" Bounds="135.557922363281,-42.379768371582,51.12646484375,78.3803443908691" />
+    <Link Source="@2" Target="@4" Category="CodeSchema_Calls" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@2" Target="@41" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="39798">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@2" Target="@43" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@2" Target="@45" Category="CodeSchema_Calls" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="10">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@2" Target="@47" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="2567">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FunctionPointer" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+    </Link>
+    <Link Source="@2" Target="@49" Category="CodeMap_ProjectReference" Bounds="240.81672668457,-42.379768371582,145.234909057617,79.1914825439453" />
+    <Link Source="@2" Target="@51" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="208">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@2" Target="@53" Category="CodeMap_ProjectReference" Bounds="171.137084960938,-42.379768371582,55.5322875976563,81.0353698730469" />
+    <Link Source="@2" Target="@6" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="24236">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@2" Target="@8" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="546">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@29" Target="@14" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="117">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@29" Target="@16" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="272">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@29" Target="@18" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="415">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@29" Target="@22" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="151">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@29" Target="@24" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="156">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@29" Target="@31" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="56">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@29" Target="@33" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="139">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@29" Target="@37" Category="CodeMap_ProjectReference" Bounds="304.814136302924,10.4684954164261,191.137290845805,32.2524663657876" />
+    <Link Source="@29" Target="@39" Category="CodeMap_ProjectReference" Bounds="156.799611925981,12.6203314911659,59.2013695255826,26.9224486289811" />
+    <Link Source="@29" Target="@43" Category="CodeSchema_Calls" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="3">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@29" Target="@47" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1886">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+    </Link>
+    <Link Source="@29" Target="@49" Category="CodeMap_ProjectReference" Bounds="280.813476004555,12.6203314911659,81.047055539144,27.141983733394" />
+    <Link Source="@29" Target="@53" Category="CodeMap_ProjectReference" Bounds="247.297158472703,12.6203314911659,6.51857177523041,21.3909636801559" />
+    <Link Source="@29" Target="@6" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="11817">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="Implements" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@29" Target="@8" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="585">
+      <Category Ref="CodeMap_ExternalReference" />
+      <Category Ref="CodeSchema_AttributeUse" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@35" Target="@16" Category="CodeMap_ExternalReference" />
+    <Link Source="@35" Target="@18" Category="CodeMap_ExternalReference" />
+    <Link Source="@35" Target="@24" Category="CodeMap_ExternalReference" />
+    <Link Source="@35" Target="@31" Category="CodeMap_ExternalReference" />
+    <Link Source="@35" Target="@6" Category="CodeSchema_AttributeUse" IsTargetVirtualized="True" Weight="14">
+      <Category Ref="CodeMap_ExternalReference" />
+    </Link>
+    <Link Source="@35" Target="@8" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@12" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@16" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@18" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@24" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@4" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@45" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@6" Category="CodeMap_ExternalReference" />
+    <Link Source="@37" Target="@8" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@12" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@16" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@18" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@24" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@4" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@45" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@6" Category="CodeMap_ExternalReference" />
+    <Link Source="@39" Target="@8" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@12" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@16" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@18" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@24" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@4" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@45" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@6" Category="CodeMap_ExternalReference" />
+    <Link Source="@49" Target="@8" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@12" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@16" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@18" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@24" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@4" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@45" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@6" Category="CodeMap_ExternalReference" />
+    <Link Source="@53" Target="@8" Category="CodeMap_ExternalReference" />
+    <Link Source="_standardGraphExternalsGroup" Target="@12" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@14" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@16" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@18" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@20" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@22" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@24" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@26" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@31" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@33" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@4" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@41" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@43" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@45" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@47" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@51" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@6" Category="Contains" />
+    <Link Source="_standardGraphExternalsGroup" Target="@8" Category="Contains" />
   </Links>
   <Categories>
+    <Category Id="CodeMap_ExternalReference" Label="External Reference" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Referenced By" OutgoingActionLabel="References" />
     <Category Id="CodeMap_ProjectReference" Label="Project Reference" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Referenced By" OutgoingActionLabel="References" />
     <Category Id="CodeSchema_Assembly" Label="Assembly" BasedOn="File" CanBeDataDriven="True" DefaultAction="Microsoft.Contains" Icon="CodeSchema_Assembly" NavigationActionLabel="Assemblies" />
+    <Category Id="CodeSchema_AttributeUse" Label="Uses Attribute" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Used by" OutgoingActionLabel="Uses Attribute" />
     <Category Id="CodeSchema_Calls" Label="Calls" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Called By" OutgoingActionLabel="Calls" />
+    <Category Id="CodeSchema_FieldRead" Label="Field Read" BasedOn="CodeSchema_FieldReference" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Read By" OutgoingActionLabel="Reads Fields" />
+    <Category Id="CodeSchema_FieldReference" Label="Field Reference" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Referenced By" OutgoingActionLabel="References Fields" />
+    <Category Id="CodeSchema_FunctionPointer" Label="Function Pointer" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Function Pointers" OutgoingActionLabel="Function Pointers" />
     <Category Id="CodeSchema_ReturnTypeLink" Label="Return" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Return types" OutgoingActionLabel="Return types" />
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+    <Category Id="Externals" Label="Externals" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Externals" />
     <Category Id="File" Label="File" CanBeDataDriven="True" DefaultAction="Microsoft.Contains" Icon="File" NavigationActionLabel="Files" />
+    <Category Id="FileSystem.Category.FileOfType.dll" BasedOn="CodeSchema_Assembly" CanBeDataDriven="True" IsProviderRoot="False" />
+    <Category Id="Implements" Label="Implements" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Implemented by" OutgoingActionLabel="Implements" />
+    <Category Id="InheritsFrom" Label="Inherits From" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Inherited By" OutgoingActionLabel="Inherits From" />
     <Category Id="References" Label="References" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Referenced By" OutgoingActionLabel="References" />
   </Categories>
   <Properties>
+    <Property Id="AssemblyTimestamp" DataType="System.DateTime" />
     <Property Id="Bounds" DataType="System.Windows.Rect" />
     <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
     <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsExternal" Label="Is External" Description="Flag indicating whether this node is considered external" DataType="System.Boolean" />
     <Property Id="CodeSchemaProperty_StrongName" Label="StrongName" Description="StrongName" DataType="System.String" />
     <Property Id="DataVirtualized" Label="Data Virtualized" Description="If true, the graph can contain nodes and links that represent data for virtualized nodes/links (i.e. not actually created in the graph)." DataType="System.Boolean" />
     <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
@@ -46,11 +335,14 @@
     <Property Id="GroupLabel" DataType="System.String" />
     <Property Id="Icon" Label="Icon" Description="Icon" DataType="System.String" />
     <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
     <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
     <Property Id="IsSourceVirtualized" Label="Link Source Virtualized" Description="If true, the link source end contains data for virtualized nodes/links (i.e. not actually created in the graph)." DataType="System.Boolean" />
     <Property Id="IsTargetVirtualized" Label="Link Target Virtualized" Description="If true, the link target end contains data for virtualized nodes/links (i.e. not actually created in the graph)." DataType="System.Boolean" />
     <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
     <Property Id="Layout" DataType="System.String" />
+    <Property Id="LayoutSettings" DataType="Microsoft.VisualStudio.Diagrams.View.GroupLayoutStyle" />
     <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
     <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
     <Property Id="TargetType" DataType="System.Type" />
@@ -67,13 +359,57 @@
   <IdentifierAliases>
     <Alias n="1" Uri="Assembly=$(32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPathUri)" />
     <Alias n="2" Id="(@1)" />
-    <Alias n="3" Uri="Assembly=$(82070314-a7e4-437e-81de-bdb558d2af15.OutputPathUri)" />
-    <Alias n="4" Uri="Assembly=$(d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPathUri)" />
-    <Alias n="5" Uri="Assembly=$(a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPathUri)" />
-    <Alias n="6" Uri="Assembly=$(7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPathUri)" />
-    <Alias n="7" Uri="Assembly=$(93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPathUri)" />
-    <Alias n="8" Uri="Assembly=$(6e3c130a-6b47-47d1-84df-7270977e8857.OutputPathUri)" />
-    <Alias n="9" Uri="Assembly=$(c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPathUri)" />
+    <Alias n="3" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.ServiceModel.Web.dll" />
+    <Alias n="4" Id="(@3)" />
+    <Alias n="5" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/mscorlib.dll" />
+    <Alias n="6" Id="(@5)" />
+    <Alias n="7" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Core.dll" />
+    <Alias n="8" Id="(@7)" />
+    <Alias n="9" Uri="Assembly=$(82070314-a7e4-437e-81de-bdb558d2af15.OutputPathUri)" />
+    <Alias n="10" Id="(@9)" />
+    <Alias n="11" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Drawing.dll" />
+    <Alias n="12" Id="(@11)" />
+    <Alias n="13" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.ServiceModel.dll" />
+    <Alias n="14" Id="(@13)" />
+    <Alias n="15" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Xml.dll" />
+    <Alias n="16" Id="(@15)" />
+    <Alias n="17" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.dll" />
+    <Alias n="18" Id="(@17)" />
+    <Alias n="19" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Design.dll" />
+    <Alias n="20" Id="(@19)" />
+    <Alias n="21" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Configuration.dll" />
+    <Alias n="22" Id="(@21)" />
+    <Alias n="23" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Runtime.Serialization.dll" />
+    <Alias n="24" Id="(@23)" />
+    <Alias n="25" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Windows.Forms.DataVisualization.dll" />
+    <Alias n="26" Id="(@25)" />
+    <Alias n="27" Uri="Assembly=$(d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPathUri)" />
+    <Alias n="28" Uri="Assembly=$(de07dbeb-d772-49ba-bceb-a7ce29308ae3.OutputPathUri)" />
+    <Alias n="29" Id="(@28)" />
+    <Alias n="30" Uri="Assembly=file:///C:/Users/erik/.nuget/packages/newtonsoft.json/12.0.2/lib/net45/Newtonsoft.Json.dll" />
+    <Alias n="31" Id="(@30)" />
+    <Alias n="32" Uri="Assembly=file:///C:/Users/erik/.nuget/packages/microsoft.azure.notificationhubs/2.16.0.234/lib/net45-full/Microsoft.Azure.NotificationHubs.dll" />
+    <Alias n="33" Id="(@32)" />
+    <Alias n="34" Uri="Assembly=$(a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPathUri)" />
+    <Alias n="35" Id="(@34)" />
+    <Alias n="36" Uri="Assembly=$(7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPathUri)" />
+    <Alias n="37" Id="(@36)" />
+    <Alias n="38" Uri="Assembly=$(93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPathUri)" />
+    <Alias n="39" Id="(@38)" />
+    <Alias n="40" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Windows.Forms.dll" />
+    <Alias n="41" Id="(@40)" />
+    <Alias n="42" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Web.Extensions.dll" />
+    <Alias n="43" Id="(@42)" />
+    <Alias n="44" Uri="Assembly=$(FxReferenceAssembliesUri)/.NETFramework/v4.6.2/System.Transactions.dll" />
+    <Alias n="45" Id="(@44)" />
+    <Alias n="46" Uri="Assembly=file:///C:/Users/erik/.nuget/packages/windowsazure.servicebus/6.0.0/lib/net462/Microsoft.ServiceBus.dll" />
+    <Alias n="47" Id="(@46)" />
+    <Alias n="48" Uri="Assembly=$(6e3c130a-6b47-47d1-84df-7270977e8857.OutputPathUri)" />
+    <Alias n="49" Id="(@48)" />
+    <Alias n="50" Uri="Assembly=$(VsSolutionUri)/ServiceBusExplorer/Libraries/FastColoredTextBox.dll" />
+    <Alias n="51" Id="(@50)" />
+    <Alias n="52" Uri="Assembly=$(c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPathUri)" />
+    <Alias n="53" Id="(@52)" />
   </IdentifierAliases>
   <Styles>
     <Style TargetType="Node" GroupLabel="Results" ValueLabel="True">
@@ -293,21 +629,27 @@
     </Style>
   </Styles>
   <Paths>
-    <Path Id="32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\ServiceBusExplorer\bin\Debug\ServiceBusExplorer.exe" />
-    <Path Id="32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/ServiceBusExplorer/bin/Debug/ServiceBusExplorer.exe" />
-    <Path Id="6e3c130a-6b47-47d1-84df-7270977e8857.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\ServiceBus\bin\Debug\netstandard2.0\ServiceBus.dll" />
-    <Path Id="6e3c130a-6b47-47d1-84df-7270977e8857.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/ServiceBus/bin/Debug/netstandard2.0/ServiceBus.dll" />
-    <Path Id="7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\EventHubs\bin\Debug\netstandard2.0\EventHubs.dll" />
-    <Path Id="7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/EventHubs/bin/Debug/netstandard2.0/EventHubs.dll" />
-    <Path Id="82070314-a7e4-437e-81de-bdb558d2af15.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\ToMigrate\bin\Debug\ToMigrate.dll" />
-    <Path Id="82070314-a7e4-437e-81de-bdb558d2af15.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/ToMigrate/bin/Debug/ToMigrate.dll" />
-    <Path Id="93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\Utilities\bin\Debug\netstandard2.0\Utilities.dll" />
-    <Path Id="93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/Utilities/bin/Debug/netstandard2.0/Utilities.dll" />
-    <Path Id="a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\NotificationHubs\bin\Debug\NotificationHubs.dll" />
-    <Path Id="a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/NotificationHubs/bin/Debug/NotificationHubs.dll" />
-    <Path Id="c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\Relay\bin\Debug\netstandard2.0\Relay.dll" />
-    <Path Id="c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/Relay/bin/Debug/netstandard2.0/Relay.dll" />
+    <Path Id="32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\ServiceBusExplorer\bin\Debug\ServiceBusExplorer.exe" />
+    <Path Id="32754f39-e353-4607-94fe-b9b9acfd58ef.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/ServiceBusExplorer/bin/Debug/ServiceBusExplorer.exe" />
+    <Path Id="6e3c130a-6b47-47d1-84df-7270977e8857.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\ServiceBus\bin\Debug\netstandard2.0\ServiceBus.dll" />
+    <Path Id="6e3c130a-6b47-47d1-84df-7270977e8857.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/ServiceBus/bin/Debug/netstandard2.0/ServiceBus.dll" />
+    <Path Id="7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\EventHubs\bin\Debug\netstandard2.0\EventHubs.dll" />
+    <Path Id="7eb5ea53-5031-4e4e-b78c-38d370af9a9f.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/EventHubs/bin/Debug/netstandard2.0/EventHubs.dll" />
+    <Path Id="82070314-a7e4-437e-81de-bdb558d2af15.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\ToMigrate\bin\Debug\ToMigrate.dll" />
+    <Path Id="82070314-a7e4-437e-81de-bdb558d2af15.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/ToMigrate/bin/Debug/ToMigrate.dll" />
+    <Path Id="93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\Utilities\bin\Debug\netstandard2.0\Utilities.dll" />
+    <Path Id="93e8bc02-bcd2-4867-a990-fec96d24e9ee.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/Utilities/bin/Debug/netstandard2.0/Utilities.dll" />
+    <Path Id="a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\NotificationHubs\bin\Debug\NotificationHubs.dll" />
+    <Path Id="a82872b5-5a0e-49ed-bd6a-daac7b07a2ff.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/NotificationHubs/bin/Debug/NotificationHubs.dll" />
+    <Path Id="c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\Relay\bin\Debug\netstandard2.0\Relay.dll" />
+    <Path Id="c6f6fa8e-2003-421d-8f06-aaf6bf205f01.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/Relay/bin/Debug/netstandard2.0/Relay.dll" />
     <Path Id="d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPath" Value="C:\github\Mine\ServiceBusExplorer\src\Common\bin\Debug\netstandard2.0\Common.dll" />
     <Path Id="d1ae04a9-ee81-4a2c-b235-df9aad821012.OutputPathUri" Value="file:///C:/github/Mine/ServiceBusExplorer/src/Common/bin/Debug/netstandard2.0/Common.dll" />
+    <Path Id="de07dbeb-d772-49ba-bceb-a7ce29308ae3.OutputPath" Value="C:\GitHub\Mine\ServiceBusExplorer\src\Common\bin\Debug\Common.dll" />
+    <Path Id="de07dbeb-d772-49ba-bceb-a7ce29308ae3.OutputPathUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src/Common/bin/Debug/Common.dll" />
+    <Path Id="FxReferenceAssemblies" Value="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework" />
+    <Path Id="FxReferenceAssembliesUri" Value="file:///C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework" />
+    <Path Id="VsSolution" Value="C:\GitHub\Mine\ServiceBusExplorer\src" />
+    <Path Id="VsSolutionUri" Value="file:///C:/GitHub/Mine/ServiceBusExplorer/src" />
   </Paths>
 </DirectedGraph>

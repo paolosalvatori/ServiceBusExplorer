@@ -702,7 +702,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{d1ae04a9-ee81-4a2c-b235-df9aad821012}</Project>
+      <Project>{de07dbeb-d772-49ba-bceb-a7ce29308ae3}</Project>
       <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\EventHubs\EventHubs.csproj">
@@ -710,7 +710,7 @@
       <Name>EventHubs</Name>
     </ProjectReference>
     <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj">
-      <Project>{a82872b5-5a0e-49ed-bd6a-daac7b07a2ff}</Project>
+      <Project>{e836c914-9bfe-4c1c-96e5-6a414cdef485}</Project>
       <Name>NotificationHubs</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relay\Relay.csproj">
@@ -720,10 +720,6 @@
     <ProjectReference Include="..\ServiceBus\ServiceBus.csproj">
       <Project>{6e3c130a-6b47-47d1-84df-7270977e8857}</Project>
       <Name>ServiceBus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToMigrate\ToMigrate.csproj">
-      <Project>{82070314-a7e4-437e-81de-bdb558d2af15}</Project>
-      <Name>ToMigrate</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>

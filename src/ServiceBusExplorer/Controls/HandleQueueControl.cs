@@ -402,8 +402,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var messagingPurger = new MessagingPurger(serviceBusHelper, queueDescription);
-                var count = await messagingPurger.Purge();
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), 
+                    queueDescription.GetNewSdkQueueDescription());
+                var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
@@ -430,8 +431,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var messagingPurger = new MessagingPurger(serviceBusHelper, queueDescription);
-                var count = await messagingPurger.Purge(purgeDeadLetterQueueInstead: true);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(),
+                    queueDescription.GetNewSdkQueueDescription());
+                var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
