@@ -38,7 +38,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Web;
     using System.Windows.Forms;
     using Forms;
     using Helpers;
@@ -4510,7 +4509,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-                
+
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
