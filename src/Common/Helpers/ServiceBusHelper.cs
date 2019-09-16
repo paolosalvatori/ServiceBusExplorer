@@ -37,11 +37,9 @@ using System.Threading;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.NotificationHubs;
-//using Microsoft.Azure.ServiceBusExplorer.Controls;
-//using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
-//using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
+using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -5594,6 +5592,37 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var serviceBusHelper2 = new ServiceBusHelper2();
             serviceBusHelper2.ConnectionString = ConnectionString;
             return serviceBusHelper2;
+        }
+
+        public async Task<NewSdkManagement.QueueDescription> GetNewSdkQueueDescription(QueueDescription oldQueueDescription)
+        {
+            var managementClient = new NewSdkManagement.ManagementClient(connectionString);
+            try
+            {
+                return await managementClient.GetQueueAsync(oldQueueDescription.Path);
+            }
+            finally
+            {
+                await managementClient.CloseAsync();
+            }
+        }
+
+        public async Task<SubscriptionWrapper2> GetSubscriptionWrapper2(SubscriptionWrapper oldSubscriptionWrapper)
+        {
+            var managementClient = new NewSdkManagement.ManagementClient(connectionString);
+            try
+            {
+                var newSdkTopicDescription = await managementClient.GetTopicAsync(oldSubscriptionWrapper.TopicDescription.Path);
+                var newSdkSubscriptionDescription = await managementClient.GetSubscriptionAsync(
+                    newSdkTopicDescription.Path,
+                    oldSubscriptionWrapper.SubscriptionDescription.Name);
+
+                return new SubscriptionWrapper2(newSdkSubscriptionDescription, newSdkTopicDescription);
+            }
+            finally
+            {
+                await managementClient.CloseAsync();
+            }
         }
         #endregion
 

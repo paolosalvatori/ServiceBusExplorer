@@ -387,8 +387,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), 
-                    subscriptionWrapper.GetNewSdkSubscriptionWrapper());
+                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
@@ -417,8 +417,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(),
-                    subscriptionWrapper.GetNewSdkSubscriptionWrapper());
+                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
