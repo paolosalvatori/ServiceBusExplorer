@@ -6,7 +6,7 @@
 // This sample is supplemental to the technical guidance published on my personal
 // blog at http://blogs.msdn.com/b/paolos/. 
 // 
-// Author: Paolo Salvatori, Sebastian Walter
+// Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // 
@@ -21,29 +21,30 @@
 
 #endregion
 
+#region Using Directives
+
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
+using System.Linq;
+using Microsoft.ServiceBus.Messaging;
+using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Properties;
+
+#endregion
 
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
-    #region Using Directives
-
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows.Forms;
-    using Forms;
-    using Helpers;
-    using Properties;
-    using ServiceBus.Messaging;
-
-    #endregion
+   
 
     public partial class HandleQueueControl : UserControl
     {
@@ -62,7 +63,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         }
 
         #endregion
-
 
         #region Private Constants
 

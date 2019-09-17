@@ -1,5 +1,4 @@
 ﻿#region Copyright
-
 //=======================================================================================
 // Microsoft Business Platform Division Customer Advisory Team  
 //
@@ -18,57 +17,26 @@
 // KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
-
 #endregion
 
 #region Using Directives
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Reflection;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
     public class MessageSerializationHelper
     {
-        #region Private Static Methods
-
-        private static void GetProperties(Type type)
-        {
-            if (type == null)
-            {
-                return;
-            }
-
-            var fullName = type.FullName;
-            if (string.IsNullOrWhiteSpace(fullName) ||
-                propertyCache.ContainsKey(fullName))
-            {
-                return;
-            }
-
-            var propertyArray = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            if (propertyArray.Length <= 0)
-            {
-                return;
-            }
-
-            var propertyDictionary = propertyArray.Where(p => p.CanRead && p.Name != "ExtensionData").ToDictionary(p => p.Name);
-            propertyCache[fullName] = propertyDictionary;
-        }
-
-        #endregion
-
         #region Private Static Fields
-
         private static readonly Dictionary<string, Dictionary<string, PropertyInfo>> propertyCache = new Dictionary<string, Dictionary<string, PropertyInfo>>();
-
         #endregion
 
         #region Public Static Methods
@@ -82,16 +50,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 return null;
             }
-
             var type = entityEnumerable[0].GetType();
             GetProperties(type);
             if (!propertyCache.ContainsKey(type.FullName))
             {
                 return null;
             }
-
             var propertyDictionary = propertyCache[type.FullName];
-            var entityList = new List<SortedDictionary<string, object>>(entityEnumerable.Length);
+            var entityList = new List<SortedDictionary<string, object>>(entityEnumerable.Length); 
             for (var i = 0; i < entityEnumerable.Length; i++)
             {
                 var entityDictionary = new SortedDictionary<string, object>();
@@ -117,12 +83,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 {
                     entityDictionary.Add("body", bodyEnumerable[i]);
                 }
-
                 foreach (var keyValuePair in propertyDictionary)
                 {
                     var camelCase = string.Format("{0}{1}",
-                        keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
-                        keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
+                                                  keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
+                                                  keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
                     entityDictionary.Add(camelCase, null);
                     try
                     {
@@ -134,10 +99,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     {
                     }
                 }
-
                 entityList.Add(entityDictionary);
             }
-
             return JsonSerializerHelper.Serialize(entityList.ToArray(), Formatting.Indented);
         }
 
@@ -147,14 +110,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 return null;
             }
-
             var type = entity.GetType();
             GetProperties(type);
             if (!propertyCache.ContainsKey(type.FullName))
             {
                 return null;
             }
-
             var propertyDictionary = propertyCache[type.FullName];
             var entityDictionary = new SortedDictionary<string, object>();
             if (!doNotSerializeBody && JsonSerializerHelper.IsJson(body))
@@ -179,27 +140,47 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             {
                 entityDictionary.Add("body", body);
             }
-
             foreach (var keyValuePair in propertyDictionary)
             {
                 var camelCase = string.Format("{0}{1}",
-                    keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
-                    keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
+                                              keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
+                                              keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
                 entityDictionary.Add(camelCase, null);
                 try
                 {
                     var value = keyValuePair.Value.GetValue(entity, null);
                     entityDictionary[camelCase] = value;
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                 catch (Exception)
                 {
                 }
             }
-
             return JsonSerializerHelper.Serialize(entityDictionary, Formatting.Indented);
         }
+        #endregion
 
+        #region Private Static Methods
+        private static void GetProperties(Type type)
+        {
+            if (type == null)
+            {
+                return;
+            }
+            var fullName = type.FullName;
+            if (string.IsNullOrWhiteSpace(fullName) ||
+                propertyCache.ContainsKey(fullName))
+            {
+                return;
+            }
+            var propertyArray = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            if (propertyArray.Length <= 0)
+            {
+                return;
+            }
+            var propertyDictionary = propertyArray.Where(p => p.CanRead && p.Name != "ExtensionData").ToDictionary(p => p.Name);
+            propertyCache[fullName] = propertyDictionary;
+        }
         #endregion
     }
 }

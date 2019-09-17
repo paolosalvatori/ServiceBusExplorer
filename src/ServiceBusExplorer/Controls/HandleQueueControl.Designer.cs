@@ -1535,13 +1535,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1646,7 +1647,6 @@
             this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
-            this.messagePropertyListView.HideSelection = false;
             this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyListView.Name = "messagePropertyListView";
             this.messagePropertyListView.OwnerDraw = true;
@@ -1848,13 +1848,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1959,7 +1960,6 @@
             this.deadletterPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4});
-            this.deadletterPropertyListView.HideSelection = false;
             this.deadletterPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.deadletterPropertyListView.Name = "deadletterPropertyListView";
             this.deadletterPropertyListView.OwnerDraw = true;
@@ -2151,6 +2151,7 @@
             this.txtTransferDeadletterText.CharWidth = 8;
             this.txtTransferDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTransferDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtTransferDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtTransferDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTransferDeadletterText.IsReplaceMode = false;
             this.txtTransferDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -2255,7 +2256,6 @@
             this.transferDeadletterPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader5,
             this.columnHeader6});
-            this.transferDeadletterPropertyListView.HideSelection = false;
             this.transferDeadletterPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.transferDeadletterPropertyListView.Name = "transferDeadletterPropertyListView";
             this.transferDeadletterPropertyListView.OwnerDraw = true;
