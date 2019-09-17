@@ -198,7 +198,6 @@
     <Compile Include="Helpers\SortableBindingList.cs" />
     <Compile Include="Helpers\StringBodyWriter.cs" />
     <Compile Include="Helpers\SubscriptionWrapper.cs" />
-    <Compile Include="Helpers\SubscriptionWrapperExtensions.cs" />
     <Compile Include="Helpers\ThresholdDeviceBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\ThresholdDeviceEventDataGenerator.cs" />
     <Compile Include="Helpers\TimeSpanExtensions.cs" />
