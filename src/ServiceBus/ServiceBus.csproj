@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.0.0" />
-    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.10.0" />
   </ItemGroup>
 
  
