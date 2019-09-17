@@ -1,7 +1,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/x5niu29yhun36hda/branch/master?svg=true)](https://ci.appveyor.com/project/seanfeldman/servicebusexplorer/branch/master)
 
-**Author:** Paolo Salvatori ([@babosbird](https://twitter.com/babosbird))
-**Contributor:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman)) and [more](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
+**Author:** Paolo Salvatori ([@babosbird](https://twitter.com/babosbird))  
+**Collaborators:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman)) and Erik Mogensen  
+**Contributors:** [Many](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
 
 # Service Bus Explorer
 The Service Bus Explorer allows users to connect to a Service Bus namespace and efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
@@ -33,7 +34,10 @@ If you just want to help out, feel free to pick one of our issues with the [`hel
 
 # Development Environment
 
-Visual Studio 2017 15.7 or later is required to build the solution.
+Visual Studio 2017 15.7 or later is required to build the solution. 
+
+When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2017 15.9.12 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
+
 
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
