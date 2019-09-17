@@ -89,19 +89,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 RetryPolicy.Default, 
                 prefetchCount: 10);
 
-            //var messagingFactory = MessagingFactory.CreateFromConnectionString(serviceBusHelper.ConnectionString);
-            //ClientEntity entityClient;
-
-            //if (queueDescription != null)
-            //{
-            //    entityClient = messagingFactory.CreateQueueClient(queueDescription.Path, ReceiveMode.ReceiveAndDelete);
-            //}
-            //else
-            //{
-            //    entityClient = messagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-            //        subscriptionWrapper.SubscriptionDescription.Name, ReceiveMode.ReceiveAndDelete);
-            //}
-
             var consecutiveSessionTimeOuts = 0;
             try
             {

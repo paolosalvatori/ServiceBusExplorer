@@ -43,12 +43,8 @@ using Microsoft.Azure.ServiceBusExplorer.Enums;
 namespace Microsoft.Azure.ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
-
-
     public class ServiceBusHelper2 
     {
         public string ConnectionString { get; set; }
-
-       
     }
 }
