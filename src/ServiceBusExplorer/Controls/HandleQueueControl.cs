@@ -281,7 +281,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const int GrouperMessagePropertiesWith = 312;
         private const string SaveAsTitle = "Save File As";
         private const string JsonExtension = "json";
+        private const string TxtExtension = "txt";
         private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string AllFilesFilter = "Text Documents|*.txt|JSON Files|*.json|XML Files|*.xml|All Files (*.*)|*.*";
         private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
         private const string MessageFileFormatAutoRecognize = "BrokeredMessage_{0}_{1}.txt";
 
@@ -4464,6 +4466,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4510,8 +4513,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -4554,6 +4559,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4599,7 +4605,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -4654,6 +4663,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4700,7 +4710,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -4741,6 +4754,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4785,7 +4799,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -4840,6 +4857,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4887,8 +4905,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
-
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
@@ -4929,6 +4949,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
@@ -4973,7 +4994,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
+                saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
