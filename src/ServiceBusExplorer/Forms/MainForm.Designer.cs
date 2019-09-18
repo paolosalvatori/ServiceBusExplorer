@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Controls;
-using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
@@ -323,7 +322,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripSeparator69 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
-            this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -2770,22 +2768,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
             // 
-            // linkLabelNewVersionAvailable
-            // 
-            this.linkLabelNewVersionAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.linkLabelNewVersionAvailable.AutoSize = true;
-            this.linkLabelNewVersionAvailable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Navy;
-            this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Navy;
-            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1050, 15);
-            this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.linkLabelNewVersionAvailable.Name = "linkLabelNewVersionAvailable";
-            this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(174, 18);
-            this.linkLabelNewVersionAvailable.TabIndex = 24;
-            this.linkLabelNewVersionAvailable.TabStop = true;
-            this.linkLabelNewVersionAvailable.Text = "New Version Available";
-            this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2793,7 +2775,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1416, 841);
-            this.Controls.Add(this.linkLabelNewVersionAvailable);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainSplitContainer);
             this.Controls.Add(this.statusStrip);
@@ -3142,7 +3123,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem copyNamespaceUrlMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyConnectionStringMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator68;
-        private System.Windows.Forms.LinkLabel linkLabelNewVersionAvailable;
     }
 }
 

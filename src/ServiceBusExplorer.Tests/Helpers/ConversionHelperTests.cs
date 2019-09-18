@@ -1,6 +1,7 @@
 ﻿#region Using Directives
 
 using System;
+using System.Globalization;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using NUnit.Framework;
 
@@ -35,7 +36,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
         public void MapStringTypeToCLRType_ValueIsTimeSpanString_ReturnsEqualTimespanObject(string timespanStr)
         {
             var convertedTimespan = ConversionHelper.MapStringTypeToCLRType("TimeSpan", timespanStr);
-            Assert.AreEqual(convertedTimespan, TimeSpan.Parse(timespanStr));
+            Assert.AreEqual(convertedTimespan, TimeSpan.Parse(timespanStr, CultureInfo.InvariantCulture));
         }
 
         [Test]

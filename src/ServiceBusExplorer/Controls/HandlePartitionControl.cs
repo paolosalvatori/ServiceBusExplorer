@@ -28,6 +28,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion

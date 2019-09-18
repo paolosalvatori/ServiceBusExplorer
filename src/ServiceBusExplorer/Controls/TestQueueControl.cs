@@ -40,11 +40,13 @@ using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Cursor = System.Windows.Forms.Cursor;
 using FastColoredTextBoxNS;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
-    public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
+    //public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
 
     public partial class TestQueueControl : UserControl
     {

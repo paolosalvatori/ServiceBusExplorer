@@ -37,13 +37,14 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
-using FastColoredTextBoxNS;
 
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     using Enums;
+    using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+    using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 
     public partial class TestEventHubControl : UserControl
     {
