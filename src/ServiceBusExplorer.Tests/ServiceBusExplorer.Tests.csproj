@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Azure.ServiceBusExplorer.Tests</RootNamespace>
     <AssemblyName>Microsoft.Azure.ServiceBusExplorer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -44,12 +44,44 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\AssemblyDependencyValidation.layerdiagram">
+      <Link>AssemblyDependencyValidation.layerdiagram</Link>
+      <Visible>False</Visible>
+    </AdditionalFiles>
+    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram">
+      <Link>ExeInternalDependencyValidation.layerdiagram</Link>
+      <Visible>False</Visible>
+    </AdditionalFiles>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{de07dbeb-d772-49ba-bceb-a7ce29308ae3}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventHubs\EventHubs.csproj">
+      <Project>{7eb5ea53-5031-4e4e-b78c-38d370af9a9f}</Project>
+      <Name>EventHubs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj">
+      <Project>{e836c914-9bfe-4c1c-96e5-6a414cdef485}</Project>
+      <Name>NotificationHubs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relay\Relay.csproj">
+      <Project>{c6f6fa8e-2003-421d-8f06-aaf6bf205f01}</Project>
+      <Name>Relay</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj">
       <Project>{32754f39-e353-4607-94fe-b9b9acfd58ef}</Project>
       <Name>ServiceBusExplorer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj">
+      <Project>{6e3c130a-6b47-47d1-84df-7270977e8857}</Project>
+      <Name>ServiceBus</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
