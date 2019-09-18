@@ -20,23 +20,6 @@
 #endregion
 
 #region Using Directives
-using System;
-using System.Threading.Tasks;
-using System.Xml;
-using System.IO;
-using System.Diagnostics;
-using System.Globalization;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Core;
-using Microsoft.Azure.ServiceBus.Management;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
 #endregion
 
 // ReSharper disable CheckNamespace

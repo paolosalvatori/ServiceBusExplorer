@@ -302,6 +302,12 @@
     <Compile Include="Forms\EventDataForm.Designer.cs">
       <DependentUpon>EventDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewVersionAvailableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewVersionAvailableForm.designer.cs">
+      <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ParameterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -507,6 +513,9 @@
     <EmbeddedResource Include="Forms\EventDataForm.resx">
       <DependentUpon>EventDataForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewVersionAvailableForm.resx">
+      <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ParameterForm.resx">
       <DependentUpon>ParameterForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -559,22 +568,6 @@
       <SubType>Designer</SubType>
       <Link>App.config</Link>
     </None>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\AssemblyDependencyValidation.layerdiagram">
-      <Link>AssemblyDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram">
-      <Link>ExeInternalDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
-    <!--<AdditionalFiles Include="..\DependencyValidation1\UIDependencyValidation.layerdiagram">
-      <Link>UIDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
-    <AdditionalFiles Include="..\DependencyValidation1\AssembliesDependencyValidation.layerdiagram">
-      <Link>AssembliesDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>-->
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

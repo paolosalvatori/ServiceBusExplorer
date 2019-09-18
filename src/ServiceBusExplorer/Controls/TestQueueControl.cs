@@ -46,8 +46,6 @@ using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
-    //public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
-
     public partial class TestQueueControl : UserControl
     {
         #region Private Constants

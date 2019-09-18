@@ -280,6 +280,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             GetServiceBusNamespaceSettingsFromConfiguration();
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
+            DisplayNewVersionInformation();
+        }
+
+        void DisplayNewVersionInformation()
+        {
+            if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
+            {
+                linkLabelNewVersionAvailable.Visible = true;
+                linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
+            }
+            else
+            {
+                linkLabelNewVersionAvailable.Visible = false;
+            }
         }
 
         private void UpdateSavedConnectionsMenu()
@@ -4439,7 +4453,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression, 
+                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
@@ -4476,7 +4490,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, 
+                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
@@ -6670,7 +6684,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 HandleException(ex);
             }
         }
-        #endregion
 
+        private void linkLabelNewVersionAvailable_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (var form = new NewVersionAvailableForm())
+            {
+                form.ShowDialog();
+            }
+        }
+        #endregion
     }
 }

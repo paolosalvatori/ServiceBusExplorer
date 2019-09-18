@@ -56,14 +56,6 @@
     <Compile Include="WindowsPhoneNotificationXmlBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram">
-      <Link>ExeInternalDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\AssemblyDependencyValidation.layerdiagram">
-      <Link>AssemblyDependencyValidation.layerdiagram</Link>
-      <Visible>False</Visible>
-    </AdditionalFiles>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

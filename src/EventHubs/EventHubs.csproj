@@ -7,30 +7,10 @@
 
 
   <ItemGroup>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\AssemblyDependencyValidation.layerdiagram" Link="AssemblyDependencyValidation.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
-
-
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram" Link="ExeInternalDependencyValidation.layerdiagram">
-      <Visible>False</Visible>
-    </AdditionalFiles>
-  </ItemGroup>
-
-
-
- 
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="4.1.0" />
   </ItemGroup>
 
 
-
- 
 
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj" />

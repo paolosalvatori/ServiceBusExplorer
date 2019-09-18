@@ -19,22 +19,15 @@
 //=======================================================================================
 #endregion
 
-using OldMessaging = Microsoft.ServiceBus.Messaging;
-using NewManagement = Microsoft.Azure.ServiceBus.Management;
+using  Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 {
     public static class QueueDescriptionExtensions
     {
-        public static NewManagement.QueueDescription GetNewSdkQueueDescription(this OldMessaging.QueueDescription oldQueueDescription)
-        {
-            return new NewManagement.QueueDescription(oldQueueDescription.Path);
-        }
-
-        public static int MaxSizeInGigabytes(this OldMessaging.QueueDescription queueDescription)
+        public static int MaxSizeInGigabytes(this QueueDescription queueDescription)
         {
             return (int) (queueDescription.MaxSizeInMegabytes / 1024);
         }
-
     }
 }

@@ -93,7 +93,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
         private const string RuleCannotBeNull = "The rule argument cannot be null.";
-        protected const string PathCannotBeNull = "The path argument cannot be null or empty.";
+        private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
