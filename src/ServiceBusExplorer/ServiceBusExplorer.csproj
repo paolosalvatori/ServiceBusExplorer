@@ -370,6 +370,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\ConfigurationHelper.cs" />
+    <Compile Include="Helpers\ConnectionStringHelper.cs" />
     <Compile Include="Helpers\GitHubReleaseProvider.cs" />
     <Compile Include="Helpers\MainSettings.cs" />
     <Compile Include="Helpers\TwoFilesConfiguration.cs" />
