@@ -2093,7 +2093,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var rules = serviceBusHelper.GetRules(subscriptionDescription);
             var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
             if (!ruleDescriptions.Any())
+            {
+                subscriptionNode.Nodes.Clear();
                 return;
+            }
             var subscriptionNodeWasExpanded = subscriptionNode.IsExpanded;
             var rulesNodeWasExpanded = subscriptionNode.Nodes.Count > 0 && subscriptionNode.Nodes[0].IsExpanded;
             subscriptionNode.Nodes.Clear();
