@@ -443,7 +443,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.clearLogToolStripMenuItem.Name = "clearLogToolStripMenuItem";
             this.clearLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.clearLogToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.clearLogToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.clearLogToolStripMenuItem.Text = "Clear Log";
             this.clearLogToolStripMenuItem.Click += new System.EventHandler(this.clearLog_Click);
             // 
@@ -451,7 +451,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.saveLogToolStripMenuItem.Name = "saveLogToolStripMenuItem";
             this.saveLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveLogToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveLogToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.saveLogToolStripMenuItem.Text = "Save Log As...";
             this.saveLogToolStripMenuItem.Click += new System.EventHandler(this.saveLogToolStripMenuItem_Click);
             // 
@@ -495,7 +495,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.setDefaultLayouToolStripMenuItem.Name = "setDefaultLayouToolStripMenuItem";
             this.setDefaultLayouToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.setDefaultLayouToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.setDefaultLayouToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.setDefaultLayouToolStripMenuItem.Text = "Set Default Layout";
             this.setDefaultLayouToolStripMenuItem.Click += new System.EventHandler(this.setDefaultLayouToolStripMenuItem_Click);
             // 
@@ -506,20 +506,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.logWindowToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.logWindowToolStripMenuItem.Name = "logWindowToolStripMenuItem";
             this.logWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.logWindowToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.logWindowToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.logWindowToolStripMenuItem.Text = "&Log Window";
             this.logWindowToolStripMenuItem.Click += new System.EventHandler(this.logWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(218, 6);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -535,16 +535,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // statusStrip
             // 
             this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.statusStrip.Location = new System.Drawing.Point(0, 819);
+            this.statusStrip.Location = new System.Drawing.Point(0, 727);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1416, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1370, 22);
             this.statusStrip.TabIndex = 19;
             this.statusStrip.Text = "statusStrip";
             // 
@@ -566,8 +566,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.panelMain);
-            this.splitContainer.Size = new System.Drawing.Size(1384, 570);
-            this.splitContainer.SplitterDistance = 372;
+            this.splitContainer.Size = new System.Drawing.Size(1338, 503);
+            this.splitContainer.SplitterDistance = 359;
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -589,7 +589,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelTreeView.Name = "panelTreeView";
             this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelTreeView.Size = new System.Drawing.Size(372, 570);
+            this.panelTreeView.Size = new System.Drawing.Size(359, 503);
             this.panelTreeView.TabIndex = 0;
             // 
             // serviceBusTreeView
@@ -603,7 +603,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
+            this.serviceBusTreeView.Size = new System.Drawing.Size(349, 470);
             this.serviceBusTreeView.TabIndex = 13;
             this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
@@ -626,7 +626,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(1008, 570);
+            this.panelMain.Size = new System.Drawing.Size(975, 503);
             this.panelMain.TabIndex = 0;
             // 
             // mainSplitContainer
@@ -645,8 +645,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.panelLog);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1384, 784);
-            this.mainSplitContainer.SplitterDistance = 570;
+            this.mainSplitContainer.Size = new System.Drawing.Size(1338, 692);
+            this.mainSplitContainer.SplitterDistance = 503;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -668,7 +668,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelLog.Name = "panelLog";
             this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1384, 210);
+            this.panelLog.Size = new System.Drawing.Size(1338, 185);
             this.panelLog.TabIndex = 0;
             // 
             // lstLog
@@ -683,7 +683,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lstLog.Location = new System.Drawing.Point(5, 29);
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1374, 177);
+            this.lstLog.Size = new System.Drawing.Size(1328, 152);
             this.lstLog.TabIndex = 4;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
@@ -1835,7 +1835,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.mainMenuStrip.Size = new System.Drawing.Size(1416, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1370, 24);
             this.mainMenuStrip.TabIndex = 22;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -2619,7 +2619,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.logoPictureBox.BackgroundImage = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.logoPictureBox.Location = new System.Drawing.Point(1304, 16);
+            this.logoPictureBox.Location = new System.Drawing.Point(1258, 16);
             this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(96, 12);
@@ -2777,10 +2777,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Navy;
             this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Navy;
-            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1050, 15);
+            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1004, 15);
             this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelNewVersionAvailable.Name = "linkLabelNewVersionAvailable";
-            this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(174, 18);
+            this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(149, 15);
             this.linkLabelNewVersionAvailable.TabIndex = 24;
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
@@ -2792,7 +2792,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1416, 841);
+            this.ClientSize = new System.Drawing.Size(1370, 749);
             this.Controls.Add(this.linkLabelNewVersionAvailable);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainSplitContainer);

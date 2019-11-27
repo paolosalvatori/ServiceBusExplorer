@@ -247,7 +247,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 return null;
             }
 
-            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString");
+            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString" || key == "ADConnectionString");
             var toLower = connectionString.ToLower();
             var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
 

@@ -41,6 +41,7 @@ using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -734,6 +735,120 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
             WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
             return factory;
+        }
+
+        public bool ConnectAD(string uri,
+                          string clientId,
+                          string clientSecret,
+                          string tenantId,
+                          TransportType transportType)
+        {
+
+            // Create the service URI using the uri specified in the Connect form
+            namespaceUri = new Uri(uri);
+            connectionStringType = ServiceBusNamespaceType.Cloud;
+            if (!string.IsNullOrWhiteSpace(namespaceUri.Host) &&
+                namespaceUri.Host.Contains('.'))
+            {
+                Namespace = namespaceUri.Host.Substring(0, namespaceUri.Host.IndexOf('.'));
+            }
+
+            // Create the atom feed URI using the scheme, namespace and service name (optional)
+            if (uri.Substring(0, 4) != Uri.UriSchemeHttp)
+            {
+                var index = uri.IndexOf("://", StringComparison.Ordinal);
+                if (index > 0)
+                {
+                    uri = Uri.UriSchemeHttp + uri.Substring(index);
+                }
+            }
+            atomFeedUri = new Uri(uri);
+            ServicePath = string.Empty;
+
+            // Auth with AD
+            //string authorityUri = "https://login.windows.net/common/oauth2/authorize";
+            string authorityUri = $"https://login.windows.net/{tenantId}";
+            Microsoft.IdentityModel.Clients.ActiveDirectory.
+            AuthenticationContext authContext = new AuthenticationContext(authorityUri);
+            ClientCredential credentials = new ClientCredential(clientId, clientSecret);
+            tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateAadTokenProvider(authContext, credentials, ServiceAudience.ServiceBusAudience);
+            // End auth with AD
+            
+            /* currentIssuerName = issuerName;
+            currentIssuerSecret = issuerSecret;
+            currentSharedAccessKeyName = sharedAccessKeyName;
+            currentSharedAccessKey = sharedAccessKey; */
+            currentTransportType = transportType;
+
+            // Create and instance of the NamespaceManagerSettings which 
+            // specifies service namespace client settings and metadata.
+            var namespaceManagerSettings = new ServiceBus.NamespaceManagerSettings
+            {
+                TokenProvider = tokenProvider,
+                OperationTimeout = TimeSpan.FromMinutes(5)
+            };
+
+            // Set retry count
+            if (namespaceManagerSettings.RetryPolicy is ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+            {
+                namespaceManagerSettings.RetryPolicy = new ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                                                                                       defaultServiceBusRetryExponential.MaximumBackoff,
+                                                                                       RetryHelper.RetryCount);
+            }
+
+            var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
+            {
+                TokenProvider = notificationHubTokenProvider,
+                OperationTimeout = TimeSpan.FromMinutes(5)
+            };
+
+            // Set retry count
+            if (notificationHubNamespaceManagerSettings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+            {
+                notificationHubNamespaceManagerSettings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                            defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                            defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                            defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                            RetryHelper.RetryCount);
+            }
+
+            // The NamespaceManager class can be used for managing entities, 
+            // such as queues, topics, subscriptions, and rules, in your service namespace. 
+            // You must provide service namespace address and access credentials in order 
+            // to manage your service namespace.
+            // namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
+            namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, tokenProvider);
+
+            try
+            {
+                notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+            }
+            catch (Exception)
+            {
+                // ignored
+                WriteToLogIf(true, "Failed to instantiate notification hub namespace manager");
+            }
+
+            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri));
+
+            // The MessagingFactorySettings specifies the service bus messaging factory settings.
+            var messagingFactorySettings = new MessagingFactorySettings
+            {
+                TokenProvider = tokenProvider,
+                OperationTimeout = TimeSpan.FromMinutes(5)
+            };
+            // In the first release of the service bus, the only available transport protocol is sb 
+            if (scheme == DefaultScheme)
+            {
+                messagingFactorySettings.NetMessagingTransportSettings = new NetMessagingTransportSettings();
+            }
+
+            // As the name suggests, the MessagingFactory class is a Factory class that allows to create
+            // instances of the QueueClient, TopicClient and SubscriptionClient classes.
+            MessagingFactory = MessagingFactory.Create(namespaceUri, messagingFactorySettings);
+            WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
+            serviceBusNamespaceInstance =  ServiceBusNamespaces["ADConnectionString"];
+            return true;
         }
 
         /// <summary>

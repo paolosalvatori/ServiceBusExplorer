@@ -1337,7 +1337,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     UpdateSavedConnectionsMenu();
                     selectedEntites = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
+                    if (connectForm.Key == "ADConnectionString")
+                    {
+                        Console.WriteLine("Auth type with AD");
+                        serviceBusHelper.ConnectAD(connectForm.Uri,
+                                                     connectForm.IssuerName,
+                                                     connectForm.IssuerSecret,
+                                                     connectForm.EntityPath,
+                                                     connectForm.TransportType);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
                     {
                         var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
