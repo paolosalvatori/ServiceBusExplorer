@@ -1345,7 +1345,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                      connectForm.IssuerName,
                                                      connectForm.IssuerSecret,
                                                      connectForm.EntityPath,
-                                                     connectForm.TransportType);
+                                                     connectForm.TransportType,
+                                                     connectForm.Key);
                     }
                     else if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
                     {

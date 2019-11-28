@@ -741,7 +741,8 @@ namespace Microsoft.Azure.ServiceBusExplorer
                           string clientId,
                           string clientSecret,
                           string tenantId,
-                          TransportType transportType)
+                          TransportType transportType,
+                          string selectedNamespace)
         {
 
             // Create the service URI using the uri specified in the Connect form
@@ -843,7 +844,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             // instances of the QueueClient, TopicClient and SubscriptionClient classes.
             MessagingFactory = MessagingFactory.Create(namespaceUri, messagingFactorySettings);
             WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
-            serviceBusNamespaceInstance =  ServiceBusNamespaces["ADConnectionString"];
+            serviceBusNamespaceInstance =  ServiceBusNamespaces[selectedNamespace];
             return true;
         }
 
