@@ -1337,7 +1337,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     UpdateSavedConnectionsMenu();
                     selectedEntites = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    if (connectForm.Key == "ADConnectionString")
+                    
+                    if (serviceBusHelper.ServiceBusNamespaces[connectForm.Key].ClientId != null)
                     {
                         Console.WriteLine("Auth type with AD");
                         serviceBusHelper.ConnectAD(connectForm.Uri,

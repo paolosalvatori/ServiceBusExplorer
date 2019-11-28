@@ -93,6 +93,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
         const string ConnectionStringTransportType = "transporttype";
         const string ConnectionStringEntityPath = "entitypath";
+        const string ConnectionStringClientId = "clientid";
+        const string ConnectionStringClientSecret= "clientsecret";
+        const string ConnectionStringTenantId= "tenantid";
+
 
         #endregion
 
@@ -103,6 +107,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string ConnectionStringFormat = "Endpoint={0};SharedSecretIssuer={1};SharedSecretValue={2};TransportType={3}";
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
         public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
+        public const string AdConnectionStringEntityPathFormat = "Endpoint={0};clientId={1};clientSecret={2};tenantId{3};TransportType={4};EntityPath={5}";
+
         #endregion
 
         #region Public Constructors
@@ -234,6 +240,68 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             TransportType = transportType;
             UserCreated = isUserCreated;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the ServiceBusNamespace class.
+        /// </summary>
+        /// <param name="connectionStringType">The service bus namespace connection string type.</param>
+        /// <param name="connectionString">The service bus namespace connection string.</param>
+        /// <param name="uri">The full address of the service bus namespace.</param>
+        /// <param name="ns">The service bus namespace.</param>
+        /// <param name="name">The issuer name of the shared secret credentials.</param>
+        /// <param name="key">The issuer secret of the shared secret credentials.</param>
+        /// <param name="servicePath">The service path that follows the host name section of the URI.</param>
+        /// <param name="stsEndpoint">The sts endpoint of the service bus namespace.</param>
+        /// <param name="transportType">The transport type to use to access the namespace.</param>
+        /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
+        /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
+        /// <param name="clientId">Client id for MSI.</param>
+        /// <param name="clientSecret">Client Secret for MSI.</param>
+        /// <param name="tenantId">Tenant id for MSI.</param>
+
+        public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
+                                   string connectionString,
+                                   string uri,
+                                   string ns,
+                                   string servicePath,
+                                   string stsEndpoint,
+                                   TransportType transportType,
+                                   bool isSas = false,
+                                   string entityPath = "",
+                                   bool isUserCreated = false,
+                                   string clientId = "",
+                                   string clientSecret = "",
+                                   string tenantId = "")
+        {
+            ConnectionStringType = connectionStringType;
+            Uri = string.IsNullOrWhiteSpace(uri) ?
+                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
+                  uri;
+            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ?
+                               string.Format(ConnectionStringFormat,
+                                             Uri,
+                                             "",
+                                             "",
+                                             transportType) :
+                               connectionString;
+            Namespace = ns;
+
+            TransportType = transportType;
+            StsEndpoint = stsEndpoint;
+            RuntimePort = default(string);
+            ManagementPort = default(string);
+            WindowsDomain = default(string);
+            WindowsUserName = default(string);
+            WindowsPassword = default(string);
+            EntityPath = entityPath;
+            UserCreated = isUserCreated;
+            ClientId = clientId;
+            ClientSecret = clientSecret;
+            TenantId = tenantId;
+        }
+
+    
+
         #endregion
 
         #region Public methods
@@ -466,6 +534,72 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, issuerName, issuerSecret, stsEndpoint, transportType, isUserCreated);
             }
+
+            if (toLower.Contains(ConnectionStringEndpoint) &&
+                toLower.Contains(ConnectionStringClientId) &&
+                toLower.Contains(ConnectionStringClientSecret) &&
+                toLower.Contains(ConnectionStringTenantId)
+                )
+            {
+                if (parameters.Count < 3)
+                {
+                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                    return null;
+                }
+
+                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
+                               parameters[ConnectionStringEndpoint] :
+                               null;
+
+                if (string.IsNullOrWhiteSpace(endpoint))
+                {
+                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                    return null;
+                }
+
+                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
+                                  parameters[ConnectionStringStsEndpoint] :
+                                  null;
+
+                Uri uri;
+                try
+                {
+                    uri = new Uri(endpoint);
+                }
+                catch (Exception)
+                {
+                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
+                    return null;
+                }
+                var ns = uri.Host.Split('.')[0];
+                var clientId = parameters.ContainsKey(ConnectionStringClientId) ?
+                                     parameters[ConnectionStringClientId] :
+                                     ConnectionStringOwner;
+
+                if (!parameters.ContainsKey(ConnectionStringClientSecret) ||
+                    string.IsNullOrWhiteSpace(parameters[ConnectionStringClientSecret]))
+                {
+                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, "Please specify a client secret ", key));
+                    return null;
+
+                }
+                var clientSecret = parameters[ConnectionStringClientSecret];
+
+                var tenantId = parameters.ContainsKey(ConnectionStringTenantId) ?
+                                   parameters[ConnectionStringTenantId] :
+                                   ConnectionStringOwner;
+
+                var settings = new MessagingFactorySettings();
+                var transportType = settings.TransportType;
+                if (parameters.ContainsKey(ConnectionStringTransportType))
+                {
+                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+                }
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, stsEndpoint, transportType, false, null, isUserCreated, clientId, clientSecret, tenantId);
+
+            }
+
+
             else
             {
                 if (parameters.Count < 4)
@@ -681,6 +815,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// Gets or sets the EntityPath
         /// </summary>
         public string EntityPath { get; set; }
+
+        public string ClientId{ get; set; }
+
+        public string ClientSecret { get; set; }
+
+        public string TenantId { get; set; }
+
+
         #endregion
     }
 }

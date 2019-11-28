@@ -438,7 +438,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     txtIssuerName.Text = ns.IssuerName;
                     txtIssuerSecret.Text = ns.IssuerSecret;
                     txtEntityPath.Text = ns.EntityPath;
-                    if (Key == "ADConnectionString")
+                    
+                    if (serviceBusHelper.ServiceBusNamespaces[Key].ClientId != null)
                     {
                         lblIssuerName.Text = ClientIdLabel;
                         lblIssuerSecret.Text = ClientSecretLabel;
