@@ -67,7 +67,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private const string SharedSecretIssuerSecretLabel = "Shared Secret Issuer Secret:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
+        private const string ClientIdLabel = "Client ID";
+        private const string ClientSecretLabel= "Client Secret";
+        private const string TenantIdLabel = "Tenant ID";
         private const string replacementText = "{replace}";
+
 
         //***************************
         // Tooltips
@@ -434,9 +438,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     txtIssuerName.Text = ns.IssuerName;
                     txtIssuerSecret.Text = ns.IssuerSecret;
                     txtEntityPath.Text = ns.EntityPath;
-                    lblIssuerName.Text = SharedSecretIssuerNameLabel;
-                    lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
-                    isIssuerName = true;
+                    if (Key == "ADConnectionString")
+                    {
+                        lblIssuerName.Text = ClientIdLabel;
+                        lblIssuerSecret.Text = ClientSecretLabel;
+                        lblEntityPath.Text = TenantIdLabel;
+                        isIssuerName = true;
+                    }
+                    else 
+                    {
+                        lblIssuerName.Text = SharedSecretIssuerNameLabel;
+                        lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
+                        isIssuerName = true;
+                    }
+                    
                 }
             }
             cboTransportType.SelectedItem = ns.TransportType;
