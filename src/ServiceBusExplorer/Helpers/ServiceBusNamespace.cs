@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -160,16 +160,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = connectionStringType;
-            Uri = string.IsNullOrWhiteSpace(uri) ? 
-                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() : 
+            Uri = string.IsNullOrWhiteSpace(uri) ?
+                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
                   uri;
-            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ? 
+            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ?
                                string.Format(ConnectionStringFormat,
                                              Uri,
                                              name,
                                              key,
-                                             transportType) : 
-                               connectionString;            
+                                             transportType) :
+                               connectionString;
             Namespace = ns;
             IssuerName = name;
             if (isSas)
@@ -255,10 +255,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="transportType">The transport type to use to access the namespace.</param>
         /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
         /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
-        /// <param name="clientId">Client id for MSI.</param>
-        /// <param name="clientSecret">Client Secret for MSI.</param>
-        /// <param name="tenantId">Tenant id for MSI.</param>
-
+        /// <param name="isUserCreated"></param>
+        /// <param name="clientId">Client Id for MSI.</param>
+        /// <param name="clientSecret">Client secret for MSI.</param>
+        /// <param name="tenantId">Tenant Id for MSI.</param>
         public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
                                    string connectionString,
                                    string uri,
@@ -300,7 +300,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             TenantId = tenantId;
         }
 
-    
+
 
         #endregion
 
@@ -387,7 +387,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                     entityPath = parameters[ConnectionStringEntityPath];
                 }
 
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, 
+                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
                     entityPath, isUserCreated);
             }
 
@@ -687,7 +687,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 }
             }
 
-            var microsoftServiceBusConnectionString = 
+            var microsoftServiceBusConnectionString =
                 configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString);
 
             if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
@@ -816,13 +816,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// </summary>
         public string EntityPath { get; set; }
 
+        /// <summary>
+        /// AAD client Id used to authenticate with MSI.
+        /// </summary>
         public string ClientId{ get; set; }
 
+        /// <summary>
+        /// AAD client secret used to authenticate with MSI.
+        /// </summary>
         public string ClientSecret { get; set; }
 
+        /// <summary>
+        /// AAD tenant Id used to authenticate with MSI.
+        /// </summary>
         public string TenantId { get; set; }
 
 
         #endregion
+
+        /// <summary>
+        /// Validate if authentication is performed with AAD credentials using MSI.
+        /// </summary>
+        public bool UsingAadAuthentication()
+        {
+            return !string.IsNullOrEmpty(TenantId) && !string.IsNullOrEmpty(ClientSecret);
+        }
     }
 }
