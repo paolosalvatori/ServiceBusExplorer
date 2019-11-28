@@ -774,10 +774,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
             tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateAadTokenProvider(authContext, credentials, ServiceAudience.ServiceBusAudience);
             // End auth with AD
             
-            /* currentIssuerName = issuerName;
-            currentIssuerSecret = issuerSecret;
-            currentSharedAccessKeyName = sharedAccessKeyName;
-            currentSharedAccessKey = sharedAccessKey; */
             currentTransportType = transportType;
 
             // Create and instance of the NamespaceManagerSettings which 
