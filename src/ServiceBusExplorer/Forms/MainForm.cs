@@ -1338,9 +1338,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     selectedEntites = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     
-                    if (serviceBusHelper.ServiceBusNamespaces[connectForm.Key].ClientId != null)
+
+                    if (serviceBusHelper.ServiceBusNamespaces[connectForm.Key].UsingAadAuthentication())
                     {
-                        Console.WriteLine("Auth type with AD");
+                        Console.WriteLine("Authentication type: AAD");
                         serviceBusHelper.ConnectAD(connectForm.Uri,
                                                      connectForm.IssuerName,
                                                      connectForm.IssuerSecret,

@@ -439,14 +439,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     txtIssuerSecret.Text = ns.IssuerSecret;
                     txtEntityPath.Text = ns.EntityPath;
                     
-                    if (serviceBusHelper.ServiceBusNamespaces[Key].ClientId != null)
+
+                    if (serviceBusHelper.ServiceBusNamespaces[Key].UsingAadAuthentication())
                     {
                         lblIssuerName.Text = ClientIdLabel;
                         lblIssuerSecret.Text = ClientSecretLabel;
                         lblEntityPath.Text = TenantIdLabel;
                         isIssuerName = true;
                     }
-                    else 
+                    else // SAS
                     {
                         lblIssuerName.Text = SharedSecretIssuerNameLabel;
                         lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;

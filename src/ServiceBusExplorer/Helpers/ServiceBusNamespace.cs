@@ -255,10 +255,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// <param name="transportType">The transport type to use to access the namespace.</param>
         /// <param name="isSas">True is is SAS connection string, false otherwise.</param>
         /// <param name="entityPath">Entity path connection string scoped to. Otherwise a default.</param>
-        /// <param name="clientId">Client id for MSI.</param>
-        /// <param name="clientSecret">Client Secret for MSI.</param>
-        /// <param name="tenantId">Tenant id for MSI.</param>
-
+        /// <param name="isUserCreated"></param>
+        /// <param name="clientId">Client Id for MSI.</param>
+        /// <param name="clientSecret">Client secret for MSI.</param>
+        /// <param name="tenantId">Tenant Id for MSI.</param>
         public ServiceBusNamespace(ServiceBusNamespaceType connectionStringType,
                                    string connectionString,
                                    string uri,
@@ -816,13 +816,30 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         /// </summary>
         public string EntityPath { get; set; }
 
+        /// <summary>
+        /// AAD client Id used to authenticate with MSI.
+        /// </summary>
         public string ClientId{ get; set; }
 
+        /// <summary>
+        /// AAD client secret used to authenticate with MSI.
+        /// </summary>
         public string ClientSecret { get; set; }
 
+        /// <summary>
+        /// AAD tenant Id used to authenticate with MSI.
+        /// </summary>
         public string TenantId { get; set; }
 
 
         #endregion
+
+        /// <summary>
+        /// Validate if authentication is performed with AAD credentials using MSI.
+        /// </summary>
+        public bool UsingAadAuthentication()
+        {
+            return !string.IsNullOrEmpty(TenantId) && !string.IsNullOrEmpty(ClientSecret);
+        }
     }
 }
