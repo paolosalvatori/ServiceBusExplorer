@@ -767,7 +767,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
             ServicePath = string.Empty;
 
             // Auth with AD
-            //string authorityUri = "https://login.windows.net/common/oauth2/authorize";
             string authorityUri = $"https://login.windows.net/{tenantId}";
             Microsoft.IdentityModel.Clients.ActiveDirectory.
             AuthenticationContext authContext = new AuthenticationContext(authorityUri);
@@ -813,7 +812,6 @@ namespace Microsoft.Azure.ServiceBusExplorer
             // such as queues, topics, subscriptions, and rules, in your service namespace. 
             // You must provide service namespace address and access credentials in order 
             // to manage your service namespace.
-            // namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
             namespaceManager = new ServiceBus.NamespaceManager(namespaceUri, tokenProvider);
 
             try
