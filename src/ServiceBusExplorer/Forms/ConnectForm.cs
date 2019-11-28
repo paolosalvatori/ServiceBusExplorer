@@ -1,21 +1,21 @@
 ﻿#region Copyright
 
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team  
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on the community
-// blog at http://www.appfabriccat.com/. 
-// 
+// blog at http://www.appfabriccat.com/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 
@@ -123,8 +123,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             InitializeComponent();
 
             this.configFileUse = configFileUse;
-            SetConfigFileUseLabelText(lblConfigFileUse);            
-            
+            SetConfigFileUseLabelText(lblConfigFileUse);
+
             this.serviceBusHelper = serviceBusHelper;
             cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
             cboServiceBusNamespace.Items.Add(EnterConnectionString);
@@ -254,10 +254,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     MainForm.StaticWriteToLog(ConnectionStringCannotBeEntitySpecific);
                     MessageBox.Show(
-                        this, 
-                        $"{ConnectionStringCannotBeEntitySpecific}\n\n{ConnectionStringCannotBeEntitySpecificDetails}", 
+                        this,
+                        $"{ConnectionStringCannotBeEntitySpecific}\n\n{ConnectionStringCannotBeEntitySpecificDetails}",
                         this.Text,  // reuse title of this window
-                        MessageBoxButtons.OK, 
+                        MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation);
                     return;
                 }
@@ -438,7 +438,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     txtIssuerName.Text = ns.IssuerName;
                     txtIssuerSecret.Text = ns.IssuerSecret;
                     txtEntityPath.Text = ns.EntityPath;
-                    
 
                     if (serviceBusHelper.ServiceBusNamespaces[Key].UsingAadAuthentication())
                     {
@@ -453,7 +452,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
                         isIssuerName = true;
                     }
-                    
+
                 }
             }
             cboTransportType.SelectedItem = ns.TransportType;
