@@ -49,11 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NotificationHubAuthorizationRuleWrapper.cs" />
-    <Compile Include="NotificationInfo.cs" />
+    <Compile Include="Helpers\NotificationHubAuthorizationRuleWrapper.cs" />
+    <Compile Include="Helpers\NotificationInfo.cs" />
+    <Compile Include="Helpers\WindowsNotificationXmlBuilder.cs" />
+    <Compile Include="Helpers\WindowsPhoneNotificationXmlBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WindowsNotificationXmlBuilder.cs" />
-    <Compile Include="WindowsPhoneNotificationXmlBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\ServiceBusExplorerDependencyValidation\ExeInternalDependencyValidation.layerdiagram">
