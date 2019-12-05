@@ -28,7 +28,7 @@ using Microsoft.Azure.ServiceBus.Management;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers
 {
     public class ServiceBusPurger
     {

@@ -28,6 +28,7 @@ using FastColoredTextBoxNS;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 
 #endregion

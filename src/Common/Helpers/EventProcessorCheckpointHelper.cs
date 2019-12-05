@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 

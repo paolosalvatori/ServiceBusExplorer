@@ -21,6 +21,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Helpers

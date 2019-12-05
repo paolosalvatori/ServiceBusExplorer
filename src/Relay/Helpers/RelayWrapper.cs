@@ -21,63 +21,33 @@
 
 #region Using Directives
 
-using System.Collections.Generic;
+using System;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.Relay.Helpers
 {
     /// <summary>
-    /// A list which acts like the List class, but with more of a java
-    /// influence. This allows you to set
-    /// a looping variable to true, and creates
-    /// a circular list. Also it utilizes the java iterator pattern of
-    /// Next and HasNext.
+    /// This class contains the information of a Relay
     /// </summary>
-    /// <typeparam name="T">The type of item that
-    /// will be stored in the list</typeparam>
-    public class CircularList<T> : List<T>
+    public class RelayWrapper
     {
-        #region Private Fields
-        private int index;
-        #endregion
-
         #region Public Constructors
-        public CircularList()
+        /// <summary>
+        /// Initializes a new instance of the RelayWrapper class.
+        /// </summary>
+        /// <param name="name">The service name.</param>
+        /// <param name="uri">The service uri.</param>
+        public RelayWrapper(string name, Uri uri)
         {
-        }
-
-        public CircularList(int capacity)
-            : base(capacity)
-        {
-        }
-
-        public CircularList(IEnumerable<T> enumerable)
-            : base(enumerable)
-        {
+            Name = name;
+            Uri = uri;
         }
         #endregion
 
         #region Public Properties
-        /// <summary>
-        /// The next element in the list. The user is responsible for
-        /// making sure that HasNext is true
-        /// before getting the next element.
-        /// </summary>
-        public T Next
-        {
-            get
-            {
-                lock (this)
-                {
-                    if (index >= Count)
-                    {
-                        index = 0;
-                    }
-                    return this[index++];
-                }
-            }
-        }
+        public string Name { get; set; }
+        public Uri Uri { get; set; }
         #endregion
     }
 }

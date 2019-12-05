@@ -22,6 +22,7 @@
 #region Using Directives
 
 using System.Collections.Generic;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion

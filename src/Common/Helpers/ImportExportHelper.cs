@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 

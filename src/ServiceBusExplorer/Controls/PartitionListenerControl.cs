@@ -38,6 +38,7 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 // ReSharper disable CoVariantArrayConversion
 #endregion

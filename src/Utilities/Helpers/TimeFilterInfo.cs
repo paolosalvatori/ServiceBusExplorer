@@ -25,7 +25,7 @@ using System;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
 {
     public class TimeFilterInfo
     {

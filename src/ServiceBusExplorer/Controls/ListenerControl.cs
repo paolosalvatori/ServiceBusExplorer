@@ -40,6 +40,7 @@ using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
 using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 

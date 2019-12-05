@@ -28,7 +28,7 @@ using System.Xml;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
 {
     public static class XmlHelper
     {

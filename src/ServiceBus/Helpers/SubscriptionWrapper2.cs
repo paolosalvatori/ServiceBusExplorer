@@ -25,7 +25,7 @@ using Microsoft.Azure.ServiceBus.Management;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers
 {
     /// <summary>
     /// This class adds a Subscriptions collection to the TopicDescription class

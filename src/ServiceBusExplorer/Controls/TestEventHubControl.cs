@@ -44,6 +44,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 {
     using Enums;
     using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+    using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
     using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
 
     public partial class TestEventHubControl : UserControl

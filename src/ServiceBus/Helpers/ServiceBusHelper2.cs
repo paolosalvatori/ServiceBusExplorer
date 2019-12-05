@@ -20,37 +20,14 @@
 #endregion
 
 #region Using Directives
-
-using System.Xml.Linq;
-
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+// ReSharper disable CheckNamespace
+namespace Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers
+// ReSharper restore CheckNamespace
 {
-    public static class XmlLinqExtensions
+    public class ServiceBusHelper2 
     {
-        public static XElement AquireElement(this XContainer container,
-            string name, bool addFirst = false)
-        {
-            var element = container.Element(name);
-
-            if (null != element)
-            {
-                return element;
-            }
-
-            element = new XElement(name);
-
-            if (addFirst)
-            {
-                container.AddFirst(element);
-            }
-            else
-            {
-                container.Add(element);
-            }
-
-            return element;
-        }
+        public string ConnectionString { get; set; }
     }
 }

@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using NUnit.Framework;
 
 #endregion

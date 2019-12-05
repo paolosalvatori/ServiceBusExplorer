@@ -40,13 +40,15 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
 using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
+using Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
 // ReSharper disable CheckNamespace
 namespace Microsoft.Azure.ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
-    using ServiceBusConnectionStringBuilder = ServiceBus.ServiceBusConnectionStringBuilder;
+    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {

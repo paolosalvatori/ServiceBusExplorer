@@ -37,6 +37,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers;
 
 #endregion
 

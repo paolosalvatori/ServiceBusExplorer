@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 

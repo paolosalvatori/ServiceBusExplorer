@@ -43,6 +43,7 @@ using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
 using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
