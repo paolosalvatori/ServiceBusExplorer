@@ -103,7 +103,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string TopicPath = "TopicPath";
         private const string EventHubPath = "EventHubPath";
         private const string SqlExpression = "SqlExpression";
-        private const string Correlationid = "Correlationid";
+        private const string CorrelationId = "CorrelationId";
         private const string QueueExported = "The queue {0} has been successfully exported.";
         private const string TopicExported = "The topic {0} has been successfully exported.";
         private const string RelayExported = "The relay {0} has been successfully exported.";
@@ -1358,7 +1358,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             }
             if (filter.Name == string.Format(NodeNameFormat, Namespace, CorrelationFilterEntity))
             {
-                ruleFilter = new CorrelationFilter(propertyValue[Correlationid] as string);
+                ruleFilter = new CorrelationFilter(propertyValue[CorrelationId] as string);
             }
             if (ruleFilter != null)
             {
