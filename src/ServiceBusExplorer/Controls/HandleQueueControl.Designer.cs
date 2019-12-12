@@ -3047,7 +3047,6 @@
         private System.Windows.Forms.PropertyGrid deadletterPropertyGrid;
         private System.Windows.Forms.SplitContainer deadletterPropertiesSplitContainer;
         private Grouper grouperDeadletterSystemProperties;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
         private Grouper grouperDeadletterText;
         private FastColoredTextBoxNS.FastColoredTextBox txtDeadletterText;
         private Grouper grouperDeadletterCustomProperties;

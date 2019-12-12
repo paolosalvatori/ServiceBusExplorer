@@ -25,6 +25,8 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections;
@@ -260,7 +262,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             splitterContainerDistance = splitContainer.SplitterDistance;
             treeViewFontSize = (decimal)serviceBusTreeView.Font.Size;
             logFontSize = (decimal)lstLog.Font.Size;
-            Trace.Listeners.Add(new LogTraceListener());
+            Trace.Listeners.Add(new LogTraceListener(MainForm.StaticWriteToLog));
             mainSingletonMainForm = this;
             serviceBusHelper = new ServiceBusHelper(WriteToLog);
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
@@ -1805,7 +1807,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         var description = nodeTag;
                         if (description.IsDynamic)
                         {
-                            var relayCollection = serviceBusHelper.GetRelays();
+                            var relayCollection = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
                             var relayDescriptions = relayCollection as IList<RelayDescription> ?? relayCollection.ToList();
                             if (relayDescriptions.Any())
                             {
@@ -4415,7 +4417,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             try
                             {
-                                var relayServices = serviceBusHelper.GetRelays();
+                                var relayServices = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
 
                                 relayServiceListNode.Text = Constants.RelayEntities;
 
@@ -4452,7 +4454,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression);
+                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
+                                MainForm.SingletonMainForm.ServerTimeout);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
                                 : FilteredQueueEntities;
@@ -4488,7 +4491,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression);
+                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
+                                MainForm.SingletonMainForm.ServerTimeout);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
                                 : FilteredTopicEntities;
