@@ -4463,7 +4463,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
                 {
@@ -4649,7 +4650,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
                 {
@@ -4836,7 +4838,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
                 {
