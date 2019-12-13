@@ -30,6 +30,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.NotificationHubs.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 

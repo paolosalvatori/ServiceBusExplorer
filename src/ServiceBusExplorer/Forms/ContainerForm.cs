@@ -43,6 +43,8 @@ using Microsoft.ServiceBus.Messaging;
 namespace Microsoft.Azure.ServiceBusExplorer.Forms
 {
     using Enums;
+    using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
+    using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
     public sealed partial class ContainerForm : Form
     {
