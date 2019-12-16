@@ -104,14 +104,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         private const string EventHubPath = "EventHubPath";
         private const string SqlExpression = "SqlExpression";
         private const string CorrelationId = "CorrelationId";
-        private const string QueueExported = "The queue {0} has been successfully exported.";
-        private const string TopicExported = "The topic {0} has been successfully exported.";
-        private const string RelayExported = "The relay {0} has been successfully exported.";
-        private const string SubscriptionExported = "The subscription {0} of the topic {1} has been successfully exported.";
-        private const string RuleExported = "The rule {0} has been successfully exported.";
-        private const string EventHubExported = "The event hub {0} has been successfully exported.";
-        private const string ConsumerGroupExported = "The consumer group {0} has been successfully exported.";
-        private const string NotificationHubExported = "The notification hub {0} has been successfully exported.";
         private const string MaxSizeInMegabytes = "MaxSizeInMegabytes";
         private const string ForwardTo = "ForwardTo";
         private const string Rights = "Rights";
@@ -1220,7 +1212,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                                 list.Add(new SharedAccessAuthorizationRule(keyName,
                                                                            primaryKey,
                                                                            rights));
-
                             }
                         }
                     }
@@ -1244,7 +1235,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                         }
                     }
                 }
-
             }
             return list;
         }
