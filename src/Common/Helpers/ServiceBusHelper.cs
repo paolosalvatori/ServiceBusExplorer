@@ -2289,7 +2289,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Gets the uri of the deadletter queue for a given queue.
         /// </summary>
         /// <param name="queuePath">The name of a queue.</param>
-        /// <returns>he absolute uri of the deadletter queue.</returns>
+        /// <returns>the absolute uri of the deadletter queue.</returns>
         public Uri GetQueueDeadLetterQueueUri(string queuePath)
         {
             if (IsCloudNamespace)
