@@ -65,7 +65,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         readonly bool includeNotificationHubs;
         readonly bool includeRelays;
         readonly QueueDescription queueDescriptionSource;  // Might be null
-        readonly SubscriptionWrapper subscriptionWrapperSource;  // Might be null
+        readonly TopicDescription topicDescriptionSource;  // Might be null
         #endregion
 
         #region Public Constructor
@@ -138,7 +138,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public SelectEntityForm(string dialogTitle,
                        string groupTitle,
                        string labelText,
-                       SubscriptionWrapper subscriptionWrapperSource,
+                       TopicDescription topicDescriptionSource,
                        bool subscriptions = false,
                        bool eventHubs = false,
                        bool notificationHubs = false,
@@ -150,7 +150,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                            notificationHubs,
                            relays)
         {
-            this.subscriptionWrapperSource = subscriptionWrapperSource;
+            this.topicDescriptionSource = topicDescriptionSource;
         }
         #endregion
 
@@ -186,7 +186,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     }
                 }
             }
-            else if (subscriptionWrapperSource != null)
+            else if (topicDescriptionSource != null)
             {
                 foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
                 {
@@ -199,7 +199,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 var topicTag = level2Node.Tag as TopicDescription;
                                 if (topicTag != null)
                                 {
-                                    if (topicTag.Path == subscriptionWrapperSource.TopicDescription.Path)
+                                    if (topicTag.Path == topicDescriptionSource.Path)
                                     {
                                         serviceBusTreeView.HideSelection = false;
                                         serviceBusTreeView.Focus();  // Otherwise the node will be light gray
