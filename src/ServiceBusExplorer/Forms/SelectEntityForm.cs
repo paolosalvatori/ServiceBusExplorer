@@ -157,6 +157,31 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         #region Event Handlers
         private void SelectEntityForm_Load(object sender, EventArgs e)
         {
+            bool FocusNodeIfMatching<T>(TreeNode treeNode, Func<T, string> getPath, string searchedPath) where T : class
+            {
+                if (treeNode.Tag is T tag)
+                {
+                    if (string.Compare(getPath(tag), searchedPath,
+                            StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        serviceBusTreeView.HideSelection = false;
+                        serviceBusTreeView.Focus(); // Otherwise the node will be light gray
+                        serviceBusTreeView.SelectedNode = treeNode;
+                        SetTextAndType(treeNode);
+                        return true;
+                    }
+                }
+
+                foreach (TreeNode childNode in treeNode.Nodes)
+                {
+                    if (FocusNodeIfMatching<T>(childNode, getPath, searchedPath))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             // Select the queue where it is coming from since that is likely where it will go
             if (queueDescriptionSource != null)
             {
@@ -166,21 +191,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         if (level1Node.Text == QueueEntities)
                         {
-                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
                             {
-                                var queueTag = level2Node.Tag as QueueDescription;
-                                if (queueTag != null)
-                                {
-                                    if (string.Compare(queueTag.Path, queueDescriptionSource.Path,
-                                        StringComparison.InvariantCultureIgnoreCase) == 0)
-                                    {
-                                        serviceBusTreeView.HideSelection = false;
-                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
-                                        serviceBusTreeView.SelectedNode = level2Node;
-                                        SetTextAndType(level2Node);
-                                        return;
-                                    }
-                                }
+                                return;
                             }
                         }
                     }
@@ -194,20 +207,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         if (level1Node.Text == TopicEntities)
                         {
-                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
                             {
-                                var topicTag = level2Node.Tag as TopicDescription;
-                                if (topicTag != null)
-                                {
-                                    if (topicTag.Path == topicDescriptionSource.Path)
-                                    {
-                                        serviceBusTreeView.HideSelection = false;
-                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
-                                        serviceBusTreeView.SelectedNode = level2Node;
-                                        SetTextAndType(level2Node);
-                                        return;
-                                    }
-                                }
+                                return;
                             }
                         }
                     }
