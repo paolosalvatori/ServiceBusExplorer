@@ -1226,27 +1226,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // ForwardTo
             if (!string.IsNullOrWhiteSpace(queueDescription.ForwardTo))
             {
-                int i;
-                txtForwardTo.Text = !string.IsNullOrWhiteSpace(queueDescription.ForwardTo) &&
-                                    (i = queueDescription.ForwardTo.IndexOf('/')) > 0 &&
-                                    i < queueDescription.ForwardTo.Length - 1
-                    ? queueDescription.ForwardTo.Substring(queueDescription.ForwardTo.LastIndexOf('/') + 1)
-                    : queueDescription.ForwardTo;
-
+                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardTo);
             }
 
             // ForwardDeadLetteredMessagesTo
             if (!string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo))
             {
-                int i;
-                txtForwardDeadLetteredMessagesTo.Text =
-                    !string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo) &&
-                    (i = queueDescription.ForwardDeadLetteredMessagesTo.IndexOf('/')) > 0 &&
-                    i < queueDescription.ForwardDeadLetteredMessagesTo.Length - 1
-                        ? queueDescription.ForwardDeadLetteredMessagesTo.Substring(
-                            queueDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1)
-                        : queueDescription.ForwardDeadLetteredMessagesTo;
-
+                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardDeadLetteredMessagesTo);
             }
 
             // MaxQueueSizeInBytes

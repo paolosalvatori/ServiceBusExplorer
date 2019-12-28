@@ -5589,6 +5589,22 @@ namespace Microsoft.Azure.ServiceBusExplorer
             return host.Substring(index);
         }
 
+        public string GetAddressRelativeToNamespace(string address)
+        {
+            if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
+            {
+                var uri = new Uri(address, UriKind.Absolute);
+                var uriRelativeToNamespace = NamespaceUri.MakeRelativeUri(uri);
+                return uriRelativeToNamespace.ToString();
+            }
+            int i;
+            return !string.IsNullOrWhiteSpace(address) &&
+                   (i = address.IndexOf('/')) > 0 &&
+                   i < address.Length - 1 ?
+                address.Substring(address.LastIndexOf('/') + 1) :
+                address;
+        }
+
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
             var serviceBusHelper2 = new ServiceBusHelper2();

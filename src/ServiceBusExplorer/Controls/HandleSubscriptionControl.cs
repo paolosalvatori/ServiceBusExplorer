@@ -754,6 +754,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void InitializeData()
         {
             // Initialize buttons
+            var forwardTo = subscriptionWrapper.SubscriptionDescription.ForwardTo;
+            var forwardDeadLetteredMessagesTo = subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo;
             btnCreateDelete.Text = DeleteText;
             btnCancelUpdate.Text = UpdateText;
             btnChangeStatus.Text = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active ? DisableText : EnableText;
@@ -761,8 +763,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             btnChangeStatus.Visible = true;
             btnMessages.Visible = true;
             btnSessions.Visible = subscriptionWrapper.SubscriptionDescription.RequiresSession;
-            btnMessages.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo);
-            btnDeadletter.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo);
+            btnMessages.Visible = string.IsNullOrWhiteSpace(forwardTo);
+            btnDeadletter.Visible = string.IsNullOrWhiteSpace(forwardDeadLetteredMessagesTo);
 
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
@@ -809,25 +811,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             // ForwardTo
-            if (!string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo))
+            if (!string.IsNullOrWhiteSpace(forwardTo))
             {
-                int i;
-                txtForwardTo.Text = !string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo) &&
-                                    (i = subscriptionWrapper.SubscriptionDescription.ForwardTo.IndexOf('/')) > 0 &&
-                                    i < subscriptionWrapper.SubscriptionDescription.ForwardTo.Length - 1 ?
-                                    subscriptionWrapper.SubscriptionDescription.ForwardTo.Substring(subscriptionWrapper.SubscriptionDescription.ForwardTo.LastIndexOf('/') + 1) :
-                                    subscriptionWrapper.SubscriptionDescription.ForwardTo;
+                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(forwardTo);
             }
 
             // ForwardDeadLetteredMessagesTo
-            if (!string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo))
+            if (!string.IsNullOrWhiteSpace(forwardDeadLetteredMessagesTo))
             {
-                int i;
-                txtForwardDeadLetteredMessagesTo.Text = !string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo) &&
-                                    (i = subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.IndexOf('/')) > 0 &&
-                                    i < subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Length - 1 ?
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Substring(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1) :
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo;
+                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(forwardDeadLetteredMessagesTo);
             }
 
             // MaxDeliveryCount
