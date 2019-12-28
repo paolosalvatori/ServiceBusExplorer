@@ -369,6 +369,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
+                txtContentType.Text = mainForm.MessageContentType;
                 txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
                 txtServerTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
                 txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
@@ -2154,6 +2155,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
             {
                 mainForm.MessageText = txtMessageText.Text;
+            }
+        }
+
+        private void txtContentType_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtContentType.Text))
+            {
+                mainForm.MessageContentType = txtContentType.Text;
             }
         }
 

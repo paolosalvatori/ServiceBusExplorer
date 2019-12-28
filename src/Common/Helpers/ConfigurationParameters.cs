@@ -35,6 +35,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public const string SaveCheckpointsToFileParameter = "saveCheckpointsToFile";
         public const string SchemeParameter = "scheme";
         public const string MessageParameter = "message";
+        public const string MessageContentTypeParameter = "contentType";
         public const string FileParameter = "file";
         public const string LabelParameter = "label";
         public const string RetryCountParameter = "retryCount";

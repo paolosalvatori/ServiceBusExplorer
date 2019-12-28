@@ -208,6 +208,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private readonly FieldInfo eventClickFieldInfo;
         private readonly PropertyInfo eventsPropertyInfo;
         private string messageText;
+        private string messageContentType;
         private string relayMessageText;
         private string messageFile;
         private string label;
@@ -394,6 +395,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Label = label,
                 MessageFile = messageFile,
                 MessageText = messageText,
+                MessageContentType = messageContentType,
 
                 SelectedEntities = selectedEntites,
                 MessageBodyType = messageBodyType,
@@ -449,6 +451,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 label = optionForm.MainSettings.Label;
                 messageFile = optionForm.MainSettings.MessageFile;
                 messageText = optionForm.MainSettings.MessageText;
+                messageContentType = optionForm.MainSettings.MessageContentType;
 
                 selectedEntites = optionForm.MainSettings.SelectedEntities;
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
@@ -3723,6 +3726,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 Label = label,
                 MessageFile = messageFile,
                 MessageText = messageText,
+                MessageContentType = messageContentType,
                 SelectedEntities = selectedEntites,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode
@@ -3798,6 +3802,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             label = readSettings.Label;
 
             messageText = readSettings.MessageText;
+            messageContentType = readSettings.MessageContentType;
             messageFile = readSettings.MessageFile;
 
             selectedEntites = readSettings.SelectedEntities;
@@ -3905,6 +3910,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             set
             {
                 messageText = value;
+            }
+        }
+
+        public string MessageContentType
+        {
+            get
+            {
+                return messageContentType;
+            }
+            set
+            {
+                messageContentType = value;
             }
         }
 

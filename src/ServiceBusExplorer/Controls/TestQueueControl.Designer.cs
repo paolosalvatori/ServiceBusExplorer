@@ -431,6 +431,7 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -507,9 +508,9 @@
             this.radioButtonXmlTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.radioButtonXmlTemplate.AutoSize = true;
             this.radioButtonXmlTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(310, 286);
+            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(305, 286);
             this.radioButtonXmlTemplate.Name = "radioButtonXmlTemplate";
-            this.radioButtonXmlTemplate.Size = new System.Drawing.Size(89, 17);
+            this.radioButtonXmlTemplate.Size = new System.Drawing.Size(94, 17);
             this.radioButtonXmlTemplate.TabIndex = 12;
             this.radioButtonXmlTemplate.TabStop = true;
             this.radioButtonXmlTemplate.Text = "XML Template";
@@ -522,7 +523,7 @@
             this.radioButtonJsonTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 286);
             this.radioButtonJsonTemplate.Name = "radioButtonJsonTemplate";
-            this.radioButtonJsonTemplate.Size = new System.Drawing.Size(94, 17);
+            this.radioButtonJsonTemplate.Size = new System.Drawing.Size(100, 17);
             this.radioButtonJsonTemplate.TabIndex = 11;
             this.radioButtonJsonTemplate.TabStop = true;
             this.radioButtonJsonTemplate.Text = "JSON Template";
@@ -564,6 +565,7 @@
             this.nameColumnHeader,
             this.sizeColumnHeader});
             this.messageFileListView.FullRowSelect = true;
+            this.messageFileListView.HideSelection = false;
             this.messageFileListView.Location = new System.Drawing.Point(16, 32);
             this.messageFileListView.Name = "messageFileListView";
             this.messageFileListView.OwnerDraw = true;
@@ -1150,6 +1152,7 @@
             this.txtContentType.Name = "txtContentType";
             this.txtContentType.Size = new System.Drawing.Size(176, 20);
             this.txtContentType.TabIndex = 5;
+            this.txtContentType.TextChanged += new System.EventHandler(this.txtContentType_TextChanged);
             // 
             // txtScheduledEnqueueTimeUtc
             // 
