@@ -183,6 +183,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
                 out string messageText, out string messageFile);
             resultProperties.MessageText = messageText;
             resultProperties.MessageFile = messageFile;
+            
+            resultProperties.MessageContentType = configuration.GetStringValue(ConfigurationParameters.MessageContentTypeParameter,
+                string.Empty);
 
             resultProperties.SelectedEntities = ConfigurationHelper.GetSelectedEntities(configuration);
 
