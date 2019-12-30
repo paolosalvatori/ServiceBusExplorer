@@ -40,6 +40,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         const string QueueEntities = "Queues";
         const string TopicEntities = "Topics";
+        const string FilteredQueueEntities = "Queues (Filtered)";
+        const string FilteredTopicEntities = "Topics (Filtered)";
         const string EventHubEntities = "Event Hubs";
         const string RelayEntities = "Relays";
         const string NotificationHubEntities = "Notification Hubs";
@@ -189,7 +191,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == QueueEntities)
+                        if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
                         {
                             if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
                             {
@@ -205,7 +207,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == TopicEntities)
+                        if (level1Node.Text == TopicEntities || level1Node.Text == FilteredTopicEntities)
                         {
                             if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
                             {
