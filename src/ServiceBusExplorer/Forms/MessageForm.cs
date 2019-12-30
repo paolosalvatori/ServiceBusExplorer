@@ -567,7 +567,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (subscriptionWrapper != null)
             {
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                   SelectEntityLabelText, subscriptionWrapper);
+                   SelectEntityLabelText, subscriptionWrapper.TopicDescription);
             }
 
             return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,

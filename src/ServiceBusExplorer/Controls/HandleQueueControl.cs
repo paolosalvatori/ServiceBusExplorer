@@ -1226,27 +1226,13 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             // ForwardTo
             if (!string.IsNullOrWhiteSpace(queueDescription.ForwardTo))
             {
-                int i;
-                txtForwardTo.Text = !string.IsNullOrWhiteSpace(queueDescription.ForwardTo) &&
-                                    (i = queueDescription.ForwardTo.IndexOf('/')) > 0 &&
-                                    i < queueDescription.ForwardTo.Length - 1
-                    ? queueDescription.ForwardTo.Substring(queueDescription.ForwardTo.LastIndexOf('/') + 1)
-                    : queueDescription.ForwardTo;
-
+                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardTo);
             }
 
             // ForwardDeadLetteredMessagesTo
             if (!string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo))
             {
-                int i;
-                txtForwardDeadLetteredMessagesTo.Text =
-                    !string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo) &&
-                    (i = queueDescription.ForwardDeadLetteredMessagesTo.IndexOf('/')) > 0 &&
-                    i < queueDescription.ForwardDeadLetteredMessagesTo.Length - 1
-                        ? queueDescription.ForwardDeadLetteredMessagesTo.Substring(
-                            queueDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1)
-                        : queueDescription.ForwardDeadLetteredMessagesTo;
-
+                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardDeadLetteredMessagesTo);
             }
 
             // MaxQueueSizeInBytes
@@ -2879,9 +2865,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnOpenForwardToForm_Click(object sender, EventArgs e)
         {
-            using (
-                var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText)
-            )
+            using (var form = creteSelectEntityFormForPath(txtForwardTo.Text))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -2892,15 +2876,47 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnOpenForwardDeadLetteredMessagesToForm_Click(object sender, EventArgs e)
         {
-            using (
-                var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText)
-            )
+            using (var form = creteSelectEntityFormForPath(txtForwardDeadLetteredMessagesTo.Text))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     txtForwardDeadLetteredMessagesTo.Text = form.Path;
                 }
             }
+        }
+
+        private SelectEntityForm creteSelectEntityFormForPath(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                QueueDescription queueDescriptionSource = null;
+                try
+                {
+                    queueDescriptionSource = serviceBusHelper.GetQueue(path);
+                }
+                catch (Exception)
+                {
+                    // we might have found a topic, and the sdk will throw with an indistinguishable MessagingException error.
+                }
+                if (queueDescriptionSource != null)
+                {
+                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, queueDescriptionSource);
+                }
+                TopicDescription topicDescriptionSource = null;
+                try
+                {
+                    topicDescriptionSource = serviceBusHelper.GetTopic(path);
+                }
+                catch (Exception)
+                {
+                    // we might have found a queue, and the sdk will throw with an indistinguishable MessagingException error.
+                }
+                if (topicDescriptionSource != null)
+                {
+                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, topicDescriptionSource);
+                }
+            }
+            return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText);
         }
 
         private void listView_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)

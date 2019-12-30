@@ -2289,7 +2289,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Gets the uri of the deadletter queue for a given queue.
         /// </summary>
         /// <param name="queuePath">The name of a queue.</param>
-        /// <returns>he absolute uri of the deadletter queue.</returns>
+        /// <returns>the absolute uri of the deadletter queue.</returns>
         public Uri GetQueueDeadLetterQueueUri(string queuePath)
         {
             if (IsCloudNamespace)
@@ -5587,6 +5587,25 @@ namespace Microsoft.Azure.ServiceBusExplorer
             var host = namespaceUri.Host;
             var index = host.IndexOf('.');
             return host.Substring(index);
+        }
+
+        public string GetAddressRelativeToNamespace(string address)
+        {
+            if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
+            {
+                var uri = new Uri(address, UriKind.Absolute);
+                if (NamespaceUri.IsBaseOf(uri))
+                {
+                    var uriRelativeToNamespace = NamespaceUri.MakeRelativeUri(uri);
+                    return uriRelativeToNamespace.ToString();
+                }
+            }
+            int i;
+            return !string.IsNullOrWhiteSpace(address) &&
+                   (i = address.LastIndexOf('/', Math.Max(0, address.Length - 2))) > 0 &&
+                   i < address.Length - 1 ?
+                address.Substring(i + 1) :
+                address;
         }
 
         public ServiceBusHelper2 GetServiceBusHelper2()
