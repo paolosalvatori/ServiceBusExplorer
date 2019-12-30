@@ -26,7 +26,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-   <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.0" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.0" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\ConnectionStringHelperTests.cs" />
+    <Compile Include="Helpers\ServiceBusHelperTest.cs" />
     <Compile Include="Helpers\TwoFilesConfigurationTests.cs" />
     <Compile Include="Helpers\ConversionHelperTests.cs" />
     <Compile Include="Helpers\JsonSerializerHelperTest.cs" />

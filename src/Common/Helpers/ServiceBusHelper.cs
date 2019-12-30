@@ -5594,14 +5594,17 @@ namespace Microsoft.Azure.ServiceBusExplorer
             if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
             {
                 var uri = new Uri(address, UriKind.Absolute);
-                var uriRelativeToNamespace = NamespaceUri.MakeRelativeUri(uri);
-                return uriRelativeToNamespace.ToString();
+                if (NamespaceUri.IsBaseOf(uri))
+                {
+                    var uriRelativeToNamespace = NamespaceUri.MakeRelativeUri(uri);
+                    return uriRelativeToNamespace.ToString();
+                }
             }
             int i;
             return !string.IsNullOrWhiteSpace(address) &&
-                   (i = address.IndexOf('/')) > 0 &&
+                   (i = address.LastIndexOf('/', Math.Max(0, address.Length - 2))) > 0 &&
                    i < address.Length - 1 ?
-                address.Substring(address.LastIndexOf('/') + 1) :
+                address.Substring(i + 1) :
                 address;
         }
 
