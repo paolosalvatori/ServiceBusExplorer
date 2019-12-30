@@ -2152,18 +2152,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            mainForm.MessageText = txtMessageText.Text;
         }
 
         private void txtContentType_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtContentType.Text))
-            {
-                mainForm.MessageContentType = txtContentType.Text;
-            }
+            mainForm.MessageContentType = txtContentType.Text;
         }
 
         private void grouperMessageFormat_CustomPaint(PaintEventArgs e)
