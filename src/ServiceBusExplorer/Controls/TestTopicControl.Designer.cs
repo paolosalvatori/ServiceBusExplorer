@@ -1152,6 +1152,7 @@
             this.txtContentType.Name = "txtContentType";
             this.txtContentType.Size = new System.Drawing.Size(176, 20);
             this.txtContentType.TabIndex = 5;
+            this.txtContentType.TextChanged += new System.EventHandler(this.txtContentType_TextChanged);
             // 
             // txtScheduledEnqueueTimeUtc
             // 

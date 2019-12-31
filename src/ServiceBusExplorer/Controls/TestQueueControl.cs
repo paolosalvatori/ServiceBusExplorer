@@ -377,6 +377,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
+                txtContentType.Text = mainForm.MessageContentType;
                 txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
                 txtSessionTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
                 txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
@@ -2146,10 +2147,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            mainForm.MessageText = txtMessageText.Text;
+        }
+
+        private void txtContentType_TextChanged(object sender, EventArgs e)
+        {
+            mainForm.MessageContentType = txtContentType.Text;
         }
 
         private void grouperMessageFormat_CustomPaint(PaintEventArgs e)

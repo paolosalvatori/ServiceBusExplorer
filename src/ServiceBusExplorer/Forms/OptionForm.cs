@@ -298,6 +298,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             MainSettings.MessageText = txtMessageText.Text;
         }
 
+        void txtMessageContentType_TextChanged(object sender, EventArgs e)
+        {
+            MainSettings.MessageContentType = txtMessageContentType.Text;
+        }
+
         void cboConnectivityMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (Enum.TryParse<ConnectivityMode>(cboConnectivityMode.Text, true, out var connectivityMode))
@@ -522,6 +527,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 MainSettings.MessageText);
             SaveSetting(configuration, readSettings, ConfigurationParameters.FileParameter,
                 MainSettings.MessageFile);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.MessageContentTypeParameter,
+                MainSettings.MessageContentType);
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.ConnectivityMode,
                 MainSettings.ConnectivityMode);
@@ -575,6 +582,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             txtLabel.Text = mainSettings.Label;
             txtMessageFile.Text = mainSettings.MessageFile;
             txtMessageText.Text = mainSettings.MessageText;
+            txtMessageContentType.Text = mainSettings.MessageContentType;
             logNumericUpDown.Value = mainSettings.LogFontSize;
             treeViewNumericUpDown.Value = mainSettings.TreeViewFontSize;
             retryCountNumericUpDown.Value = mainSettings.RetryCount;

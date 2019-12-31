@@ -56,6 +56,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public string Label { get; set; }
         public string MessageFile { get; set; }
         public string MessageText { get; set; }
+        public string MessageContentType { get; set; }
 
         public List<string> SelectedEntities { get; set; }
 
@@ -107,6 +108,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             Label = DefaultLabel;
             MessageFile = string.Empty;
             MessageText = string.Empty;
+            MessageContentType = string.Empty;
             SelectedEntities = ConfigurationHelper.Entities;
 
             MessageBodyType = BodyType.Stream.ToString();
@@ -141,6 +143,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
             if (Label != otherProperties.Label) return false;
             if (MessageFile != otherProperties.MessageFile) return false;
             if (MessageText != otherProperties.MessageText) return false;
+            if (MessageContentType != otherProperties.MessageContentType) return false;
 
             if (!SelectedEntities.SequenceEqual(SelectedEntities)) return false;
 
@@ -227,6 +230,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.MessageParameter:
                     return MessageText;
+
+                case ConfigurationParameters.MessageContentTypeParameter:
+                    return MessageContentType;
 
                 case ConfigurationParameters.SelectedEntitiesParameter:
                     return SelectedEntities;
