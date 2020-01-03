@@ -7,8 +7,8 @@
     <ProjectGuid>{E836C914-9BFE-4C1C-96E5-6A414CDEF485}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NotificationHubs</RootNamespace>
-    <AssemblyName>NotificationHubs</AssemblyName>
+    <RootNamespace>ServiceBusExplorer.NotificationHubs</RootNamespace>
+    <AssemblyName>ServiceBusExplorer.NotificationHubs</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
