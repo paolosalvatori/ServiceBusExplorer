@@ -28,7 +28,7 @@ using System.Xml.Serialization;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public static class XmlSerializerHelper
     {

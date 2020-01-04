@@ -26,13 +26,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class MessageSerializationHelper
     {

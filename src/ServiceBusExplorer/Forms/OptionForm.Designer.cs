@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class OptionForm
     {
@@ -53,7 +53,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties();
+            ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new ServiceBusExplorer.Controls.CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -107,12 +107,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.cboConfigFile = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.grouperSettings = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperSettings = new ServiceBusExplorer.Controls.Grouper();
             this.lblMessageContentType = new System.Windows.Forms.Label();
             this.txtMessageContentType = new System.Windows.Forms.TextBox();
             this.cboDefaultMessageBodyType = new System.Windows.Forms.ComboBox();
             this.LabelDefaultMessageBodyType = new System.Windows.Forms.Label();
-            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -838,7 +838,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperSettings.BorderThickness = 1F;
             this.grouperSettings.Controls.Add(this.lblMessageContentType);

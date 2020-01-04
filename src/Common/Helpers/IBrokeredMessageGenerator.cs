@@ -22,12 +22,12 @@
 #region Using Directives
 
 using System.Collections.Generic;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public interface IBrokeredMessageGenerator
     {

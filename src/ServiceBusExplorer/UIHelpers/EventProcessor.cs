@@ -31,7 +31,7 @@ using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class EventProcessor : IEventProcessor
     {

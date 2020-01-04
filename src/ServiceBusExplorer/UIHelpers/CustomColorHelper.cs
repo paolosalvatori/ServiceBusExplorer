@@ -26,7 +26,7 @@ using System.Drawing;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
 	/// <summary>
 	/// Summary description for ColorHelper.

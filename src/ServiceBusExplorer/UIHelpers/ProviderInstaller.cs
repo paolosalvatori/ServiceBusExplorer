@@ -22,12 +22,12 @@
 #region Using Directives
 
 using System.ComponentModel;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
 
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public static class ProviderInstaller
     {

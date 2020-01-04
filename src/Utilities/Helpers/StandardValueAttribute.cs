@@ -28,7 +28,7 @@ using System.Reflection;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class StandardValueAttribute : Attribute

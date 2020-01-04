@@ -31,7 +31,7 @@ using VS = System.Windows.Forms.VisualStyles;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     /// <summary>
     /// Represents a pop-up window.

@@ -30,7 +30,7 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public enum LogicalOperator
     {

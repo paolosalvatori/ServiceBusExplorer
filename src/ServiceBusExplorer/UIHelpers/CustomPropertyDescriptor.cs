@@ -31,13 +31,13 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class CustomPropertyDescriptor : PropertyDescriptor
     {

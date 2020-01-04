@@ -26,7 +26,7 @@ using System.Xml;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.NotificationHubs.Helpers
+namespace ServiceBusExplorer.NotificationHubs.Helpers
 {
     public static class WindowsNotificationXmlBuilder
     {

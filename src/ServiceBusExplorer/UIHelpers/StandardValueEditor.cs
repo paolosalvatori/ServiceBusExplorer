@@ -25,11 +25,11 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class StandardValueEditor : UITypeEditor
     {

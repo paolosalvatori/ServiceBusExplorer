@@ -27,7 +27,7 @@ using System.Linq;
 using Microsoft.ServiceBus;
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class MainSettings
     {

@@ -8,7 +8,7 @@
     <ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Azure.ServiceBusExplorer</RootNamespace>
+    <RootNamespace>ServiceBusExplorer</RootNamespace>
     <AssemblyName>ServiceBusExplorer</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>

@@ -28,7 +28,7 @@ using System.Drawing.Design;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
   internal class PropertyValueUIService : IPropertyValueUIService
   {

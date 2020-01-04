@@ -25,12 +25,12 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class SelectEntityForm : Form
     {

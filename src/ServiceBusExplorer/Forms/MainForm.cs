@@ -22,11 +22,11 @@
 #region Using Directives
 
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Controls;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections;
@@ -48,7 +48,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class MainForm : Form
     {

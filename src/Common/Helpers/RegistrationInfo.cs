@@ -30,7 +30,7 @@ using Microsoft.Azure.NotificationHubs;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class RegistrationInfo : INotifyPropertyChanged
     {

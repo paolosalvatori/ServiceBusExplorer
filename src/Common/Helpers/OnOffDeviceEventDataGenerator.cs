@@ -27,13 +27,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     [Serializable]
     public enum OnOff

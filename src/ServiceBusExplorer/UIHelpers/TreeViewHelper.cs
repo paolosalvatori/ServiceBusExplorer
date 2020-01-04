@@ -24,12 +24,12 @@
 using System;
 using System.Collections;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class TreeViewHelper : IComparer
     {

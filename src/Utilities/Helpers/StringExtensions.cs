@@ -26,7 +26,7 @@ using System.Text;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public static class StringExtensions
     {

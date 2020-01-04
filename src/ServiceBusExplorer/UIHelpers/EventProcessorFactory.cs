@@ -26,7 +26,7 @@ using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class EventProcessorFactory<T> : IEventProcessorFactory where T: class, IEventProcessor
     {

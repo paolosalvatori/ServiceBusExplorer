@@ -25,7 +25,7 @@ using System;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Relay.Helpers
+namespace ServiceBusExplorer.Relay.Helpers
 {
     /// <summary>
     /// This class contains the information of a Relay

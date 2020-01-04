@@ -37,16 +37,16 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.NotificationHubs.Messaging;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Properties;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.NotificationHubs.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Properties;
+using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.NotificationHubs.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class HandleNotificationHubControl : UserControl
     {

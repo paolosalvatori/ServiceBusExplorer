@@ -25,13 +25,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class EventProcessorCheckpointHelper
     {

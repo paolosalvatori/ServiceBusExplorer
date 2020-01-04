@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public class ReadOnlyList<T> : List<T>, ICollection<T>, IList
     {

@@ -28,7 +28,7 @@ using System.Xml;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class CustomDataContractBinarySerializer : XmlObjectSerializer
     {

@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class HeaderPanel : Panel
     {

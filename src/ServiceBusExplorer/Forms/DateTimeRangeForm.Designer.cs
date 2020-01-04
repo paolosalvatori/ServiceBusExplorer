@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class DateTimeRangeForm
     {
@@ -56,9 +56,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DateTimeRangeForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grpFromDateTime = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grpFromDateTime = new ServiceBusExplorer.Controls.Grouper();
             this.dateFromTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.grpToDateTime = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grpToDateTime = new ServiceBusExplorer.Controls.Grouper();
             this.dateToTimePicker = new System.Windows.Forms.DateTimePicker();
             this.grpFromDateTime.SuspendLayout();
             this.grpToDateTime.SuspendLayout();
@@ -106,7 +106,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpFromDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grpFromDateTime.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grpFromDateTime.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grpFromDateTime.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grpFromDateTime.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grpFromDateTime.BorderThickness = 1F;
             this.grpFromDateTime.Controls.Add(this.dateFromTimePicker);
@@ -145,7 +145,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpToDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grpToDateTime.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grpToDateTime.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grpToDateTime.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grpToDateTime.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grpToDateTime.BorderThickness = 1F;
             this.grpToDateTime.Controls.Add(this.dateToTimePicker);

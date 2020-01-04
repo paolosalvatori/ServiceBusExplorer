@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     [TypeConverter(typeof(CustomObjectConverter))]
     public class CustomObject : INotifyPropertyChanged

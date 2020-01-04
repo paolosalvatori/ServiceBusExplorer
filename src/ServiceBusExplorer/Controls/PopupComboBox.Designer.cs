@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class PopupComboBox
     {

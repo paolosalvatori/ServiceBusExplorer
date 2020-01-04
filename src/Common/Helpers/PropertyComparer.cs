@@ -28,7 +28,7 @@ using System.Reflection;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class PropertyComparer<T> : IComparer<T>
     {

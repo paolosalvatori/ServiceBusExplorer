@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public static class ConnectionStringHelper
     {

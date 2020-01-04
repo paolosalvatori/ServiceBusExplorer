@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     internal class PropertyDescriptorList : List<CustomPropertyDescriptor>
     {

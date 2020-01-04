@@ -30,7 +30,7 @@ using Microsoft.ServiceBus;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public static class ServiceBusBindingHelper
     {

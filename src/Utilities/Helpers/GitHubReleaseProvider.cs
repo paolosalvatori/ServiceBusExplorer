@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     using System;
     using System.Collections.Generic;

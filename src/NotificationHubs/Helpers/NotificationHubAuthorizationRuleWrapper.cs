@@ -28,7 +28,7 @@ using Microsoft.Azure.NotificationHubs.Messaging;
 #endregion
 
 
-namespace Microsoft.Azure.ServiceBusExplorer.NotificationHubs.Helpers
+namespace ServiceBusExplorer.NotificationHubs.Helpers
 {
     public class NotificationHubAuthorizationRuleWrapper
     {

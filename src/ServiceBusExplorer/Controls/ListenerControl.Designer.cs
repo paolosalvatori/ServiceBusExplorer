@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class ListenerControl
     {
@@ -28,29 +28,29 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageListener = new System.Windows.Forms.TabPage();
-            this.grouperStatistics = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperStatistics = new ServiceBusExplorer.Controls.Grouper();
             this.cboMessageSizePerSecond = new System.Windows.Forms.ComboBox();
             this.cboAverageDuration = new System.Windows.Forms.ComboBox();
             this.cboMessagesPerSecond = new System.Windows.Forms.ComboBox();
             this.lblMessageSizePerSecond = new System.Windows.Forms.Label();
-            this.txtMessageSizePerSecond = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtMessageSizePerSecond = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAverageTime = new System.Windows.Forms.Label();
-            this.txtAverageDuration = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
-            this.txtMessagesTotal = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtAverageDuration = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtMessagesTotal = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessagesTotal = new System.Windows.Forms.Label();
-            this.txtMessagesPerSecond = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtMessagesPerSecond = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessagesPerSecond = new System.Windows.Forms.Label();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.grouperEntityInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperEntityInformation = new ServiceBusExplorer.Controls.Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperOptions = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
-            this.txtMessageWaitTimeout = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.grouperOptions = new ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageWaitTimeout = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMessageWaitTimeout = new System.Windows.Forms.Label();
-            this.txtAutoRenewTimeout = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtAutoRenewTimeout = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAutoRenewTimeout = new System.Windows.Forms.Label();
-            this.txtPrefetchCount = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtPrefetchCount = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblPrefetchCount = new System.Windows.Forms.Label();
             this.lblReceiveMode = new System.Windows.Forms.Label();
             this.cboReceivedMode = new System.Windows.Forms.ComboBox();
@@ -59,18 +59,18 @@
             this.checkBoxTrackMessages = new System.Windows.Forms.CheckBox();
             this.checkBoxAutoComplete = new System.Windows.Forms.CheckBox();
             this.checkBoxVerbose = new System.Windows.Forms.CheckBox();
-            this.txtRefreshInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtRefreshInformation = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblRefreshInformation = new System.Windows.Forms.Label();
-            this.txtMaxConcurrentCalls = new Microsoft.Azure.ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtMaxConcurrentCalls = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblMaxConcurrentCalls = new System.Windows.Forms.Label();
             this.tabPageMessages = new System.Windows.Forms.TabPage();
             this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.messageMainSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperMessageList = new ServiceBusExplorer.Controls.Grouper();
             this.pictFindMessages = new System.Windows.Forms.PictureBox();
             this.messagesDataGridView = new System.Windows.Forms.DataGridView();
             this.messagePropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageSystemProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperMessageSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,11 +85,11 @@
             this.entityInformationContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyPartitionInformationToClipboardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.grouperMessageCustomProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyListView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperMessageText = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.mainTabControl.SuspendLayout();
             this.tabPageListener.SuspendLayout();
@@ -196,7 +196,7 @@
             this.grouperStatistics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperStatistics.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperStatistics.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperStatistics.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperStatistics.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperStatistics.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperStatistics.BorderThickness = 1F;
             this.grouperStatistics.Controls.Add(this.cboMessageSizePerSecond);
@@ -424,7 +424,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperEntityInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperEntityInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperEntityInformation.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperEntityInformation.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperEntityInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperEntityInformation.BorderThickness = 1F;
             this.grouperEntityInformation.Controls.Add(this.propertyListView);
@@ -480,7 +480,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperOptions.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperOptions.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperOptions.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperOptions.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperOptions.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperOptions.BorderThickness = 1F;
             this.grouperOptions.Controls.Add(this.txtMessageWaitTimeout);
@@ -764,7 +764,7 @@
             // 
             this.grouperMessageList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageList.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageList.BorderThickness = 1F;
             this.grouperMessageList.Controls.Add(this.pictFindMessages);
@@ -855,7 +855,7 @@
             // 
             this.grouperMessageSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageSystemProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageSystemProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageSystemProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageSystemProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageSystemProperties.BorderThickness = 1F;
             this.grouperMessageSystemProperties.Controls.Add(this.messagePropertyGrid);
@@ -996,7 +996,7 @@
             // 
             this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageCustomProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageCustomProperties.BorderThickness = 1F;
             this.grouperMessageCustomProperties.Controls.Add(this.messagePropertyListView);
@@ -1052,7 +1052,7 @@
             // 
             this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageText.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageText.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageText.BorderThickness = 1F;
             this.grouperMessageText.Controls.Add(this.txtMessageText);

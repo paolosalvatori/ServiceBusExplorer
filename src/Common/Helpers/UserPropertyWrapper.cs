@@ -28,7 +28,7 @@ using System.Linq;
 #endregion
 
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class UserPropertyWrapper
     {

@@ -27,7 +27,7 @@ using System.Runtime.Serialization;
 #endregion
 
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     [Serializable]
     public class LockDurationTooLowException : Exception

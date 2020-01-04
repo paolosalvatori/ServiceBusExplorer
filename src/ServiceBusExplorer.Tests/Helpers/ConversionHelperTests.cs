@@ -2,13 +2,13 @@
 
 using System;
 using System.Globalization;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using NUnit.Framework;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
+namespace ServiceBusExplorer.Tests.Helpers
 {
     [TestFixture]
     public class ConversionHelperTests

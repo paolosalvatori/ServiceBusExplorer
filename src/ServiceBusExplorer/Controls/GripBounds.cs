@@ -25,7 +25,7 @@ using System.Drawing;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     internal struct GripBounds
     {

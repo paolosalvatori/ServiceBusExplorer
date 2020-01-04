@@ -1,5 +1,5 @@
 ﻿
-namespace Microsoft.Azure.ServiceBusExplorer.Enums
+namespace ServiceBusExplorer.Enums
 {
     public enum DirectionType
     {

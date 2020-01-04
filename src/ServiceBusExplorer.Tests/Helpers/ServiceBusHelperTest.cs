@@ -1,13 +1,13 @@
 ﻿#region Using Directives
 
+using ServiceBusExplorer;
+using System;
 using NUnit.Framework;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
+namespace ServiceBusExplorer.Tests.Helpers
 {
-    using System;
-
     [TestFixture]
     public class ServiceBusHelperTest
     {
