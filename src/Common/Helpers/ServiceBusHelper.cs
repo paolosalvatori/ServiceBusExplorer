@@ -21,27 +21,27 @@
 
 #region Using Directives
 using System;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Threading.Tasks;
-using System.Xml;
-using System.IO;
-using System.Diagnostics;
-using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
-using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
-using ServiceBusExplorer.Enums;
+using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
+using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -175,12 +175,12 @@ namespace ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
-        private Microsoft.Azure.NotificationHubs.NamespaceManager notificationHubNamespaceManager;
+        private AzureNotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
         private Microsoft.ServiceBus.TokenProvider tokenProvider;
-        private Microsoft.Azure.NotificationHubs.TokenProvider notificationHubTokenProvider;
+        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private Uri atomFeedUri;
@@ -383,7 +383,7 @@ namespace ServiceBusExplorer
         /// <summary>
         /// Gets the current namespace manager.
         /// </summary>
-        public Microsoft.Azure.NotificationHubs.NamespaceManager NotificationHubNamespaceManager
+        public AzureNotificationHubs.NamespaceManager NotificationHubNamespaceManager
         {
             get
             {
