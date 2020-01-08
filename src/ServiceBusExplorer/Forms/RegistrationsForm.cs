@@ -26,7 +26,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 

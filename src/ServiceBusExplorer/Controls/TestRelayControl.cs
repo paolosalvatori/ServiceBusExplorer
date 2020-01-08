@@ -41,9 +41,7 @@ using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using FastColoredTextBoxNS;
 
 #endregion
 

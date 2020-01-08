@@ -31,7 +31,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 

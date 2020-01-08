@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,8 +38,7 @@ using Microsoft.Azure.ServiceBusExplorer.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using FastColoredTextBoxNS;
 
 // ReSharper disable CoVariantArrayConversion
 #endregion
@@ -1123,7 +1123,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                     registeredDictionary[partitionDescription.PartitionId])
                 {
                     await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId },
-                        Microsoft.ServiceBus.Messaging.CloseReason.Shutdown);
+                                                                 ServiceBus.Messaging.CloseReason.Shutdown);
                 }
             }
             lock (this)

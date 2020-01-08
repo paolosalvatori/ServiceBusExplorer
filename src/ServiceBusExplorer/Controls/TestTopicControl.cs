@@ -40,9 +40,6 @@ using Microsoft.Azure.ServiceBusExplorer.Enums;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
 using FastColoredTextBoxNS;
-using static Microsoft.Azure.ServiceBusExplorer.ServiceBusHelper;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
 namespace Microsoft.Azure.ServiceBusExplorer.Controls

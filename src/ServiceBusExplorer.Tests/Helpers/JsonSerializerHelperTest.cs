@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 using NUnit.Framework;
 
 namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers

@@ -24,8 +24,7 @@
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.ServiceBusExplorer.Controls;
 using Microsoft.Azure.ServiceBusExplorer.Enums;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections;
@@ -261,7 +260,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             splitterContainerDistance = splitContainer.SplitterDistance;
             treeViewFontSize = (decimal)serviceBusTreeView.Font.Size;
             logFontSize = (decimal)lstLog.Font.Size;
-            Trace.Listeners.Add(new LogTraceListener(MainForm.StaticWriteToLog));
+            Trace.Listeners.Add(new LogTraceListener());
             mainSingletonMainForm = this;
             serviceBusHelper = new ServiceBusHelper(WriteToLog);
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
@@ -1817,7 +1816,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         var description = nodeTag;
                         if (description.IsDynamic)
                         {
-                            var relayCollection = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
+                            var relayCollection = serviceBusHelper.GetRelays();
                             var relayDescriptions = relayCollection as IList<RelayDescription> ?? relayCollection.ToList();
                             if (relayDescriptions.Any())
                             {
@@ -2105,10 +2104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var rules = serviceBusHelper.GetRules(subscriptionDescription);
             var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
             if (!ruleDescriptions.Any())
-            {
-                subscriptionNode.Nodes.Clear();
                 return;
-            }
             var subscriptionNodeWasExpanded = subscriptionNode.IsExpanded;
             var rulesNodeWasExpanded = subscriptionNode.Nodes.Count > 0 && subscriptionNode.Nodes[0].IsExpanded;
             subscriptionNode.Nodes.Clear();
@@ -4430,7 +4426,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                         {
                             try
                             {
-                                var relayServices = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
+                                var relayServices = serviceBusHelper.GetRelays();
 
                                 relayServiceListNode.Text = Constants.RelayEntities;
 
@@ -4467,8 +4463,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
-                                MainForm.SingletonMainForm.ServerTimeout);
+                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
                                 : FilteredQueueEntities;
@@ -4504,8 +4499,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
-                                MainForm.SingletonMainForm.ServerTimeout);
+                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
                                 : FilteredTopicEntities;

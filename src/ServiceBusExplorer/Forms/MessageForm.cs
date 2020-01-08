@@ -35,7 +35,6 @@ using System.Windows.Forms;
 using Microsoft.Azure.ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
@@ -389,8 +388,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 }
                                 else
                                 {
-                                    var messageText = serviceBusHelper.GetMessageText(message, 
-                                        MainForm.SingletonMainForm.UseAscii, out bodyType);
+                                    var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
@@ -655,8 +653,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
         void InitializeMessageTextControl(BrokeredMessage message)
         {
-            var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm.UseAscii, out _);
+            var messageText = this.serviceBusHelper.GetMessageText(message, out _);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {
