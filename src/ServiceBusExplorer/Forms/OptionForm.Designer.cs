@@ -187,7 +187,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.TabIndex = 3;
             this.btnReset.Text = "&Reset";
             this.btnReset.UseVisualStyleBackColor = false;
-            this.btnReset.Click += new System.EventHandler(this.btnDefault_Click);
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             this.btnReset.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnReset.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
@@ -205,7 +205,7 @@ namespace ServiceBusExplorer.Forms
             this.btnApply.TabIndex = 2;
             this.btnApply.Text = "&Apply";
             this.btnApply.UseVisualStyleBackColor = false;
-            this.btnApply.Click += new System.EventHandler(this.btnSave_Click);
+            this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
             // lblLogFontSize
             // 

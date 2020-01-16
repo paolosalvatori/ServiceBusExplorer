@@ -98,6 +98,8 @@ namespace ServiceBusExplorer.Forms
         private void btnOk_Click(object sender, EventArgs e)
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
+            
+            SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
             DialogResult = DialogResult.OK;
             Close();
@@ -128,7 +130,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void btnDefault_Click(object sender, EventArgs e)
+        private void btnReset_Click(object sender, EventArgs e)
         {
             MainSettings.SetDefault();
 
@@ -316,7 +318,7 @@ namespace ServiceBusExplorer.Forms
             MainSettings.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
-        void btnSave_Click(object sender, EventArgs e)
+        void btnApply_Click(object sender, EventArgs e)
         {
             // Get selected items
             MainSettings.SelectedEntities = GetSelectedEntities();
