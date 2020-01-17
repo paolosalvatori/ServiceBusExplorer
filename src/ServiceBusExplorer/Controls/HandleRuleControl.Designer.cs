@@ -1,4 +1,4 @@
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandleRuleControl
     {
@@ -19,9 +19,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.grouperFilterType = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperFilterType = new ServiceBusExplorer.Controls.Grouper();
             this.checkBoxIsCorrelationFilter = new System.Windows.Forms.CheckBox();
-            this.grouperCorrelationFilter = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperCorrelationFilter = new ServiceBusExplorer.Controls.Grouper();
             this.txtCorrelationFilterTo = new System.Windows.Forms.TextBox();
             this.lblCorrelationFilterTo = new System.Windows.Forms.Label();
             this.txtCorrelationFilterSessionId = new System.Windows.Forms.TextBox();
@@ -39,15 +39,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.txtCorrelationFilterContentType = new System.Windows.Forms.TextBox();
             this.lblCorrelationFilterContentType = new System.Windows.Forms.Label();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
-            this.grouperCreatedAt = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperCreatedAt = new ServiceBusExplorer.Controls.Grouper();
             this.txtCreatedAt = new System.Windows.Forms.TextBox();
-            this.grouperIsDefault = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperIsDefault = new ServiceBusExplorer.Controls.Grouper();
             this.checkBoxDefault = new System.Windows.Forms.CheckBox();
-            this.grouperAction = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperAction = new ServiceBusExplorer.Controls.Grouper();
             this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
-            this.grouperFilter = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperFilter = new ServiceBusExplorer.Controls.Grouper();
             this.txtFilterExpression = new System.Windows.Forms.TextBox();
-            this.grouperName = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperName = new ServiceBusExplorer.Controls.Grouper();
             this.txtName = new System.Windows.Forms.TextBox();
             this.grouperFilterType.SuspendLayout();
             this.grouperCorrelationFilter.SuspendLayout();
@@ -102,7 +102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.grouperFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilterType.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilterType.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilterType.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilterType.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFilterType.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilterType.BorderThickness = 1F;
             this.grouperFilterType.Controls.Add(this.checkBoxIsCorrelationFilter);
@@ -142,7 +142,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCorrelationFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCorrelationFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCorrelationFilter.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperCorrelationFilter.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCorrelationFilter.BorderThickness = 1F;
             this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterTo);
@@ -358,7 +358,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCreatedAt.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperCreatedAt.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCreatedAt.BorderThickness = 1F;
             this.grouperCreatedAt.Controls.Add(this.txtCreatedAt);
@@ -394,7 +394,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             this.grouperIsDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperIsDefault.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperIsDefault.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperIsDefault.BorderThickness = 1F;
             this.grouperIsDefault.Controls.Add(this.checkBoxDefault);
@@ -433,7 +433,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAction.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAction.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperAction.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperAction.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAction.BorderThickness = 1F;
             this.grouperAction.Controls.Add(this.txtSqlFilterAction);
@@ -473,7 +473,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilter.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilter.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilter.BorderThickness = 1F;
             this.grouperFilter.Controls.Add(this.txtFilterExpression);
@@ -512,7 +512,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperName.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperName.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperName.BorderThickness = 1F;
             this.grouperName.Controls.Add(this.txtName);

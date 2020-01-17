@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class HandleTopicControl
     {
@@ -21,7 +21,7 @@
             this.sessionsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPageDescription = new System.Windows.Forms.TabPage();
-            this.grouperAutoDeleteOnIdle = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperAutoDeleteOnIdle = new ServiceBusExplorer.Controls.Grouper();
             this.lblAutoDeleteOnIdleMilliseconds = new System.Windows.Forms.Label();
             this.txtAutoDeleteOnIdleMilliseconds = new System.Windows.Forms.TextBox();
             this.lblAutoDeleteOnIdleSeconds = new System.Windows.Forms.Label();
@@ -32,7 +32,7 @@
             this.lblAutoDeleteOnIdleDays = new System.Windows.Forms.Label();
             this.txtAutoDeleteOnIdleHours = new System.Windows.Forms.TextBox();
             this.txtAutoDeleteOnIdleDays = new System.Windows.Forms.TextBox();
-            this.groupergrouperDefaultMessageTimeToLive = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.groupergrouperDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.Grouper();
             this.lblDefaultMessageTimeToLiveMilliseconds = new System.Windows.Forms.Label();
             this.txtDefaultMessageTimeToLiveMilliseconds = new System.Windows.Forms.TextBox();
             this.lblDefaultMessageTimeToLiveSeconds = new System.Windows.Forms.Label();
@@ -43,12 +43,12 @@
             this.lblDefaultMessageTimeToLiveDays = new System.Windows.Forms.Label();
             this.txtDefaultMessageTimeToLiveHours = new System.Windows.Forms.TextBox();
             this.txtDefaultMessageTimeToLiveDays = new System.Windows.Forms.TextBox();
-            this.grouperTopicSettings = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperTopicSettings = new ServiceBusExplorer.Controls.Grouper();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
-            this.grouperPath = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
-            this.grouperDuplicateDetectionHistoryTimeWindow = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
             this.lblDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.Label();
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.TextBox();
             this.lblDuplicateDetectionHistoryTimeWindowSeconds = new System.Windows.Forms.Label();
@@ -59,20 +59,20 @@
             this.lblDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.Label();
             this.txtDuplicateDetectionHistoryTimeWindowHours = new System.Windows.Forms.TextBox();
             this.txtDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.TextBox();
-            this.grouperTopicProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperTopicProperties = new ServiceBusExplorer.Controls.Grouper();
             this.lblMaxTopicSizeInGB = new System.Windows.Forms.Label();
-            this.trackBarMaxTopicSize = new Microsoft.Azure.ServiceBusExplorer.Controls.CustomTrackBar();
+            this.trackBarMaxTopicSize = new ServiceBusExplorer.Controls.CustomTrackBar();
             this.txtUserMetadata = new System.Windows.Forms.TextBox();
             this.lblUserMetadata = new System.Windows.Forms.Label();
             this.btnOpenDescriptionForm = new System.Windows.Forms.Button();
             this.lblMaxTopicSize = new System.Windows.Forms.Label();
-            this.grouperTopicInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperTopicInformation = new ServiceBusExplorer.Controls.Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageAuthorization = new System.Windows.Forms.TabPage();
-            this.grouperAuthorizationRuleList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperAuthorizationRuleList = new ServiceBusExplorer.Controls.Grouper();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnChangeStatus = new System.Windows.Forms.Button();
@@ -120,7 +120,7 @@
             // 
             this.grouperAutoDeleteOnIdle.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAutoDeleteOnIdle.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAutoDeleteOnIdle.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperAutoDeleteOnIdle.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperAutoDeleteOnIdle.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAutoDeleteOnIdle.BorderThickness = 1F;
             this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleMilliseconds);
@@ -259,7 +259,7 @@
             // 
             this.groupergrouperDefaultMessageTimeToLive.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientColor = System.Drawing.Color.White;
-            this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.groupergrouperDefaultMessageTimeToLive.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.groupergrouperDefaultMessageTimeToLive.BorderThickness = 1F;
             this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveMilliseconds);
@@ -400,7 +400,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperTopicSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTopicSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTopicSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperTopicSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperTopicSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTopicSettings.BorderThickness = 1F;
             this.grouperTopicSettings.Controls.Add(this.checkedListBox);
@@ -449,7 +449,7 @@
             // 
             this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperPath.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperPath.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperPath.BorderThickness = 1F;
             this.grouperPath.Controls.Add(this.lblRelativeURI);
@@ -498,7 +498,7 @@
             // 
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.lblDuplicateDetectionHistoryTimeWindowMilliseconds);
@@ -639,7 +639,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperTopicProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTopicProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTopicProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperTopicProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperTopicProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTopicProperties.BorderThickness = 1F;
             this.grouperTopicProperties.Controls.Add(this.lblMaxTopicSizeInGB);
@@ -696,11 +696,11 @@
             this.trackBarMaxTopicSize.TickHeight = 4;
             this.trackBarMaxTopicSize.TrackerColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
             this.trackBarMaxTopicSize.TrackerSize = new System.Drawing.Size(12, 12);
-            this.trackBarMaxTopicSize.TrackLineBrushStyle = Microsoft.Azure.ServiceBusExplorer.Controls.BrushStyle.Solid;
+            this.trackBarMaxTopicSize.TrackLineBrushStyle = ServiceBusExplorer.Controls.BrushStyle.Solid;
             this.trackBarMaxTopicSize.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
             this.trackBarMaxTopicSize.TrackLineHeight = 1;
             this.trackBarMaxTopicSize.Value = 1;
-            this.trackBarMaxTopicSize.ValueChanged += new Microsoft.Azure.ServiceBusExplorer.Controls.ValueChangedHandler(this.trackBarMaxTopicSize_ValueChanged);
+            this.trackBarMaxTopicSize.ValueChanged += new ServiceBusExplorer.Controls.ValueChangedHandler(this.trackBarMaxTopicSize_ValueChanged);
             // 
             // txtUserMetadata
             // 
@@ -766,7 +766,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTopicInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTopicInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTopicInformation.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperTopicInformation.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperTopicInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTopicInformation.BorderThickness = 1F;
             this.grouperTopicInformation.Controls.Add(this.propertyListView);
@@ -854,7 +854,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAuthorizationRuleList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperAuthorizationRuleList.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAuthorizationRuleList.BorderThickness = 1F;
             this.grouperAuthorizationRuleList.Controls.Add(this.authorizationRulesDataGridView);

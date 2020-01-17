@@ -34,17 +34,17 @@ using System.Windows.Forms;
 using System.Linq;
 using Microsoft.ServiceBus.Messaging;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.UIHelpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
 
 #endregion
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class HandleQueueControl : UserControl
     {

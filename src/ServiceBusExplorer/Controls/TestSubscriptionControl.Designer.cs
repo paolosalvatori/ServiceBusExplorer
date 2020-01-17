@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class TestSubscriptionControl
     {
@@ -26,7 +26,7 @@
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.mainTabReceiverPage = new System.Windows.Forms.TabPage();
-            this.grouperReceiver = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperReceiver = new ServiceBusExplorer.Controls.Grouper();
             this.cboReceiverInspector = new System.Windows.Forms.ComboBox();
             this.lblReceiverInspector = new System.Windows.Forms.Label();
             this.txtReceiverThinkTime = new System.Windows.Forms.TextBox();
@@ -58,7 +58,7 @@
             this.checkBoxReceiverCommitTransaction = new System.Windows.Forms.CheckBox();
             this.checkBoxEnableReceiverLogging = new System.Windows.Forms.CheckBox();
             this.tabPageGraph = new System.Windows.Forms.TabPage();
-            this.grouperReceiverStatistics = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperReceiverStatistics = new ServiceBusExplorer.Controls.Grouper();
             this.receiverLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel17 = new System.Windows.Forms.TableLayoutPanel();
             this.lblReceiverLastTime = new System.Windows.Forms.Label();
@@ -166,7 +166,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperReceiver.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperReceiver.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperReceiver.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperReceiver.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperReceiver.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperReceiver.BorderThickness = 1F;
             this.grouperReceiver.Controls.Add(this.cboReceiverInspector);
@@ -582,7 +582,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperReceiverStatistics.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperReceiverStatistics.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperReceiverStatistics.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperReceiverStatistics.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperReceiverStatistics.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperReceiverStatistics.BorderThickness = 1F;
             this.grouperReceiverStatistics.Controls.Add(this.receiverLayoutPanel);

@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public enum MonitorState
     {

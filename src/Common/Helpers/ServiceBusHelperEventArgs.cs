@@ -22,11 +22,11 @@
 #region Using Directives
 
 using System;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Enums;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     /// <summary>
     /// This class represents the arguments for the events of the ServiceBusHelper 

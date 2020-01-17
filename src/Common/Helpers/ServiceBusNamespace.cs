@@ -30,11 +30,11 @@ using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public enum ServiceBusNamespaceType
     {

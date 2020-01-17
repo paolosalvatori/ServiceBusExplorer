@@ -29,7 +29,7 @@ using Newtonsoft.Json;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     [XmlType(TypeName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
     [XmlRoot(ElementName = "property", Namespace = "http://schemas.microsoft.com/servicebusexplorer", IsNullable = false)]

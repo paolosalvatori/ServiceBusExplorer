@@ -25,7 +25,7 @@ using System.Web.Script.Serialization;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public static class GenericCopier<T> where T : class
     {

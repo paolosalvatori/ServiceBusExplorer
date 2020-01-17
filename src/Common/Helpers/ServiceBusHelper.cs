@@ -21,31 +21,31 @@
 
 #region Using Directives
 using System;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Threading.Tasks;
-using System.Xml;
-using System.IO;
-using System.Diagnostics;
-using System.Globalization;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
+using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
 using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
-using Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
 // ReSharper disable CheckNamespace
-namespace Microsoft.Azure.ServiceBusExplorer
+namespace ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
     using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
@@ -175,12 +175,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
-        private NotificationHubs.NamespaceManager notificationHubNamespaceManager;
+        private AzureNotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
         private Microsoft.ServiceBus.TokenProvider tokenProvider;
-        private NotificationHubs.TokenProvider notificationHubTokenProvider;
+        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private Uri atomFeedUri;
@@ -383,7 +383,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets the current namespace manager.
         /// </summary>
-        public NotificationHubs.NamespaceManager NotificationHubNamespaceManager
+        public AzureNotificationHubs.NamespaceManager NotificationHubNamespaceManager
         {
             get
             {
@@ -682,7 +682,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// <summary>
         /// Gets or sets the encodingType of sent messages
         /// </summary>
-        public static EncodingType EncodingType
+        public static ServiceBusExplorer.Enums.EncodingType EncodingType
         {
             get
             {
@@ -790,7 +790,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
-                    notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                    notificationHubTokenProvider = AzureNotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 }
                 catch (Exception)
                 {
@@ -820,16 +820,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 }
 
 
-                var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
+                var notificationHubNamespaceManagerSettings = new AzureNotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
                 // Set retry count
-                if (notificationHubNamespaceManagerSettings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                if (notificationHubNamespaceManagerSettings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
                 {
-                    notificationHubNamespaceManagerSettings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                    notificationHubNamespaceManagerSettings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.MaximumBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.DeltaBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
@@ -843,7 +843,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 namespaceManager = new Microsoft.ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
-                    notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                    notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 }
                 catch (Exception)
                 {
@@ -932,7 +932,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 tokenProvider = Microsoft.ServiceBus.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 try
                 {
-                    notificationHubTokenProvider = NotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
+                    notificationHubTokenProvider = AzureNotificationHubs.TokenProvider.CreateSharedSecretTokenProvider(issuerName, issuerSecret);
                 }
                 catch (Exception)
                 {
@@ -961,16 +961,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
                                                                                            RetryHelper.RetryCount);
                 }
 
-                var notificationHubNamespaceManagerSettings = new NotificationHubs.NamespaceManagerSettings
+                var notificationHubNamespaceManagerSettings = new AzureNotificationHubs.NamespaceManagerSettings
                 {
                     TokenProvider = notificationHubTokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
 
                 // Set retry count
-                if (notificationHubNamespaceManagerSettings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                if (notificationHubNamespaceManagerSettings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
                 {
-                    notificationHubNamespaceManagerSettings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                    notificationHubNamespaceManagerSettings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.MaximumBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.DeltaBackoff,
                                                                                                                 defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
@@ -984,7 +984,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
                 namespaceManager = new Microsoft.ServiceBus.NamespaceManager(namespaceUri, namespaceManagerSettings);
                 try
                 {
-                    notificationHubNamespaceManager = new NotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
+                    notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(namespaceUri, notificationHubNamespaceManagerSettings);
                 }
                 catch (Exception)
                 {
@@ -1068,12 +1068,12 @@ namespace Microsoft.Azure.ServiceBusExplorer
 
                 try
                 {
-                    notificationHubNamespaceManager = NotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
+                    notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
 
                     // Set retry count
-                    if (notificationHubNamespaceManager.Settings.RetryPolicy is NotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                    if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
                     {
-                        notificationHubNamespaceManager.Settings.RetryPolicy = new NotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                        notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
                                                                                                                      defaultNotificationHubsRetryExponential.MaximumBackoff,
                                                                                                                      defaultNotificationHubsRetryExponential.DeltaBackoff,
                                                                                                                      defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
@@ -1714,7 +1714,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// </summary>
         /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
         /// <returns>A NotificationHubDescription handle to the notification hub, or null if the notification hub does not exist in the service namespace. </returns>
-        public NotificationHubDescription GetNotificationHub(string path)
+        public AzureNotificationHubs.NotificationHubDescription GetNotificationHub(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -1732,7 +1732,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// </summary>
         /// <returns>Returns an IEnumerable<NotificationHubDescription/> collection of all notification hubs in the service namespace. 
         ///          Returns an empty collection if no notification hub exists in this service namespace.</returns>
-        public IEnumerable<NotificationHubDescription> GetNotificationHubs(int timeoutInSeconds)
+        public IEnumerable<AzureNotificationHubs.NotificationHubDescription> GetNotificationHubs(int timeoutInSeconds)
         {
             if (namespaceManager != null)
             {
@@ -1780,7 +1780,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// </summary>
         /// <param name="description">A NotificationHubDescription object describing the attributes with which the new notification hub will be created.</param>
         /// <returns>Returns a newly-created NotificationHubDescription object.</returns>
-        public NotificationHubDescription CreateNotificationHub(NotificationHubDescription description)
+        public AzureNotificationHubs.NotificationHubDescription CreateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
             if (description == null)
             {
@@ -1800,7 +1800,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// Deletes the notification hub described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
-        public async Task DeleteNotificationHub(NotificationHubDescription notificationHubDescription)
+        public async Task DeleteNotificationHub(AzureNotificationHubs.NotificationHubDescription notificationHubDescription)
         {
             if (string.IsNullOrWhiteSpace(notificationHubDescription?.Path))
             {
@@ -1836,7 +1836,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         /// </summary>
         /// <param name="description">A NotificationHubDescription object describing the attributes with which the new notification hub will be updated.</param>
         /// <returns>Returns an updated NotificationHubDescription object.</returns>
-        public NotificationHubDescription UpdateNotificationHub(NotificationHubDescription description)
+        public AzureNotificationHubs.NotificationHubDescription UpdateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
             if (description == null)
             {

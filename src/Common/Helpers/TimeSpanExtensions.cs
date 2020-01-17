@@ -25,7 +25,7 @@ using System;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public static class TimeSpanExtensions
     {

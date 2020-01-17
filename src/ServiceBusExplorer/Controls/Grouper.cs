@@ -24,7 +24,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
 	/// <summary>A special custom rounding GroupBox with many painting features.</summary>
 	[ToolboxBitmap(typeof(Grouper), "CodeVendor.Controls.Grouper.bmp")]

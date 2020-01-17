@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class SelectEntityForm
     {
@@ -57,7 +57,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectEntityForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grouperTreeView = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperTreeView = new ServiceBusExplorer.Controls.Grouper();
             this.lblSelectTargetEntity = new System.Windows.Forms.Label();
             this.lblTargetQueueTopic = new System.Windows.Forms.Label();
             this.txtEntity = new System.Windows.Forms.TextBox();
@@ -110,7 +110,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperTreeView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperTreeView.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperTreeView.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperTreeView.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperTreeView.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperTreeView.BorderThickness = 1F;
             this.grouperTreeView.Controls.Add(this.lblSelectTargetEntity);

@@ -27,7 +27,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public static class ControlHelper 
     {     

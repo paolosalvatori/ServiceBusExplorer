@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ReceiveModeForm
     {
@@ -57,16 +57,16 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.grouperInspector = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperInspector = new ServiceBusExplorer.Controls.Grouper();
             this.cboReceiverInspector = new System.Windows.Forms.ComboBox();
-            this.grouperMessages = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
             this.txtMessageCount = new System.Windows.Forms.TextBox();
             this.btnTop = new System.Windows.Forms.RadioButton();
             this.btnAll = new System.Windows.Forms.RadioButton();
-            this.grouperReadMode = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperReadMode = new ServiceBusExplorer.Controls.Grouper();
             this.btnReceive = new System.Windows.Forms.RadioButton();
             this.btnPeek = new System.Windows.Forms.RadioButton();
-            this.grouperFrom = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperFrom = new ServiceBusExplorer.Controls.Grouper();
             this.txtFromSequenceNumber = new System.Windows.Forms.TextBox();
             this.mainPanel.SuspendLayout();
             this.grouperInspector.SuspendLayout();
@@ -130,7 +130,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperInspector.BackgroundColor = System.Drawing.Color.White;
             this.grouperInspector.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperInspector.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperInspector.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperInspector.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperInspector.BorderThickness = 1F;
             this.grouperInspector.Controls.Add(this.cboReceiverInspector);
@@ -165,7 +165,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperMessages.BackgroundColor = System.Drawing.Color.White;
             this.grouperMessages.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessages.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessages.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessages.BorderThickness = 1F;
             this.grouperMessages.Controls.Add(this.txtMessageCount);
@@ -227,7 +227,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperReadMode.BackgroundColor = System.Drawing.Color.White;
             this.grouperReadMode.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperReadMode.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperReadMode.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperReadMode.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperReadMode.BorderThickness = 1F;
             this.grouperReadMode.Controls.Add(this.btnReceive);
@@ -278,7 +278,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperFrom.BackgroundColor = System.Drawing.Color.White;
             this.grouperFrom.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFrom.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFrom.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFrom.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFrom.BorderThickness = 1F;
             this.grouperFrom.Controls.Add(this.txtFromSequenceNumber);

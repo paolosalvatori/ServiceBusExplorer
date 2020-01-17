@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     [XmlRoot(ElementName = "MonitorRules", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
     [XmlType(TypeName = "MonitorRules", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

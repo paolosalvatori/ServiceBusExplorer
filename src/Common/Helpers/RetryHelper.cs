@@ -25,12 +25,12 @@ using System;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     /// <summary>
     /// This class contains a methods to implement retry logic

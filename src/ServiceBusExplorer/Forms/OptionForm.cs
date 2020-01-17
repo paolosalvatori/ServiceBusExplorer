@@ -31,12 +31,12 @@ using System.Windows.Forms;
 
 using Microsoft.ServiceBus;
 
-using Microsoft.Azure.ServiceBusExplorer.Enums;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class OptionForm : Form
     {

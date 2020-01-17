@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     internal static class NativeMethods
     {

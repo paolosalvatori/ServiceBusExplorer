@@ -25,7 +25,7 @@ using System.Xml.Linq;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public static class XmlLinqExtensions
     {

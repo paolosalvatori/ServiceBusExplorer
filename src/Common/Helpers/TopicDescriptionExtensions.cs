@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+﻿namespace ServiceBusExplorer.Helpers
 {
     using Microsoft.ServiceBus.Messaging;
 

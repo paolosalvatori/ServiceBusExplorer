@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class HandleConsumerGroupControl
     {
@@ -18,19 +18,19 @@
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tabPageDescription = new System.Windows.Forms.TabPage();
-            this.grouperName = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperName = new ServiceBusExplorer.Controls.Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
-            this.grouperConsumerGroupProperties = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperConsumerGroupProperties = new ServiceBusExplorer.Controls.Grouper();
             this.txtUserMetadata = new System.Windows.Forms.TextBox();
             this.lblUserMetadata = new System.Windows.Forms.Label();
-            this.grouperConsumerGroupInformation = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperConsumerGroupInformation = new ServiceBusExplorer.Controls.Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPagePartitions = new System.Windows.Forms.TabPage();
-            this.grouperPartitionsList = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperPartitionsList = new ServiceBusExplorer.Controls.Grouper();
             this.partitionsDataGridView = new System.Windows.Forms.DataGridView();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnCancelUpdate = new System.Windows.Forms.Button();
@@ -66,7 +66,7 @@
             // 
             this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperName.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperName.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperName.BorderThickness = 1F;
             this.grouperName.Controls.Add(this.lblRelativeURI);
@@ -115,7 +115,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperConsumerGroupProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperConsumerGroupProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperConsumerGroupProperties.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperConsumerGroupProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperConsumerGroupProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperConsumerGroupProperties.BorderThickness = 1F;
             this.grouperConsumerGroupProperties.Controls.Add(this.txtUserMetadata);
@@ -166,7 +166,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperConsumerGroupInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperConsumerGroupInformation.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperConsumerGroupInformation.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperConsumerGroupInformation.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperConsumerGroupInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperConsumerGroupInformation.BorderThickness = 1F;
             this.grouperConsumerGroupInformation.Controls.Add(this.propertyListView);
@@ -251,7 +251,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperPartitionsList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPartitionsList.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperPartitionsList.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperPartitionsList.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperPartitionsList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperPartitionsList.BorderThickness = 1F;
             this.grouperPartitionsList.Controls.Add(this.partitionsDataGridView);

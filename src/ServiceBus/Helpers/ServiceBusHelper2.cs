@@ -23,7 +23,7 @@
 #endregion
 
 // ReSharper disable CheckNamespace
-namespace Microsoft.Azure.ServiceBusExplorer.ServiceBus.Helpers
+namespace ServiceBusExplorer.ServiceBus.Helpers
 // ReSharper restore CheckNamespace
 {
     public class ServiceBusHelper2 

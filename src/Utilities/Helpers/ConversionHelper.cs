@@ -29,7 +29,7 @@ using System.Xml;
 #endregion
 
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     public class ConversionHelper
     {

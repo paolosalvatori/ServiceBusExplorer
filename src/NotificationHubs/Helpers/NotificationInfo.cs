@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.NotificationHubs.Helpers
+namespace ServiceBusExplorer.NotificationHubs.Helpers
 {
     public class NotificationInfo
     {

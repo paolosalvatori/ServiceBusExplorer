@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ServiceBusExplorer.Forms
+﻿namespace ServiceBusExplorer.Forms
 {
     partial class ChangeQueueStatusForm
     {

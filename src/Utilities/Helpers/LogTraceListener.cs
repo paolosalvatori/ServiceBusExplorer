@@ -25,7 +25,7 @@ using System.Diagnostics;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     #region Delegates
     public delegate void WriteToLogDelegate(string message, bool async = true);

@@ -25,7 +25,7 @@ using System;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false, Inherited = true)]
     public class EnumResourceAttribute : Attribute, IResourceAttribute

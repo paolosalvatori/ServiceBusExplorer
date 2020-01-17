@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers
+namespace ServiceBusExplorer.Utilities.Helpers
 {
     /// <summary>
     /// A list which acts like the List class, but with more of a java

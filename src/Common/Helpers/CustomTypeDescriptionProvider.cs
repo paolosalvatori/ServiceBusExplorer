@@ -26,7 +26,7 @@ using System.ComponentModel;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class CustomTypeDescriptionProvider : TypeDescriptionProvider
     {

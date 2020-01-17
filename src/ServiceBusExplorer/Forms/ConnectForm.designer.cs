@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ConnectForm
     {
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxProperties();
+            ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new ServiceBusExplorer.Controls.CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConnectForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -76,15 +76,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnSave = new System.Windows.Forms.Button();
             this.btnRename = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
-            this.grouperConfigFileUse = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperConfigFileUse = new ServiceBusExplorer.Controls.Grouper();
             this.lblConfigFileUse = new System.Windows.Forms.Label();
-            this.grouperFilters = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperFilters = new ServiceBusExplorer.Controls.Grouper();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
-            this.cboSelectedEntities = new Microsoft.Azure.ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblSubscriptionFilterExpression = new System.Windows.Forms.Label();
             this.lblQueueFilterExpression = new System.Windows.Forms.Label();
             this.lblTopicFilterExpression = new System.Windows.Forms.Label();
-            this.grouperServiceBusNamespaceSettings = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperServiceBusNamespaceSettings = new ServiceBusExplorer.Controls.Grouper();
             this.cboTransportType = new System.Windows.Forms.ComboBox();
             this.lblTransportType = new System.Windows.Forms.Label();
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
@@ -95,7 +95,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.lblIssuerName = new System.Windows.Forms.Label();
             this.lblNamespace = new System.Windows.Forms.Label();
             this.lblEntityPath = new System.Windows.Forms.Label();
-            this.grouperServiceBusNamespaces = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperServiceBusNamespaces = new ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.grouperConfigFileUse.SuspendLayout();
@@ -372,7 +372,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // logoPictureBox
             // 
             this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.logoPictureBox.BackgroundImage = global::Microsoft.Azure.ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
+            this.logoPictureBox.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.logoPictureBox.ErrorImage = null;
             this.logoPictureBox.Location = new System.Drawing.Point(876, 10);
@@ -442,7 +442,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperConfigFileUse.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperConfigFileUse.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperConfigFileUse.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperConfigFileUse.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperConfigFileUse.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperConfigFileUse.BorderThickness = 1F;
             this.grouperConfigFileUse.Controls.Add(this.lblConfigFileUse);
@@ -479,7 +479,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperFilters.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilters.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperFilters.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperFilters.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFilters.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilters.BorderThickness = 1F;
             this.grouperFilters.Controls.Add(this.lblSelectedEntities);
@@ -576,7 +576,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperServiceBusNamespaceSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperServiceBusNamespaceSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperServiceBusNamespaceSettings.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperServiceBusNamespaceSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperServiceBusNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperServiceBusNamespaceSettings.BorderThickness = 1F;
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboTransportType);
@@ -728,7 +728,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             // 
             this.grouperServiceBusNamespaces.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperServiceBusNamespaces.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperServiceBusNamespaces.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperServiceBusNamespaces.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperServiceBusNamespaces.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperServiceBusNamespaces.BorderThickness = 1F;
             this.grouperServiceBusNamespaces.Controls.Add(this.cboServiceBusNamespace);

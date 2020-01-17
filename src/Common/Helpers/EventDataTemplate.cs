@@ -30,7 +30,7 @@ using Newtonsoft.Json;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     [Serializable]
     [XmlType(TypeName = "eventData", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]

@@ -21,7 +21,7 @@
 
 using  Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public static class QueueDescriptionExtensions
     {

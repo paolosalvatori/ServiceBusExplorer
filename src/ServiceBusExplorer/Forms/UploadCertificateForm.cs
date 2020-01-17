@@ -27,7 +27,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class UploadCertificateForm : Form
     {

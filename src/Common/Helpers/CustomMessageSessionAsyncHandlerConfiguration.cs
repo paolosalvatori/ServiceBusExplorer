@@ -23,12 +23,12 @@
 
 using System;
 using System.ServiceModel.Channels;
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     public class CustomMessageSessionAsyncHandlerConfiguration
     {

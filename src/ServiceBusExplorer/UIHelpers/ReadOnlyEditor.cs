@@ -24,7 +24,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     public class ReadOnlyEditor : UITypeEditor
     {

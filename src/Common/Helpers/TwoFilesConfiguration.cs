@@ -21,7 +21,7 @@
 
 #region Using Directives
 
-using Microsoft.Azure.ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections;
 using System.Configuration;
@@ -32,7 +32,7 @@ using System.Xml.Linq;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Helpers
 {
     // Used for determining which config file(s) to use
     [Flags]
