@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
+    <AssemblyName>ServiceBusExplorer.ServiceBus</AssemblyName>
   </PropertyGroup>
 
 
