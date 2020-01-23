@@ -1330,6 +1330,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private void displayHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CommandLineOptions.ProcessCommandLineArguments(new string[]{"--help"}, out var argument, out var value, out var helpText);
+            WriteToLog(helpText);
+        }
+
         private void connectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
