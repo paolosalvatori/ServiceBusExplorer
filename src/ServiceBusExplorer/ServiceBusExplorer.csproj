@@ -588,9 +588,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser">
-      <Version>2.7.82</Version>
-    </PackageReference>
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="GitVersion.CommandLine" Version="3.6.5" PrivateAssets="all" />
     <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.16.0.234" />
