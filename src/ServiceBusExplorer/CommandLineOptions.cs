@@ -11,7 +11,7 @@
         [Option('n', "namespace", SetName = "Connection", Required = false, HelpText = "Load namespace key in the configuration file.")]
         public string Namespace { get; set; }
 
-        [Option('c', "connectionString", SetName = "Connection", Required = false, HelpText = "use a connection string.")]
+        [Option('c', "connectionString", SetName = "Connection", Required = false, HelpText = "Use a connection string.")]
         public string ConnectionString { get; set; }
 
         [Option('q', "queueFilter", Required = false, HelpText = "Set queue odata filter expression.")]

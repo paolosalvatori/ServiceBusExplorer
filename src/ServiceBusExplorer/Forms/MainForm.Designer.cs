@@ -52,6 +52,7 @@ namespace ServiceBusExplorer.Forms
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showCommandLineOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -324,7 +325,6 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
-            this.showCommandLineOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -527,8 +527,8 @@ namespace ServiceBusExplorer.Forms
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
-            this.showCommandLineOptionsToolStripMenuItem});
+            this.showCommandLineOptionsToolStripMenuItem,
+            this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
@@ -540,6 +540,13 @@ namespace ServiceBusExplorer.Forms
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // showCommandLineOptionsToolStripMenuItem
+            // 
+            this.showCommandLineOptionsToolStripMenuItem.Name = "showCommandLineOptionsToolStripMenuItem";
+            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.showCommandLineOptionsToolStripMenuItem.Text = "Show Command Line Options";
+            this.showCommandLineOptionsToolStripMenuItem.Click += new System.EventHandler(this.displayHelpToolStripMenuItem_Click);
             // 
             // statusStrip
             // 
@@ -2787,13 +2794,6 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
-            // 
-            // showCommandLineOptionsToolStripMenuItem
-            // 
-            this.showCommandLineOptionsToolStripMenuItem.Name = "showCommandLineOptionsToolStripMenuItem";
-            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.showCommandLineOptionsToolStripMenuItem.Text = "Show Command Line Options";
-            this.showCommandLineOptionsToolStripMenuItem.Click += new System.EventHandler(this.displayHelpToolStripMenuItem_Click);
             // 
             // MainForm
             // 
