@@ -150,7 +150,7 @@ namespace ServiceBusExplorer.Forms
             Close();
         }
 
-        void btnApply_Click(object sender, EventArgs e)
+        void btnSave_Click(object sender, EventArgs e)
         {
             // Get selected items
             MainSettings.SelectedEntities = GetSelectedEntities();
