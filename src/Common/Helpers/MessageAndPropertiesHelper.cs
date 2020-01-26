@@ -168,40 +168,6 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-
-        /// <summary>
-        /// Reads a relay message from an XML file in the current directory.
-        /// </summary>
-        /// <returns>The message read from the XML file.</returns>
-        public static string ReadRelayMessage()
-        {
-            try
-            {
-                if (!File.Exists(relayMessageFilePath))
-                {
-                    return null;
-                }
-
-                using (var reader = new StreamReader(messageFilePath))
-                {
-                    using (var xmlReader = XmlReader.Create(reader))
-                    {
-                        var root = XElement.Load(xmlReader);
-                        var cdata = root.DescendantNodes().OfType<XCData>().FirstOrDefault();
-                        if (cdata != null)
-                        {
-                            return cdata.Value;
-                        }
-                    }
-                }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
-            {
-            }
-            return null;
-        }
-
         /// <summary>
         /// Write a message to an XML file in the current directory.
         /// </summary>

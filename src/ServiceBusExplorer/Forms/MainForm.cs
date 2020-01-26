@@ -3808,7 +3808,6 @@ namespace ServiceBusExplorer.Forms
 
             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
                 serviceBusHelper.Scheme);
-            relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
 
             var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
@@ -3891,8 +3890,6 @@ namespace ServiceBusExplorer.Forms
         public string MessageText { get; set; }
 
         public string MessageContentType { get; set; }
-
-        public string RelayMessageText { get; set; }
 
         public string Label { get; set; }
 
