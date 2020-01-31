@@ -249,7 +249,7 @@ namespace ServiceBusExplorer.Forms
         /// <summary>
         /// Initializes a new instance of the MainForm class.
         /// </summary>
-        public MainForm()
+        public MainForm(string logMessage)
         {
             InitializeComponent();
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
@@ -283,6 +283,8 @@ namespace ServiceBusExplorer.Forms
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
+
+            WriteToLog(logMessage);
         }
 
         void DisplayNewVersionInformation()
@@ -356,8 +358,8 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="argument">Argument type (n or c).</param>
         /// <param name="value">Argument value</param>
-        public MainForm(string argument, string value)
-            : this()
+        public MainForm(string argument, string value, string logMessage)
+            : this(logMessage)
         {
             argumentName = argument;
             argumentValue = value;
@@ -1326,6 +1328,12 @@ namespace ServiceBusExplorer.Forms
             {
                 form.ShowDialog();
             }
+        }
+
+        private void displayHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CommandLineOptions.ProcessCommandLineArguments(new string[]{"--help"}, out var argument, out var value, out var helpText);
+            WriteToLog(helpText);
         }
 
         private void connectToolStripMenuItem_Click(object sender, EventArgs e)
