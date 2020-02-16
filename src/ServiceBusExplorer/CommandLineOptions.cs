@@ -87,12 +87,12 @@
 
                     if (!string.IsNullOrWhiteSpace(o.TopicFilter))
                     {
-                        FilterExpressionHelper.QueueFilterExpression = o.TopicFilter;
+                        FilterExpressionHelper.TopicFilterExpression = o.TopicFilter;
                     }
 
                     if (!string.IsNullOrWhiteSpace(o.SubscriptionFilter))
                     {
-                        FilterExpressionHelper.QueueFilterExpression = o.SubscriptionFilter;
+                        FilterExpressionHelper.SubscriptionFilterExpression = o.SubscriptionFilter;
                     }
                 })
                     .WithNotParsed(errors =>
