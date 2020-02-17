@@ -244,17 +244,6 @@ namespace ServiceBusExplorer.Forms
                     MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
                     return;
                 }
-                if (ConnectionStringHelper.IsEntitySpecific(txtUri.Text))
-                {
-                    MainForm.StaticWriteToLog(ConnectionStringCannotBeEntitySpecific);
-                    MessageBox.Show(
-                        this, 
-                        $"{ConnectionStringCannotBeEntitySpecific}\n\n{ConnectionStringCannotBeEntitySpecificDetails}", 
-                        this.Text,  // reuse title of this window
-                        MessageBoxButtons.OK, 
-                        MessageBoxIcon.Exclamation);
-                    return;
-                }
             }
             else
             {
