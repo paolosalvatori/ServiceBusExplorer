@@ -207,33 +207,20 @@ namespace ServiceBusExplorer.Forms
         private TreeNode currentNode;
         private readonly FieldInfo eventClickFieldInfo;
         private readonly PropertyInfo eventsPropertyInfo;
-        private string messageText;
-        private string messageContentType;
-        private string relayMessageText;
         private string messageFile;
-        private string label;
         private bool importing;
         private readonly int mainSplitterDistance;
         private readonly int splitterContainerDistance;
         private ConfigFileUse configFileUse;
         private decimal treeViewFontSize;
         private decimal logFontSize;
-        private int topCount = 10;
-        private int receiveTimeout = 1;
-        private int serverTimeout = 5;
-        private int prefetchCount;
-        private int senderThinkTime = 100;
-        private int receiverThinkTime = 100;
-        private int monitorRefreshInterval = 30;
         private bool showMessageCount = true;
         private bool saveMessageToFile = true;
         private bool savePropertiesToFile = true;
         private bool saveCheckpointsToFile = true;
-        private bool useAscii = true;
         private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         private readonly string argumentName;
         private readonly string argumentValue;
-        private List<string> selectedEntites = new List<string>();
         private string messageBodyType = BodyType.Stream.ToString();
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -380,26 +367,26 @@ namespace ServiceBusExplorer.Forms
                 TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
                 RetryCount = RetryHelper.RetryCount,
                 RetryTimeout = RetryHelper.RetryTimeout,
-                ReceiveTimeout = receiveTimeout,
-                ServerTimeout = serverTimeout,
-                PrefetchCount = prefetchCount,
-                TopCount = topCount,
-                SenderThinkTime = senderThinkTime,
-                ReceiverThinkTime = receiverThinkTime,
-                MonitorRefreshInterval = monitorRefreshInterval,
+                ReceiveTimeout = ReceiveTimeout,
+                ServerTimeout = ServerTimeout,
+                PrefetchCount = PrefetchCount,
+                TopCount = TopCount,
+                SenderThinkTime = SenderThinkTime,
+                ReceiverThinkTime = ReceiverThinkTime,
+                MonitorRefreshInterval = MonitorRefreshInterval,
 
                 ShowMessageCount = showMessageCount,
-                UseAscii = useAscii,
+                UseAscii = UseAscii,
                 SaveMessageToFile = saveMessageToFile,
                 SavePropertiesToFile = savePropertiesToFile,
                 SaveCheckpointsToFile = saveCheckpointsToFile,
 
-                Label = label,
+                Label = Label,
                 MessageFile = messageFile,
-                MessageText = messageText,
-                MessageContentType = messageContentType,
+                MessageText = MessageText,
+                MessageContentType = MessageContentType,
 
-                SelectedEntities = selectedEntites,
+                SelectedEntities = SelectedEntities,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
                 EncodingType = ServiceBusHelper.EncodingType
@@ -431,13 +418,13 @@ namespace ServiceBusExplorer.Forms
                     (float)optionForm.MainSettings.TreeViewFontSize);
                 RetryHelper.RetryCount = optionForm.MainSettings.RetryCount;
                 RetryHelper.RetryTimeout = optionForm.MainSettings.RetryTimeout;
-                receiveTimeout = optionForm.MainSettings.ReceiveTimeout;
-                serverTimeout = optionForm.MainSettings.ServerTimeout;
-                prefetchCount = optionForm.MainSettings.PrefetchCount;
-                topCount = optionForm.MainSettings.TopCount;
-                senderThinkTime = optionForm.MainSettings.SenderThinkTime;
-                receiverThinkTime = optionForm.MainSettings.ReceiverThinkTime;
-                monitorRefreshInterval = optionForm.MainSettings.MonitorRefreshInterval;
+                ReceiveTimeout = optionForm.MainSettings.ReceiveTimeout;
+                ServerTimeout = optionForm.MainSettings.ServerTimeout;
+                PrefetchCount = optionForm.MainSettings.PrefetchCount;
+                TopCount = optionForm.MainSettings.TopCount;
+                SenderThinkTime = optionForm.MainSettings.SenderThinkTime;
+                ReceiverThinkTime = optionForm.MainSettings.ReceiverThinkTime;
+                MonitorRefreshInterval = optionForm.MainSettings.MonitorRefreshInterval;
 
                 if (showMessageCount != optionForm.MainSettings.ShowMessageCount)
                 {
@@ -445,17 +432,17 @@ namespace ServiceBusExplorer.Forms
                     GetEntities(EntityType.All);
                 }
 
-                useAscii = optionForm.MainSettings.UseAscii;
+                UseAscii = optionForm.MainSettings.UseAscii;
                 saveMessageToFile = optionForm.MainSettings.SaveMessageToFile;
                 savePropertiesToFile = optionForm.MainSettings.SavePropertiesToFile;
                 saveCheckpointsToFile = optionForm.MainSettings.SaveCheckpointsToFile;
 
-                label = optionForm.MainSettings.Label;
+                Label = optionForm.MainSettings.Label;
                 messageFile = optionForm.MainSettings.MessageFile;
-                messageText = optionForm.MainSettings.MessageText;
-                messageContentType = optionForm.MainSettings.MessageContentType;
+                MessageText = optionForm.MainSettings.MessageText;
+                MessageContentType = optionForm.MainSettings.MessageContentType;
 
-                selectedEntites = optionForm.MainSettings.SelectedEntities;
+                SelectedEntities = optionForm.MainSettings.SelectedEntities;
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
@@ -1348,7 +1335,7 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
                     UpdateSavedConnectionsMenu();
-                    selectedEntites = connectForm.SelectedEntities;
+                    SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
                     {
@@ -3719,23 +3706,23 @@ namespace ServiceBusExplorer.Forms
                 TreeViewFontSize = treeViewFontSize,
                 RetryCount = RetryHelper.RetryCount,
                 RetryTimeout = RetryHelper.RetryTimeout,
-                ReceiveTimeout = receiveTimeout,
-                ServerTimeout = serverTimeout,
-                PrefetchCount = prefetchCount,
-                TopCount = topCount,
-                SenderThinkTime = senderThinkTime,
-                ReceiverThinkTime = receiverThinkTime,
-                MonitorRefreshInterval = monitorRefreshInterval,
+                ReceiveTimeout = ReceiveTimeout,
+                ServerTimeout = ServerTimeout,
+                PrefetchCount = PrefetchCount,
+                TopCount = TopCount,
+                SenderThinkTime = SenderThinkTime,
+                ReceiverThinkTime = ReceiverThinkTime,
+                MonitorRefreshInterval = MonitorRefreshInterval,
                 ShowMessageCount = showMessageCount,
-                UseAscii = useAscii,
+                UseAscii = UseAscii,
                 SaveMessageToFile = saveMessageToFile,
                 SavePropertiesToFile = savePropertiesToFile,
                 SaveCheckpointsToFile = saveCheckpointsToFile,
-                Label = label,
+                Label = Label,
                 MessageFile = messageFile,
-                MessageText = messageText,
-                MessageContentType = messageContentType,
-                SelectedEntities = selectedEntites,
+                MessageText = MessageText,
+                MessageContentType = MessageContentType,
+                SelectedEntities = SelectedEntities,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode
             };
@@ -3762,58 +3749,58 @@ namespace ServiceBusExplorer.Forms
             var tempReceiveTimeout = readSettings.ReceiveTimeout;
             if (tempReceiveTimeout >= 0)
             {
-                receiveTimeout = tempReceiveTimeout;
+                ReceiveTimeout = tempReceiveTimeout;
             }
 
             var tempServerTimeout = readSettings.ServerTimeout;
             if (tempServerTimeout >= 0)
             {
-                serverTimeout = tempServerTimeout;
+                ServerTimeout = tempServerTimeout;
             }
 
             var tempPrefetchCount = readSettings.PrefetchCount;
             if (tempPrefetchCount >= 0)
             {
-                prefetchCount = tempPrefetchCount;
+                PrefetchCount = tempPrefetchCount;
             }
 
             var tempTopValue = readSettings.TopCount;
             if (tempTopValue > 0)
             {
-                topCount = tempTopValue;
+                TopCount = tempTopValue;
             }
 
             var tempSenderThinkTime = readSettings.SenderThinkTime;
             if (tempSenderThinkTime >= 0)
             {
-                senderThinkTime = tempSenderThinkTime;
+                SenderThinkTime = tempSenderThinkTime;
             }
 
             var tempReceiverThinkTime = readSettings.ReceiverThinkTime;
             if (tempReceiverThinkTime >= 0)
             {
-                receiverThinkTime = tempReceiverThinkTime;
+                ReceiverThinkTime = tempReceiverThinkTime;
             }
 
             var tempMonitorRefreshIntervalValue = readSettings.MonitorRefreshInterval;
             if (tempMonitorRefreshIntervalValue >= 0)
             {
-                monitorRefreshInterval = tempMonitorRefreshIntervalValue;
+                MonitorRefreshInterval = tempMonitorRefreshIntervalValue;
             }
 
             showMessageCount = readSettings.ShowMessageCount;
-            useAscii = readSettings.UseAscii;
+            UseAscii = readSettings.UseAscii;
             saveMessageToFile = readSettings.SaveMessageToFile;
             savePropertiesToFile = readSettings.SavePropertiesToFile;
             saveCheckpointsToFile = readSettings.SaveCheckpointsToFile;
 
-            label = readSettings.Label;
+            Label = readSettings.Label;
 
-            messageText = readSettings.MessageText;
-            messageContentType = readSettings.MessageContentType;
+            MessageText = readSettings.MessageText;
+            MessageContentType = readSettings.MessageContentType;
             messageFile = readSettings.MessageFile;
 
-            selectedEntites = readSettings.SelectedEntities;
+            SelectedEntities = readSettings.SelectedEntities;
             messageBodyType = readSettings.MessageBodyType;
             ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
             ServiceBusHelper.EncodingType = readSettings.EncodingType;
@@ -3829,7 +3816,6 @@ namespace ServiceBusExplorer.Forms
 
             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
                 serviceBusHelper.Scheme);
-            relayMessageText = MessageAndPropertiesHelper.ReadRelayMessage();
 
             var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
@@ -3909,158 +3895,29 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public string MessageText
-        {
-            get
-            {
-                return messageText;
-            }
-            set
-            {
-                messageText = value;
-            }
-        }
+        public string MessageText { get; set; }
 
-        public string MessageContentType
-        {
-            get
-            {
-                return messageContentType;
-            }
-            set
-            {
-                messageContentType = value;
-            }
-        }
+        public string MessageContentType { get; set; }
 
-        public string RelayMessageText
-        {
-            get
-            {
-                return messageText;
-            }
-            set
-            {
-                messageText = value;
-            }
-        }
+        public string Label { get; set; }
 
-        public string Label
-        {
-            get
-            {
-                return label;
-            }
-            set
-            {
-                label = value;
-            }
-        }
+        public int ReceiveTimeout { get; set; } = 1;
 
-        public int ReceiveTimeout
-        {
-            get
-            {
-                return receiveTimeout;
-            }
-            set
-            {
-                receiveTimeout = value;
-            }
-        }
+        public int ServerTimeout { get; set; } = 5;
 
-        public int ServerTimeout
-        {
-            get
-            {
-                return serverTimeout;
-            }
-            set
-            {
-                serverTimeout = value;
-            }
-        }
+        public int PrefetchCount { get; set; }
 
-        public int PrefetchCount
-        {
-            get
-            {
-                return prefetchCount;
-            }
-            set
-            {
-                prefetchCount = value;
-            }
-        }
+        public int TopCount { get; set; } = 10;
 
-        public int TopCount
-        {
-            get
-            {
-                return topCount;
-            }
-            set
-            {
-                topCount = value;
-            }
-        }
+        public int SenderThinkTime { get; set; } = 100;
 
-        public int SenderThinkTime
-        {
-            get
-            {
-                return senderThinkTime;
-            }
-            set
-            {
-                senderThinkTime = value;
-            }
-        }
+        public int ReceiverThinkTime { get; set; } = 100;
 
-        public int ReceiverThinkTime
-        {
-            get
-            {
-                return receiverThinkTime;
-            }
-            set
-            {
-                receiverThinkTime = value;
-            }
-        }
+        public int MonitorRefreshInterval { get; set; } = 30;
 
-        public int MonitorRefreshInterval
-        {
-            get
-            {
-                return monitorRefreshInterval;
-            }
-            set
-            {
-                monitorRefreshInterval = value;
-            }
-        }
+        public bool UseAscii { get; set; } = true;
 
-
-        public bool UseAscii
-        {
-            get
-            {
-                return useAscii;
-            }
-            set
-            {
-                useAscii = value;
-            }
-        }
-
-        public List<string> SelectedEntities
-        {
-            get
-            {
-                return selectedEntites;
-            }
-        }
+        public List<string> SelectedEntities { get; private set; } = new List<string>();
 
         public BodyType MessageBodyType
         {
@@ -4326,12 +4183,12 @@ namespace ServiceBusExplorer.Forms
                         serviceBusTreeView.Nodes.Clear();
                         rootNode = serviceBusTreeView.Nodes.Add(serviceBusHelper.NamespaceUri.AbsoluteUri, serviceBusHelper.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
                         rootNode.ContextMenuStrip = rootContextMenuStrip;
-                        if (selectedEntites.Contains(Constants.QueueEntities))
+                        if (SelectedEntities.Contains(Constants.QueueEntities))
                         {
                             queueListNode = rootNode.Nodes.Add(Constants.QueueEntities, Constants.QueueEntities, QueueListIconIndex, QueueListIconIndex);
                             queueListNode.ContextMenuStrip = queuesContextMenuStrip;
                         }
-                        if (selectedEntites.Contains(Constants.TopicEntities))
+                        if (SelectedEntities.Contains(Constants.TopicEntities))
                         {
                             topicListNode = rootNode.Nodes.Add(Constants.TopicEntities, Constants.TopicEntities, TopicListIconIndex, TopicListIconIndex);
                             topicListNode.ContextMenuStrip = topicsContextMenuStrip;
@@ -4340,17 +4197,17 @@ namespace ServiceBusExplorer.Forms
                         // NOTE: Relays are not actually supported by Service Bus for Windows Server
                         if (serviceBusHelper.IsCloudNamespace)
                         {
-                            if (selectedEntites.Contains(Constants.EventHubEntities))
+                            if (SelectedEntities.Contains(Constants.EventHubEntities))
                             {
                                 eventHubListNode = rootNode.Nodes.Add(Constants.EventHubEntities, Constants.EventHubEntities, EventHubListIconIndex, EventHubListIconIndex);
                                 eventHubListNode.ContextMenuStrip = eventHubsContextMenuStrip;
                             }
-                            if (selectedEntites.Contains(Constants.NotificationHubEntities))
+                            if (SelectedEntities.Contains(Constants.NotificationHubEntities))
                             {
                                 notificationHubListNode = rootNode.Nodes.Add(Constants.NotificationHubEntities, Constants.NotificationHubEntities, NotificationHubListIconIndex, NotificationHubListIconIndex);
                                 notificationHubListNode.ContextMenuStrip = notificationHubsContextMenuStrip;
                             }
-                            if (selectedEntites.Contains(Constants.RelayEntities))
+                            if (SelectedEntities.Contains(Constants.RelayEntities))
                             {
                                 relayServiceListNode = rootNode.Nodes.Add(Constants.RelayEntities, Constants.RelayEntities, RelayListIconIndex, RelayListIconIndex);
                                 relayServiceListNode.ContextMenuStrip = relayServicesContextMenuStrip;
@@ -4360,7 +4217,7 @@ namespace ServiceBusExplorer.Forms
                     updating = true;
                     if (serviceBusHelper.IsCloudNamespace)
                     {
-                        if (selectedEntites.Contains(Constants.EventHubEntities) &&
+                        if (SelectedEntities.Contains(Constants.EventHubEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.EventHub))
                         {
@@ -4395,7 +4252,7 @@ namespace ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
-                        if (selectedEntites.Contains(Constants.NotificationHubEntities) &&
+                        if (SelectedEntities.Contains(Constants.NotificationHubEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.NotificationHub))
                         {
@@ -4439,7 +4296,7 @@ namespace ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                             }
                         }
-                        if (selectedEntites.Contains(Constants.RelayEntities) &&
+                        if (SelectedEntities.Contains(Constants.RelayEntities) &&
                             (entityType == EntityType.All ||
                             entityType == EntityType.Relay))
                         {
@@ -4476,7 +4333,7 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
 
-                    if (selectedEntites.Contains(Constants.QueueEntities) &&
+                    if (SelectedEntities.Contains(Constants.QueueEntities) &&
                         (entityType == EntityType.All ||
                          entityType == EntityType.Queue))
                     {
@@ -4513,7 +4370,7 @@ namespace ServiceBusExplorer.Forms
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
-                    if (selectedEntites.Contains(Constants.TopicEntities) &&
+                    if (SelectedEntities.Contains(Constants.TopicEntities) &&
                         (entityType == EntityType.All ||
                          entityType == EntityType.Topic))
                     {
@@ -6244,8 +6101,7 @@ namespace ServiceBusExplorer.Forms
             cancellationTokenSource.Cancel(false);
             if (saveMessageToFile)
             {
-                MessageAndPropertiesHelper.WriteMessage(messageText);
-                MessageAndPropertiesHelper.WriteRelayMessage(relayMessageText);
+                MessageAndPropertiesHelper.WriteMessage(MessageText);
             }
             if (savePropertiesToFile)
             {
