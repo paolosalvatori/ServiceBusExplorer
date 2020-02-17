@@ -94,10 +94,51 @@ namespace ServiceBusExplorer.Forms
         public ConfigFileUse ConfigFileUse { get; private set; }
         #endregion
 
-        #region Event Handlers
+        #region Command button event Handlers
+        void btnOpenConfig_Click(object sender, EventArgs e)
+        {
+            var selected = GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex);
+
+            if (selected == ConfigFileUse.None)
+            {
+                MessageBox.Show("No file was selected in the list.", "No file opened",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Open the file(s) depending on what's selected. Create an instance of the 
+            // TwoFilesConfiguration just to get the paths
+            var configuration = TwoFilesConfiguration.Create(selected);
+
+            if (cboConfigFile.SelectedIndex == ApplicationConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the application config file
+                Process.Start(configuration.ApplicationFilePath);
+            }
+
+            if (cboConfigFile.SelectedIndex == UserConfigFileIndex ||
+                cboConfigFile.SelectedIndex == BothConfigFileIndex)
+            {
+                // Open the user config file. It might not exist though
+                if (File.Exists(configuration.UserConfigFilePath))
+                {
+                    Process.Start(configuration.UserConfigFilePath);
+                }
+                else
+                {
+                    MessageBox.Show($"The file {configuration.UserConfigFilePath} does not exist. Click the Save"
+                        + " button to create it.",
+                        "File does exist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
         private void btnOk_Click(object sender, EventArgs e)
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
+            
+            SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
             DialogResult = DialogResult.OK;
             Close();
@@ -108,6 +149,28 @@ namespace ServiceBusExplorer.Forms
             DialogResult = DialogResult.Cancel;
             Close();
         }
+
+        void btnSave_Click(object sender, EventArgs e)
+        {
+            // Get selected items
+            MainSettings.SelectedEntities = GetSelectedEntities();
+
+            SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
+        }
+
+        void btnOpen_Click(object sender, EventArgs e)
+        {
+            using (var form = new TextForm(MessageTextTitle, txtMessageText.Text))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    txtMessageText.Text = form.Content;
+                }
+            }
+        }
+        #endregion
+
+        #region Event Handlers
 
         private void logNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
@@ -128,7 +191,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void btnDefault_Click(object sender, EventArgs e)
+        private void btnReset_Click(object sender, EventArgs e)
         {
             MainSettings.SetDefault();
 
@@ -316,68 +379,11 @@ namespace ServiceBusExplorer.Forms
             MainSettings.MessageBodyType = cboDefaultMessageBodyType.Text;
         }
 
-        void btnSave_Click(object sender, EventArgs e)
-        {
-            // Get selected items
-            MainSettings.SelectedEntities = GetSelectedEntities();
-
-            SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
-        }
-
-        void btnOpen_Click(object sender, EventArgs e)
-        {
-            using (var form = new TextForm(MessageTextTitle, txtMessageText.Text))
-            {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    txtMessageText.Text = form.Content;
-                }
-            }
-        }
-
         void cboEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboEncodingType.SelectedItem is EncodingType)
             {
                 MainSettings.EncodingType = (EncodingType)cboEncodingType.SelectedItem;
-            }
-        }
-        void btnOpenConfig_Click(object sender, EventArgs e)
-        {
-            var selected = GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex);
-
-            if (selected == ConfigFileUse.None)
-            {
-                MessageBox.Show("No file was selected in the list.", "No file opened",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            // Open the file(s) depending on what's selected. Create an instance of the 
-            // TwoFilesConfiguration just to get the paths
-            var configuration = TwoFilesConfiguration.Create(selected);
-
-            if (cboConfigFile.SelectedIndex == ApplicationConfigFileIndex ||
-                cboConfigFile.SelectedIndex == BothConfigFileIndex)
-            {
-                // Open the application config file
-                Process.Start(configuration.ApplicationFilePath);
-            }
-
-            if (cboConfigFile.SelectedIndex == UserConfigFileIndex ||
-                cboConfigFile.SelectedIndex == BothConfigFileIndex)
-            {
-                // Open the user config file. It might not exist though
-                if (File.Exists(configuration.UserConfigFilePath))
-                {
-                    Process.Start(configuration.UserConfigFilePath);
-                }
-                else
-                {
-                    MessageBox.Show($"The file {configuration.UserConfigFilePath} does not exist. Click the Save"
-                        + " button to create it.",
-                        "File does exist", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
             }
         }
 
