@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ConnectionStringHelperTests.cs" />
     <Compile Include="Helpers\ServiceBusHelperTest.cs" />
     <Compile Include="Helpers\TwoFilesConfigurationTests.cs" />
     <Compile Include="Helpers\ConversionHelperTests.cs" />

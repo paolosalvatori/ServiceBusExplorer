@@ -4248,6 +4248,10 @@ namespace ServiceBusExplorer.Forms
                             }
                             catch (Exception ex) when (FilterOutException(ex))
                             {
+                                if (ex is AggregateException)
+                                {
+                                    ex = ((AggregateException)ex).InnerExceptions.First();
+                                }
                                 WriteToLog($"Failed to retrieve EventHub entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
@@ -4287,6 +4291,10 @@ namespace ServiceBusExplorer.Forms
                                 }
                                 catch (Exception ex) when (FilterOutException(ex))
                                 {
+                                    if (ex is AggregateException)
+                                    {
+                                        ex = ((AggregateException)ex).InnerExceptions.First();
+                                    }
                                     WriteToLog($"Failed to retrieve Notification Hub entities. Exception: {ex}");
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
@@ -4327,6 +4335,10 @@ namespace ServiceBusExplorer.Forms
                             }
                             catch (Exception ex) when (FilterOutException(ex))
                             {
+                                if (ex is AggregateException)
+                                {
+                                    ex = ((AggregateException)ex).InnerExceptions.First();
+                                }
                                 WriteToLog($"Failed to retrieve Relay entities. Exception: {ex}");
                                 serviceBusTreeView.Nodes.Remove(relayServiceListNode);
                             }
@@ -4366,6 +4378,10 @@ namespace ServiceBusExplorer.Forms
                         }
                         catch (Exception ex) when (FilterOutException(ex))
                         {
+                            if (ex is AggregateException)
+                            {
+                                ex = ((AggregateException)ex).InnerExceptions.First();
+                            }
                             WriteToLog($"Failed to retrieve Service Bus queues. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
@@ -4404,8 +4420,12 @@ namespace ServiceBusExplorer.Forms
                         }
                         catch (Exception ex) when (FilterOutException(ex))
                         {
+                            if (ex is AggregateException)
+                            {
+                                ex = ((AggregateException) ex).InnerExceptions.First();
+                            }
                             WriteToLog($"Failed to retrieve Service Bus topics. Exception: {ex}");
-                            serviceBusTreeView.Nodes.Remove(queueListNode);
+                            serviceBusTreeView.Nodes.Remove(topicListNode);
                         }
                     }
                     queueListNode?.Expand();
@@ -4441,6 +4461,10 @@ namespace ServiceBusExplorer.Forms
 
             bool FilterOutException(Exception ex)
             {
+                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
+                {
+                    ex = ((AggregateException)ex).InnerExceptions.First();
+                }
                 return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
             }
         }
