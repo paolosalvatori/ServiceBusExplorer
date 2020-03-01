@@ -44,7 +44,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
             try
             {
                 return JsonConvert
-                    .SerializeObject(JsonConvert.DeserializeObject(json.Replace("$type", "%%$type%%"), serializerSettings), Formatting.Indented)
+                    .SerializeObject(DeserializeObject<object>(json.Replace("$type", "%%$type%%"), serializerSettings), Formatting.Indented)
                     .Replace("%%$type%%", "$type");
             }
             catch (Exception)
@@ -102,6 +102,29 @@ namespace ServiceBusExplorer.Utilities.Helpers
             return Deserialize<T>(item);
         }
 
+        /// <remarks>
+        /// Using this method instead of Json.Convert as Json.Convert can consume malformed JSON and display
+        /// the fixed JSON. This method will allow SBE to catch an exception and then display the original
+        /// text in the message.
+        /// </remarks>
+        /// <see href="https://github.com/paolosalvatori/ServiceBusExplorer/issues/425">
+        /// Issue:25: Bad json (duplicate keys) are ignored silently
+        /// </see>
+        public static T DeserializeObject<T>(string json, JsonSerializerSettings settings = null)
+        {
+            var jsonSerializer = JsonSerializer.CreateDefault(settings);
+            using (var stringReader = new StringReader(json))
+            using (var jsonTextReader = new JsonTextReader(stringReader))
+            {
+                jsonTextReader.DateParseHandling = DateParseHandling.None;
+                var loadSettings = new JsonLoadSettings
+                {
+                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error
+                };
+                var jToken = JToken.ReadFrom(jsonTextReader, loadSettings);
+                return jToken.ToObject<T>(jsonSerializer);
+            }
+        }
         /// <summary>
         /// Checks if the string is in JSON format.
         /// </summary>
