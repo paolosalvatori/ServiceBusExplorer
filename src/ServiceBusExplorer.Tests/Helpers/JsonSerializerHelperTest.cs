@@ -70,7 +70,17 @@ namespace ServiceBusExplorer.Tests.Helpers
 }";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(indented, expectedResult);
+            Assert.AreEqual(expectedResult, indented);
+        }
+
+        [Test]
+        public void IndentJson_ValueIsMalformedJson_ReturnsOriginalJson()
+        {
+            var json = @"{""Field1"":""Value1"",""Field1"":""Value2""}";
+            var expectedResult = @"{""Field1"":""Value1"",""Field1"":""Value2""}";
+            var indented = JsonSerializerHelper.Indent(json);
+
+            Assert.AreEqual(expectedResult, indented);
         }
 
         [Test]
