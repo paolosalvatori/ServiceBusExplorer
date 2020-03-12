@@ -341,6 +341,20 @@ namespace ServiceBusExplorer.Forms
             }
             else
             {
+                if (!string.IsNullOrWhiteSpace(txtUri.Text))
+                {
+                    try
+                    {
+                        BuildCurrentConnectionString();
+                        var ns = ServiceBusNamespace.GetServiceBusNamespace(Key, ConnectionString, (message, async) => { });
+                        txtNamespace.Text = ns.Namespace;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+                
                 btnOk.Enabled = (!string.IsNullOrWhiteSpace(txtUri.Text) ||
                                  !string.IsNullOrWhiteSpace(txtNamespace.Text)) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerName.Text) &&
