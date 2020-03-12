@@ -1337,47 +1337,10 @@ namespace ServiceBusExplorer.Forms
                     UpdateSavedConnectionsMenu();
                     SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    if (!string.IsNullOrWhiteSpace(connectForm.ConnectionString))
-                    {
-                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
-                            connectForm.ConnectionString, StaticWriteToLog);
-                        serviceBusHelper.Connect(serviceBusNamespace);
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrWhiteSpace(connectForm.Uri))
-                        {
-                            serviceBusHelper.Connect(connectForm.Uri,
-                                                     connectForm.IssuerName,
-                                                     connectForm.IssuerSecret,
-                                                     connectForm.SharedAccessKeyName,
-                                                     connectForm.SharedAccessKey,
-                                                     connectForm.TransportType);
-                        }
-                        else
-                        {
-                            serviceBusHelper.Connect(connectForm.Namespace,
-                                                     connectForm.ServicePath,
-                                                     connectForm.IssuerName,
-                                                     connectForm.IssuerSecret,
-                                                     connectForm.SharedAccessKeyName,
-                                                     connectForm.SharedAccessKey,
-                                                     connectForm.TransportType);
-                        }
-                    }
-                    // Set Relay Host Name
-                    //var assembly = Assembly.GetAssembly(typeof(ServiceBus.ServiceBusEnvironment));
-                    //var type = assembly.GetType("Microsoft.ServiceBus.RelayEnvironment");
-                    //if (type != null)
-                    //{
-                    //    var property = type.GetProperty("RelayHostRootName",
-                    //                                    BindingFlags.Static |
-                    //                                    BindingFlags.Public);
-                    //    if (property != null && serviceBusHelper.NamespaceUri != null)
-                    //    {
-                    //        property.SetValue(null, serviceBusHelper.GetHostWithoutNamespace());
-                    //    }
-                    //}
+                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
+                        connectForm.ConnectionString, StaticWriteToLog);
+                    serviceBusHelper.Connect(serviceBusNamespace);
+
                     foreach (var userControl in panelMain.Controls.OfType<UserControl>())
                     {
                         userControl.Dispose();
