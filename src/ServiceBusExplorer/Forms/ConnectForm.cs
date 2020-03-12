@@ -223,6 +223,26 @@ namespace ServiceBusExplorer.Forms
 
         private void btnOk_Click(object sender, EventArgs e)
         {
+            BuildCurrentConnectionString();
+            if (string.IsNullOrWhiteSpace(ConnectionString))
+            {
+                MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
+                return;
+            }
+            DialogResult = DialogResult.OK;
+            ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
+            FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
+            FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
+            FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
+            connectionStringIndex = cboServiceBusNamespace.SelectedIndex;
+            if (cboServiceBusNamespace.Text == EnterConnectionString)
+            {
+                connectionString = ConnectionString;
+            }
+        }
+
+        private void BuildCurrentConnectionString()
+        {
             var connectionStringType = cboServiceBusNamespace.SelectedIndex > 1
                 ? serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text].ConnectionStringType
                 : ServiceBusNamespaceType.Custom;
@@ -235,15 +255,11 @@ namespace ServiceBusExplorer.Forms
             var containsStsEndpoint = !string.IsNullOrWhiteSpace(Key) &&
                                       !string.IsNullOrWhiteSpace(serviceBusHelper.ServiceBusNamespaces[Key].StsEndpoint);
 
+            txtUri.Text = txtUri.Text.Trim();
             if (cboServiceBusNamespace.Text == EnterConnectionString ||
                 connectionStringType == ServiceBusNamespaceType.OnPremises || containsStsEndpoint)
             {
-                ConnectionString = txtUri.Text.Trim();
-                if (string.IsNullOrWhiteSpace(ConnectionString))
-                {
-                    MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
-                    return;
-                }
+                ConnectionString = txtUri.Text;
             }
             else
             {
@@ -285,16 +301,6 @@ namespace ServiceBusExplorer.Forms
                             EntityPath);
                     }
                 }
-            }
-            DialogResult = DialogResult.OK;
-            ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
-            FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
-            FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
-            FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
-            connectionStringIndex = cboServiceBusNamespace.SelectedIndex;
-            if (cboServiceBusNamespace.Text == EnterConnectionString)
-            {
-                connectionString = txtUri.Text;
             }
         }
 
@@ -406,6 +412,7 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
             var ns = serviceBusHelper.ServiceBusNamespaces[cboServiceBusNamespace.Text];
+            btnSave.Visible = ns.UserCreated;
             btnRename.Visible = ns.UserCreated;
             btnDelete.Visible = ns.UserCreated;
 
@@ -611,17 +618,18 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                txtUri.Text = txtUri.Text.Trim();
-                if (string.IsNullOrWhiteSpace(txtUri.Text))
-                {
-                    MainForm.StaticWriteToLog("The connection string of the Service Bus namespace cannot be null.");
-                    return;
-                }
-
+                var key = cboServiceBusNamespace.Text;
+                var isNewServiceBusNamespace = (key == EnterConnectionString);
                 ServiceBusConnectionStringBuilder serviceBusConnectionStringBuilder;
                 try
                 {
-                    serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(txtUri.Text);
+                    BuildCurrentConnectionString();
+                    if (string.IsNullOrWhiteSpace(ConnectionString))
+                    {
+                        MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
+                        return;
+                    }
+                    serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
                 }
                 catch (Exception)
                 {
@@ -652,43 +660,55 @@ namespace ServiceBusExplorer.Forms
 
                 var index = host.IndexOf(".", StringComparison.Ordinal);
 
-                var key = index > 0 ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(host.Substring(0, index)) : "MyNamespace";
 
-                using (var parameterForm = new ParameterForm("Enter the key for the Service Bus namespace",
-                    new List<string> { "Key" },
-                    new List<string> { key },
-                    new List<bool> { false }))
+                if (isNewServiceBusNamespace)
                 {
-                    if (parameterForm.ShowDialog() != DialogResult.OK)
+                    key = index > 0 ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(host.Substring(0, index)) : "MyNamespace";
+                    using (var parameterForm = new ParameterForm("Enter the key for the Service Bus namespace",
+                        new List<string> {"Key"},
+                        new List<string> {key},
+                        new List<bool> {false}))
                     {
-                        return;
-                    }
-                    key = parameterForm.ParameterValues[0];
-                    if (string.IsNullOrWhiteSpace(key))
-                    {
-                        MainForm.StaticWriteToLog("The key of the Service Bus namespace cannot be null.");
-                        return;
-                    }
-                    var value = txtUri.Text;
+                        if (parameterForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
 
-                    try
+                        key = parameterForm.ParameterValues[0];
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    MainForm.StaticWriteToLog("The key of the Service Bus namespace cannot be null.");
+                    return;
+                }
+                var value = ConnectionString;
+
+                try
+                {
+                    if (isNewServiceBusNamespace)
                     {
                         ConfigurationHelper.AddServiceBusNamespace(configFileUse, key, value, MainForm.StaticWriteToLog);
                     }
-                    catch (ArgumentNullException ex)
+                    else
                     {
-                        MainForm.StaticWriteToLog(ex.Message);
+                        ConfigurationHelper.UpdateServiceBusNamespace(configFileUse, key, key, value, MainForm.StaticWriteToLog);
                     }
-
-                    serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog));
-                    cboServiceBusNamespace.Items.Clear();
-                    cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
-                    cboServiceBusNamespace.Items.Add(EnterConnectionString);
-
-                    // ReSharper disable once CoVariantArrayConversion
-                    cboServiceBusNamespace.Items.AddRange(serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(s => s).ToArray());
-                    cboServiceBusNamespace.Text = key;
                 }
+                catch (ArgumentNullException ex)
+                {
+                    MainForm.StaticWriteToLog(ex.Message);
+                }
+
+                serviceBusHelper.ServiceBusNamespaces[key] = ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog);
+                cboServiceBusNamespace.Items.Clear();
+                cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
+                cboServiceBusNamespace.Items.Add(EnterConnectionString);
+
+                // ReSharper disable once CoVariantArrayConversion
+                cboServiceBusNamespace.Items.AddRange(serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(s => s).ToArray());
+                cboServiceBusNamespace.Text = key;
             }
             catch (Exception ex)
             {
