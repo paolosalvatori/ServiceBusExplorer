@@ -198,6 +198,14 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.EncodingType = configuration.GetEnumValue
                 (ConfigurationParameters.Encoding, currentSettings.EncodingType, writeToLog);
 
+            resultProperties.ProxyOverrideDefault = configuration.GetBoolValue(ConfigurationParameters.ProxyOverrideDefault, currentSettings.ProxyOverrideDefault, writeToLog);
+            resultProperties.ProxyUseDefaultCredentials = configuration.GetBoolValue(ConfigurationParameters.ProxyUseDefaultCredentials, currentSettings.ProxyUseDefaultCredentials, writeToLog);
+            resultProperties.ProxyBypassOnLocal = configuration.GetBoolValue(ConfigurationParameters.ProxyBypassOnLocal, currentSettings.ProxyBypassOnLocal, writeToLog);
+            resultProperties.ProxyAddress = configuration.GetStringValue(ConfigurationParameters.ProxyAddress, string.Empty);
+            resultProperties.ProxyBypassList = configuration.GetStringValue(ConfigurationParameters.ProxyBypassList, string.Empty);
+            resultProperties.ProxyUserName = configuration.GetStringValue(ConfigurationParameters.ProxyUserName, string.Empty);
+            resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
+
             return resultProperties;
         }
         #endregion

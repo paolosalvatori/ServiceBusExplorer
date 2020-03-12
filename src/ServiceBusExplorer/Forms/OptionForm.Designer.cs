@@ -123,6 +123,21 @@ namespace ServiceBusExplorer.Forms
             this.label4 = new System.Windows.Forms.Label();
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
             this.lblConnectivityMode = new System.Windows.Forms.Label();
+            this.tabPageProxy = new System.Windows.Forms.TabPage();
+            this.txtProxyPassword = new System.Windows.Forms.TextBox();
+            this.useDefaultProxyCredentialsCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblProxyPassword = new System.Windows.Forms.Label();
+            this.lblProxyDefaultCredentials = new System.Windows.Forms.Label();
+            this.txtProxyUserName = new System.Windows.Forms.TextBox();
+            this.lblProxyUser = new System.Windows.Forms.Label();
+            this.bypassProxyOnLocalAddressesCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblBypassProxyOnLocalAddresses = new System.Windows.Forms.Label();
+            this.txtProxyBypassList = new System.Windows.Forms.TextBox();
+            this.lblProxyBypass = new System.Windows.Forms.Label();
+            this.overrideDefaultProxyCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblOverrideProxy = new System.Windows.Forms.Label();
+            this.txtProxyAddress = new System.Windows.Forms.TextBox();
+            this.lblProxyAddress = new System.Windows.Forms.Label();
             this.mainPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -142,6 +157,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageSending.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).BeginInit();
             this.tabPageConnectivity.SuspendLayout();
+            this.tabPageProxy.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -329,6 +345,7 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Controls.Add(this.tabPageReceiving);
             this.tabOptionsControl.Controls.Add(this.tabPageSending);
             this.tabOptionsControl.Controls.Add(this.tabPageConnectivity);
+            this.tabOptionsControl.Controls.Add(this.tabPageProxy);
             this.tabOptionsControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabOptionsControl.Location = new System.Drawing.Point(32, 75);
             this.tabOptionsControl.Margin = new System.Windows.Forms.Padding(6);
@@ -1136,6 +1153,180 @@ namespace ServiceBusExplorer.Forms
             this.lblConnectivityMode.TabIndex = 27;
             this.lblConnectivityMode.Text = "Connectivity Mode for WindowsAzure.ServiceBus.dll (old client)";
             // 
+            // tabPageProxy
+            // 
+            this.tabPageProxy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageProxy.Controls.Add(this.txtProxyPassword);
+            this.tabPageProxy.Controls.Add(this.useDefaultProxyCredentialsCheckBox);
+            this.tabPageProxy.Controls.Add(this.lblProxyPassword);
+            this.tabPageProxy.Controls.Add(this.lblProxyDefaultCredentials);
+            this.tabPageProxy.Controls.Add(this.txtProxyUserName);
+            this.tabPageProxy.Controls.Add(this.lblProxyUser);
+            this.tabPageProxy.Controls.Add(this.bypassProxyOnLocalAddressesCheckBox);
+            this.tabPageProxy.Controls.Add(this.lblBypassProxyOnLocalAddresses);
+            this.tabPageProxy.Controls.Add(this.txtProxyBypassList);
+            this.tabPageProxy.Controls.Add(this.lblProxyBypass);
+            this.tabPageProxy.Controls.Add(this.overrideDefaultProxyCheckBox);
+            this.tabPageProxy.Controls.Add(this.lblOverrideProxy);
+            this.tabPageProxy.Controls.Add(this.txtProxyAddress);
+            this.tabPageProxy.Controls.Add(this.lblProxyAddress);
+            this.tabPageProxy.Location = new System.Drawing.Point(4, 22);
+            this.tabPageProxy.Name = "tabPageProxy";
+            this.tabPageProxy.Size = new System.Drawing.Size(567, 470);
+            this.tabPageProxy.TabIndex = 4;
+            this.tabPageProxy.Text = "Proxy";
+            // 
+            // txtProxyPassword
+            // 
+            this.txtProxyPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyPassword.Location = new System.Drawing.Point(188, 244);
+            this.txtProxyPassword.Name = "txtProxyPassword";
+            this.txtProxyPassword.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyPassword.TabIndex = 7;
+            this.txtProxyPassword.UseSystemPasswordChar = true;
+            this.txtProxyPassword.TextChanged += new System.EventHandler(this.txtProxyPassword_TextChanged);
+            // 
+            // useDefaultProxyCredentialsCheckBox
+            // 
+            this.useDefaultProxyCredentialsCheckBox.AutoSize = true;
+            this.useDefaultProxyCredentialsCheckBox.Checked = true;
+            this.useDefaultProxyCredentialsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useDefaultProxyCredentialsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.useDefaultProxyCredentialsCheckBox.Location = new System.Drawing.Point(188, 184);
+            this.useDefaultProxyCredentialsCheckBox.Name = "useDefaultProxyCredentialsCheckBox";
+            this.useDefaultProxyCredentialsCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.useDefaultProxyCredentialsCheckBox.TabIndex = 5;
+            this.useDefaultProxyCredentialsCheckBox.UseVisualStyleBackColor = true;
+            this.useDefaultProxyCredentialsCheckBox.CheckedChanged += new System.EventHandler(this.useDefaultProxyCredentialsCheckBox_CheckedChanged);
+            // 
+            // lblProxyPassword
+            // 
+            this.lblProxyPassword.AutoSize = true;
+            this.lblProxyPassword.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyPassword.Location = new System.Drawing.Point(13, 248);
+            this.lblProxyPassword.Name = "lblProxyPassword";
+            this.lblProxyPassword.Size = new System.Drawing.Size(56, 13);
+            this.lblProxyPassword.TabIndex = 53;
+            this.lblProxyPassword.Text = "Password:";
+            // 
+            // lblProxyDefaultCredentials
+            // 
+            this.lblProxyDefaultCredentials.AutoSize = true;
+            this.lblProxyDefaultCredentials.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyDefaultCredentials.Location = new System.Drawing.Point(13, 184);
+            this.lblProxyDefaultCredentials.Name = "lblProxyDefaultCredentials";
+            this.lblProxyDefaultCredentials.Size = new System.Drawing.Size(121, 13);
+            this.lblProxyDefaultCredentials.TabIndex = 59;
+            this.lblProxyDefaultCredentials.Text = "Use Default Credentials:";
+            // 
+            // txtProxyUserName
+            // 
+            this.txtProxyUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyUserName.Location = new System.Drawing.Point(188, 212);
+            this.txtProxyUserName.Name = "txtProxyUserName";
+            this.txtProxyUserName.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyUserName.TabIndex = 6;
+            this.txtProxyUserName.TextChanged += new System.EventHandler(this.txtProxyUser_TextChanged);
+            // 
+            // lblProxyUser
+            // 
+            this.lblProxyUser.AutoSize = true;
+            this.lblProxyUser.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyUser.Location = new System.Drawing.Point(13, 216);
+            this.lblProxyUser.Name = "lblProxyUser";
+            this.lblProxyUser.Size = new System.Drawing.Size(63, 13);
+            this.lblProxyUser.TabIndex = 51;
+            this.lblProxyUser.Text = "User Name:";
+            // 
+            // bypassProxyOnLocalAddressesCheckBox
+            // 
+            this.bypassProxyOnLocalAddressesCheckBox.AutoSize = true;
+            this.bypassProxyOnLocalAddressesCheckBox.Checked = true;
+            this.bypassProxyOnLocalAddressesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.bypassProxyOnLocalAddressesCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.bypassProxyOnLocalAddressesCheckBox.Location = new System.Drawing.Point(188, 152);
+            this.bypassProxyOnLocalAddressesCheckBox.Name = "bypassProxyOnLocalAddressesCheckBox";
+            this.bypassProxyOnLocalAddressesCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.bypassProxyOnLocalAddressesCheckBox.TabIndex = 4;
+            this.bypassProxyOnLocalAddressesCheckBox.UseVisualStyleBackColor = true;
+            this.bypassProxyOnLocalAddressesCheckBox.CheckedChanged += new System.EventHandler(this.bypassProxyOnLocalAddressesCheckBox_CheckedChanged);
+            // 
+            // lblBypassProxyOnLocalAddresses
+            // 
+            this.lblBypassProxyOnLocalAddresses.AutoSize = true;
+            this.lblBypassProxyOnLocalAddresses.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblBypassProxyOnLocalAddresses.Location = new System.Drawing.Point(13, 152);
+            this.lblBypassProxyOnLocalAddresses.Name = "lblBypassProxyOnLocalAddresses";
+            this.lblBypassProxyOnLocalAddresses.Size = new System.Drawing.Size(164, 13);
+            this.lblBypassProxyOnLocalAddresses.TabIndex = 57;
+            this.lblBypassProxyOnLocalAddresses.Text = "Bypass Proxy for local addresses:";
+            // 
+            // txtProxyBypassList
+            // 
+            this.txtProxyBypassList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyBypassList.Location = new System.Drawing.Point(188, 84);
+            this.txtProxyBypassList.Multiline = true;
+            this.txtProxyBypassList.Name = "txtProxyBypassList";
+            this.txtProxyBypassList.Size = new System.Drawing.Size(359, 50);
+            this.txtProxyBypassList.TabIndex = 3;
+            this.txtProxyBypassList.TextChanged += new System.EventHandler(this.txtProxyBypassList_TextChanged);
+            // 
+            // lblProxyBypass
+            // 
+            this.lblProxyBypass.AutoSize = true;
+            this.lblProxyBypass.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyBypass.Location = new System.Drawing.Point(13, 88);
+            this.lblProxyBypass.Name = "lblProxyBypass";
+            this.lblProxyBypass.Size = new System.Drawing.Size(88, 13);
+            this.lblProxyBypass.TabIndex = 55;
+            this.lblProxyBypass.Text = "Bypass Proxy for:";
+            // 
+            // overrideDefaultProxyCheckBox
+            // 
+            this.overrideDefaultProxyCheckBox.AutoSize = true;
+            this.overrideDefaultProxyCheckBox.Checked = true;
+            this.overrideDefaultProxyCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.overrideDefaultProxyCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.overrideDefaultProxyCheckBox.Location = new System.Drawing.Point(188, 24);
+            this.overrideDefaultProxyCheckBox.Name = "overrideDefaultProxyCheckBox";
+            this.overrideDefaultProxyCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.overrideDefaultProxyCheckBox.TabIndex = 1;
+            this.overrideDefaultProxyCheckBox.UseVisualStyleBackColor = true;
+            this.overrideDefaultProxyCheckBox.CheckedChanged += new System.EventHandler(this.overrideDefaultProxyCheckBox_CheckedChanged);
+            // 
+            // lblOverrideProxy
+            // 
+            this.lblOverrideProxy.AutoSize = true;
+            this.lblOverrideProxy.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblOverrideProxy.Location = new System.Drawing.Point(13, 24);
+            this.lblOverrideProxy.Name = "lblOverrideProxy";
+            this.lblOverrideProxy.Size = new System.Drawing.Size(168, 13);
+            this.lblOverrideProxy.TabIndex = 54;
+            this.lblOverrideProxy.Text = "Override system/app.config proxy:";
+            // 
+            // txtProxyAddress
+            // 
+            this.txtProxyAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyAddress.Location = new System.Drawing.Point(188, 52);
+            this.txtProxyAddress.Name = "txtProxyAddress";
+            this.txtProxyAddress.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyAddress.TabIndex = 2;
+            this.txtProxyAddress.TextChanged += new System.EventHandler(this.txtProxyAddress_TextChanged);
+            // 
+            // lblProxyAddress
+            // 
+            this.lblProxyAddress.AutoSize = true;
+            this.lblProxyAddress.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyAddress.Location = new System.Drawing.Point(13, 56);
+            this.lblProxyAddress.Name = "lblProxyAddress";
+            this.lblProxyAddress.Size = new System.Drawing.Size(77, 13);
+            this.lblProxyAddress.TabIndex = 52;
+            this.lblProxyAddress.Text = "Proxy Address:";
+            // 
             // mainPanel
             // 
             this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1198,6 +1389,8 @@ namespace ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).EndInit();
             this.tabPageConnectivity.ResumeLayout(false);
             this.tabPageConnectivity.PerformLayout();
+            this.tabPageProxy.ResumeLayout(false);
+            this.tabPageProxy.PerformLayout();
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -1275,5 +1468,20 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.CheckBox useAmqpWebSocketsCheckBox;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TabPage tabPageProxy;
+        private System.Windows.Forms.TextBox txtProxyPassword;
+        private System.Windows.Forms.CheckBox useDefaultProxyCredentialsCheckBox;
+        private System.Windows.Forms.Label lblProxyPassword;
+        private System.Windows.Forms.Label lblProxyDefaultCredentials;
+        private System.Windows.Forms.TextBox txtProxyUserName;
+        private System.Windows.Forms.Label lblProxyUser;
+        private System.Windows.Forms.CheckBox bypassProxyOnLocalAddressesCheckBox;
+        private System.Windows.Forms.Label lblBypassProxyOnLocalAddresses;
+        private System.Windows.Forms.TextBox txtProxyBypassList;
+        private System.Windows.Forms.Label lblProxyBypass;
+        private System.Windows.Forms.CheckBox overrideDefaultProxyCheckBox;
+        private System.Windows.Forms.Label lblOverrideProxy;
+        private System.Windows.Forms.TextBox txtProxyAddress;
+        private System.Windows.Forms.Label lblProxyAddress;
     }
 }
