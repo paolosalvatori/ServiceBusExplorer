@@ -59,50 +59,6 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
-            this.lblLogFontSize = new System.Windows.Forms.Label();
-            this.logNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblTreeViewFontSize = new System.Windows.Forms.Label();
-            this.treeViewNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblRetryCount = new System.Windows.Forms.Label();
-            this.retryCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblRetryTimeout = new System.Windows.Forms.Label();
-            this.retryTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblTop = new System.Windows.Forms.Label();
-            this.topNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblReceiveTimeout = new System.Windows.Forms.Label();
-            this.receiveTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblServerTimeout = new System.Windows.Forms.Label();
-            this.serverTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblPrefetchCount = new System.Windows.Forms.Label();
-            this.saveMessageToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.prefetchCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.savePropertiesToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.lblSaveMessageOnExit = new System.Windows.Forms.Label();
-            this.lblSavePropertiesOnExit = new System.Windows.Forms.Label();
-            this.lblSenderThinkTime = new System.Windows.Forms.Label();
-            this.senderThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblReceiverThinkTime = new System.Windows.Forms.Label();
-            this.receiverThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblLabel = new System.Windows.Forms.Label();
-            this.txtLabel = new System.Windows.Forms.TextBox();
-            this.lblMessageText = new System.Windows.Forms.Label();
-            this.txtMessageText = new System.Windows.Forms.TextBox();
-            this.lblMessageFile = new System.Windows.Forms.Label();
-            this.txtMessageFile = new System.Windows.Forms.TextBox();
-            this.btnOpen = new System.Windows.Forms.Button();
-            this.lblMonitorRefreshInterval = new System.Windows.Forms.Label();
-            this.monitorRefreshIntervalNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.lblConnectivityMode = new System.Windows.Forms.Label();
-            this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
-            this.cboEncodingType = new System.Windows.Forms.ComboBox();
-            this.lblEncoding = new System.Windows.Forms.Label();
-            this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
-            this.lblShowMessageCount = new System.Windows.Forms.Label();
-            this.lblSelectedEntities = new System.Windows.Forms.Label();
-            this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
-            this.lblUseAscii = new System.Windows.Forms.Label();
-            this.useAsciiCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.cboConfigFile = new System.Windows.Forms.ComboBox();
@@ -112,25 +68,85 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageContentType = new System.Windows.Forms.TextBox();
             this.cboDefaultMessageBodyType = new System.Windows.Forms.ComboBox();
             this.LabelDefaultMessageBodyType = new System.Windows.Forms.Label();
+            this.useAsciiCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblUseAscii = new System.Windows.Forms.Label();
+            this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
+            this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
             this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.lblSelectedEntities = new System.Windows.Forms.Label();
+            this.lblShowMessageCount = new System.Windows.Forms.Label();
+            this.showMessageCountCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblEncoding = new System.Windows.Forms.Label();
+            this.cboEncodingType = new System.Windows.Forms.ComboBox();
+            this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
+            this.lblConnectivityMode = new System.Windows.Forms.Label();
+            this.monitorRefreshIntervalNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblMonitorRefreshInterval = new System.Windows.Forms.Label();
+            this.btnOpen = new System.Windows.Forms.Button();
+            this.txtMessageFile = new System.Windows.Forms.TextBox();
+            this.lblMessageFile = new System.Windows.Forms.Label();
+            this.txtMessageText = new System.Windows.Forms.TextBox();
+            this.lblMessageText = new System.Windows.Forms.Label();
+            this.txtLabel = new System.Windows.Forms.TextBox();
+            this.lblLabel = new System.Windows.Forms.Label();
+            this.receiverThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblReceiverThinkTime = new System.Windows.Forms.Label();
+            this.senderThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblSenderThinkTime = new System.Windows.Forms.Label();
+            this.lblSavePropertiesOnExit = new System.Windows.Forms.Label();
+            this.lblSaveMessageOnExit = new System.Windows.Forms.Label();
+            this.savePropertiesToFileCheckBox = new System.Windows.Forms.CheckBox();
+            this.prefetchCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.saveMessageToFileCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblPrefetchCount = new System.Windows.Forms.Label();
+            this.serverTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblServerTimeout = new System.Windows.Forms.Label();
+            this.receiveTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblReceiveTimeout = new System.Windows.Forms.Label();
+            this.topNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblTop = new System.Windows.Forms.Label();
+            this.retryTimeoutNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblRetryTimeout = new System.Windows.Forms.Label();
+            this.retryCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblRetryCount = new System.Windows.Forms.Label();
+            this.treeViewNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblTreeViewFontSize = new System.Windows.Forms.Label();
+            this.logNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.lblLogFontSize = new System.Windows.Forms.Label();
+            this.grouperProxy = new ServiceBusExplorer.Controls.Grouper();
+            this.txtProxyPassword = new System.Windows.Forms.TextBox();
+            this.useDefaultProxyCredentialsCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblProxyPassword = new System.Windows.Forms.Label();
+            this.lblProxyDefaultCredentials = new System.Windows.Forms.Label();
+            this.txtProxyUserName = new System.Windows.Forms.TextBox();
+            this.lblProxyUser = new System.Windows.Forms.Label();
+            this.bypassProxyOnLocalAddressesCheckBox = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtProxyBypassList = new System.Windows.Forms.TextBox();
+            this.lblProxyBypass = new System.Windows.Forms.Label();
+            this.overrideDefaultProxyCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblOverrideProxy = new System.Windows.Forms.Label();
+            this.txtProxyAddress = new System.Windows.Forms.TextBox();
+            this.lblAddress = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.retryCountNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.retryTimeoutNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.topNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.receiveTimeoutNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.serverTimeoutNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.prefetchCountNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).BeginInit();
             this.mainPanel.SuspendLayout();
             this.grouperSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.prefetchCountNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.serverTimeoutNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.receiveTimeoutNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.topNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.retryTimeoutNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.retryCountNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).BeginInit();
+            this.grouperProxy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
@@ -143,7 +159,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(275, 544);
+            this.btnOk.Location = new System.Drawing.Point(275, 829);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 4;
@@ -163,7 +179,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(355, 544);
+            this.btnCancel.Location = new System.Drawing.Point(355, 829);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 0;
@@ -181,7 +197,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Location = new System.Drawing.Point(515, 544);
+            this.btnReset.Location = new System.Drawing.Point(515, 829);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(72, 24);
             this.btnReset.TabIndex = 3;
@@ -191,7 +207,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnReset.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
-            // btnApply
+            // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -199,586 +215,13 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(435, 544);
+            this.btnSave.Location = new System.Drawing.Point(435, 829);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 2;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // lblLogFontSize
-            // 
-            this.lblLogFontSize.AutoSize = true;
-            this.lblLogFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLogFontSize.Location = new System.Drawing.Point(13, 24);
-            this.lblLogFontSize.Name = "lblLogFontSize";
-            this.lblLogFontSize.Size = new System.Drawing.Size(75, 13);
-            this.lblLogFontSize.TabIndex = 3;
-            this.lblLogFontSize.Text = "Log Font Size:";
-            // 
-            // logNumericUpDown
-            // 
-            this.logNumericUpDown.DecimalPlaces = 2;
-            this.logNumericUpDown.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            131072});
-            this.logNumericUpDown.Location = new System.Drawing.Point(188, 20);
-            this.logNumericUpDown.Name = "logNumericUpDown";
-            this.logNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.logNumericUpDown.TabIndex = 4;
-            this.logNumericUpDown.ValueChanged += new System.EventHandler(this.logNumericUpDown_ValueChanged);
-            // 
-            // lblTreeViewFontSize
-            // 
-            this.lblTreeViewFontSize.AutoSize = true;
-            this.lblTreeViewFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTreeViewFontSize.Location = new System.Drawing.Point(13, 56);
-            this.lblTreeViewFontSize.Name = "lblTreeViewFontSize";
-            this.lblTreeViewFontSize.Size = new System.Drawing.Size(105, 13);
-            this.lblTreeViewFontSize.TabIndex = 7;
-            this.lblTreeViewFontSize.Text = "Tree View Font Size:";
-            // 
-            // treeViewNumericUpDown
-            // 
-            this.treeViewNumericUpDown.DecimalPlaces = 2;
-            this.treeViewNumericUpDown.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            131072});
-            this.treeViewNumericUpDown.Location = new System.Drawing.Point(188, 52);
-            this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
-            this.treeViewNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.treeViewNumericUpDown.TabIndex = 8;
-            this.treeViewNumericUpDown.ValueChanged += new System.EventHandler(this.treeViewNumericUpDown_ValueChanged);
-            // 
-            // lblRetryCount
-            // 
-            this.lblRetryCount.AutoSize = true;
-            this.lblRetryCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRetryCount.Location = new System.Drawing.Point(13, 89);
-            this.lblRetryCount.Name = "lblRetryCount";
-            this.lblRetryCount.Size = new System.Drawing.Size(66, 13);
-            this.lblRetryCount.TabIndex = 11;
-            this.lblRetryCount.Text = "Retry Count:";
-            // 
-            // retryCountNumericUpDown
-            // 
-            this.retryCountNumericUpDown.Location = new System.Drawing.Point(188, 84);
-            this.retryCountNumericUpDown.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
-            this.retryCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.retryCountNumericUpDown.TabIndex = 12;
-            this.retryCountNumericUpDown.ValueChanged += new System.EventHandler(this.retryCountNumericUpDown_ValueChanged);
-            // 
-            // lblRetryTimeout
-            // 
-            this.lblRetryTimeout.AutoSize = true;
-            this.lblRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRetryTimeout.Location = new System.Drawing.Point(13, 120);
-            this.lblRetryTimeout.Name = "lblRetryTimeout";
-            this.lblRetryTimeout.Size = new System.Drawing.Size(141, 13);
-            this.lblRetryTimeout.TabIndex = 15;
-            this.lblRetryTimeout.Text = "Retry Timeout (milliseconds):";
-            // 
-            // retryTimeoutNumericUpDown
-            // 
-            this.retryTimeoutNumericUpDown.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.retryTimeoutNumericUpDown.Location = new System.Drawing.Point(188, 116);
-            this.retryTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
-            this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.retryTimeoutNumericUpDown.TabIndex = 16;
-            this.retryTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.retryTimeoutNumericUpDown_ValueChanged);
-            // 
-            // lblTop
-            // 
-            this.lblTop.AutoSize = true;
-            this.lblTop.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTop.Location = new System.Drawing.Point(284, 120);
-            this.lblTop.Name = "lblTop";
-            this.lblTop.Size = new System.Drawing.Size(60, 13);
-            this.lblTop.TabIndex = 17;
-            this.lblTop.Text = "Top Count:";
-            // 
-            // topNumericUpDown
-            // 
-            this.topNumericUpDown.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.topNumericUpDown.Location = new System.Drawing.Point(469, 116);
-            this.topNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.topNumericUpDown.Name = "topNumericUpDown";
-            this.topNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.topNumericUpDown.TabIndex = 18;
-            this.topNumericUpDown.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.topNumericUpDown.ValueChanged += new System.EventHandler(this.topNumericUpDown_ValueChanged);
-            // 
-            // lblReceiveTimeout
-            // 
-            this.lblReceiveTimeout.AutoSize = true;
-            this.lblReceiveTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiveTimeout.Location = new System.Drawing.Point(284, 24);
-            this.lblReceiveTimeout.Name = "lblReceiveTimeout";
-            this.lblReceiveTimeout.Size = new System.Drawing.Size(140, 13);
-            this.lblReceiveTimeout.TabIndex = 5;
-            this.lblReceiveTimeout.Text = "Receive Timeout (seconds):";
-            // 
-            // receiveTimeoutNumericUpDown
-            // 
-            this.receiveTimeoutNumericUpDown.Location = new System.Drawing.Point(469, 20);
-            this.receiveTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.receiveTimeoutNumericUpDown.Name = "receiveTimeoutNumericUpDown";
-            this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.receiveTimeoutNumericUpDown.TabIndex = 6;
-            this.receiveTimeoutNumericUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.receiveTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.receiveTimeoutNumericUpDown_ValueChanged);
-            // 
-            // lblServerTimeout
-            // 
-            this.lblServerTimeout.AutoSize = true;
-            this.lblServerTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblServerTimeout.Location = new System.Drawing.Point(284, 56);
-            this.lblServerTimeout.Name = "lblServerTimeout";
-            this.lblServerTimeout.Size = new System.Drawing.Size(131, 13);
-            this.lblServerTimeout.TabIndex = 9;
-            this.lblServerTimeout.Text = "Server Timeout (seconds):";
-            // 
-            // serverTimeoutNumericUpDown
-            // 
-            this.serverTimeoutNumericUpDown.Location = new System.Drawing.Point(469, 52);
-            this.serverTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.serverTimeoutNumericUpDown.Name = "serverTimeoutNumericUpDown";
-            this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.serverTimeoutNumericUpDown.TabIndex = 10;
-            this.serverTimeoutNumericUpDown.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.serverTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.sessionTimeoutNumericUpDown_ValueChanged);
-            // 
-            // lblPrefetchCount
-            // 
-            this.lblPrefetchCount.AutoSize = true;
-            this.lblPrefetchCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblPrefetchCount.Location = new System.Drawing.Point(284, 89);
-            this.lblPrefetchCount.Name = "lblPrefetchCount";
-            this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
-            this.lblPrefetchCount.TabIndex = 13;
-            this.lblPrefetchCount.Text = "Prefetch Count:";
-            // 
-            // saveMessageToFileCheckBox
-            // 
-            this.saveMessageToFileCheckBox.AutoSize = true;
-            this.saveMessageToFileCheckBox.Checked = true;
-            this.saveMessageToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.saveMessageToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveMessageToFileCheckBox.Location = new System.Drawing.Point(188, 280);
-            this.saveMessageToFileCheckBox.Name = "saveMessageToFileCheckBox";
-            this.saveMessageToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveMessageToFileCheckBox.TabIndex = 35;
-            this.saveMessageToFileCheckBox.UseVisualStyleBackColor = true;
-            this.saveMessageToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveMessageToFileCheckBox_CheckedChanged);
-            // 
-            // prefetchCountNumericUpDown
-            // 
-            this.prefetchCountNumericUpDown.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.prefetchCountNumericUpDown.Location = new System.Drawing.Point(469, 84);
-            this.prefetchCountNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.prefetchCountNumericUpDown.Name = "prefetchCountNumericUpDown";
-            this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.prefetchCountNumericUpDown.TabIndex = 14;
-            this.prefetchCountNumericUpDown.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.prefetchCountNumericUpDown.ValueChanged += new System.EventHandler(this.prefetchCountNumericUpDown_ValueChanged);
-            // 
-            // savePropertiesToFileCheckBox
-            // 
-            this.savePropertiesToFileCheckBox.AutoSize = true;
-            this.savePropertiesToFileCheckBox.Checked = true;
-            this.savePropertiesToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.savePropertiesToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.savePropertiesToFileCheckBox.Location = new System.Drawing.Point(532, 280);
-            this.savePropertiesToFileCheckBox.Name = "savePropertiesToFileCheckBox";
-            this.savePropertiesToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.savePropertiesToFileCheckBox.TabIndex = 37;
-            this.savePropertiesToFileCheckBox.UseVisualStyleBackColor = true;
-            this.savePropertiesToFileCheckBox.CheckedChanged += new System.EventHandler(this.savePropertiesToFileCheckBox_CheckedChanged);
-            // 
-            // lblSaveMessageOnExit
-            // 
-            this.lblSaveMessageOnExit.AutoSize = true;
-            this.lblSaveMessageOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSaveMessageOnExit.Location = new System.Drawing.Point(13, 280);
-            this.lblSaveMessageOnExit.Name = "lblSaveMessageOnExit";
-            this.lblSaveMessageOnExit.Size = new System.Drawing.Size(174, 13);
-            this.lblSaveMessageOnExit.TabIndex = 34;
-            this.lblSaveMessageOnExit.Text = "Save Message Body to File on Exit:";
-            // 
-            // lblSavePropertiesOnExit
-            // 
-            this.lblSavePropertiesOnExit.AutoSize = true;
-            this.lblSavePropertiesOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(284, 280);
-            this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
-            this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(197, 13);
-            this.lblSavePropertiesOnExit.TabIndex = 36;
-            this.lblSavePropertiesOnExit.Text = "Save Message Properties to File on Exit:";
-            // 
-            // lblSenderThinkTime
-            // 
-            this.lblSenderThinkTime.AutoSize = true;
-            this.lblSenderThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSenderThinkTime.Location = new System.Drawing.Point(13, 152);
-            this.lblSenderThinkTime.Name = "lblSenderThinkTime";
-            this.lblSenderThinkTime.Size = new System.Drawing.Size(165, 13);
-            this.lblSenderThinkTime.TabIndex = 19;
-            this.lblSenderThinkTime.Text = "Sender Think Time (milliseconds):";
-            // 
-            // senderThinkTimeNumericUpDown
-            // 
-            this.senderThinkTimeNumericUpDown.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.senderThinkTimeNumericUpDown.Location = new System.Drawing.Point(188, 148);
-            this.senderThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.senderThinkTimeNumericUpDown.Name = "senderThinkTimeNumericUpDown";
-            this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.senderThinkTimeNumericUpDown.TabIndex = 20;
-            this.senderThinkTimeNumericUpDown.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.senderThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.senderThinkTimeNumericUpDown_ValueChanged);
-            // 
-            // lblReceiverThinkTime
-            // 
-            this.lblReceiverThinkTime.AutoSize = true;
-            this.lblReceiverThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblReceiverThinkTime.Location = new System.Drawing.Point(284, 152);
-            this.lblReceiverThinkTime.Name = "lblReceiverThinkTime";
-            this.lblReceiverThinkTime.Size = new System.Drawing.Size(174, 13);
-            this.lblReceiverThinkTime.TabIndex = 21;
-            this.lblReceiverThinkTime.Text = "Receiver Think Time (milliseconds):";
-            // 
-            // receiverThinkTimeNumericUpDown
-            // 
-            this.receiverThinkTimeNumericUpDown.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.receiverThinkTimeNumericUpDown.Location = new System.Drawing.Point(469, 148);
-            this.receiverThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.receiverThinkTimeNumericUpDown.Name = "receiverThinkTimeNumericUpDown";
-            this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.receiverThinkTimeNumericUpDown.TabIndex = 22;
-            this.receiverThinkTimeNumericUpDown.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.receiverThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.receiverThinkTimeNumericUpDown_ValueChanged);
-            // 
-            // lblLabel
-            // 
-            this.lblLabel.AutoSize = true;
-            this.lblLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLabel.Location = new System.Drawing.Point(13, 314);
-            this.lblLabel.Name = "lblLabel";
-            this.lblLabel.Size = new System.Drawing.Size(36, 13);
-            this.lblLabel.TabIndex = 38;
-            this.lblLabel.Text = "Label:";
-            // 
-            // txtLabel
-            // 
-            this.txtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLabel.Location = new System.Drawing.Point(188, 310);
-            this.txtLabel.Name = "txtLabel";
-            this.txtLabel.Size = new System.Drawing.Size(359, 20);
-            this.txtLabel.TabIndex = 39;
-            this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
-            // 
-            // lblMessageText
-            // 
-            this.lblMessageText.AutoSize = true;
-            this.lblMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMessageText.Location = new System.Drawing.Point(13, 374);
-            this.lblMessageText.Name = "lblMessageText";
-            this.lblMessageText.Size = new System.Drawing.Size(77, 13);
-            this.lblMessageText.TabIndex = 42;
-            this.lblMessageText.Text = "Message Text:";
-            // 
-            // txtMessageText
-            // 
-            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMessageText.Location = new System.Drawing.Point(188, 370);
-            this.txtMessageText.Name = "txtMessageText";
-            this.txtMessageText.Size = new System.Drawing.Size(320, 20);
-            this.txtMessageText.TabIndex = 43;
-            this.txtMessageText.TextChanged += new System.EventHandler(this.txtMessageText_TextChanged);
-            // 
-            // lblMessageFile
-            // 
-            this.lblMessageFile.AutoSize = true;
-            this.lblMessageFile.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMessageFile.Location = new System.Drawing.Point(13, 344);
-            this.lblMessageFile.Name = "lblMessageFile";
-            this.lblMessageFile.Size = new System.Drawing.Size(78, 13);
-            this.lblMessageFile.TabIndex = 40;
-            this.lblMessageFile.Text = "Message Path:";
-            // 
-            // txtMessageFile
-            // 
-            this.txtMessageFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMessageFile.Location = new System.Drawing.Point(188, 340);
-            this.txtMessageFile.Name = "txtMessageFile";
-            this.txtMessageFile.Size = new System.Drawing.Size(359, 20);
-            this.txtMessageFile.TabIndex = 41;
-            this.txtMessageFile.TextChanged += new System.EventHandler(this.txtMessageFile_TextChanged);
-            // 
-            // btnOpen
-            // 
-            this.btnOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpen.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpen.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpen.Location = new System.Drawing.Point(522, 369);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(24, 21);
-            this.btnOpen.TabIndex = 44;
-            this.btnOpen.Text = "...";
-            this.btnOpen.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnOpen.UseVisualStyleBackColor = false;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
-            this.btnOpen.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnOpen.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // lblMonitorRefreshInterval
-            // 
-            this.lblMonitorRefreshInterval.AutoSize = true;
-            this.lblMonitorRefreshInterval.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMonitorRefreshInterval.Location = new System.Drawing.Point(13, 184);
-            this.lblMonitorRefreshInterval.Name = "lblMonitorRefreshInterval";
-            this.lblMonitorRefreshInterval.Size = new System.Drawing.Size(172, 13);
-            this.lblMonitorRefreshInterval.TabIndex = 23;
-            this.lblMonitorRefreshInterval.Text = "Monitor Refresh Interval (seconds):";
-            // 
-            // monitorRefreshIntervalNumericUpDown
-            // 
-            this.monitorRefreshIntervalNumericUpDown.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.monitorRefreshIntervalNumericUpDown.Location = new System.Drawing.Point(188, 180);
-            this.monitorRefreshIntervalNumericUpDown.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.monitorRefreshIntervalNumericUpDown.Name = "monitorRefreshIntervalNumericUpDown";
-            this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.monitorRefreshIntervalNumericUpDown.TabIndex = 24;
-            this.monitorRefreshIntervalNumericUpDown.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            this.monitorRefreshIntervalNumericUpDown.ValueChanged += new System.EventHandler(this.monitorRefreshIntervalNumericUpDown_ValueChanged);
-            // 
-            // lblConnectivityMode
-            // 
-            this.lblConnectivityMode.AutoSize = true;
-            this.lblConnectivityMode.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblConnectivityMode.Location = new System.Drawing.Point(284, 184);
-            this.lblConnectivityMode.Name = "lblConnectivityMode";
-            this.lblConnectivityMode.Size = new System.Drawing.Size(98, 13);
-            this.lblConnectivityMode.TabIndex = 25;
-            this.lblConnectivityMode.Text = "Connectivity Mode:";
-            // 
-            // cboConnectivityMode
-            // 
-            this.cboConnectivityMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboConnectivityMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboConnectivityMode.FormattingEnabled = true;
-            this.cboConnectivityMode.Location = new System.Drawing.Point(469, 180);
-            this.cboConnectivityMode.Name = "cboConnectivityMode";
-            this.cboConnectivityMode.Size = new System.Drawing.Size(80, 21);
-            this.cboConnectivityMode.TabIndex = 26;
-            this.cboConnectivityMode.SelectedIndexChanged += new System.EventHandler(this.cboConnectivityMode_SelectedIndexChanged);
-            // 
-            // cboEncodingType
-            // 
-            this.cboEncodingType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboEncodingType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboEncodingType.FormattingEnabled = true;
-            this.cboEncodingType.Items.AddRange(new object[] {
-            "ASCII",
-            "UTF7",
-            "UTF8",
-            "UTF32",
-            "Unicode"});
-            this.cboEncodingType.Location = new System.Drawing.Point(469, 212);
-            this.cboEncodingType.Name = "cboEncodingType";
-            this.cboEncodingType.Size = new System.Drawing.Size(80, 21);
-            this.cboEncodingType.TabIndex = 30;
-            this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
-            // 
-            // lblEncoding
-            // 
-            this.lblEncoding.AutoSize = true;
-            this.lblEncoding.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEncoding.Location = new System.Drawing.Point(284, 216);
-            this.lblEncoding.Name = "lblEncoding";
-            this.lblEncoding.Size = new System.Drawing.Size(55, 13);
-            this.lblEncoding.TabIndex = 29;
-            this.lblEncoding.Text = "Encoding:";
-            // 
-            // showMessageCountCheckBox
-            // 
-            this.showMessageCountCheckBox.AutoSize = true;
-            this.showMessageCountCheckBox.Checked = true;
-            this.showMessageCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showMessageCountCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.showMessageCountCheckBox.Location = new System.Drawing.Point(188, 249);
-            this.showMessageCountCheckBox.Name = "showMessageCountCheckBox";
-            this.showMessageCountCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.showMessageCountCheckBox.TabIndex = 32;
-            this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
-            this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
-            // 
-            // lblShowMessageCount
-            // 
-            this.lblShowMessageCount.AutoSize = true;
-            this.lblShowMessageCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblShowMessageCount.Location = new System.Drawing.Point(13, 248);
-            this.lblShowMessageCount.Name = "lblShowMessageCount";
-            this.lblShowMessageCount.Size = new System.Drawing.Size(114, 13);
-            this.lblShowMessageCount.TabIndex = 31;
-            this.lblShowMessageCount.Text = "Show Message Count:";
-            // 
-            // lblSelectedEntities
-            // 
-            this.lblSelectedEntities.AutoSize = true;
-            this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(13, 435);
-            this.lblSelectedEntities.Name = "lblSelectedEntities";
-            this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
-            this.lblSelectedEntities.TabIndex = 47;
-            this.lblSelectedEntities.Text = "Selected Entities:";
-            // 
-            // saveCheckpointsToFileCheckBox
-            // 
-            this.saveCheckpointsToFileCheckBox.AutoSize = true;
-            this.saveCheckpointsToFileCheckBox.Checked = true;
-            this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(532, 249);
-            this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
-            this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveCheckpointsToFileCheckBox.TabIndex = 33;
-            this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
-            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
-            // 
-            // lblSaveCheckpointsOnExit
-            // 
-            this.lblSaveCheckpointsOnExit.AutoSize = true;
-            this.lblSaveCheckpointsOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(284, 249);
-            this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
-            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(227, 13);
-            this.lblSaveCheckpointsOnExit.TabIndex = 33;
-            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints on Exit:";
-            // 
-            // lblUseAscii
-            // 
-            this.lblUseAscii.AutoSize = true;
-            this.lblUseAscii.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblUseAscii.Location = new System.Drawing.Point(13, 216);
-            this.lblUseAscii.Name = "lblUseAscii";
-            this.lblUseAscii.Size = new System.Drawing.Size(59, 13);
-            this.lblUseAscii.TabIndex = 27;
-            this.lblUseAscii.Text = "Use ASCII:";
-            // 
-            // useAsciiCheckBox
-            // 
-            this.useAsciiCheckBox.AutoSize = true;
-            this.useAsciiCheckBox.Checked = true;
-            this.useAsciiCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.useAsciiCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.useAsciiCheckBox.Location = new System.Drawing.Point(188, 216);
-            this.useAsciiCheckBox.Name = "useAsciiCheckBox";
-            this.useAsciiCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useAsciiCheckBox.TabIndex = 28;
-            this.useAsciiCheckBox.UseVisualStyleBackColor = true;
-            this.useAsciiCheckBox.CheckedChanged += new System.EventHandler(this.useAscii_CheckedChanged);
             // 
             // mainPanel
             // 
@@ -790,9 +233,10 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Controls.Add(this.cboConfigFile);
             this.mainPanel.Controls.Add(this.label1);
             this.mainPanel.Controls.Add(this.grouperSettings);
+            this.mainPanel.Controls.Add(this.grouperProxy);
             this.mainPanel.Location = new System.Drawing.Point(7, 0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(584, 538);
+            this.mainPanel.Size = new System.Drawing.Size(584, 823);
             this.mainPanel.TabIndex = 1;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
@@ -953,6 +397,52 @@ namespace ServiceBusExplorer.Forms
             this.LabelDefaultMessageBodyType.TabIndex = 49;
             this.LabelDefaultMessageBodyType.Text = "Default message body type:";
             // 
+            // useAsciiCheckBox
+            // 
+            this.useAsciiCheckBox.AutoSize = true;
+            this.useAsciiCheckBox.Checked = true;
+            this.useAsciiCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useAsciiCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.useAsciiCheckBox.Location = new System.Drawing.Point(188, 216);
+            this.useAsciiCheckBox.Name = "useAsciiCheckBox";
+            this.useAsciiCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.useAsciiCheckBox.TabIndex = 28;
+            this.useAsciiCheckBox.UseVisualStyleBackColor = true;
+            this.useAsciiCheckBox.CheckedChanged += new System.EventHandler(this.useAscii_CheckedChanged);
+            // 
+            // lblUseAscii
+            // 
+            this.lblUseAscii.AutoSize = true;
+            this.lblUseAscii.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblUseAscii.Location = new System.Drawing.Point(13, 216);
+            this.lblUseAscii.Name = "lblUseAscii";
+            this.lblUseAscii.Size = new System.Drawing.Size(59, 13);
+            this.lblUseAscii.TabIndex = 27;
+            this.lblUseAscii.Text = "Use ASCII:";
+            // 
+            // lblSaveCheckpointsOnExit
+            // 
+            this.lblSaveCheckpointsOnExit.AutoSize = true;
+            this.lblSaveCheckpointsOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(284, 249);
+            this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
+            this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(227, 13);
+            this.lblSaveCheckpointsOnExit.TabIndex = 33;
+            this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints on Exit:";
+            // 
+            // saveCheckpointsToFileCheckBox
+            // 
+            this.saveCheckpointsToFileCheckBox.AutoSize = true;
+            this.saveCheckpointsToFileCheckBox.Checked = true;
+            this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(532, 249);
+            this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
+            this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.saveCheckpointsToFileCheckBox.TabIndex = 33;
+            this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
+            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
+            // 
             // cboSelectedEntities
             // 
             checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -965,6 +455,721 @@ namespace ServiceBusExplorer.Forms
             this.cboSelectedEntities.Name = "cboSelectedEntities";
             this.cboSelectedEntities.Size = new System.Drawing.Size(360, 21);
             this.cboSelectedEntities.TabIndex = 48;
+            // 
+            // lblSelectedEntities
+            // 
+            this.lblSelectedEntities.AutoSize = true;
+            this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSelectedEntities.Location = new System.Drawing.Point(13, 435);
+            this.lblSelectedEntities.Name = "lblSelectedEntities";
+            this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
+            this.lblSelectedEntities.TabIndex = 47;
+            this.lblSelectedEntities.Text = "Selected Entities:";
+            // 
+            // lblShowMessageCount
+            // 
+            this.lblShowMessageCount.AutoSize = true;
+            this.lblShowMessageCount.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblShowMessageCount.Location = new System.Drawing.Point(13, 248);
+            this.lblShowMessageCount.Name = "lblShowMessageCount";
+            this.lblShowMessageCount.Size = new System.Drawing.Size(114, 13);
+            this.lblShowMessageCount.TabIndex = 31;
+            this.lblShowMessageCount.Text = "Show Message Count:";
+            // 
+            // showMessageCountCheckBox
+            // 
+            this.showMessageCountCheckBox.AutoSize = true;
+            this.showMessageCountCheckBox.Checked = true;
+            this.showMessageCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showMessageCountCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.showMessageCountCheckBox.Location = new System.Drawing.Point(188, 249);
+            this.showMessageCountCheckBox.Name = "showMessageCountCheckBox";
+            this.showMessageCountCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.showMessageCountCheckBox.TabIndex = 32;
+            this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
+            this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
+            // 
+            // lblEncoding
+            // 
+            this.lblEncoding.AutoSize = true;
+            this.lblEncoding.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEncoding.Location = new System.Drawing.Point(284, 216);
+            this.lblEncoding.Name = "lblEncoding";
+            this.lblEncoding.Size = new System.Drawing.Size(55, 13);
+            this.lblEncoding.TabIndex = 29;
+            this.lblEncoding.Text = "Encoding:";
+            // 
+            // cboEncodingType
+            // 
+            this.cboEncodingType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEncodingType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboEncodingType.FormattingEnabled = true;
+            this.cboEncodingType.Items.AddRange(new object[] {
+            "ASCII",
+            "UTF7",
+            "UTF8",
+            "UTF32",
+            "Unicode"});
+            this.cboEncodingType.Location = new System.Drawing.Point(469, 212);
+            this.cboEncodingType.Name = "cboEncodingType";
+            this.cboEncodingType.Size = new System.Drawing.Size(80, 21);
+            this.cboEncodingType.TabIndex = 30;
+            this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
+            // 
+            // cboConnectivityMode
+            // 
+            this.cboConnectivityMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboConnectivityMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboConnectivityMode.FormattingEnabled = true;
+            this.cboConnectivityMode.Location = new System.Drawing.Point(469, 180);
+            this.cboConnectivityMode.Name = "cboConnectivityMode";
+            this.cboConnectivityMode.Size = new System.Drawing.Size(80, 21);
+            this.cboConnectivityMode.TabIndex = 26;
+            this.cboConnectivityMode.SelectedIndexChanged += new System.EventHandler(this.cboConnectivityMode_SelectedIndexChanged);
+            // 
+            // lblConnectivityMode
+            // 
+            this.lblConnectivityMode.AutoSize = true;
+            this.lblConnectivityMode.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblConnectivityMode.Location = new System.Drawing.Point(284, 184);
+            this.lblConnectivityMode.Name = "lblConnectivityMode";
+            this.lblConnectivityMode.Size = new System.Drawing.Size(98, 13);
+            this.lblConnectivityMode.TabIndex = 25;
+            this.lblConnectivityMode.Text = "Connectivity Mode:";
+            // 
+            // monitorRefreshIntervalNumericUpDown
+            // 
+            this.monitorRefreshIntervalNumericUpDown.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.monitorRefreshIntervalNumericUpDown.Location = new System.Drawing.Point(188, 180);
+            this.monitorRefreshIntervalNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.monitorRefreshIntervalNumericUpDown.Name = "monitorRefreshIntervalNumericUpDown";
+            this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.monitorRefreshIntervalNumericUpDown.TabIndex = 24;
+            this.monitorRefreshIntervalNumericUpDown.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.monitorRefreshIntervalNumericUpDown.ValueChanged += new System.EventHandler(this.monitorRefreshIntervalNumericUpDown_ValueChanged);
+            // 
+            // lblMonitorRefreshInterval
+            // 
+            this.lblMonitorRefreshInterval.AutoSize = true;
+            this.lblMonitorRefreshInterval.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblMonitorRefreshInterval.Location = new System.Drawing.Point(13, 184);
+            this.lblMonitorRefreshInterval.Name = "lblMonitorRefreshInterval";
+            this.lblMonitorRefreshInterval.Size = new System.Drawing.Size(172, 13);
+            this.lblMonitorRefreshInterval.TabIndex = 23;
+            this.lblMonitorRefreshInterval.Text = "Monitor Refresh Interval (seconds):";
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnOpen.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpen.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnOpen.Location = new System.Drawing.Point(522, 369);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(24, 21);
+            this.btnOpen.TabIndex = 44;
+            this.btnOpen.Text = "...";
+            this.btnOpen.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnOpen.UseVisualStyleBackColor = false;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            this.btnOpen.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnOpen.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // txtMessageFile
+            // 
+            this.txtMessageFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMessageFile.Location = new System.Drawing.Point(188, 340);
+            this.txtMessageFile.Name = "txtMessageFile";
+            this.txtMessageFile.Size = new System.Drawing.Size(359, 20);
+            this.txtMessageFile.TabIndex = 41;
+            this.txtMessageFile.TextChanged += new System.EventHandler(this.txtMessageFile_TextChanged);
+            // 
+            // lblMessageFile
+            // 
+            this.lblMessageFile.AutoSize = true;
+            this.lblMessageFile.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblMessageFile.Location = new System.Drawing.Point(13, 344);
+            this.lblMessageFile.Name = "lblMessageFile";
+            this.lblMessageFile.Size = new System.Drawing.Size(78, 13);
+            this.lblMessageFile.TabIndex = 40;
+            this.lblMessageFile.Text = "Message Path:";
+            // 
+            // txtMessageText
+            // 
+            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMessageText.Location = new System.Drawing.Point(188, 370);
+            this.txtMessageText.Name = "txtMessageText";
+            this.txtMessageText.Size = new System.Drawing.Size(320, 20);
+            this.txtMessageText.TabIndex = 43;
+            this.txtMessageText.TextChanged += new System.EventHandler(this.txtMessageText_TextChanged);
+            // 
+            // lblMessageText
+            // 
+            this.lblMessageText.AutoSize = true;
+            this.lblMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblMessageText.Location = new System.Drawing.Point(13, 374);
+            this.lblMessageText.Name = "lblMessageText";
+            this.lblMessageText.Size = new System.Drawing.Size(77, 13);
+            this.lblMessageText.TabIndex = 42;
+            this.lblMessageText.Text = "Message Text:";
+            // 
+            // txtLabel
+            // 
+            this.txtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLabel.Location = new System.Drawing.Point(188, 310);
+            this.txtLabel.Name = "txtLabel";
+            this.txtLabel.Size = new System.Drawing.Size(359, 20);
+            this.txtLabel.TabIndex = 39;
+            this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
+            // 
+            // lblLabel
+            // 
+            this.lblLabel.AutoSize = true;
+            this.lblLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblLabel.Location = new System.Drawing.Point(13, 314);
+            this.lblLabel.Name = "lblLabel";
+            this.lblLabel.Size = new System.Drawing.Size(36, 13);
+            this.lblLabel.TabIndex = 38;
+            this.lblLabel.Text = "Label:";
+            // 
+            // receiverThinkTimeNumericUpDown
+            // 
+            this.receiverThinkTimeNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.receiverThinkTimeNumericUpDown.Location = new System.Drawing.Point(469, 148);
+            this.receiverThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.receiverThinkTimeNumericUpDown.Name = "receiverThinkTimeNumericUpDown";
+            this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.receiverThinkTimeNumericUpDown.TabIndex = 22;
+            this.receiverThinkTimeNumericUpDown.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.receiverThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.receiverThinkTimeNumericUpDown_ValueChanged);
+            // 
+            // lblReceiverThinkTime
+            // 
+            this.lblReceiverThinkTime.AutoSize = true;
+            this.lblReceiverThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblReceiverThinkTime.Location = new System.Drawing.Point(284, 152);
+            this.lblReceiverThinkTime.Name = "lblReceiverThinkTime";
+            this.lblReceiverThinkTime.Size = new System.Drawing.Size(174, 13);
+            this.lblReceiverThinkTime.TabIndex = 21;
+            this.lblReceiverThinkTime.Text = "Receiver Think Time (milliseconds):";
+            // 
+            // senderThinkTimeNumericUpDown
+            // 
+            this.senderThinkTimeNumericUpDown.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.senderThinkTimeNumericUpDown.Location = new System.Drawing.Point(188, 148);
+            this.senderThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.senderThinkTimeNumericUpDown.Name = "senderThinkTimeNumericUpDown";
+            this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.senderThinkTimeNumericUpDown.TabIndex = 20;
+            this.senderThinkTimeNumericUpDown.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.senderThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.senderThinkTimeNumericUpDown_ValueChanged);
+            // 
+            // lblSenderThinkTime
+            // 
+            this.lblSenderThinkTime.AutoSize = true;
+            this.lblSenderThinkTime.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSenderThinkTime.Location = new System.Drawing.Point(13, 152);
+            this.lblSenderThinkTime.Name = "lblSenderThinkTime";
+            this.lblSenderThinkTime.Size = new System.Drawing.Size(165, 13);
+            this.lblSenderThinkTime.TabIndex = 19;
+            this.lblSenderThinkTime.Text = "Sender Think Time (milliseconds):";
+            // 
+            // lblSavePropertiesOnExit
+            // 
+            this.lblSavePropertiesOnExit.AutoSize = true;
+            this.lblSavePropertiesOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(284, 280);
+            this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
+            this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(197, 13);
+            this.lblSavePropertiesOnExit.TabIndex = 36;
+            this.lblSavePropertiesOnExit.Text = "Save Message Properties to File on Exit:";
+            // 
+            // lblSaveMessageOnExit
+            // 
+            this.lblSaveMessageOnExit.AutoSize = true;
+            this.lblSaveMessageOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSaveMessageOnExit.Location = new System.Drawing.Point(13, 280);
+            this.lblSaveMessageOnExit.Name = "lblSaveMessageOnExit";
+            this.lblSaveMessageOnExit.Size = new System.Drawing.Size(174, 13);
+            this.lblSaveMessageOnExit.TabIndex = 34;
+            this.lblSaveMessageOnExit.Text = "Save Message Body to File on Exit:";
+            // 
+            // savePropertiesToFileCheckBox
+            // 
+            this.savePropertiesToFileCheckBox.AutoSize = true;
+            this.savePropertiesToFileCheckBox.Checked = true;
+            this.savePropertiesToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.savePropertiesToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.savePropertiesToFileCheckBox.Location = new System.Drawing.Point(532, 280);
+            this.savePropertiesToFileCheckBox.Name = "savePropertiesToFileCheckBox";
+            this.savePropertiesToFileCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.savePropertiesToFileCheckBox.TabIndex = 37;
+            this.savePropertiesToFileCheckBox.UseVisualStyleBackColor = true;
+            this.savePropertiesToFileCheckBox.CheckedChanged += new System.EventHandler(this.savePropertiesToFileCheckBox_CheckedChanged);
+            // 
+            // prefetchCountNumericUpDown
+            // 
+            this.prefetchCountNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.prefetchCountNumericUpDown.Location = new System.Drawing.Point(469, 84);
+            this.prefetchCountNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.prefetchCountNumericUpDown.Name = "prefetchCountNumericUpDown";
+            this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.prefetchCountNumericUpDown.TabIndex = 14;
+            this.prefetchCountNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.prefetchCountNumericUpDown.ValueChanged += new System.EventHandler(this.prefetchCountNumericUpDown_ValueChanged);
+            // 
+            // saveMessageToFileCheckBox
+            // 
+            this.saveMessageToFileCheckBox.AutoSize = true;
+            this.saveMessageToFileCheckBox.Checked = true;
+            this.saveMessageToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveMessageToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.saveMessageToFileCheckBox.Location = new System.Drawing.Point(188, 280);
+            this.saveMessageToFileCheckBox.Name = "saveMessageToFileCheckBox";
+            this.saveMessageToFileCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.saveMessageToFileCheckBox.TabIndex = 35;
+            this.saveMessageToFileCheckBox.UseVisualStyleBackColor = true;
+            this.saveMessageToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveMessageToFileCheckBox_CheckedChanged);
+            // 
+            // lblPrefetchCount
+            // 
+            this.lblPrefetchCount.AutoSize = true;
+            this.lblPrefetchCount.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblPrefetchCount.Location = new System.Drawing.Point(284, 89);
+            this.lblPrefetchCount.Name = "lblPrefetchCount";
+            this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
+            this.lblPrefetchCount.TabIndex = 13;
+            this.lblPrefetchCount.Text = "Prefetch Count:";
+            // 
+            // serverTimeoutNumericUpDown
+            // 
+            this.serverTimeoutNumericUpDown.Location = new System.Drawing.Point(469, 52);
+            this.serverTimeoutNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.serverTimeoutNumericUpDown.Name = "serverTimeoutNumericUpDown";
+            this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.serverTimeoutNumericUpDown.TabIndex = 10;
+            this.serverTimeoutNumericUpDown.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.serverTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.sessionTimeoutNumericUpDown_ValueChanged);
+            // 
+            // lblServerTimeout
+            // 
+            this.lblServerTimeout.AutoSize = true;
+            this.lblServerTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblServerTimeout.Location = new System.Drawing.Point(284, 56);
+            this.lblServerTimeout.Name = "lblServerTimeout";
+            this.lblServerTimeout.Size = new System.Drawing.Size(131, 13);
+            this.lblServerTimeout.TabIndex = 9;
+            this.lblServerTimeout.Text = "Server Timeout (seconds):";
+            // 
+            // receiveTimeoutNumericUpDown
+            // 
+            this.receiveTimeoutNumericUpDown.Location = new System.Drawing.Point(469, 20);
+            this.receiveTimeoutNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.receiveTimeoutNumericUpDown.Name = "receiveTimeoutNumericUpDown";
+            this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.receiveTimeoutNumericUpDown.TabIndex = 6;
+            this.receiveTimeoutNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.receiveTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.receiveTimeoutNumericUpDown_ValueChanged);
+            // 
+            // lblReceiveTimeout
+            // 
+            this.lblReceiveTimeout.AutoSize = true;
+            this.lblReceiveTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblReceiveTimeout.Location = new System.Drawing.Point(284, 24);
+            this.lblReceiveTimeout.Name = "lblReceiveTimeout";
+            this.lblReceiveTimeout.Size = new System.Drawing.Size(140, 13);
+            this.lblReceiveTimeout.TabIndex = 5;
+            this.lblReceiveTimeout.Text = "Receive Timeout (seconds):";
+            // 
+            // topNumericUpDown
+            // 
+            this.topNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.topNumericUpDown.Location = new System.Drawing.Point(469, 116);
+            this.topNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.topNumericUpDown.Name = "topNumericUpDown";
+            this.topNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.topNumericUpDown.TabIndex = 18;
+            this.topNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.topNumericUpDown.ValueChanged += new System.EventHandler(this.topNumericUpDown_ValueChanged);
+            // 
+            // lblTop
+            // 
+            this.lblTop.AutoSize = true;
+            this.lblTop.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblTop.Location = new System.Drawing.Point(284, 120);
+            this.lblTop.Name = "lblTop";
+            this.lblTop.Size = new System.Drawing.Size(60, 13);
+            this.lblTop.TabIndex = 17;
+            this.lblTop.Text = "Top Count:";
+            // 
+            // retryTimeoutNumericUpDown
+            // 
+            this.retryTimeoutNumericUpDown.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.retryTimeoutNumericUpDown.Location = new System.Drawing.Point(188, 116);
+            this.retryTimeoutNumericUpDown.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
+            this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.retryTimeoutNumericUpDown.TabIndex = 16;
+            this.retryTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.retryTimeoutNumericUpDown_ValueChanged);
+            // 
+            // lblRetryTimeout
+            // 
+            this.lblRetryTimeout.AutoSize = true;
+            this.lblRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblRetryTimeout.Location = new System.Drawing.Point(13, 120);
+            this.lblRetryTimeout.Name = "lblRetryTimeout";
+            this.lblRetryTimeout.Size = new System.Drawing.Size(141, 13);
+            this.lblRetryTimeout.TabIndex = 15;
+            this.lblRetryTimeout.Text = "Retry Timeout (milliseconds):";
+            // 
+            // retryCountNumericUpDown
+            // 
+            this.retryCountNumericUpDown.Location = new System.Drawing.Point(188, 84);
+            this.retryCountNumericUpDown.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
+            this.retryCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.retryCountNumericUpDown.TabIndex = 12;
+            this.retryCountNumericUpDown.ValueChanged += new System.EventHandler(this.retryCountNumericUpDown_ValueChanged);
+            // 
+            // lblRetryCount
+            // 
+            this.lblRetryCount.AutoSize = true;
+            this.lblRetryCount.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblRetryCount.Location = new System.Drawing.Point(13, 89);
+            this.lblRetryCount.Name = "lblRetryCount";
+            this.lblRetryCount.Size = new System.Drawing.Size(66, 13);
+            this.lblRetryCount.TabIndex = 11;
+            this.lblRetryCount.Text = "Retry Count:";
+            // 
+            // treeViewNumericUpDown
+            // 
+            this.treeViewNumericUpDown.DecimalPlaces = 2;
+            this.treeViewNumericUpDown.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.treeViewNumericUpDown.Location = new System.Drawing.Point(188, 52);
+            this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
+            this.treeViewNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.treeViewNumericUpDown.TabIndex = 8;
+            this.treeViewNumericUpDown.ValueChanged += new System.EventHandler(this.treeViewNumericUpDown_ValueChanged);
+            // 
+            // lblTreeViewFontSize
+            // 
+            this.lblTreeViewFontSize.AutoSize = true;
+            this.lblTreeViewFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblTreeViewFontSize.Location = new System.Drawing.Point(13, 56);
+            this.lblTreeViewFontSize.Name = "lblTreeViewFontSize";
+            this.lblTreeViewFontSize.Size = new System.Drawing.Size(105, 13);
+            this.lblTreeViewFontSize.TabIndex = 7;
+            this.lblTreeViewFontSize.Text = "Tree View Font Size:";
+            // 
+            // logNumericUpDown
+            // 
+            this.logNumericUpDown.DecimalPlaces = 2;
+            this.logNumericUpDown.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.logNumericUpDown.Location = new System.Drawing.Point(188, 20);
+            this.logNumericUpDown.Name = "logNumericUpDown";
+            this.logNumericUpDown.Size = new System.Drawing.Size(80, 20);
+            this.logNumericUpDown.TabIndex = 4;
+            this.logNumericUpDown.ValueChanged += new System.EventHandler(this.logNumericUpDown_ValueChanged);
+            // 
+            // lblLogFontSize
+            // 
+            this.lblLogFontSize.AutoSize = true;
+            this.lblLogFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblLogFontSize.Location = new System.Drawing.Point(13, 24);
+            this.lblLogFontSize.Name = "lblLogFontSize";
+            this.lblLogFontSize.Size = new System.Drawing.Size(75, 13);
+            this.lblLogFontSize.TabIndex = 3;
+            this.lblLogFontSize.Text = "Log Font Size:";
+            // 
+            // grouperProxy
+            // 
+            this.grouperProxy.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperProxy.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperProxy.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperProxy.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperProxy.BorderThickness = 1F;
+            this.grouperProxy.Controls.Add(this.txtProxyPassword);
+            this.grouperProxy.Controls.Add(this.useDefaultProxyCredentialsCheckBox);
+            this.grouperProxy.Controls.Add(this.lblProxyPassword);
+            this.grouperProxy.Controls.Add(this.lblProxyDefaultCredentials);
+            this.grouperProxy.Controls.Add(this.txtProxyUserName);
+            this.grouperProxy.Controls.Add(this.lblProxyUser);
+            this.grouperProxy.Controls.Add(this.bypassProxyOnLocalAddressesCheckBox);
+            this.grouperProxy.Controls.Add(this.label4);
+            this.grouperProxy.Controls.Add(this.txtProxyBypassList);
+            this.grouperProxy.Controls.Add(this.lblProxyBypass);
+            this.grouperProxy.Controls.Add(this.overrideDefaultProxyCheckBox);
+            this.grouperProxy.Controls.Add(this.lblOverrideProxy);
+            this.grouperProxy.Controls.Add(this.txtProxyAddress);
+            this.grouperProxy.Controls.Add(this.lblAddress);
+            this.grouperProxy.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperProxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperProxy.ForeColor = System.Drawing.Color.White;
+            this.grouperProxy.GroupImage = null;
+            this.grouperProxy.GroupTitle = "Proxy";
+            this.grouperProxy.Location = new System.Drawing.Point(8, 540);
+            this.grouperProxy.Name = "grouperProxy";
+            this.grouperProxy.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperProxy.PaintGroupBox = true;
+            this.grouperProxy.RoundCorners = 4;
+            this.grouperProxy.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperProxy.ShadowControl = false;
+            this.grouperProxy.ShadowThickness = 1;
+            this.grouperProxy.Size = new System.Drawing.Size(566, 275);
+            this.grouperProxy.TabIndex = 51;
+            // 
+            // txtProxyPassword
+            // 
+            this.txtProxyPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyPassword.Location = new System.Drawing.Point(188, 244);
+            this.txtProxyPassword.Name = "txtProxyPassword";
+            this.txtProxyPassword.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyPassword.TabIndex = 7;
+            this.txtProxyPassword.UseSystemPasswordChar = true;
+            this.txtProxyPassword.TextChanged += new System.EventHandler(this.txtProxyPassword_TextChanged);
+            // 
+            // useDefaultProxyCredentialsCheckBox
+            // 
+            this.useDefaultProxyCredentialsCheckBox.AutoSize = true;
+            this.useDefaultProxyCredentialsCheckBox.Checked = true;
+            this.useDefaultProxyCredentialsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useDefaultProxyCredentialsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.useDefaultProxyCredentialsCheckBox.Location = new System.Drawing.Point(188, 184);
+            this.useDefaultProxyCredentialsCheckBox.Name = "useDefaultProxyCredentialsCheckBox";
+            this.useDefaultProxyCredentialsCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.useDefaultProxyCredentialsCheckBox.TabIndex = 5;
+            this.useDefaultProxyCredentialsCheckBox.UseVisualStyleBackColor = true;
+            this.useDefaultProxyCredentialsCheckBox.CheckedChanged += new System.EventHandler(this.useDefaultProxyCredentialsCheckBox_CheckedChanged);
+            // 
+            // lblProxyPassword
+            // 
+            this.lblProxyPassword.AutoSize = true;
+            this.lblProxyPassword.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyPassword.Location = new System.Drawing.Point(13, 248);
+            this.lblProxyPassword.Name = "lblProxyPassword";
+            this.lblProxyPassword.Size = new System.Drawing.Size(56, 13);
+            this.lblProxyPassword.TabIndex = 53;
+            this.lblProxyPassword.Text = "Password:";
+            // 
+            // lblProxyDefaultCredentials
+            // 
+            this.lblProxyDefaultCredentials.AutoSize = true;
+            this.lblProxyDefaultCredentials.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyDefaultCredentials.Location = new System.Drawing.Point(13, 184);
+            this.lblProxyDefaultCredentials.Name = "lblProxyDefaultCredentials";
+            this.lblProxyDefaultCredentials.Size = new System.Drawing.Size(121, 13);
+            this.lblProxyDefaultCredentials.TabIndex = 59;
+            this.lblProxyDefaultCredentials.Text = "Use Default Credentials:";
+            // 
+            // txtProxyUserName
+            // 
+            this.txtProxyUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyUserName.Location = new System.Drawing.Point(188, 212);
+            this.txtProxyUserName.Name = "txtProxyUserName";
+            this.txtProxyUserName.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyUserName.TabIndex = 6;
+            this.txtProxyUserName.TextChanged += new System.EventHandler(this.txtProxyUser_TextChanged);
+            // 
+            // lblProxyUser
+            // 
+            this.lblProxyUser.AutoSize = true;
+            this.lblProxyUser.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyUser.Location = new System.Drawing.Point(13, 216);
+            this.lblProxyUser.Name = "lblProxyUser";
+            this.lblProxyUser.Size = new System.Drawing.Size(63, 13);
+            this.lblProxyUser.TabIndex = 51;
+            this.lblProxyUser.Text = "User Name:";
+            // 
+            // bypassProxyOnLocalAddressesCheckBox
+            // 
+            this.bypassProxyOnLocalAddressesCheckBox.AutoSize = true;
+            this.bypassProxyOnLocalAddressesCheckBox.Checked = true;
+            this.bypassProxyOnLocalAddressesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.bypassProxyOnLocalAddressesCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.bypassProxyOnLocalAddressesCheckBox.Location = new System.Drawing.Point(188, 152);
+            this.bypassProxyOnLocalAddressesCheckBox.Name = "bypassProxyOnLocalAddressesCheckBox";
+            this.bypassProxyOnLocalAddressesCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.bypassProxyOnLocalAddressesCheckBox.TabIndex = 4;
+            this.bypassProxyOnLocalAddressesCheckBox.UseVisualStyleBackColor = true;
+            this.bypassProxyOnLocalAddressesCheckBox.CheckedChanged += new System.EventHandler(this.bypassProxyOnLocalAddressesCheckBox_CheckedChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label4.Location = new System.Drawing.Point(13, 152);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(164, 13);
+            this.label4.TabIndex = 57;
+            this.label4.Text = "Bypass Proxy for local addresses:";
+            // 
+            // txtProxyBypassList
+            // 
+            this.txtProxyBypassList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyBypassList.Location = new System.Drawing.Point(188, 84);
+            this.txtProxyBypassList.Multiline = true;
+            this.txtProxyBypassList.Name = "txtProxyBypassList";
+            this.txtProxyBypassList.Size = new System.Drawing.Size(359, 50);
+            this.txtProxyBypassList.TabIndex = 3;
+            this.txtProxyBypassList.TextChanged += new System.EventHandler(this.txtProxyBypassList_TextChanged);
+            // 
+            // lblProxyBypass
+            // 
+            this.lblProxyBypass.AutoSize = true;
+            this.lblProxyBypass.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProxyBypass.Location = new System.Drawing.Point(13, 88);
+            this.lblProxyBypass.Name = "lblProxyBypass";
+            this.lblProxyBypass.Size = new System.Drawing.Size(88, 13);
+            this.lblProxyBypass.TabIndex = 55;
+            this.lblProxyBypass.Text = "Bypass Proxy for:";
+            // 
+            // overrideDefaultProxyCheckBox
+            // 
+            this.overrideDefaultProxyCheckBox.AutoSize = true;
+            this.overrideDefaultProxyCheckBox.Checked = true;
+            this.overrideDefaultProxyCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.overrideDefaultProxyCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.overrideDefaultProxyCheckBox.Location = new System.Drawing.Point(188, 24);
+            this.overrideDefaultProxyCheckBox.Name = "overrideDefaultProxyCheckBox";
+            this.overrideDefaultProxyCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.overrideDefaultProxyCheckBox.TabIndex = 1;
+            this.overrideDefaultProxyCheckBox.UseVisualStyleBackColor = true;
+            this.overrideDefaultProxyCheckBox.CheckedChanged += new System.EventHandler(this.overrideDefaultProxyCheckBox_CheckedChanged);
+            // 
+            // lblOverrideProxy
+            // 
+            this.lblOverrideProxy.AutoSize = true;
+            this.lblOverrideProxy.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblOverrideProxy.Location = new System.Drawing.Point(13, 24);
+            this.lblOverrideProxy.Name = "lblOverrideProxy";
+            this.lblOverrideProxy.Size = new System.Drawing.Size(168, 13);
+            this.lblOverrideProxy.TabIndex = 54;
+            this.lblOverrideProxy.Text = "Override system/app.config proxy:";
+            // 
+            // txtProxyAddress
+            // 
+            this.txtProxyAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyAddress.Location = new System.Drawing.Point(188, 52);
+            this.txtProxyAddress.Name = "txtProxyAddress";
+            this.txtProxyAddress.Size = new System.Drawing.Size(359, 20);
+            this.txtProxyAddress.TabIndex = 2;
+            this.txtProxyAddress.TextChanged += new System.EventHandler(this.txtProxyAddress_TextChanged);
+            // 
+            // lblAddress
+            // 
+            this.lblAddress.AutoSize = true;
+            this.lblAddress.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblAddress.Location = new System.Drawing.Point(13, 56);
+            this.lblAddress.Name = "lblAddress";
+            this.lblAddress.Size = new System.Drawing.Size(77, 13);
+            this.lblAddress.TabIndex = 52;
+            this.lblAddress.Text = "Proxy Address:";
             // 
             // groupBox1
             // 
@@ -1030,7 +1235,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(601, 578);
+            this.ClientSize = new System.Drawing.Size(601, 863);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.btnCancel);
@@ -1045,21 +1250,23 @@ namespace ServiceBusExplorer.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Options";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OptionForm_KeyPress);
-            ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.retryCountNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.retryTimeoutNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.topNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.receiveTimeoutNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.serverTimeoutNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.prefetchCountNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).EndInit();
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
             this.grouperSettings.ResumeLayout(false);
             this.grouperSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.monitorRefreshIntervalNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.receiverThinkTimeNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.prefetchCountNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.serverTimeoutNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.receiveTimeoutNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.topNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.retryTimeoutNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.retryCountNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.treeViewNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logNumericUpDown)).EndInit();
+            this.grouperProxy.ResumeLayout(false);
+            this.grouperProxy.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
@@ -1131,5 +1338,20 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblMessageContentType;
         private System.Windows.Forms.TextBox txtMessageContentType;
+        private Grouper grouperProxy;
+        private System.Windows.Forms.TextBox txtProxyPassword;
+        private System.Windows.Forms.CheckBox useDefaultProxyCredentialsCheckBox;
+        private System.Windows.Forms.Label lblProxyPassword;
+        private System.Windows.Forms.Label lblProxyDefaultCredentials;
+        private System.Windows.Forms.TextBox txtProxyUserName;
+        private System.Windows.Forms.Label lblProxyUser;
+        private System.Windows.Forms.CheckBox bypassProxyOnLocalAddressesCheckBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtProxyBypassList;
+        private System.Windows.Forms.Label lblProxyBypass;
+        private System.Windows.Forms.CheckBox overrideDefaultProxyCheckBox;
+        private System.Windows.Forms.Label lblOverrideProxy;
+        private System.Windows.Forms.TextBox txtProxyAddress;
+        private System.Windows.Forms.Label lblAddress;
     }
 }
