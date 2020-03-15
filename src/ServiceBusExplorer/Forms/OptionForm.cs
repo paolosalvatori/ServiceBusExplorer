@@ -33,6 +33,7 @@ using Microsoft.ServiceBus;
 
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
@@ -344,6 +345,11 @@ namespace ServiceBusExplorer.Forms
         void monitorRefreshIntervalNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             MainSettings.MonitorRefreshInterval = (int)monitorRefreshIntervalNumericUpDown.Value;
+        }
+
+        private void tabControlOptions_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            TabControlHelper.DrawTabControlTabs(tabOptionsControl, e, null);
         }
 
         void txtLabel_TextChanged(object sender, EventArgs e)
