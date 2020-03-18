@@ -85,9 +85,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             ISessionClient sessionClient = new SessionClient(
                 serviceBusHelper.ConnectionString, 
                 GetEntityPath(deadLetterQueue: false),
-                ReceiveMode.ReceiveAndDelete, 
-                RetryPolicy.Default, 
-                prefetchCount: 10);
+                null,
+                receiveMode: ReceiveMode.ReceiveAndDelete, 
+                retryPolicy: RetryPolicy.Default, 
+                prefetchCount: 10,
+                transportType: serviceBusHelper.TransportType);
 
             var consecutiveSessionTimeOuts = 0;
             try

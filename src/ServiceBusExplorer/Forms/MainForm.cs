@@ -389,6 +389,7 @@ namespace ServiceBusExplorer.Forms
                 SelectedEntities = SelectedEntities,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
                 EncodingType = ServiceBusHelper.EncodingType
             };
 
@@ -445,6 +446,7 @@ namespace ServiceBusExplorer.Forms
                 SelectedEntities = optionForm.MainSettings.SelectedEntities;
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
+                ServiceBusHelper.UseAmqpWebSockets = optionForm.MainSettings.UseAmqpWebSockets;
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
             }
         }
@@ -1337,6 +1339,7 @@ namespace ServiceBusExplorer.Forms
                     UpdateSavedConnectionsMenu();
                     SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
+                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
@@ -3687,7 +3690,8 @@ namespace ServiceBusExplorer.Forms
                 MessageContentType = MessageContentType,
                 SelectedEntities = SelectedEntities,
                 MessageBodyType = messageBodyType,
-                ConnectivityMode = ServiceBusHelper.ConnectivityMode
+                ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
@@ -3766,6 +3770,7 @@ namespace ServiceBusExplorer.Forms
             SelectedEntities = readSettings.SelectedEntities;
             messageBodyType = readSettings.MessageBodyType;
             ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
+            ServiceBusHelper.UseAmqpWebSockets = readSettings.UseAmqpWebSockets;
             ServiceBusHelper.EncodingType = readSettings.EncodingType;
 
             // Get values for settings that are not part of MainSettings

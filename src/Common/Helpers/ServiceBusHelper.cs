@@ -526,7 +526,7 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Gets or sets the issuer secret.
+        /// Gets or sets the transport type.
         /// </summary>
         public TransportType TransportType
         {
@@ -678,6 +678,8 @@ namespace ServiceBusExplorer
                 Microsoft.ServiceBus.ServiceBusEnvironment.SystemConnectivity.Mode = value;
             }
         }
+
+        public static bool UseAmqpWebSockets { get; set; }
 
         /// <summary>
         /// Gets or sets the encodingType of sent messages
@@ -5338,6 +5340,9 @@ namespace ServiceBusExplorer
         {
             var serviceBusHelper2 = new ServiceBusHelper2();
             serviceBusHelper2.ConnectionString = ConnectionString;
+            serviceBusHelper2.TransportType = UseAmqpWebSockets
+                ? Microsoft.Azure.ServiceBus.TransportType.AmqpWebSockets
+                : Microsoft.Azure.ServiceBus.TransportType.Amqp;
             return serviceBusHelper2;
         }
 

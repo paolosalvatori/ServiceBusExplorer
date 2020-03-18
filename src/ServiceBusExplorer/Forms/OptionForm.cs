@@ -212,7 +212,8 @@ namespace ServiceBusExplorer.Forms
             receiverThinkTimeNumericUpDown.Value = MainSettings.ReceiverThinkTime;
 
             monitorRefreshIntervalNumericUpDown.Value = MainSettings.MonitorRefreshInterval;
-            cboConnectivityMode.SelectedItem = ConnectivityMode.AutoDetect;
+            cboConnectivityMode.SelectedItem = MainSettings.ConnectivityMode;
+            useAmqpWebSocketsCheckBox.Checked = MainSettings.UseAmqpWebSockets;
             cboEncodingType.SelectedItem = EncodingType.ASCII;
 
             saveMessageToFileCheckBox.Checked = MainSettings.SaveMessageToFile;
@@ -357,6 +358,11 @@ namespace ServiceBusExplorer.Forms
             {
                 MainSettings.ConnectivityMode = connectivityMode;
             }
+        }
+
+        private void useAmqpWebSocketsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.UseAmqpWebSockets = useAmqpWebSocketsCheckBox.Checked;
         }
 
         void cboDefaultMessageBodyType_SelectedIndexChanged(object sender, EventArgs e)
@@ -523,6 +529,8 @@ namespace ServiceBusExplorer.Forms
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.ConnectivityMode,
                 MainSettings.ConnectivityMode);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.UseAmqpWebSockets,
+                MainSettings.UseAmqpWebSockets);
             SaveSetting(configuration, readSettings, ConfigurationParameters.Encoding,
                 MainSettings.EncodingType);
 
@@ -592,6 +600,7 @@ namespace ServiceBusExplorer.Forms
             useAsciiCheckBox.Checked = mainSettings.UseAscii;
 
             cboConnectivityMode.SelectedItem = mainSettings.ConnectivityMode;
+            useAmqpWebSocketsCheckBox.Checked = mainSettings.UseAmqpWebSockets;
             cboEncodingType.SelectedItem = mainSettings.EncodingType;
 
             foreach (var item in mainSettings.SelectedEntities)

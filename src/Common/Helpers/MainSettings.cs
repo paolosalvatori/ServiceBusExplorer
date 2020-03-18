@@ -62,7 +62,7 @@ namespace ServiceBusExplorer.Helpers
 
         public string MessageBodyType { get; set; }
         public ConnectivityMode ConnectivityMode { get; set; }
-
+        public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 
         #endregion
@@ -113,6 +113,7 @@ namespace ServiceBusExplorer.Helpers
 
             MessageBodyType = BodyType.Stream.ToString();
             ConnectivityMode = ConnectivityMode.AutoDetect;
+            UseAmqpWebSockets = false;
         }
 
         public override bool Equals(object other)
@@ -149,6 +150,7 @@ namespace ServiceBusExplorer.Helpers
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
+            if (UseAmqpWebSockets != otherProperties.UseAmqpWebSockets) return false;
 
             return true;
         }
@@ -242,6 +244,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ConnectivityMode:
                     return ConnectivityMode;
+
+                case ConfigurationParameters.UseAmqpWebSockets:
+                    return UseAmqpWebSockets;
 
                 case ConfigurationParameters.Encoding:
                     return EncodingType;

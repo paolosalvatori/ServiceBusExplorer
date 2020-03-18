@@ -53,6 +53,7 @@ namespace ServiceBusExplorer.Helpers
         public const string TreeViewFontSize = "treeViewFontSize";
         public const string MessageBodyType = "messageBodyType";
         public const string ConnectivityMode = "connectivityMode";
+        public const string UseAmqpWebSockets = "useAmqpWebSockets";
         public const string Encoding = "encoding";
         public const string SelectedEntitiesParameter = "selectedEntities";
         public const string MicrosoftServiceBusConnectionString = "Microsoft.ServiceBus.ConnectionString";

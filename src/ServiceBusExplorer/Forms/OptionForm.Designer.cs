@@ -71,7 +71,6 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
             this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
-            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.monitorRefreshIntervalNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblMonitorRefreshInterval = new System.Windows.Forms.Label();
@@ -124,6 +123,7 @@ namespace ServiceBusExplorer.Forms
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
             this.lblConnectivityMode = new System.Windows.Forms.Label();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -1093,7 +1093,6 @@ namespace ServiceBusExplorer.Forms
             // useAmqpWebSocketsCheckBox
             // 
             this.useAmqpWebSocketsCheckBox.AutoSize = true;
-            this.useAmqpWebSocketsCheckBox.Enabled = false;
             this.useAmqpWebSocketsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
             this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(768, 108);
             this.useAmqpWebSocketsCheckBox.Margin = new System.Windows.Forms.Padding(6);
@@ -1101,6 +1100,7 @@ namespace ServiceBusExplorer.Forms
             this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(28, 27);
             this.useAmqpWebSocketsCheckBox.TabIndex = 68;
             this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
+            this.useAmqpWebSocketsCheckBox.CheckedChanged += new System.EventHandler(this.useAmqpWebSocketsCheckBox_CheckedChanged);
             // 
             // label4
             // 
@@ -1152,6 +1152,19 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Size = new System.Drawing.Size(1229, 724);
             this.mainPanel.TabIndex = 1;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
+            // 
+            // cboSelectedEntities
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedEntities.DisplayMemberSingleItem = "";
+            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedEntities.FormattingEnabled = true;
+            this.cboSelectedEntities.Location = new System.Drawing.Point(135, 348);
+            this.cboSelectedEntities.Name = "cboSelectedEntities";
+            this.cboSelectedEntities.Size = new System.Drawing.Size(360, 21);
+            this.cboSelectedEntities.TabIndex = 50;
             // 
             // OptionForm
             // 
