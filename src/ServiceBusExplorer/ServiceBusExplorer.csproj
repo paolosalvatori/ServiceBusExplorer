@@ -422,6 +422,7 @@
     <Compile Include="UIHelpers\ScrollBarHelper.cs" />
     <Compile Include="UIHelpers\StandardValueEditor.cs" />
     <Compile Include="UIHelpers\StandardValuesConverter.cs" />
+    <Compile Include="UIHelpers\TabControlHelper.cs" />
     <Compile Include="UIHelpers\TreeViewHelper.cs" />
     <EmbeddedResource Include="Controls\HandleConsumerGroupControl.resx">
       <DependentUpon>HandleConsumerGroupControl.cs</DependentUpon>
