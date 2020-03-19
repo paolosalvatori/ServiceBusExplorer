@@ -1,0 +1,398 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.IdentityModel.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.IdentityModel.Logging.IdentityModelEventSource">
+            <summary>
+            Event source based logger to log different events.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.Logger">
+            <summary>
+            Static logger that is exposed externally. An external application or framework can hook up a listener to this event source to log data in a custom way.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII">
+            <summary>
+            Flag which indicates whether or not PII is shown in logs. False by default.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.HiddenPIIString">
+            <summary>
+            String that is used in place of any arguments to log messages if the 'ShowPII' flag is set to false.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.HeaderWritten">
+            <summary>
+            Indicates whether or the log message header (contains library version, date/time, and PII debugging information) has been written.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Logging.IdentityModelEventSource._versionLogMessage">
+            <summary>
+            The log message that indicates the current library version.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Logging.IdentityModelEventSource._dateLogMessage">
+            <summary>
+            The log message that indicates the date.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Logging.IdentityModelEventSource._piiOffLogMessage">
+            <summary>
+            The log message that is shown when PII is off.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Logging.IdentityModelEventSource._piiOnLogMessage">
+            <summary>
+            The log message that is shown when PII is off.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteAlways(System.String)">
+            <summary>
+            Writes an event log by using the provided string argument and current UTC time.
+            No level filtering is done on the event.
+            </summary>
+            <param name="message">The log message.</param>
+            <remarks>No level filtering.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteAlways(System.String,System.Object[])">
+            <summary>
+            Writes an event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteVerbose(System.String)">
+            <summary>
+            Writes a verbose event log by using the provided string argument and current UTC time.
+            </summary>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteVerbose(System.String,System.Object[])">
+            <summary>
+            Writes a verbose event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteInformation(System.String)">
+            <summary>
+            Writes an information event log by using the provided string argument and current UTC time.
+            </summary>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteInformation(System.String,System.Object[])">
+            <summary>
+            Writes an information event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteWarning(System.String)">
+            <summary>
+            Writes a warning event log by using the provided string argument and current UTC time.
+            </summary>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteWarning(System.String,System.Object[])">
+            <summary>
+            Writes a warning event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteError(System.String)">
+            <summary>
+            Writes an error event log by using the provided string argument and current UTC time.
+            </summary>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteError(System.String,System.Object[])">
+            <summary>
+            Writes an error event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteCritical(System.String)">
+            <summary>
+            Writes a critical event log by using the provided string argument and current UTC time.
+            </summary>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteCritical(System.String,System.Object[])">
+            <summary>
+            Writes a critical event log by using the provided string argument, current UTC time and the provided arguments list.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.Write(System.Diagnostics.Tracing.EventLevel,System.Exception,System.String)">
+            <summary>
+            Writes an exception log by using the provided event identifer, exception argument, string argument and current UTC time.
+            </summary>
+            <param name="level"><see cref="T:System.Diagnostics.Tracing.EventLevel"/></param>
+            <param name="innerException"><see cref="T:System.Exception"/></param>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.Write(System.Diagnostics.Tracing.EventLevel,System.Exception,System.String,System.Object[])">
+            <summary>
+            Writes an exception log by using the provided event identifer, exception argument, string argument, arguments list and current UTC time.
+            </summary>
+            <param name="level"><see cref="T:System.Diagnostics.Tracing.EventLevel"/></param>
+            <param name="innerException"><see cref="T:System.Exception"/></param>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.LogLevel">
+            <summary>
+            Minimum log level to log events. Default is Warning.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Logging.LogHelper">
+            <summary>
+            Helper class for logging.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentNullException(System.String)">
+            <summary>
+            Logs an exception using the event source logger and returns new <see cref="T:System.ArgumentNullException"/> exception.
+            </summary>
+            <param name="argument">argument that is null or empty.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.String)">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="message">message to log.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.String,System.String)">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="message">message to log.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.String,System.Object[])">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.String,System.String,System.Object[])">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Exception,System.String)">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="message">message to log.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.String,System.Exception,System.String)">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="message">message to log.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Exception,System.String,System.Object[])">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.String,System.Exception,System.String,System.Object[])">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+            <remarks>EventLevel is set to Error.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Diagnostics.Tracing.EventLevel,System.String)">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="message">message to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.Diagnostics.Tracing.EventLevel,System.String,System.String)">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="message">message to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Diagnostics.Tracing.EventLevel,System.String,System.Object[])">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.Diagnostics.Tracing.EventLevel,System.String,System.String,System.Object[])">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Diagnostics.Tracing.EventLevel,System.Exception,System.String)">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="message">message to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.Diagnostics.Tracing.EventLevel,System.String,System.Exception,System.String)">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="message">message to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogException``1(System.Diagnostics.Tracing.EventLevel,System.Exception,System.String,System.Object[])">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogArgumentException``1(System.Diagnostics.Tracing.EventLevel,System.String,System.Exception,System.String,System.Object[])">
+            <summary>
+            Logs an argument exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogExceptionMessage(System.Exception)">
+            <summary>
+            Logs an exception using the event source logger.
+            </summary>
+            <param name="exception">The exception to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogExceptionMessage(System.Diagnostics.Tracing.EventLevel,System.Exception)">
+            <summary>
+            Logs an exception using the event source logger.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="exception">The exception to log.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogInformation(System.String,System.Object[])">
+            <summary>
+            Logs an information event.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogVerbose(System.String,System.Object[])">
+            <summary>
+            Logs a verbose event.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogWarning(System.String,System.Object[])">
+            <summary>
+            Logs a warning event.
+            </summary>
+            <param name="message">The log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.LogExceptionImpl``1(System.Diagnostics.Tracing.EventLevel,System.String,System.Exception,System.String,System.Object[])">
+            <summary>
+            Logs an exception using the event source logger and returns new typed exception.
+            </summary>
+            <param name="eventLevel">Identifies the level of an event to be logged.</param>
+            <param name="argumentName">Identifies the argument whose value generated the ArgumentException.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+            <param name="format">Format string of the log message.</param>
+            <param name="args">An object array that contains zero or more objects to format.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.FormatInvariant(System.String,System.Object[])">
+            <summary>
+            Formats the string using InvariantCulture
+            </summary>
+            <param name="format">Format string.</param>
+            <param name="args">Format arguments.</param>
+            <returns>Formatted string.</returns>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Logging.LogMessages">
+            <summary>
+            Log messages and codes for Microsoft.IdentityModel.Logging
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Logging.TextWriterEventListener">
+            <summary>
+            Event listener that writes logs to a file or a fileStream provided by user.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Logging.TextWriterEventListener.DefaultLogFileName">
+            <summary>
+            Name of the default log file, excluding its path.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.TextWriterEventListener.#ctor">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Logging.TextWriterEventListener"/> that writes logs to text file.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.TextWriterEventListener.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Logging.TextWriterEventListener"/> that writes logs to text file.
+            </summary>
+            <param name="filePath">location of the file where log messages will be written.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.TextWriterEventListener.#ctor(System.IO.StreamWriter)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Logging.TextWriterEventListener"/> that writes logs to text file.
+            </summary>
+            <param name="streamWriter">StreamWriter where logs will be written.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.TextWriterEventListener.OnEventWritten(System.Diagnostics.Tracing.EventWrittenEventArgs)">
+            <summary>
+            Called whenever an event has been written by an event source for which the event listener has enabled events.
+            </summary>
+            <param name="eventData"><see cref="T:System.Diagnostics.Tracing.EventWrittenEventArgs"/></param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.TextWriterEventListener.Dispose">
+            <summary>
+            Releases all resources used by the current instance of the <see cref="T:Microsoft.IdentityModel.Logging.TextWriterEventListener"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>
