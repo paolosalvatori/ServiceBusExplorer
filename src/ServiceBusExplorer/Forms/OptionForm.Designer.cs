@@ -71,6 +71,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
             this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
+            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.monitorRefreshIntervalNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblMonitorRefreshInterval = new System.Windows.Forms.Label();
@@ -123,7 +124,6 @@ namespace ServiceBusExplorer.Forms
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
             this.lblConnectivityMode = new System.Windows.Forms.Label();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -391,6 +391,21 @@ namespace ServiceBusExplorer.Forms
             this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(28, 27);
             this.saveCheckpointsToFileCheckBox.TabIndex = 52;
             this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
+            this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
+            // 
+            // cboSelectedEntities
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedEntities.DisplayMemberSingleItem = "";
+            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedEntities.FormattingEnabled = true;
+            this.cboSelectedEntities.Location = new System.Drawing.Point(520, 528);
+            this.cboSelectedEntities.Margin = new System.Windows.Forms.Padding(6);
+            this.cboSelectedEntities.Name = "cboSelectedEntities";
+            this.cboSelectedEntities.Size = new System.Drawing.Size(592, 33);
+            this.cboSelectedEntities.TabIndex = 50;
             // 
             // lblSelectedEntities
             // 
@@ -425,6 +440,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.monitorRefreshIntervalNumericUpDown.ValueChanged += new System.EventHandler(this.monitorRefreshIntervalNumericUpDown_ValueChanged);
             // 
             // lblMonitorRefreshInterval
             // 
@@ -449,6 +465,7 @@ namespace ServiceBusExplorer.Forms
             this.useAsciiCheckBox.Size = new System.Drawing.Size(28, 27);
             this.useAsciiCheckBox.TabIndex = 40;
             this.useAsciiCheckBox.UseVisualStyleBackColor = true;
+            this.useAsciiCheckBox.CheckedChanged += new System.EventHandler(this.useAscii_CheckedChanged);
             // 
             // lblUseAscii
             // 
@@ -484,6 +501,7 @@ namespace ServiceBusExplorer.Forms
             this.showMessageCountCheckBox.Size = new System.Drawing.Size(28, 27);
             this.showMessageCountCheckBox.TabIndex = 44;
             this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
+            this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
             // 
             // lblEncoding
             // 
@@ -512,6 +530,7 @@ namespace ServiceBusExplorer.Forms
             this.cboEncodingType.Name = "cboEncodingType";
             this.cboEncodingType.Size = new System.Drawing.Size(592, 33);
             this.cboEncodingType.TabIndex = 42;
+            this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
             // 
             // serverTimeoutNumericUpDown
             // 
@@ -530,6 +549,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.serverTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.sessionTimeoutNumericUpDown_ValueChanged);
             // 
             // lblServerTimeout
             // 
@@ -555,6 +575,7 @@ namespace ServiceBusExplorer.Forms
             this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
             this.treeViewNumericUpDown.Size = new System.Drawing.Size(160, 31);
             this.treeViewNumericUpDown.TabIndex = 36;
+            this.treeViewNumericUpDown.ValueChanged += new System.EventHandler(this.treeViewNumericUpDown_ValueChanged);
             // 
             // lblTreeViewFontSize
             // 
@@ -580,6 +601,7 @@ namespace ServiceBusExplorer.Forms
             this.logNumericUpDown.Name = "logNumericUpDown";
             this.logNumericUpDown.Size = new System.Drawing.Size(160, 31);
             this.logNumericUpDown.TabIndex = 34;
+            this.logNumericUpDown.ValueChanged += new System.EventHandler(this.logNumericUpDown_ValueChanged);
             // 
             // lblLogFontSize
             // 
@@ -637,6 +659,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.receiverThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.receiverThinkTimeNumericUpDown_ValueChanged);
             // 
             // lblReceiverThinkTime
             // 
@@ -671,6 +694,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.prefetchCountNumericUpDown.ValueChanged += new System.EventHandler(this.prefetchCountNumericUpDown_ValueChanged);
             // 
             // lblPrefetchCount
             // 
@@ -700,6 +724,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.receiveTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.receiveTimeoutNumericUpDown_ValueChanged);
             // 
             // lblReceiveTimeout
             // 
@@ -734,6 +759,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.topNumericUpDown.ValueChanged += new System.EventHandler(this.topNumericUpDown_ValueChanged);
             // 
             // lblTop
             // 
@@ -763,6 +789,7 @@ namespace ServiceBusExplorer.Forms
             this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
             this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(160, 31);
             this.retryTimeoutNumericUpDown.TabIndex = 30;
+            this.retryTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.retryTimeoutNumericUpDown_ValueChanged);
             // 
             // lblRetryTimeout
             // 
@@ -787,6 +814,7 @@ namespace ServiceBusExplorer.Forms
             this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
             this.retryCountNumericUpDown.Size = new System.Drawing.Size(160, 31);
             this.retryCountNumericUpDown.TabIndex = 26;
+            this.retryCountNumericUpDown.ValueChanged += new System.EventHandler(this.retryCountNumericUpDown_ValueChanged);
             // 
             // lblRetryCount
             // 
@@ -839,6 +867,7 @@ namespace ServiceBusExplorer.Forms
             this.saveMessageToFileCheckBox.Size = new System.Drawing.Size(28, 27);
             this.saveMessageToFileCheckBox.TabIndex = 67;
             this.saveMessageToFileCheckBox.UseVisualStyleBackColor = true;
+            this.saveMessageToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveMessageToFileCheckBox_CheckedChanged);
             // 
             // lblMessageContentType
             // 
@@ -860,6 +889,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageContentType.Name = "txtMessageContentType";
             this.txtMessageContentType.Size = new System.Drawing.Size(600, 31);
             this.txtMessageContentType.TabIndex = 64;
+            this.txtMessageContentType.TextChanged += new System.EventHandler(this.txtMessageContentType_TextChanged);
             // 
             // cboDefaultMessageBodyType
             // 
@@ -876,6 +906,7 @@ namespace ServiceBusExplorer.Forms
             this.cboDefaultMessageBodyType.Name = "cboDefaultMessageBodyType";
             this.cboDefaultMessageBodyType.Size = new System.Drawing.Size(600, 33);
             this.cboDefaultMessageBodyType.TabIndex = 66;
+            this.cboDefaultMessageBodyType.SelectedIndexChanged += new System.EventHandler(this.cboDefaultMessageBodyType_SelectedIndexChanged);
             // 
             // LabelDefaultMessageBodyType
             // 
@@ -905,6 +936,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpen.Text = "...";
             this.btnOpen.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpen.UseVisualStyleBackColor = false;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // txtMessageFile
             // 
@@ -915,6 +947,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageFile.Name = "txtMessageFile";
             this.txtMessageFile.Size = new System.Drawing.Size(600, 31);
             this.txtMessageFile.TabIndex = 59;
+            this.txtMessageFile.TextChanged += new System.EventHandler(this.txtMessageFile_TextChanged);
             // 
             // lblMessageFile
             // 
@@ -936,6 +969,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.Size = new System.Drawing.Size(527, 31);
             this.txtMessageText.TabIndex = 61;
+            this.txtMessageText.TextChanged += new System.EventHandler(this.txtMessageText_TextChanged);
             // 
             // lblMessageText
             // 
@@ -957,6 +991,7 @@ namespace ServiceBusExplorer.Forms
             this.txtLabel.Name = "txtLabel";
             this.txtLabel.Size = new System.Drawing.Size(600, 31);
             this.txtLabel.TabIndex = 57;
+            this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
             // 
             // lblLabel
             // 
@@ -991,6 +1026,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
+            this.senderThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.senderThinkTimeNumericUpDown_ValueChanged);
             // 
             // lblSenderThinkTime
             // 
@@ -1037,6 +1073,7 @@ namespace ServiceBusExplorer.Forms
             this.savePropertiesToFileCheckBox.Size = new System.Drawing.Size(28, 27);
             this.savePropertiesToFileCheckBox.TabIndex = 55;
             this.savePropertiesToFileCheckBox.UseVisualStyleBackColor = true;
+            this.savePropertiesToFileCheckBox.CheckedChanged += new System.EventHandler(this.savePropertiesToFileCheckBox_CheckedChanged);
             // 
             // tabPageConnectivity
             // 
@@ -1086,6 +1123,7 @@ namespace ServiceBusExplorer.Forms
             this.cboConnectivityMode.Name = "cboConnectivityMode";
             this.cboConnectivityMode.Size = new System.Drawing.Size(365, 33);
             this.cboConnectivityMode.TabIndex = 28;
+            this.cboConnectivityMode.SelectedIndexChanged += new System.EventHandler(this.cboConnectivityMode_SelectedIndexChanged);
             // 
             // lblConnectivityMode
             // 
@@ -1114,20 +1152,6 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Size = new System.Drawing.Size(1229, 724);
             this.mainPanel.TabIndex = 1;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
-            // 
-            // cboSelectedEntities
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
-            this.cboSelectedEntities.DisplayMemberSingleItem = "";
-            this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(520, 528);
-            this.cboSelectedEntities.Margin = new System.Windows.Forms.Padding(6);
-            this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(592, 33);
-            this.cboSelectedEntities.TabIndex = 50;
             // 
             // OptionForm
             // 
