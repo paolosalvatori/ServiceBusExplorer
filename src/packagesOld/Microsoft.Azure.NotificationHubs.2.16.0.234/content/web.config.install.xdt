@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
-  <appSettings xdt:Transform="InsertIfMissing">
-    <!-- NotificationHubs specific app setings for messaging connections -->
-    <add key="Microsoft.Azure.NotificationHubs.ConnectionString" value="Endpoint=sb://[your namespace].notificationhubs.windows.net;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=[your secret]" xdt:Transform="InsertIfMissing"/>
-  </appSettings>
-</configuration>
