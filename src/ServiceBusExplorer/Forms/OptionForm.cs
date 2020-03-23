@@ -95,7 +95,7 @@ namespace ServiceBusExplorer.Forms
         public ConfigFileUse ConfigFileUse { get; private set; }
         #endregion
 
-        #region Command button event Handlers
+        #region Command Button Event Handlers
         void btnOpenConfig_Click(object sender, EventArgs e)
         {
             var selected = GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex);
@@ -304,27 +304,6 @@ namespace ServiceBusExplorer.Forms
                                     cboConfigFile.Location.Y - 1,
                                     cboConfigFile.Size.Width + 1,
                                     cboConfigFile.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboConnectivityMode.Location.X - 1,
-                                    cboConnectivityMode.Location.Y - 1,
-                                    cboConnectivityMode.Size.Width + 1,
-                                    cboConnectivityMode.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                   cboEncodingType.Location.X - 1,
-                                   cboEncodingType.Location.Y - 1,
-                                   cboEncodingType.Size.Width + 1,
-                                   cboEncodingType.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboSelectedEntities.Location.X - 1,
-                                    cboSelectedEntities.Location.Y - 1,
-                                    cboSelectedEntities.Size.Width + 1,
-                                    cboSelectedEntities.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboDefaultMessageBodyType.Location.X - 1,
-                                    cboDefaultMessageBodyType.Location.Y - 1,
-                                    cboDefaultMessageBodyType.Size.Width + 1,
-                                    cboDefaultMessageBodyType.Size.Height + 1);
-            e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
 
         void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -632,6 +611,38 @@ namespace ServiceBusExplorer.Forms
         {
             return cboSelectedEntities.CheckBoxItems.
                 Where(i => i.Checked).Select(i => i.Text).ToList();
+        }
+
+        private void tabPageGeneral_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboEncodingType.Location.X - 1,
+                                    cboEncodingType.Location.Y - 1,
+                                    cboEncodingType.Size.Width + 1,
+                                    cboEncodingType.Size.Height + 1);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboSelectedEntities.Location.X - 1,
+                                    cboSelectedEntities.Location.Y - 1,
+                                    cboSelectedEntities.Size.Width + 1,
+                                    cboSelectedEntities.Size.Height + 1);
+        }
+
+        private void tabPageSending_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboDefaultMessageBodyType.Location.X - 1,
+                                    cboDefaultMessageBodyType.Location.Y - 1,
+                                    cboDefaultMessageBodyType.Size.Width + 1,
+                                    cboDefaultMessageBodyType.Size.Height + 1);
+        }
+
+        private void tabPageConnectivity_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                                    cboConnectivityMode.Location.X - 1,
+                                    cboConnectivityMode.Location.Y - 1,
+                                    cboConnectivityMode.Size.Width + 1,
+                                    cboConnectivityMode.Size.Height + 1);
         }
         #endregion
     }
