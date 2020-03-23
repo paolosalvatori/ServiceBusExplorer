@@ -56,6 +56,17 @@ namespace ServiceBusExplorer.Helpers
         public const string Encoding = "encoding";
         public const string SelectedEntitiesParameter = "selectedEntities";
         public const string MicrosoftServiceBusConnectionString = "Microsoft.ServiceBus.ConnectionString";
+
+        public const string ProxyOverrideDefault = "Proxy.OverrideDefault";
+        public const string ProxyAddress = "Proxy.Address";
+        public const string ProxyBypassList = "Proxy.BypassList";
+        public const string ProxyBypassOnLocal = "Proxy.BypassOnLocal";
+        public const string ProxyUseDefaultCredentials = "Proxy.UseDefaultCredentials";
+        public const string ProxyUserName = "Proxy.UserName";
+        public const string ProxyPassword = "Proxy.Password";
+
         #endregion
+
+
     }
 }
