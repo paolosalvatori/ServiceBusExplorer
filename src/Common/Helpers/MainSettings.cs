@@ -65,6 +65,14 @@ namespace ServiceBusExplorer.Helpers
         public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 
+        public bool ProxyOverrideDefault { get; set; }
+        public string ProxyAddress { get; set; }
+        public string ProxyBypassList { get; set; }
+        public bool ProxyBypassOnLocal { get; set; }
+        public bool ProxyUseDefaultCredentials { get; set; }
+        public string ProxyUserName { get; set; }
+        public string ProxyPassword { get; set; }
+
         #endregion
 
         #region Public Static Methods
@@ -114,6 +122,14 @@ namespace ServiceBusExplorer.Helpers
             MessageBodyType = BodyType.Stream.ToString();
             ConnectivityMode = ConnectivityMode.AutoDetect;
             UseAmqpWebSockets = false;
+
+            ProxyOverrideDefault = true;
+            ProxyUseDefaultCredentials = true;
+            ProxyBypassOnLocal = true;
+            ProxyAddress = string.Empty;
+            ProxyBypassList = string.Empty;
+            ProxyUserName = string.Empty;
+            ProxyPassword = string.Empty;
         }
 
         public override bool Equals(object other)
@@ -151,6 +167,14 @@ namespace ServiceBusExplorer.Helpers
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
             if (UseAmqpWebSockets != otherProperties.UseAmqpWebSockets) return false;
+
+            if (ProxyOverrideDefault != otherProperties.ProxyOverrideDefault) return false;
+            if (ProxyUseDefaultCredentials != otherProperties.ProxyUseDefaultCredentials) return false;
+            if (ProxyBypassOnLocal != otherProperties.ProxyBypassOnLocal) return false;
+            if (ProxyAddress != otherProperties.ProxyAddress) return false;
+            if (ProxyBypassList != otherProperties.ProxyBypassList) return false;
+            if (ProxyUserName != otherProperties.ProxyUserName) return false;
+            if (ProxyPassword != otherProperties.ProxyPassword) return false;
 
             return true;
         }
@@ -250,6 +274,27 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.Encoding:
                     return EncodingType;
+
+                case ConfigurationParameters.ProxyOverrideDefault:
+                    return ProxyOverrideDefault;
+
+                case ConfigurationParameters.ProxyUseDefaultCredentials:
+                    return ProxyUseDefaultCredentials;
+
+                case ConfigurationParameters.ProxyBypassOnLocal:
+                    return ProxyBypassOnLocal;
+
+                case ConfigurationParameters.ProxyAddress:
+                    return ProxyBypassList;
+
+                case ConfigurationParameters.ProxyBypassList:
+                    return ProxyBypassList;
+
+                case ConfigurationParameters.ProxyUserName:
+                    return ProxyUserName;
+
+                case ConfigurationParameters.ProxyPassword:
+                    return ProxyPassword;
             }
 
             throw new InvalidOperationException(String.Format("Unexpected value for setting: {0}", setting));

@@ -228,6 +228,14 @@ namespace ServiceBusExplorer.Forms
             }
 
             MainSettings.MessageBodyType = MainSettings.MessageBodyType; // .Stream.ToString();
+
+            overrideDefaultProxyCheckBox.Checked = MainSettings.ProxyOverrideDefault;
+            txtProxyAddress.Text = MainSettings.ProxyAddress;
+            txtProxyBypassList.Text = MainSettings.ProxyBypassList;
+            bypassProxyOnLocalAddressesCheckBox.Checked = MainSettings.ProxyBypassOnLocal;
+            useDefaultProxyCredentialsCheckBox.Checked = MainSettings.ProxyUseDefaultCredentials;
+            txtProxyUserName.Text = MainSettings.ProxyUserName;
+            txtProxyPassword.Text = MainSettings.ProxyPassword;
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -420,6 +428,42 @@ namespace ServiceBusExplorer.Forms
             lastConfigFileIndex = cboConfigFile.SelectedIndex;
             ConfigFileUse = GetConfigFileUseFromUIIndex(lastConfigFileIndex);
         }
+
+        private void overrideDefaultProxyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyOverrideDefault = overrideDefaultProxyCheckBox.Checked;
+        }
+
+        private void txtProxyAddress_TextChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyAddress = txtProxyAddress.Text;
+        }
+
+        private void txtProxyBypassList_TextChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyBypassList = txtProxyBypassList.Text;
+        }
+
+        private void bypassProxyOnLocalAddressesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyBypassOnLocal = bypassProxyOnLocalAddressesCheckBox.Checked;
+        }
+
+        private void useDefaultProxyCredentialsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyUseDefaultCredentials = useDefaultProxyCredentialsCheckBox.Checked;
+        }
+
+        private void txtProxyUser_TextChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyUserName = txtProxyUserName.Text;
+        }
+
+        private void txtProxyPassword_TextChanged(object sender, EventArgs e)
+        {
+            MainSettings.ProxyPassword = txtProxyPassword.Text;
+        }
+
         #endregion
 
         #region Private methods
@@ -540,6 +584,21 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.MessageBodyType,
                 MainSettings.MessageBodyType);
 
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyOverrideDefault,
+                MainSettings.ProxyOverrideDefault);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyAddress,
+                MainSettings.ProxyAddress);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyBypassList,
+                MainSettings.ProxyBypassList);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyBypassOnLocal,
+                MainSettings.ProxyBypassOnLocal);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyUseDefaultCredentials,
+                MainSettings.ProxyUseDefaultCredentials);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyUserName,
+                MainSettings.ProxyUserName);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
+                MainSettings.ProxyPassword);
+
             configuration.Save();
         }
 
@@ -614,6 +673,15 @@ namespace ServiceBusExplorer.Forms
             }
 
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
+
+            overrideDefaultProxyCheckBox.Checked = mainSettings.ProxyOverrideDefault;
+            txtProxyAddress.Text = mainSettings.ProxyAddress;
+            txtProxyBypassList.Text = mainSettings.ProxyBypassList;
+            bypassProxyOnLocalAddressesCheckBox.Checked = mainSettings.ProxyBypassOnLocal;
+            useDefaultProxyCredentialsCheckBox.Checked = mainSettings.ProxyUseDefaultCredentials;
+            txtProxyUserName.Text = mainSettings.ProxyUserName;
+            txtProxyPassword.Text = mainSettings.ProxyPassword;
+
         }
 
         List<string> GetSelectedEntities()

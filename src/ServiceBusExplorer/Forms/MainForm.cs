@@ -230,6 +230,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Static Fields
         private static MainForm mainSingletonMainForm;
+        private static IWebProxy initialDefaultWebProxy;
         #endregion
 
         #region Public Constructor
@@ -390,7 +391,15 @@ namespace ServiceBusExplorer.Forms
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
                 UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
-                EncodingType = ServiceBusHelper.EncodingType
+                EncodingType = ServiceBusHelper.EncodingType,
+
+                ProxyOverrideDefault = ProxyOverrideDefault,
+                ProxyAddress = ProxyAddress,
+                ProxyBypassList = ProxyBypassList,
+                ProxyBypassOnLocal = ProxyBypassOnLocal,
+                ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
+                ProxyUserName = ProxyUserName,
+                ProxyPassword = ProxyPassword
             };
 
             var lastConfigFileUse = configFileUse;
@@ -448,6 +457,8 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
                 ServiceBusHelper.UseAmqpWebSockets = optionForm.MainSettings.UseAmqpWebSockets;
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
+
+                SetProxy(optionForm.MainSettings);
             }
         }
 
@@ -3691,7 +3702,14 @@ namespace ServiceBusExplorer.Forms
                 SelectedEntities = SelectedEntities,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
-                UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets
+                UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
+                ProxyOverrideDefault = ProxyOverrideDefault,
+                ProxyAddress = ProxyAddress,
+                ProxyBypassList = ProxyBypassList,
+                ProxyBypassOnLocal = ProxyBypassOnLocal,
+                ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
+                ProxyUserName = ProxyUserName,
+                ProxyPassword = ProxyPassword
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
@@ -3803,6 +3821,37 @@ namespace ServiceBusExplorer.Forms
                     // Comment to avoid ReSharper warning
                 }
             }
+
+            SetProxy(readSettings);
+        }
+
+        private void SetProxy(MainSettings settings)
+        {
+            if (initialDefaultWebProxy == null)
+            {
+                initialDefaultWebProxy = WebRequest.DefaultWebProxy;
+            }
+
+            ProxyOverrideDefault = settings.ProxyOverrideDefault;
+            ProxyAddress = settings.ProxyAddress;
+            ProxyBypassList = settings.ProxyBypassList;
+            ProxyBypassOnLocal = settings.ProxyBypassOnLocal;
+            ProxyUseDefaultCredentials = settings.ProxyUseDefaultCredentials;
+            ProxyUserName = settings.ProxyUserName;
+            ProxyPassword = settings.ProxyPassword;
+
+            if (settings.ProxyOverrideDefault)
+            {
+                var credentials = settings.ProxyUseDefaultCredentials
+                    ? CredentialCache.DefaultNetworkCredentials
+                    : new NetworkCredential(settings.ProxyUserName, settings.ProxyPassword);
+                var proxy = new WebProxy(settings.ProxyAddress, settings.ProxyBypassOnLocal, settings.ProxyBypassList.Split(';'), credentials);
+                WebRequest.DefaultWebProxy = proxy;
+            }
+            else
+            {
+                WebRequest.DefaultWebProxy = initialDefaultWebProxy;
+            }
         }
 
         private void ReadEventHubPartitionCheckpointFile()
@@ -3886,6 +3935,14 @@ namespace ServiceBusExplorer.Forms
         public bool UseAscii { get; set; } = true;
 
         public List<string> SelectedEntities { get; private set; } = new List<string>();
+
+        public bool ProxyOverrideDefault { get; set; }
+        public string ProxyAddress { get; set; }
+        public string ProxyBypassList { get; set; }
+        public bool ProxyBypassOnLocal { get; set; }
+        public bool ProxyUseDefaultCredentials { get; set; }
+        public string ProxyUserName { get; set; }
+        public string ProxyPassword { get; set; }
 
         public BodyType MessageBodyType
         {
