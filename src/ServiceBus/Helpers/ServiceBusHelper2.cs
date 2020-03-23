@@ -26,8 +26,11 @@
 namespace ServiceBusExplorer.ServiceBus.Helpers
 // ReSharper restore CheckNamespace
 {
+    using Microsoft.Azure.ServiceBus;
+
     public class ServiceBusHelper2 
     {
         public string ConnectionString { get; set; }
+        public TransportType TransportType { get; set; }
     }
 }

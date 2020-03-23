@@ -62,7 +62,7 @@ namespace ServiceBusExplorer.Helpers
 
         public string MessageBodyType { get; set; }
         public ConnectivityMode ConnectivityMode { get; set; }
-
+        public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 
         public bool ProxyOverrideDefault { get; set; }
@@ -121,6 +121,7 @@ namespace ServiceBusExplorer.Helpers
 
             MessageBodyType = BodyType.Stream.ToString();
             ConnectivityMode = ConnectivityMode.AutoDetect;
+            UseAmqpWebSockets = false;
 
             ProxyOverrideDefault = true;
             ProxyUseDefaultCredentials = true;
@@ -165,6 +166,7 @@ namespace ServiceBusExplorer.Helpers
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
+            if (UseAmqpWebSockets != otherProperties.UseAmqpWebSockets) return false;
 
             if (ProxyOverrideDefault != otherProperties.ProxyOverrideDefault) return false;
             if (ProxyUseDefaultCredentials != otherProperties.ProxyUseDefaultCredentials) return false;
@@ -266,6 +268,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ConnectivityMode:
                     return ConnectivityMode;
+
+                case ConfigurationParameters.UseAmqpWebSockets:
+                    return UseAmqpWebSockets;
 
                 case ConfigurationParameters.Encoding:
                     return EncodingType;

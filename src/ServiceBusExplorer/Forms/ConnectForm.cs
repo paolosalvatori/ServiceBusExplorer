@@ -30,7 +30,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -132,6 +131,8 @@ namespace ServiceBusExplorer.Forms
             ConnectivityMode = ServiceBusHelper.ConnectivityMode;
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
             cboConnectivityMode.SelectedItem = ConnectivityMode;
+            UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets;
+            useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
 
             cboTransportType.DataSource = Enum.GetValues(typeof(TransportType));
             var settings = new MessagingFactorySettings();
@@ -205,6 +206,7 @@ namespace ServiceBusExplorer.Forms
         public string ConnectionString { get; private set; }
         public string EntityPath { get; private set; }
         public ConnectivityMode ConnectivityMode { get; private set; }
+        public bool UseAmqpWebSockets { get; private set; }
         public TransportType TransportType { get; set; }
 
         public List<string> SelectedEntities
@@ -231,6 +233,7 @@ namespace ServiceBusExplorer.Forms
             }
             DialogResult = DialogResult.OK;
             ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
+            UseAmqpWebSockets = useAmqpWebSocketsCheckBox.Checked;
             FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
             FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
             FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;

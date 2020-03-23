@@ -194,7 +194,8 @@ namespace ServiceBusExplorer.Helpers
 
             resultProperties.ConnectivityMode = configuration.GetEnumValue
                 (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
-
+            resultProperties.UseAmqpWebSockets = configuration.GetBoolValue
+                (ConfigurationParameters.UseAmqpWebSockets, currentSettings.UseAmqpWebSockets, writeToLog);
             resultProperties.EncodingType = configuration.GetEnumValue
                 (ConfigurationParameters.Encoding, currentSettings.EncodingType, writeToLog);
 
