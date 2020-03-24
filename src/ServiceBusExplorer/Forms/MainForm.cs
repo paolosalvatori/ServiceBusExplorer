@@ -2306,6 +2306,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllEntities))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("Absolutely Everything");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var queueList = new List<string>();
@@ -2324,6 +2326,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllQueues))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("All Queues");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var queueList = new List<string>();
@@ -2339,6 +2343,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllTopics))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("All Topics");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var topicList = new List<string>();
@@ -2354,6 +2360,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllRelays))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("All Relays");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var relayServiceList = new List<string>();
@@ -2369,6 +2377,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllEventHubs))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("All Event Hubs");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var eventHubList = new List<string>();
@@ -2388,6 +2398,8 @@ namespace ServiceBusExplorer.Forms
                             var eventHubDescription = parent.Tag as EventHubDescription;
                             using (var deleteForm = new DeleteForm(string.Format(DeleteAllConsumerGroups, eventHubDescription.Path)))
                             {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck("All Consumer Groups");
+
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     var notificationHubList = new List<string>();
@@ -2405,6 +2417,8 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(DeleteAllNotificationHubs))
                         {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck("All Notification Hubs");
+
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
                                 var notificationHubList = new List<string>();
@@ -2428,6 +2442,8 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(string.Format(DeleteAllQueuesInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
                             {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck("All Queues In Path");
+
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     var queueList = new List<string>();
@@ -2440,6 +2456,8 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(string.Format(DeleteAllTopicsInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
                             {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck("All Topics In Path");
+
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     var topicList = new List<string>();
@@ -2452,6 +2470,8 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(string.Format(DeleteAllRelaysInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
                             {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck("All Relays In Path");
+
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     var relayServiceList = new List<string>();
@@ -2640,6 +2660,8 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(DeleteAllRules))
                             {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck("All Rules");
+
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     serviceBusHelper.RemoveRules(ruleWrappers);

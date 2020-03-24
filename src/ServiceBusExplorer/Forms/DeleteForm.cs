@@ -39,6 +39,10 @@ namespace ServiceBusExplorer.Forms
         private const string Unknown = "Unknown";
         #endregion
 
+        #region Private Fields
+        private bool useAccidentalDeletionPreventionCheck = false;
+        #endregion
+
         #region Public Constructor
         public DeleteForm(string message)
         {
@@ -57,11 +61,36 @@ namespace ServiceBusExplorer.Forms
         }
         #endregion
 
+        #region Public Methods
+        public void ShowAccidentalDeletionPreventionCheck(string entityName)
+        {
+            useAccidentalDeletionPreventionCheck = true;
+
+            accidentalDeletionPreventionCheckControl.EntityName = entityName;
+            accidentalDeletionPreventionCheckControl.Visible = true;
+
+            accidentalDeletionPreventionCheckControl.Top = mainPanel.Bottom;
+            buttonsPanel.Top = accidentalDeletionPreventionCheckControl.Bottom;
+
+            ClientSize = new Size(ClientSize.Width, buttonsPanel.Bottom);
+        }
+        #endregion
+
         #region Event Handlers
         private void btnOk_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.OK;
-            Close();
+            bool acceptForm = false;
+
+            if (useAccidentalDeletionPreventionCheck == false)
+                acceptForm = true;
+            else
+                acceptForm = accidentalDeletionPreventionCheckControl.CheckAcceptanceAndNotifyUser();
+
+            if (acceptForm)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

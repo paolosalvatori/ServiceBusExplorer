@@ -119,6 +119,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
+    <Compile Include="Controls\AccidentalDeletionPreventionCheckControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AccidentalDeletionPreventionCheckControl.Designer.cs">
+      <DependentUpon>AccidentalDeletionPreventionCheckControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CheckBoxComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -424,6 +430,9 @@
     <Compile Include="UIHelpers\StandardValuesConverter.cs" />
     <Compile Include="UIHelpers\TabControlHelper.cs" />
     <Compile Include="UIHelpers\TreeViewHelper.cs" />
+    <EmbeddedResource Include="Controls\AccidentalDeletionPreventionCheckControl.resx">
+      <DependentUpon>AccidentalDeletionPreventionCheckControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\HandleConsumerGroupControl.resx">
       <DependentUpon>HandleConsumerGroupControl.cs</DependentUpon>
       <SubType>Designer</SubType>
