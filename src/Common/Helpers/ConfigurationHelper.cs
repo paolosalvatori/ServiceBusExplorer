@@ -199,6 +199,9 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.EncodingType = configuration.GetEnumValue
                 (ConfigurationParameters.Encoding, currentSettings.EncodingType, writeToLog);
 
+            resultProperties.DisableAccidentalDeletionPrevention = configuration.GetBoolValue
+                (ConfigurationParameters.DisableAccidentalDeletionPrevention, currentSettings.DisableAccidentalDeletionPrevention, writeToLog);
+
             resultProperties.ProxyOverrideDefault = configuration.GetBoolValue(ConfigurationParameters.ProxyOverrideDefault, currentSettings.ProxyOverrideDefault, writeToLog);
             resultProperties.ProxyUseDefaultCredentials = configuration.GetBoolValue(ConfigurationParameters.ProxyUseDefaultCredentials, currentSettings.ProxyUseDefaultCredentials, writeToLog);
             resultProperties.ProxyBypassOnLocal = configuration.GetBoolValue(ConfigurationParameters.ProxyBypassOnLocal, currentSettings.ProxyBypassOnLocal, writeToLog);

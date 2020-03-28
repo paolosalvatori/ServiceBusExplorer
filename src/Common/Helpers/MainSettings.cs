@@ -65,6 +65,8 @@ namespace ServiceBusExplorer.Helpers
         public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 
+        public bool DisableAccidentalDeletionPrevention { get; set; }
+
         public bool ProxyOverrideDefault { get; set; }
         public string ProxyAddress { get; set; }
         public string ProxyBypassList { get; set; }
@@ -271,6 +273,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.UseAmqpWebSockets:
                     return UseAmqpWebSockets;
+
+                case ConfigurationParameters.DisableAccidentalDeletionPrevention:
+                    return DisableAccidentalDeletionPrevention;
 
                 case ConfigurationParameters.Encoding:
                     return EncodingType;

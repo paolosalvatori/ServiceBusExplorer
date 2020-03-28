@@ -141,10 +141,13 @@ namespace ServiceBusExplorer.Forms
             // 
             this.accidentalDeletionPreventionCheckControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.accidentalDeletionPreventionCheckControl.EntityName = "Entity Name";
+            this.accidentalDeletionPreventionCheckControl.AutoSize = true;
+            this.accidentalDeletionPreventionCheckControl.BackColor = System.Drawing.Color.Cornsilk;
+            this.accidentalDeletionPreventionCheckControl.DeletionScopePromptText = "Deletion Type";
+            this.accidentalDeletionPreventionCheckControl.DisableFurtherChecks = false;
             this.accidentalDeletionPreventionCheckControl.Location = new System.Drawing.Point(0, 65);
             this.accidentalDeletionPreventionCheckControl.Name = "accidentalDeletionPreventionCheckControl";
-            this.accidentalDeletionPreventionCheckControl.Size = new System.Drawing.Size(312, 110);
+            this.accidentalDeletionPreventionCheckControl.Size = new System.Drawing.Size(312, 157);
             this.accidentalDeletionPreventionCheckControl.TabIndex = 35;
             this.accidentalDeletionPreventionCheckControl.Visible = false;
             // 
@@ -170,6 +173,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

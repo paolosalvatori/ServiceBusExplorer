@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.Helpers;
 
 #endregion
 
@@ -40,6 +41,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Fields
+        private TwoFilesConfiguration configuration;
         private bool useAccidentalDeletionPreventionCheck = false;
         #endregion
 
@@ -62,17 +64,28 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Methods
-        public void ShowAccidentalDeletionPreventionCheck(string entityName)
+        public void ShowAccidentalDeletionPreventionCheck(TwoFilesConfiguration configuration, string deletionScopePromptText)
         {
-            useAccidentalDeletionPreventionCheck = true;
+            this.configuration = configuration;
 
-            accidentalDeletionPreventionCheckControl.EntityName = entityName;
-            accidentalDeletionPreventionCheckControl.Visible = true;
+            bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                defaultValue: false);
 
-            accidentalDeletionPreventionCheckControl.Top = mainPanel.Bottom;
-            buttonsPanel.Top = accidentalDeletionPreventionCheckControl.Bottom;
+            if (!disableAccidentalDeletionPrevention)
+            {
+                useAccidentalDeletionPreventionCheck = true;
 
-            ClientSize = new Size(ClientSize.Width, buttonsPanel.Bottom);
+                accidentalDeletionPreventionCheckControl.DeletionScopePromptText = deletionScopePromptText;
+                accidentalDeletionPreventionCheckControl.Visible = true;
+
+                accidentalDeletionPreventionCheckControl.Top = mainPanel.Bottom;
+                buttonsPanel.Top = accidentalDeletionPreventionCheckControl.Bottom;
+
+                accidentalDeletionPreventionCheckControl.Width = ClientSize.Width;
+
+                ClientSize = new Size(ClientSize.Width, buttonsPanel.Bottom);
+            }
         }
         #endregion
 
@@ -84,7 +97,18 @@ namespace ServiceBusExplorer.Forms
             if (useAccidentalDeletionPreventionCheck == false)
                 acceptForm = true;
             else
+            {
                 acceptForm = accidentalDeletionPreventionCheckControl.CheckAcceptanceAndNotifyUser();
+
+                if (accidentalDeletionPreventionCheckControl.DisableFurtherChecks)
+                {
+                    configuration.SetValue(
+                        ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                        value: true);
+
+                    configuration.Save();
+                }
+            }
 
             if (acceptForm)
             {

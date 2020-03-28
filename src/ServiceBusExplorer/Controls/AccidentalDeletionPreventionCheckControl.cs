@@ -18,20 +18,17 @@ namespace ServiceBusExplorer.Controls
         }
         #endregion
 
-        #region Event Handlers
-        private void pnlFlowLayout_SizeChanged(object sender, EventArgs e)
-        {
-            this.ClientSize = new Size(
-                this.ClientSize.Width,
-                pnlFlowLayout.Height);
-        }
-        #endregion
-
         #region Public Properties
-        public string EntityName
+        public string DeletionScopePromptText
         {
-            get => lblEntityName.Text;
-            set => lblEntityName.Text = value;
+            get => lblDeletionScopePromptText.Text;
+            set => lblDeletionScopePromptText.Text = value;
+        }
+
+        public bool DisableFurtherChecks
+        {
+            get => chkDisableAccidentalDeletionPrevention.Checked;
+            set => chkDisableAccidentalDeletionPrevention.Checked = value;
         }
         #endregion
 
@@ -39,8 +36,8 @@ namespace ServiceBusExplorer.Controls
         public bool CheckAcceptanceAndNotifyUser()
         {
             bool isAccepted = string.Equals(
-                txtEntityNameCheck.Text.Trim(),
-                lblEntityName.Text,
+                txtDeletionScopePromptCheck.Text.Trim(),
+                lblDeletionScopePromptText.Text,
                 StringComparison.InvariantCultureIgnoreCase);
 
             if (!isAccepted)
