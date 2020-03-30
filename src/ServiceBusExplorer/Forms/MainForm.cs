@@ -2630,8 +2630,6 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
                             {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All Subscriptions");
-
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
