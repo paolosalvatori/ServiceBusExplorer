@@ -69,8 +69,8 @@ namespace ServiceBusExplorer.Forms
         const string WarningHeader = "The following validations failed:";
         const string WarningFormat = "\n\r - {0}";
         const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
-        const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
-        const string MessageMovedMessage = "[{0}] messages where moved to [{1}] in [{2}] milliseconds.";
+        const string MessageSentMessage = "[{0}] messages were sent to [{1}] in [{2}] milliseconds.";
+        const string MessageMovedMessage = "[{0}] messages were moved to [{1}] in [{2}] milliseconds.";
 
         //***************************
         // Constants
@@ -389,7 +389,7 @@ namespace ServiceBusExplorer.Forms
                                 }
                                 else
                                 {
-                                    var messageText = serviceBusHelper.GetMessageText(message, 
+                                    var messageText = serviceBusHelper.GetMessageText(message,
                                         MainForm.SingletonMainForm.UseAscii, out bodyType);
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
