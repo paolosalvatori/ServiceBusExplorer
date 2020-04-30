@@ -3840,7 +3840,7 @@ namespace ServiceBusExplorer.Forms
             ProxyUserName = settings.ProxyUserName;
             ProxyPassword = settings.ProxyPassword;
 
-            if (settings.ProxyOverrideDefault)
+            if (settings.ProxyOverrideDefault && !string.IsNullOrWhiteSpace(settings.ProxyAddress))
             {
                 var credentials = settings.ProxyUseDefaultCredentials
                     ? CredentialCache.DefaultNetworkCredentials
