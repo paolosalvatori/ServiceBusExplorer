@@ -41,7 +41,7 @@
       <HintPath>..\packages\Microsoft.Azure.EventHubs.4.1.0\lib\netstandard2.0\Microsoft.Azure.EventHubs.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.NotificationHubs, Version=2.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.NotificationHubs.2.16.0.234\lib\net45-full\Microsoft.Azure.NotificationHubs.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Azure.NotificationHubs.1.0.9\lib\net45-full\Microsoft.Azure.NotificationHubs.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Relay, Version=2.0.1.0, Culture=neutral, PublicKeyToken=7e34167dcc6d6d8c, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Relay.2.0.1\lib\net451\Microsoft.Azure.Relay.dll</HintPath>
