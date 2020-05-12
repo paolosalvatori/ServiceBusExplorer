@@ -601,7 +601,7 @@
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="GitVersion.CommandLine" Version="3.6.5" PrivateAssets="all" />
     <PackageReference Include="GitVersionTask" Version="3.6.5" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.16.0.234" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
       <Version>4.5.0</Version>
