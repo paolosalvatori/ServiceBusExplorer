@@ -57,6 +57,7 @@ namespace ServiceBusExplorer.Helpers
         public const string Encoding = "encoding";
         public const string SelectedEntitiesParameter = "selectedEntities";
         public const string MicrosoftServiceBusConnectionString = "Microsoft.ServiceBus.ConnectionString";
+        public const string DisableAccidentalDeletionPrevention = "disableAccidentalDeletionPrevention";
 
         public const string ProxyOverrideDefault = "Proxy.OverrideDefault";
         public const string ProxyAddress = "Proxy.Address";

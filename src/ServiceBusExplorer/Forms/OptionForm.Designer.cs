@@ -68,6 +68,8 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.tabOptionsControl = new System.Windows.Forms.TabControl();
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
+            this.disableAccidentalDeletionPrevention = new System.Windows.Forms.CheckBox();
+            this.lblDisableAccidentalDeletionPrevention = new System.Windows.Forms.Label();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
             this.saveCheckpointsToFileCheckBox = new System.Windows.Forms.CheckBox();
             this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
@@ -172,7 +174,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.Location = new System.Drawing.Point(255, 406);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
-            this.btnOk.TabIndex = 0;
+            this.btnOk.TabIndex = 1;
             this.btnOk.Text = "&OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -190,7 +192,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.Location = new System.Drawing.Point(528, 406);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(72, 24);
-            this.btnReset.TabIndex = 3;
+            this.btnReset.TabIndex = 4;
             this.btnReset.Text = "&Reset";
             this.btnReset.UseVisualStyleBackColor = false;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
@@ -208,7 +210,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.Location = new System.Drawing.Point(435, 406);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
-            this.btnSave.TabIndex = 2;
+            this.btnSave.TabIndex = 3;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -304,7 +306,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenConfig.Location = new System.Drawing.Point(528, 8);
             this.btnOpenConfig.Name = "btnOpenConfig";
             this.btnOpenConfig.Size = new System.Drawing.Size(72, 24);
-            this.btnOpenConfig.TabIndex = 0;
+            this.btnOpenConfig.TabIndex = 2;
             this.btnOpenConfig.Text = "O&pen";
             this.btnOpenConfig.UseVisualStyleBackColor = false;
             this.btnOpenConfig.Click += new System.EventHandler(this.btnOpenConfig_Click);
@@ -323,12 +325,14 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Name = "tabOptionsControl";
             this.tabOptionsControl.SelectedIndex = 0;
             this.tabOptionsControl.Size = new System.Drawing.Size(584, 355);
-            this.tabOptionsControl.TabIndex = 51;
+            this.tabOptionsControl.TabIndex = 3;
             this.tabOptionsControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControlOptions_DrawItem);
             // 
             // tabPageGeneral
             // 
             this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageGeneral.Controls.Add(this.disableAccidentalDeletionPrevention);
+            this.tabPageGeneral.Controls.Add(this.lblDisableAccidentalDeletionPrevention);
             this.tabPageGeneral.Controls.Add(this.lblSaveCheckpointsOnExit);
             this.tabPageGeneral.Controls.Add(this.saveCheckpointsToFileCheckBox);
             this.tabPageGeneral.Controls.Add(this.cboSelectedEntities);
@@ -355,14 +359,33 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageGeneral_Paint);
             // 
+            // disableAccidentalDeletionPrevention
+            // 
+            this.disableAccidentalDeletionPrevention.AutoSize = true;
+            this.disableAccidentalDeletionPrevention.Location = new System.Drawing.Point(260, 298);
+            this.disableAccidentalDeletionPrevention.Name = "disableAccidentalDeletionPrevention";
+            this.disableAccidentalDeletionPrevention.Size = new System.Drawing.Size(15, 14);
+            this.disableAccidentalDeletionPrevention.TabIndex = 19;
+            this.disableAccidentalDeletionPrevention.UseVisualStyleBackColor = true;
+            this.disableAccidentalDeletionPrevention.CheckedChanged += new System.EventHandler(this.disableAccidentalDeletionPrevention_CheckedChanged);
+            // 
+            // lblDisableAccidentalDeletionPrevention
+            // 
+            this.lblDisableAccidentalDeletionPrevention.AutoSize = true;
+            this.lblDisableAccidentalDeletionPrevention.Location = new System.Drawing.Point(16, 298);
+            this.lblDisableAccidentalDeletionPrevention.Name = "lblDisableAccidentalDeletionPrevention";
+            this.lblDisableAccidentalDeletionPrevention.Size = new System.Drawing.Size(194, 13);
+            this.lblDisableAccidentalDeletionPrevention.TabIndex = 18;
+            this.lblDisableAccidentalDeletionPrevention.Text = "Disable Accidental Deletion Prevention:";
+            // 
             // lblSaveCheckpointsOnExit
             // 
             this.lblSaveCheckpointsOnExit.AutoSize = true;
             this.lblSaveCheckpointsOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(16, 212);
+            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(16, 205);
             this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
             this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(227, 13);
-            this.lblSaveCheckpointsOnExit.TabIndex = 51;
+            this.lblSaveCheckpointsOnExit.TabIndex = 12;
             this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints on Exit:";
             // 
             // saveCheckpointsToFileCheckBox
@@ -371,10 +394,10 @@ namespace ServiceBusExplorer.Forms
             this.saveCheckpointsToFileCheckBox.Checked = true;
             this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(260, 212);
+            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(260, 205);
             this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
             this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveCheckpointsToFileCheckBox.TabIndex = 52;
+            this.saveCheckpointsToFileCheckBox.TabIndex = 13;
             this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
             this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
             // 
@@ -386,19 +409,19 @@ namespace ServiceBusExplorer.Forms
             this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(260, 275);
+            this.cboSelectedEntities.Location = new System.Drawing.Point(260, 267);
             this.cboSelectedEntities.Name = "cboSelectedEntities";
             this.cboSelectedEntities.Size = new System.Drawing.Size(298, 21);
-            this.cboSelectedEntities.TabIndex = 50;
+            this.cboSelectedEntities.TabIndex = 17;
             // 
             // lblSelectedEntities
             // 
             this.lblSelectedEntities.AutoSize = true;
             this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 275);
+            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 267);
             this.lblSelectedEntities.Name = "lblSelectedEntities";
             this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
-            this.lblSelectedEntities.TabIndex = 49;
+            this.lblSelectedEntities.TabIndex = 16;
             this.lblSelectedEntities.Text = "Selected Entities:";
             // 
             // monitorRefreshIntervalNumericUpDown
@@ -408,7 +431,7 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             0});
-            this.monitorRefreshIntervalNumericUpDown.Location = new System.Drawing.Point(260, 119);
+            this.monitorRefreshIntervalNumericUpDown.Location = new System.Drawing.Point(260, 112);
             this.monitorRefreshIntervalNumericUpDown.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -416,7 +439,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.monitorRefreshIntervalNumericUpDown.Name = "monitorRefreshIntervalNumericUpDown";
             this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.monitorRefreshIntervalNumericUpDown.TabIndex = 46;
+            this.monitorRefreshIntervalNumericUpDown.TabIndex = 7;
             this.monitorRefreshIntervalNumericUpDown.Value = new decimal(new int[] {
             30,
             0,
@@ -428,10 +451,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblMonitorRefreshInterval.AutoSize = true;
             this.lblMonitorRefreshInterval.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMonitorRefreshInterval.Location = new System.Drawing.Point(16, 119);
+            this.lblMonitorRefreshInterval.Location = new System.Drawing.Point(16, 112);
             this.lblMonitorRefreshInterval.Name = "lblMonitorRefreshInterval";
             this.lblMonitorRefreshInterval.Size = new System.Drawing.Size(172, 13);
-            this.lblMonitorRefreshInterval.TabIndex = 45;
+            this.lblMonitorRefreshInterval.TabIndex = 6;
             this.lblMonitorRefreshInterval.Text = "Monitor Refresh Interval (seconds):";
             // 
             // useAsciiCheckBox
@@ -440,10 +463,10 @@ namespace ServiceBusExplorer.Forms
             this.useAsciiCheckBox.Checked = true;
             this.useAsciiCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.useAsciiCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.useAsciiCheckBox.Location = new System.Drawing.Point(260, 149);
+            this.useAsciiCheckBox.Location = new System.Drawing.Point(260, 143);
             this.useAsciiCheckBox.Name = "useAsciiCheckBox";
             this.useAsciiCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useAsciiCheckBox.TabIndex = 40;
+            this.useAsciiCheckBox.TabIndex = 9;
             this.useAsciiCheckBox.UseVisualStyleBackColor = true;
             this.useAsciiCheckBox.CheckedChanged += new System.EventHandler(this.useAscii_CheckedChanged);
             // 
@@ -451,20 +474,20 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblUseAscii.AutoSize = true;
             this.lblUseAscii.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblUseAscii.Location = new System.Drawing.Point(16, 149);
+            this.lblUseAscii.Location = new System.Drawing.Point(16, 143);
             this.lblUseAscii.Name = "lblUseAscii";
             this.lblUseAscii.Size = new System.Drawing.Size(59, 13);
-            this.lblUseAscii.TabIndex = 39;
+            this.lblUseAscii.TabIndex = 8;
             this.lblUseAscii.Text = "Use ASCII:";
             // 
             // lblShowMessageCount
             // 
             this.lblShowMessageCount.AutoSize = true;
             this.lblShowMessageCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblShowMessageCount.Location = new System.Drawing.Point(16, 181);
+            this.lblShowMessageCount.Location = new System.Drawing.Point(16, 174);
             this.lblShowMessageCount.Name = "lblShowMessageCount";
             this.lblShowMessageCount.Size = new System.Drawing.Size(114, 13);
-            this.lblShowMessageCount.TabIndex = 43;
+            this.lblShowMessageCount.TabIndex = 10;
             this.lblShowMessageCount.Text = "Show Message Count:";
             // 
             // showMessageCountCheckBox
@@ -473,10 +496,10 @@ namespace ServiceBusExplorer.Forms
             this.showMessageCountCheckBox.Checked = true;
             this.showMessageCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showMessageCountCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.showMessageCountCheckBox.Location = new System.Drawing.Point(260, 181);
+            this.showMessageCountCheckBox.Location = new System.Drawing.Point(260, 174);
             this.showMessageCountCheckBox.Name = "showMessageCountCheckBox";
             this.showMessageCountCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.showMessageCountCheckBox.TabIndex = 44;
+            this.showMessageCountCheckBox.TabIndex = 11;
             this.showMessageCountCheckBox.UseVisualStyleBackColor = true;
             this.showMessageCountCheckBox.CheckedChanged += new System.EventHandler(this.showMessageCountCheckBox_CheckedChanged);
             // 
@@ -484,10 +507,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblEncoding.AutoSize = true;
             this.lblEncoding.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEncoding.Location = new System.Drawing.Point(16, 243);
+            this.lblEncoding.Location = new System.Drawing.Point(16, 236);
             this.lblEncoding.Name = "lblEncoding";
             this.lblEncoding.Size = new System.Drawing.Size(55, 13);
-            this.lblEncoding.TabIndex = 41;
+            this.lblEncoding.TabIndex = 14;
             this.lblEncoding.Text = "Encoding:";
             // 
             // cboEncodingType
@@ -501,15 +524,15 @@ namespace ServiceBusExplorer.Forms
             "UTF8",
             "UTF32",
             "Unicode"});
-            this.cboEncodingType.Location = new System.Drawing.Point(260, 243);
+            this.cboEncodingType.Location = new System.Drawing.Point(260, 236);
             this.cboEncodingType.Name = "cboEncodingType";
             this.cboEncodingType.Size = new System.Drawing.Size(298, 21);
-            this.cboEncodingType.TabIndex = 42;
+            this.cboEncodingType.TabIndex = 15;
             this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
             // 
             // serverTimeoutNumericUpDown
             // 
-            this.serverTimeoutNumericUpDown.Location = new System.Drawing.Point(260, 87);
+            this.serverTimeoutNumericUpDown.Location = new System.Drawing.Point(260, 81);
             this.serverTimeoutNumericUpDown.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -517,7 +540,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.serverTimeoutNumericUpDown.Name = "serverTimeoutNumericUpDown";
             this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.serverTimeoutNumericUpDown.TabIndex = 38;
+            this.serverTimeoutNumericUpDown.TabIndex = 5;
             this.serverTimeoutNumericUpDown.Value = new decimal(new int[] {
             5,
             0,
@@ -529,10 +552,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblServerTimeout.AutoSize = true;
             this.lblServerTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblServerTimeout.Location = new System.Drawing.Point(16, 87);
+            this.lblServerTimeout.Location = new System.Drawing.Point(16, 81);
             this.lblServerTimeout.Name = "lblServerTimeout";
             this.lblServerTimeout.Size = new System.Drawing.Size(131, 13);
-            this.lblServerTimeout.TabIndex = 37;
+            this.lblServerTimeout.TabIndex = 4;
             this.lblServerTimeout.Text = "Server Timeout (seconds):";
             // 
             // treeViewNumericUpDown
@@ -543,20 +566,20 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             131072});
-            this.treeViewNumericUpDown.Location = new System.Drawing.Point(260, 56);
+            this.treeViewNumericUpDown.Location = new System.Drawing.Point(260, 50);
             this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
             this.treeViewNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.treeViewNumericUpDown.TabIndex = 36;
+            this.treeViewNumericUpDown.TabIndex = 3;
             this.treeViewNumericUpDown.ValueChanged += new System.EventHandler(this.treeViewNumericUpDown_ValueChanged);
             // 
             // lblTreeViewFontSize
             // 
             this.lblTreeViewFontSize.AutoSize = true;
             this.lblTreeViewFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTreeViewFontSize.Location = new System.Drawing.Point(16, 56);
+            this.lblTreeViewFontSize.Location = new System.Drawing.Point(16, 50);
             this.lblTreeViewFontSize.Name = "lblTreeViewFontSize";
             this.lblTreeViewFontSize.Size = new System.Drawing.Size(105, 13);
-            this.lblTreeViewFontSize.TabIndex = 35;
+            this.lblTreeViewFontSize.TabIndex = 2;
             this.lblTreeViewFontSize.Text = "Tree View Font Size:";
             // 
             // logNumericUpDown
@@ -567,20 +590,20 @@ namespace ServiceBusExplorer.Forms
             0,
             0,
             131072});
-            this.logNumericUpDown.Location = new System.Drawing.Point(260, 25);
+            this.logNumericUpDown.Location = new System.Drawing.Point(260, 19);
             this.logNumericUpDown.Name = "logNumericUpDown";
             this.logNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.logNumericUpDown.TabIndex = 34;
+            this.logNumericUpDown.TabIndex = 1;
             this.logNumericUpDown.ValueChanged += new System.EventHandler(this.logNumericUpDown_ValueChanged);
             // 
             // lblLogFontSize
             // 
             this.lblLogFontSize.AutoSize = true;
             this.lblLogFontSize.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLogFontSize.Location = new System.Drawing.Point(16, 25);
+            this.lblLogFontSize.Location = new System.Drawing.Point(16, 19);
             this.lblLogFontSize.Name = "lblLogFontSize";
             this.lblLogFontSize.Size = new System.Drawing.Size(75, 13);
-            this.lblLogFontSize.TabIndex = 33;
+            this.lblLogFontSize.TabIndex = 0;
             this.lblLogFontSize.Text = "Log Font Size:";
             // 
             // tabPageReceiving
@@ -620,7 +643,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.receiverThinkTimeNumericUpDown.Name = "receiverThinkTimeNumericUpDown";
             this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.receiverThinkTimeNumericUpDown.TabIndex = 34;
+            this.receiverThinkTimeNumericUpDown.TabIndex = 11;
             this.receiverThinkTimeNumericUpDown.Value = new decimal(new int[] {
             100,
             0,
@@ -635,7 +658,7 @@ namespace ServiceBusExplorer.Forms
             this.lblReceiverThinkTime.Location = new System.Drawing.Point(16, 179);
             this.lblReceiverThinkTime.Name = "lblReceiverThinkTime";
             this.lblReceiverThinkTime.Size = new System.Drawing.Size(174, 13);
-            this.lblReceiverThinkTime.TabIndex = 33;
+            this.lblReceiverThinkTime.TabIndex = 10;
             this.lblReceiverThinkTime.Text = "Receiver Think Time (milliseconds):";
             // 
             // prefetchCountNumericUpDown
@@ -653,7 +676,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.prefetchCountNumericUpDown.Name = "prefetchCountNumericUpDown";
             this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.prefetchCountNumericUpDown.TabIndex = 28;
+            this.prefetchCountNumericUpDown.TabIndex = 7;
             this.prefetchCountNumericUpDown.Value = new decimal(new int[] {
             10,
             0,
@@ -668,7 +691,7 @@ namespace ServiceBusExplorer.Forms
             this.lblPrefetchCount.Location = new System.Drawing.Point(16, 119);
             this.lblPrefetchCount.Name = "lblPrefetchCount";
             this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
-            this.lblPrefetchCount.TabIndex = 27;
+            this.lblPrefetchCount.TabIndex = 6;
             this.lblPrefetchCount.Text = "Prefetch Count:";
             // 
             // receiveTimeoutNumericUpDown
@@ -681,7 +704,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.receiveTimeoutNumericUpDown.Name = "receiveTimeoutNumericUpDown";
             this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.receiveTimeoutNumericUpDown.TabIndex = 24;
+            this.receiveTimeoutNumericUpDown.TabIndex = 1;
             this.receiveTimeoutNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -696,7 +719,7 @@ namespace ServiceBusExplorer.Forms
             this.lblReceiveTimeout.Location = new System.Drawing.Point(16, 25);
             this.lblReceiveTimeout.Name = "lblReceiveTimeout";
             this.lblReceiveTimeout.Size = new System.Drawing.Size(140, 13);
-            this.lblReceiveTimeout.TabIndex = 23;
+            this.lblReceiveTimeout.TabIndex = 0;
             this.lblReceiveTimeout.Text = "Receive Timeout (seconds):";
             // 
             // topNumericUpDown
@@ -714,7 +737,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.topNumericUpDown.Name = "topNumericUpDown";
             this.topNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.topNumericUpDown.TabIndex = 32;
+            this.topNumericUpDown.TabIndex = 9;
             this.topNumericUpDown.Value = new decimal(new int[] {
             10,
             0,
@@ -729,7 +752,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTop.Location = new System.Drawing.Point(16, 149);
             this.lblTop.Name = "lblTop";
             this.lblTop.Size = new System.Drawing.Size(60, 13);
-            this.lblTop.TabIndex = 31;
+            this.lblTop.TabIndex = 8;
             this.lblTop.Text = "Top Count:";
             // 
             // retryTimeoutNumericUpDown
@@ -747,7 +770,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
             this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.retryTimeoutNumericUpDown.TabIndex = 30;
+            this.retryTimeoutNumericUpDown.TabIndex = 5;
             this.retryTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.retryTimeoutNumericUpDown_ValueChanged);
             // 
             // lblRetryTimeout
@@ -757,7 +780,7 @@ namespace ServiceBusExplorer.Forms
             this.lblRetryTimeout.Location = new System.Drawing.Point(16, 87);
             this.lblRetryTimeout.Name = "lblRetryTimeout";
             this.lblRetryTimeout.Size = new System.Drawing.Size(141, 13);
-            this.lblRetryTimeout.TabIndex = 29;
+            this.lblRetryTimeout.TabIndex = 4;
             this.lblRetryTimeout.Text = "Retry Timeout (milliseconds):";
             // 
             // retryCountNumericUpDown
@@ -770,7 +793,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
             this.retryCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.retryCountNumericUpDown.TabIndex = 26;
+            this.retryCountNumericUpDown.TabIndex = 3;
             this.retryCountNumericUpDown.ValueChanged += new System.EventHandler(this.retryCountNumericUpDown_ValueChanged);
             // 
             // lblRetryCount
@@ -780,7 +803,7 @@ namespace ServiceBusExplorer.Forms
             this.lblRetryCount.Location = new System.Drawing.Point(16, 56);
             this.lblRetryCount.Name = "lblRetryCount";
             this.lblRetryCount.Size = new System.Drawing.Size(66, 13);
-            this.lblRetryCount.TabIndex = 25;
+            this.lblRetryCount.TabIndex = 2;
             this.lblRetryCount.Text = "Retry Count:";
             // 
             // tabPageSending
@@ -819,7 +842,7 @@ namespace ServiceBusExplorer.Forms
             this.saveMessageToFileCheckBox.Location = new System.Drawing.Point(260, 56);
             this.saveMessageToFileCheckBox.Name = "saveMessageToFileCheckBox";
             this.saveMessageToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveMessageToFileCheckBox.TabIndex = 67;
+            this.saveMessageToFileCheckBox.TabIndex = 3;
             this.saveMessageToFileCheckBox.UseVisualStyleBackColor = true;
             this.saveMessageToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveMessageToFileCheckBox_CheckedChanged);
             // 
@@ -830,7 +853,7 @@ namespace ServiceBusExplorer.Forms
             this.lblMessageContentType.Location = new System.Drawing.Point(16, 243);
             this.lblMessageContentType.Name = "lblMessageContentType";
             this.lblMessageContentType.Size = new System.Drawing.Size(120, 13);
-            this.lblMessageContentType.TabIndex = 63;
+            this.lblMessageContentType.TabIndex = 13;
             this.lblMessageContentType.Text = "Message Content Type:";
             // 
             // txtMessageContentType
@@ -840,7 +863,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageContentType.Location = new System.Drawing.Point(260, 243);
             this.txtMessageContentType.Name = "txtMessageContentType";
             this.txtMessageContentType.Size = new System.Drawing.Size(302, 20);
-            this.txtMessageContentType.TabIndex = 64;
+            this.txtMessageContentType.TabIndex = 14;
             this.txtMessageContentType.TextChanged += new System.EventHandler(this.txtMessageContentType_TextChanged);
             // 
             // cboDefaultMessageBodyType
@@ -856,7 +879,7 @@ namespace ServiceBusExplorer.Forms
             this.cboDefaultMessageBodyType.Location = new System.Drawing.Point(260, 275);
             this.cboDefaultMessageBodyType.Name = "cboDefaultMessageBodyType";
             this.cboDefaultMessageBodyType.Size = new System.Drawing.Size(302, 21);
-            this.cboDefaultMessageBodyType.TabIndex = 66;
+            this.cboDefaultMessageBodyType.TabIndex = 16;
             this.cboDefaultMessageBodyType.SelectedIndexChanged += new System.EventHandler(this.cboDefaultMessageBodyType_SelectedIndexChanged);
             // 
             // LabelDefaultMessageBodyType
@@ -866,7 +889,7 @@ namespace ServiceBusExplorer.Forms
             this.LabelDefaultMessageBodyType.Location = new System.Drawing.Point(16, 275);
             this.LabelDefaultMessageBodyType.Name = "LabelDefaultMessageBodyType";
             this.LabelDefaultMessageBodyType.Size = new System.Drawing.Size(138, 13);
-            this.LabelDefaultMessageBodyType.TabIndex = 65;
+            this.LabelDefaultMessageBodyType.TabIndex = 15;
             this.LabelDefaultMessageBodyType.Text = "Default message body type:";
             // 
             // btnOpen
@@ -881,7 +904,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpen.Location = new System.Drawing.Point(537, 212);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(24, 21);
-            this.btnOpen.TabIndex = 62;
+            this.btnOpen.TabIndex = 12;
             this.btnOpen.Text = "...";
             this.btnOpen.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpen.UseVisualStyleBackColor = false;
@@ -894,7 +917,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageFile.Location = new System.Drawing.Point(260, 181);
             this.txtMessageFile.Name = "txtMessageFile";
             this.txtMessageFile.Size = new System.Drawing.Size(302, 20);
-            this.txtMessageFile.TabIndex = 59;
+            this.txtMessageFile.TabIndex = 9;
             this.txtMessageFile.TextChanged += new System.EventHandler(this.txtMessageFile_TextChanged);
             // 
             // lblMessageFile
@@ -904,7 +927,7 @@ namespace ServiceBusExplorer.Forms
             this.lblMessageFile.Location = new System.Drawing.Point(16, 181);
             this.lblMessageFile.Name = "lblMessageFile";
             this.lblMessageFile.Size = new System.Drawing.Size(78, 13);
-            this.lblMessageFile.TabIndex = 58;
+            this.lblMessageFile.TabIndex = 8;
             this.lblMessageFile.Text = "Message Path:";
             // 
             // txtMessageText
@@ -914,7 +937,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageText.Location = new System.Drawing.Point(260, 212);
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.Size = new System.Drawing.Size(266, 20);
-            this.txtMessageText.TabIndex = 61;
+            this.txtMessageText.TabIndex = 11;
             this.txtMessageText.TextChanged += new System.EventHandler(this.txtMessageText_TextChanged);
             // 
             // lblMessageText
@@ -924,7 +947,7 @@ namespace ServiceBusExplorer.Forms
             this.lblMessageText.Location = new System.Drawing.Point(16, 212);
             this.lblMessageText.Name = "lblMessageText";
             this.lblMessageText.Size = new System.Drawing.Size(77, 13);
-            this.lblMessageText.TabIndex = 60;
+            this.lblMessageText.TabIndex = 10;
             this.lblMessageText.Text = "Message Text:";
             // 
             // txtLabel
@@ -934,7 +957,7 @@ namespace ServiceBusExplorer.Forms
             this.txtLabel.Location = new System.Drawing.Point(260, 149);
             this.txtLabel.Name = "txtLabel";
             this.txtLabel.Size = new System.Drawing.Size(302, 20);
-            this.txtLabel.TabIndex = 57;
+            this.txtLabel.TabIndex = 7;
             this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
             // 
             // lblLabel
@@ -944,7 +967,7 @@ namespace ServiceBusExplorer.Forms
             this.lblLabel.Location = new System.Drawing.Point(16, 149);
             this.lblLabel.Name = "lblLabel";
             this.lblLabel.Size = new System.Drawing.Size(36, 13);
-            this.lblLabel.TabIndex = 56;
+            this.lblLabel.TabIndex = 6;
             this.lblLabel.Text = "Label:";
             // 
             // senderThinkTimeNumericUpDown
@@ -962,7 +985,7 @@ namespace ServiceBusExplorer.Forms
             0});
             this.senderThinkTimeNumericUpDown.Name = "senderThinkTimeNumericUpDown";
             this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
-            this.senderThinkTimeNumericUpDown.TabIndex = 52;
+            this.senderThinkTimeNumericUpDown.TabIndex = 1;
             this.senderThinkTimeNumericUpDown.Value = new decimal(new int[] {
             100,
             0,
@@ -977,7 +1000,7 @@ namespace ServiceBusExplorer.Forms
             this.lblSenderThinkTime.Location = new System.Drawing.Point(16, 25);
             this.lblSenderThinkTime.Name = "lblSenderThinkTime";
             this.lblSenderThinkTime.Size = new System.Drawing.Size(165, 13);
-            this.lblSenderThinkTime.TabIndex = 51;
+            this.lblSenderThinkTime.TabIndex = 0;
             this.lblSenderThinkTime.Text = "Sender Think Time (milliseconds):";
             // 
             // lblSavePropertiesOnExit
@@ -987,7 +1010,7 @@ namespace ServiceBusExplorer.Forms
             this.lblSavePropertiesOnExit.Location = new System.Drawing.Point(16, 87);
             this.lblSavePropertiesOnExit.Name = "lblSavePropertiesOnExit";
             this.lblSavePropertiesOnExit.Size = new System.Drawing.Size(197, 13);
-            this.lblSavePropertiesOnExit.TabIndex = 54;
+            this.lblSavePropertiesOnExit.TabIndex = 4;
             this.lblSavePropertiesOnExit.Text = "Save Message Properties to File on Exit:";
             // 
             // lblSaveMessageOnExit
@@ -997,7 +1020,7 @@ namespace ServiceBusExplorer.Forms
             this.lblSaveMessageOnExit.Location = new System.Drawing.Point(16, 56);
             this.lblSaveMessageOnExit.Name = "lblSaveMessageOnExit";
             this.lblSaveMessageOnExit.Size = new System.Drawing.Size(174, 13);
-            this.lblSaveMessageOnExit.TabIndex = 53;
+            this.lblSaveMessageOnExit.TabIndex = 2;
             this.lblSaveMessageOnExit.Text = "Save Message Body to File on Exit:";
             // 
             // savePropertiesToFileCheckBox
@@ -1009,7 +1032,7 @@ namespace ServiceBusExplorer.Forms
             this.savePropertiesToFileCheckBox.Location = new System.Drawing.Point(260, 87);
             this.savePropertiesToFileCheckBox.Name = "savePropertiesToFileCheckBox";
             this.savePropertiesToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.savePropertiesToFileCheckBox.TabIndex = 55;
+            this.savePropertiesToFileCheckBox.TabIndex = 5;
             this.savePropertiesToFileCheckBox.UseVisualStyleBackColor = true;
             this.savePropertiesToFileCheckBox.CheckedChanged += new System.EventHandler(this.savePropertiesToFileCheckBox_CheckedChanged);
             // 
@@ -1034,7 +1057,7 @@ namespace ServiceBusExplorer.Forms
             this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(384, 56);
             this.useAmqpWebSocketsCheckBox.Name = "useAmqpWebSocketsCheckBox";
             this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useAmqpWebSocketsCheckBox.TabIndex = 68;
+            this.useAmqpWebSocketsCheckBox.TabIndex = 3;
             this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
             this.useAmqpWebSocketsCheckBox.CheckedChanged += new System.EventHandler(this.useAmqpWebSocketsCheckBox_CheckedChanged);
             // 
@@ -1045,7 +1068,7 @@ namespace ServiceBusExplorer.Forms
             this.label4.Location = new System.Drawing.Point(16, 56);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(346, 13);
-            this.label4.TabIndex = 29;
+            this.label4.TabIndex = 2;
             this.label4.Text = "Use AMQP Web Sockets for Microsoft.Azure.ServiceBus.dll (new client)";
             // 
             // cboConnectivityMode
@@ -1056,7 +1079,7 @@ namespace ServiceBusExplorer.Forms
             this.cboConnectivityMode.Location = new System.Drawing.Point(384, 25);
             this.cboConnectivityMode.Name = "cboConnectivityMode";
             this.cboConnectivityMode.Size = new System.Drawing.Size(184, 21);
-            this.cboConnectivityMode.TabIndex = 28;
+            this.cboConnectivityMode.TabIndex = 1;
             this.cboConnectivityMode.SelectedIndexChanged += new System.EventHandler(this.cboConnectivityMode_SelectedIndexChanged);
             // 
             // lblConnectivityMode
@@ -1066,7 +1089,7 @@ namespace ServiceBusExplorer.Forms
             this.lblConnectivityMode.Location = new System.Drawing.Point(16, 25);
             this.lblConnectivityMode.Name = "lblConnectivityMode";
             this.lblConnectivityMode.Size = new System.Drawing.Size(305, 13);
-            this.lblConnectivityMode.TabIndex = 27;
+            this.lblConnectivityMode.TabIndex = 0;
             this.lblConnectivityMode.Text = "Connectivity Mode for WindowsAzure.ServiceBus.dll (old client)";
             // 
             // tabPageProxy
@@ -1101,7 +1124,7 @@ namespace ServiceBusExplorer.Forms
             this.txtProxyPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txtProxyPassword.Name = "txtProxyPassword";
             this.txtProxyPassword.Size = new System.Drawing.Size(302, 20);
-            this.txtProxyPassword.TabIndex = 7;
+            this.txtProxyPassword.TabIndex = 13;
             this.txtProxyPassword.UseSystemPasswordChar = true;
             this.txtProxyPassword.TextChanged += new System.EventHandler(this.txtProxyPassword_TextChanged);
             // 
@@ -1115,7 +1138,7 @@ namespace ServiceBusExplorer.Forms
             this.useDefaultProxyCredentialsCheckBox.Margin = new System.Windows.Forms.Padding(2);
             this.useDefaultProxyCredentialsCheckBox.Name = "useDefaultProxyCredentialsCheckBox";
             this.useDefaultProxyCredentialsCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useDefaultProxyCredentialsCheckBox.TabIndex = 5;
+            this.useDefaultProxyCredentialsCheckBox.TabIndex = 9;
             this.useDefaultProxyCredentialsCheckBox.UseVisualStyleBackColor = true;
             this.useDefaultProxyCredentialsCheckBox.CheckedChanged += new System.EventHandler(this.useDefaultProxyCredentialsCheckBox_CheckedChanged);
             // 
@@ -1127,7 +1150,7 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyPassword.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProxyPassword.Name = "lblProxyPassword";
             this.lblProxyPassword.Size = new System.Drawing.Size(56, 13);
-            this.lblProxyPassword.TabIndex = 53;
+            this.lblProxyPassword.TabIndex = 12;
             this.lblProxyPassword.Text = "Password:";
             // 
             // lblProxyDefaultCredentials
@@ -1138,7 +1161,7 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyDefaultCredentials.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProxyDefaultCredentials.Name = "lblProxyDefaultCredentials";
             this.lblProxyDefaultCredentials.Size = new System.Drawing.Size(121, 13);
-            this.lblProxyDefaultCredentials.TabIndex = 59;
+            this.lblProxyDefaultCredentials.TabIndex = 8;
             this.lblProxyDefaultCredentials.Text = "Use Default Credentials:";
             // 
             // txtProxyUserName
@@ -1149,7 +1172,7 @@ namespace ServiceBusExplorer.Forms
             this.txtProxyUserName.Margin = new System.Windows.Forms.Padding(2);
             this.txtProxyUserName.Name = "txtProxyUserName";
             this.txtProxyUserName.Size = new System.Drawing.Size(302, 20);
-            this.txtProxyUserName.TabIndex = 6;
+            this.txtProxyUserName.TabIndex = 11;
             this.txtProxyUserName.TextChanged += new System.EventHandler(this.txtProxyUser_TextChanged);
             // 
             // lblProxyUser
@@ -1160,7 +1183,7 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyUser.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProxyUser.Name = "lblProxyUser";
             this.lblProxyUser.Size = new System.Drawing.Size(63, 13);
-            this.lblProxyUser.TabIndex = 51;
+            this.lblProxyUser.TabIndex = 10;
             this.lblProxyUser.Text = "User Name:";
             // 
             // bypassProxyOnLocalAddressesCheckBox
@@ -1173,7 +1196,7 @@ namespace ServiceBusExplorer.Forms
             this.bypassProxyOnLocalAddressesCheckBox.Margin = new System.Windows.Forms.Padding(2);
             this.bypassProxyOnLocalAddressesCheckBox.Name = "bypassProxyOnLocalAddressesCheckBox";
             this.bypassProxyOnLocalAddressesCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.bypassProxyOnLocalAddressesCheckBox.TabIndex = 4;
+            this.bypassProxyOnLocalAddressesCheckBox.TabIndex = 7;
             this.bypassProxyOnLocalAddressesCheckBox.UseVisualStyleBackColor = true;
             this.bypassProxyOnLocalAddressesCheckBox.CheckedChanged += new System.EventHandler(this.bypassProxyOnLocalAddressesCheckBox_CheckedChanged);
             // 
@@ -1185,7 +1208,7 @@ namespace ServiceBusExplorer.Forms
             this.lblBypassProxyOnLocalAddresses.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblBypassProxyOnLocalAddresses.Name = "lblBypassProxyOnLocalAddresses";
             this.lblBypassProxyOnLocalAddresses.Size = new System.Drawing.Size(164, 13);
-            this.lblBypassProxyOnLocalAddresses.TabIndex = 57;
+            this.lblBypassProxyOnLocalAddresses.TabIndex = 6;
             this.lblBypassProxyOnLocalAddresses.Text = "Bypass Proxy for local addresses:";
             // 
             // txtProxyBypassList
@@ -1196,7 +1219,7 @@ namespace ServiceBusExplorer.Forms
             this.txtProxyBypassList.Margin = new System.Windows.Forms.Padding(2);
             this.txtProxyBypassList.Name = "txtProxyBypassList";
             this.txtProxyBypassList.Size = new System.Drawing.Size(302, 20);
-            this.txtProxyBypassList.TabIndex = 3;
+            this.txtProxyBypassList.TabIndex = 5;
             this.txtProxyBypassList.TextChanged += new System.EventHandler(this.txtProxyBypassList_TextChanged);
             // 
             // lblProxyBypass
@@ -1207,7 +1230,7 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyBypass.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProxyBypass.Name = "lblProxyBypass";
             this.lblProxyBypass.Size = new System.Drawing.Size(88, 13);
-            this.lblProxyBypass.TabIndex = 55;
+            this.lblProxyBypass.TabIndex = 4;
             this.lblProxyBypass.Text = "Bypass Proxy for:";
             // 
             // overrideDefaultProxyCheckBox
@@ -1230,7 +1253,7 @@ namespace ServiceBusExplorer.Forms
             this.lblOverrideProxy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblOverrideProxy.Name = "lblOverrideProxy";
             this.lblOverrideProxy.Size = new System.Drawing.Size(168, 13);
-            this.lblOverrideProxy.TabIndex = 54;
+            this.lblOverrideProxy.TabIndex = 0;
             this.lblOverrideProxy.Text = "Override system/app.config proxy:";
             // 
             // txtProxyAddress
@@ -1241,7 +1264,7 @@ namespace ServiceBusExplorer.Forms
             this.txtProxyAddress.Margin = new System.Windows.Forms.Padding(2);
             this.txtProxyAddress.Name = "txtProxyAddress";
             this.txtProxyAddress.Size = new System.Drawing.Size(302, 20);
-            this.txtProxyAddress.TabIndex = 2;
+            this.txtProxyAddress.TabIndex = 3;
             this.txtProxyAddress.TextChanged += new System.EventHandler(this.txtProxyAddress_TextChanged);
             // 
             // lblProxyAddress
@@ -1252,7 +1275,7 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyAddress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProxyAddress.Name = "lblProxyAddress";
             this.lblProxyAddress.Size = new System.Drawing.Size(77, 13);
-            this.lblProxyAddress.TabIndex = 52;
+            this.lblProxyAddress.TabIndex = 2;
             this.lblProxyAddress.Text = "Proxy Address:";
             // 
             // mainPanel
@@ -1267,7 +1290,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(614, 401);
-            this.mainPanel.TabIndex = 1;
+            this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
             // btnCancel
@@ -1283,7 +1306,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(343, 406);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 4;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             // 
@@ -1424,5 +1447,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.TextBox txtProxyAddress;
         private System.Windows.Forms.Label lblProxyAddress;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label lblDisableAccidentalDeletionPrevention;
+        private System.Windows.Forms.CheckBox disableAccidentalDeletionPrevention;
     }
 }
