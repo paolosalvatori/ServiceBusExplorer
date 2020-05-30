@@ -8,7 +8,7 @@ skip_commits:
     - '**/images/*'
     - '**/icons/*'
 
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 assembly_info:
   patch: false
@@ -16,6 +16,7 @@ assembly_info:
 environment:
   choco_token:
     secure: 68Fr+kbT0ilhb84AyU/kKVWJw74urnreRDCpZ2L89v0cJeuEGcOchKGIFsy4Hp+V
+
 
 #---------------------------------#
 #       restore nuget packages    #
