@@ -90,8 +90,6 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringWindowsUsername = "windowsusername";
         const string ConnectionStringWindowsDomain = "windowsdomain";
         const string ConnectionStringWindowsPassword = "windowspassword";
-        const string ConnectionStringSharedSecretIssuer = "sharedsecretissuer";
-        const string ConnectionStringSharedSecretValue = "sharedsecretvalue";
         const string ConnectionStringTransportType = "transporttype";
         const string ConnectionStringEntityPath = "entitypath";
 
@@ -155,16 +153,16 @@ namespace ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = connectionStringType;
-            Uri = string.IsNullOrWhiteSpace(uri) ? 
-                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() : 
+            Uri = string.IsNullOrWhiteSpace(uri) ?
+                  ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
                   uri;
-            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ? 
+            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ?
                                string.Format(ConnectionStringFormat,
                                              Uri,
                                              name,
                                              key,
-                                             transportType) : 
-                               connectionString;            
+                                             transportType) :
+                               connectionString;
             Namespace = ns;
             IssuerName = name;
             if (isSas)
@@ -248,7 +246,7 @@ namespace ServiceBusExplorer.Helpers
                 return null;
             }
 
-            var isUserCreated = !(key == "CustomConnectionString" || key == "ACSConnectionString" || key == "SASConnectionString");
+            var isUserCreated = !(key == "CustomConnectionString" || key == "SASConnectionString");
             var toLower = connectionString.ToLower();
             var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
 
@@ -256,72 +254,8 @@ namespace ServiceBusExplorer.Helpers
                 toLower.Contains(ConnectionStringSharedAccessKeyName) &&
                 toLower.Contains(ConnectionStringSharedAccessKey))
             {
-                if (parameters.Count < 3)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                if (!endpoint.Contains("://"))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
-                    endpoint = "sb://" + endpoint;
-                }
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-
-                if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
-                }
-                var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
-
-                if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
-                }
-                var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
-
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                string entityPath = string.Empty;
-                if (parameters.ContainsKey(ConnectionStringEntityPath))
-                {
-                    entityPath = parameters[ConnectionStringEntityPath];
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true, 
-                    entityPath, isUserCreated);
+                return GetServiceBusNamespaceUsingSAS(key, connectionString, staticWriteToLog, 
+                    isUserCreated, parameters);
             }
 
             if (toLower.Contains(ConnectionStringRuntimePort) ||
@@ -330,194 +264,12 @@ namespace ServiceBusExplorer.Helpers
                 toLower.Contains(ConnectionStringWindowsDomain) ||
                 toLower.Contains(ConnectionStringWindowsPassword))
             {
-                if (!toLower.Contains(ConnectionStringEndpoint) ||
-                    !toLower.Contains(ConnectionStringStsEndpoint) ||
-                    !toLower.Contains(ConnectionStringRuntimePort) ||
-                    !toLower.Contains(ConnectionStringManagementPort))
-                {
-                    return null;
-                }
-
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                if (string.IsNullOrWhiteSpace(stsEndpoint))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceStsEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var runtimePort = parameters.ContainsKey(ConnectionStringRuntimePort) ?
-                                  parameters[ConnectionStringRuntimePort] :
-                                  null;
-
-                if (string.IsNullOrWhiteSpace(runtimePort))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceRuntimePortIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var managementPort = parameters.ContainsKey(ConnectionStringManagementPort) ?
-                                     parameters[ConnectionStringManagementPort] :
-                                     null;
-
-                if (string.IsNullOrWhiteSpace(managementPort))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceManagementPortIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var windowsDomain = parameters.ContainsKey(ConnectionStringWindowsDomain) ?
-                                    parameters[ConnectionStringWindowsDomain] :
-                                    null;
-
-                var windowsUsername = parameters.ContainsKey(ConnectionStringWindowsUsername) ?
-                                      parameters[ConnectionStringWindowsUsername] :
-                                      null;
-
-                var windowsPassword = parameters.ContainsKey(ConnectionStringWindowsPassword) ?
-                                      parameters[ConnectionStringWindowsPassword] :
-                                      null;
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-                return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType, isUserCreated);
+                return GetServiceBusNamespaceUsingWindows(key, connectionString, staticWriteToLog, 
+                    isUserCreated, toLower, parameters);
             }
 
-            if (toLower.Contains(ConnectionStringEndpoint) &&
-                toLower.Contains(ConnectionStringSharedSecretIssuer) &&
-                toLower.Contains(ConnectionStringSharedSecretValue))
-            {
-                if (parameters.Count < 3)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-
-                var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
-                               parameters[ConnectionStringEndpoint] :
-                               null;
-
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointIsNullOrEmpty, key));
-                    return null;
-                }
-
-                var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
-                                  parameters[ConnectionStringStsEndpoint] :
-                                  null;
-
-                Uri uri;
-                try
-                {
-                    uri = new Uri(endpoint);
-                }
-                catch (Exception)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceEndpointUriIsInvalid, key));
-                    return null;
-                }
-                var ns = uri.Host.Split('.')[0];
-                var issuerName = parameters.ContainsKey(ConnectionStringSharedSecretIssuer) ?
-                                     parameters[ConnectionStringSharedSecretIssuer] :
-                                     ConnectionStringOwner;
-
-                if (!parameters.ContainsKey(ConnectionStringSharedSecretValue) ||
-                    string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedSecretValue]))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
-                    return null;
-
-                }
-                var issuerSecret = parameters[ConnectionStringSharedSecretValue];
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, issuerName, issuerSecret, stsEndpoint, transportType, isUserCreated);
-            }
-            else
-            {
-                if (parameters.Count < 4)
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                    return null;
-                }
-
-                var uriString = parameters.ContainsKey(ConnectionStringUri) ?
-                                    parameters[ConnectionStringUri] :
-                                    null;
-
-                if (string.IsNullOrWhiteSpace(uriString) && !parameters.ContainsKey(ConnectionStringNameSpace))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
-                    return null;
-                }
-
-                var ns = parameters[ConnectionStringNameSpace];
-
-                var servicePath = parameters.ContainsKey(ConnectionStringServicePath) ?
-                                      parameters[ConnectionStringServicePath] :
-                                      null;
-
-                if (!parameters.ContainsKey(ConnectionStringIssuerName))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
-                    return null;
-                }
-                var issuerName = parameters.ContainsKey(ConnectionStringIssuerName) ?
-                                     parameters[ConnectionStringIssuerName] :
-                                     ConnectionStringOwner;
-
-                if (!parameters.ContainsKey(ConnectionStringIssuerSecret) ||
-                    string.IsNullOrWhiteSpace(parameters[ConnectionStringIssuerSecret]))
-                {
-                    staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
-                    return null;
-
-                }
-                var issuerSecret = parameters[ConnectionStringIssuerSecret];
-
-                var settings = new MessagingFactorySettings();
-                var transportType = settings.TransportType;
-                if (parameters.ContainsKey(ConnectionStringTransportType))
-                {
-                    Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-                }
-
-                return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
-            }
+            return GetServiceBusNamespaceUsingIssuer(key, connectionString, staticWriteToLog, 
+                isUserCreated, parameters);
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
@@ -554,7 +306,7 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            var microsoftServiceBusConnectionString = 
+            var microsoftServiceBusConnectionString =
                 configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString);
 
             if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
@@ -682,6 +434,232 @@ namespace ServiceBusExplorer.Helpers
         /// Gets or sets the EntityPath
         /// </summary>
         public string EntityPath { get; set; }
+        #endregion
+
+        #region Private Methods
+        
+        static ServiceBusNamespace GetServiceBusNamespaceUsingIssuer(string key, string connectionString, WriteToLogDelegate staticWriteToLog, bool isUserCreated, Dictionary<string, string> parameters)
+        {
+            if (parameters.Count < 4)
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                return null;
+            }
+
+            var uriString = parameters.ContainsKey(ConnectionStringUri) ?
+                                parameters[ConnectionStringUri] :
+                                null;
+
+            if (string.IsNullOrWhiteSpace(uriString) && !parameters.ContainsKey(ConnectionStringNameSpace))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
+                return null;
+            }
+
+            var ns = parameters[ConnectionStringNameSpace];
+
+            var servicePath = parameters.ContainsKey(ConnectionStringServicePath) ?
+                                  parameters[ConnectionStringServicePath] :
+                                  null;
+
+            if (!parameters.ContainsKey(ConnectionStringIssuerName))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
+                return null;
+            }
+
+            var issuerName = parameters.ContainsKey(ConnectionStringIssuerName) ?
+                                 parameters[ConnectionStringIssuerName] :
+                                 ConnectionStringOwner;
+
+            if (!parameters.ContainsKey(ConnectionStringIssuerSecret) ||
+                string.IsNullOrWhiteSpace(parameters[ConnectionStringIssuerSecret]))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
+                return null;
+
+            }
+
+            var issuerSecret = parameters[ConnectionStringIssuerSecret];
+            var settings = new MessagingFactorySettings();
+            var transportType = settings.TransportType;
+
+            if (parameters.ContainsKey(ConnectionStringTransportType))
+            {
+                Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+            }
+
+            return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, 
+                ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
+        }
+
+        static ServiceBusNamespace GetServiceBusNamespaceUsingWindows(string key, string connectionString,
+            WriteToLogDelegate staticWriteToLog, bool isUserCreated, string toLower, 
+            Dictionary<string, string> parameters)
+        {
+            if (!toLower.Contains(ConnectionStringEndpoint) ||
+                !toLower.Contains(ConnectionStringStsEndpoint) ||
+                !toLower.Contains(ConnectionStringRuntimePort) ||
+                !toLower.Contains(ConnectionStringManagementPort))
+            {
+                return null;
+            }
+
+            var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
+                           parameters[ConnectionStringEndpoint] :
+                           null;
+
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                return null;
+            }
+
+            string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);  
+
+            var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
+                              parameters[ConnectionStringStsEndpoint] :
+                              null;
+
+            if (string.IsNullOrWhiteSpace(stsEndpoint))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceStsEndpointIsNullOrEmpty, key));
+                return null;
+            }
+
+            var runtimePort = parameters.ContainsKey(ConnectionStringRuntimePort) ?
+                              parameters[ConnectionStringRuntimePort] :
+                              null;
+
+            if (string.IsNullOrWhiteSpace(runtimePort))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceRuntimePortIsNullOrEmpty, key));
+                return null;
+            }
+
+            var managementPort = parameters.ContainsKey(ConnectionStringManagementPort) ?
+                                 parameters[ConnectionStringManagementPort] :
+                                 null;
+
+            if (string.IsNullOrWhiteSpace(managementPort))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceManagementPortIsNullOrEmpty, key));
+                return null;
+            }
+
+            var windowsDomain = parameters.ContainsKey(ConnectionStringWindowsDomain) ?
+                                parameters[ConnectionStringWindowsDomain] :
+                                null;
+
+            var windowsUsername = parameters.ContainsKey(ConnectionStringWindowsUsername) ?
+                                  parameters[ConnectionStringWindowsUsername] :
+                                  null;
+
+            var windowsPassword = parameters.ContainsKey(ConnectionStringWindowsPassword) ?
+                                  parameters[ConnectionStringWindowsPassword] :
+                                  null;
+
+            var settings = new MessagingFactorySettings();
+            var transportType = settings.TransportType;
+
+            if (parameters.ContainsKey(ConnectionStringTransportType))
+            {
+                Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+            }
+            
+            return new ServiceBusNamespace(connectionString, endpoint, stsEndpoint, runtimePort, managementPort, windowsDomain, windowsUsername, windowsPassword, ns, transportType, isUserCreated);
+        }
+
+        static ServiceBusNamespace GetServiceBusNamespaceUsingSAS(string key, string connectionString, 
+            WriteToLogDelegate staticWriteToLog, bool isUserCreated, Dictionary<string, string> parameters)
+        {
+            if (parameters.Count < 3)
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
+                return null;
+            }
+
+            var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
+                           parameters[ConnectionStringEndpoint] :
+                           null;
+
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                return null;
+            }
+
+            if (!endpoint.Contains("://"))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
+                endpoint = "sb://" + endpoint;
+            }
+
+            var stsEndpoint = parameters.ContainsKey(ConnectionStringStsEndpoint) ?
+                              parameters[ConnectionStringStsEndpoint] :
+                              null;
+
+            string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);           
+
+            if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || 
+                string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
+            }
+
+            var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
+
+            if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+            }
+
+            var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
+            var settings = new MessagingFactorySettings();
+            var transportType = settings.TransportType;
+
+            if (parameters.ContainsKey(ConnectionStringTransportType))
+            {
+                Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+            }
+
+            string entityPath = string.Empty;
+
+            if (parameters.ContainsKey(ConnectionStringEntityPath))
+            {
+                entityPath = parameters[ConnectionStringEntityPath];
+            }
+
+            return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
+                entityPath, isUserCreated);
+        }
+
+        static string GetNamespaceNameFromEndpoint(string endpoint, WriteToLogDelegate staticWriteToLog, string key)
+        {
+             Uri uri;
+
+            try
+            {
+                uri = new Uri(endpoint);
+            }
+            catch (Exception)
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
+                    ServiceBusNamespaceEndpointUriIsInvalid, key));
+                return null;
+            }
+
+            return uri.Host.Split('.')[0];
+        }
+
         #endregion
     }
 }
