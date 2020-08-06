@@ -638,11 +638,13 @@ namespace ServiceBusExplorer.Helpers
                 entityPath = parameters[ConnectionStringEntityPath];
             }
 
-            return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null, sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
+            return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null,
+                sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
                 entityPath, isUserCreated);
         }
 
-        static string GetNamespaceNameFromEndpoint(string endpoint, WriteToLogDelegate staticWriteToLog, string key)
+        static string GetNamespaceNameFromEndpoint(string endpoint, WriteToLogDelegate staticWriteToLog, 
+            string key)
         {
              Uri uri;
 
