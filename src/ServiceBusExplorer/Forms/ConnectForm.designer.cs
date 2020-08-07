@@ -85,6 +85,7 @@ namespace ServiceBusExplorer.Forms
             this.lblQueueFilterExpression = new System.Windows.Forms.Label();
             this.lblTopicFilterExpression = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaceSettings = new ServiceBusExplorer.Controls.Grouper();
+            this.useAmqpWebSocketsCheckBox = new System.Windows.Forms.CheckBox();
             this.lblNewSdkTransportType = new System.Windows.Forms.Label();
             this.cboTransportType = new System.Windows.Forms.ComboBox();
             this.lblTransportType = new System.Windows.Forms.Label();
@@ -98,7 +99,6 @@ namespace ServiceBusExplorer.Forms
             this.lblEntityPath = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
-            this.useAmqpWebSocketsCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.grouperConfigFileUse.SuspendLayout();
             this.grouperFilters.SuspendLayout();
@@ -587,6 +587,16 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.TabIndex = 2;
             this.grouperServiceBusNamespaceSettings.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperServiceBusNamespaceSettings_CustomPaint);
             // 
+            // useAmqpWebSocketsCheckBox
+            // 
+            this.useAmqpWebSocketsCheckBox.AutoSize = true;
+            this.useAmqpWebSocketsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(337, 384);
+            this.useAmqpWebSocketsCheckBox.Name = "useAmqpWebSocketsCheckBox";
+            this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.useAmqpWebSocketsCheckBox.TabIndex = 75;
+            this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // lblNewSdkTransportType
             // 
             this.lblNewSdkTransportType.AutoSize = true;
@@ -666,9 +676,9 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblIssuerSecret.Location = new System.Drawing.Point(16, 224);
             this.lblIssuerSecret.Name = "lblIssuerSecret";
-            this.lblIssuerSecret.Size = new System.Drawing.Size(143, 13);
+            this.lblIssuerSecret.Size = new System.Drawing.Size(103, 13);
             this.lblIssuerSecret.TabIndex = 40;
-            this.lblIssuerSecret.Text = "Shared Secret Issuer Secret:";
+            this.lblIssuerSecret.Text = "Shared Access Key:";
             // 
             // lblIssuerName
             // 
@@ -676,9 +686,10 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblIssuerName.Location = new System.Drawing.Point(16, 176);
             this.lblIssuerName.Name = "lblIssuerName";
-            this.lblIssuerName.Size = new System.Drawing.Size(140, 13);
+            this.lblIssuerName.Size = new System.Drawing.Size(134, 13);
             this.lblIssuerName.TabIndex = 39;
-            this.lblIssuerName.Text = "Shared Secret Issuer Name:";
+            this.lblIssuerName.Text = "Shared Access Key Name:";
+            this.lblIssuerName.Click += new System.EventHandler(this.lblIssuerName_Click);
             // 
             // lblNamespace
             // 
@@ -738,16 +749,6 @@ namespace ServiceBusExplorer.Forms
             this.cboServiceBusNamespace.Size = new System.Drawing.Size(336, 21);
             this.cboServiceBusNamespace.TabIndex = 0;
             this.cboServiceBusNamespace.SelectedIndexChanged += new System.EventHandler(this.cboServiceBusNamespace_SelectedIndexChanged);
-            // 
-            // useAmqpWebSocketsCheckBox
-            // 
-            this.useAmqpWebSocketsCheckBox.AutoSize = true;
-            this.useAmqpWebSocketsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(337, 384);
-            this.useAmqpWebSocketsCheckBox.Name = "useAmqpWebSocketsCheckBox";
-            this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useAmqpWebSocketsCheckBox.TabIndex = 75;
-            this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
             // 
             // ConnectForm
             // 

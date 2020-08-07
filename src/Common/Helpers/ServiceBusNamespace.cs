@@ -29,7 +29,6 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
-using System.Configuration;
 using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
@@ -60,9 +59,6 @@ namespace ServiceBusExplorer.Helpers
         const string ServiceBusNamespacesNotConfigured = "Service bus accounts have not been properly configured in the configuration file.";
         const string ServiceBusNamespaceIsNullOrEmpty = "The connection string for service bus entry {0} is null or empty.";
         const string ServiceBusNamespaceIsWrong = "The connection string for service bus namespace {0} is in the wrong format.";
-        const string ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty = "Both the URI and namespace for the service bus entry {0} is null or empty.";
-        const string ServiceBusNamespaceIssuerNameIsNullOrEmpty = "The issuer name for the service bus namespace {0} is null or empty.";
-        const string ServiceBusNamespaceIssuerSecretIsNullOrEmpty = "The issuer secret for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceEndpointIsNullOrEmpty = "The endpoint for the service bus namespace {0} is null or empty.";
         const string ServiceBusNamespaceEndpointPrefixedWithSb = "The endpoint for the service bus namespace {0} is being automatically prefixed with \"sb://\".";
         const string ServiceBusNamespaceStsEndpointIsNullOrEmpty = "The sts endpoint for the service bus namespace {0} is null or empty.";
@@ -75,12 +71,6 @@ namespace ServiceBusExplorer.Helpers
         //***************************
         // Parameters
         //***************************
-        const string ConnectionStringUri = "uri";
-        const string ConnectionStringNameSpace = "namespace";
-        const string ConnectionStringServicePath = "servicepath";
-        const string ConnectionStringIssuerName = "issuername";
-        const string ConnectionStringIssuerSecret = "issuersecret";
-        const string ConnectionStringOwner = "owner";
         const string ConnectionStringEndpoint = "endpoint";
         const string ConnectionStringSharedAccessKeyName = "sharedaccesskeyname";
         const string ConnectionStringSharedAccessKey = "sharedaccesskey";
@@ -99,7 +89,6 @@ namespace ServiceBusExplorer.Helpers
         //***************************
         // Formats
         //***************************
-        public const string ConnectionStringFormat = "Endpoint={0};SharedSecretIssuer={1};SharedSecretValue={2};TransportType={3}";
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
         public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
         #endregion
@@ -114,8 +103,6 @@ namespace ServiceBusExplorer.Helpers
             ConnectionString = default(string);
             Uri = default(string);
             Namespace = default(string);
-            IssuerName = default(string);
-            IssuerSecret = default(string);
             ServicePath = default(string);
             StsEndpoint = default(string);
             RuntimePort = default(string);
@@ -156,15 +143,10 @@ namespace ServiceBusExplorer.Helpers
             Uri = string.IsNullOrWhiteSpace(uri) ?
                   ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
                   uri;
-            ConnectionString = ConnectionStringType == ServiceBusNamespaceType.Custom ?
-                               string.Format(ConnectionStringFormat,
-                                             Uri,
-                                             name,
-                                             key,
-                                             transportType) :
-                               connectionString;
+
+            ConnectionString = connectionString;
             Namespace = ns;
-            IssuerName = name;
+
             if (isSas)
             {
                 SharedAccessKeyName = name;
@@ -172,9 +154,9 @@ namespace ServiceBusExplorer.Helpers
             }
             else
             {
-                IssuerSecret = key;
                 ServicePath = servicePath;
             }
+
             TransportType = transportType;
             StsEndpoint = stsEndpoint;
             RuntimePort = default(string);
@@ -215,13 +197,14 @@ namespace ServiceBusExplorer.Helpers
             ConnectionString = connectionString;
             Uri = endpoint;
             var uri = new Uri(endpoint);
+
+
             if (string.IsNullOrWhiteSpace(endpoint))
             {
                 Uri = ServiceBusEnvironment.CreateServiceUri(uri.Scheme, ns, null).ToString();
             }
+
             Namespace = ns;
-            IssuerName = default(string);
-            IssuerSecret = default(string);
             var settings = new MessagingFactorySettings();
             TransportType = settings.TransportType;
             StsEndpoint = stsEndpoint;
@@ -268,8 +251,7 @@ namespace ServiceBusExplorer.Helpers
                     isUserCreated, toLower, parameters);
             }
 
-            return GetServiceBusNamespaceUsingIssuer(key, connectionString, staticWriteToLog, 
-                isUserCreated, parameters);
+            return null;
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
@@ -371,16 +353,6 @@ namespace ServiceBusExplorer.Helpers
         public string Namespace { get; set; }
 
         /// <summary>
-        /// Gets or sets the issuer name of the shared secret credentials.
-        /// </summary>
-        public string IssuerName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the issuer secret of the shared secret credentials.
-        /// </summary>
-        public string IssuerSecret { get; set; }
-
-        /// <summary>
         /// Gets or sets the service path that follows the host name section of the URI.
         /// </summary>
         public string ServicePath { get; set; }
@@ -437,63 +409,6 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Methods
-        
-        static ServiceBusNamespace GetServiceBusNamespaceUsingIssuer(string key, string connectionString, WriteToLogDelegate staticWriteToLog, bool isUserCreated, Dictionary<string, string> parameters)
-        {
-            if (parameters.Count < 4)
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceIsWrong, key));
-                return null;
-            }
-
-            var uriString = parameters.ContainsKey(ConnectionStringUri) ?
-                                parameters[ConnectionStringUri] :
-                                null;
-
-            if (string.IsNullOrWhiteSpace(uriString) && !parameters.ContainsKey(ConnectionStringNameSpace))
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceNamespaceAndUriAreNullOrEmpty, key));
-                return null;
-            }
-
-            var ns = parameters[ConnectionStringNameSpace];
-
-            var servicePath = parameters.ContainsKey(ConnectionStringServicePath) ?
-                                  parameters[ConnectionStringServicePath] :
-                                  null;
-
-            if (!parameters.ContainsKey(ConnectionStringIssuerName))
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
-                    ServiceBusNamespaceIssuerNameIsNullOrEmpty, key));
-                return null;
-            }
-
-            var issuerName = parameters.ContainsKey(ConnectionStringIssuerName) ?
-                                 parameters[ConnectionStringIssuerName] :
-                                 ConnectionStringOwner;
-
-            if (!parameters.ContainsKey(ConnectionStringIssuerSecret) ||
-                string.IsNullOrWhiteSpace(parameters[ConnectionStringIssuerSecret]))
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
-                    ServiceBusNamespaceIssuerSecretIsNullOrEmpty, key));
-                return null;
-
-            }
-
-            var issuerSecret = parameters[ConnectionStringIssuerSecret];
-            var settings = new MessagingFactorySettings();
-            var transportType = settings.TransportType;
-
-            if (parameters.ContainsKey(ConnectionStringTransportType))
-            {
-                Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
-            }
-
-            return new ServiceBusNamespace(ServiceBusNamespaceType.Custom, connectionString, uriString, 
-                ns, servicePath, issuerName, issuerSecret, null, transportType, isUserCreated);
-        }
 
         static ServiceBusNamespace GetServiceBusNamespaceUsingWindows(string key, string connectionString,
             WriteToLogDelegate staticWriteToLog, bool isUserCreated, string toLower, 

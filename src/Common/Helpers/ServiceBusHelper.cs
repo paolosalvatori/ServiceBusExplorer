@@ -763,8 +763,6 @@ namespace ServiceBusExplorer
             Func<bool> func = (() =>
             {
                 connectionString = serviceBusNamespace.ConnectionString;
-                currentIssuerName = serviceBusNamespace.IssuerName;
-                currentIssuerSecret = serviceBusNamespace.IssuerSecret;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
                 currentTransportType = serviceBusNamespace.TransportType;
