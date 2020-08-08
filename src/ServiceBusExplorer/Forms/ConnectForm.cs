@@ -774,10 +774,5 @@ namespace ServiceBusExplorer.Forms
         }
 
         #endregion
-
-        private void lblIssuerName_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

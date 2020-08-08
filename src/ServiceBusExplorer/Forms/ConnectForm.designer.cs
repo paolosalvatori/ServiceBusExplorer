@@ -666,7 +666,6 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerName.Size = new System.Drawing.Size(134, 13);
             this.lblIssuerName.TabIndex = 39;
             this.lblIssuerName.Text = "Shared Access Key Name:";
-            this.lblIssuerName.Click += new System.EventHandler(this.lblIssuerName_Click);
             // 
             // txtNamespace
             // 
