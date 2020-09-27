@@ -228,6 +228,7 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.ProxyBypassList = configuration.GetStringValue(ConfigurationParameters.ProxyBypassList, string.Empty);
             resultProperties.ProxyUserName = configuration.GetStringValue(ConfigurationParameters.ProxyUserName, string.Empty);
             resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
+            resultProperties.NodesColors = NodeColorInfo.ParseAll(configuration.GetStringValue(ConfigurationParameters.NodesColors, string.Empty));
 
             return resultProperties;
         }

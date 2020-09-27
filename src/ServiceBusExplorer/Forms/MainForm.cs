@@ -50,6 +50,8 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
+    using System.Text.RegularExpressions;
+
     public partial class MainForm : Form
     {
         #region Private Constants
@@ -409,7 +411,9 @@ namespace ServiceBusExplorer.Forms
                 ProxyBypassOnLocal = ProxyBypassOnLocal,
                 ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
                 ProxyUserName = ProxyUserName,
-                ProxyPassword = ProxyPassword
+                ProxyPassword = ProxyPassword,
+
+                NodesColors = NodesColors
             };
 
             var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
@@ -485,7 +489,11 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
 
                 SetProxy(optionForm.MainSettings);
+
+                NodesColors = optionForm.MainSettings.NodesColors;
             }
+
+            ReApplyColors(rootNode);
         }
 
         /// <summary>
@@ -3734,7 +3742,8 @@ namespace ServiceBusExplorer.Forms
                 ProxyBypassOnLocal = ProxyBypassOnLocal,
                 ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
                 ProxyUserName = ProxyUserName,
-                ProxyPassword = ProxyPassword
+                ProxyPassword = ProxyPassword,
+                NodesColors = NodesColors
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
@@ -3849,6 +3858,8 @@ namespace ServiceBusExplorer.Forms
             }
 
             SetProxy(readSettings);
+
+            NodesColors = readSettings.NodesColors;
         }
 
         private void SetProxy(MainSettings settings)
@@ -3989,6 +4000,8 @@ namespace ServiceBusExplorer.Forms
         public bool ProxyUseDefaultCredentials { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
+
+        public List<NodeColorInfo> NodesColors { get; set;} = new List<NodeColorInfo>();
 
         public BodyType MessageBodyType
         {
@@ -5666,6 +5679,7 @@ namespace ServiceBusExplorer.Forms
                             entityType = EntityType.Relay;
                         }
                         entityNode.Tag = new UrlSegmentWrapper(entityType, new Uri(currentUrl));
+                        ApplyColor(entityNode, false);
                     }
                     else
                     {
@@ -5678,6 +5692,7 @@ namespace ServiceBusExplorer.Forms
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
                             entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
 
                             if (log)
                             {
@@ -5694,6 +5709,7 @@ namespace ServiceBusExplorer.Forms
                                                               topicDescription.Status == EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex);
                             entityNode.ContextMenuStrip = topicContextMenuStrip;
                             entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
 
                             if (log)
                             {
@@ -5710,6 +5726,7 @@ namespace ServiceBusExplorer.Forms
                                                               RelayLeafIconIndex);
                             entityNode.ContextMenuStrip = relayContextMenuStrip;
                             entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
 
                             if (log)
                             {
@@ -5726,6 +5743,7 @@ namespace ServiceBusExplorer.Forms
                                                               EventHubIconIndex);
                             entityNode.ContextMenuStrip = eventHubContextMenuStrip;
                             entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
 
                             if (log)
                             {
@@ -5743,6 +5761,7 @@ namespace ServiceBusExplorer.Forms
                                                               NotificationHubIconIndex);
                             entityNode.ContextMenuStrip = notificationHubContextMenuStrip;
                             entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
 
                             if (log)
                             {
@@ -5768,6 +5787,38 @@ namespace ServiceBusExplorer.Forms
                 sb.Append(")");
             }
             return sb.ToString();
+        }
+        
+        private void ReApplyColors(TreeNode parentNode)
+        {
+            if (parentNode == null)
+            {
+                return;
+            }
+            foreach (TreeNode node in parentNode.Nodes)
+            {
+                if (node.Tag is UrlSegmentWrapper)
+                {
+                    ApplyColor(node, false);
+                }
+                else if (node.Tag is EntityDescription)
+                {
+                    ApplyColor(node, true);
+                }
+                ReApplyColors(node);
+            }
+        }
+
+        private void ApplyColor(TreeNode node, bool isLeaf)
+        {
+            foreach (var nodeColorInfo in NodesColors.Where(nc => nc.IsLeaf == isLeaf))
+            {
+                if (Regex.IsMatch(node.Name, nodeColorInfo.Text ?? string.Empty))
+                {
+                    node.ForeColor = nodeColorInfo.Color;
+                    return;
+                }
+            }
         }
 
         private static void GetQueueList(ICollection<string> list, TreeNode node)
