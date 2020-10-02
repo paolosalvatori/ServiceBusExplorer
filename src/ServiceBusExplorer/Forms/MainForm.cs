@@ -493,7 +493,7 @@ namespace ServiceBusExplorer.Forms
                 NodesColors = optionForm.MainSettings.NodesColors;
             }
 
-            ReApplyColors(rootNode);
+            ReapplyColors(rootNode);
         }
 
         /// <summary>
@@ -5789,7 +5789,7 @@ namespace ServiceBusExplorer.Forms
             return sb.ToString();
         }
         
-        private void ReApplyColors(TreeNode parentNode)
+        private void ReapplyColors(TreeNode parentNode)
         {
             if (parentNode == null)
             {
@@ -5805,7 +5805,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     ApplyColor(node, true);
                 }
-                ReApplyColors(node);
+                ReapplyColors(node);
             }
         }
 
