@@ -81,6 +81,10 @@ namespace ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.Items.Add(item);
             }
+            foreach (var item in ConfigurationHelper.MessageCounts)
+            {
+                cboSelectedMessageCounts.Items.Add(item);
+            }
 
             MainSettings = mainSettings;
             ConfigFileUse = configFileUse;
@@ -138,6 +142,7 @@ namespace ServiceBusExplorer.Forms
         private void btnOk_Click(object sender, EventArgs e)
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
+            MainSettings.SelectedMessageCounts = GetSelectedMessageCounts();
             
             SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
@@ -155,6 +160,7 @@ namespace ServiceBusExplorer.Forms
         {
             // Get selected items
             MainSettings.SelectedEntities = GetSelectedEntities();
+            MainSettings.SelectedMessageCounts = GetSelectedMessageCounts();
 
             SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
         }
@@ -223,6 +229,11 @@ namespace ServiceBusExplorer.Forms
             useAsciiCheckBox.Checked = MainSettings.UseAscii;
 
             foreach (var item in ConfigurationHelper.Entities)
+            {
+                cboSelectedEntities.CheckBoxItems[item].Checked = true;
+            }
+
+            foreach (var item in ConfigurationHelper.MessageCounts)
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
@@ -587,6 +598,8 @@ namespace ServiceBusExplorer.Forms
 
             SaveListSetting(configuration, readSettings, ConfigurationParameters.SelectedEntitiesParameter,
                 MainSettings.SelectedEntities);
+            SaveListSetting(configuration, readSettings, ConfigurationParameters.SelectedMessageCountsParameter,
+                MainSettings.SelectedMessageCounts);
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.MessageBodyType,
                 MainSettings.MessageBodyType);
@@ -676,6 +689,10 @@ namespace ServiceBusExplorer.Forms
             {
                 cboSelectedEntities.CheckBoxItems[item].Checked = true;
             }
+            foreach (var item in mainSettings.SelectedMessageCounts)
+            {
+                cboSelectedMessageCounts.CheckBoxItems[item].Checked = true;
+            }
 
             if (!Enum.TryParse<BodyType>(mainSettings.MessageBodyType, true, out var bodyType))
             {
@@ -702,6 +719,12 @@ namespace ServiceBusExplorer.Forms
                 Where(i => i.Checked).Select(i => i.Text).ToList();
         }
 
+        List<string> GetSelectedMessageCounts()
+        {
+            return cboSelectedMessageCounts.CheckBoxItems.
+                Where(i => i.Checked).Select(i => i.Text).ToList();
+        }
+
         private void tabPageGeneral_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
@@ -714,6 +737,11 @@ namespace ServiceBusExplorer.Forms
                                     cboSelectedEntities.Location.Y - 1,
                                     cboSelectedEntities.Size.Width + 1,
                                     cboSelectedEntities.Size.Height + 1);
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                cboSelectedMessageCounts.Location.X - 1,
+                cboSelectedMessageCounts.Location.Y - 1,
+                cboSelectedMessageCounts.Size.Width + 1,
+                cboSelectedMessageCounts.Size.Height + 1);
         }
 
         private void tabPageSending_Paint(object sender, PaintEventArgs e)

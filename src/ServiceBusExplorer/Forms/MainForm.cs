@@ -63,7 +63,6 @@ namespace ServiceBusExplorer.Forms
         private const string EntityFileNameFormat = "{0} {1} {2}.xml";
         private const string EntitiesFileNameFormat = "{0} {1}.xml";
         private const string UrlSegmentFormat = "{0}/{1}";
-        private const string NameMessageCountFormat = "{0} ({1}, {2}, {3})";
         private const string PartitionFormat = "{0,2:00}";
 
         //***************************
@@ -231,6 +230,16 @@ namespace ServiceBusExplorer.Forms
         #region Private Static Fields
         private static MainForm mainSingletonMainForm;
         private static IWebProxy initialDefaultWebProxy;
+
+        private static IDictionary<string, Func<MessageCountDetails, long>> messageCountRetriever = new Dictionary<string, Func<MessageCountDetails, long>>
+        {
+            { Constants.ActiveMessages, mcd => mcd.ActiveMessageCount },
+            { Constants.DeadLetterMessages, mcd => mcd.DeadLetterMessageCount },
+            { Constants.ScheduledMessages, mcd => mcd.ScheduledMessageCount },
+            { Constants.TransferMessages, mcd => mcd.TransferMessageCount },
+            { Constants.TransferDeadLetterMessages, mcd => mcd.TransferDeadLetterMessageCount },
+        };
+
         #endregion
 
         #region Public Constructor
@@ -388,6 +397,7 @@ namespace ServiceBusExplorer.Forms
                 MessageContentType = MessageContentType,
 
                 SelectedEntities = SelectedEntities,
+                SelectedMessageCounts = SelectedMessageCounts,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
                 UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
@@ -441,9 +451,19 @@ namespace ServiceBusExplorer.Forms
                 ReceiverThinkTime = optionForm.MainSettings.ReceiverThinkTime;
                 MonitorRefreshInterval = optionForm.MainSettings.MonitorRefreshInterval;
 
+                var reloadEntities = false;
                 if (showMessageCount != optionForm.MainSettings.ShowMessageCount)
                 {
                     showMessageCount = optionForm.MainSettings.ShowMessageCount;
+                    reloadEntities = true;
+                }
+                if (!SelectedMessageCounts.SequenceEqual(optionForm.MainSettings.SelectedMessageCounts))
+                {
+                    SelectedMessageCounts = optionForm.MainSettings.SelectedMessageCounts;
+                    reloadEntities = true;
+                }
+                if (reloadEntities)
+                {
                     GetEntities(EntityType.All);
                 }
 
@@ -458,6 +478,7 @@ namespace ServiceBusExplorer.Forms
                 MessageContentType = optionForm.MainSettings.MessageContentType;
 
                 SelectedEntities = optionForm.MainSettings.SelectedEntities;
+                
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
                 ServiceBusHelper.UseAmqpWebSockets = optionForm.MainSettings.UseAmqpWebSockets;
@@ -1069,13 +1090,7 @@ namespace ServiceBusExplorer.Forms
                             subscriptionsNode.Tag = new SubscriptionWrapper(null, wrapper.TopicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
                         }
                         var subscriptionNode = subscriptionsNode.Nodes.Add(wrapper.SubscriptionDescription.Name,
-                                                                           showMessageCount ?
-                                                                           string.Format(NameMessageCountFormat,
-                                                                                         wrapper.SubscriptionDescription.Name,
-                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
-                                                                                         wrapper.SubscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
-                                                                           wrapper.SubscriptionDescription.Name,
+                                                                           GetNameAndMessageCountText(wrapper.SubscriptionDescription.Name, wrapper.SubscriptionDescription.MessageCountDetails),
                                                                            wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                            wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                         subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
@@ -1745,13 +1760,7 @@ namespace ServiceBusExplorer.Forms
                             control.RefreshData(queueDescription);
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
-                        serviceBusTreeView.SelectedNode.Text = showMessageCount ?
-                                                               string.Format(NameMessageCountFormat,
-                                                                             serviceBusTreeView.SelectedNode.Name,
-                                                                             queueDescription.MessageCountDetails.ActiveMessageCount,
-                                                                             queueDescription.MessageCountDetails.DeadLetterMessageCount,
-                                                                             queueDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
-                                                               serviceBusTreeView.SelectedNode.Name;
+                        serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
                         return;
                     }
                     // Individual Topic Node
@@ -1963,13 +1972,7 @@ namespace ServiceBusExplorer.Forms
                             foreach (var subscription in subscriptionDescriptions)
                             {
                                 var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
-                                                                                   showMessageCount ?
-                                                                                   string.Format(NameMessageCountFormat,
-                                                                                                 subscription.Name,
-                                                                                                 subscription.MessageCountDetails.ActiveMessageCount,
-                                                                                                 subscription.MessageCountDetails.DeadLetterMessageCount,
-                                                                                                 subscription.MessageCountDetails.TransferDeadLetterMessageCount) :
-                                                                                   subscription.Name,
+                                                                                   GetNameAndMessageCountText(subscription.Name, subscription.MessageCountDetails),
                                                                                    subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                                    subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
@@ -2046,13 +2049,7 @@ namespace ServiceBusExplorer.Forms
                                                      wrapper.SubscriptionDescription.TopicPath),
                                        false);
                         }
-                        serviceBusTreeView.SelectedNode.Text = showMessageCount ?
-                                                               string.Format(NameMessageCountFormat,
-                                                                             serviceBusTreeView.SelectedNode.Name,
-                                                                             subscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                                                             subscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
-                                                                             subscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
-                                                               serviceBusTreeView.SelectedNode.Name;
+                        serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, subscriptionDescription.MessageCountDetails);
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
                     }
@@ -2120,14 +2117,10 @@ namespace ServiceBusExplorer.Forms
             subscriptionsNode.Tag = new SubscriptionWrapper(null, topicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
             foreach (var subscriptionDescription in subscriptionDescriptions)
             {
-                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, showMessageCount
-                        ? string.Format(NameMessageCountFormat,
-                                        subscriptionDescription.Name,
-                                        subscriptionDescription.MessageCountDetails.ActiveMessageCount,
-                                        subscriptionDescription.MessageCountDetails.DeadLetterMessageCount,
-                                        subscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount)
-                        : subscriptionDescription.Name, subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex, subscriptionDescription.Status == EntityStatus.Active
-                        ? SubscriptionIconIndex : GreySubscriptionIconIndex);
+                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, 
+                                                                   GetNameAndMessageCountText(subscriptionDescription.Name, subscriptionDescription.MessageCountDetails),
+                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                 subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
                 if (topicDescription != null)
@@ -3731,6 +3724,7 @@ namespace ServiceBusExplorer.Forms
                 MessageText = MessageText,
                 MessageContentType = MessageContentType,
                 SelectedEntities = SelectedEntities,
+                SelectedMessageCounts = SelectedMessageCounts,
                 MessageBodyType = messageBodyType,
                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
                 UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
@@ -3817,6 +3811,7 @@ namespace ServiceBusExplorer.Forms
             messageFile = readSettings.MessageFile;
 
             SelectedEntities = readSettings.SelectedEntities;
+            SelectedMessageCounts = readSettings.SelectedMessageCounts;
             messageBodyType = readSettings.MessageBodyType;
             ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
             ServiceBusHelper.UseAmqpWebSockets = readSettings.UseAmqpWebSockets;
@@ -3985,6 +3980,7 @@ namespace ServiceBusExplorer.Forms
         public bool UseAscii { get; set; } = true;
 
         public List<string> SelectedEntities { get; private set; } = new List<string>();
+        public List<string> SelectedMessageCounts { get; private set; } = new List<string>();
 
         public bool ProxyOverrideDefault { get; set; }
         public string ProxyAddress { get; set; }
@@ -4595,13 +4591,7 @@ namespace ServiceBusExplorer.Forms
                         foreach (var subscription in subscriptionDescriptions)
                         {
                             var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
-                                showMessageCount
-                                    ? string.Format(NameMessageCountFormat,
-                                        subscription.Name,
-                                        subscription.MessageCountDetails.ActiveMessageCount,
-                                        subscription.MessageCountDetails.DeadLetterMessageCount,
-                                        subscription.MessageCountDetails.TransferDeadLetterMessageCount)
-                                    : subscription.Name,
+                                GetNameAndMessageCountText(subscription.Name, subscription.MessageCountDetails),
                                 subscription.Status == EntityStatus.Active
                                     ? SubscriptionIconIndex
                                     : GreySubscriptionIconIndex,
@@ -5683,13 +5673,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             var queueDescription = tag as QueueDescription;
                             entityNode = entityNode.Nodes.Add(segments[i],
-                                                              showMessageCount ?
-                                                              string.Format(NameMessageCountFormat,
-                                                                            segments[i],
-                                                                            queueDescription.MessageCountDetails.ActiveMessageCount,
-                                                                            queueDescription.MessageCountDetails.DeadLetterMessageCount,
-                                                                            queueDescription.MessageCountDetails.TransferDeadLetterMessageCount) :
-                                                              segments[i],
+                                                              GetNameAndMessageCountText(segments[i], queueDescription.MessageCountDetails),
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
@@ -5770,6 +5754,20 @@ namespace ServiceBusExplorer.Forms
                 }
             }
             return null;
+        }
+
+        private string GetNameAndMessageCountText(string name, MessageCountDetails details)
+        {
+            var sb = new StringBuilder();
+            sb.Append(name);
+            if (showMessageCount && SelectedMessageCounts.Any())
+            {
+                sb.Append(" (");
+                var counts = SelectedMessageCounts.Select(smc => messageCountRetriever[smc](details));
+                sb.Append(string.Join(", ", counts));
+                sb.Append(")");
+            }
+            return sb.ToString();
         }
 
         private static void GetQueueList(ICollection<string> list, TreeNode node)

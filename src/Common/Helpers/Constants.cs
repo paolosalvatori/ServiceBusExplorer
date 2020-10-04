@@ -37,7 +37,12 @@ namespace ServiceBusExplorer.Helpers
         public const string EventHubEntities = "Event Hubs";
         public const string NotificationHubEntities = "Notification Hubs";
 
-
+        public const string ActiveMessages = "Active";
+        public const string DeadLetterMessages = "DeadLetter";
+        public const string ScheduledMessages = "Scheduled";
+        public const string TransferMessages = "Transfer";
+        public const string TransferDeadLetterMessages = "Transfer DL";
+        
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1.0);
         public static readonly TimeSpan TokenRequestOperationTimeout = TimeSpan.FromMinutes(3.0);
         public static readonly long ServicePointMaxIdleTimeMilliSeconds = 50000;

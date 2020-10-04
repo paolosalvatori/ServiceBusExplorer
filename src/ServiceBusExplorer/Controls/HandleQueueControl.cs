@@ -251,11 +251,11 @@ namespace ServiceBusExplorer.Controls
         private const string AccessedAt = "Accessed At";
         private const string UpdatedAt = "Updated At";
         private const string MessageCount = "Message Count";
-        private const string ActiveMessageCount = "Active Message Count";
-        private const string DeadletterCount = "DeadLetter Message Count";
-        private const string ScheduledMessageCount = "Scheduled Message Count";
-        private const string TransferMessageCount = "Transfer Message Count";
-        private const string TransferDeadLetterMessageCount = "Transfer DL Message Count";
+        private const string ActiveMessageCount = Constants.ActiveMessages + " " + MessageCount;
+        private const string DeadLetterCount = Constants.DeadLetterMessages + " " + MessageCount;
+        private const string ScheduledMessageCount = Constants.ScheduledMessages + " " + MessageCount;
+        private const string TransferMessageCount = Constants.TransferMessages + " " + MessageCount;
+        private const string TransferDeadLetterMessageCount = Constants.TransferDeadLetterMessages + " " + MessageCount;
         private const string IsReadOnly = "Is ReadOnly";
 
         //***************************
@@ -1182,7 +1182,7 @@ namespace ServiceBusExplorer.Controls
                 },
                 new[]
                 {
-                    DeadletterCount,
+                    DeadLetterCount,
                     queueDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
                         CultureInfo.CurrentCulture)
                 },

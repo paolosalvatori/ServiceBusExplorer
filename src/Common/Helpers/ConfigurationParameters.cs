@@ -56,6 +56,7 @@ namespace ServiceBusExplorer.Helpers
         public const string UseAmqpWebSockets = "useAmqpWebSockets";
         public const string Encoding = "encoding";
         public const string SelectedEntitiesParameter = "selectedEntities";
+        public const string SelectedMessageCountsParameter = "selectedMessageCounts";
         public const string MicrosoftServiceBusConnectionString = "Microsoft.ServiceBus.ConnectionString";
         public const string DisableAccidentalDeletionPrevention = "disableAccidentalDeletionPrevention";
 
