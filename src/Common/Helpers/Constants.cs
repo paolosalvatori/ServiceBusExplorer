@@ -38,9 +38,9 @@ namespace ServiceBusExplorer.Helpers
         public const string NotificationHubEntities = "Notification Hubs";
 
         public const string ActiveMessages = "Active";
-        public const string DeadLetterMessages = "DeadLetter";
+        public const string DeadLetterMessages = "DeadLettered";
         public const string ScheduledMessages = "Scheduled";
-        public const string TransferMessages = "Transfer";
+        public const string TransferMessages = "InTransfer";
         public const string TransferDeadLetterMessages = "Transfer DL";
         
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1.0);
