@@ -54,6 +54,7 @@ namespace ServiceBusExplorer.Forms
         private void InitializeComponent()
         {
             ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new ServiceBusExplorer.Controls.CheckBoxProperties();
+            ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties2 = new ServiceBusExplorer.Controls.CheckBoxProperties();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
@@ -68,6 +69,8 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.tabOptionsControl = new System.Windows.Forms.TabControl();
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
+            this.cboSelectedMessageCounts = new ServiceBusExplorer.Controls.CheckBoxComboBox();
+            this.lblMessageCounts = new System.Windows.Forms.Label();
             this.disableAccidentalDeletionPrevention = new System.Windows.Forms.CheckBox();
             this.lblDisableAccidentalDeletionPrevention = new System.Windows.Forms.Label();
             this.lblSaveCheckpointsOnExit = new System.Windows.Forms.Label();
@@ -171,7 +174,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(255, 406);
+            this.btnOk.Location = new System.Drawing.Point(255, 437);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 1;
@@ -189,7 +192,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Location = new System.Drawing.Point(528, 406);
+            this.btnReset.Location = new System.Drawing.Point(528, 437);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(72, 24);
             this.btnReset.TabIndex = 4;
@@ -207,7 +210,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(435, 406);
+            this.btnSave.Location = new System.Drawing.Point(435, 437);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 3;
@@ -324,13 +327,15 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Location = new System.Drawing.Point(16, 39);
             this.tabOptionsControl.Name = "tabOptionsControl";
             this.tabOptionsControl.SelectedIndex = 0;
-            this.tabOptionsControl.Size = new System.Drawing.Size(584, 355);
+            this.tabOptionsControl.Size = new System.Drawing.Size(584, 386);
             this.tabOptionsControl.TabIndex = 3;
             this.tabOptionsControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControlOptions_DrawItem);
             // 
             // tabPageGeneral
             // 
             this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageGeneral.Controls.Add(this.cboSelectedMessageCounts);
+            this.tabPageGeneral.Controls.Add(this.lblMessageCounts);
             this.tabPageGeneral.Controls.Add(this.disableAccidentalDeletionPrevention);
             this.tabPageGeneral.Controls.Add(this.lblDisableAccidentalDeletionPrevention);
             this.tabPageGeneral.Controls.Add(this.lblSaveCheckpointsOnExit);
@@ -354,38 +359,60 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabPageGeneral.Name = "tabPageGeneral";
             this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(576, 329);
+            this.tabPageGeneral.Size = new System.Drawing.Size(576, 360);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageGeneral_Paint);
             // 
+            // cboSelectedMessageCounts
+            // 
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedMessageCounts.CheckBoxProperties = checkBoxProperties1;
+            this.cboSelectedMessageCounts.DisplayMemberSingleItem = "";
+            this.cboSelectedMessageCounts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSelectedMessageCounts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboSelectedMessageCounts.FormattingEnabled = true;
+            this.cboSelectedMessageCounts.Location = new System.Drawing.Point(260, 205);
+            this.cboSelectedMessageCounts.Name = "cboSelectedMessageCounts";
+            this.cboSelectedMessageCounts.Size = new System.Drawing.Size(298, 21);
+            this.cboSelectedMessageCounts.TabIndex = 13;
+            // 
+            // lblMessageCounts
+            // 
+            this.lblMessageCounts.AutoSize = true;
+            this.lblMessageCounts.Location = new System.Drawing.Point(16, 205);
+            this.lblMessageCounts.Name = "lblMessageCounts";
+            this.lblMessageCounts.Size = new System.Drawing.Size(134, 13);
+            this.lblMessageCounts.TabIndex = 12;
+            this.lblMessageCounts.Text = "Selected Message Counts:";
+            // 
             // disableAccidentalDeletionPrevention
             // 
             this.disableAccidentalDeletionPrevention.AutoSize = true;
-            this.disableAccidentalDeletionPrevention.Location = new System.Drawing.Point(260, 298);
+            this.disableAccidentalDeletionPrevention.Location = new System.Drawing.Point(260, 329);
             this.disableAccidentalDeletionPrevention.Name = "disableAccidentalDeletionPrevention";
             this.disableAccidentalDeletionPrevention.Size = new System.Drawing.Size(15, 14);
-            this.disableAccidentalDeletionPrevention.TabIndex = 19;
+            this.disableAccidentalDeletionPrevention.TabIndex = 21;
             this.disableAccidentalDeletionPrevention.UseVisualStyleBackColor = true;
             this.disableAccidentalDeletionPrevention.CheckedChanged += new System.EventHandler(this.disableAccidentalDeletionPrevention_CheckedChanged);
             // 
             // lblDisableAccidentalDeletionPrevention
             // 
             this.lblDisableAccidentalDeletionPrevention.AutoSize = true;
-            this.lblDisableAccidentalDeletionPrevention.Location = new System.Drawing.Point(16, 298);
+            this.lblDisableAccidentalDeletionPrevention.Location = new System.Drawing.Point(16, 329);
             this.lblDisableAccidentalDeletionPrevention.Name = "lblDisableAccidentalDeletionPrevention";
             this.lblDisableAccidentalDeletionPrevention.Size = new System.Drawing.Size(194, 13);
-            this.lblDisableAccidentalDeletionPrevention.TabIndex = 18;
+            this.lblDisableAccidentalDeletionPrevention.TabIndex = 20;
             this.lblDisableAccidentalDeletionPrevention.Text = "Disable Accidental Deletion Prevention:";
             // 
             // lblSaveCheckpointsOnExit
             // 
             this.lblSaveCheckpointsOnExit.AutoSize = true;
             this.lblSaveCheckpointsOnExit.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(16, 205);
+            this.lblSaveCheckpointsOnExit.Location = new System.Drawing.Point(16, 236);
             this.lblSaveCheckpointsOnExit.Name = "lblSaveCheckpointsOnExit";
             this.lblSaveCheckpointsOnExit.Size = new System.Drawing.Size(227, 13);
-            this.lblSaveCheckpointsOnExit.TabIndex = 12;
+            this.lblSaveCheckpointsOnExit.TabIndex = 14;
             this.lblSaveCheckpointsOnExit.Text = "Save Event Hub Partition Checkpoints on Exit:";
             // 
             // saveCheckpointsToFileCheckBox
@@ -394,34 +421,34 @@ namespace ServiceBusExplorer.Forms
             this.saveCheckpointsToFileCheckBox.Checked = true;
             this.saveCheckpointsToFileCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveCheckpointsToFileCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(260, 205);
+            this.saveCheckpointsToFileCheckBox.Location = new System.Drawing.Point(260, 236);
             this.saveCheckpointsToFileCheckBox.Name = "saveCheckpointsToFileCheckBox";
             this.saveCheckpointsToFileCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.saveCheckpointsToFileCheckBox.TabIndex = 13;
+            this.saveCheckpointsToFileCheckBox.TabIndex = 15;
             this.saveCheckpointsToFileCheckBox.UseVisualStyleBackColor = true;
             this.saveCheckpointsToFileCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckpointsToFileCheckBox_CheckedChanged);
             // 
             // cboSelectedEntities
             // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
+            checkBoxProperties2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties2;
             this.cboSelectedEntities.DisplayMemberSingleItem = "";
             this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(260, 267);
+            this.cboSelectedEntities.Location = new System.Drawing.Point(260, 298);
             this.cboSelectedEntities.Name = "cboSelectedEntities";
             this.cboSelectedEntities.Size = new System.Drawing.Size(298, 21);
-            this.cboSelectedEntities.TabIndex = 17;
+            this.cboSelectedEntities.TabIndex = 19;
             // 
             // lblSelectedEntities
             // 
             this.lblSelectedEntities.AutoSize = true;
             this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 267);
+            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 298);
             this.lblSelectedEntities.Name = "lblSelectedEntities";
             this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
-            this.lblSelectedEntities.TabIndex = 16;
+            this.lblSelectedEntities.TabIndex = 18;
             this.lblSelectedEntities.Text = "Selected Entities:";
             // 
             // monitorRefreshIntervalNumericUpDown
@@ -507,10 +534,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblEncoding.AutoSize = true;
             this.lblEncoding.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEncoding.Location = new System.Drawing.Point(16, 236);
+            this.lblEncoding.Location = new System.Drawing.Point(16, 267);
             this.lblEncoding.Name = "lblEncoding";
             this.lblEncoding.Size = new System.Drawing.Size(55, 13);
-            this.lblEncoding.TabIndex = 14;
+            this.lblEncoding.TabIndex = 16;
             this.lblEncoding.Text = "Encoding:";
             // 
             // cboEncodingType
@@ -524,10 +551,10 @@ namespace ServiceBusExplorer.Forms
             "UTF8",
             "UTF32",
             "Unicode"});
-            this.cboEncodingType.Location = new System.Drawing.Point(260, 236);
+            this.cboEncodingType.Location = new System.Drawing.Point(260, 267);
             this.cboEncodingType.Name = "cboEncodingType";
             this.cboEncodingType.Size = new System.Drawing.Size(298, 21);
-            this.cboEncodingType.TabIndex = 15;
+            this.cboEncodingType.TabIndex = 17;
             this.cboEncodingType.SelectedIndexChanged += new System.EventHandler(this.cboEncoding_SelectedIndexChanged);
             // 
             // serverTimeoutNumericUpDown
@@ -624,7 +651,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageReceiving.Location = new System.Drawing.Point(4, 22);
             this.tabPageReceiving.Name = "tabPageReceiving";
             this.tabPageReceiving.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageReceiving.Size = new System.Drawing.Size(576, 329);
+            this.tabPageReceiving.Size = new System.Drawing.Size(576, 360);
             this.tabPageReceiving.TabIndex = 1;
             this.tabPageReceiving.Text = "Receiving";
             // 
@@ -828,7 +855,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageSending.Controls.Add(this.savePropertiesToFileCheckBox);
             this.tabPageSending.Location = new System.Drawing.Point(4, 22);
             this.tabPageSending.Name = "tabPageSending";
-            this.tabPageSending.Size = new System.Drawing.Size(576, 329);
+            this.tabPageSending.Size = new System.Drawing.Size(576, 360);
             this.tabPageSending.TabIndex = 2;
             this.tabPageSending.Text = "Sending";
             this.tabPageSending.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageSending_Paint);
@@ -1045,7 +1072,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageConnectivity.Controls.Add(this.lblConnectivityMode);
             this.tabPageConnectivity.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectivity.Name = "tabPageConnectivity";
-            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 329);
+            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 360);
             this.tabPageConnectivity.TabIndex = 3;
             this.tabPageConnectivity.Text = "Connectivity";
             this.tabPageConnectivity.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageConnectivity_Paint);
@@ -1112,7 +1139,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageProxy.Location = new System.Drawing.Point(4, 22);
             this.tabPageProxy.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageProxy.Name = "tabPageProxy";
-            this.tabPageProxy.Size = new System.Drawing.Size(576, 329);
+            this.tabPageProxy.Size = new System.Drawing.Size(576, 360);
             this.tabPageProxy.TabIndex = 4;
             this.tabPageProxy.Text = "Proxy";
             // 
@@ -1289,7 +1316,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Controls.Add(this.label1);
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(614, 401);
+            this.mainPanel.Size = new System.Drawing.Size(614, 432);
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
@@ -1303,7 +1330,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(343, 406);
+            this.btnCancel.Location = new System.Drawing.Point(343, 437);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 2;
@@ -1316,7 +1343,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(615, 442);
+            this.ClientSize = new System.Drawing.Size(615, 473);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnReset);
@@ -1449,5 +1476,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label lblDisableAccidentalDeletionPrevention;
         private System.Windows.Forms.CheckBox disableAccidentalDeletionPrevention;
+        private System.Windows.Forms.Label lblMessageCounts;
+        private CheckBoxComboBox cboSelectedMessageCounts;
     }
 }

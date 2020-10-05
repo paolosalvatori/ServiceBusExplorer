@@ -33,6 +33,9 @@ namespace ServiceBusExplorer.Helpers
         static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
             Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
 
+        static readonly List<string> messageCounts = new List<string> { Constants.ActiveMessages, Constants.DeadLetterMessages,
+            Constants.ScheduledMessages, Constants.TransferMessages, Constants.TransferDeadLetterMessages };
+
         #region Public methods
 
         public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
@@ -75,48 +78,63 @@ namespace ServiceBusExplorer.Helpers
                 return entities;
             }
         }
+
+        public static List<string> MessageCounts
+        {
+            get
+            {
+                return messageCounts;
+            }
+        }
         #endregion
 
         #region Private static methods
-        static List<string> GetEntitiesAsList(string parameter)
+        static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
+        {
+            return GetListFromSettings(configuration, ConfigurationParameters.SelectedEntitiesParameter, entities, entities);
+        }
+
+        static List<string> GetSelectedMessageCounts(TwoFilesConfiguration configuration)
+        {
+            return GetListFromSettings(configuration, ConfigurationParameters.SelectedMessageCountsParameter, messageCounts,
+                new List<string> { Constants.ActiveMessages, Constants.DeadLetterMessages, Constants.TransferDeadLetterMessages }
+                );
+        }
+
+        static List<string> GetParameterValueAsList(string parameter)
         {
             return parameter.Split(',').Select(item => item.Trim()).ToList();
         }
 
-        static List<string> GetSelectedEntities(TwoFilesConfiguration configuration)
+        static List<string> GetListFromSettings(TwoFilesConfiguration configuration, string configurationKey, List<string> allowedItems, List<string> defaultItems)
         {
-            var selectedEntities = new List<string>();
-            var parameter = configuration.GetStringValue(ConfigurationParameters.SelectedEntitiesParameter);
+            var selectedItems = new List<string>();
+            var parameter = configuration.GetStringValue(configurationKey);
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                List<string> items = GetEntitiesAsList(parameter);
+                var items = GetParameterValueAsList(parameter);
                 if (items.Count == 0)
                 {
-                    GetDefaultSelectedEntities(selectedEntities, entities);
+                    selectedItems.AddRange(defaultItems);
                 }
                 else
                 {
                     foreach (var item in items)
                     {
-                        if (entities.Contains(item, StringComparer.OrdinalIgnoreCase))
+                        if (allowedItems.Contains(item, StringComparer.OrdinalIgnoreCase))
                         {
-                            selectedEntities.Add(item);
+                            selectedItems.Add(item);
                         }
                     }
                 }
             }
             else
             {
-                GetDefaultSelectedEntities(selectedEntities, entities);
+                selectedItems.AddRange(defaultItems);
             }
 
-            return selectedEntities;
-        }
-
-        static void GetDefaultSelectedEntities(List<string> selectedEntities, List<string> entities)
-        {
-            selectedEntities.AddRange(entities);
+            return selectedItems;
         }
 
         static MainSettings GetMainSettingsUsingConfiguration(TwoFilesConfiguration configuration,
@@ -188,6 +206,7 @@ namespace ServiceBusExplorer.Helpers
                 string.Empty);
 
             resultProperties.SelectedEntities = ConfigurationHelper.GetSelectedEntities(configuration);
+            resultProperties.SelectedMessageCounts = ConfigurationHelper.GetSelectedMessageCounts(configuration);
 
             resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
                 BodyType.Stream.ToString());
