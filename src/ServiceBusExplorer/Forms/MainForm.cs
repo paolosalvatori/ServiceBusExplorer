@@ -4250,7 +4250,7 @@ namespace ServiceBusExplorer.Forms
 
             try
             {
-                if (serviceBusHelper != null)
+                if (serviceBusHelper != null && serviceBusHelper.NamespaceUri != null)
                 {
                     Cursor.Current = Cursors.WaitCursor;
                     serviceBusTreeView.SuspendDrawing();
