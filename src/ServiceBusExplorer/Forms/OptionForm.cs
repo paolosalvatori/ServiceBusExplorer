@@ -39,6 +39,10 @@ using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Forms
 {
+    using System.ComponentModel;
+    using System.Configuration;
+    using Utilities.Helpers;
+
     public partial class OptionForm : Form
     {
         #region Private Constants
@@ -63,6 +67,9 @@ namespace ServiceBusExplorer.Forms
         };
 
         ConfigFileUse originalConfigFileUse;
+
+        BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
+
         #endregion
 
         #region Public Constructor
@@ -90,8 +97,12 @@ namespace ServiceBusExplorer.Forms
             ConfigFileUse = configFileUse;
             cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(ConfigFileUse);
 
+            NodesColorInfoBindingList.ListChanged += NodesColorsListChanged;
+            nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
+
             ShowSettings(mainSettings);
         }
+
         #endregion
 
         #region Public Properties
@@ -249,6 +260,26 @@ namespace ServiceBusExplorer.Forms
             useDefaultProxyCredentialsCheckBox.Checked = MainSettings.ProxyUseDefaultCredentials;
             txtProxyUserName.Text = MainSettings.ProxyUserName;
             txtProxyPassword.Text = MainSettings.ProxyPassword;
+
+            SetNodesColorsIntoBindingList(MainSettings.NodesColors);
+        }
+
+        private void SetNodesColorsIntoBindingList(IEnumerable<NodeColorInfo> items)
+        {
+            try
+            {
+                NodesColorInfoBindingList.RaiseListChangedEvents = false;
+                NodesColorInfoBindingList.Clear();
+                foreach (var nodeColorInfo in items)
+                {
+                    NodesColorInfoBindingList.Add(nodeColorInfo);
+                }
+            }
+            finally
+            {
+                NodesColorInfoBindingList.RaiseListChangedEvents = true;
+                NodesColorInfoBindingList.ResetBindings();
+            }
         }
 
         private void retryCountNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -482,6 +513,12 @@ namespace ServiceBusExplorer.Forms
             MainSettings.ProxyPassword = txtProxyPassword.Text;
         }
 
+        
+        private void NodesColorsListChanged(object sender, ListChangedEventArgs e)
+        {
+            MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
+        }
+
         #endregion
 
         #region Private methods
@@ -622,6 +659,8 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
                 MainSettings.ProxyPassword);
 
+            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, NodeColorInfo.FormatAll(MainSettings.NodesColors));
+
             configuration.Save();
         }
 
@@ -711,6 +750,7 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = mainSettings.ProxyUserName;
             txtProxyPassword.Text = mainSettings.ProxyPassword;
 
+            SetNodesColorsIntoBindingList(mainSettings.NodesColors);
         }
 
         List<string> GetSelectedEntities()
@@ -761,6 +801,16 @@ namespace ServiceBusExplorer.Forms
                                     cboConnectivityMode.Size.Width + 1,
                                     cboConnectivityMode.Size.Height + 1);
         }
+
+        private void tabPageColors_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                dgNodeColors.Location.X - 1,
+                dgNodeColors.Location.Y - 1,
+                dgNodeColors.Size.Width + 1,
+                dgNodeColors.Size.Height + 1);
+        }
+
         #endregion
     }
 }

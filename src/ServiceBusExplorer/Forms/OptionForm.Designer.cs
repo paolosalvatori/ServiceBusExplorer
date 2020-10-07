@@ -23,6 +23,8 @@ using ServiceBusExplorer.Controls;
 
 namespace ServiceBusExplorer.Forms
 {
+    using Utilities.Helpers;
+
     partial class OptionForm
     {
         /// <summary>
@@ -53,8 +55,11 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties1 = new ServiceBusExplorer.Controls.CheckBoxProperties();
             ServiceBusExplorer.Controls.CheckBoxProperties checkBoxProperties2 = new ServiceBusExplorer.Controls.CheckBoxProperties();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
@@ -142,8 +147,18 @@ namespace ServiceBusExplorer.Forms
             this.lblOverrideProxy = new System.Windows.Forms.Label();
             this.txtProxyAddress = new System.Windows.Forms.TextBox();
             this.lblProxyAddress = new System.Windows.Forms.Label();
+            this.tabPageColors = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.dgNodeColors = new System.Windows.Forms.DataGridView();
+            this.nodeColorsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainPanel = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewColorPickerColumn1 = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IsLeaf = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colorDataGridViewTextBoxColumn = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -163,6 +178,9 @@ namespace ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).BeginInit();
             this.tabPageConnectivity.SuspendLayout();
             this.tabPageProxy.SuspendLayout();
+            this.tabPageColors.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgNodeColors)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeColorsBindingSource)).BeginInit();
             this.mainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -323,6 +341,7 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Controls.Add(this.tabPageSending);
             this.tabOptionsControl.Controls.Add(this.tabPageConnectivity);
             this.tabOptionsControl.Controls.Add(this.tabPageProxy);
+            this.tabOptionsControl.Controls.Add(this.tabPageColors);
             this.tabOptionsControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabOptionsControl.Location = new System.Drawing.Point(16, 39);
             this.tabOptionsControl.Name = "tabOptionsControl";
@@ -1305,6 +1324,72 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyAddress.TabIndex = 2;
             this.lblProxyAddress.Text = "Proxy Address:";
             // 
+            // tabPageColors
+            // 
+            this.tabPageColors.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageColors.Controls.Add(this.label5);
+            this.tabPageColors.Controls.Add(this.dgNodeColors);
+            this.tabPageColors.Location = new System.Drawing.Point(4, 22);
+            this.tabPageColors.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageColors.Name = "tabPageColors";
+            this.tabPageColors.Padding = new System.Windows.Forms.Padding(16, 25, 16, 25);
+            this.tabPageColors.Size = new System.Drawing.Size(576, 329);
+            this.tabPageColors.TabIndex = 5;
+            this.tabPageColors.Text = "Colors";
+            this.tabPageColors.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageColors_Paint);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label5.Location = new System.Drawing.Point(16, 25);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Node colors";
+            // 
+            // dgNodeColors
+            // 
+            this.dgNodeColors.AutoGenerateColumns = false;
+            this.dgNodeColors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgNodeColors.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.dgNodeColors.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgNodeColors.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgNodeColors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgNodeColors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.textDataGridViewTextBoxColumn,
+            this.IsLeaf,
+            this.colorDataGridViewTextBoxColumn});
+            this.dgNodeColors.DataSource = this.nodeColorsBindingSource;
+            this.dgNodeColors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dgNodeColors.Location = new System.Drawing.Point(16, 41);
+            this.dgNodeColors.MultiSelect = false;
+            this.dgNodeColors.Name = "dgNodeColors";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgNodeColors.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dgNodeColors.RowHeadersWidth = 15;
+            this.dgNodeColors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dgNodeColors.Size = new System.Drawing.Size(544, 263);
+            this.dgNodeColors.TabIndex = 0;
+            // 
+            // nodeColorsBindingSource
+            // 
+            this.nodeColorsBindingSource.DataSource = typeof(ServiceBusExplorer.Utilities.Helpers.NodeColorInfo);
+            // 
             // mainPanel
             // 
             this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -1336,6 +1421,55 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "Text";
+            this.dataGridViewTextBoxColumn1.FillWeight = 134.7716F;
+            this.dataGridViewTextBoxColumn1.HeaderText = "Text (regexp)";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Width = 271;
+            // 
+            // dataGridViewColorPickerColumn1
+            // 
+            this.dataGridViewColorPickerColumn1.DataPropertyName = "Color";
+            this.dataGridViewColorPickerColumn1.FillWeight = 134.7716F;
+            this.dataGridViewColorPickerColumn1.HeaderText = "Color";
+            this.dataGridViewColorPickerColumn1.Name = "dataGridViewColorPickerColumn1";
+            this.dataGridViewColorPickerColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewColorPickerColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.dataGridViewColorPickerColumn1.Width = 239;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "Color";
+            this.dataGridViewTextBoxColumn2.HeaderText = "Color";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.Width = 270;
+            // 
+            // textDataGridViewTextBoxColumn
+            // 
+            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
+            this.textDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.textDataGridViewTextBoxColumn.HeaderText = "Text (regexp)";
+            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
+            // 
+            // IsLeaf
+            // 
+            this.IsLeaf.DataPropertyName = "IsLeaf";
+            this.IsLeaf.FillWeight = 30F;
+            this.IsLeaf.HeaderText = "Leaf";
+            this.IsLeaf.MinimumWidth = 20;
+            this.IsLeaf.Name = "IsLeaf";
+            // 
+            // colorDataGridViewTextBoxColumn
+            // 
+            this.colorDataGridViewTextBoxColumn.DataPropertyName = "Color";
+            this.colorDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
+            this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
+            this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // OptionForm
             // 
@@ -1382,6 +1516,10 @@ namespace ServiceBusExplorer.Forms
             this.tabPageConnectivity.PerformLayout();
             this.tabPageProxy.ResumeLayout(false);
             this.tabPageProxy.PerformLayout();
+            this.tabPageColors.ResumeLayout(false);
+            this.tabPageColors.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgNodeColors)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeColorsBindingSource)).EndInit();
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -1478,5 +1616,15 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.CheckBox disableAccidentalDeletionPrevention;
         private System.Windows.Forms.Label lblMessageCounts;
         private CheckBoxComboBox cboSelectedMessageCounts;
+        private System.Windows.Forms.TabPage tabPageColors;
+        private System.Windows.Forms.BindingSource nodeColorsBindingSource;
+        private System.Windows.Forms.DataGridView dgNodeColors;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.Label label5;
+        private DataGridViewColorPickerColumn dataGridViewColorPickerColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn IsLeaf;
+        private DataGridViewColorPickerColumn colorDataGridViewTextBoxColumn;
     }
 }

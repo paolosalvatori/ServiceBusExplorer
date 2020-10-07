@@ -29,6 +29,8 @@ using Microsoft.ServiceBus;
 
 namespace ServiceBusExplorer.Helpers
 {
+    using Utilities.Helpers;
+
     public class MainSettings
     {
         #region Internal constants
@@ -75,6 +77,8 @@ namespace ServiceBusExplorer.Helpers
         public bool ProxyUseDefaultCredentials { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
+
+        public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
         #endregion
 
@@ -134,6 +138,8 @@ namespace ServiceBusExplorer.Helpers
             ProxyBypassList = string.Empty;
             ProxyUserName = string.Empty;
             ProxyPassword = string.Empty;
+            
+            NodesColors = new List<NodeColorInfo>();
         }
 
         public override bool Equals(object other)
@@ -180,6 +186,7 @@ namespace ServiceBusExplorer.Helpers
             if (ProxyBypassList != otherProperties.ProxyBypassList) return false;
             if (ProxyUserName != otherProperties.ProxyUserName) return false;
             if (ProxyPassword != otherProperties.ProxyPassword) return false;
+            if (NodesColors.SequenceEqual(otherProperties.NodesColors)) return false;
 
             return true;
         }
@@ -306,6 +313,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ProxyPassword:
                     return ProxyPassword;
+
+                case ConfigurationParameters.NodesColors:
+                    return NodesColors;
             }
 
             throw new InvalidOperationException(String.Format("Unexpected value for setting: {0}", setting));
