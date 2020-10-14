@@ -43,7 +43,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Constructor
-        public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors)
+        public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors, bool fromSessionSelectionActive = false)
         {
             InitializeComponent();
             Text = message;
@@ -59,6 +59,8 @@ namespace ServiceBusExplorer.Forms
             {
                 cboReceiverInspector.Items.Add(messageInspectors[i]);
             }
+
+            txtFromSession.Enabled = fromSessionSelectionActive;
         }
         #endregion
 
