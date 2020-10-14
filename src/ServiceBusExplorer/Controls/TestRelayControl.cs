@@ -736,11 +736,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceBusHelper.SharedAccessKeyName, serviceBusHelper.SharedAccessKey);
             }
-            if (!string.IsNullOrWhiteSpace(serviceBusHelper.IssuerName) &&
-                !string.IsNullOrWhiteSpace(serviceBusHelper.IssuerSecret))
-            {
-                return TokenProvider.CreateSharedSecretTokenProvider(serviceBusHelper.IssuerName, serviceBusHelper.IssuerSecret);
-            }
+
             return null;
         }
 

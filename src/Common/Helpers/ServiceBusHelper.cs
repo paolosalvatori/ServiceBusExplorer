@@ -189,8 +189,6 @@ namespace ServiceBusExplorer
         private string connectionString;
         private List<BrokeredMessage> brokeredMessageList;
         private readonly WriteToLogDelegate writeToLog;
-        private string currentIssuerName;
-        private string currentIssuerSecret;
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private TransportType currentTransportType;
@@ -251,8 +249,6 @@ namespace ServiceBusExplorer
             TokenProvider = serviceBusHelper.TokenProvider;
             notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
-            IssuerName = serviceBusHelper.IssuerName;
-            IssuerSecret = serviceBusHelper.IssuerSecret;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
             TransportType = serviceBusHelper.TransportType;
@@ -441,47 +437,6 @@ namespace ServiceBusExplorer
             }
         }
 
-        /// <summary>
-        /// Gets or sets the issuer name.
-        /// </summary>
-        public string IssuerName
-        {
-            get
-            {
-                lock (this)
-                {
-                    return currentIssuerName;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    currentIssuerName = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the issuer secret.
-        /// </summary>
-        public string IssuerSecret
-        {
-            get
-            {
-                lock (this)
-                {
-                    return currentIssuerSecret;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    currentIssuerSecret = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Gets or sets the shared access key name.
@@ -763,8 +718,6 @@ namespace ServiceBusExplorer
             Func<bool> func = (() =>
             {
                 connectionString = serviceBusNamespace.ConnectionString;
-                currentIssuerName = serviceBusNamespace.IssuerName;
-                currentIssuerSecret = serviceBusNamespace.IssuerSecret;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
                 currentTransportType = serviceBusNamespace.TransportType;

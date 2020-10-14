@@ -60,8 +60,6 @@ namespace ServiceBusExplorer.Forms
         private const string ConnectionStringTransportTypeFormat = ";TransportType={0}";
         private const string DefaultNetMessagingRuntimePort = "9354";
         private const string DefaultAmqpRuntimePort = "5671";
-        private const string SharedSecretIssuerNameLabel = "Shared Secret Issuer Name:";
-        private const string SharedSecretIssuerSecretLabel = "Shared Secret Issuer Secret:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
         private const string replacementText = "{replace}";
@@ -97,7 +95,6 @@ namespace ServiceBusExplorer.Forms
 
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly ConfigFileUse configFileUse;
-        private bool isIssuerName;
         private bool ignoreSelectedIndexChange;
 
         #endregion
@@ -116,8 +113,8 @@ namespace ServiceBusExplorer.Forms
             InitializeComponent();
 
             this.configFileUse = configFileUse;
-            SetConfigFileUseLabelText(lblConfigFileUse);            
-            
+            SetConfigFileUseLabelText(lblConfigFileUse);
+
             this.serviceBusHelper = serviceBusHelper;
             cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
             cboServiceBusNamespace.Items.Add(EnterConnectionString);
@@ -168,7 +165,7 @@ namespace ServiceBusExplorer.Forms
 
             string replacement;
 
-            switch(configFileUse)
+            switch (configFileUse)
             {
                 case ConfigFileUse.ApplicationConfig:
                     replacement = "The application config file";
@@ -271,38 +268,26 @@ namespace ServiceBusExplorer.Forms
                 TransportType = (TransportType)cboTransportType.SelectedItem;
                 EntityPath = txtEntityPath.Text;
 
-                if (isIssuerName)
+
+                SharedAccessKeyName = txtIssuerName.Text;
+                SharedAccessKey = txtIssuerSecret.Text;
+
+                if (string.IsNullOrEmpty(EntityPath))
                 {
-                    IssuerName = txtIssuerName.Text;
-                    IssuerSecret = txtIssuerSecret.Text;
-                    ConnectionString = string.Format(ServiceBusNamespace.ConnectionStringFormat,
+                    ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
                         Uri,
-                        IssuerName,
-                        IssuerSecret,
+                        SharedAccessKeyName,
+                        SharedAccessKey,
                         TransportType);
                 }
                 else
                 {
-                    SharedAccessKeyName = txtIssuerName.Text;
-                    SharedAccessKey = txtIssuerSecret.Text;
-
-                    if (string.IsNullOrEmpty(EntityPath))
-                    {
-                        ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
-                            Uri,
-                            SharedAccessKeyName,
-                            SharedAccessKey,
-                            TransportType);
-                    }
-                    else
-                    {
-                        ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringEntityPathFormat,
-                            Uri,
-                            SharedAccessKeyName,
-                            SharedAccessKey,
-                            TransportType,
-                            EntityPath);
-                    }
+                    ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringEntityPathFormat,
+                        Uri,
+                        SharedAccessKeyName,
+                        SharedAccessKey,
+                        TransportType,
+                        EntityPath);
                 }
             }
         }
@@ -363,7 +348,7 @@ namespace ServiceBusExplorer.Forms
                         // ignore
                     }
                 }
-                
+
                 btnOk.Enabled = (!string.IsNullOrWhiteSpace(txtUri.Text) ||
                                  !string.IsNullOrWhiteSpace(txtNamespace.Text)) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerName.Text) &&
@@ -438,16 +423,6 @@ namespace ServiceBusExplorer.Forms
                     txtEntityPath.Text = ns.EntityPath;
                     lblIssuerName.Text = SharedAccessKeyNameLabel;
                     lblIssuerSecret.Text = SharedAccessKeyLabel;
-                    isIssuerName = false;
-                }
-                else
-                {
-                    txtIssuerName.Text = ns.IssuerName;
-                    txtIssuerSecret.Text = ns.IssuerSecret;
-                    txtEntityPath.Text = ns.EntityPath;
-                    lblIssuerName.Text = SharedSecretIssuerNameLabel;
-                    lblIssuerSecret.Text = SharedSecretIssuerSecretLabel;
-                    isIssuerName = true;
                 }
             }
             cboTransportType.SelectedItem = ns.TransportType;
@@ -668,9 +643,9 @@ namespace ServiceBusExplorer.Forms
                 {
                     key = index > 0 ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(host.Substring(0, index)) : "MyNamespace";
                     using (var parameterForm = new ParameterForm("Enter the key for the Service Bus namespace",
-                        new List<string> {"Key"},
-                        new List<string> {key},
-                        new List<bool> {false}))
+                        new List<string> { "Key" },
+                        new List<string> { key },
+                        new List<bool> { false }))
                     {
                         if (parameterForm.ShowDialog() != DialogResult.OK)
                         {
