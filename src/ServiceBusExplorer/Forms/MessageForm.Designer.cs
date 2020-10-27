@@ -278,9 +278,9 @@ namespace ServiceBusExplorer.Forms
             this.legend.Location = new System.Drawing.Point(20, 226);
             this.legend.Name = "legend";
             this.legend.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.legend.Size = new System.Drawing.Size(214, 15);
+            this.legend.Size = new System.Drawing.Size(313, 15);
             this.legend.TabIndex = 1;
-            this.legend.Text = "* Press DELETE key to remove the property";
+            this.legend.Text = "* To delete a property, select the row and press the DELETE key";
             // 
             // propertiesDataGridView
             // 
