@@ -63,6 +63,7 @@ namespace ServiceBusExplorer.Forms
             this.chkAutoindent = new System.Windows.Forms.CheckBox();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
+            this.legend = new System.Windows.Forms.Label();
             this.propertiesDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperMessageProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -247,6 +248,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageCustomProperties.BorderThickness = 1F;
+            this.grouperMessageCustomProperties.Controls.Add(this.legend);
             this.grouperMessageCustomProperties.Controls.Add(this.propertiesDataGridView);
             this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -256,7 +258,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
             this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
-            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 0);
             this.grouperMessageCustomProperties.PaintGroupBox = true;
             this.grouperMessageCustomProperties.RoundCorners = 4;
             this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
@@ -265,6 +267,20 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.Size = new System.Drawing.Size(666, 241);
             this.grouperMessageCustomProperties.TabIndex = 27;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
+            // 
+            // legend
+            // 
+            this.legend.AccessibleRole = System.Windows.Forms.AccessibleRole.Text;
+            this.legend.AutoSize = true;
+            this.legend.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.legend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            this.legend.ForeColor = System.Drawing.Color.Black;
+            this.legend.Location = new System.Drawing.Point(20, 226);
+            this.legend.Name = "legend";
+            this.legend.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.legend.Size = new System.Drawing.Size(214, 15);
+            this.legend.TabIndex = 1;
+            this.legend.Text = "* Press DELETE key to remove the property";
             // 
             // propertiesDataGridView
             // 
@@ -277,6 +293,7 @@ namespace ServiceBusExplorer.Forms
             this.propertiesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.propertiesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.propertiesDataGridView.Location = new System.Drawing.Point(16, 32);
+            this.propertiesDataGridView.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.propertiesDataGridView.Name = "propertiesDataGridView";
             this.propertiesDataGridView.Size = new System.Drawing.Size(636, 194);
             this.propertiesDataGridView.TabIndex = 0;
@@ -447,6 +464,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageText.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.grouperMessageCustomProperties.ResumeLayout(false);
+            this.grouperMessageCustomProperties.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesDataGridView)).EndInit();
             this.grouperMessageProperties.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -475,5 +493,6 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.CheckBox chkRemove;
         private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
         private System.Windows.Forms.CheckBox chkAutoindent;
+        private System.Windows.Forms.Label legend;
     }
 }
