@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -42,7 +43,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Constructor
-        public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors)
+        public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors, bool fromSessionSelectionActive = false)
         {
             InitializeComponent();
             Text = message;
@@ -58,6 +59,8 @@ namespace ServiceBusExplorer.Forms
             {
                 cboReceiverInspector.Items.Add(messageInspectors[i]);
             }
+
+            txtFromSession.Enabled = fromSessionSelectionActive;
         }
         #endregion
 
@@ -73,6 +76,7 @@ namespace ServiceBusExplorer.Forms
         public bool All { get; private set; }
         public string Inspector { get; private set; }
         public long? FromSequenceNumber { get; private set; }
+        public string? FromSession { get; private set; }
         #endregion
 
         #region Event Handlers
@@ -96,6 +100,11 @@ namespace ServiceBusExplorer.Forms
                 {
                     FromSequenceNumber = fromSequenceNumber;
                 }
+            }
+
+            if (!string.IsNullOrEmpty(txtFromSession.Text))
+            {
+                FromSession = txtFromSession.Text;
             }
             Close();
         }

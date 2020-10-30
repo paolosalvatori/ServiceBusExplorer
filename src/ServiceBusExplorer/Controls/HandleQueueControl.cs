@@ -23,6 +23,7 @@
 
 #region Using Directives
 
+#nullable enable
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -355,7 +356,7 @@ namespace ServiceBusExplorer.Controls
         {
             using (
                 var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromQueue, MainForm.SingletonMainForm.TopCount,
-                    serviceBusHelper.BrokeredMessageInspectors.Keys))
+                    serviceBusHelper.BrokeredMessageInspectors.Keys, queueDescription.RequiresSession))
             {
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
@@ -371,11 +372,11 @@ namespace ServiceBusExplorer.Controls
                     if (queueDescription.EnablePartitioning)
                     {
                         ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count,
-                            messageInspector, receiveModeForm.FromSequenceNumber);
+                            messageInspector, receiveModeForm.FromSequenceNumber, receiveModeForm.FromSession);
                     }
                     else
                     {
-                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
+                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber, receiveModeForm.FromSession);
                     }
                 }
             }
@@ -1332,7 +1333,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null)
+        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
@@ -1345,20 +1346,31 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
+                    var totalRetrieved = 0;
+
+                    MessageReceiver receiver;
+                    if (fromSession != null)
+                    {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
                         ReceiveMode.PeekLock);
-                    var totalRetrieved = 0;
+                        receiver = queueClient.AcceptMessageSession(fromSession);
+                    }
+                    else
+                    {
+                        receiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, ReceiveMode.PeekLock);
+                    }
+
                     while (totalRetrieved < count)
                     {
                         IEnumerable<BrokeredMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messageEnumerable = queueClient.PeekBatch(fromSequenceNumber.Value, count);
+                            messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, count);
                         }
                         else
                         {
-                            messageEnumerable = queueClient.PeekBatch(count);
+                            messageEnumerable = receiver.PeekBatch(count);
                         }
 
                         if (messageEnumerable == null)
@@ -1385,9 +1397,17 @@ namespace ServiceBusExplorer.Controls
                     {
                         var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
                             ReceiveMode.ReceiveAndDelete);
-                        messageReceiver =
-                            queueClient.AcceptMessageSession(
+                        if (fromSession != null)
+                        {
+                            messageReceiver = queueClient.AcceptMessageSession(fromSession,
                                 TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        }
+                        else
+                        {
+                            messageReceiver =
+                                queueClient.AcceptMessageSession(
+                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        }
                     }
                     else
                     {
@@ -1469,26 +1489,36 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null)
+        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
+                    MessageReceiver messageReceiver;
+                    if (fromSession != null)
+                    {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
                         ReceiveMode.PeekLock);
+                        messageReceiver = queueClient.AcceptMessageSession(fromSession);
+                    }
+                    else
+                    {
+                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, ReceiveMode.PeekLock);
+                    }
+    
                     for (var i = 0; i < count; i++)
                     {
                         BrokeredMessage message;
 
                         if (i == 0 && fromSequenceNumber.HasValue)
                         {
-                            message = queueClient.Peek(fromSequenceNumber.Value);
+                            message = messageReceiver.Peek(fromSequenceNumber.Value);
                         }
                         else
                         {
-                            message = queueClient.Peek();
+                            message = messageReceiver.Peek();
                         }
 
                         if (message != null)
@@ -1509,9 +1539,18 @@ namespace ServiceBusExplorer.Controls
                     {
                         var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
                             ReceiveMode.ReceiveAndDelete);
-                        messageReceiver =
+                        if (fromSession != null)
+                        {
+                            messageReceiver =
+                                queueClient.AcceptMessageSession(fromSession,
+                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        }
+                        else
+                        {
+                            messageReceiver =
                             queueClient.AcceptMessageSession(
                                 TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        }
                     }
                     else
                     {
