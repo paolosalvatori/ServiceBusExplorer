@@ -93,7 +93,9 @@ namespace ServiceBusExplorer.Helpers
             if (!omitAllProperties)
             {
                 // Copy all custom properties
-                var propertiesToCopy = originalMessage.Properties.Where(h => !Constants.AlwaysOmittedProperties.Contains(h.Key.ToLower()));
+                var propertiesToCopy = originalMessage.Properties.Where(prop => !Constants.AlwaysOmittedProperties.Exists(
+                    omitProp => prop.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)));
+
                 propertiesToCopy.ForEach(h => message.Properties[h.Key] = h.Value);
             }
 

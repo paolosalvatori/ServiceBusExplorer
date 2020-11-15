@@ -415,7 +415,8 @@ namespace ServiceBusExplorer.Forms
                             {
                                 try
                                 {
-                                    if (Constants.AlwaysOmittedProperties.Contains(messagePropertyInfo.Key.ToLower()))
+                                    if (Constants.AlwaysOmittedProperties.Exists(
+                                        omitProp => messagePropertyInfo.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)))
                                     {
                                         continue;
                                     }
