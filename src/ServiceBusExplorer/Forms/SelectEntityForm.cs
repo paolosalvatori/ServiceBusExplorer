@@ -25,12 +25,12 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class SelectEntityForm : Form
     {
@@ -40,6 +40,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         const string QueueEntities = "Queues";
         const string TopicEntities = "Topics";
+        const string FilteredQueueEntities = "Queues (Filtered)";
+        const string FilteredTopicEntities = "Topics (Filtered)";
         const string EventHubEntities = "Event Hubs";
         const string RelayEntities = "Relays";
         const string NotificationHubEntities = "Notification Hubs";
@@ -65,7 +67,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         readonly bool includeNotificationHubs;
         readonly bool includeRelays;
         readonly QueueDescription queueDescriptionSource;  // Might be null
-        readonly SubscriptionWrapper subscriptionWrapperSource;  // Might be null
+        readonly TopicDescription topicDescriptionSource;  // Might be null
         #endregion
 
         #region Public Constructor
@@ -138,7 +140,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         public SelectEntityForm(string dialogTitle,
                        string groupTitle,
                        string labelText,
-                       SubscriptionWrapper subscriptionWrapperSource,
+                       TopicDescription topicDescriptionSource,
                        bool subscriptions = false,
                        bool eventHubs = false,
                        bool notificationHubs = false,
@@ -150,13 +152,38 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                            notificationHubs,
                            relays)
         {
-            this.subscriptionWrapperSource = subscriptionWrapperSource;
+            this.topicDescriptionSource = topicDescriptionSource;
         }
         #endregion
 
         #region Event Handlers
         private void SelectEntityForm_Load(object sender, EventArgs e)
         {
+            bool FocusNodeIfMatching<T>(TreeNode treeNode, Func<T, string> getPath, string searchedPath) where T : class
+            {
+                if (treeNode.Tag is T tag)
+                {
+                    if (string.Compare(getPath(tag), searchedPath,
+                            StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        serviceBusTreeView.HideSelection = false;
+                        serviceBusTreeView.Focus(); // Otherwise the node will be light gray
+                        serviceBusTreeView.SelectedNode = treeNode;
+                        SetTextAndType(treeNode);
+                        return true;
+                    }
+                }
+
+                foreach (TreeNode childNode in treeNode.Nodes)
+                {
+                    if (FocusNodeIfMatching<T>(childNode, getPath, searchedPath))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             // Select the queue where it is coming from since that is likely where it will go
             if (queueDescriptionSource != null)
             {
@@ -164,50 +191,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == QueueEntities)
+                        if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
                         {
-                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
                             {
-                                var queueTag = level2Node.Tag as QueueDescription;
-                                if (queueTag != null)
-                                {
-                                    if (string.Compare(queueTag.Path, queueDescriptionSource.Path,
-                                        StringComparison.InvariantCultureIgnoreCase) == 0)
-                                    {
-                                        serviceBusTreeView.HideSelection = false;
-                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
-                                        serviceBusTreeView.SelectedNode = level2Node;
-                                        SetTextAndType(level2Node);
-                                        return;
-                                    }
-                                }
+                                return;
                             }
                         }
                     }
                 }
             }
-            else if (subscriptionWrapperSource != null)
+            else if (topicDescriptionSource != null)
             {
                 foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == TopicEntities)
+                        if (level1Node.Text == TopicEntities || level1Node.Text == FilteredTopicEntities)
                         {
-                            foreach (TreeNode level2Node in level1Node.Nodes)
+                            if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
                             {
-                                var topicTag = level2Node.Tag as TopicDescription;
-                                if (topicTag != null)
-                                {
-                                    if (topicTag.Path == subscriptionWrapperSource.TopicDescription.Path)
-                                    {
-                                        serviceBusTreeView.HideSelection = false;
-                                        serviceBusTreeView.Focus();  // Otherwise the node will be light gray
-                                        serviceBusTreeView.SelectedNode = level2Node;
-                                        SetTextAndType(level2Node);
-                                        return;
-                                    }
-                                }
+                                return;
                             }
                         }
                     }

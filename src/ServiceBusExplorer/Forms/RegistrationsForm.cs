@@ -25,11 +25,12 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public enum GetRegistrationsMethod
     {

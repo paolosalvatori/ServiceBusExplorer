@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class DeleteForm
     {
@@ -57,6 +57,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainPanel = new System.Windows.Forms.Panel();
             this.lblMessage = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.buttonsPanel = new System.Windows.Forms.Panel();
+            this.accidentalDeletionPreventionCheckControl = new ServiceBusExplorer.Controls.AccidentalDeletionPreventionCheckControl();
             this.mainPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -128,6 +130,27 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.pictureBox1.TabIndex = 33;
             this.pictureBox1.TabStop = false;
             // 
+            // buttonsPanel
+            // 
+            this.buttonsPanel.Location = new System.Drawing.Point(0, 63);
+            this.buttonsPanel.Name = "buttonsPanel";
+            this.buttonsPanel.Size = new System.Drawing.Size(312, 49);
+            this.buttonsPanel.TabIndex = 34;
+            // 
+            // accidentalDeletionPreventionCheckControl
+            // 
+            this.accidentalDeletionPreventionCheckControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.accidentalDeletionPreventionCheckControl.AutoSize = true;
+            this.accidentalDeletionPreventionCheckControl.BackColor = System.Drawing.Color.Cornsilk;
+            this.accidentalDeletionPreventionCheckControl.DeletionScopePromptText = "Deletion Type";
+            this.accidentalDeletionPreventionCheckControl.DisableFurtherChecks = false;
+            this.accidentalDeletionPreventionCheckControl.Location = new System.Drawing.Point(0, 65);
+            this.accidentalDeletionPreventionCheckControl.Name = "accidentalDeletionPreventionCheckControl";
+            this.accidentalDeletionPreventionCheckControl.Size = new System.Drawing.Size(312, 157);
+            this.accidentalDeletionPreventionCheckControl.TabIndex = 35;
+            this.accidentalDeletionPreventionCheckControl.Visible = false;
+            // 
             // DeleteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -137,6 +160,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
+            this.Controls.Add(this.buttonsPanel);
+            this.Controls.Add(this.accidentalDeletionPreventionCheckControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -148,6 +173,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.mainPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -158,5 +184,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Panel buttonsPanel;
+        private Controls.AccidentalDeletionPreventionCheckControl accidentalDeletionPreventionCheckControl;
     }
 }

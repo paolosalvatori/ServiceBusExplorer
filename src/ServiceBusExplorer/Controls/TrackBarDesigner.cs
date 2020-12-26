@@ -27,7 +27,7 @@ using System.Windows.Forms.Design;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
 	/// <summary>
 	/// The Designer for the <see cref="CustomTrackBar"/>.

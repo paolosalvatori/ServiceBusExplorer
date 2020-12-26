@@ -37,13 +37,16 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.NotificationHubs.Messaging;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Properties;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Properties;
+using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.NotificationHubs.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class HandleNotificationHubControl : UserControl
     {
@@ -102,7 +105,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         // Property Labels
         //***************************
         private const string DailyOperations = "Daily Operations";
-        private const string DailyMaxActiveRegistrations  = "Daily Max Active Registrations";
+        private const string DailyMaxActiveRegistrations = "Daily Max Active Registrations";
         private const string DailyMaxActiveDevices = "Daily Max Active Devices";
 
         //***************************
@@ -117,8 +120,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber = "The Seconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
         private const string DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber = "The Milliseconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
         private const string NotificationPayloadCannotBeNull = "The notification payload cannot be null.";
-        private const string JsonPayloadTemplateCannotBeNull = "The json payload cannot be null.";
-        private const string PayloadIsNotInJsonFormat = "The payload is not in json format.";
+        private const string JsonPayloadTemplateCannotBeNull = "The JSON payload cannot be null.";
+        private const string PayloadIsNotInJsonFormat = "The payload is not in JSON format.";
         private const string RegistrationsRetrievedFormat = "[{0}] registrations were retrieved from the notification hub [{1}].";
         private const string RegistrationsDeletedFormat = "[1] registration was deleted from the notification hub [{1}]: RegistrationId=[{0}]";
         private const string RegistrationsUpdatedFormat = "[1] registration was updated in the notification hub [{1}]: RegistrationId=[{0}]";
@@ -199,8 +202,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         #endregion
 
         #region Public Constructors
-        public HandleNotificationHubControl(WriteToLogDelegate writeToLog, 
-                                            ServiceBusHelper serviceBusHelper, 
+        public HandleNotificationHubControl(WriteToLogDelegate writeToLog,
+                                            ServiceBusHelper serviceBusHelper,
                                             NotificationHubDescription notificationHubDescription)
         {
             this.writeToLog = writeToLog;
@@ -209,7 +212,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -266,7 +269,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     case GetRegistrationsMethod.All:
                         {
-                            collectionQueryResult = string.IsNullOrWhiteSpace(continuationToken) ? 
+                            collectionQueryResult = string.IsNullOrWhiteSpace(continuationToken) ?
                                                     await notificationHubClient.GetAllRegistrationsAsync(currentTopCount) :
                                                     await notificationHubClient.GetAllRegistrationsAsync(continuationToken, currentTopCount);
                         }
@@ -1076,7 +1079,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         continue;
                     }
                     cboWnsNotificationTemplate.Items.Add(methodInfo.Name.StartsWith("Create") ?
-                                                      methodInfo.Name.Substring(6) : 
+                                                      methodInfo.Name.Substring(6) :
                                                       methodInfo.Name);
                 }
                 cboWnsNotificationTemplate.SelectedIndex = 0;
@@ -1099,7 +1102,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 DisablePage(WindowsNativeNotificationPage);
                 DisablePage(AppleNativeNotificationPage);
                 DisablePage(GoogleNativeNotificationPage);
-                
+
                 // Create BindingList for Authorization Rules
                 var bindingList = new BindingList<NotificationHubAuthorizationRuleWrapper>(new List<NotificationHubAuthorizationRuleWrapper>())
                 {
@@ -1117,8 +1120,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (notificationHubDescription != null && 
-                    notificationHubDescription.Authorization.Count > 0 && 
+                if (notificationHubDescription != null &&
+                    notificationHubDescription.Authorization.Count > 0 &&
                     notificationHubDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = notificationHubDescription.Authorization.ElementAt(e.NewIndex);
@@ -1250,7 +1253,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
             }
 
-            
+
             if (notificationHubDescription.ApnsCredential != null)
             {
                 if (!string.IsNullOrWhiteSpace(notificationHubDescription.ApnsCredential.ApnsCertificate) &&
@@ -1337,7 +1340,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return;
             }
-            
+
             if (dataGridView.Columns.Count == 2)
             {
                 var gridWidth = dataGridView.Parent is Grouper
@@ -1366,7 +1369,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     width -= verticalScrollbar.Width;
                 }
-                var columnWidth = width/4;
+                var columnWidth = width / 4;
                 dataGridView.Columns[1].Width = columnWidth - 5;
                 dataGridView.Columns[2].Width = columnWidth - 5;
                 dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 5;
@@ -1374,9 +1377,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             if (dataGridView.ColumnCount == 0 ||
-               (dataGridView != mpnsTagsDataGridView && 
+               (dataGridView != mpnsTagsDataGridView &&
                 dataGridView != wnsTagsDataGridView &&
-                dataGridView != templateTagsDataGridView && 
+                dataGridView != templateTagsDataGridView &&
                 dataGridView != appleTagsDataGridView &&
                 dataGridView != gcmTagsDataGridView))
             {
@@ -1437,11 +1440,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 var methodInfo = wnsMethodInfoList[cboWnsNotificationTemplate.SelectedIndex - 2];
                 var parameterInfos = methodInfo.GetParameters();
-                
+
                 var notification = new CustomObject
-                    {
-                        Properties = parameterInfos.Select(p => new CustomProperty {Name = p.Name, Type = p.ParameterType}).ToList()
-                    };
+                {
+                    Properties = parameterInfos.Select(p => new CustomProperty { Name = p.Name, Type = p.ParameterType }).ToList()
+                };
 
                 wnsTemplatePropertyGrid.SelectedObject = notification;
                 var values = notification.Properties.Select(p => notification[p.Name]).ToArray();
@@ -1481,21 +1484,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 connectionString = serviceBusHelper.ConnectionString;
             }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) &&
-                !string.IsNullOrWhiteSpace(serviceBusHelper.IssuerName) &&
-                !string.IsNullOrWhiteSpace(serviceBusHelper.IssuerSecret))
-                {
-                    var uri = ServiceBusEnvironment.CreateServiceUri("sb", serviceBusHelper.Namespace, string.Empty);
-                    connectionString = ServiceBusConnectionStringBuilder.CreateUsingSharedSecret(uri,
-                                                                                                 serviceBusHelper.IssuerName,
-                                                                                                 serviceBusHelper.IssuerSecret);
-                }
-            }
 
-            if (string.IsNullOrWhiteSpace(connectionString) || 
-                notificationHubDescription == null || 
+            if (string.IsNullOrWhiteSpace(connectionString) ||
+                notificationHubDescription == null ||
                 string.IsNullOrWhiteSpace(notificationHubDescription.Path))
             {
                 return null;
@@ -1531,7 +1522,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                             var headers = NotificationInfo.TemplateHeaders.ToDictionary(p => p.Name, p => p.Value);
                             tags = NotificationInfo.TemplateTags.Select(t => t.Tag).ToArray();
                             tagExpression = txtTemplateTagExpression.Text;
-                            notification = new TemplateNotification(properties) {Headers = headers};
+                            notification = new TemplateNotification(properties) { Headers = headers };
                         }
                         else
                         {
@@ -1804,7 +1795,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        
+
 
         private void grouperTemplateNotificationProperties_CustomPaint(PaintEventArgs e)
         {
@@ -1857,7 +1848,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                      wnsTagsDataGridView.Location.Y - 1,
                                      wnsTagsDataGridView.Size.Width + 1,
                                      wnsTagsDataGridView.Size.Height + 1);
-            
+
         }
 
         private void grouperWnsAdditionalHeaders_CustomPaint(PaintEventArgs e)
@@ -1915,22 +1906,22 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void grouperRegistrationProperties_CustomPaint(PaintEventArgs obj)
         {
             registrationPropertyGrid.Size = new Size(grouperRegistrationProperties.Size.Width - 32, registrationPropertyGrid.Size.Height);
-            btnUpdateRegistration.Location = new Point(grouperRegistrationProperties.Size.Width - 
-                                                       btnUpdateRegistration.Size.Width - 16, 
+            btnUpdateRegistration.Location = new Point(grouperRegistrationProperties.Size.Width -
+                                                       btnUpdateRegistration.Size.Width - 16,
                                                        btnUpdateRegistration.Location.Y);
-            btnDeleteRegistration.Location = new Point(grouperRegistrationProperties.Size.Width - 
-                                                       btnUpdateRegistration.Size.Width - 
+            btnDeleteRegistration.Location = new Point(grouperRegistrationProperties.Size.Width -
+                                                       btnUpdateRegistration.Size.Width -
                                                        btnDeleteRegistration.Size.Width - 24,
                                                        btnDeleteRegistration.Location.Y);
-            btnCreateRegistration.Location = new Point(grouperRegistrationProperties.Size.Width - 
-                                                       btnUpdateRegistration.Size.Width - 
+            btnCreateRegistration.Location = new Point(grouperRegistrationProperties.Size.Width -
+                                                       btnUpdateRegistration.Size.Width -
                                                        btnDeleteRegistration.Size.Width -
                                                        btnCreateRegistration.Size.Width - 32,
                                                        btnDeleteRegistration.Location.Y);
             btnRefreshRegistrations.Location = new Point(grouperRegistrationProperties.Size.Width -
                                                        btnUpdateRegistration.Size.Width -
                                                        btnDeleteRegistration.Size.Width -
-                                                       btnCreateRegistration.Size.Width - 
+                                                       btnCreateRegistration.Size.Width -
                                                        btnRefreshRegistrations.Size.Width - 40,
                                                        btnDeleteRegistration.Location.Y);
         }
@@ -2048,9 +2039,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     }
 
                     var description = new NotificationHubDescription(txtPath.Text)
-                        {
-                            UserMetadata = txtUserMetadata.Text
-                        };
+                    {
+                        UserMetadata = txtUserMetadata.Text
+                    };
 
                     if (!string.IsNullOrWhiteSpace(txtPackageSid.Text) &&
                         !string.IsNullOrWhiteSpace(txtClientSecret.Text))
@@ -2066,7 +2057,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) &&
                         !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
                     {
-                        description.MpnsCredential = new MpnsCredential(mpnsCredentialCertificatePath, 
+                        description.MpnsCredential = new MpnsCredential(mpnsCredentialCertificatePath,
                                                                         mpnsCredentialCertificateKey);
                     }
                     else
@@ -2493,37 +2484,39 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             var propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var registration = new CustomObject
             {
-                Properties = propertyInfos.Select(p => new CustomProperty { Name = p.Name,
-                                                                            Type = p.Name == ChannelUri ?
+                Properties = propertyInfos.Select(p => new CustomProperty
+                {
+                    Name = p.Name,
+                    Type = p.Name == ChannelUri ?
                                                                                    typeof(string) :
                                                                                    p.Name == BodyTemplate ?
                                                                                    typeof(string) :
-                                                                                   p.Name == Tags ? 
+                                                                                   p.Name == Tags ?
                                                                                    typeof(List<string>) :
-                                                                                   p.Name == MpnsHeaders || 
+                                                                                   p.Name == MpnsHeaders ||
                                                                                    p.Name == WnsHeaders ?
                                                                                    typeof(List<NotificationInfo>) :
-                                                                                   p.Name == Expressions ? 
+                                                                                   p.Name == Expressions ?
                                                                                    typeof(ReadOnlyList<string>) :
                                                                                    p.Name == ExpressionLengths ||
                                                                                    p.Name == ExpressionStartIndices ?
                                                                                    typeof(ReadOnlyList<int>) :
                                                                                    p.PropertyType,
-                                                                            Editor = p.Name == BodyTemplate ||
+                    Editor = p.Name == BodyTemplate ||
                                                                                     p.Name == ChannelUri ||
                                                                                     p.Name == DeviceToken ||
                                                                                     p.Name == GcmRegistrationId ?
-                                                                                    new CustomTextEditor() as UITypeEditor : 
-                                                                                    p.Name == Expressions || 
+                                                                                    new CustomTextEditor() as UITypeEditor :
+                                                                                    p.Name == Expressions ||
                                                                                     p.Name == ExpressionLengths ||
                                                                                     p.Name == ExpressionStartIndices ?
-                                                                                    new ReadOnlyEditor() as UITypeEditor:
+                                                                                    new ReadOnlyEditor() as UITypeEditor :
                                                                                     p.Name == Tags ||
                                                                                     p.Name == MpnsHeaders ||
                                                                                     p.Name == WnsHeaders ?
                                                                                     new CustomCollectionEditor() as UITypeEditor :
                                                                                     null,
-                                                                            IsReadOnly = !p.CanWrite || 
+                    IsReadOnly = !p.CanWrite ||
                                                                                          p.SetMethod == null ||
                                                                                         (p.SetMethod != null && !p.SetMethod.IsPublic)
                 }).ToList()
@@ -2551,8 +2544,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 else if (propertyInfo.PropertyType == typeof(MpnsHeaderCollection))
                 {
                     var collection = propertyInfo.GetValue(bindingList[e.RowIndex].Registration) as MpnsHeaderCollection;
-                    value = collection == null ? 
-                            new List<NotificationInfo>() : 
+                    value = collection == null ?
+                            new List<NotificationInfo>() :
                             collection.Select(i => new NotificationInfo(i.Key, i.Value)).ToList();
                 }
                 else if (propertyInfo.PropertyType == typeof(WnsHeaderCollection))
@@ -2578,7 +2571,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 registration[propertyInfo.Name] = value;
             }
-            registrationPropertyGrid.SelectedObject = registration;  
+            registrationPropertyGrid.SelectedObject = registration;
         }
 
         private void btnMpnsCredentialUploadCertificate_Click(object sender, EventArgs e)
@@ -2597,7 +2590,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (Exception ex)
             {
-               HandleException(ex);
+                HandleException(ex);
             }
         }
 
@@ -2664,10 +2657,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
                 var notification = new CustomObject
                 {
-                    Properties = parameterInfos.Select(p => new CustomProperty { Name = p.Name, Type = p.ParameterType}).ToList()
+                    Properties = parameterInfos.Select(p => new CustomProperty { Name = p.Name, Type = p.ParameterType }).ToList()
                 };
 
-                foreach (var property in notification.Properties.Where(property => property.Type == typeof (bool)))
+                foreach (var property in notification.Properties.Where(property => property.Type == typeof(bool)))
                 {
                     property.DefaultValue = property.Name.Contains("IsRelative") || property.Name.Contains("IsResource");
                     notification[property.Name] = property.DefaultValue;
@@ -2761,7 +2754,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         }
                     }
                 }
-                
+
                 var updated = 0;
                 for (var i = 0; i < registrationsDataGridView.SelectedRows.Count; i++)
                 {
@@ -3067,7 +3060,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void sessionPropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             var bindingList = registrationsBindingSource.DataSource as SortableBindingList<RegistrationInfo>;
-            
+
             if (bindingList == null ||
                 string.IsNullOrWhiteSpace(e.ChangedItem.Label) ||
                 registrationsDataGridView.SelectedRows.Count == 0)
@@ -3076,7 +3069,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             var registrationInfo = bindingList[currentRegistrationRowIndex];
             var registration = registrationInfo.Registration;
-            
+
             switch (e.ChangedItem.Label)
             {
                 case ChannelUri:
@@ -3189,23 +3182,23 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     tags = new HashSet<string>(tagsAsList.Select(t => t.Tag));
                 }
                 RegistrationInfo registrationInfo = null;
-                if (form.RegistrationType == typeof (MpnsRegistrationDescription))
+                if (form.RegistrationType == typeof(MpnsRegistrationDescription))
                 {
-                    var registration = tags == null || tags.Count == 0?
+                    var registration = tags == null || tags.Count == 0 ?
                                        new MpnsRegistrationDescription(form.RegistrationObject[ChannelUri] as string) :
                                        new MpnsRegistrationDescription(form.RegistrationObject[ChannelUri] as string, tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
-                        {
-                            ChannelUri = registration.ChannelUri.AbsoluteUri,
-                            ETag = registration.ETag,
-                            ExpirationTime = registration.ExpirationTime,
-                            RegistrationId = registration.RegistrationId,
-                            Registration = registration,
-                            Tags = registration.Tags != null && registration.Tags.Any() ?
+                    {
+                        ChannelUri = registration.ChannelUri.AbsoluteUri,
+                        ETag = registration.ETag,
+                        ExpirationTime = registration.ExpirationTime,
+                        RegistrationId = registration.RegistrationId,
+                        Registration = registration,
+                        Tags = registration.Tags != null && registration.Tags.Any() ?
                                    registration.Tags.Aggregate((a, t) => a + "," + t) :
                                    null
-                        };
+                    };
                 }
                 else if (form.RegistrationType == typeof(MpnsTemplateRegistrationDescription))
                 {
@@ -3231,7 +3224,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                                tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
-                        {
+                    {
                         ChannelUri = registration.ChannelUri.AbsoluteUri,
                         ETag = registration.ETag,
                         ExpirationTime = registration.ExpirationTime,
@@ -3249,7 +3242,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                        new WindowsRegistrationDescription(form.RegistrationObject[ChannelUri] as string, tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
-                        {
+                    {
                         ChannelUri = registration.ChannelUri.AbsoluteUri,
                         ETag = registration.ETag,
                         ExpirationTime = registration.ExpirationTime,
@@ -3284,7 +3277,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                                   tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
-                        {
+                    {
                         ChannelUri = registration.ChannelUri.AbsoluteUri,
                         ETag = registration.ETag,
                         ExpirationTime = registration.ExpirationTime,
@@ -3381,7 +3374,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                writeToLog(string.Format(RegistrationCreatedMessage, 
+                writeToLog(string.Format(RegistrationCreatedMessage,
                                          registrationInfo.PlatformType,
                                          notificationHubDescription.Path));
                 bindingList.Add(registrationInfo);
@@ -3518,10 +3511,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             using (var solidBrush = new SolidBrush(gridView.RowHeadersDefaultCellStyle.ForeColor))
             {
-                e.Graphics.DrawString((e.RowIndex + 1).ToString(CultureInfo.InvariantCulture), 
-                                       e.InheritedRowStyle.Font, 
-                                       solidBrush, 
-                                       e.RowBounds.Location.X + 14, 
+                e.Graphics.DrawString((e.RowIndex + 1).ToString(CultureInfo.InvariantCulture),
+                                       e.InheritedRowStyle.Font,
+                                       solidBrush,
+                                       e.RowBounds.Location.X + 14,
                                        e.RowBounds.Location.Y + 4);
             }
         }

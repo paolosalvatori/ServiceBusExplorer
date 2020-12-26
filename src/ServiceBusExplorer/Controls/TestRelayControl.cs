@@ -36,16 +36,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using FastColoredTextBoxNS;
+using ServiceBusExplorer.UIHelpers;
+using static ServiceBusExplorer.ServiceBusHelper;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class TestRelayControl : UserControl
     {
@@ -77,8 +79,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string MessageCannotBeNull = "The Message field cannot be null.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
-        private const string SenderStatitiscsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1}] Total Elapsed Time (ms)=[{2}]";
-        private const string SenderStatitiscsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
+        private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
+        private const string SenderStatisticsLine2 = " - Average Send Time (ms)=[{0}] Minimum Send Time (ms)=[{1}] Maximum Send Time (ms)=[{2}] ";
         private const string MessageSuccessfullySent = "Sender[{0}]: Request message sent. MessageNumber=[{1}]";
         private const string MessageSuccessfullyReceived = "Sender[{0}]: Response message received. MessageNumber=[{1}]";
         private const string PayloadHeader = "Payload:";
@@ -666,12 +668,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                     builder.AppendLine(exceptionMessage);
                                 }
                                 builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                                                 SenderStatitiscsLine1,
+                                                                 SenderStatisticsLine1,
                                                                  messagesSent,
                                                                  messagesPerSecond,
                                                                  totalElapsedTime));
                                 builder.AppendLine(string.Format(CultureInfo.CurrentCulture,
-                                                                 SenderStatitiscsLine2,
+                                                                 SenderStatisticsLine2,
                                                                  averageSendTime,
                                                                  minimumSendTime == long.MaxValue ? 0 : minimumSendTime,
                                                                  maximumSendTime));
@@ -734,11 +736,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             {
                 return TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceBusHelper.SharedAccessKeyName, serviceBusHelper.SharedAccessKey);
             }
-            if (!string.IsNullOrWhiteSpace(serviceBusHelper.IssuerName) &&
-                !string.IsNullOrWhiteSpace(serviceBusHelper.IssuerSecret))
-            {
-                return TokenProvider.CreateSharedSecretTokenProvider(serviceBusHelper.IssuerName, serviceBusHelper.IssuerSecret);
-            }
+
             return null;
         }
 

@@ -1,7 +1,8 @@
-﻿using Microsoft.Azure.ServiceBusExplorer.Helpers;
+﻿using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using NUnit.Framework;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
+namespace ServiceBusExplorer.Tests.Helpers
 {
     [TestFixture]
     public class JsonSerializerHelperTest
@@ -69,7 +70,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Tests.Helpers
 }";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(indented, expectedResult);
+            Assert.AreEqual(expectedResult, indented);
+        }
+
+        [Test]
+        public void IndentJson_ValueIsMalformedJson_ReturnsOriginalJson()
+        {
+            var json = @"{""Field1"":""Value1"",""Field1"":""Value2""}";
+            var expectedResult = @"{""Field1"":""Value1"",""Field1"":""Value2""}";
+            var indented = JsonSerializerHelper.Indent(json);
+
+            Assert.AreEqual(expectedResult, indented);
         }
 
         [Test]

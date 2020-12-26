@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ClipboardForm
     {
@@ -143,7 +143,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.MinimizeBox = false;
             this.Name = "ClipboardForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Url";
+            this.Text = "URL";
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

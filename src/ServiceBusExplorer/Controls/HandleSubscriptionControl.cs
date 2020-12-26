@@ -29,17 +29,18 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus.Messaging;
-using FastColoredTextBoxNS;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class HandleSubscriptionControl : UserControl
     {
@@ -125,7 +126,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string FilterExpressionTitle = "Define Filter Expression";
         private const string FilterExpressionLabel = "Filter Expression";
         private const string FilterExpressionNotValidMessage = "The filter expression [{0}] is not valid: {1}";
-        private const string FilterExpressionAppliedMessage = "The filter expression [{0}] has been successfully applied. [{1}] messages retrieved.";
+        private const string FilterExpressionAppliedMessage =
+            "The filter expression [{0}] from {1} to {2} has been successfully applied. [{3}] messages retrieved.";
         private const string FilterExpressionRemovedMessage = "The filter expression has been removed.";
 
         //***************************
@@ -193,6 +195,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private bool sorting;
         private string messagesFilterExpression;
         private string deadletterFilterExpression;
+        private DateTime? messagesFilterFromDate;
+        private DateTime? messagesFilterToDate;
+        private DateTime? deadletterFilterFromDate;
+        private DateTime? deadletterFilterToDate;
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
         private SortableBindingList<MessageSession> sessionBindingList;
@@ -246,11 +252,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                            null;
                     if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                     {
-                        ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                     }
                     else
                     {
-                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                        GetMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                     }
                 }
             }
@@ -273,11 +279,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     null;
                 if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                 {
-                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
             }
         }
@@ -299,11 +305,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     null;
                 if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                 {
-                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector);
+                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
             }
         }
@@ -383,8 +389,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var messagingPurger = new MessagingPurger(serviceBusHelper, subscriptionWrapper);
-                var count = await messagingPurger.Purge();
+                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
+                var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, 
@@ -412,8 +419,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var messagingPurger = new MessagingPurger(serviceBusHelper, subscriptionWrapper);
-                var count = await messagingPurger.Purge(purgeDeadLetterQueueInstead: true);
+                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
+                var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                            subscriptionWrapper.SubscriptionDescription.Name);
@@ -746,6 +754,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private void InitializeData()
         {
             // Initialize buttons
+            var forwardTo = subscriptionWrapper.SubscriptionDescription.ForwardTo;
+            var forwardDeadLetteredMessagesTo = subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo;
             btnCreateDelete.Text = DeleteText;
             btnCancelUpdate.Text = UpdateText;
             btnChangeStatus.Text = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active ? DisableText : EnableText;
@@ -753,8 +763,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             btnChangeStatus.Visible = true;
             btnMessages.Visible = true;
             btnSessions.Visible = subscriptionWrapper.SubscriptionDescription.RequiresSession;
-            btnMessages.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo);
-            btnDeadletter.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo);
+            btnMessages.Visible = string.IsNullOrWhiteSpace(forwardTo);
+            btnDeadletter.Visible = string.IsNullOrWhiteSpace(forwardDeadLetteredMessagesTo);
 
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
@@ -801,25 +811,15 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
 
             // ForwardTo
-            if (!string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo))
+            if (!string.IsNullOrWhiteSpace(forwardTo))
             {
-                int i;
-                txtForwardTo.Text = !string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo) &&
-                                    (i = subscriptionWrapper.SubscriptionDescription.ForwardTo.IndexOf('/')) > 0 &&
-                                    i < subscriptionWrapper.SubscriptionDescription.ForwardTo.Length - 1 ?
-                                    subscriptionWrapper.SubscriptionDescription.ForwardTo.Substring(subscriptionWrapper.SubscriptionDescription.ForwardTo.LastIndexOf('/') + 1) :
-                                    subscriptionWrapper.SubscriptionDescription.ForwardTo;
+                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(forwardTo);
             }
 
             // ForwardDeadLetteredMessagesTo
-            if (!string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo))
+            if (!string.IsNullOrWhiteSpace(forwardDeadLetteredMessagesTo))
             {
-                int i;
-                txtForwardDeadLetteredMessagesTo.Text = !string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo) &&
-                                    (i = subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.IndexOf('/')) > 0 &&
-                                    i < subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Length - 1 ?
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.Substring(subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo.LastIndexOf('/') + 1) :
-                                    subscriptionWrapper.SubscriptionDescription.ForwardDeadLetteredMessagesTo;
+                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(forwardDeadLetteredMessagesTo);
             }
 
             // MaxDeliveryCount
@@ -863,7 +863,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                           subscriptionWrapper.SubscriptionDescription.RequiresSession);
         }
 
-        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -882,7 +882,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     var totalRetrieved = 0;
                     while (totalRetrieved < count)
                     {
-                        var messageEnumerable = subscriptionClient.PeekBatch(count);
+                        IEnumerable<BrokeredMessage> messageEnumerable;
+
+                        if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
+                        {
+                            messageEnumerable = subscriptionClient.PeekBatch(fromSequenceNumber.Value, count);
+                        }
+                        else
+                        {
+                            messageEnumerable = subscriptionClient.PeekBatch(count);
+                        }
+
                         if (messageEnumerable == null)
                         {
                             break;
@@ -974,7 +984,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (NotSupportedException)
             {
-                ReadMessagesOneAtTheTime(peek, all, count, messageInspector);
+                ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -990,7 +1000,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1002,7 +1012,17 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                                                  ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
-                        var message = subscriptionClient.Peek();
+                        BrokeredMessage message;
+
+                        if (i == 0 && fromSequenceNumber.HasValue)
+                        {
+                            message = subscriptionClient.Peek(fromSequenceNumber.Value);
+                        }
+                        else
+                        {
+                            message = subscriptionClient.Peek();
+                        }
+
                         if (message != null)
                         {
                             if (messageInspector != null)
@@ -1010,6 +1030,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
                             brokeredMessages.Add(message);
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
                     writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
@@ -1089,7 +1113,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1107,12 +1131,25 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                                                                                                               subscriptionWrapper.SubscriptionDescription.Name),
                                                                                               ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
-                    int retrieved;
+                    var retrieved = 0;
+
                     do
                     {
-                        var messages = messageReceiver.PeekBatch(all ?
-                                                                    MainForm.SingletonMainForm.TopCount :
-                                                                    count - totalRetrieved);
+                        IEnumerable<BrokeredMessage> messages;
+
+                        if (retrieved == 0 && fromSequenceNumber.HasValue)
+                        {
+                            messages = messageReceiver.PeekBatch(fromSequenceNumber.Value, all ?
+                                MainForm.SingletonMainForm.TopCount :
+                                count - totalRetrieved);
+                        }
+                        else
+                        {
+                            messages = messageReceiver.PeekBatch(all ?
+                                MainForm.SingletonMainForm.TopCount :
+                                count - totalRetrieved);
+                        }
+
                         var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Count();
                         if (retrieved == 0)
@@ -1190,7 +1227,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
             catch (NotSupportedException)
             {
-                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector);
+                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1206,7 +1243,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector)
+        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1217,9 +1254,20 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                     var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                                                                               subscriptionWrapper.SubscriptionDescription.Name),
                                                                                                   ReceiveMode.PeekLock);
-                    for (var i = 0; i < count; i++)
+
+                    for (var i=0; i < count; i++)
                     {
-                        var message = messageReceiver.Peek();
+                        BrokeredMessage message;
+
+                        if (i == 0 && fromSequenceNumber.HasValue)
+                        {
+                            message = messageReceiver.Peek(fromSequenceNumber.Value);
+                        }
+                        else
+                        {
+                            message = messageReceiver.Peek();
+                        }
+
                         if (message != null)
                         {
                             if (messageInspector != null)
@@ -1227,6 +1275,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
                             brokeredMessages.Add(message);
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
@@ -1869,7 +1921,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnOpenForwardToForm_Click(object sender, EventArgs e)
         {
-            using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
+            using (var form = creteSelectEntityFormForPath(txtForwardTo.Text))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -1880,13 +1932,47 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void btnOpenForwardDeadLetteredMessagesToForm_Click(object sender, EventArgs e)
         {
-            using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
+            using (var form = creteSelectEntityFormForPath(txtForwardDeadLetteredMessagesTo.Text))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     txtForwardDeadLetteredMessagesTo.Text = form.Path;
                 }
             }
+        }
+
+        private SelectEntityForm creteSelectEntityFormForPath(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                QueueDescription queueDescriptionSource = null;
+                try
+                {
+                    queueDescriptionSource = serviceBusHelper.GetQueue(path);
+                }
+                catch (Exception)
+                {
+                    // we might have found a topic, and the sdk will throw with an indistinguishable MessagingException error.
+                }
+                if (queueDescriptionSource != null)
+                {
+                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, queueDescriptionSource);
+                }
+                TopicDescription topicDescriptionSource = null;
+                try
+                {
+                    topicDescriptionSource = serviceBusHelper.GetTopic(path);
+                }
+                catch (Exception)
+                {
+                    // we might have found a queue, and the sdk will throw with an indistinguishable MessagingException error.
+                }
+                if (topicDescriptionSource != null)
+                {
+                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, topicDescriptionSource);
+                }
+            }
+            return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText);
         }
 
         private void mainTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -2369,9 +2455,6 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 {
                     Application.UseWaitCursor = false;
                 }
-
-                MainForm.SingletonMainForm.RefreshQueues();
-                MainForm.SingletonMainForm.RefreshTopics();
             }
         }
 
@@ -2601,6 +2684,176 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             MainForm.SingletonMainForm.RefreshTopics();
         }
 
+        private void pictFindMessagesByDate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                messagesDataGridView.SuspendDrawing();
+                messagesDataGridView.SuspendLayout();
+                if (messageBindingList == null)
+                {
+                    return;
+                }
+                using (var form = new DateTimeRangeForm(messagesFilterFromDate, messagesFilterToDate))
+                {
+                    if (form.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    messagesFilterFromDate = form.DateTimeFrom;
+                    messagesFilterToDate = form.DateTimeTo;
+                    FilterMessages();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                messagesDataGridView.ResumeLayout();
+                messagesDataGridView.ResumeDrawing();
+            }
+        }
+
+        private void pictFindDeadletterByDate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                deadletterDataGridView.SuspendDrawing();
+                deadletterDataGridView.SuspendLayout();
+                if (deadletterBindingList == null)
+                {
+                    return;
+                }
+                using (var form = new DateTimeRangeForm(deadletterFilterFromDate, deadletterFilterToDate))
+                {
+                    if (form.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    deadletterFilterFromDate = form.DateTimeFrom;
+                    deadletterFilterToDate = form.DateTimeTo;
+                    FilterDeadletters();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                deadletterDataGridView.ResumeLayout();
+                deadletterDataGridView.ResumeDrawing();
+            }
+        }
+
+        private void FilterMessages()
+        {
+            if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression))
+            {
+                messagesBindingSource.DataSource = messageBindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
+                writeToLog(FilterExpressionRemovedMessage);
+            }
+            else
+            {
+                var filteredList = messageBindingList.ToList();
+                if (!string.IsNullOrWhiteSpace(messagesFilterExpression))
+                {
+                    Filter filter;
+                    try
+                    {
+                        var sqlFilter = new SqlFilter(messagesFilterExpression);
+                        sqlFilter.Validate();
+                        filter = sqlFilter.Preprocess();
+                    }
+                    catch (Exception ex)
+                    {
+                        writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression,
+                            ex.Message));
+                        return;
+                    }
+
+                    filteredList = filteredList.Where(filter.Match).ToList();
+                }
+
+                if (messagesFilterFromDate != null || messagesFilterToDate != null)
+                {
+                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, messagesFilterFromDate, messagesFilterToDate)).ToList();
+                }
+
+                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                messagesBindingSource.DataSource = bindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
+                writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, messagesFilterFromDate ?? DateTime.MinValue, messagesFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+            }
+        }
+
+        private void FilterDeadletters()
+        {
+            if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression))
+            {
+                deadletterBindingSource.DataSource = deadletterBindingList;
+                deadletterDataGridView.DataSource = deadletterBindingSource;
+                writeToLog(FilterExpressionRemovedMessage);
+            }
+            else
+            {
+                var filteredList = deadletterBindingList.ToList();
+                if (!string.IsNullOrWhiteSpace(deadletterFilterExpression))
+                {
+                    Filter filter;
+                    try
+                    {
+                        var sqlFilter = new SqlFilter(deadletterFilterExpression);
+                        sqlFilter.Validate();
+                        filter = sqlFilter.Preprocess();
+                    }
+                    catch (Exception ex)
+                    {
+                        writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression,
+                            ex.Message));
+                        return;
+                    }
+                    filteredList = filteredList.Where(filter.Match).ToList();
+                }
+
+                if (deadletterFilterFromDate != null || deadletterFilterToDate != null)
+                {
+                    filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, deadletterFilterFromDate, deadletterFilterToDate)).ToList();
+                }
+
+                var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                deadletterBindingSource.DataSource = bindingList;
+                deadletterDataGridView.DataSource = deadletterBindingSource;
+                writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, deadletterFilterFromDate ?? DateTime.MinValue, deadletterFilterToDate ?? DateTime.MaxValue, bindingList.Count));
+            }
+        }
+
+        private static bool IsWithinDateTimeRange(BrokeredMessage message, DateTime? fromDateTime, DateTime? toDateTime)
+        {
+            if (message.EnqueuedTimeUtc < (fromDateTime ?? DateTime.MinValue))
+            {
+                return false;
+            }
+            if (message.EnqueuedTimeUtc > (toDateTime ?? DateTime.MaxValue))
+            {
+                return false;
+            }
+            return true;
+        }
+
         private void pictFindMessages_Click(object sender, EventArgs e)
         {
             try
@@ -2619,37 +2872,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         return;
                     }
                     messagesFilterExpression = form.Content;
-                    if (string.IsNullOrWhiteSpace(messagesFilterExpression))
-                    {
-                        messagesBindingSource.DataSource = messageBindingList;
-                        messagesDataGridView.DataSource = messagesBindingSource;
-                        writeToLog(FilterExpressionRemovedMessage);
-                    }
-                    else
-                    {
-                        Filter filter;
-                        try
-                        {
-                            var sqlFilter = new SqlFilter(messagesFilterExpression);
-                            sqlFilter.Validate();
-                            filter = sqlFilter.Preprocess();
-                        }
-                        catch (Exception ex)
-                        {
-                            writeToLog(string.Format(FilterExpressionNotValidMessage, messagesFilterExpression, ex.Message));
-                            return;
-                        }
-                        var filteredList = messageBindingList.Where(filter.Match).ToList();
-                        var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                        {
-                            AllowEdit = false,
-                            AllowNew = false,
-                            AllowRemove = false
-                        };
-                        messagesBindingSource.DataSource = bindingList;
-                        messagesDataGridView.DataSource = messagesBindingSource;
-                        writeToLog(string.Format(FilterExpressionAppliedMessage, messagesFilterExpression, bindingList.Count));
-                    }
+                    FilterMessages();
                 }
             }
             catch (Exception ex)
@@ -2681,37 +2904,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                         return;
                     }
                     deadletterFilterExpression = form.Content;
-                    if (string.IsNullOrWhiteSpace(deadletterFilterExpression))
-                    {
-                        deadletterBindingSource.DataSource = deadletterBindingList;
-                        deadletterDataGridView.DataSource = deadletterBindingSource;
-                        writeToLog(FilterExpressionRemovedMessage);
-                    }
-                    else
-                    {
-                        Filter filter;
-                        try
-                        {
-                            var sqlFilter = new SqlFilter(deadletterFilterExpression);
-                            sqlFilter.Validate();
-                            filter = sqlFilter.Preprocess();
-                        }
-                        catch (Exception ex)
-                        {
-                            writeToLog(string.Format(FilterExpressionNotValidMessage, deadletterFilterExpression, ex.Message));
-                            return;
-                        }
-                        var filteredList = deadletterBindingList.Where(filter.Match).ToList();
-                        var bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
-                        {
-                            AllowEdit = false,
-                            AllowNew = false,
-                            AllowRemove = false
-                        };
-                        deadletterBindingSource.DataSource = bindingList;
-                        deadletterDataGridView.DataSource = deadletterBindingSource;
-                        writeToLog(string.Format(FilterExpressionAppliedMessage, deadletterFilterExpression, bindingList.Count));
-                    }
+                    FilterDeadletters();
                 }
             }
             catch (Exception ex)
@@ -2740,6 +2933,24 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
             if (pictureBox != null)
             {
                 pictureBox.Image = Properties.Resources.FindExtension;
+            }
+        }
+
+        private void pictureBoxByDate_MouseEnter(object sender, EventArgs e)
+        {
+            var pictureBox = sender as PictureBox;
+            if (pictureBox != null)
+            {
+                pictureBox.Image = Properties.Resources.FindByDateExtensionRaised;
+            }
+        }
+
+        private void pictureBoxByDate_MouseLeave(object sender, EventArgs e)
+        {
+            var pictureBox = sender as PictureBox;
+            if (pictureBox != null)
+            {
+                pictureBox.Image = Properties.Resources.FindByDateExtension;
             }
         }
 
@@ -2868,7 +3079,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                         MainForm.SingletonMainForm.UseAscii, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }
@@ -2948,7 +3160,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                         MainForm.SingletonMainForm.UseAscii, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }

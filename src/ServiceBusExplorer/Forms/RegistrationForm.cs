@@ -29,11 +29,14 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.NotificationHubs.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class RegistrationForm : Form
     {

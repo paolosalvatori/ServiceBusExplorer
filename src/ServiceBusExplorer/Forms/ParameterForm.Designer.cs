@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ParameterForm
     {
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 1;
-            this.btnOk.Text = "Ok";
+            this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             this.btnOk.MouseEnter += new System.EventHandler(this.button_MouseEnter);

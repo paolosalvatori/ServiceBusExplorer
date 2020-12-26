@@ -56,7 +56,7 @@
 <ul>
 <li>Replaced the absolute Uri of a target queue or topic with the value of the Path property (queues) and name property (subscriptions) when loading the value of the ForwardTo property. </li>
 <li>Added ListView for entity information (AccessedAt, UpdatedAt, Status, MessageCountDetail, etc.) to queue, topic and subscription management control. </li>
-<li>Added User Meyadata fields. </li>
+<li>Added User Metadata fields. </li>
 <li>Replaced TextBox with TrackBar for Maximum Size of Queues and Topics. </li>
 <li>Differentiated possible and maximum values for max size of messaging entities for cloud and on-premises Service Bus namespaces. </li>
 <li>Fixed Refresh operation for Subscriptions and Rules nodes. </li>

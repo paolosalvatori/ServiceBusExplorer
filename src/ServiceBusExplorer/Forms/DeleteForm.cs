@@ -24,10 +24,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class DeleteForm : Form
     {
@@ -37,6 +38,11 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         //***************************
         private const string MessageFormat = "The {0} {1} will be permanently deleted.";
         private const string Unknown = "Unknown";
+        #endregion
+
+        #region Private Fields
+        private TwoFilesConfiguration configuration;
+        private bool useAccidentalDeletionPreventionCheck = false;
         #endregion
 
         #region Public Constructor
@@ -57,11 +63,58 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         }
         #endregion
 
+        #region Public Methods
+        public void ShowAccidentalDeletionPreventionCheck(TwoFilesConfiguration configuration, string deletionScopePromptText)
+        {
+            this.configuration = configuration;
+
+            bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                defaultValue: false);
+
+            if (!disableAccidentalDeletionPrevention)
+            {
+                useAccidentalDeletionPreventionCheck = true;
+
+                accidentalDeletionPreventionCheckControl.DeletionScopePromptText = deletionScopePromptText;
+                accidentalDeletionPreventionCheckControl.Visible = true;
+
+                accidentalDeletionPreventionCheckControl.Top = mainPanel.Bottom;
+                buttonsPanel.Top = accidentalDeletionPreventionCheckControl.Bottom;
+
+                accidentalDeletionPreventionCheckControl.Width = ClientSize.Width;
+
+                ClientSize = new Size(ClientSize.Width, buttonsPanel.Bottom);
+            }
+        }
+        #endregion
+
         #region Event Handlers
         private void btnOk_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.OK;
-            Close();
+            bool acceptForm = false;
+
+            if (useAccidentalDeletionPreventionCheck == false)
+                acceptForm = true;
+            else
+            {
+                acceptForm = accidentalDeletionPreventionCheckControl.CheckAcceptanceAndNotifyUser();
+
+                if (accidentalDeletionPreventionCheckControl.DisableFurtherChecks)
+                {
+                    configuration.SetValue(
+                        ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                        value: true);
+
+                    configuration.Save();
+                }
+            }
+
+            if (acceptForm)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

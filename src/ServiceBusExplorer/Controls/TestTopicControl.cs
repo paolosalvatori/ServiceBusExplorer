@@ -34,15 +34,18 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
-using Microsoft.Azure.ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Enums;
 using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
 using FastColoredTextBoxNS;
+using static ServiceBusExplorer.ServiceBusHelper;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class TestTopicControl : UserControl
     {
@@ -92,8 +95,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
         private const string NoSubscriptionSelected = "No subscription has been selected.";
         private const string NoMessageSelected = "No message to send has been selected under the Files tab.";
         private const string SelectBrokeredMessageGenerator = "Select a BrokeredMessage generator...";
-        private const string InvalidJsonTemplate = "{0} is an invalid Json template. The file will be used as text message rather than a template.";
-        private const string InvalidXmlTemplate = "{0} is an invalid Xml template. The file will be used as text message rather than a template.";
+        private const string InvalidJsonTemplate = "{0} is an invalid JSON template. The file will be used as text message rather than a template.";
+        private const string InvalidXmlTemplate = "{0} is an invalid XML template. The file will be used as text message rather than a template.";
         private const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
         private const string SelectBrokeredMessageGeneratorWarning = "You have to select a BrokeredMessage generator under the Generator tab before sending messages to {0}.";
 
@@ -366,6 +369,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtSendTaskCount.Text = DefaultSenderTaskCount;
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
+                txtContentType.Text = mainForm.MessageContentType;
                 txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
                 txtServerTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
                 txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
@@ -2148,10 +2152,12 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            mainForm.MessageText = txtMessageText.Text;
+        }
+
+        private void txtContentType_TextChanged(object sender, EventArgs e)
+        {
+            mainForm.MessageContentType = txtContentType.Text;
         }
 
         private void grouperMessageFormat_CustomPaint(PaintEventArgs e)

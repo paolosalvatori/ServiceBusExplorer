@@ -32,13 +32,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     public partial class MessageForm : Form
     {
@@ -68,8 +69,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         const string WarningHeader = "The following validations failed:";
         const string WarningFormat = "\n\r - {0}";
         const string SelectBrokeredMessageInspector = "Select a BrokeredMessage inspector...";
-        const string MessageSentMessage = "[{0}] messages where sent to [{1}] in [{2}] milliseconds.";
-        const string MessageMovedMessage = "[{0}] messages where moved to [{1}] in [{2}] milliseconds.";
+        const string MessageSentMessage = "[{0}] messages were sent to [{1}] in [{2}] milliseconds.";
+        const string MessageMovedMessage = "[{0}] messages were moved to [{1}] in [{2}] milliseconds.";
 
         //***************************
         // Constants
@@ -110,26 +111,9 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             InitializeComponent();
 
             cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
-
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
-            var messageText = serviceBusHelper.GetMessageText(brokeredMessage, out _);
-
-            if (JsonSerializerHelper.IsJson(messageText))
-            {
-                txtMessageText.Language = Language.JSON;
-                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
-            }
-            else if (XmlHelper.IsXml(messageText))
-            {
-                txtMessageText.Language = Language.HTML;
-                txtMessageText.Text = XmlHelper.Indent(messageText);
-            }
-            else
-            {
-                txtMessageText.Language = Language.Custom;
-                txtMessageText.Text = messageText;
-            }
+            InitializeMessageTextControl(brokeredMessage);
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
@@ -231,7 +215,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             btnSave.Visible = false;
             btnSubmit.Location = btnSave.Location;
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            int moveRightInPixels = btnClose.Left - btnSubmit.Left;
+            var moveRightInPixels = btnClose.Left - btnSubmit.Left;
             Size = new Size(Size.Width - moveRightInPixels, 80);
             lblBody.Left += moveRightInPixels;
             cboBodyType.Left += moveRightInPixels;
@@ -388,7 +372,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                                      Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
                                                      Scheme = "sb"
                                                  }.Uri;
-                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text),
+                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text, messagesSplitContainer.Visible),
                                                                                                0,
                                                                                                false,
                                                                                                false,
@@ -400,17 +384,18 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                                 {
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
-                                                      brokeredMessage.Clone(txtMessageText.Text);
+                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
+                                                      brokeredMessage.Clone(brokeredMessage.GetBody<Stream>(), messagesSplitContainer.Visible);
                                 }
                                 else
                                 {
-                                    var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
+                                    var messageText = serviceBusHelper.GetMessageText(message,
+                                        MainForm.SingletonMainForm.UseAscii, out bodyType);
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      message.CloneWithByteArrayBodyType(messageText) :
-                                                      message.Clone(messageText);
+                                                      message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
+                                                      message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
@@ -430,10 +415,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             {
                                 try
                                 {
-                                    if (string.Compare(messagePropertyInfo.Key, "DeadLetterReason",
-                                        StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                                        string.Compare(messagePropertyInfo.Key, "DeadLetterErrorDescription",
-                                        StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    if (Constants.AlwaysOmittedProperties.Exists(
+                                        omitProp => messagePropertyInfo.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)))
                                     {
                                         continue;
                                     }
@@ -582,7 +565,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             if (subscriptionWrapper != null)
             {
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                   SelectEntityLabelText, subscriptionWrapper);
+                   SelectEntityLabelText, subscriptionWrapper.TopicDescription);
             }
 
             return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
@@ -652,7 +635,14 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
         {
             e.Cancel = true;
         }
+
+        void ChkAutoindent_CheckedChanged(object sender, EventArgs e)
+        {
+            InitializeMessageTextControl(messagePropertyGrid.SelectedObject as BrokeredMessage);
+        }
         #endregion
+
+        #region Private Methods
 
         string GetShortValueTypeName(object o)
         {
@@ -660,5 +650,29 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             var typeName = o.GetType().ToString();
             return typeName.Length > 7 ? typeName.Substring(7) : typeName;
         }
+
+        void InitializeMessageTextControl(BrokeredMessage message)
+        {
+            var messageText = this.serviceBusHelper.GetMessageText(message,
+                 MainForm.SingletonMainForm.UseAscii, out _);
+
+            if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
+            {
+                txtMessageText.Language = Language.JSON;
+                txtMessageText.Text = JsonSerializerHelper.Indent(messageText);
+            }
+            else if (chkAutoindent.Checked && XmlHelper.IsXml(messageText))
+            {
+                txtMessageText.Language = Language.HTML;
+                txtMessageText.Text = XmlHelper.Indent(messageText);
+            }
+            else
+            {
+                txtMessageText.Language = Language.Custom;
+                txtMessageText.Text = messageText;
+            }
+        }
+
+        #endregion
     }
 }

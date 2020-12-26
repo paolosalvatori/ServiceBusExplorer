@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.Azure.ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class DateTimeForm
     {
@@ -56,7 +56,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DateTimeForm));
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grouperCaption = new Microsoft.Azure.ServiceBusExplorer.Controls.Grouper();
+            this.grouperCaption = new ServiceBusExplorer.Controls.Grouper();
             this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.grouperCaption.SuspendLayout();
             this.SuspendLayout();
@@ -73,7 +73,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 0;
-            this.btnOk.Text = "Ok";
+            this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             this.btnOk.MouseEnter += new System.EventHandler(this.button_MouseEnter);
@@ -104,7 +104,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCaption.BackgroundGradientMode = Microsoft.Azure.ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperCaption.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCaption.BorderThickness = 1F;
             this.grouperCaption.Controls.Add(this.dateTimePicker);

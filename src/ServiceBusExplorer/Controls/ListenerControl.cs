@@ -35,14 +35,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     public partial class ListenerControl : UserControl
     {
@@ -747,7 +749,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
                 {
                     var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, out var bodyType);
+                    serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm.UseAscii, out var bodyType);
                     if (bodyType == BodyType.Wcf)
                     {
                         var wcfUri = serviceBusHelper.IsCloudNamespace ?
@@ -1763,7 +1765,8 @@ namespace Microsoft.Azure.ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm, out _));
+                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                        MainForm.SingletonMainForm.UseAscii, out _));
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
                 }
             }

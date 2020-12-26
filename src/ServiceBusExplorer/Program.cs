@@ -24,13 +24,13 @@ using System;
 using System.Threading;
 using System.Globalization;
 using System.Windows.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Forms;
-using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
 using System.Net;
+
 
 #endregion
 
-namespace Microsoft.Azure.ServiceBusExplorer
+namespace ServiceBusExplorer
 {
     static class Program
     {
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         #endregion
-
+        
         #region Static Main Method
         /// <summary>
         /// The main entry point for the application.
@@ -56,59 +56,16 @@ namespace Microsoft.Azure.ServiceBusExplorer
             ServicePointManager.DefaultConnectionLimit = 200;
             try
             {
-                string argument = null;
-                string value = null; 
-                if (args != null && args.Length >= 2)
-                {
-                    for (var i = 0; i < args.Length; i++)
-                    {
-                        if ((string.Compare(args[i], "/n", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(args[i], "-n", StringComparison.InvariantCultureIgnoreCase) == 0) &&
-                            args.Length > i + 1 &&
-                            !string.IsNullOrWhiteSpace(args[i + 1]))
-                        {
-                            argument = args[i];
-                            value = args[i + 1];
-                        }
-                        if ((string.Compare(args[i], "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(args[i], "-c", StringComparison.InvariantCultureIgnoreCase) == 0) &&
-                            args.Length > i + 1 &&
-                            !string.IsNullOrWhiteSpace(args[i + 1]))
-                        {
-                            argument = args[i];
-                            value = args[i + 1];
-                        }
-                        if ((string.Compare(args[i], "/q", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(args[i], "-q", StringComparison.InvariantCultureIgnoreCase) == 0) &&
-                            args.Length > i + 1 &&
-                            !string.IsNullOrWhiteSpace(args[i + 1]))
-                        {
-                            FilterExpressionHelper.QueueFilterExpression = args[i + 1];
-                        }
-                        if ((string.Compare(args[i], "/t", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(args[i], "-t", StringComparison.InvariantCultureIgnoreCase) == 0) &&
-                            args.Length > i + 1 &&
-                            !string.IsNullOrWhiteSpace(args[i + 1]))
-                        {
-                            FilterExpressionHelper.TopicFilterExpression = args[i + 1];
-                        }
-                        if ((string.Compare(args[i], "/s", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(args[i], "-s", StringComparison.InvariantCultureIgnoreCase) == 0) &&
-                            args.Length > i + 1 &&
-                            !string.IsNullOrWhiteSpace(args[i + 1]))
-                        {
-                            FilterExpressionHelper.SubscriptionFilterExpression = args[i + 1];
-                        }
-                    }
-                }
+                CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
+                
                 if (!string.IsNullOrWhiteSpace(argument) &&
                     !string.IsNullOrWhiteSpace(value))
                 {
-                    Application.Run(new MainForm(argument, value));
+                    Application.Run(new MainForm(argument, value, helpText));
                 }
                 else
                 {
-                    Application.Run(new MainForm());
+                    Application.Run(new MainForm(helpText));
                 }
             }
             // ReSharper disable EmptyGeneralCatchClause
@@ -117,7 +74,7 @@ namespace Microsoft.Azure.ServiceBusExplorer
             {
             }
         }
-
+        
         static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
             if (e != null &&
