@@ -4622,6 +4622,7 @@ namespace ServiceBusExplorer.Forms
                                     SubscriptionRetrievedFormat, subscription.Name, topic.Path),
                                 false);
                             treeNodesToLazyLoad.Add(subscriptionNode);
+                            ApplyColor(subscriptionNode, true);
                         }
                     }
                 }
@@ -4654,6 +4655,7 @@ namespace ServiceBusExplorer.Forms
                                     topic.Path), false);
                         }
                     }
+                    ApplyColor(subscriptionNode, true);
                 }
             }
             catch (Exception ex)
