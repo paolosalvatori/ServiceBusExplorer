@@ -2273,7 +2273,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void serviceBusTreeView_KeyUp(object sender, KeyEventArgs keyEventArgs)
+        private void serviceBusTreeView_KeyDown(object sender, KeyEventArgs keyEventArgs)
         {
             switch (keyEventArgs.KeyCode)
             {
@@ -4622,6 +4622,7 @@ namespace ServiceBusExplorer.Forms
                                     SubscriptionRetrievedFormat, subscription.Name, topic.Path),
                                 false);
                             treeNodesToLazyLoad.Add(subscriptionNode);
+                            ApplyColor(subscriptionNode, true);
                         }
                     }
                 }
@@ -4654,6 +4655,7 @@ namespace ServiceBusExplorer.Forms
                                     topic.Path), false);
                         }
                     }
+                    ApplyColor(subscriptionNode, true);
                 }
             }
             catch (Exception ex)
