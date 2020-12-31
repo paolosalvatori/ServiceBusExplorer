@@ -21,6 +21,14 @@
 
 #region Using Directives
 
+using Microsoft.ServiceBus.Messaging;
+
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,12 +39,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.ServiceBus.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -106,7 +108,7 @@ namespace ServiceBusExplorer.Controls
         private const string AutoDeleteOnIdleMinutesMustBeANumber = "The Minutes value of the AutoDeleteOnIdle field must be a number.";
         private const string AutoDeleteOnIdleSecondsMustBeANumber = "The Seconds value of the AutoDeleteOnIdle field must be a number.";
         private const string AutoDeleteOnIdleMillisecondsMustBeANumber = "The Milliseconds value of the AutoDeleteOnIdle field must be a number.";
-        
+
         private const string MessagesPeekedFromTheSubscription = "[{0}] messages peeked from the subscription [{1}].";
         private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the deadletter queue of the subscription [{1}].";
         private const string MessagesReceivedFromTheSubscription = "[{0}] messages received from the subscription [{1}].";
@@ -143,7 +145,7 @@ namespace ServiceBusExplorer.Controls
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string ForwardToTooltip = "Gets or sets the path to the recipient to which the message is forwarded.";
         private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead lettered message is forwarded.";
-        
+
         //***************************
         // Property Labels
         //***************************
@@ -204,7 +206,7 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<MessageSession> sessionBindingList;
         private bool buttonsMoved;
         #endregion
-        
+
         #region Public Constructors
         public HandleSubscriptionControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, SubscriptionWrapper subscriptionWrapper)
         {
@@ -214,7 +216,7 @@ namespace ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -354,7 +356,7 @@ namespace ServiceBusExplorer.Controls
                                                           GrouperMessagePropertiesWith -
                                                           sessionsSplitContainer.SplitterWidth;
                 sessionMainSplitContainer.SplitterDistance =
-                    sessionMainSplitContainer.Size.Height/2 - 8;
+                    sessionMainSplitContainer.Size.Height / 2 - 8;
 
                 if (mainTabControl.TabPages[SessionsTabPage] != null)
                 {
@@ -394,7 +396,7 @@ namespace ServiceBusExplorer.Controls
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath, 
+                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                     subscriptionWrapper.SubscriptionDescription.Name);
                 writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
                 return count;
@@ -454,7 +456,7 @@ namespace ServiceBusExplorer.Controls
             DisablePage(MessagesTabPage);
             DisablePage(SessionsTabPage);
             DisablePage(DeadletterTabPage);
-            
+
             if (subscriptionWrapper != null &&
                 subscriptionWrapper.TopicDescription != null &&
                 subscriptionWrapper.SubscriptionDescription != null)
@@ -978,8 +980,8 @@ namespace ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format(NoMessageReceivedFromTheSubscription, 
-                                         MainForm.SingletonMainForm.ReceiveTimeout,  
+                writeToLog(string.Format(NoMessageReceivedFromTheSubscription,
+                                         MainForm.SingletonMainForm.ReceiveTimeout,
                                          subscriptionWrapper.SubscriptionDescription.Name));
             }
             catch (NotSupportedException)
@@ -1255,7 +1257,7 @@ namespace ServiceBusExplorer.Controls
                                                                                                                               subscriptionWrapper.SubscriptionDescription.Name),
                                                                                                   ReceiveMode.PeekLock);
 
-                    for (var i=0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         BrokeredMessage message;
 
@@ -1583,8 +1585,8 @@ namespace ServiceBusExplorer.Controls
                         ruleDescription.Action = new SqlRuleAction(txtAction.Text);
                     }
 
-                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.CreateSubscription(subscriptionWrapper.TopicDescription, 
-                                                                                          subscriptionDescription, 
+                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.CreateSubscription(subscriptionWrapper.TopicDescription,
+                                                                                          subscriptionDescription,
                                                                                           ruleDescription);
                     InitializeData();
                 }
@@ -1826,7 +1828,7 @@ namespace ServiceBusExplorer.Controls
                         var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                         if (!timeSpan.IsMaxValue())
                         {
-                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = timeSpan;   
+                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = timeSpan;
                         }
                     }
 
@@ -2199,10 +2201,10 @@ namespace ServiceBusExplorer.Controls
                     var columnWidth = width / 4;
                     dataGridView.Columns[0].Width = columnWidth - 20;
                     dataGridView.Columns[3].Width = columnWidth;
-                    dataGridView.Columns[4].Width = columnWidth +(width - (columnWidth * 4)) + 10;
+                    dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
-                if (dataGridView == sessionsDataGridView && 
+                if (dataGridView == sessionsDataGridView &&
                     dataGridView.ColumnCount == 4)
                 {
                     var width = dataGridView.Width - dataGridView.RowHeadersWidth;
@@ -2438,7 +2440,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(subscriptionWrapper, bindingList[e.RowIndex], 
+            using (var messageForm = new MessageForm(subscriptionWrapper, bindingList[e.RowIndex],
                 serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();

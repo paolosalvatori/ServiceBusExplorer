@@ -21,14 +21,14 @@
 
 #region Using Directives
 
-using Microsoft.Azure.ServiceBus.Management;
+using Azure.Messaging.ServiceBus.Administration;
 
 #endregion
 
 namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     /// <summary>
-    /// This class adds a Subscriptions collection to the TopicDescription class
+    /// This class adds a Subscriptions collection to the TopicProperties class
     /// </summary>
     public class SubscriptionWrapper2
     {
@@ -38,8 +38,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// </summary>
         public SubscriptionWrapper2()
         {
-            SubscriptionDescription = null;
-            TopicDescription = null;
+            SubscriptionProperties = null;
+            TopicProperties = null;
             Filter = null;
         }
 
@@ -48,10 +48,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// </summary>
         /// <param name="subscription">A subscription.</param>
         /// <param name="topic">The topic the subscription belongs to.</param>
-        public SubscriptionWrapper2(SubscriptionDescription subscription, TopicDescription topic)
+        public SubscriptionWrapper2(SubscriptionProperties subscription, TopicProperties topic)
         {
-            SubscriptionDescription = subscription;
-            TopicDescription = topic;
+            SubscriptionProperties = subscription;
+            TopicProperties = topic;
         }
 
         /// <summary>
@@ -60,17 +60,17 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// <param name="subscription">A subscription.</param>
         /// <param name="topic">The topic the subscription belongs to.</param>
         /// <param name="filter">The OData filter.</param>
-        public SubscriptionWrapper2(SubscriptionDescription subscription, TopicDescription topic, string filter)
+        public SubscriptionWrapper2(SubscriptionProperties subscription, TopicProperties topic, string filter)
         {
-            SubscriptionDescription = subscription;
-            TopicDescription = topic;
+            SubscriptionProperties = subscription;
+            TopicProperties = topic;
             Filter = filter;
         }
         #endregion
 
         #region Public Properties
-        public SubscriptionDescription SubscriptionDescription { get; set; }
-        public TopicDescription TopicDescription { get; set; }
+        public SubscriptionProperties SubscriptionProperties { get; set; }
+        public TopicProperties TopicProperties { get; set; }
         public string Filter { get; set; }
         #endregion
     }
