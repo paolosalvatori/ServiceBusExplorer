@@ -564,7 +564,7 @@
             // 
             this.pickerStartingDateTimeUtc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pickerStartingDateTimeUtc.Checked = false;
-            this.pickerStartingDateTimeUtc.CustomFormat = "dd MMM yyyy hh:mm tt";
+            this.pickerStartingDateTimeUtc.CustomFormat = "dd MMM yyyy HH:mm:ss";
             this.pickerStartingDateTimeUtc.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.pickerStartingDateTimeUtc.Location = new System.Drawing.Point(424, 48);
             this.pickerStartingDateTimeUtc.MinDate = new System.DateTime(2014, 1, 1, 0, 0, 0, 0);
