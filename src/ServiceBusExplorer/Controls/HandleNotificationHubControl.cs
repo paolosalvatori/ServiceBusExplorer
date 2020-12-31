@@ -2412,42 +2412,7 @@ namespace ServiceBusExplorer.Controls
                 control.ForeColor = SystemColors.ControlText;
             }
         }
-
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (Char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
-            }
-        }
-
+        
         private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRegistrations.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;

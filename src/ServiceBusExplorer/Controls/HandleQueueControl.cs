@@ -3449,42 +3449,7 @@ namespace ServiceBusExplorer.Controls
             transferDeadletterPropertyListView.Items.Clear();
             transferDeadletterPropertyListView.Items.AddRange(listViewItems);
         }
-
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
-            }
-        }
-
+        
         private void authorizationRulesDataGridView_Resize(object sender, EventArgs e)
         {
             try

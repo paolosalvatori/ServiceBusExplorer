@@ -23,26 +23,26 @@
             this.tabPageDescription = new System.Windows.Forms.TabPage();
             this.grouperAutoDeleteOnIdle = new ServiceBusExplorer.Controls.Grouper();
             this.lblAutoDeleteOnIdleMilliseconds = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleMilliseconds = new System.Windows.Forms.TextBox();
+            this.txtAutoDeleteOnIdleMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAutoDeleteOnIdleSeconds = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleSeconds = new System.Windows.Forms.TextBox();
+            this.txtAutoDeleteOnIdleSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAutoDeleteOnIdleMinutes = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleMinutes = new System.Windows.Forms.TextBox();
+            this.txtAutoDeleteOnIdleMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblAutoDeleteOnIdleHours = new System.Windows.Forms.Label();
             this.lblAutoDeleteOnIdleDays = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleHours = new System.Windows.Forms.TextBox();
-            this.txtAutoDeleteOnIdleDays = new System.Windows.Forms.TextBox();
+            this.txtAutoDeleteOnIdleHours = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtAutoDeleteOnIdleDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.groupergrouperDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.Grouper();
             this.lblDefaultMessageTimeToLiveMilliseconds = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveMilliseconds = new System.Windows.Forms.TextBox();
+            this.txtDefaultMessageTimeToLiveMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDefaultMessageTimeToLiveSeconds = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveSeconds = new System.Windows.Forms.TextBox();
+            this.txtDefaultMessageTimeToLiveSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDefaultMessageTimeToLiveMinutes = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveMinutes = new System.Windows.Forms.TextBox();
+            this.txtDefaultMessageTimeToLiveMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lbllblDefaultMessageTimeToLiveHours = new System.Windows.Forms.Label();
             this.lblDefaultMessageTimeToLiveDays = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveHours = new System.Windows.Forms.TextBox();
-            this.txtDefaultMessageTimeToLiveDays = new System.Windows.Forms.TextBox();
+            this.txtDefaultMessageTimeToLiveHours = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtDefaultMessageTimeToLiveDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperTopicSettings = new ServiceBusExplorer.Controls.Grouper();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
             this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
@@ -50,15 +50,15 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
             this.lblDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.Label();
-            this.txtDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.TextBox();
+            this.txtDuplicateDetectionHistoryTimeWindowMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowSeconds = new System.Windows.Forms.Label();
-            this.txtDuplicateDetectionHistoryTimeWindowSeconds = new System.Windows.Forms.TextBox();
+            this.txtDuplicateDetectionHistoryTimeWindowSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowMinutes = new System.Windows.Forms.Label();
-            this.txtDuplicateDetectionHistoryTimeWindowMinutes = new System.Windows.Forms.TextBox();
+            this.txtDuplicateDetectionHistoryTimeWindowMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowHours = new System.Windows.Forms.Label();
             this.lblDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.Label();
-            this.txtDuplicateDetectionHistoryTimeWindowHours = new System.Windows.Forms.TextBox();
-            this.txtDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.TextBox();
+            this.txtDuplicateDetectionHistoryTimeWindowHours = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtDuplicateDetectionHistoryTimeWindowDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperTopicProperties = new ServiceBusExplorer.Controls.Grouper();
             this.lblMaxTopicSizeInGB = new System.Windows.Forms.Label();
             this.trackBarMaxTopicSize = new ServiceBusExplorer.Controls.CustomTrackBar();
@@ -169,7 +169,6 @@
             this.txtAutoDeleteOnIdleMilliseconds.Name = "txtAutoDeleteOnIdleMilliseconds";
             this.txtAutoDeleteOnIdleMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleMilliseconds.TabIndex = 4;
-            this.txtAutoDeleteOnIdleMilliseconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblAutoDeleteOnIdleSeconds
             // 
@@ -190,7 +189,6 @@
             this.txtAutoDeleteOnIdleSeconds.Name = "txtAutoDeleteOnIdleSeconds";
             this.txtAutoDeleteOnIdleSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleSeconds.TabIndex = 3;
-            this.txtAutoDeleteOnIdleSeconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblAutoDeleteOnIdleMinutes
             // 
@@ -211,7 +209,6 @@
             this.txtAutoDeleteOnIdleMinutes.Name = "txtAutoDeleteOnIdleMinutes";
             this.txtAutoDeleteOnIdleMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleMinutes.TabIndex = 2;
-            this.txtAutoDeleteOnIdleMinutes.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblAutoDeleteOnIdleHours
             // 
@@ -243,7 +240,6 @@
             this.txtAutoDeleteOnIdleHours.Name = "txtAutoDeleteOnIdleHours";
             this.txtAutoDeleteOnIdleHours.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleHours.TabIndex = 1;
-            this.txtAutoDeleteOnIdleHours.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // txtAutoDeleteOnIdleDays
             // 
@@ -253,7 +249,6 @@
             this.txtAutoDeleteOnIdleDays.Name = "txtAutoDeleteOnIdleDays";
             this.txtAutoDeleteOnIdleDays.Size = new System.Drawing.Size(52, 23);
             this.txtAutoDeleteOnIdleDays.TabIndex = 0;
-            this.txtAutoDeleteOnIdleDays.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // groupergrouperDefaultMessageTimeToLive
             // 
@@ -308,7 +303,6 @@
             this.txtDefaultMessageTimeToLiveMilliseconds.Name = "txtDefaultMessageTimeToLiveMilliseconds";
             this.txtDefaultMessageTimeToLiveMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveMilliseconds.TabIndex = 4;
-            this.txtDefaultMessageTimeToLiveMilliseconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDefaultMessageTimeToLiveSeconds
             // 
@@ -329,7 +323,6 @@
             this.txtDefaultMessageTimeToLiveSeconds.Name = "txtDefaultMessageTimeToLiveSeconds";
             this.txtDefaultMessageTimeToLiveSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveSeconds.TabIndex = 3;
-            this.txtDefaultMessageTimeToLiveSeconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDefaultMessageTimeToLiveMinutes
             // 
@@ -350,7 +343,6 @@
             this.txtDefaultMessageTimeToLiveMinutes.Name = "txtDefaultMessageTimeToLiveMinutes";
             this.txtDefaultMessageTimeToLiveMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveMinutes.TabIndex = 2;
-            this.txtDefaultMessageTimeToLiveMinutes.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lbllblDefaultMessageTimeToLiveHours
             // 
@@ -382,7 +374,6 @@
             this.txtDefaultMessageTimeToLiveHours.Name = "txtDefaultMessageTimeToLiveHours";
             this.txtDefaultMessageTimeToLiveHours.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveHours.TabIndex = 1;
-            this.txtDefaultMessageTimeToLiveHours.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // txtDefaultMessageTimeToLiveDays
             // 
@@ -392,7 +383,6 @@
             this.txtDefaultMessageTimeToLiveDays.Name = "txtDefaultMessageTimeToLiveDays";
             this.txtDefaultMessageTimeToLiveDays.Size = new System.Drawing.Size(52, 23);
             this.txtDefaultMessageTimeToLiveDays.TabIndex = 0;
-            this.txtDefaultMessageTimeToLiveDays.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // grouperTopicSettings
             // 
@@ -547,7 +537,6 @@
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Name = "txtDuplicateDetectionHistoryTimeWindowMilliseconds";
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.TabIndex = 4;
-            this.txtDuplicateDetectionHistoryTimeWindowMilliseconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowSeconds
             // 
@@ -568,7 +557,6 @@
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.Name = "txtDuplicateDetectionHistoryTimeWindowSeconds";
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowSeconds.TabIndex = 3;
-            this.txtDuplicateDetectionHistoryTimeWindowSeconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowMinutes
             // 
@@ -589,7 +577,6 @@
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.Name = "txtDuplicateDetectionHistoryTimeWindowMinutes";
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowMinutes.TabIndex = 2;
-            this.txtDuplicateDetectionHistoryTimeWindowMinutes.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowHours
             // 
@@ -621,7 +608,6 @@
             this.txtDuplicateDetectionHistoryTimeWindowHours.Name = "txtDuplicateDetectionHistoryTimeWindowHours";
             this.txtDuplicateDetectionHistoryTimeWindowHours.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowHours.TabIndex = 1;
-            this.txtDuplicateDetectionHistoryTimeWindowHours.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // txtDuplicateDetectionHistoryTimeWindowDays
             // 
@@ -631,7 +617,6 @@
             this.txtDuplicateDetectionHistoryTimeWindowDays.Name = "txtDuplicateDetectionHistoryTimeWindowDays";
             this.txtDuplicateDetectionHistoryTimeWindowDays.Size = new System.Drawing.Size(52, 23);
             this.txtDuplicateDetectionHistoryTimeWindowDays.TabIndex = 0;
-            this.txtDuplicateDetectionHistoryTimeWindowDays.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // grouperTopicProperties
             // 
@@ -1038,15 +1023,15 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private Grouper groupergrouperDefaultMessageTimeToLive;
         private System.Windows.Forms.Label lblDefaultMessageTimeToLiveMilliseconds;
-        private System.Windows.Forms.TextBox txtDefaultMessageTimeToLiveMilliseconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveMilliseconds;
         private System.Windows.Forms.Label lblDefaultMessageTimeToLiveSeconds;
-        private System.Windows.Forms.TextBox txtDefaultMessageTimeToLiveSeconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveSeconds;
         private System.Windows.Forms.Label lblDefaultMessageTimeToLiveMinutes;
-        private System.Windows.Forms.TextBox txtDefaultMessageTimeToLiveMinutes;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveMinutes;
         private System.Windows.Forms.Label lbllblDefaultMessageTimeToLiveHours;
         private System.Windows.Forms.Label lblDefaultMessageTimeToLiveDays;
-        private System.Windows.Forms.TextBox txtDefaultMessageTimeToLiveHours;
-        private System.Windows.Forms.TextBox txtDefaultMessageTimeToLiveDays;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveHours;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveDays;
         private Grouper grouperTopicSettings;
         private System.Windows.Forms.CheckedListBox checkedListBox;
         private Grouper grouperPath;
@@ -1054,15 +1039,15 @@
         private System.Windows.Forms.TextBox txtPath;
         private Grouper grouperDuplicateDetectionHistoryTimeWindow;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowMilliseconds;
-        private System.Windows.Forms.TextBox txtDuplicateDetectionHistoryTimeWindowMilliseconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDuplicateDetectionHistoryTimeWindowMilliseconds;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowSeconds;
-        private System.Windows.Forms.TextBox txtDuplicateDetectionHistoryTimeWindowSeconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDuplicateDetectionHistoryTimeWindowSeconds;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowMinutes;
-        private System.Windows.Forms.TextBox txtDuplicateDetectionHistoryTimeWindowMinutes;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDuplicateDetectionHistoryTimeWindowMinutes;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowHours;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowDays;
-        private System.Windows.Forms.TextBox txtDuplicateDetectionHistoryTimeWindowHours;
-        private System.Windows.Forms.TextBox txtDuplicateDetectionHistoryTimeWindowDays;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDuplicateDetectionHistoryTimeWindowHours;
+        private ServiceBusExplorer.Controls.NumericTextBox txtDuplicateDetectionHistoryTimeWindowDays;
         private Grouper grouperTopicProperties;
         private System.Windows.Forms.Label lblMaxTopicSizeInGB;
         private CustomTrackBar trackBarMaxTopicSize;
@@ -1076,15 +1061,15 @@
         private System.Windows.Forms.ColumnHeader valueColumnHeader;
         private Grouper grouperAutoDeleteOnIdle;
         private System.Windows.Forms.Label lblAutoDeleteOnIdleMilliseconds;
-        private System.Windows.Forms.TextBox txtAutoDeleteOnIdleMilliseconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleMilliseconds;
         private System.Windows.Forms.Label lblAutoDeleteOnIdleSeconds;
-        private System.Windows.Forms.TextBox txtAutoDeleteOnIdleSeconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleSeconds;
         private System.Windows.Forms.Label lblAutoDeleteOnIdleMinutes;
-        private System.Windows.Forms.TextBox txtAutoDeleteOnIdleMinutes;
+        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleMinutes;
         private System.Windows.Forms.Label lblAutoDeleteOnIdleHours;
         private System.Windows.Forms.Label lblAutoDeleteOnIdleDays;
-        private System.Windows.Forms.TextBox txtAutoDeleteOnIdleHours;
-        private System.Windows.Forms.TextBox txtAutoDeleteOnIdleDays;
+        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleHours;
+        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleDays;
         private System.Windows.Forms.TabPage tabPageAuthorization;
         private Grouper grouperAuthorizationRuleList;
         private System.Windows.Forms.DataGridView authorizationRulesDataGridView;

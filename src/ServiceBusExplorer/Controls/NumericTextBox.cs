@@ -79,21 +79,15 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Public Properties
-        public int IntegerValue
-        {
-            get { return Int32.Parse(Text); }
-        }
+        public int IntegerValue => int.Parse(Text);
 
-        public decimal DecimalValue
-        {
-            get { return Decimal.Parse(Text); }
-        }
+        public decimal DecimalValue => decimal.Parse(Text);
 
         public bool AllowSpace { set; get; }
 
-        public bool AllowDecimal { set; get; } = true;
+        public bool AllowDecimal { set; get; }
 
-        public bool AllowNegative { set; get; } = true;
+        public bool AllowNegative { set; get; }
 
         #endregion
     }

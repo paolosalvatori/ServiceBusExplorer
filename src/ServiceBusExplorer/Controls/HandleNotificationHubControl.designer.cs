@@ -56,15 +56,15 @@
             this.txtPackageSid = new System.Windows.Forms.TextBox();
             this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
             this.lblDuplicateDetectionHistoryTimeWindowMilliseconds = new System.Windows.Forms.Label();
-            this.txtRegistrationTimeToLiveWindowMilliseconds = new System.Windows.Forms.TextBox();
+            this.txtRegistrationTimeToLiveWindowMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowSeconds = new System.Windows.Forms.Label();
-            this.txtRegistrationTimeToLiveWindowSeconds = new System.Windows.Forms.TextBox();
+            this.txtRegistrationTimeToLiveWindowSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowMinutes = new System.Windows.Forms.Label();
-            this.txtRegistrationTimeToLiveWindowMinutes = new System.Windows.Forms.TextBox();
+            this.txtRegistrationTimeToLiveWindowMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblDuplicateDetectionHistoryTimeWindowHours = new System.Windows.Forms.Label();
             this.lblDuplicateDetectionHistoryTimeWindowDays = new System.Windows.Forms.Label();
-            this.txtRegistrationTimeToLiveWindowHours = new System.Windows.Forms.TextBox();
-            this.txtRegistrationTimeToLiveWindowDays = new System.Windows.Forms.TextBox();
+            this.txtRegistrationTimeToLiveWindowHours = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtRegistrationTimeToLiveWindowDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
@@ -166,15 +166,15 @@
             this.tabAppleNotificationExpiry = new System.Windows.Forms.TabPage();
             this.grouperApnsExpiry = new ServiceBusExplorer.Controls.Grouper();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtApnsExpiryMilliseconds = new System.Windows.Forms.TextBox();
+            this.txtApnsExpiryMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtApnsExpirySeconds = new System.Windows.Forms.TextBox();
+            this.txtApnsExpirySeconds = new ServiceBusExplorer.Controls.NumericTextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.txtApnsExpiryMinutes = new System.Windows.Forms.TextBox();
+            this.txtApnsExpiryMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtApnsExpiryHours = new System.Windows.Forms.TextBox();
-            this.txtApnsExpiryDays = new System.Windows.Forms.TextBox();
+            this.txtApnsExpiryHours = new ServiceBusExplorer.Controls.NumericTextBox();
+            this.txtApnsExpiryDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperExpiry = new ServiceBusExplorer.Controls.Grouper();
             this.expiryDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.tabPageGoogleNativeNotification = new System.Windows.Forms.TabPage();
@@ -1022,7 +1022,6 @@
             this.txtRegistrationTimeToLiveWindowMilliseconds.Name = "txtRegistrationTimeToLiveWindowMilliseconds";
             this.txtRegistrationTimeToLiveWindowMilliseconds.Size = new System.Drawing.Size(52, 23);
             this.txtRegistrationTimeToLiveWindowMilliseconds.TabIndex = 3;
-            this.txtRegistrationTimeToLiveWindowMilliseconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowSeconds
             // 
@@ -1043,7 +1042,6 @@
             this.txtRegistrationTimeToLiveWindowSeconds.Name = "txtRegistrationTimeToLiveWindowSeconds";
             this.txtRegistrationTimeToLiveWindowSeconds.Size = new System.Drawing.Size(52, 23);
             this.txtRegistrationTimeToLiveWindowSeconds.TabIndex = 2;
-            this.txtRegistrationTimeToLiveWindowSeconds.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowMinutes
             // 
@@ -1064,7 +1062,6 @@
             this.txtRegistrationTimeToLiveWindowMinutes.Name = "txtRegistrationTimeToLiveWindowMinutes";
             this.txtRegistrationTimeToLiveWindowMinutes.Size = new System.Drawing.Size(52, 23);
             this.txtRegistrationTimeToLiveWindowMinutes.TabIndex = 2;
-            this.txtRegistrationTimeToLiveWindowMinutes.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblDuplicateDetectionHistoryTimeWindowHours
             // 
@@ -1096,7 +1093,6 @@
             this.txtRegistrationTimeToLiveWindowHours.Name = "txtRegistrationTimeToLiveWindowHours";
             this.txtRegistrationTimeToLiveWindowHours.Size = new System.Drawing.Size(52, 23);
             this.txtRegistrationTimeToLiveWindowHours.TabIndex = 1;
-            this.txtRegistrationTimeToLiveWindowHours.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // txtRegistrationTimeToLiveWindowDays
             // 
@@ -1106,7 +1102,6 @@
             this.txtRegistrationTimeToLiveWindowDays.Name = "txtRegistrationTimeToLiveWindowDays";
             this.txtRegistrationTimeToLiveWindowDays.Size = new System.Drawing.Size(52, 23);
             this.txtRegistrationTimeToLiveWindowDays.TabIndex = 0;
-            this.txtRegistrationTimeToLiveWindowDays.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // grouperPath
             // 
@@ -3852,15 +3847,15 @@
         private System.Windows.Forms.TextBox txtPackageSid;
         private Grouper grouperDuplicateDetectionHistoryTimeWindow;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowMilliseconds;
-        private System.Windows.Forms.TextBox txtRegistrationTimeToLiveWindowMilliseconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtRegistrationTimeToLiveWindowMilliseconds;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowSeconds;
-        private System.Windows.Forms.TextBox txtRegistrationTimeToLiveWindowSeconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtRegistrationTimeToLiveWindowSeconds;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowMinutes;
-        private System.Windows.Forms.TextBox txtRegistrationTimeToLiveWindowMinutes;
+        private ServiceBusExplorer.Controls.NumericTextBox txtRegistrationTimeToLiveWindowMinutes;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowHours;
         private System.Windows.Forms.Label lblDuplicateDetectionHistoryTimeWindowDays;
-        private System.Windows.Forms.TextBox txtRegistrationTimeToLiveWindowHours;
-        private System.Windows.Forms.TextBox txtRegistrationTimeToLiveWindowDays;
+        private ServiceBusExplorer.Controls.NumericTextBox txtRegistrationTimeToLiveWindowHours;
+        private ServiceBusExplorer.Controls.NumericTextBox txtRegistrationTimeToLiveWindowDays;
         private Grouper grouperPath;
         private System.Windows.Forms.Label lblRelativeURI;
         private System.Windows.Forms.TextBox txtPath;
@@ -4012,15 +4007,15 @@
         private System.Windows.Forms.TabPage tabAppleNotificationExpiry;
         private Grouper grouperApnsExpiry;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtApnsExpiryMilliseconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtApnsExpiryMilliseconds;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtApnsExpirySeconds;
+        private ServiceBusExplorer.Controls.NumericTextBox txtApnsExpirySeconds;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtApnsExpiryMinutes;
+        private ServiceBusExplorer.Controls.NumericTextBox txtApnsExpiryMinutes;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtApnsExpiryHours;
-        private System.Windows.Forms.TextBox txtApnsExpiryDays;
+        private ServiceBusExplorer.Controls.NumericTextBox txtApnsExpiryHours;
+        private ServiceBusExplorer.Controls.NumericTextBox txtApnsExpiryDays;
         internal System.Windows.Forms.TabControl gcmAdditionalHeadersTabControl;
         private System.Windows.Forms.TabPage tabGcmAdditionalHeaders;
         private Grouper grouperGcmAdditionalHeaders;

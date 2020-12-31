@@ -210,7 +210,6 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageCount.Size = new System.Drawing.Size(272, 20);
             this.txtMessageCount.TabIndex = 30;
             this.txtMessageCount.TextChanged += new System.EventHandler(this.txtMessageCount_TextChanged);
-            this.txtMessageCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblMessageCount
             // 
