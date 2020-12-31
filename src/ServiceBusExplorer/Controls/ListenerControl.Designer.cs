@@ -69,9 +69,12 @@
             this.grouperMessageList = new ServiceBusExplorer.Controls.Grouper();
             this.pictFindMessages = new System.Windows.Forms.PictureBox();
             this.messagesDataGridView = new System.Windows.Forms.DataGridView();
+            this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
+            this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.messagePropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperMessageSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,12 +88,7 @@
             this.entityInformationContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyPartitionInformationToClipboardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
-            this.messagePropertyListView = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
-            this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.messageCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mainTabControl.SuspendLayout();
             this.tabPageListener.SuspendLayout();
             this.grouperStatistics.SuspendLayout();
@@ -109,17 +107,17 @@
             this.grouperMessageList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).BeginInit();
+            this.grouperMessageText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).BeginInit();
             this.messagePropertiesSplitContainer.Panel1.SuspendLayout();
             this.messagePropertiesSplitContainer.Panel2.SuspendLayout();
             this.messagePropertiesSplitContainer.SuspendLayout();
             this.grouperMessageSystemProperties.SuspendLayout();
+            this.grouperMessageCustomProperties.SuspendLayout();
             this.messagesContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
             this.entityInformationContextMenuStrip.SuspendLayout();
-            this.grouperMessageCustomProperties.SuspendLayout();
-            this.grouperMessageText.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
             this.SuspendLayout();
             // 
             // btnClose
@@ -272,6 +270,8 @@
             // 
             // txtMessageSizePerSecond
             // 
+            this.txtMessageSizePerSecond.AllowDecimal = false;
+            this.txtMessageSizePerSecond.AllowNegative = false;
             this.txtMessageSizePerSecond.AllowSpace = false;
             this.txtMessageSizePerSecond.Location = new System.Drawing.Point(160, 88);
             this.txtMessageSizePerSecond.Name = "txtMessageSizePerSecond";
@@ -290,6 +290,8 @@
             // 
             // txtAverageDuration
             // 
+            this.txtAverageDuration.AllowDecimal = false;
+            this.txtAverageDuration.AllowNegative = false;
             this.txtAverageDuration.AllowSpace = false;
             this.txtAverageDuration.Location = new System.Drawing.Point(16, 88);
             this.txtAverageDuration.Name = "txtAverageDuration";
@@ -298,6 +300,8 @@
             // 
             // txtMessagesTotal
             // 
+            this.txtMessagesTotal.AllowDecimal = false;
+            this.txtMessagesTotal.AllowNegative = false;
             this.txtMessagesTotal.AllowSpace = false;
             this.txtMessagesTotal.Location = new System.Drawing.Point(16, 48);
             this.txtMessagesTotal.Name = "txtMessagesTotal";
@@ -316,6 +320,8 @@
             // 
             // txtMessagesPerSecond
             // 
+            this.txtMessagesPerSecond.AllowDecimal = false;
+            this.txtMessagesPerSecond.AllowNegative = false;
             this.txtMessagesPerSecond.AllowSpace = false;
             this.txtMessagesPerSecond.Location = new System.Drawing.Point(160, 48);
             this.txtMessagesPerSecond.Name = "txtMessagesPerSecond";
@@ -452,6 +458,7 @@
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameColumnHeader,
             this.valueColumnHeader});
+            this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
@@ -520,6 +527,8 @@
             // 
             // txtMessageWaitTimeout
             // 
+            this.txtMessageWaitTimeout.AllowDecimal = false;
+            this.txtMessageWaitTimeout.AllowNegative = false;
             this.txtMessageWaitTimeout.AllowSpace = false;
             this.txtMessageWaitTimeout.Location = new System.Drawing.Point(632, 48);
             this.txtMessageWaitTimeout.Name = "txtMessageWaitTimeout";
@@ -539,6 +548,8 @@
             // 
             // txtAutoRenewTimeout
             // 
+            this.txtAutoRenewTimeout.AllowDecimal = false;
+            this.txtAutoRenewTimeout.AllowNegative = false;
             this.txtAutoRenewTimeout.AllowSpace = false;
             this.txtAutoRenewTimeout.Location = new System.Drawing.Point(496, 48);
             this.txtAutoRenewTimeout.Name = "txtAutoRenewTimeout";
@@ -558,6 +569,8 @@
             // 
             // txtPrefetchCount
             // 
+            this.txtPrefetchCount.AllowDecimal = false;
+            this.txtPrefetchCount.AllowNegative = false;
             this.txtPrefetchCount.AllowSpace = false;
             this.txtPrefetchCount.Location = new System.Drawing.Point(256, 48);
             this.txtPrefetchCount.Name = "txtPrefetchCount";
@@ -670,6 +683,8 @@
             // 
             // txtRefreshInformation
             // 
+            this.txtRefreshInformation.AllowDecimal = false;
+            this.txtRefreshInformation.AllowNegative = false;
             this.txtRefreshInformation.AllowSpace = false;
             this.txtRefreshInformation.Location = new System.Drawing.Point(136, 48);
             this.txtRefreshInformation.Name = "txtRefreshInformation";
@@ -690,6 +705,8 @@
             // 
             // txtMaxConcurrentCalls
             // 
+            this.txtMaxConcurrentCalls.AllowDecimal = false;
+            this.txtMaxConcurrentCalls.AllowNegative = false;
             this.txtMaxConcurrentCalls.AllowSpace = false;
             this.txtMaxConcurrentCalls.Location = new System.Drawing.Point(16, 48);
             this.txtMaxConcurrentCalls.Name = "txtMaxConcurrentCalls";
@@ -832,6 +849,63 @@
             this.messagesDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
             this.messagesDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
+            // grouperMessageText
+            // 
+            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessageText.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.BorderThickness = 1F;
+            this.grouperMessageText.Controls.Add(this.txtMessageText);
+            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperMessageText.ForeColor = System.Drawing.Color.White;
+            this.grouperMessageText.GroupImage = null;
+            this.grouperMessageText.GroupTitle = "Message Text";
+            this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
+            this.grouperMessageText.Name = "grouperMessageText";
+            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageText.PaintGroupBox = true;
+            this.grouperMessageText.RoundCorners = 4;
+            this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperMessageText.ShadowControl = false;
+            this.grouperMessageText.ShadowThickness = 1;
+            this.grouperMessageText.Size = new System.Drawing.Size(608, 212);
+            this.grouperMessageText.TabIndex = 26;
+            this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
+            // 
+            // txtMessageText
+            // 
+            this.txtMessageText.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.BackBrush = null;
+            this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtMessageText.CharHeight = 14;
+            this.txtMessageText.CharWidth = 8;
+            this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtMessageText.IsReplaceMode = false;
+            this.txtMessageText.Location = new System.Drawing.Point(16, 32);
+            this.txtMessageText.Name = "txtMessageText";
+            this.txtMessageText.Paddings = new System.Windows.Forms.Padding(0);
+            this.txtMessageText.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtMessageText.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtMessageText.ServiceColors")));
+            this.txtMessageText.Size = new System.Drawing.Size(576, 164);
+            this.txtMessageText.TabIndex = 0;
+            this.txtMessageText.Zoom = 100;
+            // 
             // messagePropertiesSplitContainer
             // 
             this.messagePropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -890,6 +964,32 @@
             this.messagePropertyGrid.Size = new System.Drawing.Size(280, 164);
             this.messagePropertyGrid.TabIndex = 2;
             this.messagePropertyGrid.ToolbarVisible = false;
+            // 
+            // grouperMessageCustomProperties
+            // 
+            this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessageCustomProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.BorderThickness = 1F;
+            this.grouperMessageCustomProperties.Controls.Add(this.messageCustomPropertyGrid);
+            this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
+            this.grouperMessageCustomProperties.GroupImage = null;
+            this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
+            this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
+            this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
+            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageCustomProperties.PaintGroupBox = true;
+            this.grouperMessageCustomProperties.RoundCorners = 4;
+            this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperMessageCustomProperties.ShadowControl = false;
+            this.grouperMessageCustomProperties.ShadowThickness = 1;
+            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(312, 212);
+            this.grouperMessageCustomProperties.TabIndex = 27;
+            this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
             // messagesContextMenuStrip
             // 
@@ -992,119 +1092,19 @@
             this.copyPartitionInformationToClipboardMenuItem.ToolTipText = "Copy entity information to clipboard.";
             this.copyPartitionInformationToClipboardMenuItem.Click += new System.EventHandler(this.copyEntityInformationToClipboardMenuItem_Click);
             // 
-            // grouperMessageCustomProperties
+            // messageCustomPropertyGrid
             // 
-            this.grouperMessageCustomProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageCustomProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageCustomProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageCustomProperties.BorderThickness = 1F;
-            this.grouperMessageCustomProperties.Controls.Add(this.messagePropertyListView);
-            this.grouperMessageCustomProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageCustomProperties.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageCustomProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageCustomProperties.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageCustomProperties.GroupImage = null;
-            this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
-            this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
-            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperMessageCustomProperties.PaintGroupBox = true;
-            this.grouperMessageCustomProperties.RoundCorners = 4;
-            this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageCustomProperties.ShadowControl = false;
-            this.grouperMessageCustomProperties.ShadowThickness = 1;
-            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(312, 212);
-            this.grouperMessageCustomProperties.TabIndex = 27;
-            this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
-            // 
-            // messagePropertyListView
-            // 
-            this.messagePropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
-            this.messagePropertyListView.Name = "messagePropertyListView";
-            this.messagePropertyListView.OwnerDraw = true;
-            this.messagePropertyListView.Size = new System.Drawing.Size(280, 164);
-            this.messagePropertyListView.TabIndex = 0;
-            this.messagePropertyListView.UseCompatibleStateImageBehavior = false;
-            this.messagePropertyListView.View = System.Windows.Forms.View.Details;
-            this.messagePropertyListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
-            this.messagePropertyListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
-            this.messagePropertyListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
-            this.messagePropertyListView.Resize += new System.EventHandler(this.listView_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 113;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Value";
-            this.columnHeader2.Width = 115;
-            // 
-            // grouperMessageText
-            // 
-            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageText.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.BorderThickness = 1F;
-            this.grouperMessageText.Controls.Add(this.txtMessageText);
-            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageText.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Message Text";
-            this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageText.Name = "grouperMessageText";
-            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperMessageText.PaintGroupBox = true;
-            this.grouperMessageText.RoundCorners = 4;
-            this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageText.ShadowControl = false;
-            this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(608, 212);
-            this.grouperMessageText.TabIndex = 26;
-            this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
-            // 
-            // txtMessageText
-            // 
-            this.txtMessageText.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
-            this.txtMessageText.BackBrush = null;
-            this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtMessageText.CharHeight = 14;
-            this.txtMessageText.CharWidth = 8;
-            this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
-            this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtMessageText.IsReplaceMode = false;
-            this.txtMessageText.Location = new System.Drawing.Point(16, 32);
-            this.txtMessageText.Name = "txtMessageText";
-            this.txtMessageText.Paddings = new System.Windows.Forms.Padding(0);
-            this.txtMessageText.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.txtMessageText.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtMessageText.ServiceColors")));
-            this.txtMessageText.Size = new System.Drawing.Size(576, 164);
-            this.txtMessageText.TabIndex = 0;
-            this.txtMessageText.Zoom = 100;
+            this.messageCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.messageCustomPropertyGrid.HelpVisible = false;
+            this.messageCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.messageCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
+            this.messageCustomPropertyGrid.Name = "messageCustomPropertyGrid";
+            this.messageCustomPropertyGrid.Size = new System.Drawing.Size(280, 164);
+            this.messageCustomPropertyGrid.TabIndex = 3;
+            this.messageCustomPropertyGrid.ToolbarVisible = false;
             // 
             // ListenerControl
             // 
@@ -1141,17 +1141,17 @@
             this.grouperMessageList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).EndInit();
+            this.grouperMessageText.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.messagePropertiesSplitContainer.Panel1.ResumeLayout(false);
             this.messagePropertiesSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).EndInit();
             this.messagePropertiesSplitContainer.ResumeLayout(false);
             this.grouperMessageSystemProperties.ResumeLayout(false);
+            this.grouperMessageCustomProperties.ResumeLayout(false);
             this.messagesContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).EndInit();
             this.entityInformationContextMenuStrip.ResumeLayout(false);
-            this.grouperMessageCustomProperties.ResumeLayout(false);
-            this.grouperMessageText.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1224,8 +1224,6 @@
         private Grouper grouperMessageText;
         private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
         private Grouper grouperMessageCustomProperties;
-        private System.Windows.Forms.ListView messagePropertyListView;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.PropertyGrid messageCustomPropertyGrid;
     }
 }

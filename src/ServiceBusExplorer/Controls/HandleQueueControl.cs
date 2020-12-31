@@ -306,7 +306,7 @@ namespace ServiceBusExplorer.Controls
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
                     txtMessageText.Text = string.Empty;
-                    messagePropertyListView.Items.Clear();
+                    messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
                     var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
                                            serviceBusHelper.BrokeredMessageInspectors.ContainsKey(
@@ -405,7 +405,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 txtDeadletterText.Text = string.Empty;
-                deadletterPropertyListView.Items.Clear();
+                deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
                     ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
@@ -430,7 +430,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 txtTransferDeadletterText.Text = string.Empty;
-                transferDeadletterPropertyListView.Items.Clear();
+                transferDeadletterCustomPropertyGrid.SelectedObject = null;
                 transferDeadletterPropertyGrid.SelectedObject = null;
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
                     ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
@@ -2810,9 +2810,7 @@ namespace ServiceBusExplorer.Controls
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
 
-                var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
-                messagePropertyListView.Items.Clear();
-                messagePropertyListView.Items.AddRange(listViewItems);
+                messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(brokeredMessage.Properties);
                 messagePropertyGrid.SelectedObject = brokeredMessage;
             }
             // ReSharper disable once EmptyGeneralCatchClause
@@ -2946,9 +2944,7 @@ namespace ServiceBusExplorer.Controls
 
             LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtDeadletterText);
 
-            var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
-            deadletterPropertyListView.Items.Clear();
-            deadletterPropertyListView.Items.AddRange(listViewItems);
+            deadletterCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(deadletterMessage.Properties);
         }
 
         private void transferDeadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -2968,9 +2964,7 @@ namespace ServiceBusExplorer.Controls
 
             LanguageDetector.SetFormattedMessage(serviceBusHelper, transferDeadletterMessage, txtTransferDeadletterText);
 
-            var listViewItems = transferDeadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
-            transferDeadletterPropertyListView.Items.Clear();
-            transferDeadletterPropertyListView.Items.AddRange(listViewItems);
+            transferDeadletterCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(transferDeadletterMessage.Properties);
         }
         
         private void authorizationRulesDataGridView_Resize(object sender, EventArgs e)
@@ -3176,9 +3170,9 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - messagePropertyListView.Location.X * 2,
-                                                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y -
-                                                    messagePropertyListView.Location.X);
+            messageCustomPropertyGrid.Size = new Size(grouperMessageCustomProperties.Size.Width - messageCustomPropertyGrid.Location.X * 2,
+                                                    grouperMessageCustomProperties.Size.Height - messageCustomPropertyGrid.Location.Y -
+                                                    messageCustomPropertyGrid.Location.X);
         }
 
         private void grouperMessageSystemProperties_CustomPaint(PaintEventArgs obj)
@@ -3195,10 +3189,10 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            deadletterPropertyListView.Size =
-                new Size(grouperDeadletterCustomProperties.Size.Width - deadletterPropertyListView.Location.X * 2,
-                    grouperDeadletterCustomProperties.Size.Height - deadletterPropertyListView.Location.Y -
-                    deadletterPropertyListView.Location.X);
+            deadletterCustomPropertyGrid.Size =
+                new Size(grouperDeadletterCustomProperties.Size.Width - deadletterCustomPropertyGrid.Location.X * 2,
+                    grouperDeadletterCustomProperties.Size.Height - deadletterCustomPropertyGrid.Location.Y -
+                    deadletterCustomPropertyGrid.Location.X);
         }
 
         private void grouperDeadletterSystemProperties_CustomPaint(PaintEventArgs obj)
@@ -3218,10 +3212,10 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperTransferDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            transferDeadletterPropertyListView.Size =
-                new Size(grouperTransferDeadletterCustomProperties.Size.Width - transferDeadletterPropertyListView.Location.X * 2,
-                    grouperTransferDeadletterCustomProperties.Size.Height - transferDeadletterPropertyListView.Location.Y -
-                    transferDeadletterPropertyListView.Location.X);
+            transferDeadletterCustomPropertyGrid.Size =
+                new Size(grouperTransferDeadletterCustomProperties.Size.Width - transferDeadletterCustomPropertyGrid.Location.X * 2,
+                    grouperTransferDeadletterCustomProperties.Size.Height - transferDeadletterCustomPropertyGrid.Location.Y -
+                    transferDeadletterCustomPropertyGrid.Location.X);
         }
 
         private void grouperTransferDeadletterSystemProperties_CustomPaint(PaintEventArgs obj)
@@ -3594,7 +3588,7 @@ namespace ServiceBusExplorer.Controls
                 if (!bindingList.Any())
                 {
                     txtMessageText.Text = string.Empty;
-                    messagePropertyListView.Items.Clear();
+                    messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
                 }
                 else
@@ -3663,7 +3657,7 @@ namespace ServiceBusExplorer.Controls
                 if (!bindingList.Any())
                 {
                     txtDeadletterText.Text = string.Empty;
-                    deadletterPropertyListView.Items.Clear();
+                    deadletterCustomPropertyGrid.SelectedObject = null;
                     deadletterPropertyGrid.SelectedObject = null;
                 }
                 else

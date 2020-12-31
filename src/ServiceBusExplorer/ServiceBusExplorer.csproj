@@ -421,6 +421,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIHelpers\DataGridViewDeleteButtonCell.cs" />
+    <Compile Include="UIHelpers\DictionaryPropertyDescriptor.cs" />
+    <Compile Include="UIHelpers\DictionaryPropertyGridAdapter.cs" />
     <Compile Include="UIHelpers\DynamicCustomTypeDescriptor.cs" />
     <Compile Include="UIHelpers\EventProcessor.cs" />
     <Compile Include="UIHelpers\EventProcessorFactory.cs" />

@@ -624,9 +624,7 @@ namespace ServiceBusExplorer.Controls
 
             LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
 
-            var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
-            messagePropertyListView.Items.Clear();
-            messagePropertyListView.Items.AddRange(listViewItems);
+            messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(brokeredMessage.Properties);
         }
 
         private void tabPageMessages_Resize(object sender, EventArgs e)
@@ -637,7 +635,7 @@ namespace ServiceBusExplorer.Controls
                 messagesSplitContainer.SuspendLayout();
                 grouperMessageCustomProperties.Size = new Size(grouperMessageCustomProperties.Size.Width, messageMainSplitContainer.Panel2.Size.Height);
                 messagePropertyGrid.Size = new Size(grouperMessageSystemProperties.Size.Width - 32, messagePropertyGrid.Size.Height);
-                messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - 32, messagePropertyListView.Size.Height);
+                messageCustomPropertyGrid.Size = new Size(grouperMessageCustomProperties.Size.Width - 32, messageCustomPropertyGrid.Size.Height);
                 grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Width;
             }
             finally
@@ -693,8 +691,8 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - (messagePropertyListView.Location.X * 2),
-                                                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y - messagePropertyListView.Location.X);
+            messageCustomPropertyGrid.Size = new Size(grouperMessageCustomProperties.Size.Width - (messageCustomPropertyGrid.Location.X * 2),
+                                                    grouperMessageCustomProperties.Size.Height - messageCustomPropertyGrid.Location.Y - messageCustomPropertyGrid.Location.X);
         }
 
         private void grouperMessageSystemProperties_CustomPaint(PaintEventArgs obj)
@@ -1042,7 +1040,7 @@ namespace ServiceBusExplorer.Controls
                     containerForm.Clear();
                 }
                 txtMessageText.Text = null;
-                messagePropertyListView.Clear();
+                messageCustomPropertyGrid.SelectedObject = null;
                 messagePropertyGrid.SelectedObject = null;
             }
             catch (Exception ex)
