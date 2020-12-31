@@ -29,10 +29,8 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
@@ -114,11 +112,7 @@ namespace ServiceBusExplorer.Controls
         private const string SelectNotificationTemplate = "Select a Notification Template...";
         private const string ManualTemplate = "Manual";
         private const string PathCannotBeNull = "The Path field cannot be null.";
-        private const string DuplicateDetectionHistoryTimeWindowDaysMustBeANumber = "The Days value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowHoursMustBeANumber = "The Hours value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber = "The Minutes value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber = "The Seconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber = "The Milliseconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
+        private const string RegistrationTimeToLive = "RegistrationTimeToLive";
         private const string NotificationPayloadCannotBeNull = "The notification payload cannot be null.";
         private const string JsonPayloadTemplateCannotBeNull = "The JSON payload cannot be null.";
         private const string PayloadIsNotInJsonFormat = "The payload is not in JSON format.";
@@ -404,11 +398,7 @@ namespace ServiceBusExplorer.Controls
                 txtPath.GotFocus += textBox_GotFocus;
 
                 toolTip.SetToolTip(txtPath, PathTooltip);
-                toolTip.SetToolTip(txtRegistrationTimeToLiveWindowDays, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtRegistrationTimeToLiveWindowHours, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtRegistrationTimeToLiveWindowMinutes, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtRegistrationTimeToLiveWindowSeconds, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtRegistrationTimeToLiveWindowMilliseconds, DuplicateDetectionHistoryTimeWindowTooltip);
+                toolTip.SetToolTip(tsRegistrationTimeToLive, DuplicateDetectionHistoryTimeWindowTooltip);
                 toolTip.SetToolTip(txtPackageSid, PackageSidTooltip);
                 toolTip.SetToolTip(txtClientSecret, ClientSecretTooltip);
                 toolTip.SetToolTip(txtMpnsCredentialCertificateThumbprint, MpnsCertificateThumbprintTooltip);
@@ -1194,11 +1184,7 @@ namespace ServiceBusExplorer.Controls
             // RegistrationTtl
             if (notificationHubDescription.RegistrationTtl != null)
             {
-                txtRegistrationTimeToLiveWindowDays.Text = notificationHubDescription.RegistrationTtl.Value.Days.ToString(CultureInfo.InvariantCulture);
-                txtRegistrationTimeToLiveWindowHours.Text = notificationHubDescription.RegistrationTtl.Value.Hours.ToString(CultureInfo.InvariantCulture);
-                txtRegistrationTimeToLiveWindowMinutes.Text = notificationHubDescription.RegistrationTtl.Value.Minutes.ToString(CultureInfo.InvariantCulture);
-                txtRegistrationTimeToLiveWindowSeconds.Text = notificationHubDescription.RegistrationTtl.Value.Seconds.ToString(CultureInfo.InvariantCulture);
-                txtRegistrationTimeToLiveWindowMilliseconds.Text = notificationHubDescription.RegistrationTtl.Value.Milliseconds.ToString(CultureInfo.InvariantCulture);
+                tsRegistrationTimeToLive.TimeSpanValue = notificationHubDescription.RegistrationTtl;
             }
 
             if (notificationHubDescription.WnsCredential != null)
@@ -2074,61 +2060,16 @@ namespace ServiceBusExplorer.Controls
                                                                         mpnsCredentialCertificateKey);
                     }
 
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMilliseconds.Text))
+                    if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowDays.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowDays.Text, out days))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowHours.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowHours.Text, out hours))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMinutes.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowMinutes.Text, out minutes))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowSeconds.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowSeconds.Text, out seconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        description.RegistrationTtl = new TimeSpan(days, hours, minutes, seconds, milliseconds);
+                        description.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
                     }
-
+                    else
+                    {
+                        writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
+                        return;
+                    }
+                    
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<NotificationHubAuthorizationRuleWrapper>;
                     if (bindingList != null)
                     {
@@ -2221,59 +2162,14 @@ namespace ServiceBusExplorer.Controls
             {
                 try
                 {
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowDays.Text) ||
-                         !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowHours.Text) ||
-                         !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMinutes.Text) ||
-                         !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowSeconds.Text) ||
-                         !string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMilliseconds.Text))
+                    if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowDays.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowDays.Text, out days))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowHours.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowHours.Text, out hours))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMinutes.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowMinutes.Text, out minutes))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowSeconds.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowSeconds.Text, out seconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtRegistrationTimeToLiveWindowMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtRegistrationTimeToLiveWindowMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        notificationHubDescription.RegistrationTtl = new TimeSpan(days, hours, minutes, seconds, milliseconds);
+                        notificationHubDescription.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
+                    }
+                    else
+                    {
+                        writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
+                        return;
                     }
 
                     notificationHubDescription.WnsCredential = !string.IsNullOrWhiteSpace(txtPackageSid.Text) &&
@@ -2424,12 +2320,6 @@ namespace ServiceBusExplorer.Controls
             {
                 HandleNotificationHubControl_Resize(null, null);
             }
-        }
-
-        private void tabPageAppleNativeNotification_Resize(object sender, EventArgs e)
-        {
-            grouperExpiry.Size = new Size(grouperExpiry.Size.Width,
-                                          appleSplitContainer.Panel2.Size.Height);
         }
 
         private void btnRegistrations_Click(object sender, EventArgs e)

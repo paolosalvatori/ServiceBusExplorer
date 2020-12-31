@@ -79,7 +79,12 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Public Properties
+
+        public bool IsValidIntegerValue => int.TryParse(Text, out _);
+
         public int IntegerValue => int.Parse(Text);
+
+        public bool IsValidDecimalValue => decimal.TryParse(Text, out _);
 
         public decimal DecimalValue => decimal.Parse(Text);
 

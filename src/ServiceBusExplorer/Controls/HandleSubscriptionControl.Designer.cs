@@ -27,28 +27,40 @@
             this.btnSessions = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageDescription = new System.Windows.Forms.TabPage();
+            this.tabPageMessages = new System.Windows.Forms.TabPage();
+            this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.messageMainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.messagePropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.tabPageDeadletter = new System.Windows.Forms.TabPage();
+            this.deadletterSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.deadletterMainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.deadletterPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.tabPageSessions = new System.Windows.Forms.TabPage();
+            this.sessionsSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.sessionMainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.sessionsBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.deadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.deadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.repairAndResubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnPurgeMessages = new System.Windows.Forms.Button();
+            this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
             this.grouperAutoDeleteOnIdle = new ServiceBusExplorer.Controls.Grouper();
-            this.lblAutoDeleteOnIdleMilliseconds = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblAutoDeleteOnIdleSeconds = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblAutoDeleteOnIdleMinutes = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblAutoDeleteOnIdleHours = new System.Windows.Forms.Label();
-            this.lblAutoDeleteOnIdleDays = new System.Windows.Forms.Label();
-            this.txtAutoDeleteOnIdleHours = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.txtAutoDeleteOnIdleDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.groupergrouperDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.Grouper();
-            this.lblDefaultMessageTimeToLiveMilliseconds = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblDefaultMessageTimeToLiveSeconds = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblDefaultMessageTimeToLiveMinutes = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lbllblDefaultMessageTimeToLiveHours = new System.Windows.Forms.Label();
-            this.lblDefaultMessageTimeToLiveDays = new System.Windows.Forms.Label();
-            this.txtDefaultMessageTimeToLiveHours = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.txtDefaultMessageTimeToLiveDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperName = new ServiceBusExplorer.Controls.Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
@@ -76,90 +88,43 @@
             this.labelUserDescription = new System.Windows.Forms.Label();
             this.txtMaxDeliveryCount = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperLockDuration = new ServiceBusExplorer.Controls.Grouper();
-            this.lblLockDurationMilliseconds = new System.Windows.Forms.Label();
-            this.txtLockDurationMilliseconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblLockDurationSeconds = new System.Windows.Forms.Label();
-            this.txtLockDurationSeconds = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblLockDurationMinutes = new System.Windows.Forms.Label();
-            this.txtLockDurationMinutes = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.lblLockDurationHours = new System.Windows.Forms.Label();
-            this.lblLockDurationDays = new System.Windows.Forms.Label();
-            this.txtLockDurationHours = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.txtLockDurationDays = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperSubscriptionSettings = new ServiceBusExplorer.Controls.Grouper();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
-            this.tabPageMessages = new System.Windows.Forms.TabPage();
-            this.messagesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.messageMainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperMessageList = new ServiceBusExplorer.Controls.Grouper();
             this.pictFindMessages = new System.Windows.Forms.PictureBox();
             this.pictFindMessagesByDate = new System.Windows.Forms.PictureBox();
             this.messagesDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.messagePropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperMessageProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyListView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tabPageDeadletter = new System.Windows.Forms.TabPage();
-            this.deadletterSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.deadletterMainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperDeadletterList = new ServiceBusExplorer.Controls.Grouper();
             this.pictFindDeadletter = new System.Windows.Forms.PictureBox();
             this.pictFindDeadletterByDate = new System.Windows.Forms.PictureBox();
             this.deadletterDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperDeadletterText = new ServiceBusExplorer.Controls.Grouper();
             this.txtDeadletterText = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.deadletterPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperDeadletterSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.deadletterPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperDeadletterCustomProperties = new ServiceBusExplorer.Controls.Grouper();
             this.deadletterPropertyListView = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tabPageSessions = new System.Windows.Forms.TabPage();
-            this.sessionsSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.sessionMainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperSessionList = new ServiceBusExplorer.Controls.Grouper();
             this.sessionsDataGridView = new System.Windows.Forms.DataGridView();
             this.grouperSessionState = new ServiceBusExplorer.Controls.Grouper();
             this.txtSessionState = new System.Windows.Forms.TextBox();
             this.grouperSessionProperties = new ServiceBusExplorer.Controls.Grouper();
             this.sessionPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.sessionsBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.deadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.deadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.repairAndResubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSelectedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnPurgeMessages = new System.Windows.Forms.Button();
-            this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
+            this.tsAutoDeleteOnIdle = new ServiceBusExplorer.Controls.TimeSpanControl();
+            this.tsDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.TimeSpanControl();
+            this.tsLockDuration = new ServiceBusExplorer.Controls.TimeSpanControl();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
-            this.grouperAutoDeleteOnIdle.SuspendLayout();
-            this.groupergrouperDefaultMessageTimeToLive.SuspendLayout();
-            this.grouperName.SuspendLayout();
-            this.grouperDefaultRule.SuspendLayout();
-            this.grouperSubscriptionInformation.SuspendLayout();
-            this.grouperSubscriptionProperties.SuspendLayout();
-            this.grouperLockDuration.SuspendLayout();
-            this.grouperSubscriptionSettings.SuspendLayout();
             this.tabPageMessages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesSplitContainer)).BeginInit();
             this.messagesSplitContainer.Panel1.SuspendLayout();
@@ -169,18 +134,10 @@
             this.messageMainSplitContainer.Panel1.SuspendLayout();
             this.messageMainSplitContainer.Panel2.SuspendLayout();
             this.messageMainSplitContainer.SuspendLayout();
-            this.grouperMessageList.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).BeginInit();
-            this.grouperMessageText.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).BeginInit();
             this.messagePropertiesSplitContainer.Panel1.SuspendLayout();
             this.messagePropertiesSplitContainer.Panel2.SuspendLayout();
             this.messagePropertiesSplitContainer.SuspendLayout();
-            this.grouperMessageProperties.SuspendLayout();
-            this.grouperMessageCustomProperties.SuspendLayout();
             this.tabPageDeadletter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterSplitContainer)).BeginInit();
             this.deadletterSplitContainer.Panel1.SuspendLayout();
@@ -190,18 +147,10 @@
             this.deadletterMainSplitContainer.Panel1.SuspendLayout();
             this.deadletterMainSplitContainer.Panel2.SuspendLayout();
             this.deadletterMainSplitContainer.SuspendLayout();
-            this.grouperDeadletterList.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).BeginInit();
-            this.grouperDeadletterText.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterPropertiesSplitContainer)).BeginInit();
             this.deadletterPropertiesSplitContainer.Panel1.SuspendLayout();
             this.deadletterPropertiesSplitContainer.Panel2.SuspendLayout();
             this.deadletterPropertiesSplitContainer.SuspendLayout();
-            this.grouperDeadletterSystemProperties.SuspendLayout();
-            this.grouperDeadletterCustomProperties.SuspendLayout();
             this.tabPageSessions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsSplitContainer)).BeginInit();
             this.sessionsSplitContainer.Panel1.SuspendLayout();
@@ -211,16 +160,40 @@
             this.sessionMainSplitContainer.Panel1.SuspendLayout();
             this.sessionMainSplitContainer.Panel2.SuspendLayout();
             this.sessionMainSplitContainer.SuspendLayout();
-            this.grouperSessionList.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sessionsDataGridView)).BeginInit();
-            this.grouperSessionState.SuspendLayout();
-            this.grouperSessionProperties.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesBindingSource)).BeginInit();
             this.deadletterContextMenuStrip.SuspendLayout();
             this.messagesContextMenuStrip.SuspendLayout();
+            this.grouperAutoDeleteOnIdle.SuspendLayout();
+            this.groupergrouperDefaultMessageTimeToLive.SuspendLayout();
+            this.grouperName.SuspendLayout();
+            this.grouperDefaultRule.SuspendLayout();
+            this.grouperSubscriptionInformation.SuspendLayout();
+            this.grouperSubscriptionProperties.SuspendLayout();
+            this.grouperLockDuration.SuspendLayout();
+            this.grouperSubscriptionSettings.SuspendLayout();
+            this.grouperMessageList.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).BeginInit();
+            this.grouperMessageText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).BeginInit();
+            this.grouperMessageProperties.SuspendLayout();
+            this.grouperMessageCustomProperties.SuspendLayout();
+            this.grouperDeadletterList.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).BeginInit();
+            this.grouperDeadletterText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).BeginInit();
+            this.grouperDeadletterSystemProperties.SuspendLayout();
+            this.grouperDeadletterCustomProperties.SuspendLayout();
+            this.grouperSessionList.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sessionsDataGridView)).BeginInit();
+            this.grouperSessionState.SuspendLayout();
+            this.grouperSessionProperties.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnRefresh
@@ -384,6 +357,344 @@
             this.tabPageDescription.TabIndex = 2;
             this.tabPageDescription.Text = "Description";
             // 
+            // tabPageMessages
+            // 
+            this.tabPageMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageMessages.Controls.Add(this.messagesSplitContainer);
+            this.tabPageMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPageMessages.Location = new System.Drawing.Point(4, 24);
+            this.tabPageMessages.Name = "tabPageMessages";
+            this.tabPageMessages.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageMessages.Size = new System.Drawing.Size(968, 452);
+            this.tabPageMessages.TabIndex = 5;
+            this.tabPageMessages.Text = "Messages";
+            this.tabPageMessages.Resize += new System.EventHandler(this.tabPageMessages_Resize);
+            // 
+            // messagesSplitContainer
+            // 
+            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.messagesSplitContainer.Location = new System.Drawing.Point(16, 8);
+            this.messagesSplitContainer.Name = "messagesSplitContainer";
+            // 
+            // messagesSplitContainer.Panel1
+            // 
+            this.messagesSplitContainer.Panel1.Controls.Add(this.messageMainSplitContainer);
+            // 
+            // messagesSplitContainer.Panel2
+            // 
+            this.messagesSplitContainer.Panel2.Controls.Add(this.messagePropertiesSplitContainer);
+            this.messagesSplitContainer.Size = new System.Drawing.Size(936, 432);
+            this.messagesSplitContainer.SplitterDistance = 607;
+            this.messagesSplitContainer.SplitterWidth = 16;
+            this.messagesSplitContainer.TabIndex = 3;
+            // 
+            // messageMainSplitContainer
+            // 
+            this.messageMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.messageMainSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.messageMainSplitContainer.Name = "messageMainSplitContainer";
+            this.messageMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // messageMainSplitContainer.Panel1
+            // 
+            this.messageMainSplitContainer.Panel1.Controls.Add(this.grouperMessageList);
+            // 
+            // messageMainSplitContainer.Panel2
+            // 
+            this.messageMainSplitContainer.Panel2.Controls.Add(this.grouperMessageText);
+            this.messageMainSplitContainer.Size = new System.Drawing.Size(607, 432);
+            this.messageMainSplitContainer.SplitterDistance = 212;
+            this.messageMainSplitContainer.SplitterWidth = 8;
+            this.messageMainSplitContainer.TabIndex = 0;
+            // 
+            // messagePropertiesSplitContainer
+            // 
+            this.messagePropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.messagePropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.messagePropertiesSplitContainer.Name = "messagePropertiesSplitContainer";
+            this.messagePropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // messagePropertiesSplitContainer.Panel1
+            // 
+            this.messagePropertiesSplitContainer.Panel1.Controls.Add(this.grouperMessageProperties);
+            // 
+            // messagePropertiesSplitContainer.Panel2
+            // 
+            this.messagePropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
+            this.messagePropertiesSplitContainer.Size = new System.Drawing.Size(313, 432);
+            this.messagePropertiesSplitContainer.SplitterDistance = 212;
+            this.messagePropertiesSplitContainer.SplitterWidth = 8;
+            this.messagePropertiesSplitContainer.TabIndex = 0;
+            // 
+            // tabPageDeadletter
+            // 
+            this.tabPageDeadletter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageDeadletter.Controls.Add(this.deadletterSplitContainer);
+            this.tabPageDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPageDeadletter.Location = new System.Drawing.Point(4, 24);
+            this.tabPageDeadletter.Name = "tabPageDeadletter";
+            this.tabPageDeadletter.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDeadletter.Size = new System.Drawing.Size(968, 452);
+            this.tabPageDeadletter.TabIndex = 7;
+            this.tabPageDeadletter.Text = "Deadletter";
+            this.tabPageDeadletter.Resize += new System.EventHandler(this.deadletterTabPage_Resize);
+            // 
+            // deadletterSplitContainer
+            // 
+            this.deadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.deadletterSplitContainer.Location = new System.Drawing.Point(16, 8);
+            this.deadletterSplitContainer.Name = "deadletterSplitContainer";
+            // 
+            // deadletterSplitContainer.Panel1
+            // 
+            this.deadletterSplitContainer.Panel1.Controls.Add(this.deadletterMainSplitContainer);
+            // 
+            // deadletterSplitContainer.Panel2
+            // 
+            this.deadletterSplitContainer.Panel2.Controls.Add(this.deadletterPropertiesSplitContainer);
+            this.deadletterSplitContainer.Size = new System.Drawing.Size(936, 432);
+            this.deadletterSplitContainer.SplitterDistance = 607;
+            this.deadletterSplitContainer.SplitterWidth = 16;
+            this.deadletterSplitContainer.TabIndex = 4;
+            // 
+            // deadletterMainSplitContainer
+            // 
+            this.deadletterMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deadletterMainSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.deadletterMainSplitContainer.Name = "deadletterMainSplitContainer";
+            this.deadletterMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // deadletterMainSplitContainer.Panel1
+            // 
+            this.deadletterMainSplitContainer.Panel1.Controls.Add(this.grouperDeadletterList);
+            // 
+            // deadletterMainSplitContainer.Panel2
+            // 
+            this.deadletterMainSplitContainer.Panel2.Controls.Add(this.grouperDeadletterText);
+            this.deadletterMainSplitContainer.Size = new System.Drawing.Size(607, 432);
+            this.deadletterMainSplitContainer.SplitterDistance = 212;
+            this.deadletterMainSplitContainer.SplitterWidth = 8;
+            this.deadletterMainSplitContainer.TabIndex = 0;
+            // 
+            // deadletterPropertiesSplitContainer
+            // 
+            this.deadletterPropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deadletterPropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.deadletterPropertiesSplitContainer.Name = "deadletterPropertiesSplitContainer";
+            this.deadletterPropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // deadletterPropertiesSplitContainer.Panel1
+            // 
+            this.deadletterPropertiesSplitContainer.Panel1.Controls.Add(this.grouperDeadletterSystemProperties);
+            // 
+            // deadletterPropertiesSplitContainer.Panel2
+            // 
+            this.deadletterPropertiesSplitContainer.Panel2.Controls.Add(this.grouperDeadletterCustomProperties);
+            this.deadletterPropertiesSplitContainer.Size = new System.Drawing.Size(313, 432);
+            this.deadletterPropertiesSplitContainer.SplitterDistance = 212;
+            this.deadletterPropertiesSplitContainer.SplitterWidth = 8;
+            this.deadletterPropertiesSplitContainer.TabIndex = 0;
+            // 
+            // tabPageSessions
+            // 
+            this.tabPageSessions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageSessions.Controls.Add(this.sessionsSplitContainer);
+            this.tabPageSessions.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPageSessions.Location = new System.Drawing.Point(4, 24);
+            this.tabPageSessions.Name = "tabPageSessions";
+            this.tabPageSessions.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSessions.Size = new System.Drawing.Size(968, 452);
+            this.tabPageSessions.TabIndex = 6;
+            this.tabPageSessions.Text = "Sessions";
+            this.tabPageSessions.Resize += new System.EventHandler(this.tabPageSessions_Resize);
+            // 
+            // sessionsSplitContainer
+            // 
+            this.sessionsSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.sessionsSplitContainer.Location = new System.Drawing.Point(16, 8);
+            this.sessionsSplitContainer.Name = "sessionsSplitContainer";
+            // 
+            // sessionsSplitContainer.Panel1
+            // 
+            this.sessionsSplitContainer.Panel1.Controls.Add(this.sessionMainSplitContainer);
+            // 
+            // sessionsSplitContainer.Panel2
+            // 
+            this.sessionsSplitContainer.Panel2.Controls.Add(this.grouperSessionProperties);
+            this.sessionsSplitContainer.Size = new System.Drawing.Size(936, 432);
+            this.sessionsSplitContainer.SplitterDistance = 607;
+            this.sessionsSplitContainer.SplitterWidth = 16;
+            this.sessionsSplitContainer.TabIndex = 4;
+            // 
+            // sessionMainSplitContainer
+            // 
+            this.sessionMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sessionMainSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.sessionMainSplitContainer.Name = "sessionMainSplitContainer";
+            this.sessionMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // sessionMainSplitContainer.Panel1
+            // 
+            this.sessionMainSplitContainer.Panel1.Controls.Add(this.grouperSessionList);
+            // 
+            // sessionMainSplitContainer.Panel2
+            // 
+            this.sessionMainSplitContainer.Panel2.Controls.Add(this.grouperSessionState);
+            this.sessionMainSplitContainer.Size = new System.Drawing.Size(607, 432);
+            this.sessionMainSplitContainer.SplitterDistance = 212;
+            this.sessionMainSplitContainer.SplitterWidth = 8;
+            this.sessionMainSplitContainer.TabIndex = 2;
+            // 
+            // deadletterContextMenuStrip
+            // 
+            this.deadletterContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.deadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.repairAndResubmitDeadletterToolStripMenuItem,
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.saveSelectedDeadletteredMessageToolStripMenuItem,
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem,
+            this.deleteSelectedMessageToolStripMenuItem,
+            this.deleteSelectedMessagesToolStripMenuItem});
+            this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            // 
+            // repairAndResubmitDeadletterToolStripMenuItem
+            // 
+            this.repairAndResubmitDeadletterToolStripMenuItem.Name = "repairAndResubmitDeadletterToolStripMenuItem";
+            this.repairAndResubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.repairAndResubmitDeadletterToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
+            this.repairAndResubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitDeadletterMessageToolStripMenuItem_Click);
+            // 
+            // resubmitSelectedDeadletterInBatchModeToolStripMenuItem
+            // 
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Name = "resubmitSelectedDeadletterInBatchModeToolStripMenuItem";
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
+            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(302, 6);
+            // 
+            // saveSelectedDeadletteredMessageToolStripMenuItem
+            // 
+            this.saveSelectedDeadletteredMessageToolStripMenuItem.Name = "saveSelectedDeadletteredMessageToolStripMenuItem";
+            this.saveSelectedDeadletteredMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedDeadletteredMessageToolStripMenuItem.Text = "Save Selected Message";
+            this.saveSelectedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessageToolStripMenuItem_Click);
+            // 
+            // saveSelectedDeadletteredMessagesToolStripMenuItem
+            // 
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesToolStripMenuItem";
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesToolStripMenuItem_Click);
+            // 
+            // deleteSelectedMessageToolStripMenuItem
+            // 
+            this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedMessageToolStripMenuItem";
+            this.deleteSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.deleteSelectedMessageToolStripMenuItem.Text = "Delete Selected Message";
+            this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessageToolStripMenuItem_Click);
+            // 
+            // deleteSelectedMessagesToolStripMenuItem
+            // 
+            this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedMessagesToolStripMenuItem";
+            this.deleteSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
+            this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
+            // 
+            // messagesContextMenuStrip
+            // 
+            this.messagesContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.repairAndResubmitMessageToolStripMenuItem,
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.saveSelectedMessageToolStripMenuItem,
+            this.saveSelectedMessagesToolStripMenuItem});
+            this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 98);
+            // 
+            // repairAndResubmitMessageToolStripMenuItem
+            // 
+            this.repairAndResubmitMessageToolStripMenuItem.Name = "repairAndResubmitMessageToolStripMenuItem";
+            this.repairAndResubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.repairAndResubmitMessageToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
+            this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
+            // 
+            // resubmitSelectedMessagesInBatchModeToolStripMenuItem
+            // 
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Name = "resubmitSelectedMessagesInBatchModeToolStripMenuItem";
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(302, 6);
+            // 
+            // saveSelectedMessageToolStripMenuItem
+            // 
+            this.saveSelectedMessageToolStripMenuItem.Name = "saveSelectedMessageToolStripMenuItem";
+            this.saveSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedMessageToolStripMenuItem.Text = "Save Selected Message";
+            this.saveSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageToolStripMenuItem_Click);
+            // 
+            // saveSelectedMessagesToolStripMenuItem
+            // 
+            this.saveSelectedMessagesToolStripMenuItem.Name = "saveSelectedMessagesToolStripMenuItem";
+            this.saveSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.saveSelectedMessagesToolStripMenuItem.Text = "Save Selected Messages";
+            this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
+            // 
+            // btnPurgeMessages
+            // 
+            this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPurgeMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnPurgeMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPurgeMessages.Location = new System.Drawing.Point(282, 504);
+            this.btnPurgeMessages.Name = "btnPurgeMessages";
+            this.btnPurgeMessages.Size = new System.Drawing.Size(72, 24);
+            this.btnPurgeMessages.TabIndex = 17;
+            this.btnPurgeMessages.Text = "Purge";
+            this.btnPurgeMessages.UseVisualStyleBackColor = false;
+            this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
+            this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // btnPurgeDeadletterQueueMessages
+            // 
+            this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(362, 504);
+            this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
+            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(72, 24);
+            this.btnPurgeDeadletterQueueMessages.TabIndex = 16;
+            this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
+            this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
+            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
+            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
             // grouperAutoDeleteOnIdle
             // 
             this.grouperAutoDeleteOnIdle.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -391,16 +702,7 @@
             this.grouperAutoDeleteOnIdle.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperAutoDeleteOnIdle.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAutoDeleteOnIdle.BorderThickness = 1F;
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleMilliseconds);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleMilliseconds);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleSeconds);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleSeconds);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleMinutes);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleMinutes);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleHours);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.lblAutoDeleteOnIdleDays);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleHours);
-            this.grouperAutoDeleteOnIdle.Controls.Add(this.txtAutoDeleteOnIdleDays);
+            this.grouperAutoDeleteOnIdle.Controls.Add(this.tsAutoDeleteOnIdle);
             this.grouperAutoDeleteOnIdle.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperAutoDeleteOnIdle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperAutoDeleteOnIdle.ForeColor = System.Drawing.Color.White;
@@ -417,96 +719,6 @@
             this.grouperAutoDeleteOnIdle.Size = new System.Drawing.Size(296, 80);
             this.grouperAutoDeleteOnIdle.TabIndex = 1;
             // 
-            // lblAutoDeleteOnIdleMilliseconds
-            // 
-            this.lblAutoDeleteOnIdleMilliseconds.AutoSize = true;
-            this.lblAutoDeleteOnIdleMilliseconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblAutoDeleteOnIdleMilliseconds.Location = new System.Drawing.Point(240, 28);
-            this.lblAutoDeleteOnIdleMilliseconds.Name = "lblAutoDeleteOnIdleMilliseconds";
-            this.lblAutoDeleteOnIdleMilliseconds.Size = new System.Drawing.Size(49, 13);
-            this.lblAutoDeleteOnIdleMilliseconds.TabIndex = 25;
-            this.lblAutoDeleteOnIdleMilliseconds.Text = "Millisecs:";
-            // 
-            // txtAutoDeleteOnIdleMilliseconds
-            // 
-            this.txtAutoDeleteOnIdleMilliseconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtAutoDeleteOnIdleMilliseconds.Location = new System.Drawing.Point(240, 44);
-            this.txtAutoDeleteOnIdleMilliseconds.Name = "txtAutoDeleteOnIdleMilliseconds";
-            this.txtAutoDeleteOnIdleMilliseconds.Size = new System.Drawing.Size(40, 20);
-            this.txtAutoDeleteOnIdleMilliseconds.TabIndex = 4;
-            // 
-            // lblAutoDeleteOnIdleSeconds
-            // 
-            this.lblAutoDeleteOnIdleSeconds.AutoSize = true;
-            this.lblAutoDeleteOnIdleSeconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblAutoDeleteOnIdleSeconds.Location = new System.Drawing.Point(184, 28);
-            this.lblAutoDeleteOnIdleSeconds.Name = "lblAutoDeleteOnIdleSeconds";
-            this.lblAutoDeleteOnIdleSeconds.Size = new System.Drawing.Size(52, 13);
-            this.lblAutoDeleteOnIdleSeconds.TabIndex = 24;
-            this.lblAutoDeleteOnIdleSeconds.Text = "Seconds:";
-            // 
-            // txtAutoDeleteOnIdleSeconds
-            // 
-            this.txtAutoDeleteOnIdleSeconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtAutoDeleteOnIdleSeconds.Location = new System.Drawing.Point(184, 44);
-            this.txtAutoDeleteOnIdleSeconds.Name = "txtAutoDeleteOnIdleSeconds";
-            this.txtAutoDeleteOnIdleSeconds.Size = new System.Drawing.Size(40, 20);
-            this.txtAutoDeleteOnIdleSeconds.TabIndex = 3;
-            // 
-            // lblAutoDeleteOnIdleMinutes
-            // 
-            this.lblAutoDeleteOnIdleMinutes.AutoSize = true;
-            this.lblAutoDeleteOnIdleMinutes.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblAutoDeleteOnIdleMinutes.Location = new System.Drawing.Point(128, 28);
-            this.lblAutoDeleteOnIdleMinutes.Name = "lblAutoDeleteOnIdleMinutes";
-            this.lblAutoDeleteOnIdleMinutes.Size = new System.Drawing.Size(47, 13);
-            this.lblAutoDeleteOnIdleMinutes.TabIndex = 23;
-            this.lblAutoDeleteOnIdleMinutes.Text = "Minutes:";
-            // 
-            // txtAutoDeleteOnIdleMinutes
-            // 
-            this.txtAutoDeleteOnIdleMinutes.BackColor = System.Drawing.SystemColors.Window;
-            this.txtAutoDeleteOnIdleMinutes.Location = new System.Drawing.Point(128, 44);
-            this.txtAutoDeleteOnIdleMinutes.Name = "txtAutoDeleteOnIdleMinutes";
-            this.txtAutoDeleteOnIdleMinutes.Size = new System.Drawing.Size(40, 20);
-            this.txtAutoDeleteOnIdleMinutes.TabIndex = 2;
-            // 
-            // lblAutoDeleteOnIdleHours
-            // 
-            this.lblAutoDeleteOnIdleHours.AutoSize = true;
-            this.lblAutoDeleteOnIdleHours.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblAutoDeleteOnIdleHours.Location = new System.Drawing.Point(72, 28);
-            this.lblAutoDeleteOnIdleHours.Name = "lblAutoDeleteOnIdleHours";
-            this.lblAutoDeleteOnIdleHours.Size = new System.Drawing.Size(38, 13);
-            this.lblAutoDeleteOnIdleHours.TabIndex = 22;
-            this.lblAutoDeleteOnIdleHours.Text = "Hours:";
-            // 
-            // lblAutoDeleteOnIdleDays
-            // 
-            this.lblAutoDeleteOnIdleDays.AutoSize = true;
-            this.lblAutoDeleteOnIdleDays.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblAutoDeleteOnIdleDays.Location = new System.Drawing.Point(16, 28);
-            this.lblAutoDeleteOnIdleDays.Name = "lblAutoDeleteOnIdleDays";
-            this.lblAutoDeleteOnIdleDays.Size = new System.Drawing.Size(34, 13);
-            this.lblAutoDeleteOnIdleDays.TabIndex = 21;
-            this.lblAutoDeleteOnIdleDays.Text = "Days:";
-            // 
-            // txtAutoDeleteOnIdleHours
-            // 
-            this.txtAutoDeleteOnIdleHours.BackColor = System.Drawing.SystemColors.Window;
-            this.txtAutoDeleteOnIdleHours.Location = new System.Drawing.Point(72, 44);
-            this.txtAutoDeleteOnIdleHours.Name = "txtAutoDeleteOnIdleHours";
-            this.txtAutoDeleteOnIdleHours.Size = new System.Drawing.Size(40, 20);
-            this.txtAutoDeleteOnIdleHours.TabIndex = 1;
-            // 
-            // txtAutoDeleteOnIdleDays
-            // 
-            this.txtAutoDeleteOnIdleDays.BackColor = System.Drawing.SystemColors.Window;
-            this.txtAutoDeleteOnIdleDays.Location = new System.Drawing.Point(16, 44);
-            this.txtAutoDeleteOnIdleDays.Name = "txtAutoDeleteOnIdleDays";
-            this.txtAutoDeleteOnIdleDays.Size = new System.Drawing.Size(40, 20);
-            this.txtAutoDeleteOnIdleDays.TabIndex = 0;
-            // 
             // groupergrouperDefaultMessageTimeToLive
             // 
             this.groupergrouperDefaultMessageTimeToLive.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -514,16 +726,7 @@
             this.groupergrouperDefaultMessageTimeToLive.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.groupergrouperDefaultMessageTimeToLive.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.groupergrouperDefaultMessageTimeToLive.BorderThickness = 1F;
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveMilliseconds);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveMilliseconds);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveSeconds);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveSeconds);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveMinutes);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveMinutes);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lbllblDefaultMessageTimeToLiveHours);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.lblDefaultMessageTimeToLiveDays);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveHours);
-            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.txtDefaultMessageTimeToLiveDays);
+            this.groupergrouperDefaultMessageTimeToLive.Controls.Add(this.tsDefaultMessageTimeToLive);
             this.groupergrouperDefaultMessageTimeToLive.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.groupergrouperDefaultMessageTimeToLive.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.groupergrouperDefaultMessageTimeToLive.ForeColor = System.Drawing.Color.White;
@@ -539,96 +742,6 @@
             this.groupergrouperDefaultMessageTimeToLive.ShadowThickness = 1;
             this.groupergrouperDefaultMessageTimeToLive.Size = new System.Drawing.Size(296, 80);
             this.groupergrouperDefaultMessageTimeToLive.TabIndex = 2;
-            // 
-            // lblDefaultMessageTimeToLiveMilliseconds
-            // 
-            this.lblDefaultMessageTimeToLiveMilliseconds.AutoSize = true;
-            this.lblDefaultMessageTimeToLiveMilliseconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDefaultMessageTimeToLiveMilliseconds.Location = new System.Drawing.Point(240, 28);
-            this.lblDefaultMessageTimeToLiveMilliseconds.Name = "lblDefaultMessageTimeToLiveMilliseconds";
-            this.lblDefaultMessageTimeToLiveMilliseconds.Size = new System.Drawing.Size(49, 13);
-            this.lblDefaultMessageTimeToLiveMilliseconds.TabIndex = 25;
-            this.lblDefaultMessageTimeToLiveMilliseconds.Text = "Millisecs:";
-            // 
-            // txtDefaultMessageTimeToLiveMilliseconds
-            // 
-            this.txtDefaultMessageTimeToLiveMilliseconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtDefaultMessageTimeToLiveMilliseconds.Location = new System.Drawing.Point(240, 44);
-            this.txtDefaultMessageTimeToLiveMilliseconds.Name = "txtDefaultMessageTimeToLiveMilliseconds";
-            this.txtDefaultMessageTimeToLiveMilliseconds.Size = new System.Drawing.Size(40, 20);
-            this.txtDefaultMessageTimeToLiveMilliseconds.TabIndex = 4;
-            // 
-            // lblDefaultMessageTimeToLiveSeconds
-            // 
-            this.lblDefaultMessageTimeToLiveSeconds.AutoSize = true;
-            this.lblDefaultMessageTimeToLiveSeconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDefaultMessageTimeToLiveSeconds.Location = new System.Drawing.Point(184, 28);
-            this.lblDefaultMessageTimeToLiveSeconds.Name = "lblDefaultMessageTimeToLiveSeconds";
-            this.lblDefaultMessageTimeToLiveSeconds.Size = new System.Drawing.Size(52, 13);
-            this.lblDefaultMessageTimeToLiveSeconds.TabIndex = 24;
-            this.lblDefaultMessageTimeToLiveSeconds.Text = "Seconds:";
-            // 
-            // txtDefaultMessageTimeToLiveSeconds
-            // 
-            this.txtDefaultMessageTimeToLiveSeconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtDefaultMessageTimeToLiveSeconds.Location = new System.Drawing.Point(184, 44);
-            this.txtDefaultMessageTimeToLiveSeconds.Name = "txtDefaultMessageTimeToLiveSeconds";
-            this.txtDefaultMessageTimeToLiveSeconds.Size = new System.Drawing.Size(40, 20);
-            this.txtDefaultMessageTimeToLiveSeconds.TabIndex = 3;
-            // 
-            // lblDefaultMessageTimeToLiveMinutes
-            // 
-            this.lblDefaultMessageTimeToLiveMinutes.AutoSize = true;
-            this.lblDefaultMessageTimeToLiveMinutes.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDefaultMessageTimeToLiveMinutes.Location = new System.Drawing.Point(128, 28);
-            this.lblDefaultMessageTimeToLiveMinutes.Name = "lblDefaultMessageTimeToLiveMinutes";
-            this.lblDefaultMessageTimeToLiveMinutes.Size = new System.Drawing.Size(47, 13);
-            this.lblDefaultMessageTimeToLiveMinutes.TabIndex = 23;
-            this.lblDefaultMessageTimeToLiveMinutes.Text = "Minutes:";
-            // 
-            // txtDefaultMessageTimeToLiveMinutes
-            // 
-            this.txtDefaultMessageTimeToLiveMinutes.BackColor = System.Drawing.SystemColors.Window;
-            this.txtDefaultMessageTimeToLiveMinutes.Location = new System.Drawing.Point(128, 44);
-            this.txtDefaultMessageTimeToLiveMinutes.Name = "txtDefaultMessageTimeToLiveMinutes";
-            this.txtDefaultMessageTimeToLiveMinutes.Size = new System.Drawing.Size(40, 20);
-            this.txtDefaultMessageTimeToLiveMinutes.TabIndex = 2;
-            // 
-            // lbllblDefaultMessageTimeToLiveHours
-            // 
-            this.lbllblDefaultMessageTimeToLiveHours.AutoSize = true;
-            this.lbllblDefaultMessageTimeToLiveHours.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lbllblDefaultMessageTimeToLiveHours.Location = new System.Drawing.Point(72, 28);
-            this.lbllblDefaultMessageTimeToLiveHours.Name = "lbllblDefaultMessageTimeToLiveHours";
-            this.lbllblDefaultMessageTimeToLiveHours.Size = new System.Drawing.Size(38, 13);
-            this.lbllblDefaultMessageTimeToLiveHours.TabIndex = 22;
-            this.lbllblDefaultMessageTimeToLiveHours.Text = "Hours:";
-            // 
-            // lblDefaultMessageTimeToLiveDays
-            // 
-            this.lblDefaultMessageTimeToLiveDays.AutoSize = true;
-            this.lblDefaultMessageTimeToLiveDays.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDefaultMessageTimeToLiveDays.Location = new System.Drawing.Point(16, 28);
-            this.lblDefaultMessageTimeToLiveDays.Name = "lblDefaultMessageTimeToLiveDays";
-            this.lblDefaultMessageTimeToLiveDays.Size = new System.Drawing.Size(34, 13);
-            this.lblDefaultMessageTimeToLiveDays.TabIndex = 21;
-            this.lblDefaultMessageTimeToLiveDays.Text = "Days:";
-            // 
-            // txtDefaultMessageTimeToLiveHours
-            // 
-            this.txtDefaultMessageTimeToLiveHours.BackColor = System.Drawing.SystemColors.Window;
-            this.txtDefaultMessageTimeToLiveHours.Location = new System.Drawing.Point(72, 44);
-            this.txtDefaultMessageTimeToLiveHours.Name = "txtDefaultMessageTimeToLiveHours";
-            this.txtDefaultMessageTimeToLiveHours.Size = new System.Drawing.Size(40, 20);
-            this.txtDefaultMessageTimeToLiveHours.TabIndex = 1;
-            // 
-            // txtDefaultMessageTimeToLiveDays
-            // 
-            this.txtDefaultMessageTimeToLiveDays.BackColor = System.Drawing.SystemColors.Window;
-            this.txtDefaultMessageTimeToLiveDays.Location = new System.Drawing.Point(16, 44);
-            this.txtDefaultMessageTimeToLiveDays.Name = "txtDefaultMessageTimeToLiveDays";
-            this.txtDefaultMessageTimeToLiveDays.Size = new System.Drawing.Size(40, 20);
-            this.txtDefaultMessageTimeToLiveDays.TabIndex = 0;
             // 
             // grouperName
             // 
@@ -817,6 +930,7 @@
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameColumnHeader,
             this.valueColumnHeader});
+            this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
@@ -1001,6 +1115,9 @@
             // 
             // txtMaxDeliveryCount
             // 
+            this.txtMaxDeliveryCount.AllowDecimal = false;
+            this.txtMaxDeliveryCount.AllowNegative = false;
+            this.txtMaxDeliveryCount.AllowSpace = false;
             this.txtMaxDeliveryCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMaxDeliveryCount.BackColor = System.Drawing.SystemColors.Window;
@@ -1016,16 +1133,7 @@
             this.grouperLockDuration.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperLockDuration.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperLockDuration.BorderThickness = 1F;
-            this.grouperLockDuration.Controls.Add(this.lblLockDurationMilliseconds);
-            this.grouperLockDuration.Controls.Add(this.txtLockDurationMilliseconds);
-            this.grouperLockDuration.Controls.Add(this.lblLockDurationSeconds);
-            this.grouperLockDuration.Controls.Add(this.txtLockDurationSeconds);
-            this.grouperLockDuration.Controls.Add(this.lblLockDurationMinutes);
-            this.grouperLockDuration.Controls.Add(this.txtLockDurationMinutes);
-            this.grouperLockDuration.Controls.Add(this.lblLockDurationHours);
-            this.grouperLockDuration.Controls.Add(this.lblLockDurationDays);
-            this.grouperLockDuration.Controls.Add(this.txtLockDurationHours);
-            this.grouperLockDuration.Controls.Add(this.txtLockDurationDays);
+            this.grouperLockDuration.Controls.Add(this.tsLockDuration);
             this.grouperLockDuration.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperLockDuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperLockDuration.ForeColor = System.Drawing.Color.White;
@@ -1041,96 +1149,6 @@
             this.grouperLockDuration.ShadowThickness = 1;
             this.grouperLockDuration.Size = new System.Drawing.Size(296, 80);
             this.grouperLockDuration.TabIndex = 3;
-            // 
-            // lblLockDurationMilliseconds
-            // 
-            this.lblLockDurationMilliseconds.AutoSize = true;
-            this.lblLockDurationMilliseconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLockDurationMilliseconds.Location = new System.Drawing.Point(240, 28);
-            this.lblLockDurationMilliseconds.Name = "lblLockDurationMilliseconds";
-            this.lblLockDurationMilliseconds.Size = new System.Drawing.Size(49, 13);
-            this.lblLockDurationMilliseconds.TabIndex = 25;
-            this.lblLockDurationMilliseconds.Text = "Millisecs:";
-            // 
-            // txtLockDurationMilliseconds
-            // 
-            this.txtLockDurationMilliseconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtLockDurationMilliseconds.Location = new System.Drawing.Point(240, 44);
-            this.txtLockDurationMilliseconds.Name = "txtLockDurationMilliseconds";
-            this.txtLockDurationMilliseconds.Size = new System.Drawing.Size(40, 20);
-            this.txtLockDurationMilliseconds.TabIndex = 4;
-            // 
-            // lblLockDurationSeconds
-            // 
-            this.lblLockDurationSeconds.AutoSize = true;
-            this.lblLockDurationSeconds.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLockDurationSeconds.Location = new System.Drawing.Point(184, 28);
-            this.lblLockDurationSeconds.Name = "lblLockDurationSeconds";
-            this.lblLockDurationSeconds.Size = new System.Drawing.Size(52, 13);
-            this.lblLockDurationSeconds.TabIndex = 24;
-            this.lblLockDurationSeconds.Text = "Seconds:";
-            // 
-            // txtLockDurationSeconds
-            // 
-            this.txtLockDurationSeconds.BackColor = System.Drawing.SystemColors.Window;
-            this.txtLockDurationSeconds.Location = new System.Drawing.Point(184, 44);
-            this.txtLockDurationSeconds.Name = "txtLockDurationSeconds";
-            this.txtLockDurationSeconds.Size = new System.Drawing.Size(40, 20);
-            this.txtLockDurationSeconds.TabIndex = 3;
-            // 
-            // lblLockDurationMinutes
-            // 
-            this.lblLockDurationMinutes.AutoSize = true;
-            this.lblLockDurationMinutes.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLockDurationMinutes.Location = new System.Drawing.Point(128, 28);
-            this.lblLockDurationMinutes.Name = "lblLockDurationMinutes";
-            this.lblLockDurationMinutes.Size = new System.Drawing.Size(47, 13);
-            this.lblLockDurationMinutes.TabIndex = 23;
-            this.lblLockDurationMinutes.Text = "Minutes:";
-            // 
-            // txtLockDurationMinutes
-            // 
-            this.txtLockDurationMinutes.BackColor = System.Drawing.SystemColors.Window;
-            this.txtLockDurationMinutes.Location = new System.Drawing.Point(128, 44);
-            this.txtLockDurationMinutes.Name = "txtLockDurationMinutes";
-            this.txtLockDurationMinutes.Size = new System.Drawing.Size(40, 20);
-            this.txtLockDurationMinutes.TabIndex = 2;
-            // 
-            // lblLockDurationHours
-            // 
-            this.lblLockDurationHours.AutoSize = true;
-            this.lblLockDurationHours.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLockDurationHours.Location = new System.Drawing.Point(72, 28);
-            this.lblLockDurationHours.Name = "lblLockDurationHours";
-            this.lblLockDurationHours.Size = new System.Drawing.Size(38, 13);
-            this.lblLockDurationHours.TabIndex = 22;
-            this.lblLockDurationHours.Text = "Hours:";
-            // 
-            // lblLockDurationDays
-            // 
-            this.lblLockDurationDays.AutoSize = true;
-            this.lblLockDurationDays.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblLockDurationDays.Location = new System.Drawing.Point(16, 28);
-            this.lblLockDurationDays.Name = "lblLockDurationDays";
-            this.lblLockDurationDays.Size = new System.Drawing.Size(34, 13);
-            this.lblLockDurationDays.TabIndex = 21;
-            this.lblLockDurationDays.Text = "Days:";
-            // 
-            // txtLockDurationHours
-            // 
-            this.txtLockDurationHours.BackColor = System.Drawing.SystemColors.Window;
-            this.txtLockDurationHours.Location = new System.Drawing.Point(72, 44);
-            this.txtLockDurationHours.Name = "txtLockDurationHours";
-            this.txtLockDurationHours.Size = new System.Drawing.Size(40, 20);
-            this.txtLockDurationHours.TabIndex = 1;
-            // 
-            // txtLockDurationDays
-            // 
-            this.txtLockDurationDays.BackColor = System.Drawing.SystemColors.Window;
-            this.txtLockDurationDays.Location = new System.Drawing.Point(16, 44);
-            this.txtLockDurationDays.Name = "txtLockDurationDays";
-            this.txtLockDurationDays.Size = new System.Drawing.Size(40, 20);
-            this.txtLockDurationDays.TabIndex = 0;
             // 
             // grouperSubscriptionSettings
             // 
@@ -1178,58 +1196,6 @@
             this.checkedListBox.TabIndex = 0;
             this.checkedListBox.ThreeDCheckBoxes = true;
             this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
-            // 
-            // tabPageMessages
-            // 
-            this.tabPageMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.tabPageMessages.Controls.Add(this.messagesSplitContainer);
-            this.tabPageMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tabPageMessages.Location = new System.Drawing.Point(4, 24);
-            this.tabPageMessages.Name = "tabPageMessages";
-            this.tabPageMessages.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMessages.Size = new System.Drawing.Size(968, 452);
-            this.tabPageMessages.TabIndex = 5;
-            this.tabPageMessages.Text = "Messages";
-            this.tabPageMessages.Resize += new System.EventHandler(this.tabPageMessages_Resize);
-            // 
-            // messagesSplitContainer
-            // 
-            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.messagesSplitContainer.Location = new System.Drawing.Point(16, 8);
-            this.messagesSplitContainer.Name = "messagesSplitContainer";
-            // 
-            // messagesSplitContainer.Panel1
-            // 
-            this.messagesSplitContainer.Panel1.Controls.Add(this.messageMainSplitContainer);
-            // 
-            // messagesSplitContainer.Panel2
-            // 
-            this.messagesSplitContainer.Panel2.Controls.Add(this.messagePropertiesSplitContainer);
-            this.messagesSplitContainer.Size = new System.Drawing.Size(936, 432);
-            this.messagesSplitContainer.SplitterDistance = 607;
-            this.messagesSplitContainer.SplitterWidth = 16;
-            this.messagesSplitContainer.TabIndex = 3;
-            // 
-            // messageMainSplitContainer
-            // 
-            this.messageMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.messageMainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.messageMainSplitContainer.Name = "messageMainSplitContainer";
-            this.messageMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // messageMainSplitContainer.Panel1
-            // 
-            this.messageMainSplitContainer.Panel1.Controls.Add(this.grouperMessageList);
-            // 
-            // messageMainSplitContainer.Panel2
-            // 
-            this.messageMainSplitContainer.Panel2.Controls.Add(this.grouperMessageText);
-            this.messageMainSplitContainer.Size = new System.Drawing.Size(607, 432);
-            this.messageMainSplitContainer.SplitterDistance = 212;
-            this.messageMainSplitContainer.SplitterWidth = 8;
-            this.messageMainSplitContainer.TabIndex = 0;
             // 
             // grouperMessageList
             // 
@@ -1375,25 +1341,6 @@
             this.txtMessageText.TabIndex = 0;
             this.txtMessageText.Zoom = 100;
             // 
-            // messagePropertiesSplitContainer
-            // 
-            this.messagePropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.messagePropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.messagePropertiesSplitContainer.Name = "messagePropertiesSplitContainer";
-            this.messagePropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // messagePropertiesSplitContainer.Panel1
-            // 
-            this.messagePropertiesSplitContainer.Panel1.Controls.Add(this.grouperMessageProperties);
-            // 
-            // messagePropertiesSplitContainer.Panel2
-            // 
-            this.messagePropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
-            this.messagePropertiesSplitContainer.Size = new System.Drawing.Size(313, 432);
-            this.messagePropertiesSplitContainer.SplitterDistance = 212;
-            this.messagePropertiesSplitContainer.SplitterWidth = 8;
-            this.messagePropertiesSplitContainer.TabIndex = 0;
-            // 
             // grouperMessageProperties
             // 
             this.grouperMessageProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -1466,6 +1413,7 @@
             this.messagePropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
+            this.messagePropertyListView.HideSelection = false;
             this.messagePropertyListView.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyListView.Name = "messagePropertyListView";
             this.messagePropertyListView.OwnerDraw = true;
@@ -1487,58 +1435,6 @@
             // 
             this.columnHeader2.Text = "Value";
             this.columnHeader2.Width = 115;
-            // 
-            // tabPageDeadletter
-            // 
-            this.tabPageDeadletter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.tabPageDeadletter.Controls.Add(this.deadletterSplitContainer);
-            this.tabPageDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tabPageDeadletter.Location = new System.Drawing.Point(4, 24);
-            this.tabPageDeadletter.Name = "tabPageDeadletter";
-            this.tabPageDeadletter.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDeadletter.Size = new System.Drawing.Size(968, 452);
-            this.tabPageDeadletter.TabIndex = 7;
-            this.tabPageDeadletter.Text = "Deadletter";
-            this.tabPageDeadletter.Resize += new System.EventHandler(this.deadletterTabPage_Resize);
-            // 
-            // deadletterSplitContainer
-            // 
-            this.deadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.deadletterSplitContainer.Location = new System.Drawing.Point(16, 8);
-            this.deadletterSplitContainer.Name = "deadletterSplitContainer";
-            // 
-            // deadletterSplitContainer.Panel1
-            // 
-            this.deadletterSplitContainer.Panel1.Controls.Add(this.deadletterMainSplitContainer);
-            // 
-            // deadletterSplitContainer.Panel2
-            // 
-            this.deadletterSplitContainer.Panel2.Controls.Add(this.deadletterPropertiesSplitContainer);
-            this.deadletterSplitContainer.Size = new System.Drawing.Size(936, 432);
-            this.deadletterSplitContainer.SplitterDistance = 607;
-            this.deadletterSplitContainer.SplitterWidth = 16;
-            this.deadletterSplitContainer.TabIndex = 4;
-            // 
-            // deadletterMainSplitContainer
-            // 
-            this.deadletterMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deadletterMainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.deadletterMainSplitContainer.Name = "deadletterMainSplitContainer";
-            this.deadletterMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // deadletterMainSplitContainer.Panel1
-            // 
-            this.deadletterMainSplitContainer.Panel1.Controls.Add(this.grouperDeadletterList);
-            // 
-            // deadletterMainSplitContainer.Panel2
-            // 
-            this.deadletterMainSplitContainer.Panel2.Controls.Add(this.grouperDeadletterText);
-            this.deadletterMainSplitContainer.Size = new System.Drawing.Size(607, 432);
-            this.deadletterMainSplitContainer.SplitterDistance = 212;
-            this.deadletterMainSplitContainer.SplitterWidth = 8;
-            this.deadletterMainSplitContainer.TabIndex = 0;
             // 
             // grouperDeadletterList
             // 
@@ -1686,25 +1582,6 @@
             this.txtDeadletterText.TabIndex = 0;
             this.txtDeadletterText.Zoom = 100;
             // 
-            // deadletterPropertiesSplitContainer
-            // 
-            this.deadletterPropertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deadletterPropertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.deadletterPropertiesSplitContainer.Name = "deadletterPropertiesSplitContainer";
-            this.deadletterPropertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // deadletterPropertiesSplitContainer.Panel1
-            // 
-            this.deadletterPropertiesSplitContainer.Panel1.Controls.Add(this.grouperDeadletterSystemProperties);
-            // 
-            // deadletterPropertiesSplitContainer.Panel2
-            // 
-            this.deadletterPropertiesSplitContainer.Panel2.Controls.Add(this.grouperDeadletterCustomProperties);
-            this.deadletterPropertiesSplitContainer.Size = new System.Drawing.Size(313, 432);
-            this.deadletterPropertiesSplitContainer.SplitterDistance = 212;
-            this.deadletterPropertiesSplitContainer.SplitterWidth = 8;
-            this.deadletterPropertiesSplitContainer.TabIndex = 0;
-            // 
             // grouperDeadletterSystemProperties
             // 
             this.grouperDeadletterSystemProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -1779,6 +1656,7 @@
             this.deadletterPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4});
+            this.deadletterPropertyListView.HideSelection = false;
             this.deadletterPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.deadletterPropertyListView.Name = "deadletterPropertyListView";
             this.deadletterPropertyListView.OwnerDraw = true;
@@ -1800,58 +1678,6 @@
             // 
             this.columnHeader4.Text = "Value";
             this.columnHeader4.Width = 115;
-            // 
-            // tabPageSessions
-            // 
-            this.tabPageSessions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.tabPageSessions.Controls.Add(this.sessionsSplitContainer);
-            this.tabPageSessions.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tabPageSessions.Location = new System.Drawing.Point(4, 24);
-            this.tabPageSessions.Name = "tabPageSessions";
-            this.tabPageSessions.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSessions.Size = new System.Drawing.Size(968, 452);
-            this.tabPageSessions.TabIndex = 6;
-            this.tabPageSessions.Text = "Sessions";
-            this.tabPageSessions.Resize += new System.EventHandler(this.tabPageSessions_Resize);
-            // 
-            // sessionsSplitContainer
-            // 
-            this.sessionsSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.sessionsSplitContainer.Location = new System.Drawing.Point(16, 8);
-            this.sessionsSplitContainer.Name = "sessionsSplitContainer";
-            // 
-            // sessionsSplitContainer.Panel1
-            // 
-            this.sessionsSplitContainer.Panel1.Controls.Add(this.sessionMainSplitContainer);
-            // 
-            // sessionsSplitContainer.Panel2
-            // 
-            this.sessionsSplitContainer.Panel2.Controls.Add(this.grouperSessionProperties);
-            this.sessionsSplitContainer.Size = new System.Drawing.Size(936, 432);
-            this.sessionsSplitContainer.SplitterDistance = 607;
-            this.sessionsSplitContainer.SplitterWidth = 16;
-            this.sessionsSplitContainer.TabIndex = 4;
-            // 
-            // sessionMainSplitContainer
-            // 
-            this.sessionMainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sessionMainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.sessionMainSplitContainer.Name = "sessionMainSplitContainer";
-            this.sessionMainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // sessionMainSplitContainer.Panel1
-            // 
-            this.sessionMainSplitContainer.Panel1.Controls.Add(this.grouperSessionList);
-            // 
-            // sessionMainSplitContainer.Panel2
-            // 
-            this.sessionMainSplitContainer.Panel2.Controls.Add(this.grouperSessionState);
-            this.sessionMainSplitContainer.Size = new System.Drawing.Size(607, 432);
-            this.sessionMainSplitContainer.SplitterDistance = 212;
-            this.sessionMainSplitContainer.SplitterWidth = 8;
-            this.sessionMainSplitContainer.TabIndex = 2;
             // 
             // grouperSessionList
             // 
@@ -1988,149 +1814,26 @@
             this.sessionPropertyGrid.TabIndex = 1;
             this.sessionPropertyGrid.ToolbarVisible = false;
             // 
-            // deadletterContextMenuStrip
+            // tsAutoDeleteOnIdle
             // 
-            this.deadletterContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.deadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.repairAndResubmitDeadletterToolStripMenuItem,
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.saveSelectedDeadletteredMessageToolStripMenuItem,
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem,
-            this.deleteSelectedMessageToolStripMenuItem,
-            this.deleteSelectedMessagesToolStripMenuItem});
-            this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            this.tsAutoDeleteOnIdle.Location = new System.Drawing.Point(14, 25);
+            this.tsAutoDeleteOnIdle.Name = "tsAutoDeleteOnIdle";
+            this.tsAutoDeleteOnIdle.Size = new System.Drawing.Size(273, 42);
+            this.tsAutoDeleteOnIdle.TabIndex = 1;
             // 
-            // repairAndResubmitDeadletterToolStripMenuItem
+            // tsDefaultMessageTimeToLive
             // 
-            this.repairAndResubmitDeadletterToolStripMenuItem.Name = "repairAndResubmitDeadletterToolStripMenuItem";
-            this.repairAndResubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.repairAndResubmitDeadletterToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
-            this.repairAndResubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitDeadletterMessageToolStripMenuItem_Click);
+            this.tsDefaultMessageTimeToLive.Location = new System.Drawing.Point(14, 25);
+            this.tsDefaultMessageTimeToLive.Name = "tsDefaultMessageTimeToLive";
+            this.tsDefaultMessageTimeToLive.Size = new System.Drawing.Size(273, 42);
+            this.tsDefaultMessageTimeToLive.TabIndex = 2;
             // 
-            // resubmitSelectedDeadletterInBatchModeToolStripMenuItem
+            // tsLockDuration
             // 
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Name = "resubmitSelectedDeadletterInBatchModeToolStripMenuItem";
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
-            this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(302, 6);
-            // 
-            // saveSelectedDeadletteredMessageToolStripMenuItem
-            // 
-            this.saveSelectedDeadletteredMessageToolStripMenuItem.Name = "saveSelectedDeadletteredMessageToolStripMenuItem";
-            this.saveSelectedDeadletteredMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedDeadletteredMessageToolStripMenuItem.Text = "Save Selected Message";
-            this.saveSelectedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessageToolStripMenuItem_Click);
-            // 
-            // saveSelectedDeadletteredMessagesToolStripMenuItem
-            // 
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesToolStripMenuItem";
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesToolStripMenuItem_Click);
-            // 
-            // deleteSelectedMessageToolStripMenuItem
-            // 
-            this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedMessageToolStripMenuItem";
-            this.deleteSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.deleteSelectedMessageToolStripMenuItem.Text = "Delete Selected Message";
-            this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessageToolStripMenuItem_Click);
-            // 
-            // deleteSelectedMessagesToolStripMenuItem
-            // 
-            this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedMessagesToolStripMenuItem";
-            this.deleteSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
-            this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
-            // 
-            // messagesContextMenuStrip
-            // 
-            this.messagesContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.repairAndResubmitMessageToolStripMenuItem,
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.saveSelectedMessageToolStripMenuItem,
-            this.saveSelectedMessagesToolStripMenuItem});
-            this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 98);
-            // 
-            // repairAndResubmitMessageToolStripMenuItem
-            // 
-            this.repairAndResubmitMessageToolStripMenuItem.Name = "repairAndResubmitMessageToolStripMenuItem";
-            this.repairAndResubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.repairAndResubmitMessageToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
-            this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
-            // 
-            // resubmitSelectedMessagesInBatchModeToolStripMenuItem
-            // 
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Name = "resubmitSelectedMessagesInBatchModeToolStripMenuItem";
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
-            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(302, 6);
-            // 
-            // saveSelectedMessageToolStripMenuItem
-            // 
-            this.saveSelectedMessageToolStripMenuItem.Name = "saveSelectedMessageToolStripMenuItem";
-            this.saveSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedMessageToolStripMenuItem.Text = "Save Selected Message";
-            this.saveSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageToolStripMenuItem_Click);
-            // 
-            // saveSelectedMessagesToolStripMenuItem
-            // 
-            this.saveSelectedMessagesToolStripMenuItem.Name = "saveSelectedMessagesToolStripMenuItem";
-            this.saveSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.saveSelectedMessagesToolStripMenuItem.Text = "Save Selected Messages";
-            this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
-            // 
-            // btnPurgeMessages
-            // 
-            this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPurgeMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPurgeMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPurgeMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeMessages.Location = new System.Drawing.Point(282, 504);
-            this.btnPurgeMessages.Name = "btnPurgeMessages";
-            this.btnPurgeMessages.Size = new System.Drawing.Size(72, 24);
-            this.btnPurgeMessages.TabIndex = 17;
-            this.btnPurgeMessages.Text = "Purge";
-            this.btnPurgeMessages.UseVisualStyleBackColor = false;
-            this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
-            this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // btnPurgeDeadletterQueueMessages
-            // 
-            this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(362, 504);
-            this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
-            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(72, 24);
-            this.btnPurgeDeadletterQueueMessages.TabIndex = 16;
-            this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
-            this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
-            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
-            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.tsLockDuration.Location = new System.Drawing.Point(16, 25);
+            this.tsLockDuration.Name = "tsLockDuration";
+            this.tsLockDuration.Size = new System.Drawing.Size(273, 42);
+            this.tsLockDuration.TabIndex = 3;
             // 
             // HandleSubscriptionControl
             // 
@@ -2151,20 +1854,6 @@
             this.Size = new System.Drawing.Size(1008, 544);
             this.mainTabControl.ResumeLayout(false);
             this.tabPageDescription.ResumeLayout(false);
-            this.grouperAutoDeleteOnIdle.ResumeLayout(false);
-            this.grouperAutoDeleteOnIdle.PerformLayout();
-            this.groupergrouperDefaultMessageTimeToLive.ResumeLayout(false);
-            this.groupergrouperDefaultMessageTimeToLive.PerformLayout();
-            this.grouperName.ResumeLayout(false);
-            this.grouperName.PerformLayout();
-            this.grouperDefaultRule.ResumeLayout(false);
-            this.grouperDefaultRule.PerformLayout();
-            this.grouperSubscriptionInformation.ResumeLayout(false);
-            this.grouperSubscriptionProperties.ResumeLayout(false);
-            this.grouperSubscriptionProperties.PerformLayout();
-            this.grouperLockDuration.ResumeLayout(false);
-            this.grouperLockDuration.PerformLayout();
-            this.grouperSubscriptionSettings.ResumeLayout(false);
             this.tabPageMessages.ResumeLayout(false);
             this.messagesSplitContainer.Panel1.ResumeLayout(false);
             this.messagesSplitContainer.Panel2.ResumeLayout(false);
@@ -2174,18 +1863,10 @@
             this.messageMainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messageMainSplitContainer)).EndInit();
             this.messageMainSplitContainer.ResumeLayout(false);
-            this.grouperMessageList.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).EndInit();
-            this.grouperMessageText.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
             this.messagePropertiesSplitContainer.Panel1.ResumeLayout(false);
             this.messagePropertiesSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.messagePropertiesSplitContainer)).EndInit();
             this.messagePropertiesSplitContainer.ResumeLayout(false);
-            this.grouperMessageProperties.ResumeLayout(false);
-            this.grouperMessageCustomProperties.ResumeLayout(false);
             this.tabPageDeadletter.ResumeLayout(false);
             this.deadletterSplitContainer.Panel1.ResumeLayout(false);
             this.deadletterSplitContainer.Panel2.ResumeLayout(false);
@@ -2195,18 +1876,10 @@
             this.deadletterMainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.deadletterMainSplitContainer)).EndInit();
             this.deadletterMainSplitContainer.ResumeLayout(false);
-            this.grouperDeadletterList.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).EndInit();
-            this.grouperDeadletterText.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).EndInit();
             this.deadletterPropertiesSplitContainer.Panel1.ResumeLayout(false);
             this.deadletterPropertiesSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.deadletterPropertiesSplitContainer)).EndInit();
             this.deadletterPropertiesSplitContainer.ResumeLayout(false);
-            this.grouperDeadletterSystemProperties.ResumeLayout(false);
-            this.grouperDeadletterCustomProperties.ResumeLayout(false);
             this.tabPageSessions.ResumeLayout(false);
             this.sessionsSplitContainer.Panel1.ResumeLayout(false);
             this.sessionsSplitContainer.Panel2.ResumeLayout(false);
@@ -2216,17 +1889,44 @@
             this.sessionMainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.sessionMainSplitContainer)).EndInit();
             this.sessionMainSplitContainer.ResumeLayout(false);
-            this.grouperSessionList.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.sessionsDataGridView)).EndInit();
-            this.grouperSessionState.ResumeLayout(false);
-            this.grouperSessionState.PerformLayout();
-            this.grouperSessionProperties.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesBindingSource)).EndInit();
             this.deadletterContextMenuStrip.ResumeLayout(false);
             this.messagesContextMenuStrip.ResumeLayout(false);
+            this.grouperAutoDeleteOnIdle.ResumeLayout(false);
+            this.groupergrouperDefaultMessageTimeToLive.ResumeLayout(false);
+            this.grouperName.ResumeLayout(false);
+            this.grouperName.PerformLayout();
+            this.grouperDefaultRule.ResumeLayout(false);
+            this.grouperDefaultRule.PerformLayout();
+            this.grouperSubscriptionInformation.ResumeLayout(false);
+            this.grouperSubscriptionProperties.ResumeLayout(false);
+            this.grouperSubscriptionProperties.PerformLayout();
+            this.grouperLockDuration.ResumeLayout(false);
+            this.grouperSubscriptionSettings.ResumeLayout(false);
+            this.grouperMessageList.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessages)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindMessagesByDate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.messagesDataGridView)).EndInit();
+            this.grouperMessageText.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txtMessageText)).EndInit();
+            this.grouperMessageProperties.ResumeLayout(false);
+            this.grouperMessageCustomProperties.ResumeLayout(false);
+            this.grouperDeadletterList.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletter)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictFindDeadletterByDate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.deadletterDataGridView)).EndInit();
+            this.grouperDeadletterText.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txtDeadletterText)).EndInit();
+            this.grouperDeadletterSystemProperties.ResumeLayout(false);
+            this.grouperDeadletterCustomProperties.ResumeLayout(false);
+            this.grouperSessionList.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.sessionsDataGridView)).EndInit();
+            this.grouperSessionState.ResumeLayout(false);
+            this.grouperSessionState.PerformLayout();
+            this.grouperSessionProperties.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2258,16 +1958,6 @@
         private Grouper grouperDeadletterList;
         private System.Windows.Forms.DataGridView deadletterDataGridView;
         private Grouper groupergrouperDefaultMessageTimeToLive;
-        private System.Windows.Forms.Label lblDefaultMessageTimeToLiveMilliseconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveMilliseconds;
-        private System.Windows.Forms.Label lblDefaultMessageTimeToLiveSeconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveSeconds;
-        private System.Windows.Forms.Label lblDefaultMessageTimeToLiveMinutes;
-        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveMinutes;
-        private System.Windows.Forms.Label lbllblDefaultMessageTimeToLiveHours;
-        private System.Windows.Forms.Label lblDefaultMessageTimeToLiveDays;
-        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveHours;
-        private ServiceBusExplorer.Controls.NumericTextBox txtDefaultMessageTimeToLiveDays;
         private Grouper grouperName;
         private System.Windows.Forms.Label lblRelativeURI;
         private System.Windows.Forms.TextBox txtName;
@@ -2292,29 +1982,9 @@
         private System.Windows.Forms.Label labelUserDescription;
         private ServiceBusExplorer.Controls.NumericTextBox txtMaxDeliveryCount;
         private Grouper grouperLockDuration;
-        private System.Windows.Forms.Label lblLockDurationMilliseconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtLockDurationMilliseconds;
-        private System.Windows.Forms.Label lblLockDurationSeconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtLockDurationSeconds;
-        private System.Windows.Forms.Label lblLockDurationMinutes;
-        private ServiceBusExplorer.Controls.NumericTextBox txtLockDurationMinutes;
-        private System.Windows.Forms.Label lblLockDurationHours;
-        private System.Windows.Forms.Label lblLockDurationDays;
-        private ServiceBusExplorer.Controls.NumericTextBox txtLockDurationHours;
-        private ServiceBusExplorer.Controls.NumericTextBox txtLockDurationDays;
         private Grouper grouperSubscriptionSettings;
         private System.Windows.Forms.CheckedListBox checkedListBox;
         private Grouper grouperAutoDeleteOnIdle;
-        private System.Windows.Forms.Label lblAutoDeleteOnIdleMilliseconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleMilliseconds;
-        private System.Windows.Forms.Label lblAutoDeleteOnIdleSeconds;
-        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleSeconds;
-        private System.Windows.Forms.Label lblAutoDeleteOnIdleMinutes;
-        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleMinutes;
-        private System.Windows.Forms.Label lblAutoDeleteOnIdleHours;
-        private System.Windows.Forms.Label lblAutoDeleteOnIdleDays;
-        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleHours;
-        private ServiceBusExplorer.Controls.NumericTextBox txtAutoDeleteOnIdleDays;
         private System.Windows.Forms.BindingSource sessionsBindingSource;
         private System.Windows.Forms.BindingSource messagesBindingSource;
         private System.Windows.Forms.BindingSource deadletterBindingSource;
@@ -2366,5 +2036,8 @@
         private System.Windows.Forms.ListView deadletterPropertyListView;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
+        private TimeSpanControl tsAutoDeleteOnIdle;
+        private TimeSpanControl tsDefaultMessageTimeToLive;
+        private TimeSpanControl tsLockDuration;
     }
 }
