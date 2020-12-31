@@ -180,6 +180,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                             ++consecutiveZeroBatchReceives;
                         }
                     }
+
+                    await sessionReceiver.CloseAsync().ConfigureAwait(false);
                 }
             }
             catch (TimeoutException)
@@ -188,15 +190,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             finally
             {
-                if (null != sessionReceiver)
-                {
-                    await sessionReceiver.CloseAsync().ConfigureAwait(false);
-                }
-
-                if (null != client)
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
+                await client.DisposeAsync().ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
@@ -272,14 +266,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             var taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
             var tasks = new Task[taskCount];
             var quit = false;  // This instance controls all the receiving tasks
-            ServiceBusClient client = null;
+
+            var client = new ServiceBusClient(
+                serviceBusHelper.ConnectionString,
+                new ServiceBusClientOptions { TransportType = serviceBusHelper.TransportType });
 
             try
             {
-                client = new ServiceBusClient(
-                    serviceBusHelper.ConnectionString,
-                    new ServiceBusClientOptions { TransportType = serviceBusHelper.TransportType });
-
                 for (var taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
                 {
                     tasks[taskIndex] = Task.Run(async () =>
@@ -332,10 +325,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             finally
             {
-                if (null != client)
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
+                await client.DisposeAsync().ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
