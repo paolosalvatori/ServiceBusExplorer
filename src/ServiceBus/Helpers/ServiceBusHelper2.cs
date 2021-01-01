@@ -20,16 +20,17 @@
 #endregion
 
 #region Using Directives
-using Azure.Messaging.ServiceBus;
 #endregion
 
 // ReSharper disable CheckNamespace
 namespace ServiceBusExplorer.ServiceBus.Helpers
 // ReSharper restore CheckNamespace
 {
-    public class ServiceBusHelper2
+    using Microsoft.Azure.ServiceBus;
+
+    public class ServiceBusHelper2 
     {
         public string ConnectionString { get; set; }
-        public ServiceBusTransportType TransportType { get; set; }
+        public TransportType TransportType { get; set; }
     }
 }

@@ -24,24 +24,22 @@
 #region Using Directives
 
 #nullable enable
-using Microsoft.ServiceBus.Messaging;
-
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.ServiceBus.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
-
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Linq;
+using Microsoft.ServiceBus.Messaging;
+using System.Threading.Tasks;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
 
 #endregion
 
@@ -410,12 +408,12 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var newSdkQueueDescription = await serviceBusHelper.GetNewSdkQueueProperties(queueDescription);
+                var newSdkQueueDescription = await serviceBusHelper.GetNewSdkQueueDescription(queueDescription);
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), newSdkQueueDescription);
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds}] milliseconds.");
                 return count;
             }
             finally
@@ -439,7 +437,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var newSdkQueueDescription = await serviceBusHelper.GetNewSdkQueueProperties(queueDescription);
+                var newSdkQueueDescription = await serviceBusHelper.GetNewSdkQueueDescription(queueDescription);
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), newSdkQueueDescription);
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
@@ -1353,8 +1351,8 @@ namespace ServiceBusExplorer.Controls
                     MessageReceiver receiver;
                     if (fromSession != null)
                     {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
+                        ReceiveMode.PeekLock);
                         receiver = queueClient.AcceptMessageSession(fromSession);
                     }
                     else
@@ -1501,15 +1499,15 @@ namespace ServiceBusExplorer.Controls
                     MessageReceiver messageReceiver;
                     if (fromSession != null)
                     {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
+                        ReceiveMode.PeekLock);
                         messageReceiver = queueClient.AcceptMessageSession(fromSession);
                     }
                     else
                     {
                         messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, ReceiveMode.PeekLock);
                     }
-
+    
                     for (var i = 0; i < count; i++)
                     {
                         BrokeredMessage message;
