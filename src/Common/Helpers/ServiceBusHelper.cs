@@ -5309,7 +5309,7 @@ namespace ServiceBusExplorer
             return await managementClient.GetQueueAsync(oldQueueDescription.Path);
         }
 
-        public async Task<SubscriptionWrapper2> GetSubscriptionWrapper2(SubscriptionWrapper oldSubscriptionWrapper)
+        public async Task<NewSdkManagement.SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
         {
             var managementClient = new NewSdkManagement.ServiceBusAdministrationClient(connectionString);
 
@@ -5317,13 +5317,12 @@ namespace ServiceBusExplorer
                 oldSubscriptionWrapper.TopicDescription.Path)
                 .ConfigureAwait(false);
 
-
             var subscriptionResponse = await managementClient.GetSubscriptionAsync(
                 topicResponse.Value.Name,
                 oldSubscriptionWrapper.SubscriptionDescription.Name)
                 .ConfigureAwait(false);
 
-            return new SubscriptionWrapper2(subscriptionResponse.Value, topicResponse.Value);
+            return subscriptionResponse.Value;
         }
         #endregion
 

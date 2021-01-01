@@ -391,8 +391,8 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
+                var subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
+                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.refreshEntity_Click(null, null);
@@ -421,7 +421,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionWrapper2(subscriptionWrapper);
+                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();

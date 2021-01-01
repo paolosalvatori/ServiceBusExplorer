@@ -32,9 +32,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     public class ServiceBusPurger
     {
-        // Either queueProperties or subscriptWrapper is used - but never both.
+        // Either queueProperties or subscriptProperties is used - but never both.
         readonly QueueProperties queueProperties;
-        readonly SubscriptionWrapper2 subscriptionWrapper;
+        readonly SubscriptionProperties subscriptionProperties;
         readonly ServiceBusHelper2 serviceBusHelper;
 
         public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper, QueueProperties queueProperties)
@@ -43,10 +43,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             this.queueProperties = queueProperties;
         }
 
-        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper, SubscriptionWrapper2 subscriptionWrapper)
+        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper, SubscriptionProperties subscriptionProperties)
         {
             this.serviceBusHelper = serviceBusHelper;
-            this.subscriptionWrapper = subscriptionWrapper;
+            this.subscriptionProperties = subscriptionProperties;
         }
 
         /// <summary>
@@ -72,67 +72,60 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             return totalMessagesPurged;
         }
 
-        async Task<ServiceBusReceiver> CreateServiceBusReceiver(ServiceBusClient client,
+        ServiceBusReceiver CreateServiceBusReceiver(ServiceBusClient client,
             bool purgeDeadLetterQueueInstead)
         {
-            ServiceBusReceiver receiver = null;
-
-            if (!purgeDeadLetterQueueInstead && EntityRequiresSession())
+            if (queueProperties != null)
             {
-                // Create SessionReceiver
-
-                if (queueProperties != null)
-                {
-                    receiver = await client.AcceptNextSessionAsync(
-                        queueProperties.Name,
-                        new ServiceBusSessionReceiverOptions
-                        {
-                            PrefetchCount = 10,
-                            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
-                        });
-                }
-                else
-                {
-                    receiver = await client.AcceptNextSessionAsync(
-                        subscriptionWrapper.SubscriptionProperties.TopicName,
-                        subscriptionWrapper.SubscriptionProperties.SubscriptionName,
-
-                        new ServiceBusSessionReceiverOptions
-                        {
-                            PrefetchCount = 10,
-                            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
-                        });
-                }
+                return client.CreateReceiver(
+                    queueProperties.Name,
+                    new ServiceBusReceiverOptions
+                    {
+                        PrefetchCount = 50,
+                        ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
+                        SubQueue = purgeDeadLetterQueueInstead ? SubQueue.DeadLetter : SubQueue.None
+                    });
             }
             else
             {
-                // Create normal Receiver
-                if (queueProperties != null)
-                {
-                    receiver = client.CreateReceiver(
-                        queueProperties.Name,
-                        new ServiceBusReceiverOptions
-                        {
-                            PrefetchCount = 50,
-                            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-                            SubQueue = purgeDeadLetterQueueInstead ? SubQueue.DeadLetter : SubQueue.None
-                        });
-                }
-                else
-                {
-                    receiver = client.CreateReceiver(
-                        subscriptionWrapper.SubscriptionProperties.TopicName,
-                        subscriptionWrapper.SubscriptionProperties.SubscriptionName,
-                        new ServiceBusReceiverOptions
-                        {
-                            PrefetchCount = 50,
-                            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-                            SubQueue = purgeDeadLetterQueueInstead ? SubQueue.DeadLetter : SubQueue.None
-                        });
-                }
+                return client.CreateReceiver(
+                    subscriptionProperties.TopicName,
+                    subscriptionProperties.SubscriptionName,
+                    new ServiceBusReceiverOptions
+                    {
+                        PrefetchCount = 50,
+                        ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
+                        SubQueue = purgeDeadLetterQueueInstead ? SubQueue.DeadLetter : SubQueue.None
+                    });
             }
+        }
 
-            return receiver;
+        async Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(ServiceBusClient client,
+            bool purgeDeadLetterQueueInstead)
+        {
+            if (queueProperties != null)
+            {
+                return await client.AcceptNextSessionAsync(
+                    queueProperties.Name,
+                    new ServiceBusSessionReceiverOptions
+                    {
+                        PrefetchCount = 10,
+                        ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
+                    })
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                return await client.AcceptNextSessionAsync(
+                    subscriptionProperties.TopicName,
+                    subscriptionProperties.SubscriptionName,
+                    new ServiceBusSessionReceiverOptions
+                    {
+                        PrefetchCount = 10,
+                        ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
+                    })
+                    .ConfigureAwait(false);
+            }
         }
 
         async Task<long> PurgeSessionEntity()
@@ -156,8 +149,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 while (consecutiveSessionTimeOuts < enoughZeroReceives && totalMessagesPurged < messagesToPurgeCount)
                 {
-                    sessionReceiver = (ServiceBusSessionReceiver)await
-                        CreateServiceBusReceiver(client, purgeDeadLetterQueueInstead: false)
+                    sessionReceiver = await CreateServiceBusSessionReceiver(
+                        client, 
+                        purgeDeadLetterQueueInstead: false)
                         .ConfigureAwait(false);
 
                     var consecutiveZeroBatchReceives = 0;
@@ -212,7 +206,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                     )
                     .ConfigureAwait(false);
 
-                messageCount = await GetMessageCount(purgeDeadLetterQueueInstead);
+                messageCount = await GetMessageCount(purgeDeadLetterQueueInstead).ConfigureAwait(false);
                 ++retries;
             }
 
@@ -235,8 +229,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 else
                 {
                     var runtimeInfoResponse = await client.GetSubscriptionRuntimePropertiesAsync(
-                        subscriptionWrapper.SubscriptionProperties.TopicName,
-                        subscriptionWrapper.SubscriptionProperties.SubscriptionName)
+                        subscriptionProperties.TopicName,
+                        subscriptionProperties.SubscriptionName)
                         .ConfigureAwait(false);
 
                     return runtimeInfoResponse.Value.DeadLetterMessageCount;
@@ -246,14 +240,17 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             {
                 if (queueProperties != null)
                 {
-                    var runtimeInfo = await client.GetQueueRuntimePropertiesAsync(queueProperties.Name);
+                    var runtimeInfo = await client.GetQueueRuntimePropertiesAsync(queueProperties.Name)
+                        .ConfigureAwait(false);
 
                     return runtimeInfo.Value.ActiveMessageCount;
                 }
                 else
                 {
-                    var runtimeInfo = await client.GetSubscriptionRuntimePropertiesAsync(subscriptionWrapper.TopicProperties.Name,
-                                subscriptionWrapper.SubscriptionProperties.SubscriptionName);
+                    var runtimeInfo = await client.GetSubscriptionRuntimePropertiesAsync(
+                        subscriptionProperties.TopicName,
+                        subscriptionProperties.SubscriptionName)
+                        .ConfigureAwait(false);
 
                     return runtimeInfo.Value.ActiveMessageCount;
                 }
@@ -277,10 +274,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 {
                     tasks[taskIndex] = Task.Run(async () =>
                     {
-                        ServiceBusReceiver receiver = await CreateServiceBusReceiver(
+                        ServiceBusReceiver receiver = CreateServiceBusReceiver(
                             client,
-                            purgeDeadLetterSubqueueInstead)
-                            .ConfigureAwait(false);
+                            purgeDeadLetterSubqueueInstead);
 
                         try
                         {
@@ -338,7 +334,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 return queueProperties.RequiresSession;
             }
 
-            return subscriptionWrapper.SubscriptionProperties.RequiresSession;
+            return subscriptionProperties.RequiresSession;
         }
     }
 }
