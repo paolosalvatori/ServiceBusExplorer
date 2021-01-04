@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Static Fields
         private static readonly List<string> properties = new List<string> { "CreatedAt", "AccessedAt", "UpdatedAt"};
-        private static readonly List<string> operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
+        private static readonly List<string> operators = new List<string> { "Ge", "Gt", "Le", "Lt", "Eq", "Ne" };
         private static readonly List<TimeFilterInfo> timeFilters = new List<TimeFilterInfo>();
         #endregion
 
@@ -413,7 +413,7 @@ namespace ServiceBusExplorer.Forms
                                 {
                                     Property = timeFilterProperty,
                                     Operator = timeFilterOperator,
-                                    Value = timeFilterValue
+                                    Value = DateTime.Parse(timeFilterValue)
                                 });
                         }
                     }
@@ -453,7 +453,7 @@ namespace ServiceBusExplorer.Forms
             {
                 if (string.IsNullOrWhiteSpace(timeFilter.Property) ||
                     string.IsNullOrWhiteSpace(timeFilter.Operator) ||
-                    string.IsNullOrWhiteSpace(timeFilter.Value))
+                    !timeFilter.Value.HasValue)
                 {
                     continue;
                 }
@@ -464,7 +464,7 @@ namespace ServiceBusExplorer.Forms
                 builder.AppendFormat(TimeFilterFormat,
                                      timeFilter.Property,
                                      timeFilter.Operator,
-                                     timeFilter.Value);
+                                     timeFilter.Value.Value.ToUniversalTime().ToString("o"));
                 appendAnd = true;
             }
             txtFilterExpression.TextChanged -= txtFilterExpression_TextChanged;
