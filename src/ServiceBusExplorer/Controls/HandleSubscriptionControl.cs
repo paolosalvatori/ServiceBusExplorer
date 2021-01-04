@@ -89,24 +89,10 @@ namespace ServiceBusExplorer.Controls
         private const string NameCannotBeNull = "The Name field cannot be null.";
         private const string MaxDeliveryCountMustBeANumber = "The MaxDeliveryCount field must be a number.";
 
-        private const string DefaultMessageTimeToLiveDaysMustBeANumber = "The Days value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveHoursMustBeANumber = "The Hours value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveMinutesMustBeANumber = "The Minutes value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveSecondsMustBeANumber = "The Seconds value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveMillisecondsMustBeANumber = "The Milliseconds value of the DefaultMessageTimeToLive field must be a number.";
+        const string DefaultMessageTimeToLive = "DefaultMessageTimeToLive";
+        const string LockDuration = "LockDuration";
+        const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
 
-        private const string LockDurationDaysMustBeANumber = "The Days value of the LockDuration field must be a number.";
-        private const string LockDurationHoursMustBeANumber = "The Hours value of the LockDuration field must be a number.";
-        private const string LockDurationMinutesMustBeANumber = "The Minutes value of the LockDuration field must be a number.";
-        private const string LockDurationSecondsMustBeANumber = "The Seconds value of the LockDuration field must be a number.";
-        private const string LockDurationMillisecondsMustBeANumber = "The Milliseconds value of the LockDuration field must be a number.";
-
-        private const string AutoDeleteOnIdleDaysMustBeANumber = "The Days value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleHoursMustBeANumber = "The Hours value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleMinutesMustBeANumber = "The Minutes value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleSecondsMustBeANumber = "The Seconds value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleMillisecondsMustBeANumber = "The Milliseconds value of the AutoDeleteOnIdle field must be a number.";
-        
         private const string MessagesPeekedFromTheSubscription = "[{0}] messages peeked from the subscription [{1}].";
         private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the deadletter queue of the subscription [{1}].";
         private const string MessagesReceivedFromTheSubscription = "[{0}] messages received from the subscription [{1}].";
@@ -244,7 +230,7 @@ namespace ServiceBusExplorer.Controls
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
                     txtMessageText.Text = string.Empty;
-                    messagePropertyListView.Items.Clear();
+                    messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
                     var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
                                            serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
@@ -271,7 +257,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 txtDeadletterText.Text = string.Empty;
-                deadletterPropertyListView.Items.Clear();
+                deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
                                        serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
@@ -297,7 +283,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 txtDeadletterText.Text = string.Empty;
-                deadletterPropertyListView.Items.Clear();
+                deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
                                        serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
@@ -716,24 +702,12 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
                 toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
                 toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveDays, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveHours, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveMinutes, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveSeconds, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveMilliseconds, DefaultMessageTimeToLiveTooltip);
+                toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
                 toolTip.SetToolTip(txtFilter, FilterExpressionTooltip);
                 toolTip.SetToolTip(txtAction, FilterActionTooltip);
-                toolTip.SetToolTip(txtLockDurationDays, LockDurationTooltip);
-                toolTip.SetToolTip(txtLockDurationHours, LockDurationTooltip);
-                toolTip.SetToolTip(txtLockDurationMinutes, LockDurationTooltip);
-                toolTip.SetToolTip(txtLockDurationSeconds, LockDurationTooltip);
-                toolTip.SetToolTip(txtLockDurationMilliseconds, LockDurationTooltip);
+                toolTip.SetToolTip(tsLockDuration, LockDurationTooltip);
                 toolTip.SetToolTip(txtMaxDeliveryCount, MaxDeliveryCountTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleDays, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleHours, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleMinutes, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleSeconds, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleMilliseconds, AutoDeleteOnIdleTooltip);
+                toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
             }
             else
             {
@@ -826,25 +800,13 @@ namespace ServiceBusExplorer.Controls
             txtMaxDeliveryCount.Text = subscriptionWrapper.SubscriptionDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
 
             // DefaultMessageTimeToLive
-            txtDefaultMessageTimeToLiveDays.Text = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive.Days.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveHours.Text = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive.Hours.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveMinutes.Text = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveSeconds.Text = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveMilliseconds.Text = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsDefaultMessageTimeToLive.TimeSpanValue = subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive;
 
             // LockDuration
-            txtLockDurationDays.Text = subscriptionWrapper.SubscriptionDescription.LockDuration.Days.ToString(CultureInfo.InvariantCulture);
-            txtLockDurationHours.Text = subscriptionWrapper.SubscriptionDescription.LockDuration.Hours.ToString(CultureInfo.InvariantCulture);
-            txtLockDurationMinutes.Text = subscriptionWrapper.SubscriptionDescription.LockDuration.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtLockDurationSeconds.Text = subscriptionWrapper.SubscriptionDescription.LockDuration.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtLockDurationMilliseconds.Text = subscriptionWrapper.SubscriptionDescription.LockDuration.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsLockDuration.TimeSpanValue = subscriptionWrapper.SubscriptionDescription.LockDuration;
 
             // AutoDeleteOnIdle
-            txtAutoDeleteOnIdleDays.Text = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle.Days.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleHours.Text = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle.Hours.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleMinutes.Text = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleSeconds.Text = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleMilliseconds.Text = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsAutoDeleteOnIdle.TimeSpanValue = subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle;
 
             // EnableDeadLetteringOnFilterEvaluationExceptions
             checkedListBox.SetItemChecked(EnableBatchedOperationsIndex,
@@ -1402,171 +1364,36 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
+                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveDays.Text, out days))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        subscriptionDescription.DefaultMessageTimeToLive = new TimeSpan(days, hours, minutes, seconds, milliseconds);
+                        subscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                    }
+                    else
+                    {
+                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                        return;
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtLockDurationDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
+                    if (tsLockDuration.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationDays.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationDays.Text, out days))
-                            {
-                                writeToLog(LockDurationDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationHours.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationHours.Text, out hours))
-                            {
-                                writeToLog(LockDurationHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationMinutes.Text, out minutes))
-                            {
-                                writeToLog(LockDurationMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationSeconds.Text, out seconds))
-                            {
-                                writeToLog(LockDurationSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(LockDurationMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        subscriptionDescription.LockDuration = new TimeSpan(days, hours, minutes, seconds, milliseconds);
+                        subscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
+                    }
+                    else
+                    {
+                        writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
+                        return;
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
+                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleDays.Text, out days))
-                            {
-                                writeToLog(AutoDeleteOnIdleDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
-                            {
-                                writeToLog(AutoDeleteOnIdleHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
-                            {
-                                writeToLog(AutoDeleteOnIdleMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        subscriptionDescription.AutoDeleteOnIdle = new TimeSpan(days, hours, minutes, seconds, milliseconds);
+                        subscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
                     }
-
+                    else
+                    {
+                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                        return;
+                    }
+                    
                     subscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
@@ -1656,180 +1483,36 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
+                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveDays.Text, out days))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive = new TimeSpan(days, hours, minutes, seconds,
-                                                                                 milliseconds);
+                        subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                    }
+                    else
+                    {
+                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                        return;
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtLockDurationDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
+                    if (tsLockDuration.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationDays.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationDays.Text, out days))
-                            {
-                                writeToLog(LockDurationDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationHours.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationHours.Text, out hours))
-                            {
-                                writeToLog(LockDurationHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationMinutes.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationMinutes.Text, out minutes))
-                            {
-                                writeToLog(LockDurationMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationSeconds.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationSeconds.Text, out seconds))
-                            {
-                                writeToLog(LockDurationSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtLockDurationMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtLockDurationMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(LockDurationMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
-                        if (!timeSpan.IsMaxValue())
-                        {
-                            subscriptionWrapper.SubscriptionDescription.LockDuration = timeSpan;
-                        }
+                        subscriptionWrapper.SubscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
+                    }
+                    else
+                    {
+                        writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
+                        return;
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
+                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleDays.Text, out days))
-                            {
-                                writeToLog(AutoDeleteOnIdleDaysMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
-                            {
-                                writeToLog(AutoDeleteOnIdleHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
-                            {
-                                writeToLog(AutoDeleteOnIdleMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
-                        if (!timeSpan.IsMaxValue())
-                        {
-                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = timeSpan;   
-                        }
+                        subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
                     }
-
+                    else
+                    {
+                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                        return;
+                    }
+                    
                     subscriptionWrapper.SubscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
@@ -2252,9 +1935,7 @@ namespace ServiceBusExplorer.Controls
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
 
-                var listViewItems = brokeredMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
-                messagePropertyListView.Items.Clear();
-                messagePropertyListView.Items.AddRange(listViewItems);
+                messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(brokeredMessage.Properties);
             }
         }
 
@@ -2347,9 +2028,7 @@ namespace ServiceBusExplorer.Controls
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, deadletterMessage, txtDeadletterText);
 
-                var listViewItems = deadletterMessage.Properties.Select(p => new ListViewItem(new[] { p.Key, Convert.ToString(p.Value) })).ToArray();
-                deadletterPropertyListView.Items.Clear();
-                deadletterPropertyListView.Items.AddRange(listViewItems);
+                deadletterCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(deadletterMessage.Properties);
             }
         }
 
@@ -2373,41 +2052,6 @@ namespace ServiceBusExplorer.Controls
             }
             mainTabControl.TabPages.Remove(page);
             hiddenPages.Add(page);
-        }
-
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
-            }
         }
 
         private void messagesDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -2478,8 +2122,8 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            messagePropertyListView.Size = new Size(grouperMessageCustomProperties.Size.Width - (messagePropertyListView.Location.X * 2),
-                                                    grouperMessageCustomProperties.Size.Height - messagePropertyListView.Location.Y - messagePropertyListView.Location.X);
+            messageCustomPropertyGrid.Size = new Size(grouperMessageCustomProperties.Size.Width - (messageCustomPropertyGrid.Location.X * 2),
+                                                    grouperMessageCustomProperties.Size.Height - messageCustomPropertyGrid.Location.Y - messageCustomPropertyGrid.Location.X);
         }
 
         private void grouperMessageProperties_CustomPaint(PaintEventArgs obj)
@@ -2496,8 +2140,8 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
         {
-            deadletterPropertyListView.Size = new Size(grouperDeadletterCustomProperties.Size.Width - (deadletterPropertyListView.Location.X * 2),
-                                                       grouperDeadletterCustomProperties.Size.Height - deadletterPropertyListView.Location.Y - deadletterPropertyListView.Location.X);
+            deadletterCustomPropertyGrid.Size = new Size(grouperDeadletterCustomProperties.Size.Width - (deadletterCustomPropertyGrid.Location.X * 2),
+                                                       grouperDeadletterCustomProperties.Size.Height - deadletterCustomPropertyGrid.Location.Y - deadletterCustomPropertyGrid.Location.X);
         }
 
         private void grouperDeadletterSystemProperties_CustomPaint(PaintEventArgs obj)

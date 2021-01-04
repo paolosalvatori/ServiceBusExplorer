@@ -197,6 +197,12 @@
     <Compile Include="Controls\TestEventHubControl.Designer.cs">
       <DependentUpon>TestEventHubControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TimeSpanControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TimeSpanControl.Designer.cs">
+      <DependentUpon>TimeSpanControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -412,6 +418,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIHelpers\DataGridViewDeleteButtonCell.cs" />
+    <Compile Include="UIHelpers\DictionaryPropertyDescriptor.cs" />
+    <Compile Include="UIHelpers\DictionaryPropertyGridAdapter.cs" />
     <Compile Include="UIHelpers\DynamicCustomTypeDescriptor.cs" />
     <Compile Include="UIHelpers\EventProcessor.cs" />
     <Compile Include="UIHelpers\EventProcessorFactory.cs" />
@@ -464,6 +472,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TestEventHubControl.resx">
       <DependentUpon>TestEventHubControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TimeSpanControl.resx">
+      <DependentUpon>TimeSpanControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TrackBar.resx">
       <SubType>Designer</SubType>
