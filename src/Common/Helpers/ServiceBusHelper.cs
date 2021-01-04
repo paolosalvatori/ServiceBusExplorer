@@ -35,6 +35,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using Azure.Messaging.ServiceBus.Administration;
+
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -44,7 +46,6 @@ using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
 using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
-using NewSdkManagement = Azure.Messaging.ServiceBus.Administration;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -5302,16 +5303,16 @@ namespace ServiceBusExplorer
             return serviceBusHelper2;
         }
 
-        public async Task<NewSdkManagement.QueueProperties> GetNewSdkQueueProperties(QueueDescription oldQueueDescription)
+        public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)
         {
-            var managementClient = new NewSdkManagement.ServiceBusAdministrationClient(connectionString);
+            var administrationClient = new ServiceBusAdministrationClient(connectionString);
 
-            return await managementClient.GetQueueAsync(oldQueueDescription.Path);
+            return await administrationClient.GetQueueAsync(oldQueueDescription.Path);
         }
 
-        public async Task<NewSdkManagement.SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
+        public async Task<SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
         {
-            var managementClient = new NewSdkManagement.ServiceBusAdministrationClient(connectionString);
+            var managementClient = new ServiceBusAdministrationClient(connectionString);
 
             var topicResponse = await managementClient.GetTopicAsync(
                 oldSubscriptionWrapper.TopicDescription.Path)
