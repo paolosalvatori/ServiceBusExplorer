@@ -209,6 +209,7 @@
     <Compile Include="Helpers\IBrokeredMessageGenerator.cs" />
     <Compile Include="Helpers\IBrokeredMessageInspector.cs" />
     <Compile Include="Helpers\IdAttribute.cs" />
+    <Compile Include="Helpers\IEnumerableExtensions.cs" />
     <Compile Include="Helpers\IEventDataGenerator.cs" />
     <Compile Include="Helpers\IEventDataInspector.cs" />
     <Compile Include="Helpers\IMessageDeferProvider.cs" />

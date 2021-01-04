@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Static Fields
         private static readonly List<string> properties = new List<string> { "CreatedAt", "AccessedAt", "UpdatedAt"};
-        private static readonly List<string> operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
+        private static readonly List<string> operators = new List<string> { "Ge", "Gt", "Le", "Lt", "Eq", "Ne" };
         private static readonly List<TimeFilterInfo> timeFilters = new List<TimeFilterInfo>();
         #endregion
 
@@ -413,7 +413,7 @@ namespace ServiceBusExplorer.Forms
                                 {
                                     Property = timeFilterProperty,
                                     Operator = timeFilterOperator,
-                                    Value = timeFilterValue
+                                    Value = DateTime.Parse(timeFilterValue)
                                 });
                         }
                     }
@@ -453,7 +453,7 @@ namespace ServiceBusExplorer.Forms
             {
                 if (string.IsNullOrWhiteSpace(timeFilter.Property) ||
                     string.IsNullOrWhiteSpace(timeFilter.Operator) ||
-                    string.IsNullOrWhiteSpace(timeFilter.Value))
+                    !timeFilter.Value.HasValue)
                 {
                     continue;
                 }
@@ -464,7 +464,7 @@ namespace ServiceBusExplorer.Forms
                 builder.AppendFormat(TimeFilterFormat,
                                      timeFilter.Property,
                                      timeFilter.Operator,
-                                     timeFilter.Value);
+                                     timeFilter.Value.Value.ToUniversalTime().ToString("o"));
                 appendAnd = true;
             }
             txtFilterExpression.TextChanged -= txtFilterExpression_TextChanged;
@@ -492,40 +492,6 @@ namespace ServiceBusExplorer.Forms
                                    timeFilterDataGridView.Size.Height + 1);
         }
 
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (Char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
-            }
-        }
         #endregion
     }
 }

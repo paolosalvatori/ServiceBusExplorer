@@ -59,7 +59,7 @@ namespace ServiceBusExplorer.Controls
         public CalendarCell()
         {
             // Use the short date format. 
-            Style.Format = "yyyy/MM/dd HH:mm";
+            Style.Format = "dd MMM yyyy HH:mm:ss";
         }
 
         public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
@@ -73,7 +73,7 @@ namespace ServiceBusExplorer.Controls
             control.Format = DateTimePickerFormat.Custom;
             control.ShowUpDown = false;
             // ReSharper disable LocalizableElement
-            control.CustomFormat = "yyyy/MM/dd HH:mm";
+            control.CustomFormat = "dd MMM yyyy HH:mm:ss";
             if (DefaultNewRowValue == null)
             {
                 control.Value = DateTime.Now;
@@ -120,7 +120,7 @@ namespace ServiceBusExplorer.Controls
         // property. 
         public object EditingControlFormattedValue
         {
-            get { return Value.ToString("yyyy/MM/dd HH:mm"); }
+            get { return Value.ToString("dd MMM yyyy HH:mm:ss"); }
             set
             {
                 var s = value as string;

@@ -21,12 +21,13 @@
 
 #region Using Directives
 
+using Microsoft.Azure.ServiceBusExplorer.Helpers;
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -50,7 +51,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        public static BrokeredMessage Clone(this BrokeredMessage message, Stream stream)
+        public static BrokeredMessage Clone(this BrokeredMessage message, Stream stream, bool omitAllProperties)
         {
             if (stream == null)
             {
@@ -61,34 +62,41 @@ namespace ServiceBusExplorer.Helpers
                 stream.Seek(0, SeekOrigin.Begin);
             }
             var clone = message.Clone();
+            if (omitAllProperties)
+            {
+                clone.Properties.Clear();
+            }
             BodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
         }
 
-        public static BrokeredMessage Clone(this BrokeredMessage message, string text)
+        public static BrokeredMessage Clone(this BrokeredMessage message, string text, bool omitAllProperties)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(text);
             writer.Flush();
             var clone = message.Clone();
+            if (omitAllProperties)
+            {
+                clone.Properties.Clear();
+            }
             BodyStreamPropertyInfo.SetValue(clone, stream);
             return clone;
         }
 
-        public static BrokeredMessage CloneWithByteArrayBodyType(this BrokeredMessage originalMessage, string text)
+        public static BrokeredMessage CloneWithByteArrayBodyType(this BrokeredMessage originalMessage, string text, bool omitAllProperties)
         {
             var bytes = Encoding.UTF8.GetBytes(text);
             var message = new BrokeredMessage(bytes);
 
-            // Copy all custom properties
-            foreach (var header in originalMessage.Properties)
+            if (!omitAllProperties)
             {
-                // Recovery header should not be included
-                if (header.Key != "NServiceBus.Transport.Recovery")
-                {
-                    message.Properties[header.Key] = header.Value;
-                }
+                // Copy all custom properties
+                var propertiesToCopy = originalMessage.Properties.Where(prop => !Constants.AlwaysOmittedProperties.Exists(
+                    omitProp => prop.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)));
+
+                propertiesToCopy.ForEach(h => message.Properties[h.Key] = h.Value);
             }
 
             // Required standard properties

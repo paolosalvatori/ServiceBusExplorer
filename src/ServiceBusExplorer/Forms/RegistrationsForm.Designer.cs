@@ -56,7 +56,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.txtTop = new System.Windows.Forms.TextBox();
+            this.txtTop = new ServiceBusExplorer.Controls.NumericTextBox();
             this.lblTop = new System.Windows.Forms.Label();
             this.txtTag = new System.Windows.Forms.TextBox();
             this.txtPnsHandle = new System.Windows.Forms.TextBox();
@@ -139,7 +139,6 @@ namespace ServiceBusExplorer.Forms
             this.txtTop.Size = new System.Drawing.Size(152, 20);
             this.txtTop.TabIndex = 7;
             this.txtTop.Text = "100";
-            this.txtTop.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMessageCount_KeyPress);
             // 
             // lblTop
             // 
@@ -222,7 +221,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.TextBox txtPnsHandle;
         private System.Windows.Forms.RadioButton btnTag;
         private System.Windows.Forms.Label lblTop;
-        private System.Windows.Forms.TextBox txtTop;
+        private ServiceBusExplorer.Controls.NumericTextBox txtTop;
         private System.Windows.Forms.RadioButton radioButton1;
     }
 }
