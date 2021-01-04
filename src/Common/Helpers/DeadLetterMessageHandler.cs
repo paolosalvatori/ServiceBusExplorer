@@ -87,9 +87,9 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Public methods
-        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long> sequenceNumbers)
+        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long?> sequenceNumbers)
         {
-            var sequenceNumbersToDeleteList = new List<long>();
+            var sequenceNumbersToDeleteList = new List<long?>();
             foreach (var number in sequenceNumbers)
             {
                 sequenceNumbersToDeleteList.Add(number);
