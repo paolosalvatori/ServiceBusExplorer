@@ -385,7 +385,7 @@ namespace ServiceBusExplorer.Forms
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                     outboundMessage = bodyType == BodyType.ByteArray ?
                                                       brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
-                                                      brokeredMessage.Clone(brokeredMessage.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
                                 }
                                 else
                                 {
