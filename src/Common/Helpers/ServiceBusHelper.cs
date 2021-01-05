@@ -3989,63 +3989,65 @@ namespace ServiceBusExplorer
             }
             elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
 
-            if (logging)
+            if (!logging)
             {
-                for (var i = 0; i < messageList.Count; i++)
+                return;
+            }
+            
+            for (var i = 0; i < messageList.Count; i++)
+            {
+                try
                 {
-                    try
-                    {
 
-                        builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
-                                                            taskId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].MessageId)
-                                                                ? NullValue
-                                                                : messageList[i].MessageId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].SessionId)
-                                                                ? NullValue
-                                                                : messageList[i].SessionId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].Label)
-                                                                ? NullValue
-                                                                : messageList[i].Label,
-                                                            messageList[i].Size));
-                        if (verbose)
+                    builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
+                        taskId,
+                        string.IsNullOrWhiteSpace(messageList[i].MessageId)
+                            ? NullValue
+                            : messageList[i].MessageId,
+                        string.IsNullOrWhiteSpace(messageList[i].SessionId)
+                            ? NullValue
+                            : messageList[i].SessionId,
+                        string.IsNullOrWhiteSpace(messageList[i].Label)
+                            ? NullValue
+                            : messageList[i].Label,
+                        messageList[i].Size));
+                    if (verbose)
+                    {
+                        builder.AppendLine(SentMessagePayloadHeader);
+                        var messageText = GetMessageText(bodyStreams[i], isBinary);
+                        if (useWcf)
                         {
-                            builder.AppendLine(SentMessagePayloadHeader);
-                            var messageText = GetMessageText(bodyStreams[i], isBinary);
-                            if (useWcf)
+                            var stringBuilder = new StringBuilder();
+                            using (var reader = XmlReader.Create(new StringReader(messageText)))
                             {
-                                var stringBuilder = new StringBuilder();
-                                using (var reader = XmlReader.Create(new StringReader(messageText)))
+                                // The XmlWriter is used just to indent the XML message
+                                var settings = new XmlWriterSettings { Indent = true };
+                                using (var writer = XmlWriter.Create(stringBuilder, settings))
                                 {
-                                    // The XmlWriter is used just to indent the XML message
-                                    var settings = new XmlWriterSettings { Indent = true };
-                                    using (var writer = XmlWriter.Create(stringBuilder, settings))
-                                    {
-                                        writer.WriteNode(reader, true);
-                                    }
+                                    writer.WriteNode(reader, true);
                                 }
-                                messageText = stringBuilder.ToString();
                             }
-                            builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText :
-                                                                                messageText.Substring(0, Math.Min(messageText.Length, 128)) +
-                                                                                (messageText.Length >= 128 ? "..." : "")));
-                            builder.AppendLine(SentMessagePropertiesHeader);
-                            foreach (var p in messageList[i].Properties)
-                            {
-                                builder.AppendLine(string.Format(MessagePropertyFormat,
-                                                                 p.Key,
-                                                                 p.Value));
-                            }
+                            messageText = stringBuilder.ToString();
+                        }
+                        builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText :
+                            messageText.Substring(0, Math.Min(messageText.Length, 128)) +
+                            (messageText.Length >= 128 ? "..." : "")));
+                        builder.AppendLine(SentMessagePropertiesHeader);
+                        foreach (var p in messageList[i].Properties)
+                        {
+                            builder.AppendLine(string.Format(MessagePropertyFormat,
+                                p.Key,
+                                p.Value));
                         }
                     }
-                    finally
-                    {
-                        messageList[i].Dispose();
-                    }
                 }
-                var traceMessage = builder.ToString();
-                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                finally
+                {
+                    messageList[i].Dispose();
+                }
             }
+            var traceMessage = builder.ToString();
+            WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
         }
 
         /// <summary>
