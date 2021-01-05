@@ -112,8 +112,7 @@ namespace ServiceBusExplorer.Helpers
                 throw new LockDurationTooLowException();
             }
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var stopwatch = Stopwatch.StartNew();
 
             try
             {
@@ -214,8 +213,7 @@ namespace ServiceBusExplorer.Helpers
                 throw new LockDurationTooLowException();
             }
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var stopwatch = Stopwatch.StartNew();
 
             try
             {

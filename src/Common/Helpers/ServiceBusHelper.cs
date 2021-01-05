@@ -3171,11 +3171,10 @@ namespace ServiceBusExplorer
                 return elapsedMilliseconds;
             }
             List<Stream> eventDataPayloadList = null;
-            var stopwatch = new Stopwatch();
             var builder = new StringBuilder();
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                stopwatch.Start();
                 if (logging && verbose)
                 {
                     eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
@@ -3253,11 +3252,10 @@ namespace ServiceBusExplorer
                 return elapsedMilliseconds;
             }
             List<Stream> eventDataPayloadList = null;
-            var stopwatch = new Stopwatch();
             var builder = new StringBuilder();
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                stopwatch.Start();
                 if (logging && verbose)
                 {
                     eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
@@ -3974,8 +3972,6 @@ namespace ServiceBusExplorer
             }
 
             var stopwatch = new Stopwatch();
-
-
             var builder = new StringBuilder();
             var bodyStreams = new List<Stream>();
             if (logging && verbose)
@@ -4230,10 +4226,10 @@ namespace ServiceBusExplorer
                         IList<BrokeredMessage> messageList = null;
                         try
                         {
-                            var stopwatch = new Stopwatch();
-                            stopwatch.Start();
+                            var stopwatch = Stopwatch.StartNew();
                             var messageEnumerable = messageReceiver.ReceiveBatch(batchSize, TimeSpan.FromSeconds(timeout));
                             stopwatch.Stop();
+                            
                             messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
                             if (messageInspector != null)
                             {
@@ -4248,10 +4244,10 @@ namespace ServiceBusExplorer
                             {
                                 if (completeReceive)
                                 {
-                                    stopwatch = new Stopwatch();
-                                    stopwatch.Start();
+                                    stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
+                                    
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -4363,10 +4359,10 @@ namespace ServiceBusExplorer
                             {
                                 try
                                 {
-                                    var stopwatch = new Stopwatch();
-                                    stopwatch.Start();
+                                    var stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
+                                    
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -4412,10 +4408,10 @@ namespace ServiceBusExplorer
                     {
                         try
                         {
-                            var stopwatch = new Stopwatch();
                             var movedToDeadLetterQueue = false;
                             var deferredMessage = false;
                             var readDeferredMessage = false;
+                            var stopwatch = new Stopwatch();
 
                             if (!readingDeferredMessages)
                             {
