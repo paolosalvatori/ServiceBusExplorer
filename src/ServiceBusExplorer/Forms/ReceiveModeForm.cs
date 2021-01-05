@@ -74,13 +74,13 @@ namespace ServiceBusExplorer.Forms
         public int Count { get; private set; }
         public bool Peek { get; private set; }
         public bool All { get; private set; }
-        public string Inspector { get; private set; }
+        public string? Inspector { get; private set; }
         public long? FromSequenceNumber { get; private set; }
         public string? FromSession { get; private set; }
         #endregion
 
         #region Event Handlers
-        private void btnOk_Click(object sender, EventArgs e)
+        private void btnOk_Click(object? sender, EventArgs? e)
         {
             DialogResult = DialogResult.OK;
             if (int.TryParse(txtMessageCount.Text, out var count))

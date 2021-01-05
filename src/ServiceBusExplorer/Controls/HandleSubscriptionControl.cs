@@ -2240,7 +2240,7 @@ namespace ServiceBusExplorer.Controls
                 }
             }
 
-            var sequenceNumbersToDelete = messages.Select(s => s.SequenceNumber).ToList();
+            var sequenceNumbersToDelete = messages.Select(s => s?.SequenceNumber).ToList();
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
 
