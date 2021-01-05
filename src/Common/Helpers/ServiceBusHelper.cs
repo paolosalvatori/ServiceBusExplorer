@@ -3009,7 +3009,8 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            Thread.Sleep(thinkTime);
+                            
+                            await Task.Delay(thinkTime);
                         }
                     }
                 }
@@ -3076,7 +3077,8 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            Thread.Sleep(thinkTime);
+                            
+                            await Task.Delay(thinkTime);
                         }
                     }
                 }
