@@ -34,14 +34,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+
+using Azure.Messaging.ServiceBus.Administration;
+
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
+
 using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
-using NewSdkManagement = Microsoft.Azure.ServiceBus.Management;
 #endregion
 
 // ReSharper disable CheckNamespace
@@ -1585,7 +1589,7 @@ namespace ServiceBusExplorer
                             throw new TimeoutException();
                         }
                     }
-                    return queues;                    
+                    return queues;
                 }
 
                 return new List<QueueDescription> {
@@ -1717,7 +1721,7 @@ namespace ServiceBusExplorer
                     var filters = new List<string>();
                     if (string.IsNullOrWhiteSpace(filter))
                     {
-                        filters.Add(filter);                        
+                        filters.Add(filter);
                     }
                     else
                     {
@@ -1740,7 +1744,7 @@ namespace ServiceBusExplorer
                             throw new TimeoutException();
                         }
                     }
-                    return topics;                    
+                    return topics;
                 }
 
                 return new List<TopicDescription> {
@@ -4736,7 +4740,7 @@ namespace ServiceBusExplorer
             var importExportHelper = new ImportExportHelper(writeToLog);
             importExportHelper.DeserializeAndCreate(this, xml);
         }
-      
+
         /// <summary>
         /// Reads the content of the BrokeredMessage passed as argument.
         /// </summary>
@@ -5294,40 +5298,32 @@ namespace ServiceBusExplorer
             var serviceBusHelper2 = new ServiceBusHelper2();
             serviceBusHelper2.ConnectionString = ConnectionString;
             serviceBusHelper2.TransportType = UseAmqpWebSockets
-                ? Microsoft.Azure.ServiceBus.TransportType.AmqpWebSockets
-                : Microsoft.Azure.ServiceBus.TransportType.Amqp;
+                ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
+                : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
             return serviceBusHelper2;
         }
 
-        public async Task<NewSdkManagement.QueueDescription> GetNewSdkQueueDescription(QueueDescription oldQueueDescription)
+        public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)
         {
-            var managementClient = new NewSdkManagement.ManagementClient(connectionString);
-            try
-            {
-                return await managementClient.GetQueueAsync(oldQueueDescription.Path);
-            }
-            finally
-            {
-                await managementClient.CloseAsync();
-            }
+            var administrationClient = new ServiceBusAdministrationClient(connectionString);
+
+            return await administrationClient.GetQueueAsync(oldQueueDescription.Path);
         }
 
-        public async Task<SubscriptionWrapper2> GetSubscriptionWrapper2(SubscriptionWrapper oldSubscriptionWrapper)
+        public async Task<SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
         {
-            var managementClient = new NewSdkManagement.ManagementClient(connectionString);
-            try
-            {
-                var newSdkTopicDescription = await managementClient.GetTopicAsync(oldSubscriptionWrapper.TopicDescription.Path);
-                var newSdkSubscriptionDescription = await managementClient.GetSubscriptionAsync(
-                    newSdkTopicDescription.Path,
-                    oldSubscriptionWrapper.SubscriptionDescription.Name);
+            var managementClient = new ServiceBusAdministrationClient(connectionString);
 
-                return new SubscriptionWrapper2(newSdkSubscriptionDescription, newSdkTopicDescription);
-            }
-            finally
-            {
-                await managementClient.CloseAsync();
-            }
+            var topicResponse = await managementClient.GetTopicAsync(
+                oldSubscriptionWrapper.TopicDescription.Path)
+                .ConfigureAwait(false);
+
+            var subscriptionResponse = await managementClient.GetSubscriptionAsync(
+                topicResponse.Value.Name,
+                oldSubscriptionWrapper.SubscriptionDescription.Name)
+                .ConfigureAwait(false);
+
+            return subscriptionResponse.Value;
         }
         #endregion
 
