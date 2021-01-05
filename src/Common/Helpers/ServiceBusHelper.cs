@@ -3009,7 +3009,8 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            Thread.Sleep(thinkTime);
+                            
+                            await Task.Delay(thinkTime);
                         }
                     }
                 }
@@ -3076,7 +3077,8 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            Thread.Sleep(thinkTime);
+                            
+                            await Task.Delay(thinkTime);
                         }
                     }
                 }
@@ -3171,11 +3173,10 @@ namespace ServiceBusExplorer
                 return elapsedMilliseconds;
             }
             List<Stream> eventDataPayloadList = null;
-            var stopwatch = new Stopwatch();
             var builder = new StringBuilder();
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                stopwatch.Start();
                 if (logging && verbose)
                 {
                     eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
@@ -3253,11 +3254,10 @@ namespace ServiceBusExplorer
                 return elapsedMilliseconds;
             }
             List<Stream> eventDataPayloadList = null;
-            var stopwatch = new Stopwatch();
             var builder = new StringBuilder();
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                stopwatch.Start();
                 if (logging && verbose)
                 {
                     eventDataPayloadList = eventDataList.Select(e => e.Clone().GetBodyStream()).ToList();
@@ -3974,8 +3974,6 @@ namespace ServiceBusExplorer
             }
 
             var stopwatch = new Stopwatch();
-
-
             var builder = new StringBuilder();
             var bodyStreams = new List<Stream>();
             if (logging && verbose)
@@ -3993,63 +3991,65 @@ namespace ServiceBusExplorer
             }
             elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
 
-            if (logging)
+            if (!logging)
             {
-                for (var i = 0; i < messageList.Count; i++)
+                return;
+            }
+            
+            for (var i = 0; i < messageList.Count; i++)
+            {
+                try
                 {
-                    try
-                    {
 
-                        builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
-                                                            taskId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].MessageId)
-                                                                ? NullValue
-                                                                : messageList[i].MessageId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].SessionId)
-                                                                ? NullValue
-                                                                : messageList[i].SessionId,
-                                                            string.IsNullOrWhiteSpace(messageList[i].Label)
-                                                                ? NullValue
-                                                                : messageList[i].Label,
-                                                            messageList[i].Size));
-                        if (verbose)
+                    builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
+                        taskId,
+                        string.IsNullOrWhiteSpace(messageList[i].MessageId)
+                            ? NullValue
+                            : messageList[i].MessageId,
+                        string.IsNullOrWhiteSpace(messageList[i].SessionId)
+                            ? NullValue
+                            : messageList[i].SessionId,
+                        string.IsNullOrWhiteSpace(messageList[i].Label)
+                            ? NullValue
+                            : messageList[i].Label,
+                        messageList[i].Size));
+                    if (verbose)
+                    {
+                        builder.AppendLine(SentMessagePayloadHeader);
+                        var messageText = GetMessageText(bodyStreams[i], isBinary);
+                        if (useWcf)
                         {
-                            builder.AppendLine(SentMessagePayloadHeader);
-                            var messageText = GetMessageText(bodyStreams[i], isBinary);
-                            if (useWcf)
+                            var stringBuilder = new StringBuilder();
+                            using (var reader = XmlReader.Create(new StringReader(messageText)))
                             {
-                                var stringBuilder = new StringBuilder();
-                                using (var reader = XmlReader.Create(new StringReader(messageText)))
+                                // The XmlWriter is used just to indent the XML message
+                                var settings = new XmlWriterSettings { Indent = true };
+                                using (var writer = XmlWriter.Create(stringBuilder, settings))
                                 {
-                                    // The XmlWriter is used just to indent the XML message
-                                    var settings = new XmlWriterSettings { Indent = true };
-                                    using (var writer = XmlWriter.Create(stringBuilder, settings))
-                                    {
-                                        writer.WriteNode(reader, true);
-                                    }
+                                    writer.WriteNode(reader, true);
                                 }
-                                messageText = stringBuilder.ToString();
                             }
-                            builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText :
-                                                                                messageText.Substring(0, Math.Min(messageText.Length, 128)) +
-                                                                                (messageText.Length >= 128 ? "..." : "")));
-                            builder.AppendLine(SentMessagePropertiesHeader);
-                            foreach (var p in messageList[i].Properties)
-                            {
-                                builder.AppendLine(string.Format(MessagePropertyFormat,
-                                                                 p.Key,
-                                                                 p.Value));
-                            }
+                            messageText = stringBuilder.ToString();
+                        }
+                        builder.AppendLine(string.Format(MessageTextFormat, messageText.Contains('\n') ? messageText :
+                            messageText.Substring(0, Math.Min(messageText.Length, 128)) +
+                            (messageText.Length >= 128 ? "..." : "")));
+                        builder.AppendLine(SentMessagePropertiesHeader);
+                        foreach (var p in messageList[i].Properties)
+                        {
+                            builder.AppendLine(string.Format(MessagePropertyFormat,
+                                p.Key,
+                                p.Value));
                         }
                     }
-                    finally
-                    {
-                        messageList[i].Dispose();
-                    }
                 }
-                var traceMessage = builder.ToString();
-                WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                finally
+                {
+                    messageList[i].Dispose();
+                }
             }
+            var traceMessage = builder.ToString();
+            WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
         }
 
         /// <summary>
@@ -4230,10 +4230,10 @@ namespace ServiceBusExplorer
                         IList<BrokeredMessage> messageList = null;
                         try
                         {
-                            var stopwatch = new Stopwatch();
-                            stopwatch.Start();
+                            var stopwatch = Stopwatch.StartNew();
                             var messageEnumerable = messageReceiver.ReceiveBatch(batchSize, TimeSpan.FromSeconds(timeout));
                             stopwatch.Stop();
+                            
                             messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
                             if (messageInspector != null)
                             {
@@ -4248,10 +4248,10 @@ namespace ServiceBusExplorer
                             {
                                 if (completeReceive)
                                 {
-                                    stopwatch = new Stopwatch();
-                                    stopwatch.Start();
+                                    stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
+                                    
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -4363,10 +4363,10 @@ namespace ServiceBusExplorer
                             {
                                 try
                                 {
-                                    var stopwatch = new Stopwatch();
-                                    stopwatch.Start();
+                                    var stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
+                                    
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -4412,10 +4412,10 @@ namespace ServiceBusExplorer
                     {
                         try
                         {
-                            var stopwatch = new Stopwatch();
                             var movedToDeadLetterQueue = false;
                             var deferredMessage = false;
                             var readDeferredMessage = false;
+                            var stopwatch = new Stopwatch();
 
                             if (!readingDeferredMessages)
                             {
