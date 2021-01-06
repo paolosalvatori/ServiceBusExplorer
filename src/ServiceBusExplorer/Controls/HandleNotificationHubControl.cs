@@ -2060,14 +2060,17 @@ namespace ServiceBusExplorer.Controls
                                                                         mpnsCredentialCertificateKey);
                     }
 
-                    if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
+                    if (tsRegistrationTimeToLive.IsFilled)
                     {
-                        description.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
-                        return;
+                        if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            description.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
+                            return;
+                        }
                     }
                     
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<NotificationHubAuthorizationRuleWrapper>;
@@ -2162,14 +2165,17 @@ namespace ServiceBusExplorer.Controls
             {
                 try
                 {
-                    if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
+                    if (tsRegistrationTimeToLive.IsFilled)
                     {
-                        notificationHubDescription.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
-                        return;
+                        if (tsRegistrationTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            notificationHubDescription.RegistrationTtl = tsRegistrationTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsRegistrationTimeToLive.GetErrorMessage(RegistrationTimeToLive));
+                            return;
+                        }
                     }
 
                     notificationHubDescription.WnsCredential = !string.IsNullOrWhiteSpace(txtPackageSid.Text) &&

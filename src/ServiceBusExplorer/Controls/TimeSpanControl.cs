@@ -20,6 +20,8 @@
             InitializeComponent();
         }
 
+        public bool IsFilled => txtDays.IsFilled || txtHours.IsFilled || txtMinutes.IsFilled || txtSeconds.IsFilled || txtMilliseconds.IsFilled;
+
         public bool IsValidValue => txtDays.IsValidIntegerValue && txtHours.IsValidIntegerValue && txtMinutes.IsValidIntegerValue && txtSeconds.IsValidIntegerValue && txtMilliseconds.IsValidIntegerValue;
 
         public string GetErrorMessage(string fieldName)
@@ -58,7 +60,7 @@
         {
             get
             {
-                if (!IsValidValue)
+                if (!IsFilled || !IsValidValue)
                 {
                     return null;
                 }
