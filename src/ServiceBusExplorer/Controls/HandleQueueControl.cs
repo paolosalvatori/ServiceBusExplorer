@@ -234,6 +234,7 @@ namespace ServiceBusExplorer.Controls
 
         private QueueDescription queueDescription = default!;
         private readonly ServiceBusHelper serviceBusHelper = default!;
+        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog = default!;
         private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
@@ -280,6 +281,7 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
+            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
             this.queueDescription = queueDescription;
 
@@ -525,7 +527,9 @@ namespace ServiceBusExplorer.Controls
 
         private void InitializeControls()
         {
-            trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            var maxSize = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            maxSize = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult() ? 80 : maxSize;
+            trackBarMaxQueueSize.Maximum = maxSize;
 
             // Splitter controls
             messagesSplitContainer.SplitterWidth = 16;
