@@ -19,16 +19,14 @@
 //=======================================================================================
 #endregion
 
+using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 
 // ReSharper disable CheckNamespace
 namespace ServiceBusExplorer.ServiceBus.Helpers
 // ReSharper restore CheckNamespace
 {
-    using System.Threading.Tasks;
-    using Azure;
-    using Azure.Messaging.ServiceBus.Administration;
-
     public class ServiceBusHelper2
     {
         public string ConnectionString { get; set; }
