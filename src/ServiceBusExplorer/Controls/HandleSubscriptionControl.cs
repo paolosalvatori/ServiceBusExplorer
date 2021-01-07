@@ -1366,34 +1366,43 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        subscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
-                        return;
-                    }
-
-                    if (tsLockDuration.TimeSpanValue.HasValue)
-                    {
-                        subscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
-                        return;
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            subscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
+                        }
                     }
 
-                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                    if (tsLockDuration.IsFilled)
                     {
-                        subscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        if (tsLockDuration.TimeSpanValue.HasValue)
+                        {
+                            subscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
+                            return;
+                        }
                     }
-                    else
+
+                    if (tsAutoDeleteOnIdle.IsFilled)
                     {
-                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
-                        return;
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                        {
+                            subscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
+                        }
                     }
                     
                     subscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
@@ -1485,34 +1494,43 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
-                        return;
-                    }
-
-                    if (tsLockDuration.TimeSpanValue.HasValue)
-                    {
-                        subscriptionWrapper.SubscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
-                        return;
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            subscriptionWrapper.SubscriptionDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
+                        }
                     }
 
-                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                    if (tsLockDuration.IsFilled)
                     {
-                        subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        if (tsLockDuration.TimeSpanValue.HasValue)
+                        {
+                            subscriptionWrapper.SubscriptionDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsLockDuration.GetErrorMessage(LockDuration));
+                            return;
+                        }
                     }
-                    else
+
+                    if (tsAutoDeleteOnIdle.IsFilled)
                     {
-                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
-                        return;
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                        {
+                            subscriptionWrapper.SubscriptionDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
+                        }
                     }
                     
                     subscriptionWrapper.SubscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);

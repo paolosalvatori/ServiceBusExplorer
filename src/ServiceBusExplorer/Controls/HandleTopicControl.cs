@@ -470,34 +470,43 @@ namespace ServiceBusExplorer.Controls
                             UserMetadata = txtUserMetadata.Text
                         };
 
-                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        description.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
-                        return;
-                    }
-
-                    if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
-                    {
-                        description.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
-                        return;
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            description.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
+                        }
                     }
 
-                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                    if (tsDuplicateDetectionHistoryTimeWindow.IsFilled)
                     {
-                        description.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
+                        {
+                            description.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
+                            return;
+                        }
                     }
-                    else
+
+                    if (tsAutoDeleteOnIdle.IsFilled)
                     {
-                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
-                        return;
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                        {
+                            description.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
+                        }
                     }
                     
                     description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
@@ -609,36 +618,45 @@ namespace ServiceBusExplorer.Controls
                 {
                     topicDescription.UserMetadata = txtUserMetadata.Text;
 
-                    if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        topicDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
-                        return;
-                    }
-
-                    if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
-                    {
-                        topicDescription.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
-                        return;
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
+                        {
+                            topicDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
+                        }
                     }
 
-                    if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                    if (tsDuplicateDetectionHistoryTimeWindow.IsFilled)
                     {
-                        topicDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
-                    }
-                    else
-                    {
-                        writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
-                        return;
+                        if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
+                        {
+                            topicDescription.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
+                            return;
+                        }
                     }
 
+                    if (tsAutoDeleteOnIdle.IsFilled)
+                    {
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
+                        {
+                            topicDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                        }
+                        else
+                        {
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
+                        }
+                    }
+                    
                     topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
                     topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);

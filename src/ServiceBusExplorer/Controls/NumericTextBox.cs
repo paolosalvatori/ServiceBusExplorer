@@ -80,6 +80,8 @@ namespace ServiceBusExplorer.Controls
 
         #region Public Properties
 
+        public bool IsFilled => !string.IsNullOrWhiteSpace(Text);
+
         public bool IsValidIntegerValue => int.TryParse(Text, out _);
 
         public int IntegerValue => int.Parse(Text);
