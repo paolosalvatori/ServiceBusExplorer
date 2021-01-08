@@ -27,9 +27,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
+using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -40,8 +39,6 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Controls
 {
-    using ServiceBus.Helpers;
-
     public partial class HandleTopicControl : UserControl
     {
         #region Private Constants
