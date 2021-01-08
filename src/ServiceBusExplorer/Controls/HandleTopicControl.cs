@@ -174,9 +174,13 @@ namespace ServiceBusExplorer.Controls
         #region Private Methods
         private void InitializeControls()
         {
-            var maxSize = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            maxSize = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult() ? 80 : maxSize;
-            trackBarMaxTopicSize.Maximum = maxSize;
+            trackBarMaxTopicSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+
+            if (serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult())
+            {
+                trackBarMaxTopicSize.Maximum = 80;
+                trackBarMaxTopicSize.TickFrequency = 10;
+            }
 
             // IsAnonymousAccessible
             if (serviceBusHelper.IsCloudNamespace)

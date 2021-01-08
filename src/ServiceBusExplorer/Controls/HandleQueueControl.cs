@@ -527,9 +527,13 @@ namespace ServiceBusExplorer.Controls
 
         private void InitializeControls()
         {
-            var maxSize = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            maxSize = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult() ? 80 : maxSize;
-            trackBarMaxQueueSize.Maximum = maxSize;
+            trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            
+            if (serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult())
+            {
+                trackBarMaxQueueSize.Maximum = 80;
+                trackBarMaxQueueSize.TickFrequency = 10;
+            }
 
             // Splitter controls
             messagesSplitContainer.SplitterWidth = 16;
