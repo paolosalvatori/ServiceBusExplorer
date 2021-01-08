@@ -19,9 +19,9 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
+using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-#endregion
+using Azure.Messaging.ServiceBus.Administration;
 
 // ReSharper disable CheckNamespace
 namespace ServiceBusExplorer.ServiceBus.Helpers
@@ -31,5 +31,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
     {
         public string ConnectionString { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
+
+        public async Task<bool> IsPremiumNamespace()
+        {
+            var administrationClient = new ServiceBusAdministrationClient(ConnectionString);
+            NamespaceProperties namespaceProperties = await administrationClient.GetNamespacePropertiesAsync().ConfigureAwait(false);
+
+            return namespaceProperties.MessagingSku == MessagingSku.Premium;
+        }
     }
 }
