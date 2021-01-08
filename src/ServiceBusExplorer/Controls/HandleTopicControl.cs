@@ -40,6 +40,8 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Controls
 {
+    using ServiceBus.Helpers;
+
     public partial class HandleTopicControl : UserControl
     {
         #region Private Constants
@@ -126,6 +128,7 @@ namespace ServiceBusExplorer.Controls
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private TopicDescription topicDescription;
         private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog;
         private readonly string path;
         #endregion
@@ -141,6 +144,7 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
+            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.topicDescription = topicDescription;
             this.path = path;
 
@@ -173,7 +177,9 @@ namespace ServiceBusExplorer.Controls
         #region Private Methods
         private void InitializeControls()
         {
-            trackBarMaxTopicSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            var maxSize = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            maxSize = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult() ? 80 : maxSize;
+            trackBarMaxTopicSize.Maximum = maxSize;
 
             // IsAnonymousAccessible
             if (serviceBusHelper.IsCloudNamespace)
