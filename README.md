@@ -34,7 +34,7 @@ If you just want to help out, feel free to pick one of our issues with the [`hel
 
 # Development Environment
 
-Visual Studio 2019 is required to build the solution. 
+Visual Studio 2019 16.8.0 or later is required to build the solution. 
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2017 15.9.12 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
 
