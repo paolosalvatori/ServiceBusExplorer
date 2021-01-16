@@ -3090,23 +3090,6 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void RefreshQueueNode(TreeNode node, QueueDescription queueDescription)
-        {
-            if (queueDescription.Status == EntityStatus.Active)
-            {
-                node.ImageIndex = QueueIconIndex;
-                node.SelectedImageIndex = QueueIconIndex;
-            }
-            else
-            {
-                node.ImageIndex = GreyQueueIconIndex;
-                node.SelectedImageIndex = GreyQueueIconIndex;
-            }
-
-            node.Tag = queueDescription;
-            node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
-        }
-
         public void RefreshQueues()
         {
             ShowEntities(EntityType.Queue);
@@ -3911,6 +3894,23 @@ namespace ServiceBusExplorer.Forms
             {
                 EventProcessorCheckpointHelper.ReadCheckpoints();
             }
+        }
+
+        private void RefreshQueueNode(TreeNode node, QueueDescription queueDescription)
+        {
+            if (queueDescription.Status == EntityStatus.Active)
+            {
+                node.ImageIndex = QueueIconIndex;
+                node.SelectedImageIndex = QueueIconIndex;
+            }
+            else
+            {
+                node.ImageIndex = GreyQueueIconIndex;
+                node.SelectedImageIndex = GreyQueueIconIndex;
+            }
+
+            node.Tag = queueDescription;
+            node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
         }
 
         private void SetControlSize(Control control)
