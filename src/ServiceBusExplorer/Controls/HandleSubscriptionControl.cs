@@ -381,7 +381,7 @@ namespace ServiceBusExplorer.Controls
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
                 var count = await purger.Purge();
                 stopwatch.Stop();
-                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                MainForm.SingletonMainForm.RefreshSelectedEntity();
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                     subscriptionWrapper.SubscriptionDescription.Name);
                 writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
@@ -413,7 +413,7 @@ namespace ServiceBusExplorer.Controls
                 stopwatch.Stop();
                 var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
                                                                            subscriptionWrapper.SubscriptionDescription.Name);
-                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                MainForm.SingletonMainForm.RefreshSelectedEntity();
                 writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
                 return count;
             }
@@ -2291,7 +2291,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = false;
             }
 
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+            MainForm.SingletonMainForm.RefreshSelectedEntity();
         }
 
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)

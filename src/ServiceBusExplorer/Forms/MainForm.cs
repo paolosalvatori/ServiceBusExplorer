@@ -545,7 +545,7 @@ namespace ServiceBusExplorer.Forms
             {
                 serviceBusTreeView.SelectedNode = currentNode;
                 currentNode.EnsureVisible();
-                refreshEntity_Click(null, null);
+                RefreshSelectedEntity();
             }
         }
 
@@ -1698,7 +1698,1030 @@ namespace ServiceBusExplorer.Forms
         }
 
         // ReSharper disable once FunctionComplexityOverflow
-        public void refreshEntity_Click(object sender, EventArgs e)
+        private void refreshEntity_Click(object sender, EventArgs e)
+        {
+            RefreshSelectedEntity();
+        }
+
+        private void RefreshIndividualSubscription(SubscriptionDescription subscriptionDescription, TreeNode subscriptionNode)
+        {
+            var rules = serviceBusHelper.GetRules(subscriptionDescription);
+            var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
+            if (!ruleDescriptions.Any())
+            {
+                subscriptionNode.Nodes.Clear();
+                return;
+            }
+            var subscriptionNodeWasExpanded = subscriptionNode.IsExpanded;
+            var rulesNodeWasExpanded = subscriptionNode.Nodes.Count > 0 && subscriptionNode.Nodes[0].IsExpanded;
+            subscriptionNode.Nodes.Clear();
+            var rulesNode = subscriptionNode.Nodes.Add(RuleEntities, RuleEntities, RuleListIconIndex, RuleListIconIndex);
+            rulesNode.ContextMenuStrip = rulesContextMenuStrip;
+            rulesNode.Tag = new RuleWrapper(null, subscriptionDescription);
+            foreach (var rule in ruleDescriptions)
+            {
+                var ruleNode = rulesNode.Nodes.Add(rule.Name, rule.Name, RuleIconIndex, RuleIconIndex);
+                ruleNode.ContextMenuStrip = ruleContextMenuStrip;
+                ruleNode.Tag = new RuleWrapper(rule, subscriptionDescription);
+                WriteToLog(string.Format(CultureInfo.CurrentCulture, RuleRetrievedFormat, rule.Name, subscriptionDescription.Name, subscriptionDescription.TopicPath), false);
+            }
+            if (rulesNodeWasExpanded)
+                rulesNode.Expand();
+            if (subscriptionNodeWasExpanded)
+                subscriptionNode.Expand();
+        }
+
+        private void RefreshIndividualTopic(TreeNode selectedNode)
+        {
+            var wasTopicNodeExpanded = selectedNode.IsExpanded;
+
+            var topicDescription = selectedNode.Tag as TopicDescription;
+
+            var subscriptions = serviceBusHelper.GetSubscriptions(topicDescription, null);
+            var subscriptionDescriptions = subscriptions as IList<SubscriptionDescription> ?? subscriptions.ToList();
+
+            if (!subscriptionDescriptions.Any())
+            {
+                selectedNode.Nodes.Clear();
+                return;
+            }
+
+            selectedNode.Nodes.Clear();
+            var subscriptionsNode = selectedNode.Nodes.Add(SubscriptionEntities, SubscriptionEntities, SubscriptionListIconIndex, SubscriptionListIconIndex);
+            subscriptionsNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression) ? SubscriptionEntities : FilteredSubscriptionEntities;
+            subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
+            subscriptionsNode.Tag = new SubscriptionWrapper(null, topicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
+            foreach (var subscriptionDescription in subscriptionDescriptions)
+            {
+                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, 
+                                                                   GetNameAndMessageCountText(subscriptionDescription.Name, subscriptionDescription.MessageCountDetails),
+                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
+                subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
+                subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
+                if (topicDescription != null)
+                {
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path), false);
+                }
+
+                RefreshIndividualSubscription(subscriptionDescription, subscriptionNode);
+            }
+
+            if (wasTopicNodeExpanded)
+                selectedNode.Expand();
+        }
+
+        private void createEntity_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode != null)
+                {
+                    // Queues Node (Create New QueueDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.QueueEntities)
+                    {
+                        panelMain.HeaderText = CreateQueue;
+                        ShowQueue(null, null);
+                        return;
+                    }
+                    // Topics Node (Create New TopicDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.TopicEntities)
+                    {
+                        panelMain.HeaderText = CreateTopic;
+                        ShowTopic(null, null);
+                        return;
+                    }
+                    // Relays Node (Create New RelayDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.RelayEntities)
+                    {
+                        panelMain.HeaderText = CreateRelay;
+                        ShowRelay(null, null);
+                        return;
+                    }
+                    // EventHubs Node (Create New EventHubDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.EventHubEntities)
+                    {
+                        panelMain.HeaderText = CreateEventHub;
+                        ShowEventHub(null);
+                        return;
+                    }
+                    // ConsumerGroup Node (Create New ConsumerGroupDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == ConsumerGroupEntities)
+                    {
+                        var parent = serviceBusTreeView.SelectedNode.Parent;
+                        if (parent?.Tag is EventHubDescription)
+                        {
+                            panelMain.HeaderText = CreateConsumerGroup;
+                            ShowConsumerGroup(null, ((EventHubDescription)parent.Tag).Path);
+                        }
+                        return;
+                    }
+                    // NotificationHubs Node (Create New NotificationHubDescription)
+                    if (serviceBusTreeView.SelectedNode.Text == Constants.NotificationHubEntities)
+                    {
+                        panelMain.HeaderText = CreateNotificationHub;
+                        ShowNotificationHub(null);
+                        return;
+                    }
+                    if (serviceBusTreeView.SelectedNode.Tag != null)
+                    {
+                        // UrlSegment Node
+                        if (serviceBusTreeView.SelectedNode.Tag is UrlSegmentWrapper)
+                        {
+                            var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
+                            if (urlSegmentWrapper.EntityType == EntityType.Queue)
+                            {
+                                panelMain.HeaderText = CreateQueue;
+                                ShowQueue(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
+                            }
+                            else if (urlSegmentWrapper.EntityType == EntityType.Topic)
+                            {
+                                panelMain.HeaderText = CreateTopic;
+                                ShowTopic(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
+                            }
+                            else
+                            {
+                                panelMain.HeaderText = CreateRelay;
+                                ShowRelay(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
+                            }
+                            return;
+                        }
+
+                        // TopicDescription Node (Create New SubscriptionDescription)
+                        if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                        {
+                            panelMain.HeaderText = CreateSubscription;
+                            ShowSubscription(new SubscriptionWrapper(null, serviceBusTreeView.SelectedNode.Tag as TopicDescription));
+                            return;
+                        }
+
+                        // EventHub Node (Create New ConsumerGroupDescription)
+                        if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
+                        {
+                            panelMain.HeaderText = CreateConsumerGroup;
+                            ShowConsumerGroup(null, (serviceBusTreeView.SelectedNode.Tag as EventHubDescription).Path);
+                            return;
+                        }
+                        // Subscriptions Node (Create New SubscriptionDescription)
+                        if (serviceBusTreeView.SelectedNode.Text == SubscriptionEntities ||
+                            serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
+                        {
+                            panelMain.HeaderText = CreateSubscription;
+                            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                            if (subscriptionWrapper != null)
+                            {
+                                ShowSubscription(new SubscriptionWrapper(null, subscriptionWrapper.TopicDescription));
+                            }
+                            return;
+                        }
+                        // SubscriptionDescription Node (Create New RuleDescription)
+                        if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                        {
+                            var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                            panelMain.HeaderText = AddRule;
+                            ShowRule(new RuleWrapper(null, wrapper.SubscriptionDescription), !serviceBusTreeView.SelectedNode.Nodes.ContainsKey(RuleEntities));
+                            return;
+                        }
+                        // Rules Node (Create New RuleDescription)
+                        if (serviceBusTreeView.SelectedNode.Text == RuleEntities)
+                        {
+                            panelMain.HeaderText = AddRule;
+                            var ruleWrapper = serviceBusTreeView.SelectedNode.Tag as RuleWrapper;
+                            if (ruleWrapper != null)
+                            {
+                                ShowRule(new RuleWrapper(null, ruleWrapper.SubscriptionDescription), false);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void serviceBusTreeView_KeyDown(object sender, KeyEventArgs keyEventArgs)
+        {
+            switch (keyEventArgs.KeyCode)
+            {
+                case Keys.Delete: // purge entity
+                    if (keyEventArgs.Modifiers == Keys.Shift)
+                    {
+                        receiveMessages_Click(sender, keyEventArgs);
+                    }
+                    else // delete entity
+                    {
+                        deleteEntity_Click(sender, keyEventArgs);
+                    }
+                    break;
+
+                case Keys.Enter: // select entity
+                    HandleNodeMouseClick(serviceBusTreeView.SelectedNode);
+                    break;
+            }
+        }
+
+        private async void deleteEntity_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                if (serviceBusTreeView.SelectedNode != null)
+                {
+                    var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
+                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
+                    var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
+
+                    string serviceBusNamespaceLocalName = GetServiceBusNamespaceLocalName(rootNode.Text);
+
+                    var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+
+                    // Root Node
+                    if (serviceBusTreeView.SelectedNode == rootNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllEntities))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Everything in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var queueList = new List<string>();
+                                var topicList = new List<string>();
+                                GetQueueList(queueList, queueListNode);
+                                GetTopicList(topicList, topicListNode);
+                                await serviceBusHelper.DeleteQueues(queueList);
+                                await serviceBusHelper.DeleteTopics(topicList);
+                                GetEntities(EntityType.All);
+                            }
+                        }
+                        return;
+                    }
+                    // Queues Node
+                    if (serviceBusTreeView.SelectedNode == queueListNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllQueues))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All queues in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var queueList = new List<string>();
+                                GetQueueList(queueList, queueListNode);
+                                await serviceBusHelper.DeleteQueues(queueList);
+                                GetEntities(EntityType.Queue);
+                            }
+                        }
+                        return;
+                    }
+                    // Topics Node
+                    if (serviceBusTreeView.SelectedNode == topicListNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllTopics))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All topics in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var topicList = new List<string>();
+                                GetTopicList(topicList, topicListNode);
+                                await serviceBusHelper.DeleteTopics(topicList);
+                                GetEntities(EntityType.Topic);
+                            }
+                        }
+                        return;
+                    }
+                    // Relays Node
+                    if (serviceBusTreeView.SelectedNode == relayServiceListNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllRelays))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All relays in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var relayServiceList = new List<string>();
+                                GetRelayList(relayServiceList, relayServiceListNode);
+                                await serviceBusHelper.DeleteRelays(relayServiceList);
+                                GetEntities(EntityType.Relay);
+                            }
+                        }
+                        return;
+                    }
+                    // EventHubs Node
+                    if (serviceBusTreeView.SelectedNode == eventHubListNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllEventHubs))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All event hubs in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var eventHubList = new List<string>();
+                                GetEventHubList(eventHubList, eventHubListNode);
+                                serviceBusHelper.DeleteEventHubs(eventHubList);
+                                GetEntities(EntityType.EventHub);
+                            }
+                        }
+                        return;
+                    }
+                    // ConsumerGroups Node
+                    if (serviceBusTreeView.SelectedNode.Text == ConsumerGroupEntities)
+                    {
+                        var parent = serviceBusTreeView.SelectedNode.Parent;
+                        if (parent != null && parent.Tag is EventHubDescription)
+                        {
+                            var eventHubDescription = parent.Tag as EventHubDescription;
+                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllConsumerGroups, eventHubDescription.Path)))
+                            {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All consumer groups in " + serviceBusNamespaceLocalName);
+
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    var notificationHubList = new List<string>();
+                                    GetConsumerGroupList(notificationHubList, serviceBusTreeView.SelectedNode);
+                                    notificationHubList.Remove(DefaultConsumerGroupName);
+                                    serviceBusHelper.DeleteConsumerGroups(eventHubDescription.Path, notificationHubList);
+                                    RefreshSelectedEntity();
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // NotificationHubs Node
+                    if (serviceBusTreeView.SelectedNode == notificationHubListNode)
+                    {
+                        using (var deleteForm = new DeleteForm(DeleteAllNotificationHubs))
+                        {
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All notification hubs in " + serviceBusNamespaceLocalName);
+
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var notificationHubList = new List<string>();
+                                GetNotificationHubList(notificationHubList, notificationHubListNode);
+                                await serviceBusHelper.DeleteNotificationHubs(notificationHubList);
+                                GetEntities(EntityType.NotificationHub);
+                            }
+                        }
+                        return;
+                    }
+                    // Check that serviceBusTreeView.SelectedNode.Tag is not null
+                    if (serviceBusTreeView.SelectedNode.Tag == null)
+                    {
+                        return;
+                    }
+                    // Url Segment Node
+                    if (serviceBusTreeView.SelectedNode.Tag is UrlSegmentWrapper)
+                    {
+                        var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
+                        if (urlSegmentWrapper.EntityType == EntityType.Queue)
+                        {
+                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllQueuesInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
+                            {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Queues in subpath of " + serviceBusNamespaceLocalName);
+
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    var queueList = new List<string>();
+                                    GetQueueList(queueList, serviceBusTreeView.SelectedNode);
+                                    await serviceBusHelper.DeleteQueues(queueList);
+                                }
+                            }
+                        }
+                        else if (urlSegmentWrapper.EntityType == EntityType.Topic)
+                        {
+                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllTopicsInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
+                            {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Topics in subpath of " + serviceBusNamespaceLocalName);
+
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    var topicList = new List<string>();
+                                    GetTopicList(topicList, serviceBusTreeView.SelectedNode);
+                                    await serviceBusHelper.DeleteTopics(topicList);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllRelaysInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
+                            {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Relays in subpath of " + serviceBusNamespaceLocalName);
+
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    var relayServiceList = new List<string>();
+                                    GetRelayList(relayServiceList, serviceBusTreeView.SelectedNode);
+                                    await serviceBusHelper.DeleteRelays(relayServiceList);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // Queue Node
+                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                    {
+                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                        using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                await serviceBusHelper.DeleteQueue(queueDescription);
+                            }
+                        }
+                        return;
+                    }
+                    // Subscriptions Node
+                    if (sender == deleteTopicSubscriptionsMenuItem)
+                    {
+                        if (serviceBusTreeView.SelectedNode.Nodes.Count == 0)
+                        {
+                            return;
+                        }
+                        var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[0];
+                        var subscriptionDescriptions = subscriptionsNode.
+                                                            Nodes.
+                                                            Cast<TreeNode>().
+                                                            Select(n => ((SubscriptionWrapper)n.Tag).SubscriptionDescription).
+                                                            ToList();
+                        if (subscriptionDescriptions.Count > 0)
+                        {
+                            using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
+                            {
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // Topic Node
+                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                    {
+                        var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
+                        using (var deleteForm = new DeleteForm(topicDescription.Path, TopicEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                await serviceBusHelper.DeleteTopic(topicDescription);
+                            }
+                        }
+                        return;
+                    }
+                    // Relay Node
+                    if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
+                    {
+                        var relayDescription = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
+                        using (var deleteForm = new DeleteForm(relayDescription.Path, RelayEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                await serviceBusHelper.DeleteRelay(relayDescription.Path);
+                            }
+                        }
+                        return;
+                    }
+                    // EventHub Node: Delete Consumer Groups
+                    if (sender == deleteConsumerGroupsMenuItem)
+                    {
+                        if (serviceBusTreeView.SelectedNode.Nodes.Count == 0)
+                        {
+                            return;
+                        }
+                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
+                        if (eventHubDescription == null)
+                        {
+                            return;
+                        }
+                        using (var deleteForm = new DeleteForm(string.Format(DeleteAllConsumerGroups, eventHubDescription.Path)))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                var notificationHubList = new List<string>();
+                                GetConsumerGroupList(notificationHubList, serviceBusTreeView.SelectedNode);
+                                notificationHubList.Remove(DefaultConsumerGroupName);
+                                serviceBusHelper.DeleteConsumerGroups(eventHubDescription.Path, notificationHubList);
+                                RefreshSelectedEntity();
+                            }
+                        }
+                        return;
+                    }
+                    // EventHub Node
+                    if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
+                    {
+                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
+                        using (var deleteForm = new DeleteForm(eventHubDescription.Path, EventHubEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                serviceBusHelper.DeleteEventHub(eventHubDescription);
+                            }
+                        }
+                        return;
+                    }
+                    // ConsumerGroup Node
+                    if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
+                    {
+                        var notificationHubDescription = serviceBusTreeView.SelectedNode.Tag as ConsumerGroupDescription;
+                        using (var deleteForm = new DeleteForm(notificationHubDescription.Name, ConsumerGroupEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                serviceBusHelper.DeleteConsumerGroup(notificationHubDescription);
+                            }
+                        }
+                        return;
+                    }
+                    // NotificationHub Node
+                    if (serviceBusTreeView.SelectedNode.Tag is NotificationHubDescription)
+                    {
+                        var notificationHubDescription = serviceBusTreeView.SelectedNode.Tag as NotificationHubDescription;
+                        using (var deleteForm = new DeleteForm(notificationHubDescription.Path, NotificationHubEntity.ToLower()))
+                        {
+                            if (deleteForm.ShowDialog() == DialogResult.OK)
+                            {
+                                await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
+                            }
+                        }
+                        return;
+                    }
+                    // Subscriptions Node
+                    if (serviceBusTreeView.SelectedNode.Text == SubscriptionEntities ||
+                        serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
+                    {
+                        var subscriptionDescriptions = serviceBusTreeView.SelectedNode.
+                                                            Nodes.
+                                                            Cast<TreeNode>().
+                                                            Select(n => ((SubscriptionWrapper)n.Tag).SubscriptionDescription).
+                                                            ToList();
+                        if (subscriptionDescriptions.Count > 0)
+                        {
+                            using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
+                            {
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // Subscription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                    {
+                        var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                        if (wrapper.TopicDescription != null &&
+                            wrapper.SubscriptionDescription != null)
+                        {
+                            using (var deleteForm = new DeleteForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower()))
+                            {
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    await serviceBusHelper.DeleteSubscription(wrapper.SubscriptionDescription);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // Rules Node
+                    if (serviceBusTreeView.SelectedNode.Text == RuleEntities)
+                    {
+                        var ruleWrappers = serviceBusTreeView.SelectedNode.
+                                                            Nodes.
+                                                            Cast<TreeNode>().
+                                                            Select(n => (RuleWrapper)n.Tag).
+                                                            ToList();
+                        if (ruleWrappers.Count > 0)
+                        {
+                            using (var deleteForm = new DeleteForm(DeleteAllRules))
+                            {
+                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All rules in " + serviceBusNamespaceLocalName);
+
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    serviceBusHelper.RemoveRules(ruleWrappers);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    // Rule Node
+                    if (serviceBusTreeView.SelectedNode.Tag is RuleWrapper)
+                    {
+                        var wrapper = serviceBusTreeView.SelectedNode.Tag as RuleWrapper;
+                        if (wrapper.SubscriptionDescription != null &&
+                            wrapper.RuleDescription != null)
+                        {
+                            using (var deleteForm = new DeleteForm(wrapper.RuleDescription.Name, RuleEntity.ToLower()))
+                            {
+                                if (deleteForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    serviceBusHelper.RemoveRule(wrapper.SubscriptionDescription, wrapper.RuleDescription);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void changeStatusQueueMenuItem_DropDownOpening(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var tag = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                if (tag != null)
+                {
+                    // Put a check against the item that reflects the current status of the queue
+                    var queueDescription = serviceBusHelper.GetQueue(tag.Path);
+                    var status = queueDescription.Status;
+                    foreach (var dropDownItem in changeStatusQueueMenuItem.DropDownItems)
+                    {
+                        var dropDownMenuItem = dropDownItem as ToolStripMenuItem;
+                        dropDownMenuItem.Checked = (EntityStatus)dropDownMenuItem.Tag == status;
+                    }
+                }
+                else
+                {
+                    throw new NotSupportedException("Not supported for entity types other than queues.");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void changeStatusQueue_Click(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                if (serviceBusHelper != null &&
+                    serviceBusTreeView.SelectedNode != null)
+                {
+                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                    {
+                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+
+                        var desiredStatus = (EntityStatus)e.ClickedItem.Tag;
+                        using (var changeStatusForm = new ChangeStatusForm(queueDescription.Path, QueueEntity.ToLower(), desiredStatus))
+                        {
+                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                            {
+                                queueDescription.Status = (EntityStatus)e.ClickedItem.Tag;
+                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                RefreshSelectedEntity();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Not supported for entity types other than queues.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private async void changeStatusEntity_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                if (serviceBusHelper != null &&
+                    serviceBusTreeView.SelectedNode != null)
+                {
+                    // Queue Node
+                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                    {
+                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                        using (var changeQueueStatusForm = new ChangeQueueStatusForm(queueDescription.Status))
+                        {
+                            if (changeQueueStatusForm.ShowDialog() == DialogResult.OK)
+                            {
+                                queueDescription.Status = changeQueueStatusForm.EntityStatus;
+                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                RefreshSelectedEntity();
+                            }
+                        }
+                        return;
+                    }
+                    // Topic Node
+                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                    {
+                        var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
+                        var desiredStatus = topicDescription.Status == EntityStatus.Active
+                                                          ? EntityStatus.Disabled
+                                                          : EntityStatus.Active;
+                        using (var changeStatusForm = new ChangeStatusForm(topicDescription.Path, TopicEntity.ToLower(), desiredStatus))
+                        {
+                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                            {
+                                topicDescription.Status = desiredStatus;
+                                serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
+                                RefreshSelectedEntity();
+                                changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
+                                                                     ? DisableTopic
+                                                                     : EnableTopic;
+                                var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusTopicMenuItem];
+                                if (item != null)
+                                {
+                                    item.Text = changeStatusTopicMenuItem.Text;
+                                }
+                            }
+                        }
+                        return;
+                    }
+
+                    // Subscription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                    {
+                        var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                        if (wrapper.TopicDescription != null &&
+                            wrapper.SubscriptionDescription != null)
+                        {
+                            var desiredStatus = wrapper.SubscriptionDescription.Status = wrapper.SubscriptionDescription.Status == EntityStatus.Active
+                                                                             ? EntityStatus.Disabled
+                                                                             : EntityStatus.Active;
+                            using (var changeStatusForm = new ChangeStatusForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower(), desiredStatus))
+                            {
+                                if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    wrapper.SubscriptionDescription.Status = desiredStatus;
+                                    serviceBusHelper.NamespaceManager.UpdateSubscription(wrapper.SubscriptionDescription);
+                                    RefreshSelectedEntity();
+                                    changeStatusSubscriptionMenuItem.Text = wrapper.SubscriptionDescription.Status == EntityStatus.Active
+                                                                         ? DisableSubscription
+                                                                         : EnableSubscription;
+                                    var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusSubscriptionMenuItem];
+                                    if (item != null)
+                                    {
+                                        item.Text = changeStatusSubscriptionMenuItem.Text;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Event Hub
+                    if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
+                    {
+                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
+                        var desiredStatus = eventHubDescription.Status = eventHubDescription.Status == EntityStatus.Active
+                                                          ? EntityStatus.Disabled
+                                                          : EntityStatus.Active;
+                        using (var changeStatusForm = new ChangeStatusForm(eventHubDescription.Path, EventHubEntity.ToLower(), desiredStatus))
+                        {
+                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
+                            {
+                                eventHubDescription.Status = desiredStatus;
+                                await serviceBusHelper.NamespaceManager.UpdateEventHubAsync(eventHubDescription);
+                                RefreshSelectedEntity();
+                                changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active
+                                                                     ? DisableEventHub
+                                                                     : EnableEventHub;
+                                var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusEventHubMenuItem];
+                                if (item != null)
+                                {
+                                    item.Text = changeStatusEventHubMenuItem.Text;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void testEntityInSDIMode_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+                if (serviceBusTreeView.SelectedNode.Tag == null)
+                {
+                    return;
+                }
+                // QueueDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var queue = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                    panelMain.HeaderText = string.Format(TestQueueFormat, queue.Path);
+                    TestQueue(queue, true);
+                    return;
+                }
+                // TopicDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                {
+                    var topic = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
+                    var subscriptionList = new List<SubscriptionDescription>();
+                    if (serviceBusTreeView.SelectedNode.Nodes.ContainsKey(SubscriptionEntities))
+                    {
+                        var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[SubscriptionEntities];
+                        if (subscriptionsNode != null &&
+                            subscriptionsNode.Nodes.Count > 0)
+                        {
+                            for (var i = 0; i < subscriptionsNode.Nodes.Count; i++)
+                            {
+                                var wrapper = subscriptionsNode.Nodes[i].Tag as SubscriptionWrapper;
+                                if (wrapper != null &&
+                                    wrapper.SubscriptionDescription != null)
+                                {
+                                    subscriptionList.Add(wrapper.SubscriptionDescription);
+                                }
+                            }
+                        }
+                    }
+
+                    panelMain.HeaderText = string.Format(TestTopicFormat, topic.Path);
+                    TestTopic(topic, subscriptionList, true);
+                    return;
+                }
+
+                // SubscriptionDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                    panelMain.HeaderText = string.Format(TestSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
+                    TestSubscription(subscriptionWrapper, true);
+                }
+
+                // RelayDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
+                {
+                    var relay = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
+                    panelMain.HeaderText = string.Format(TestRelayFormat, relay.Path);
+                    TestRelay(relay, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void testEntityInMDIMode_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode != null)
+                {
+                    if (serviceBusTreeView.SelectedNode.Tag == null)
+                    {
+                        return;
+                    }
+                    // QueueDescription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                    {
+                        var queue = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                        TestQueue(queue, false);
+                        return;
+                    }
+                    // TopicDescription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
+                    {
+                        var topic = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
+                        var subscriptionList = new List<SubscriptionDescription>();
+                        if (serviceBusTreeView.SelectedNode.Nodes.ContainsKey(SubscriptionEntities))
+                        {
+                            var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[SubscriptionEntities];
+                            if (subscriptionsNode != null &&
+                                subscriptionsNode.Nodes.Count > 0)
+                            {
+                                for (var i = 0; i < subscriptionsNode.Nodes.Count; i++)
+                                {
+                                    var wrapper = subscriptionsNode.Nodes[i].Tag as SubscriptionWrapper;
+                                    if (wrapper != null &&
+                                        wrapper.SubscriptionDescription != null)
+                                    {
+                                        subscriptionList.Add(wrapper.SubscriptionDescription);
+                                    }
+                                }
+                            }
+                        }
+                        TestTopic(topic, subscriptionList, false);
+                        return;
+                    }
+
+                    // SubscriptionDescription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                    {
+                        var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                        TestSubscription(subscriptionWrapper, false);
+                    }
+
+                    // RelayDescription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
+                    {
+                        var queue = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
+                        TestRelay(queue, false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void createEntityListenerMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null || ServiceBusTreeView.SelectedNode.Tag == null)
+                {
+                    return;
+                }
+
+                // QueueDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+                    var form = new ContainerForm(serviceBusHelper, this, FormTypeEnum.Listener, queueDescription);
+                    form.Show();
+                    return;
+                }
+
+                // SubscriptionDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+                    var form = new ContainerForm(serviceBusHelper, this, FormTypeEnum.Listener, subscriptionWrapper);
+                    form.Show();
+                }
+
+                // ConsumerGroup Node
+                if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
+                {
+                    var consumerGroupPartition = serviceBusTreeView.SelectedNode.Tag as ConsumerGroupDescription;
+                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, GetPartitionsFromConsumerGroup(serviceBusTreeView.SelectedNode));
+                    form.Show();
+                }
+
+                // PartitionDescription Node
+                if (serviceBusTreeView.SelectedNode.Tag is PartitionDescription)
+                {
+                    var consumerGroupPartition = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
+                    var partitionDescription = serviceBusTreeView.SelectedNode.Tag as PartitionDescription;
+                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, new[] { partitionDescription });
+                    form.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void serviceBusTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            EnsureNodeHasBeenLazyLoaded(e.Node);
+        }
+        #endregion
+
+        #region Public Methods
+        public void HandleException(Exception ex)
+        {
+            if (string.IsNullOrWhiteSpace(ex?.Message))
+            {
+                return;
+            }
+            WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
+            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
+            {
+                WriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
+            }
+        }
+
+        public void RefreshSelectedEntity()
         {
             try
             {
@@ -2072,1024 +3095,6 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
                 serviceBusTreeView.EndUpdate();
-            }
-        }
-
-        private void RefreshIndividualSubscription(SubscriptionDescription subscriptionDescription, TreeNode subscriptionNode)
-        {
-            var rules = serviceBusHelper.GetRules(subscriptionDescription);
-            var ruleDescriptions = rules as RuleDescription[] ?? rules.ToArray();
-            if (!ruleDescriptions.Any())
-            {
-                subscriptionNode.Nodes.Clear();
-                return;
-            }
-            var subscriptionNodeWasExpanded = subscriptionNode.IsExpanded;
-            var rulesNodeWasExpanded = subscriptionNode.Nodes.Count > 0 && subscriptionNode.Nodes[0].IsExpanded;
-            subscriptionNode.Nodes.Clear();
-            var rulesNode = subscriptionNode.Nodes.Add(RuleEntities, RuleEntities, RuleListIconIndex, RuleListIconIndex);
-            rulesNode.ContextMenuStrip = rulesContextMenuStrip;
-            rulesNode.Tag = new RuleWrapper(null, subscriptionDescription);
-            foreach (var rule in ruleDescriptions)
-            {
-                var ruleNode = rulesNode.Nodes.Add(rule.Name, rule.Name, RuleIconIndex, RuleIconIndex);
-                ruleNode.ContextMenuStrip = ruleContextMenuStrip;
-                ruleNode.Tag = new RuleWrapper(rule, subscriptionDescription);
-                WriteToLog(string.Format(CultureInfo.CurrentCulture, RuleRetrievedFormat, rule.Name, subscriptionDescription.Name, subscriptionDescription.TopicPath), false);
-            }
-            if (rulesNodeWasExpanded)
-                rulesNode.Expand();
-            if (subscriptionNodeWasExpanded)
-                subscriptionNode.Expand();
-        }
-
-        private void RefreshIndividualTopic(TreeNode selectedNode)
-        {
-            var wasTopicNodeExpanded = selectedNode.IsExpanded;
-
-            var topicDescription = selectedNode.Tag as TopicDescription;
-
-            var subscriptions = serviceBusHelper.GetSubscriptions(topicDescription, null);
-            var subscriptionDescriptions = subscriptions as IList<SubscriptionDescription> ?? subscriptions.ToList();
-
-            if (!subscriptionDescriptions.Any())
-            {
-                selectedNode.Nodes.Clear();
-                return;
-            }
-
-            selectedNode.Nodes.Clear();
-            var subscriptionsNode = selectedNode.Nodes.Add(SubscriptionEntities, SubscriptionEntities, SubscriptionListIconIndex, SubscriptionListIconIndex);
-            subscriptionsNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression) ? SubscriptionEntities : FilteredSubscriptionEntities;
-            subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
-            subscriptionsNode.Tag = new SubscriptionWrapper(null, topicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
-            foreach (var subscriptionDescription in subscriptionDescriptions)
-            {
-                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, 
-                                                                   GetNameAndMessageCountText(subscriptionDescription.Name, subscriptionDescription.MessageCountDetails),
-                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
-                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
-                subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
-                subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
-                if (topicDescription != null)
-                {
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscriptionDescription.Name, topicDescription.Path), false);
-                }
-
-                RefreshIndividualSubscription(subscriptionDescription, subscriptionNode);
-            }
-
-            if (wasTopicNodeExpanded)
-                selectedNode.Expand();
-        }
-
-        private void createEntity_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode != null)
-                {
-                    // Queues Node (Create New QueueDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.QueueEntities)
-                    {
-                        panelMain.HeaderText = CreateQueue;
-                        ShowQueue(null, null);
-                        return;
-                    }
-                    // Topics Node (Create New TopicDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.TopicEntities)
-                    {
-                        panelMain.HeaderText = CreateTopic;
-                        ShowTopic(null, null);
-                        return;
-                    }
-                    // Relays Node (Create New RelayDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.RelayEntities)
-                    {
-                        panelMain.HeaderText = CreateRelay;
-                        ShowRelay(null, null);
-                        return;
-                    }
-                    // EventHubs Node (Create New EventHubDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.EventHubEntities)
-                    {
-                        panelMain.HeaderText = CreateEventHub;
-                        ShowEventHub(null);
-                        return;
-                    }
-                    // ConsumerGroup Node (Create New ConsumerGroupDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == ConsumerGroupEntities)
-                    {
-                        var parent = serviceBusTreeView.SelectedNode.Parent;
-                        if (parent?.Tag is EventHubDescription)
-                        {
-                            panelMain.HeaderText = CreateConsumerGroup;
-                            ShowConsumerGroup(null, ((EventHubDescription)parent.Tag).Path);
-                        }
-                        return;
-                    }
-                    // NotificationHubs Node (Create New NotificationHubDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.NotificationHubEntities)
-                    {
-                        panelMain.HeaderText = CreateNotificationHub;
-                        ShowNotificationHub(null);
-                        return;
-                    }
-                    if (serviceBusTreeView.SelectedNode.Tag != null)
-                    {
-                        // UrlSegment Node
-                        if (serviceBusTreeView.SelectedNode.Tag is UrlSegmentWrapper)
-                        {
-                            var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
-                            if (urlSegmentWrapper.EntityType == EntityType.Queue)
-                            {
-                                panelMain.HeaderText = CreateQueue;
-                                ShowQueue(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
-                            }
-                            else if (urlSegmentWrapper.EntityType == EntityType.Topic)
-                            {
-                                panelMain.HeaderText = CreateTopic;
-                                ShowTopic(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
-                            }
-                            else
-                            {
-                                panelMain.HeaderText = CreateRelay;
-                                ShowRelay(null, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri));
-                            }
-                            return;
-                        }
-
-                        // TopicDescription Node (Create New SubscriptionDescription)
-                        if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
-                        {
-                            panelMain.HeaderText = CreateSubscription;
-                            ShowSubscription(new SubscriptionWrapper(null, serviceBusTreeView.SelectedNode.Tag as TopicDescription));
-                            return;
-                        }
-
-                        // EventHub Node (Create New ConsumerGroupDescription)
-                        if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
-                        {
-                            panelMain.HeaderText = CreateConsumerGroup;
-                            ShowConsumerGroup(null, (serviceBusTreeView.SelectedNode.Tag as EventHubDescription).Path);
-                            return;
-                        }
-                        // Subscriptions Node (Create New SubscriptionDescription)
-                        if (serviceBusTreeView.SelectedNode.Text == SubscriptionEntities ||
-                            serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
-                        {
-                            panelMain.HeaderText = CreateSubscription;
-                            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                            if (subscriptionWrapper != null)
-                            {
-                                ShowSubscription(new SubscriptionWrapper(null, subscriptionWrapper.TopicDescription));
-                            }
-                            return;
-                        }
-                        // SubscriptionDescription Node (Create New RuleDescription)
-                        if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                        {
-                            var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                            panelMain.HeaderText = AddRule;
-                            ShowRule(new RuleWrapper(null, wrapper.SubscriptionDescription), !serviceBusTreeView.SelectedNode.Nodes.ContainsKey(RuleEntities));
-                            return;
-                        }
-                        // Rules Node (Create New RuleDescription)
-                        if (serviceBusTreeView.SelectedNode.Text == RuleEntities)
-                        {
-                            panelMain.HeaderText = AddRule;
-                            var ruleWrapper = serviceBusTreeView.SelectedNode.Tag as RuleWrapper;
-                            if (ruleWrapper != null)
-                            {
-                                ShowRule(new RuleWrapper(null, ruleWrapper.SubscriptionDescription), false);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void serviceBusTreeView_KeyDown(object sender, KeyEventArgs keyEventArgs)
-        {
-            switch (keyEventArgs.KeyCode)
-            {
-                case Keys.Delete: // purge entity
-                    if (keyEventArgs.Modifiers == Keys.Shift)
-                    {
-                        receiveMessages_Click(sender, keyEventArgs);
-                    }
-                    else // delete entity
-                    {
-                        deleteEntity_Click(sender, keyEventArgs);
-                    }
-                    break;
-
-                case Keys.Enter: // select entity
-                    HandleNodeMouseClick(serviceBusTreeView.SelectedNode);
-                    break;
-            }
-        }
-
-        private async void deleteEntity_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Cursor.Current = Cursors.WaitCursor;
-                if (serviceBusTreeView.SelectedNode != null)
-                {
-                    var queueListNode = FindNode(Constants.QueueEntities, rootNode);
-                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
-                    var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
-                    var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
-                    var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
-
-                    string serviceBusNamespaceLocalName = GetServiceBusNamespaceLocalName(rootNode.Text);
-
-                    var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
-
-                    // Root Node
-                    if (serviceBusTreeView.SelectedNode == rootNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllEntities))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Everything in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var queueList = new List<string>();
-                                var topicList = new List<string>();
-                                GetQueueList(queueList, queueListNode);
-                                GetTopicList(topicList, topicListNode);
-                                await serviceBusHelper.DeleteQueues(queueList);
-                                await serviceBusHelper.DeleteTopics(topicList);
-                                GetEntities(EntityType.All);
-                            }
-                        }
-                        return;
-                    }
-                    // Queues Node
-                    if (serviceBusTreeView.SelectedNode == queueListNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllQueues))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All queues in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var queueList = new List<string>();
-                                GetQueueList(queueList, queueListNode);
-                                await serviceBusHelper.DeleteQueues(queueList);
-                                GetEntities(EntityType.Queue);
-                            }
-                        }
-                        return;
-                    }
-                    // Topics Node
-                    if (serviceBusTreeView.SelectedNode == topicListNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllTopics))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All topics in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var topicList = new List<string>();
-                                GetTopicList(topicList, topicListNode);
-                                await serviceBusHelper.DeleteTopics(topicList);
-                                GetEntities(EntityType.Topic);
-                            }
-                        }
-                        return;
-                    }
-                    // Relays Node
-                    if (serviceBusTreeView.SelectedNode == relayServiceListNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllRelays))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All relays in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var relayServiceList = new List<string>();
-                                GetRelayList(relayServiceList, relayServiceListNode);
-                                await serviceBusHelper.DeleteRelays(relayServiceList);
-                                GetEntities(EntityType.Relay);
-                            }
-                        }
-                        return;
-                    }
-                    // EventHubs Node
-                    if (serviceBusTreeView.SelectedNode == eventHubListNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllEventHubs))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All event hubs in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var eventHubList = new List<string>();
-                                GetEventHubList(eventHubList, eventHubListNode);
-                                serviceBusHelper.DeleteEventHubs(eventHubList);
-                                GetEntities(EntityType.EventHub);
-                            }
-                        }
-                        return;
-                    }
-                    // ConsumerGroups Node
-                    if (serviceBusTreeView.SelectedNode.Text == ConsumerGroupEntities)
-                    {
-                        var parent = serviceBusTreeView.SelectedNode.Parent;
-                        if (parent != null && parent.Tag is EventHubDescription)
-                        {
-                            var eventHubDescription = parent.Tag as EventHubDescription;
-                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllConsumerGroups, eventHubDescription.Path)))
-                            {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All consumer groups in " + serviceBusNamespaceLocalName);
-
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    var notificationHubList = new List<string>();
-                                    GetConsumerGroupList(notificationHubList, serviceBusTreeView.SelectedNode);
-                                    notificationHubList.Remove(DefaultConsumerGroupName);
-                                    serviceBusHelper.DeleteConsumerGroups(eventHubDescription.Path, notificationHubList);
-                                    refreshEntity_Click(null, null);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // NotificationHubs Node
-                    if (serviceBusTreeView.SelectedNode == notificationHubListNode)
-                    {
-                        using (var deleteForm = new DeleteForm(DeleteAllNotificationHubs))
-                        {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All notification hubs in " + serviceBusNamespaceLocalName);
-
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var notificationHubList = new List<string>();
-                                GetNotificationHubList(notificationHubList, notificationHubListNode);
-                                await serviceBusHelper.DeleteNotificationHubs(notificationHubList);
-                                GetEntities(EntityType.NotificationHub);
-                            }
-                        }
-                        return;
-                    }
-                    // Check that serviceBusTreeView.SelectedNode.Tag is not null
-                    if (serviceBusTreeView.SelectedNode.Tag == null)
-                    {
-                        return;
-                    }
-                    // Url Segment Node
-                    if (serviceBusTreeView.SelectedNode.Tag is UrlSegmentWrapper)
-                    {
-                        var urlSegmentWrapper = serviceBusTreeView.SelectedNode.Tag as UrlSegmentWrapper;
-                        if (urlSegmentWrapper.EntityType == EntityType.Queue)
-                        {
-                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllQueuesInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
-                            {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Queues in subpath of " + serviceBusNamespaceLocalName);
-
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    var queueList = new List<string>();
-                                    GetQueueList(queueList, serviceBusTreeView.SelectedNode);
-                                    await serviceBusHelper.DeleteQueues(queueList);
-                                }
-                            }
-                        }
-                        else if (urlSegmentWrapper.EntityType == EntityType.Topic)
-                        {
-                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllTopicsInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
-                            {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Topics in subpath of " + serviceBusNamespaceLocalName);
-
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    var topicList = new List<string>();
-                                    GetTopicList(topicList, serviceBusTreeView.SelectedNode);
-                                    await serviceBusHelper.DeleteTopics(topicList);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            using (var deleteForm = new DeleteForm(string.Format(DeleteAllRelaysInPath, FormatAbsolutePathForEdit(urlSegmentWrapper.Uri))))
-                            {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "Relays in subpath of " + serviceBusNamespaceLocalName);
-
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    var relayServiceList = new List<string>();
-                                    GetRelayList(relayServiceList, serviceBusTreeView.SelectedNode);
-                                    await serviceBusHelper.DeleteRelays(relayServiceList);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // Queue Node
-                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                    {
-                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                        using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                await serviceBusHelper.DeleteQueue(queueDescription);
-                            }
-                        }
-                        return;
-                    }
-                    // Subscriptions Node
-                    if (sender == deleteTopicSubscriptionsMenuItem)
-                    {
-                        if (serviceBusTreeView.SelectedNode.Nodes.Count == 0)
-                        {
-                            return;
-                        }
-                        var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[0];
-                        var subscriptionDescriptions = subscriptionsNode.
-                                                            Nodes.
-                                                            Cast<TreeNode>().
-                                                            Select(n => ((SubscriptionWrapper)n.Tag).SubscriptionDescription).
-                                                            ToList();
-                        if (subscriptionDescriptions.Count > 0)
-                        {
-                            using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
-                            {
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // Topic Node
-                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
-                    {
-                        var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                        using (var deleteForm = new DeleteForm(topicDescription.Path, TopicEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                await serviceBusHelper.DeleteTopic(topicDescription);
-                            }
-                        }
-                        return;
-                    }
-                    // Relay Node
-                    if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
-                    {
-                        var relayDescription = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
-                        using (var deleteForm = new DeleteForm(relayDescription.Path, RelayEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                await serviceBusHelper.DeleteRelay(relayDescription.Path);
-                            }
-                        }
-                        return;
-                    }
-                    // EventHub Node: Delete Consumer Groups
-                    if (sender == deleteConsumerGroupsMenuItem)
-                    {
-                        if (serviceBusTreeView.SelectedNode.Nodes.Count == 0)
-                        {
-                            return;
-                        }
-                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
-                        if (eventHubDescription == null)
-                        {
-                            return;
-                        }
-                        using (var deleteForm = new DeleteForm(string.Format(DeleteAllConsumerGroups, eventHubDescription.Path)))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                var notificationHubList = new List<string>();
-                                GetConsumerGroupList(notificationHubList, serviceBusTreeView.SelectedNode);
-                                notificationHubList.Remove(DefaultConsumerGroupName);
-                                serviceBusHelper.DeleteConsumerGroups(eventHubDescription.Path, notificationHubList);
-                                refreshEntity_Click(null, null);
-                            }
-                        }
-                        return;
-                    }
-                    // EventHub Node
-                    if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
-                    {
-                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
-                        using (var deleteForm = new DeleteForm(eventHubDescription.Path, EventHubEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                serviceBusHelper.DeleteEventHub(eventHubDescription);
-                            }
-                        }
-                        return;
-                    }
-                    // ConsumerGroup Node
-                    if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
-                    {
-                        var notificationHubDescription = serviceBusTreeView.SelectedNode.Tag as ConsumerGroupDescription;
-                        using (var deleteForm = new DeleteForm(notificationHubDescription.Name, ConsumerGroupEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                serviceBusHelper.DeleteConsumerGroup(notificationHubDescription);
-                            }
-                        }
-                        return;
-                    }
-                    // NotificationHub Node
-                    if (serviceBusTreeView.SelectedNode.Tag is NotificationHubDescription)
-                    {
-                        var notificationHubDescription = serviceBusTreeView.SelectedNode.Tag as NotificationHubDescription;
-                        using (var deleteForm = new DeleteForm(notificationHubDescription.Path, NotificationHubEntity.ToLower()))
-                        {
-                            if (deleteForm.ShowDialog() == DialogResult.OK)
-                            {
-                                await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);
-                            }
-                        }
-                        return;
-                    }
-                    // Subscriptions Node
-                    if (serviceBusTreeView.SelectedNode.Text == SubscriptionEntities ||
-                        serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
-                    {
-                        var subscriptionDescriptions = serviceBusTreeView.SelectedNode.
-                                                            Nodes.
-                                                            Cast<TreeNode>().
-                                                            Select(n => ((SubscriptionWrapper)n.Tag).SubscriptionDescription).
-                                                            ToList();
-                        if (subscriptionDescriptions.Count > 0)
-                        {
-                            using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
-                            {
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // Subscription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                    {
-                        var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                        if (wrapper.TopicDescription != null &&
-                            wrapper.SubscriptionDescription != null)
-                        {
-                            using (var deleteForm = new DeleteForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower()))
-                            {
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    await serviceBusHelper.DeleteSubscription(wrapper.SubscriptionDescription);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // Rules Node
-                    if (serviceBusTreeView.SelectedNode.Text == RuleEntities)
-                    {
-                        var ruleWrappers = serviceBusTreeView.SelectedNode.
-                                                            Nodes.
-                                                            Cast<TreeNode>().
-                                                            Select(n => (RuleWrapper)n.Tag).
-                                                            ToList();
-                        if (ruleWrappers.Count > 0)
-                        {
-                            using (var deleteForm = new DeleteForm(DeleteAllRules))
-                            {
-                                deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, "All rules in " + serviceBusNamespaceLocalName);
-
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    serviceBusHelper.RemoveRules(ruleWrappers);
-                                }
-                            }
-                        }
-                        return;
-                    }
-                    // Rule Node
-                    if (serviceBusTreeView.SelectedNode.Tag is RuleWrapper)
-                    {
-                        var wrapper = serviceBusTreeView.SelectedNode.Tag as RuleWrapper;
-                        if (wrapper.SubscriptionDescription != null &&
-                            wrapper.RuleDescription != null)
-                        {
-                            using (var deleteForm = new DeleteForm(wrapper.RuleDescription.Name, RuleEntity.ToLower()))
-                            {
-                                if (deleteForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    serviceBusHelper.RemoveRule(wrapper.SubscriptionDescription, wrapper.RuleDescription);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private void changeStatusQueueMenuItem_DropDownOpening(object sender, System.EventArgs e)
-        {
-            try
-            {
-                var tag = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                if (tag != null)
-                {
-                    // Put a check against the item that reflects the current status of the queue
-                    var queueDescription = serviceBusHelper.GetQueue(tag.Path);
-                    var status = queueDescription.Status;
-                    foreach (var dropDownItem in changeStatusQueueMenuItem.DropDownItems)
-                    {
-                        var dropDownMenuItem = dropDownItem as ToolStripMenuItem;
-                        dropDownMenuItem.Checked = (EntityStatus)dropDownMenuItem.Tag == status;
-                    }
-                }
-                else
-                {
-                    throw new NotSupportedException("Not supported for entity types other than queues.");
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void changeStatusQueue_Click(object sender, ToolStripItemClickedEventArgs e)
-        {
-            try
-            {
-                Cursor.Current = Cursors.WaitCursor;
-                if (serviceBusHelper != null &&
-                    serviceBusTreeView.SelectedNode != null)
-                {
-                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                    {
-                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-
-                        var desiredStatus = (EntityStatus)e.ClickedItem.Tag;
-                        using (var changeStatusForm = new ChangeStatusForm(queueDescription.Path, QueueEntity.ToLower(), desiredStatus))
-                        {
-                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
-                            {
-                                queueDescription.Status = (EntityStatus)e.ClickedItem.Tag;
-                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
-                                refreshEntity_Click(null, null);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        throw new NotSupportedException("Not supported for entity types other than queues.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private async void changeStatusEntity_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Cursor.Current = Cursors.WaitCursor;
-                if (serviceBusHelper != null &&
-                    serviceBusTreeView.SelectedNode != null)
-                {
-                    // Queue Node
-                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                    {
-                        var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                        using (var changeQueueStatusForm = new ChangeQueueStatusForm(queueDescription.Status))
-                        {
-                            if (changeQueueStatusForm.ShowDialog() == DialogResult.OK)
-                            {
-                                queueDescription.Status = changeQueueStatusForm.EntityStatus;
-                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
-                                refreshEntity_Click(null, null);
-                            }
-                        }
-                        return;
-                    }
-                    // Topic Node
-                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
-                    {
-                        var topicDescription = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                        var desiredStatus = topicDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
-                        using (var changeStatusForm = new ChangeStatusForm(topicDescription.Path, TopicEntity.ToLower(), desiredStatus))
-                        {
-                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
-                            {
-                                topicDescription.Status = desiredStatus;
-                                serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
-                                refreshEntity_Click(null, null);
-                                changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
-                                                                     ? DisableTopic
-                                                                     : EnableTopic;
-                                var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusTopicMenuItem];
-                                if (item != null)
-                                {
-                                    item.Text = changeStatusTopicMenuItem.Text;
-                                }
-                            }
-                        }
-                        return;
-                    }
-
-                    // Subscription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                    {
-                        var wrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                        if (wrapper.TopicDescription != null &&
-                            wrapper.SubscriptionDescription != null)
-                        {
-                            var desiredStatus = wrapper.SubscriptionDescription.Status = wrapper.SubscriptionDescription.Status == EntityStatus.Active
-                                                                             ? EntityStatus.Disabled
-                                                                             : EntityStatus.Active;
-                            using (var changeStatusForm = new ChangeStatusForm(wrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower(), desiredStatus))
-                            {
-                                if (changeStatusForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    wrapper.SubscriptionDescription.Status = desiredStatus;
-                                    serviceBusHelper.NamespaceManager.UpdateSubscription(wrapper.SubscriptionDescription);
-                                    refreshEntity_Click(null, null);
-                                    changeStatusSubscriptionMenuItem.Text = wrapper.SubscriptionDescription.Status == EntityStatus.Active
-                                                                         ? DisableSubscription
-                                                                         : EnableSubscription;
-                                    var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusSubscriptionMenuItem];
-                                    if (item != null)
-                                    {
-                                        item.Text = changeStatusSubscriptionMenuItem.Text;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // Event Hub
-                    if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
-                    {
-                        var eventHubDescription = serviceBusTreeView.SelectedNode.Tag as EventHubDescription;
-                        var desiredStatus = eventHubDescription.Status = eventHubDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
-                        using (var changeStatusForm = new ChangeStatusForm(eventHubDescription.Path, EventHubEntity.ToLower(), desiredStatus))
-                        {
-                            if (changeStatusForm.ShowDialog() == DialogResult.OK)
-                            {
-                                eventHubDescription.Status = desiredStatus;
-                                await serviceBusHelper.NamespaceManager.UpdateEventHubAsync(eventHubDescription);
-                                refreshEntity_Click(null, null);
-                                changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active
-                                                                     ? DisableEventHub
-                                                                     : EnableEventHub;
-                                var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusEventHubMenuItem];
-                                if (item != null)
-                                {
-                                    item.Text = changeStatusEventHubMenuItem.Text;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private void testEntityInSDIMode_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode == null)
-                {
-                    return;
-                }
-                if (serviceBusTreeView.SelectedNode.Tag == null)
-                {
-                    return;
-                }
-                // QueueDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                {
-                    var queue = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                    panelMain.HeaderText = string.Format(TestQueueFormat, queue.Path);
-                    TestQueue(queue, true);
-                    return;
-                }
-                // TopicDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
-                {
-                    var topic = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                    var subscriptionList = new List<SubscriptionDescription>();
-                    if (serviceBusTreeView.SelectedNode.Nodes.ContainsKey(SubscriptionEntities))
-                    {
-                        var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[SubscriptionEntities];
-                        if (subscriptionsNode != null &&
-                            subscriptionsNode.Nodes.Count > 0)
-                        {
-                            for (var i = 0; i < subscriptionsNode.Nodes.Count; i++)
-                            {
-                                var wrapper = subscriptionsNode.Nodes[i].Tag as SubscriptionWrapper;
-                                if (wrapper != null &&
-                                    wrapper.SubscriptionDescription != null)
-                                {
-                                    subscriptionList.Add(wrapper.SubscriptionDescription);
-                                }
-                            }
-                        }
-                    }
-
-                    panelMain.HeaderText = string.Format(TestTopicFormat, topic.Path);
-                    TestTopic(topic, subscriptionList, true);
-                    return;
-                }
-
-                // SubscriptionDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                {
-                    var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                    panelMain.HeaderText = string.Format(TestSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
-                    TestSubscription(subscriptionWrapper, true);
-                }
-
-                // RelayDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
-                {
-                    var relay = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
-                    panelMain.HeaderText = string.Format(TestRelayFormat, relay.Path);
-                    TestRelay(relay, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void testEntityInMDIMode_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode != null)
-                {
-                    if (serviceBusTreeView.SelectedNode.Tag == null)
-                    {
-                        return;
-                    }
-                    // QueueDescription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                    {
-                        var queue = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                        TestQueue(queue, false);
-                        return;
-                    }
-                    // TopicDescription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is TopicDescription)
-                    {
-                        var topic = serviceBusTreeView.SelectedNode.Tag as TopicDescription;
-                        var subscriptionList = new List<SubscriptionDescription>();
-                        if (serviceBusTreeView.SelectedNode.Nodes.ContainsKey(SubscriptionEntities))
-                        {
-                            var subscriptionsNode = serviceBusTreeView.SelectedNode.Nodes[SubscriptionEntities];
-                            if (subscriptionsNode != null &&
-                                subscriptionsNode.Nodes.Count > 0)
-                            {
-                                for (var i = 0; i < subscriptionsNode.Nodes.Count; i++)
-                                {
-                                    var wrapper = subscriptionsNode.Nodes[i].Tag as SubscriptionWrapper;
-                                    if (wrapper != null &&
-                                        wrapper.SubscriptionDescription != null)
-                                    {
-                                        subscriptionList.Add(wrapper.SubscriptionDescription);
-                                    }
-                                }
-                            }
-                        }
-                        TestTopic(topic, subscriptionList, false);
-                        return;
-                    }
-
-                    // SubscriptionDescription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                    {
-                        var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                        TestSubscription(subscriptionWrapper, false);
-                    }
-
-                    // RelayDescription Node
-                    if (serviceBusTreeView.SelectedNode.Tag is RelayDescription)
-                    {
-                        var queue = serviceBusTreeView.SelectedNode.Tag as RelayDescription;
-                        TestRelay(queue, false);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void createEntityListenerMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode == null || ServiceBusTreeView.SelectedNode.Tag == null)
-                {
-                    return;
-                }
-
-                // QueueDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
-                {
-                    var queueDescription = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-                    var form = new ContainerForm(serviceBusHelper, this, FormTypeEnum.Listener, queueDescription);
-                    form.Show();
-                    return;
-                }
-
-                // SubscriptionDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
-                {
-                    var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-                    var form = new ContainerForm(serviceBusHelper, this, FormTypeEnum.Listener, subscriptionWrapper);
-                    form.Show();
-                }
-
-                // ConsumerGroup Node
-                if (serviceBusTreeView.SelectedNode.Tag is ConsumerGroupDescription)
-                {
-                    var consumerGroupPartition = serviceBusTreeView.SelectedNode.Tag as ConsumerGroupDescription;
-                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, GetPartitionsFromConsumerGroup(serviceBusTreeView.SelectedNode));
-                    form.Show();
-                }
-
-                // PartitionDescription Node
-                if (serviceBusTreeView.SelectedNode.Tag is PartitionDescription)
-                {
-                    var consumerGroupPartition = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
-                    var partitionDescription = serviceBusTreeView.SelectedNode.Tag as PartitionDescription;
-                    var form = new ContainerForm(serviceBusHelper, this, consumerGroupPartition, new[] { partitionDescription });
-                    form.Show();
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void serviceBusTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
-        {
-            EnsureNodeHasBeenLazyLoaded(e.Node);
-        }
-        #endregion
-
-        #region Public Methods
-        public void HandleException(Exception ex)
-        {
-            if (string.IsNullOrWhiteSpace(ex?.Message))
-            {
-                return;
-            }
-            WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-            if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
-            {
-                WriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
             }
         }
 
@@ -6318,7 +6323,7 @@ namespace ServiceBusExplorer.Forms
                             {
                                 wrapper.Filter = form.FilterExpression;
                             }
-                            refreshEntity_Click(null, null);
+                            RefreshSelectedEntity();
                         }
                     }
                 }

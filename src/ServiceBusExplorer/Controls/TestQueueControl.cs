@@ -622,7 +622,7 @@ namespace ServiceBusExplorer.Controls
                             Invoke((MethodInvoker) delegate
                             {
                                 btnStart.Text = StartCaption;
-                                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+                                MainForm.SingletonMainForm.RefreshSelectedEntity();
                             });
                         }
                     };
