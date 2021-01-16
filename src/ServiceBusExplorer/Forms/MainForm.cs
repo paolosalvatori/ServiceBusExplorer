@@ -482,7 +482,7 @@ namespace ServiceBusExplorer.Forms
                 MessageContentType = optionForm.MainSettings.MessageContentType;
 
                 SelectedEntities = optionForm.MainSettings.SelectedEntities;
-                
+
                 messageBodyType = optionForm.MainSettings.MessageBodyType;
                 ServiceBusHelper.ConnectivityMode = optionForm.MainSettings.ConnectivityMode;
                 ServiceBusHelper.UseAmqpWebSockets = optionForm.MainSettings.UseAmqpWebSockets;
@@ -1360,7 +1360,7 @@ namespace ServiceBusExplorer.Forms
 
         private void displayHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CommandLineOptions.ProcessCommandLineArguments(new string[]{"--help"}, out var argument, out var value, out var helpText);
+            CommandLineOptions.ProcessCommandLineArguments(new string[] { "--help" }, out var argument, out var value, out var helpText);
             WriteToLog(helpText);
         }
 
@@ -1753,7 +1753,7 @@ namespace ServiceBusExplorer.Forms
             subscriptionsNode.Tag = new SubscriptionWrapper(null, topicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
             foreach (var subscriptionDescription in subscriptionDescriptions)
             {
-                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name, 
+                var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name,
                                                                    GetNameAndMessageCountText(subscriptionDescription.Name, subscriptionDescription.MessageCountDetails),
                                                                    subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
                                                                    subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
@@ -3094,17 +3094,17 @@ namespace ServiceBusExplorer.Forms
         {
             if (queueDescription.Status == EntityStatus.Active)
             {
-               node.ImageIndex = QueueIconIndex;
-               node.SelectedImageIndex = QueueIconIndex;
+                node.ImageIndex = QueueIconIndex;
+                node.SelectedImageIndex = QueueIconIndex;
             }
             else
             {
-               node.ImageIndex = GreyQueueIconIndex;
-               node.SelectedImageIndex = GreyQueueIconIndex;
+                node.ImageIndex = GreyQueueIconIndex;
+                node.SelectedImageIndex = GreyQueueIconIndex;
             }
 
-           node.Tag = queueDescription;
-           node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
+            node.Tag = queueDescription;
+            node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
         }
 
         public void RefreshQueues()
@@ -4015,7 +4015,7 @@ namespace ServiceBusExplorer.Forms
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
 
-        public List<NodeColorInfo> NodesColors { get; set;} = new List<NodeColorInfo>();
+        public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
         public BodyType MessageBodyType
         {
@@ -4520,7 +4520,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             if (ex is AggregateException)
                             {
-                                ex = ((AggregateException) ex).InnerExceptions.First();
+                                ex = ((AggregateException)ex).InnerExceptions.First();
                             }
                             WriteToLog($"Failed to retrieve Service Bus topics. Exception: {ex}");
                             serviceBusTreeView.Nodes.Remove(topicListNode);
@@ -5804,7 +5804,7 @@ namespace ServiceBusExplorer.Forms
             }
             return sb.ToString();
         }
-        
+
         private void ReapplyColors(TreeNode parentNode)
         {
             if (parentNode == null)
