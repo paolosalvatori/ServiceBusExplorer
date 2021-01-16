@@ -2774,24 +2774,16 @@ namespace ServiceBusExplorer.Forms
                     if (tag != null)
                     {
                         var queueDescription = serviceBusHelper.GetQueue(tag.Path);
-                        if (queueDescription.Status == EntityStatus.Active)
-                        {
-                            serviceBusTreeView.SelectedNode.ImageIndex = QueueIconIndex;
-                            serviceBusTreeView.SelectedNode.SelectedImageIndex = QueueIconIndex;
-                        }
-                        else
-                        {
-                            serviceBusTreeView.SelectedNode.ImageIndex = GreyQueueIconIndex;
-                            serviceBusTreeView.SelectedNode.SelectedImageIndex = GreyQueueIconIndex;
-                        }
-                        serviceBusTreeView.SelectedNode.Tag = queueDescription;
+                        RefreshQueueNode(serviceBusTreeView.SelectedNode, queueDescription);
+
+                        // Update the right view
                         var control = panelMain.Controls[0] as HandleQueueControl;
                         if (control != null)
                         {
                             control.RefreshData(queueDescription);
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
-                        serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
+
                         return;
                     }
                     // Individual Topic Node
@@ -3096,6 +3088,23 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.ResumeLayout();
                 serviceBusTreeView.EndUpdate();
             }
+        }
+
+        private void RefreshQueueNode(TreeNode node, QueueDescription queueDescription)
+        {
+            if (queueDescription.Status == EntityStatus.Active)
+            {
+               node.ImageIndex = QueueIconIndex;
+               node.SelectedImageIndex = QueueIconIndex;
+            }
+            else
+            {
+               node.ImageIndex = GreyQueueIconIndex;
+               node.SelectedImageIndex = GreyQueueIconIndex;
+            }
+
+           node.Tag = queueDescription;
+           node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
         }
 
         public void RefreshQueues()
