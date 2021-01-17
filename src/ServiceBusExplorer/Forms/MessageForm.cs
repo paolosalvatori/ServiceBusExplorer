@@ -459,9 +459,11 @@ namespace ServiceBusExplorer.Forms
                         {
                             return;
                         }
+
                         var sent = outboundMessages.Count;
                         var stopwatch = new Stopwatch();
                         stopwatch.Start();
+
                         if (chkRemove.Checked)
                         {
                             var messageHandler = CreateDeadLetterMessageHandler();
@@ -484,13 +486,25 @@ namespace ServiceBusExplorer.Forms
                                 writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
                                     messageSender.Path, stopwatch.ElapsedMilliseconds));
                             }
+
+                            if (null != queueDescription)
+                            {
+                                if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
+                                }
+                            }
+                            else if (null != subscriptionWrapper)
+                            {
+                                await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(subscriptionWrapper.SubscriptionDescription.TopicPath);
+                            }
                         }
                         else
                         {
                             var messageIndex = 0;
                             try
                             {
-                                while(messageIndex < outboundMessages.Count)
+                                while (messageIndex < outboundMessages.Count)
                                 {
                                     await messageSender.SendAsync(outboundMessages[messageIndex++]);
                                 }
@@ -507,6 +521,8 @@ namespace ServiceBusExplorer.Forms
                             stopwatch.Stop();
                             writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
                         }
+
+                        await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(messageSender.Path);
 
                         if (brokeredMessages != null)
                         {

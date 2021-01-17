@@ -2791,17 +2791,8 @@ namespace ServiceBusExplorer.Forms
                     if (selectedNodeTag != null)
                     {
                         var topicDescription = serviceBusHelper.GetTopic(selectedNodeTag.Path);
-                        if (topicDescription.Status == EntityStatus.Active)
-                        {
-                            serviceBusTreeView.SelectedNode.ImageIndex = TopicIconIndex;
-                            serviceBusTreeView.SelectedNode.SelectedImageIndex = TopicIconIndex;
-                        }
-                        else
-                        {
-                            serviceBusTreeView.SelectedNode.ImageIndex = GreyTopicIconIndex;
-                            serviceBusTreeView.SelectedNode.SelectedImageIndex = GreyTopicIconIndex;
-                        }
-                        serviceBusTreeView.SelectedNode.Tag = topicDescription;
+                        RefreshTopicNode(serviceBusTreeView.SelectedNode, topicDescription);
+
                         var control = panelMain.Controls[0] as HandleTopicControl;
                         if (control != null)
                         {
@@ -2809,7 +2800,6 @@ namespace ServiceBusExplorer.Forms
                             WriteToLog(string.Format(TopicRetrievedFormat, topicDescription.Path), false);
                         }
 
-                        RefreshIndividualTopic(serviceBusTreeView.SelectedNode);
                         return;
                     }
                     // Relay Node
@@ -3098,6 +3088,33 @@ namespace ServiceBusExplorer.Forms
         public void RefreshTopics()
         {
             ShowEntities(EntityType.Topic);
+        }
+
+        public async Task RefreshServiceBusEntityNode(string path)
+        {
+            var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+
+            if (await serviceBusHelper2.IsQueue(path))
+            {
+                var queueDescription = serviceBusHelper.GetQueue(path);
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                var queueNode = FindNode(path, queueListNode);
+
+                RefreshQueueNode(queueNode, queueDescription);
+                return;
+            }
+
+            if (await serviceBusHelper2.IsTopic(path))
+            {
+                var topicDescription = serviceBusHelper.GetTopic(path);
+                var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                var topicNode = FindNode(path, topicListNode);
+
+                RefreshTopicNode(topicNode, topicDescription);
+                return;
+            }
+
+            WriteToLog($"{path} is neither a queue nor a topic so there was no update in the tree view.");
         }
         #endregion
 
@@ -3910,7 +3927,24 @@ namespace ServiceBusExplorer.Forms
             }
 
             node.Tag = queueDescription;
-            node.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, queueDescription.MessageCountDetails);
+            node.Text = GetNameAndMessageCountText(node.Name, queueDescription.MessageCountDetails);
+        }
+
+        private void RefreshTopicNode(TreeNode node, TopicDescription topicDescription)
+        {
+            if (topicDescription.Status == EntityStatus.Active)
+            {
+                node.ImageIndex = TopicIconIndex;
+                node.SelectedImageIndex = TopicIconIndex;
+            }
+            else
+            {
+                node.ImageIndex = GreyTopicIconIndex;
+                node.SelectedImageIndex = GreyTopicIconIndex;
+            }
+
+            node.Tag = topicDescription;
+            RefreshIndividualTopic(node);
         }
 
         private void SetControlSize(Control control)

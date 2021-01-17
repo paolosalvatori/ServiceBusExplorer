@@ -39,5 +39,17 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
             return namespaceProperties.MessagingSku == MessagingSku.Premium;
         }
+
+        public async Task<bool> IsQueue(string name)
+        {
+            var administrationClient = new ServiceBusAdministrationClient(ConnectionString);
+            return await administrationClient.QueueExistsAsync(name).ConfigureAwait(false);
+        }
+
+        public async Task<bool> IsTopic(string name)
+        {
+            var administrationClient = new ServiceBusAdministrationClient(ConnectionString);
+            return await administrationClient.TopicExistsAsync(name).ConfigureAwait(false);
+        }
     }
 }
