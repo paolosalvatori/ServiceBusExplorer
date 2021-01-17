@@ -494,7 +494,7 @@ namespace ServiceBusExplorer.Forms
                                     await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
                                 }
                             }
-                            else if (null != subscriptionWrapper)
+                            else if (null != subscriptionWrapper?.SubscriptionDescription?.TopicPath)
                             {
                                 await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(subscriptionWrapper.SubscriptionDescription.TopicPath);
                             }
