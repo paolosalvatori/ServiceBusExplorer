@@ -20,14 +20,13 @@
 #endregion
 
 #region Using Directives
-
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -41,6 +40,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
@@ -50,8 +50,6 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    using System.Text.RegularExpressions;
-
     public partial class MainForm : Form
     {
         #region Private Constants
