@@ -159,7 +159,6 @@ namespace ServiceBusExplorer.Forms
         private const string ImportToolStripMenuItemToolTipText = "Import entity definition from file.";
         private const string EventClick = "EventClick";
         private const string EventsProperty = "Events";
-        private const string ChangeStatusQueueMenuItem = "changeStatusQueueMenuItem";
         private const string ChangeStatusTopicMenuItem = "changeStatusTopicMenuItem";
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
@@ -1358,7 +1357,7 @@ namespace ServiceBusExplorer.Forms
 
         private void displayHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CommandLineOptions.ProcessCommandLineArguments(new string[] { "--help" }, out var argument, out var value, out var helpText);
+            CommandLineOptions.ProcessCommandLineArguments(new[] { "--help" }, out _, out _, out var helpText);
             WriteToLog(helpText);
         }
 
@@ -2334,7 +2333,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void changeStatusQueueMenuItem_DropDownOpening(object sender, System.EventArgs e)
+        private void changeStatusQueueMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             try
             {
@@ -2417,7 +2416,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeQueueStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 queueDescription.Status = changeQueueStatusForm.EntityStatus;
-                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                await serviceBusHelper.NamespaceManager.UpdateQueueAsync(queueDescription);
                                 RefreshSelectedEntity();
                             }
                         }
@@ -2435,7 +2434,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 topicDescription.Status = desiredStatus;
-                                serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
+                                await serviceBusHelper.NamespaceManager.UpdateTopicAsync(topicDescription);
                                 RefreshSelectedEntity();
                                 changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
                                                                      ? DisableTopic
@@ -2465,7 +2464,7 @@ namespace ServiceBusExplorer.Forms
                                 if (changeStatusForm.ShowDialog() == DialogResult.OK)
                                 {
                                     wrapper.SubscriptionDescription.Status = desiredStatus;
-                                    serviceBusHelper.NamespaceManager.UpdateSubscription(wrapper.SubscriptionDescription);
+                                    await serviceBusHelper.NamespaceManager.UpdateSubscriptionAsync(wrapper.SubscriptionDescription);
                                     RefreshSelectedEntity();
                                     changeStatusSubscriptionMenuItem.Text = wrapper.SubscriptionDescription.Status == EntityStatus.Active
                                                                          ? DisableSubscription
@@ -3160,7 +3159,7 @@ namespace ServiceBusExplorer.Forms
                     }
                     if (InvokeRequired)
                     {
-                        Invoke(new Action<string>(InternalWriteToLog), new object[] { message });
+                        Invoke(new Action<string>(InternalWriteToLog), message);
                     }
                     else
                     {
@@ -3991,9 +3990,11 @@ namespace ServiceBusExplorer.Forms
                 int separator = hostNameQualified.IndexOf('.');
 
                 if (separator < 0)
+                {
                     return hostNameQualified;
-                else
-                    return hostNameQualified.Substring(0, separator);
+                }
+                
+                return hostNameQualified.Substring(0, separator);
             }
 
             return text;
