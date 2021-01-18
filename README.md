@@ -27,14 +27,14 @@ Here are some guidelines concerning contributions:
 
 - All contributions should be done on `develop`
 	- `master` is only for releases
-- Every pull request is built by AppVeyor and should be linked to a GitHub issue.
+- Every pull request is built by AppVeyor and should preferably be linked to a GitHub issue.
 - Write unit tests, if applicable
 
 If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
 
 # Development Environment
 
-Visual Studio 2017 15.7 or later is required to build the solution. 
+Visual Studio 2019 16.8.0 or later is required to build the solution. 
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2017 15.9.12 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
 
