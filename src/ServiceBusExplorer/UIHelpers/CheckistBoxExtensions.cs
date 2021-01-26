@@ -37,6 +37,15 @@ namespace ServiceBusExplorer.UIHelpers
             return listBox.GetItemChecked(index);
         }
 
+        public static bool GetItemChecked(this CheckedListBox listBox, string itemText, bool defaultValue)
+        {
+            int index = listBox.Items.IndexOf(itemText);
+
+            if (index < 0 || index > listBox.Items.Count - 1) return defaultValue;
+
+            return listBox.GetItemChecked(index);
+        }
+
         public static void SetItemChecked(this CheckedListBox listBox, string itemText, bool value)
         {
             int index = GetIndex(listBox, itemText);

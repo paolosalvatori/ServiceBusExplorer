@@ -22,13 +22,16 @@
             this.messagesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPageDescription = new System.Windows.Forms.TabPage();
             this.grouperAutoDeleteOnIdle = new ServiceBusExplorer.Controls.Grouper();
+            this.tsAutoDeleteOnIdle = new ServiceBusExplorer.Controls.TimeSpanControl();
             this.groupergrouperDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.Grouper();
+            this.tsDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.TimeSpanControl();
             this.grouperTopicSettings = new ServiceBusExplorer.Controls.Grouper();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
             this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
             this.lblRelativeURI = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
+            this.tsDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.TimeSpanControl();
             this.grouperTopicProperties = new ServiceBusExplorer.Controls.Grouper();
             this.lblMaxTopicSizeInGB = new System.Windows.Forms.Label();
             this.trackBarMaxTopicSize = new ServiceBusExplorer.Controls.CustomTrackBar();
@@ -50,9 +53,6 @@
             this.btnCreateDelete = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tsDefaultMessageTimeToLive = new ServiceBusExplorer.Controls.TimeSpanControl();
-            this.tsDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.TimeSpanControl();
-            this.tsAutoDeleteOnIdle = new ServiceBusExplorer.Controls.TimeSpanControl();
             ((System.ComponentModel.ISupportInitialize)(this.deadletterBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sessionsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.messagesBindingSource)).BeginInit();
@@ -103,7 +103,7 @@
             this.grouperAutoDeleteOnIdle.GroupTitle = "Auto Delete On Idle";
             this.grouperAutoDeleteOnIdle.Location = new System.Drawing.Point(16, 96);
             this.grouperAutoDeleteOnIdle.Name = "grouperAutoDeleteOnIdle";
-            this.grouperAutoDeleteOnIdle.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperAutoDeleteOnIdle.Padding = new System.Windows.Forms.Padding(20);
             this.grouperAutoDeleteOnIdle.PaintGroupBox = true;
             this.grouperAutoDeleteOnIdle.RoundCorners = 4;
             this.grouperAutoDeleteOnIdle.ShadowColor = System.Drawing.Color.DarkGray;
@@ -111,6 +111,14 @@
             this.grouperAutoDeleteOnIdle.ShadowThickness = 1;
             this.grouperAutoDeleteOnIdle.Size = new System.Drawing.Size(296, 80);
             this.grouperAutoDeleteOnIdle.TabIndex = 1;
+            // 
+            // tsAutoDeleteOnIdle
+            // 
+            this.tsAutoDeleteOnIdle.Location = new System.Drawing.Point(13, 25);
+            this.tsAutoDeleteOnIdle.Name = "tsAutoDeleteOnIdle";
+            this.tsAutoDeleteOnIdle.Size = new System.Drawing.Size(273, 42);
+            this.tsAutoDeleteOnIdle.TabIndex = 28;
+            this.tsAutoDeleteOnIdle.TimeSpanValue = null;
             // 
             // groupergrouperDefaultMessageTimeToLive
             // 
@@ -127,7 +135,7 @@
             this.groupergrouperDefaultMessageTimeToLive.GroupTitle = "Default Message Time To Live";
             this.groupergrouperDefaultMessageTimeToLive.Location = new System.Drawing.Point(328, 96);
             this.groupergrouperDefaultMessageTimeToLive.Name = "groupergrouperDefaultMessageTimeToLive";
-            this.groupergrouperDefaultMessageTimeToLive.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.groupergrouperDefaultMessageTimeToLive.Padding = new System.Windows.Forms.Padding(20);
             this.groupergrouperDefaultMessageTimeToLive.PaintGroupBox = true;
             this.groupergrouperDefaultMessageTimeToLive.RoundCorners = 4;
             this.groupergrouperDefaultMessageTimeToLive.ShadowColor = System.Drawing.Color.DarkGray;
@@ -135,6 +143,14 @@
             this.groupergrouperDefaultMessageTimeToLive.ShadowThickness = 1;
             this.groupergrouperDefaultMessageTimeToLive.Size = new System.Drawing.Size(296, 80);
             this.groupergrouperDefaultMessageTimeToLive.TabIndex = 2;
+            // 
+            // tsDefaultMessageTimeToLive
+            // 
+            this.tsDefaultMessageTimeToLive.Location = new System.Drawing.Point(13, 25);
+            this.tsDefaultMessageTimeToLive.Name = "tsDefaultMessageTimeToLive";
+            this.tsDefaultMessageTimeToLive.Size = new System.Drawing.Size(273, 42);
+            this.tsDefaultMessageTimeToLive.TabIndex = 26;
+            this.tsDefaultMessageTimeToLive.TimeSpanValue = null;
             // 
             // grouperTopicSettings
             // 
@@ -153,7 +169,7 @@
             this.grouperTopicSettings.GroupTitle = "Topic Settings";
             this.grouperTopicSettings.Location = new System.Drawing.Point(328, 272);
             this.grouperTopicSettings.Name = "grouperTopicSettings";
-            this.grouperTopicSettings.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperTopicSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperTopicSettings.PaintGroupBox = true;
             this.grouperTopicSettings.RoundCorners = 4;
             this.grouperTopicSettings.ShadowColor = System.Drawing.Color.DarkGray;
@@ -170,16 +186,8 @@
             this.checkedListBox.CheckOnClick = true;
             this.checkedListBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.checkedListBox.FormattingEnabled = true;
-            this.checkedListBox.Items.AddRange(new object[] {
-            "Enable Batched Operations",
-            "Enable Filtering Messages Before Publishing",
-            "Enable Partitioning",
-            "Enable Express",
-            "Requires Duplicate Detection",
-            "Enforce Message Ordering",
-            "Is Anonymous Accessible"});
             this.checkedListBox.Location = new System.Drawing.Point(16, 43);
-            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8);
             this.checkedListBox.Name = "checkedListBox";
             this.checkedListBox.Size = new System.Drawing.Size(264, 94);
             this.checkedListBox.TabIndex = 0;
@@ -202,7 +210,7 @@
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(16, 8);
             this.grouperPath.Name = "grouperPath";
-            this.grouperPath.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
             this.grouperPath.PaintGroupBox = true;
             this.grouperPath.RoundCorners = 4;
             this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
@@ -247,7 +255,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Duplicate Detection History Time Window";
             this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(328, 184);
             this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
-            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20);
             this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
             this.grouperDuplicateDetectionHistoryTimeWindow.RoundCorners = 4;
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowColor = System.Drawing.Color.DarkGray;
@@ -255,6 +263,14 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowThickness = 1;
             this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(296, 80);
             this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 4;
+            // 
+            // tsDuplicateDetectionHistoryTimeWindow
+            // 
+            this.tsDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(13, 25);
+            this.tsDuplicateDetectionHistoryTimeWindow.Name = "tsDuplicateDetectionHistoryTimeWindow";
+            this.tsDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(273, 42);
+            this.tsDuplicateDetectionHistoryTimeWindow.TabIndex = 27;
+            this.tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = null;
             // 
             // grouperTopicProperties
             // 
@@ -278,7 +294,7 @@
             this.grouperTopicProperties.GroupTitle = "Topic Properties";
             this.grouperTopicProperties.Location = new System.Drawing.Point(16, 184);
             this.grouperTopicProperties.Name = "grouperTopicProperties";
-            this.grouperTopicProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperTopicProperties.Padding = new System.Windows.Forms.Padding(20);
             this.grouperTopicProperties.PaintGroupBox = true;
             this.grouperTopicProperties.RoundCorners = 4;
             this.grouperTopicProperties.ShadowColor = System.Drawing.Color.DarkGray;
@@ -393,7 +409,7 @@
             this.grouperTopicInformation.GroupTitle = "Topic Information";
             this.grouperTopicInformation.Location = new System.Drawing.Point(640, 8);
             this.grouperTopicInformation.Name = "grouperTopicInformation";
-            this.grouperTopicInformation.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperTopicInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperTopicInformation.PaintGroupBox = true;
             this.grouperTopicInformation.RoundCorners = 4;
             this.grouperTopicInformation.ShadowColor = System.Drawing.Color.DarkGray;
@@ -478,7 +494,7 @@
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(16, 8);
             this.grouperAuthorizationRuleList.Name = "grouperAuthorizationRuleList";
-            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20);
             this.grouperAuthorizationRuleList.PaintGroupBox = true;
             this.grouperAuthorizationRuleList.RoundCorners = 4;
             this.grouperAuthorizationRuleList.ShadowColor = System.Drawing.Color.DarkGray;
@@ -591,30 +607,6 @@
             this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
             this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // tsDefaultMessageTimeToLive
-            // 
-            this.tsDefaultMessageTimeToLive.Location = new System.Drawing.Point(13, 25);
-            this.tsDefaultMessageTimeToLive.Name = "tsDefaultMessageTimeToLive";
-            this.tsDefaultMessageTimeToLive.Size = new System.Drawing.Size(273, 42);
-            this.tsDefaultMessageTimeToLive.TabIndex = 26;
-            this.tsDefaultMessageTimeToLive.TimeSpanValue = null;
-            // 
-            // tsDuplicateDetectionHistoryTimeWindow
-            // 
-            this.tsDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(13, 25);
-            this.tsDuplicateDetectionHistoryTimeWindow.Name = "tsDuplicateDetectionHistoryTimeWindow";
-            this.tsDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(273, 42);
-            this.tsDuplicateDetectionHistoryTimeWindow.TabIndex = 27;
-            this.tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = null;
-            // 
-            // tsAutoDeleteOnIdle
-            // 
-            this.tsAutoDeleteOnIdle.Location = new System.Drawing.Point(13, 25);
-            this.tsAutoDeleteOnIdle.Name = "tsAutoDeleteOnIdle";
-            this.tsAutoDeleteOnIdle.Size = new System.Drawing.Size(273, 42);
-            this.tsAutoDeleteOnIdle.TabIndex = 28;
-            this.tsAutoDeleteOnIdle.TimeSpanValue = null;
             // 
             // HandleTopicControl
             // 

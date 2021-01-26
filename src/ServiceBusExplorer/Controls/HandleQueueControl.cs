@@ -61,7 +61,7 @@ namespace ServiceBusExplorer.Controls
         private const string SizeInGigabytes = "{0} GB";
 
         //***************************
-        // Indexes
+        // CheckListBox item texts
         //***************************
         private const string EnableBatchedOperationsItemText = "Enable Batched Operations";
         private const string EnableDeadLetteringOnMessageExpirationItemText = "Enable Dead Lettering On Message Expiration";
@@ -270,6 +270,19 @@ namespace ServiceBusExplorer.Controls
             "SharedAccessKey"
         };
 
+
+        private static List<string> QueueSettingsList = new List<string>()
+        {
+            EnableBatchedOperationsItemText,
+            EnableDeadLetteringOnMessageExpirationItemText,
+            EnablePartitioningItemText,
+            EnableExpressItemText,
+            RequiresDuplicateDetectionItemText,
+            RequiresSessionItemText,
+            SupportOrderingItemText,
+            IsAnonymousAccessibleItemText
+        };
+
         private static readonly List<string> Operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
         private static readonly List<string> TimeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
 
@@ -288,21 +301,8 @@ namespace ServiceBusExplorer.Controls
             this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
 
             InitializeComponent();
-            InitializeControls(calledFirstTime: true);
+            InitializeControls(initialCall: true);
         }
-
-        List<string> queueSettingsList = new List<string>()
-        {
-            EnableBatchedOperationsItemText,
-            EnableDeadLetteringOnMessageExpirationItemText,
-            EnablePartitioningItemText,
-            EnableExpressItemText,
-            RequiresDuplicateDetectionItemText,
-            RequiresSessionItemText,
-            SupportOrderingItemText,
-            IsAnonymousAccessibleItemText
-        };
-
         #endregion
 
         #region Public Events
@@ -539,7 +539,7 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Methods
 
-        private void InitializeControls(bool calledFirstTime = false)
+        private void InitializeControls(bool initialCall = false)
         {
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
@@ -550,11 +550,11 @@ namespace ServiceBusExplorer.Controls
             }
 
             // This must only be done once per instance of this class
-            if (calledFirstTime)
+            if (initialCall)
             {
                 checkedListBox.Items.Clear();
 
-                foreach (string item in queueSettingsList)
+                foreach (string item in QueueSettingsList)
                 {
                     switch (item)
                     {
@@ -2135,19 +2135,18 @@ namespace ServiceBusExplorer.Controls
                     description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     description.EnableDeadLetteringOnMessageExpiration =
                         checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationItemText);
-                    if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
-                    {
-                        description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningItemText);
-                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText);
-                    }
+
+                    // The following two items are not shown on Premium namespaces
+                    description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningItemText, defaultValue: false);
+                    description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+
                     description.RequiresDuplicateDetection =
                         checkedListBox.GetItemChecked(RequiresDuplicateDetectionItemText);
                     description.RequiresSession = checkedListBox.GetItemChecked(RequiresSessionItemText);
                     description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText);
-                    }
+
+                    // The following item is only shown on Service Bus for Windows Server namespaces
+                    description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList =
                         authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
@@ -2354,16 +2353,13 @@ namespace ServiceBusExplorer.Controls
 
                     queueDescription.EnableBatchedOperations =
                         checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
-                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText);
+                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
                     queueDescription.EnableDeadLetteringOnMessageExpiration =
                         checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationItemText);
                     queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
 
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        queueDescription.IsAnonymousAccessible =
-                            checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText);
-                    }
+                    queueDescription.IsAnonymousAccessible =
+                        checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList =
                         authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
