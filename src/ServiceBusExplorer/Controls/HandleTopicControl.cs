@@ -185,7 +185,7 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Methods
-        private void InitializeControls(bool initialCall = false)
+        private void InitializeControls(bool initialCall)
         {
             trackBarMaxTopicSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
@@ -613,7 +613,7 @@ namespace ServiceBusExplorer.Controls
                     }
 
                     topicDescription = serviceBusHelper.CreateTopic(description);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
             catch (Exception ex)
@@ -769,7 +769,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     topicDescription.Status = EntityStatus.Active;
                     topicDescription = serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
         }

@@ -539,7 +539,7 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Methods
 
-        private void InitializeControls(bool initialCall = false)
+        private void InitializeControls(bool initialCall)
         {
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
@@ -2207,7 +2207,7 @@ namespace ServiceBusExplorer.Controls
 
 
                     queueDescription = serviceBusHelper.CreateQueue(description);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
             catch (Exception ex)
