@@ -186,6 +186,7 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.btnClearFiles = new System.Windows.Forms.Button();
             this.btnSelectFiles = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.mainTabControl.SuspendLayout();
             this.mainTabMessagePage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -433,7 +434,6 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -449,6 +449,7 @@
             // tabFilesPage
             // 
             this.tabFilesPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabFilesPage.Controls.Add(this.label2);
             this.tabFilesPage.Controls.Add(this.grouperMessageFiles);
             this.tabFilesPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabFilesPage.Location = new System.Drawing.Point(4, 24);
@@ -479,7 +480,7 @@
             this.grouperMessageFiles.ForeColor = System.Drawing.Color.White;
             this.grouperMessageFiles.GroupImage = null;
             this.grouperMessageFiles.GroupTitle = "Message Files";
-            this.grouperMessageFiles.Location = new System.Drawing.Point(16, 8);
+            this.grouperMessageFiles.Location = new System.Drawing.Point(16, 78);
             this.grouperMessageFiles.Name = "grouperMessageFiles";
             this.grouperMessageFiles.Padding = new System.Windows.Forms.Padding(20);
             this.grouperMessageFiles.PaintGroupBox = true;
@@ -487,7 +488,7 @@
             this.grouperMessageFiles.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageFiles.ShadowControl = false;
             this.grouperMessageFiles.ShadowThickness = 1;
-            this.grouperMessageFiles.Size = new System.Drawing.Size(416, 317);
+            this.grouperMessageFiles.Size = new System.Drawing.Size(416, 247);
             this.grouperMessageFiles.TabIndex = 17;
             this.grouperMessageFiles.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageFiles_CustomPaint);
             // 
@@ -496,7 +497,7 @@
             this.radioButtonBinaryFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.radioButtonBinaryFile.AutoSize = true;
             this.radioButtonBinaryFile.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonBinaryFile.Location = new System.Drawing.Point(104, 286);
+            this.radioButtonBinaryFile.Location = new System.Drawing.Point(104, 216);
             this.radioButtonBinaryFile.Name = "radioButtonBinaryFile";
             this.radioButtonBinaryFile.Size = new System.Drawing.Size(73, 17);
             this.radioButtonBinaryFile.TabIndex = 15;
@@ -508,9 +509,9 @@
             this.radioButtonJsonTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.radioButtonJsonTemplate.AutoSize = true;
             this.radioButtonJsonTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 286);
+            this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 216);
             this.radioButtonJsonTemplate.Name = "radioButtonJsonTemplate";
-            this.radioButtonJsonTemplate.Size = new System.Drawing.Size(94, 17);
+            this.radioButtonJsonTemplate.Size = new System.Drawing.Size(100, 17);
             this.radioButtonJsonTemplate.TabIndex = 14;
             this.radioButtonJsonTemplate.TabStop = true;
             this.radioButtonJsonTemplate.Text = "JSON Template";
@@ -521,9 +522,9 @@
             this.radioButtonXmlTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.radioButtonXmlTemplate.AutoSize = true;
             this.radioButtonXmlTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(310, 286);
+            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(305, 216);
             this.radioButtonXmlTemplate.Name = "radioButtonXmlTemplate";
-            this.radioButtonXmlTemplate.Size = new System.Drawing.Size(89, 17);
+            this.radioButtonXmlTemplate.Size = new System.Drawing.Size(94, 17);
             this.radioButtonXmlTemplate.TabIndex = 9;
             this.radioButtonXmlTemplate.TabStop = true;
             this.radioButtonXmlTemplate.Text = "XML Template";
@@ -535,7 +536,7 @@
             this.radioButtonTextFile.AutoSize = true;
             this.radioButtonTextFile.Checked = true;
             this.radioButtonTextFile.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonTextFile.Location = new System.Drawing.Point(16, 286);
+            this.radioButtonTextFile.Location = new System.Drawing.Point(16, 216);
             this.radioButtonTextFile.Name = "radioButtonTextFile";
             this.radioButtonTextFile.Size = new System.Drawing.Size(65, 17);
             this.radioButtonTextFile.TabIndex = 7;
@@ -565,10 +566,11 @@
             this.nameColumnHeader,
             this.sizeColumnHeader});
             this.messageFileListView.FullRowSelect = true;
+            this.messageFileListView.HideSelection = false;
             this.messageFileListView.Location = new System.Drawing.Point(16, 32);
             this.messageFileListView.Name = "messageFileListView";
             this.messageFileListView.OwnerDraw = true;
-            this.messageFileListView.Size = new System.Drawing.Size(384, 246);
+            this.messageFileListView.Size = new System.Drawing.Size(384, 176);
             this.messageFileListView.TabIndex = 2;
             this.messageFileListView.UseCompatibleStateImageBehavior = false;
             this.messageFileListView.View = System.Windows.Forms.View.Details;
@@ -834,6 +836,8 @@
             // 
             // txtMessageCount
             // 
+            this.txtMessageCount.AllowDecimal = false;
+            this.txtMessageCount.AllowNegative = false;
             this.txtMessageCount.AllowSpace = false;
             this.txtMessageCount.Location = new System.Drawing.Point(96, 259);
             this.txtMessageCount.Name = "txtMessageCount";
@@ -2543,6 +2547,17 @@
             this.btnSelectFiles.UseVisualStyleBackColor = false;
             this.btnSelectFiles.Click += new System.EventHandler(this.btnSelectFiles_Click);
             // 
+            // label2
+            // 
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label2.Location = new System.Drawing.Point(16, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(416, 56);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "The default is to just send one message so if you have selected muliple files and" +
+    " want to send all of them you have to change the Message Count on the Sender tab" +
+    ".";
+            // 
             // TestTopicControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2772,5 +2787,6 @@
         private System.Windows.Forms.ComboBox cboMessageFormat;
         private Grouper grouperMessageText;
         private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
+        private System.Windows.Forms.Label label2;
     }
 }
