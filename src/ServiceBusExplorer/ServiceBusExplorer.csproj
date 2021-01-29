@@ -401,6 +401,7 @@
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UIHelpers\CategorySorter.cs" />
+    <Compile Include="UIHelpers\CheckistBoxExtensions.cs" />
     <Compile Include="UIHelpers\ControlHelper.cs" />
     <Compile Include="UIHelpers\CustomCollectionEditor.cs" />
     <Compile Include="UIHelpers\CustomColorHelper.cs" />

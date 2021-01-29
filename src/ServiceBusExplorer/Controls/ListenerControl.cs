@@ -74,7 +74,7 @@ namespace ServiceBusExplorer.Controls
         private const string SelectEntityGrouperTitle = "Forward To";
         private const string SelectEntityLabelText = "Target Queue or Topic:";
         private const string DoubleClickMessage = "Double-click a row to repair and resubmit the corresponding message.";
-        private const string MessageSentMessage = "[{0}] messages where sent to [{1}]";
+        private const string MessageSentMessage = "[{0}] messages were sent to [{1}]";
         private const string FilterExpressionTitle = "Define Filter Expression";
         private const string FilterExpressionLabel = "Filter Expression";
         private const string FilterExpressionNotValidMessage = "The filter expression [{0}] is not valid: {1}";

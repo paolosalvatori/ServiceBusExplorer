@@ -50,15 +50,15 @@ namespace ServiceBusExplorer.Controls
         private const string SizeInGigabytes = "{0} GB";
 
         //***************************
-        // Indexes
+        // CheckListBox item texts
         //***************************
-        private const int EnableBatchedOperationsIndex = 0;
-        private const int EnableFilteringMessagesBeforePublishingIndex = 1;
-        private const int EnablePartitioningIndex = 2;
-        private const int EnableExpressIndex = 3;
-        private const int RequiresDuplicateDetectionIndex = 4;
-        private const int SupportOrderingIndex = 5;
-        private const int IsAnonymousAccessibleIndex = 6;
+        private const string  EnableBatchedOperationsItemText                        = "Enable Batched Operations";
+        private const string  EnableFilteringMessagesBeforePublishingItemText       = "Enable Filtering Messages Before Publishing";
+        private const string  EnablePartitioningItemText                            = "Enable Partitioning";
+        private const string  EnableExpressItemText                                 = "Enable Express";
+        private const string  RequiresDuplicateDetectionItemText                    = "Requires Duplicate Detection";
+        private const string  SupportOrderingItemText                               = "Enforce Message Ordering";
+        private const string  IsAnonymousAccessibleItemText                         = "Is Anonymous Accessible";
 
         //***************************
         // Texts
@@ -127,10 +127,22 @@ namespace ServiceBusExplorer.Controls
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog;
+        private readonly bool premiumNamespace;
         private readonly string path;
         #endregion
 
         #region Private Static Fields
+        private static List<string> topicSettingsList = new List<string>()
+        {
+            EnableBatchedOperationsItemText,
+            EnableFilteringMessagesBeforePublishingItemText,
+            EnablePartitioningItemText,
+            EnableExpressItemText,
+            RequiresDuplicateDetectionItemText,
+            SupportOrderingItemText,
+            IsAnonymousAccessibleItemText
+        };
+
         private static readonly List<string> claimTypes = new List<string> { "NameIdentifier", "Upn", "Role", "SharedAccessKey" };
         private static readonly List<string> operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
         private static readonly List<string> timeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
@@ -142,11 +154,12 @@ namespace ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
             this.topicDescription = topicDescription;
             this.path = path;
 
             InitializeComponent();
-            InitializeControls();
+            InitializeControls(initialCall: true);
         } 
         #endregion
 
@@ -172,22 +185,35 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Methods
-        private void InitializeControls()
+        private void InitializeControls(bool initialCall)
         {
             trackBarMaxTopicSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
-            if (serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult())
+            if (this.premiumNamespace)
             {
                 trackBarMaxTopicSize.Maximum = 80;
                 trackBarMaxTopicSize.TickFrequency = 10;
             }
 
-            // IsAnonymousAccessible
-            if (serviceBusHelper.IsCloudNamespace)
+            // This must only be done once per instance of this class
+            if (initialCall)
             {
-                if (checkedListBox.Items.Count > IsAnonymousAccessibleIndex)
+                checkedListBox.Items.Clear();
+
+                foreach (string item in topicSettingsList)
                 {
-                    checkedListBox.Items.RemoveAt(IsAnonymousAccessibleIndex);
+                    switch (item)
+                    {
+                        // Don't add some settings for premium and Service Bus Server namespaces
+                        case EnablePartitioningItemText when this.premiumNamespace:
+                        case EnableExpressItemText when this.premiumNamespace:
+                        case IsAnonymousAccessibleItemText when serviceBusHelper.IsCloudNamespace:
+                            break;
+
+                        default:
+                            checkedListBox.Items.Add(item);
+                            break;
+                    }
                 }
             }
 
@@ -390,34 +416,34 @@ namespace ServiceBusExplorer.Controls
             tsAutoDeleteOnIdle.TimeSpanValue = topicDescription.AutoDeleteOnIdle;
 
             // EnableBatchedOperations
-            checkedListBox.SetItemChecked(EnableBatchedOperationsIndex,
+            checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
                                           topicDescription.EnableBatchedOperations);
             // EnableFilteringMessagesBeforePublishing
-            checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingIndex,
+            checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingItemText,
                                           topicDescription.EnableFilteringMessagesBeforePublishing);
             
-            if (serviceBusHelper.IsCloudNamespace)
+            if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
-                checkedListBox.SetItemChecked(EnablePartitioningIndex, topicDescription.EnablePartitioning);
+                checkedListBox.SetItemChecked(EnablePartitioningItemText, topicDescription.EnablePartitioning);
 
                 // EnableExpress
-                checkedListBox.SetItemChecked(EnableExpressIndex, topicDescription.EnableExpress);
+                checkedListBox.SetItemChecked(EnableExpressItemText, topicDescription.EnableExpress);
             }
 
             // RequiresDuplicateDetection
-            checkedListBox.SetItemChecked(RequiresDuplicateDetectionIndex,
+            checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
                                           topicDescription.RequiresDuplicateDetection);
 
             // SupportOrdering
-            checkedListBox.SetItemChecked(SupportOrderingIndex,
+            checkedListBox.SetItemChecked(SupportOrderingItemText,
                                           topicDescription.SupportOrdering);
 
             // IsAnonymousAccessible
             if (!serviceBusHelper.IsCloudNamespace &&
                 topicDescription != null)
             {
-                checkedListBox.SetItemChecked(IsAnonymousAccessibleIndex,
+                checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
                                               topicDescription.IsAnonymousAccessible);
             }
         }
@@ -428,15 +454,15 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            if (e.Index == EnablePartitioningIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
             {
                 e.NewValue = topicDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == RequiresDuplicateDetectionIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
             {
                 e.NewValue = topicDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == IsAnonymousAccessibleIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
             {
                 e.NewValue = topicDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
             }
@@ -516,15 +542,14 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                     
-                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);
-                    if (serviceBusHelper.IsCloudNamespace)
-                    {
-                        description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
-                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    }
-                    description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
-                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
+                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
+                    description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
+
+                    description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningItemText, defaultValue: false);
+                    description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+
+                    description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionItemText);
+                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
                     if (bindingList != null)
@@ -584,11 +609,11 @@ namespace ServiceBusExplorer.Controls
 
                     if (!serviceBusHelper.IsCloudNamespace)
                     {
-                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
+                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText);
                     }
 
                     topicDescription = serviceBusHelper.CreateTopic(description);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
             catch (Exception ex)
@@ -664,15 +689,11 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                     
-                    topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);
-                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
-                    
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
-                    }
+                    topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
+                    topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+                    topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
+                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);                    
+                    topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
                     if (bindingList != null)
@@ -748,7 +769,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     topicDescription.Status = EntityStatus.Active;
                     topicDescription = serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
         }

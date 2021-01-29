@@ -72,6 +72,7 @@
             this.grouperMessageSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.messagePropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperMessageCustomProperties = new ServiceBusExplorer.Controls.Grouper();
+            this.messageCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabPageDeadletter = new System.Windows.Forms.TabPage();
             this.deadletterSplitContainer = new System.Windows.Forms.SplitContainer();
             this.deadletterMainSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -85,6 +86,7 @@
             this.grouperDeadletterSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.deadletterPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperDeadletterCustomProperties = new ServiceBusExplorer.Controls.Grouper();
+            this.deadletterCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabPageTransferDeadletter = new System.Windows.Forms.TabPage();
             this.transferDeadletterSplitContainer = new System.Windows.Forms.SplitContainer();
             this.transferMainSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -97,6 +99,7 @@
             this.grouperTransferDeadletterSystemProperties = new ServiceBusExplorer.Controls.Grouper();
             this.transferDeadletterPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.grouperTransferDeadletterCustomProperties = new ServiceBusExplorer.Controls.Grouper();
+            this.transferDeadletterCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.tabPageSessions = new System.Windows.Forms.TabPage();
             this.sessionListStateSplitContainer = new System.Windows.Forms.SplitContainer();
             this.sessionMainSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -144,9 +147,6 @@
             this.saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.messageCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.deadletterCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.transferDeadletterCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
             this.grouperAutoDeleteOnIdle.SuspendLayout();
@@ -516,15 +516,6 @@
             this.checkedListBox.CheckOnClick = true;
             this.checkedListBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.checkedListBox.FormattingEnabled = true;
-            this.checkedListBox.Items.AddRange(new object[] {
-            "Enable Batched Operations",
-            "Enable Dead Lettering On Message Expiration",
-            "Enable Partitioning",
-            "Enable Express",
-            "Requires Duplicate Detection",
-            "Requires Session",
-            "Enforce Message Ordering",
-            "Is Anonymous Accessible"});
             this.checkedListBox.Location = new System.Drawing.Point(16, 32);
             this.checkedListBox.Margin = new System.Windows.Forms.Padding(8);
             this.checkedListBox.Name = "checkedListBox";
@@ -1111,7 +1102,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
@@ -1214,6 +1205,21 @@
             this.grouperMessageCustomProperties.Size = new System.Drawing.Size(314, 212);
             this.grouperMessageCustomProperties.TabIndex = 27;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
+            // 
+            // messageCustomPropertyGrid
+            // 
+            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.messageCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.messageCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.messageCustomPropertyGrid.HelpVisible = false;
+            this.messageCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.messageCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
+            this.messageCustomPropertyGrid.Name = "messageCustomPropertyGrid";
+            this.messageCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
+            this.messageCustomPropertyGrid.TabIndex = 1;
+            this.messageCustomPropertyGrid.ToolbarVisible = false;
             // 
             // tabPageDeadletter
             // 
@@ -1394,7 +1400,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
@@ -1497,6 +1503,21 @@
             this.grouperDeadletterCustomProperties.Size = new System.Drawing.Size(314, 212);
             this.grouperDeadletterCustomProperties.TabIndex = 27;
             this.grouperDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
+            // 
+            // deadletterCustomPropertyGrid
+            // 
+            this.deadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.deadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.deadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.deadletterCustomPropertyGrid.HelpVisible = false;
+            this.deadletterCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.deadletterCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
+            this.deadletterCustomPropertyGrid.Name = "deadletterCustomPropertyGrid";
+            this.deadletterCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
+            this.deadletterCustomPropertyGrid.TabIndex = 2;
+            this.deadletterCustomPropertyGrid.ToolbarVisible = false;
             // 
             // tabPageTransferDeadletter
             // 
@@ -1660,7 +1681,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtTransferDeadletterText.BackBrush = null;
             this.txtTransferDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTransferDeadletterText.CharHeight = 14;
@@ -1763,6 +1784,21 @@
             this.grouperTransferDeadletterCustomProperties.Size = new System.Drawing.Size(314, 212);
             this.grouperTransferDeadletterCustomProperties.TabIndex = 27;
             this.grouperTransferDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
+            // 
+            // transferDeadletterCustomPropertyGrid
+            // 
+            this.transferDeadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.transferDeadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.transferDeadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.transferDeadletterCustomPropertyGrid.HelpVisible = false;
+            this.transferDeadletterCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.transferDeadletterCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
+            this.transferDeadletterCustomPropertyGrid.Name = "transferDeadletterCustomPropertyGrid";
+            this.transferDeadletterCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
+            this.transferDeadletterCustomPropertyGrid.TabIndex = 3;
+            this.transferDeadletterCustomPropertyGrid.ToolbarVisible = false;
             // 
             // tabPageSessions
             // 
@@ -2255,51 +2291,6 @@
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
-            // 
-            // messageCustomPropertyGrid
-            // 
-            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.messageCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
-            this.messageCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.messageCustomPropertyGrid.HelpVisible = false;
-            this.messageCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.messageCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
-            this.messageCustomPropertyGrid.Name = "messageCustomPropertyGrid";
-            this.messageCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
-            this.messageCustomPropertyGrid.TabIndex = 1;
-            this.messageCustomPropertyGrid.ToolbarVisible = false;
-            // 
-            // deadletterCustomPropertyGrid
-            // 
-            this.deadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.deadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
-            this.deadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.deadletterCustomPropertyGrid.HelpVisible = false;
-            this.deadletterCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.deadletterCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
-            this.deadletterCustomPropertyGrid.Name = "deadletterCustomPropertyGrid";
-            this.deadletterCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
-            this.deadletterCustomPropertyGrid.TabIndex = 2;
-            this.deadletterCustomPropertyGrid.ToolbarVisible = false;
-            // 
-            // transferDeadletterCustomPropertyGrid
-            // 
-            this.transferDeadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.transferDeadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
-            this.transferDeadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.transferDeadletterCustomPropertyGrid.HelpVisible = false;
-            this.transferDeadletterCustomPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.transferDeadletterCustomPropertyGrid.Location = new System.Drawing.Point(16, 32);
-            this.transferDeadletterCustomPropertyGrid.Name = "transferDeadletterCustomPropertyGrid";
-            this.transferDeadletterCustomPropertyGrid.Size = new System.Drawing.Size(281, 164);
-            this.transferDeadletterCustomPropertyGrid.TabIndex = 3;
-            this.transferDeadletterCustomPropertyGrid.ToolbarVisible = false;
             // 
             // HandleQueueControl
             // 

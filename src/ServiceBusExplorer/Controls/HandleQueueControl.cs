@@ -61,16 +61,16 @@ namespace ServiceBusExplorer.Controls
         private const string SizeInGigabytes = "{0} GB";
 
         //***************************
-        // Indexes
+        // CheckListBox item texts
         //***************************
-        private const int EnableBatchedOperationsIndex = 0;
-        private const int EnableDeadLetteringOnMessageExpirationIndex = 1;
-        private const int EnablePartitioningIndex = 2;
-        private const int EnableExpressIndex = 3;
-        private const int RequiresDuplicateDetectionIndex = 4;
-        private const int RequiresSessionIndex = 5;
-        private const int SupportOrderingIndex = 6;
-        private const int IsAnonymousAccessibleIndex = 7;
+        private const string EnableBatchedOperationsItemText = "Enable Batched Operations";
+        private const string EnableDeadLetteringOnMessageExpirationItemText = "Enable Dead Lettering On Message Expiration";
+        private const string EnablePartitioningItemText = "Enable Partitioning";
+        private const string EnableExpressItemText = "Enable Express";
+        private const string RequiresDuplicateDetectionItemText = "Requires Duplicate Detection";
+        private const string RequiresSessionItemText = "Requires Session";
+        private const string SupportOrderingItemText = "Enforce Message Ordering";
+        private const string IsAnonymousAccessibleItemText = "Is Anonymous Accessible";
 
         //***************************
         // Texts
@@ -106,7 +106,7 @@ namespace ServiceBusExplorer.Controls
         private const string DuplicateDetectionHistoryTimeWindow = "DuplicateDetectionHistoryTimeWindow";
         private const string LockDuration = "LockDuration";
         private const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
-       
+
         private const string CannotForwardToItself =
             "The value of the ForwardTo property of the current queue cannot be set to itself.";
 
@@ -238,6 +238,7 @@ namespace ServiceBusExplorer.Controls
         private readonly WriteToLogDelegate writeToLog = default!;
         private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
+        private readonly bool premiumNamespace;
         private BrokeredMessage brokeredMessage = default!;
         private BrokeredMessage deadletterMessage = default!;
         private BrokeredMessage transferDeadletterMessage = default!;
@@ -269,6 +270,19 @@ namespace ServiceBusExplorer.Controls
             "SharedAccessKey"
         };
 
+
+        private static List<string> QueueSettingsList = new List<string>()
+        {
+            EnableBatchedOperationsItemText,
+            EnableDeadLetteringOnMessageExpirationItemText,
+            EnablePartitioningItemText,
+            EnableExpressItemText,
+            RequiresDuplicateDetectionItemText,
+            RequiresSessionItemText,
+            SupportOrderingItemText,
+            IsAnonymousAccessibleItemText
+        };
+
         private static readonly List<string> Operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
         private static readonly List<string> TimeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
 
@@ -284,11 +298,11 @@ namespace ServiceBusExplorer.Controls
             this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
             this.queueDescription = queueDescription;
+            this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
 
             InitializeComponent();
-            InitializeControls();
+            InitializeControls(initialCall: true);
         }
-
         #endregion
 
         #region Public Events
@@ -363,6 +377,7 @@ namespace ServiceBusExplorer.Controls
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
                 writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+
                 return count;
             }
             finally
@@ -392,6 +407,7 @@ namespace ServiceBusExplorer.Controls
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
                 writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+
                 return count;
             }
             finally
@@ -525,14 +541,36 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Methods
 
-        private void InitializeControls()
+        private void InitializeControls(bool initialCall)
         {
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            
-            if (serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult())
+
+            if (this.premiumNamespace)
             {
                 trackBarMaxQueueSize.Maximum = 80;
                 trackBarMaxQueueSize.TickFrequency = 10;
+            }
+
+            // This must only be done once per instance of this class
+            if (initialCall)
+            {
+                checkedListBox.Items.Clear();
+
+                foreach (string item in QueueSettingsList)
+                {
+                    switch (item)
+                    {
+                        // Don't add some settings for premium and Service Bus Server namespaces
+                        case EnablePartitioningItemText when this.premiumNamespace:
+                        case EnableExpressItemText when this.premiumNamespace:
+                        case IsAnonymousAccessibleItemText when serviceBusHelper.IsCloudNamespace:
+                            break;
+
+                        default:
+                            checkedListBox.Items.Add(item);
+                            break;
+                    }
+                }
             }
 
             // Splitter controls
@@ -556,15 +594,6 @@ namespace ServiceBusExplorer.Controls
             DisablePage(SessionsTabPage);
             DisablePage(DeadletterTabPage);
             DisablePage(TransferDeadletterTabPage);
-
-            // IsAnonymousAccessible
-            if (serviceBusHelper.IsCloudNamespace)
-            {
-                if (checkedListBox.Items.Count > IsAnonymousAccessibleIndex)
-                {
-                    checkedListBox.Items.RemoveAt(IsAnonymousAccessibleIndex);
-                }
-            }
 
             // Set Grid style
             authorizationRulesDataGridView.EnableHeadersVisualStyles = false;
@@ -1199,39 +1228,39 @@ namespace ServiceBusExplorer.Controls
             tsAutoDeleteOnIdle.TimeSpanValue = queueDescription.AutoDeleteOnIdle;
 
             // EnableBatchedOperations
-            checkedListBox.SetItemChecked(EnableBatchedOperationsIndex,
+            checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
                 queueDescription.EnableBatchedOperations);
 
             // EnableDeadLetteringOnMessageExpiration
-            checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationIndex,
+            checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationItemText,
                 queueDescription.EnableDeadLetteringOnMessageExpiration);
 
 
-            if (serviceBusHelper.IsCloudNamespace)
+            if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
-                checkedListBox.SetItemChecked(EnablePartitioningIndex, queueDescription.EnablePartitioning);
+                checkedListBox.SetItemChecked(EnablePartitioningItemText, queueDescription.EnablePartitioning);
 
                 // EnableExpress
-                checkedListBox.SetItemChecked(EnableExpressIndex, queueDescription.EnableExpress);
+                checkedListBox.SetItemChecked(EnableExpressItemText, queueDescription.EnableExpress);
             }
 
             // RequiresDuplicateDetection
-            checkedListBox.SetItemChecked(RequiresDuplicateDetectionIndex,
+            checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
                 queueDescription.RequiresDuplicateDetection);
 
             // RequiresSession
-            checkedListBox.SetItemChecked(RequiresSessionIndex,
+            checkedListBox.SetItemChecked(RequiresSessionItemText,
                 queueDescription.RequiresSession);
 
             // SupportOrdering
-            checkedListBox.SetItemChecked(SupportOrderingIndex,
+            checkedListBox.SetItemChecked(SupportOrderingItemText,
                 queueDescription.SupportOrdering);
 
             // IsAnonymousAccessible
             if (!serviceBusHelper.IsCloudNamespace)
             {
-                checkedListBox.SetItemChecked(IsAnonymousAccessibleIndex,
+                checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
                     queueDescription.IsAnonymousAccessible);
             }
         }
@@ -2104,23 +2133,22 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
-                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
+
+                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     description.EnableDeadLetteringOnMessageExpiration =
-                        checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
-                    if (serviceBusHelper.IsCloudNamespace)
-                    {
-                        description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
-                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    }
+                        checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationItemText);
+
+                    // The following two items are not shown on Premium namespaces
+                    description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningItemText, defaultValue: false);
+                    description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+
                     description.RequiresDuplicateDetection =
-                        checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
-                    description.RequiresSession = checkedListBox.GetItemChecked(RequiresSessionIndex);
-                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
-                    }
+                        checkedListBox.GetItemChecked(RequiresDuplicateDetectionItemText);
+                    description.RequiresSession = checkedListBox.GetItemChecked(RequiresSessionItemText);
+                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
+
+                    // The following item is only shown on Service Bus for Windows Server namespaces
+                    description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList =
                         authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
@@ -2181,7 +2209,7 @@ namespace ServiceBusExplorer.Controls
 
 
                     queueDescription = serviceBusHelper.CreateQueue(description);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
             catch (Exception ex)
@@ -2209,19 +2237,19 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            if (e.Index == EnablePartitioningIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
             {
                 e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == RequiresSessionIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresSessionItemText))
             {
                 e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == RequiresDuplicateDetectionIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
             {
                 e.NewValue = queueDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == IsAnonymousAccessibleIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
             {
                 e.NewValue = queueDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
             }
@@ -2324,19 +2352,16 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
-                    queueDescription.EnableBatchedOperations =
-                        checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    queueDescription.EnableDeadLetteringOnMessageExpiration =
-                        checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
-                    queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
 
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        queueDescription.IsAnonymousAccessible =
-                            checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
-                    }
+                    queueDescription.EnableBatchedOperations =
+                        checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
+                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+                    queueDescription.EnableDeadLetteringOnMessageExpiration =
+                        checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationItemText);
+                    queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
+
+                    queueDescription.IsAnonymousAccessible =
+                        checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList =
                         authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
@@ -3009,7 +3034,7 @@ namespace ServiceBusExplorer.Controls
 
             transferDeadletterCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(transferDeadletterMessage.Properties);
         }
-        
+
         private void authorizationRulesDataGridView_Resize(object sender, EventArgs? e)
         {
             try
