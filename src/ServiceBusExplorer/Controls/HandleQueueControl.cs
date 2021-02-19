@@ -375,8 +375,9 @@ namespace ServiceBusExplorer.Controls
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), queueProperties);
                 var count = await purger.Purge();
                 stopwatch.Stop();
-                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds / 1000}] seconds.");
+                MainForm.SingletonMainForm.RefreshSelectedEntity();
+                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+
                 return count;
             }
             finally
@@ -404,8 +405,9 @@ namespace ServiceBusExplorer.Controls
                 var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), newSdkQueueDescription);
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
-                MainForm.SingletonMainForm.refreshEntity_Click(null, null);
-                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds / 1000}] seconds.");
+                MainForm.SingletonMainForm.RefreshSelectedEntity();
+                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+
                 return count;
             }
             finally
@@ -3417,7 +3419,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = false;
             }
 
-            MainForm.SingletonMainForm.refreshEntity_Click(null, null);
+            MainForm.SingletonMainForm.RefreshSelectedEntity();
         }
 
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
