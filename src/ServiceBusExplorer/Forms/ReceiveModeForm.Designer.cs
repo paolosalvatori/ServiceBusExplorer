@@ -60,11 +60,11 @@ namespace ServiceBusExplorer.Forms
             this.grouperSession = new ServiceBusExplorer.Controls.Grouper();
             this.txtFromSession = new System.Windows.Forms.TextBox();
             this.grouperFrom = new ServiceBusExplorer.Controls.Grouper();
-            this.txtFromSequenceNumber = new System.Windows.Forms.TextBox();
+            this.txtFromSequenceNumber = new ServiceBusExplorer.Controls.NumericTextBox();
             this.grouperInspector = new ServiceBusExplorer.Controls.Grouper();
             this.cboReceiverInspector = new System.Windows.Forms.ComboBox();
             this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
-            this.txtMessageCount = new System.Windows.Forms.TextBox();
+            this.txtMessageCount = new ServiceBusExplorer.Controls.NumericTextBox();
             this.btnTop = new System.Windows.Forms.RadioButton();
             this.btnAll = new System.Windows.Forms.RadioButton();
             this.grouperReadMode = new ServiceBusExplorer.Controls.Grouper();
@@ -266,7 +266,6 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageCount.Name = "txtMessageCount";
             this.txtMessageCount.Size = new System.Drawing.Size(80, 20);
             this.txtMessageCount.TabIndex = 42;
-            this.txtMessageCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMessageCount_KeyPress);
             // 
             // btnTop
             // 
@@ -383,7 +382,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel mainPanel;
         private Grouper grouperMessages;
-        private System.Windows.Forms.TextBox txtMessageCount;
+        private ServiceBusExplorer.Controls.NumericTextBox txtMessageCount;
         private System.Windows.Forms.RadioButton btnTop;
         private System.Windows.Forms.RadioButton btnAll;
         private Grouper grouperReadMode;
@@ -392,7 +391,7 @@ namespace ServiceBusExplorer.Forms
         private Grouper grouperInspector;
         private System.Windows.Forms.ComboBox cboReceiverInspector;
         private Grouper grouperFrom;
-        private System.Windows.Forms.TextBox txtFromSequenceNumber;
+        private ServiceBusExplorer.Controls.NumericTextBox txtFromSequenceNumber;
         private Grouper grouperSession;
         private System.Windows.Forms.TextBox txtFromSession;
     }

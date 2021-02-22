@@ -169,118 +169,119 @@ namespace ServiceBusExplorer.Helpers
         /// <returns>An XML string.</returns>
         public async Task<string> ReadAndSerialize(ServiceBusHelper serviceBusHelper, List<IExtensibleDataObject> entityList)
         {
-            if (entityList != null &&
-                entityList.Count > 0)
+            if (entityList == null || entityList.Count <= 0)
             {
-                using (var memoryStream = new MemoryStream())
+                return null;
+            }
+            
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
                 {
-                    using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
+                    var xmlWriterSettings = new System.Xml.XmlWriterSettings();
+                    xmlWriterSettings.Indent = true;
+                    using (var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings))
                     {
-                        var xmlWriterSettings = new System.Xml.XmlWriterSettings();
-                        xmlWriterSettings.Indent = true;
-                        using (var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings))
+                        var queueList = entityList.Where(e => e is QueueDescription).Cast<QueueDescription>();
+                        var topicList = entityList.Where(e => e is TopicDescription).Cast<TopicDescription>();
+                        var relayList = entityList.Where(e => e is RelayDescription).Cast<RelayDescription>();
+                        var eventHubList = entityList.Where(e => e is EventHubDescription).Cast<EventHubDescription>();
+                        var notificationHubList = entityList.Where(e => e is NotificationHubDescription).Cast<NotificationHubDescription>();
+                        xmlWriter.WriteStartElement(EntityList, Namespace);
+                        xmlWriter.WriteAttributeString(NamespaceAttribute, string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ?
+                            Unknown :
+                            serviceBusHelper.Namespace);
+                        var queueDescriptions = queueList as QueueDescription[] ?? queueList.ToArray();
+                        if (queueDescriptions.Any())
                         {
-                            var queueList = entityList.Where(e => e is QueueDescription).Cast<QueueDescription>();
-                            var topicList = entityList.Where(e => e is TopicDescription).Cast<TopicDescription>();
-                            var relayList = entityList.Where(e => e is RelayDescription).Cast<RelayDescription>();
-                            var eventHubList = entityList.Where(e => e is EventHubDescription).Cast<EventHubDescription>();
-                            var notificationHubList = entityList.Where(e => e is NotificationHubDescription).Cast<NotificationHubDescription>();
-                            xmlWriter.WriteStartElement(EntityList, Namespace);
-                            xmlWriter.WriteAttributeString(NamespaceAttribute, string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ?
-                                                                               Unknown :
-                                                                               serviceBusHelper.Namespace);
-                            var queueDescriptions = queueList as QueueDescription[] ?? queueList.ToArray();
-                            if (queueDescriptions.Any())
+                            xmlWriter.WriteStartElement(QueueEntityList);
+                            foreach (var queue in queueDescriptions)
                             {
-                                xmlWriter.WriteStartElement(QueueEntityList);
-                                foreach (var queue in queueDescriptions)
+                                try
                                 {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, queue);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, queue);
                                 }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var topicDescriptions = topicList as TopicDescription[] ?? topicList.ToArray();
-                            if (topicDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(TopicEntityList);
-                                foreach (var topic in topicDescriptions)
+                                catch (Exception ex)
                                 {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, topic);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
+                                    HandleException(ex);
                                 }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var relayDescriptions = relayList as RelayDescription[] ?? relayList.ToArray();
-                            if (relayDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(RelayEntityList);
-                                foreach (var relay in relayDescriptions)
-                                {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, relay);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
-                                }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var eventHubDescriptions = eventHubList as EventHubDescription[] ?? eventHubList.ToArray();
-                            if (eventHubDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(EventHubEntityList);
-                                foreach (var eventHub in eventHubDescriptions)
-                                {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, eventHub);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
-                                }
-                                xmlWriter.WriteEndElement();
-                            }
-                            var notificationHubDescriptions = notificationHubList as NotificationHubDescription[] ?? notificationHubList.ToArray();
-                            if (notificationHubDescriptions.Any())
-                            {
-                                xmlWriter.WriteStartElement(NotificationHubEntityList);
-                                foreach (var notificationHub in notificationHubDescriptions)
-                                {
-                                    try
-                                    {
-                                        await SerializeEntity(serviceBusHelper, xmlWriter, notificationHub);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        HandleException(ex);
-                                    }
-                                }
-                                xmlWriter.WriteEndElement();
                             }
                             xmlWriter.WriteEndElement();
                         }
+                        var topicDescriptions = topicList as TopicDescription[] ?? topicList.ToArray();
+                        if (topicDescriptions.Any())
+                        {
+                            xmlWriter.WriteStartElement(TopicEntityList);
+                            foreach (var topic in topicDescriptions)
+                            {
+                                try
+                                {
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, topic);
+                                }
+                                catch (Exception ex)
+                                {
+                                    HandleException(ex);
+                                }
+                            }
+                            xmlWriter.WriteEndElement();
+                        }
+                        var relayDescriptions = relayList as RelayDescription[] ?? relayList.ToArray();
+                        if (relayDescriptions.Any())
+                        {
+                            xmlWriter.WriteStartElement(RelayEntityList);
+                            foreach (var relay in relayDescriptions)
+                            {
+                                try
+                                {
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, relay);
+                                }
+                                catch (Exception ex)
+                                {
+                                    HandleException(ex);
+                                }
+                            }
+                            xmlWriter.WriteEndElement();
+                        }
+                        var eventHubDescriptions = eventHubList as EventHubDescription[] ?? eventHubList.ToArray();
+                        if (eventHubDescriptions.Any())
+                        {
+                            xmlWriter.WriteStartElement(EventHubEntityList);
+                            foreach (var eventHub in eventHubDescriptions)
+                            {
+                                try
+                                {
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, eventHub);
+                                }
+                                catch (Exception ex)
+                                {
+                                    HandleException(ex);
+                                }
+                            }
+                            xmlWriter.WriteEndElement();
+                        }
+                        var notificationHubDescriptions = notificationHubList as NotificationHubDescription[] ?? notificationHubList.ToArray();
+                        if (notificationHubDescriptions.Any())
+                        {
+                            xmlWriter.WriteStartElement(NotificationHubEntityList);
+                            foreach (var notificationHub in notificationHubDescriptions)
+                            {
+                                try
+                                {
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, notificationHub);
+                                }
+                                catch (Exception ex)
+                                {
+                                    HandleException(ex);
+                                }
+                            }
+                            xmlWriter.WriteEndElement();
+                        }
+                        xmlWriter.WriteEndElement();
                     }
-                    return Encoding.UTF8.GetString(memoryStream.ToArray());
                 }
+                
+                return Encoding.UTF8.GetString(memoryStream.ToArray());
             }
-            return null;
         }
 
         /// <summary>

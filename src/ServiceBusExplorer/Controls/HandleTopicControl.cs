@@ -27,9 +27,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
+using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -51,15 +50,15 @@ namespace ServiceBusExplorer.Controls
         private const string SizeInGigabytes = "{0} GB";
 
         //***************************
-        // Indexes
+        // CheckListBox item texts
         //***************************
-        private const int EnableBatchedOperationsIndex = 0;
-        private const int EnableFilteringMessagesBeforePublishingIndex = 1;
-        private const int EnablePartitioningIndex = 2;
-        private const int EnableExpressIndex = 3;
-        private const int RequiresDuplicateDetectionIndex = 4;
-        private const int SupportOrderingIndex = 5;
-        private const int IsAnonymousAccessibleIndex = 6;
+        private const string  EnableBatchedOperationsItemText                        = "Enable Batched Operations";
+        private const string  EnableFilteringMessagesBeforePublishingItemText       = "Enable Filtering Messages Before Publishing";
+        private const string  EnablePartitioningItemText                            = "Enable Partitioning";
+        private const string  EnableExpressItemText                                 = "Enable Express";
+        private const string  RequiresDuplicateDetectionItemText                    = "Requires Duplicate Detection";
+        private const string  SupportOrderingItemText                               = "Enforce Message Ordering";
+        private const string  IsAnonymousAccessibleItemText                         = "Is Anonymous Accessible";
 
         //***************************
         // Texts
@@ -77,23 +76,11 @@ namespace ServiceBusExplorer.Controls
         // Messages
         //***************************
         private const string PathCannotBeNull = "The Path field cannot be null.";
-        private const string DefaultMessageTimeToLiveDaysMustBeANumber = "The Days value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveHoursMustBeANumber = "The Hours value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveMinutesMustBeANumber = "The Minutes value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveSecondsMustBeANumber = "The Seconds value of the DefaultMessageTimeToLive field must be a number.";
-        private const string DefaultMessageTimeToLiveMillisecondsMustBeANumber = "The Milliseconds value of the DefaultMessageTimeToLive field must be a number.";
+        
+        private const string DefaultMessageTimeToLive = "DefaultMessageTimeToLive";
+        private const string DuplicateDetectionHistoryTimeWindow = "DuplicateDetectionHistoryTimeWindow";
+        private const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
 
-        private const string DuplicateDetectionHistoryTimeWindowDaysMustBeANumber = "The Days value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowHoursMustBeANumber = "The Hours value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber = "The Minutes value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber = "The Seconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-        private const string DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber = "The Milliseconds value of the DuplicateDetectionHistoryTimeWindow field must be a number.";
-
-        private const string AutoDeleteOnIdleDaysMustBeANumber = "The Days value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleHoursMustBeANumber = "The Hours value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleMinutesMustBeANumber = "The Minutes value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleSecondsMustBeANumber = "The Seconds value of the AutoDeleteOnIdle field must be a number.";
-        private const string AutoDeleteOnIdleMillisecondsMustBeANumber = "The Milliseconds value of the AutoDeleteOnIdle field must be a number.";
         private const string AuthorizationRuleDeleteMessage = "The Authorization Rule will be permanently deleted";
 
         private const string KeyNameCannotBeNull = "Authorization Rule [{0}]: the KeyName cannot be null";
@@ -138,11 +125,24 @@ namespace ServiceBusExplorer.Controls
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private TopicDescription topicDescription;
         private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog;
+        private readonly bool premiumNamespace;
         private readonly string path;
         #endregion
 
         #region Private Static Fields
+        private static List<string> topicSettingsList = new List<string>()
+        {
+            EnableBatchedOperationsItemText,
+            EnableFilteringMessagesBeforePublishingItemText,
+            EnablePartitioningItemText,
+            EnableExpressItemText,
+            RequiresDuplicateDetectionItemText,
+            SupportOrderingItemText,
+            IsAnonymousAccessibleItemText
+        };
+
         private static readonly List<string> claimTypes = new List<string> { "NameIdentifier", "Upn", "Role", "SharedAccessKey" };
         private static readonly List<string> operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
         private static readonly List<string> timeGranularityList = new List<string> { "PT5M", "PT1H", "P1D", "P7D" };
@@ -153,11 +153,13 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
+            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
             this.topicDescription = topicDescription;
             this.path = path;
 
             InitializeComponent();
-            InitializeControls();
+            InitializeControls(initialCall: true);
         } 
         #endregion
 
@@ -183,16 +185,35 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Methods
-        private void InitializeControls()
+        private void InitializeControls(bool initialCall)
         {
             trackBarMaxTopicSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
-            // IsAnonymousAccessible
-            if (serviceBusHelper.IsCloudNamespace)
+            if (this.premiumNamespace)
             {
-                if (checkedListBox.Items.Count > IsAnonymousAccessibleIndex)
+                trackBarMaxTopicSize.Maximum = 80;
+                trackBarMaxTopicSize.TickFrequency = 10;
+            }
+
+            // This must only be done once per instance of this class
+            if (initialCall)
+            {
+                checkedListBox.Items.Clear();
+
+                foreach (string item in topicSettingsList)
                 {
-                    checkedListBox.Items.RemoveAt(IsAnonymousAccessibleIndex);
+                    switch (item)
+                    {
+                        // Don't add some settings for premium and Service Bus Server namespaces
+                        case EnablePartitioningItemText when this.premiumNamespace:
+                        case EnableExpressItemText when this.premiumNamespace:
+                        case IsAnonymousAccessibleItemText when serviceBusHelper.IsCloudNamespace:
+                            break;
+
+                        default:
+                            checkedListBox.Items.Add(item);
+                            break;
+                    }
                 }
             }
 
@@ -263,22 +284,9 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(txtPath, PathTooltip);
                 toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
                 toolTip.SetToolTip(trackBarMaxTopicSize, MaxTopicSizeTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveDays, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveHours, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveMinutes, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveSeconds, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDefaultMessageTimeToLiveMilliseconds, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(txtDuplicateDetectionHistoryTimeWindowDays, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtDuplicateDetectionHistoryTimeWindowHours, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtDuplicateDetectionHistoryTimeWindowMinutes, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtDuplicateDetectionHistoryTimeWindowSeconds, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtDuplicateDetectionHistoryTimeWindowMilliseconds, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleDays, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleHours, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleMinutes, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleSeconds, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtAutoDeleteOnIdleMilliseconds, AutoDeleteOnIdleTooltip);
-
+                toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
+                toolTip.SetToolTip(tsDuplicateDetectionHistoryTimeWindow, DuplicateDetectionHistoryTimeWindowTooltip);
+                toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
             }
             else
             {
@@ -399,55 +407,43 @@ namespace ServiceBusExplorer.Controls
             }
 
             // DefaultMessageTimeToLive
-            txtDefaultMessageTimeToLiveDays.Text = topicDescription.DefaultMessageTimeToLive.Days.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveHours.Text = topicDescription.DefaultMessageTimeToLive.Hours.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveMinutes.Text = topicDescription.DefaultMessageTimeToLive.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveSeconds.Text = topicDescription.DefaultMessageTimeToLive.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtDefaultMessageTimeToLiveMilliseconds.Text = topicDescription.DefaultMessageTimeToLive.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsDefaultMessageTimeToLive.TimeSpanValue = topicDescription.DefaultMessageTimeToLive;
 
             // DuplicateDetectionHistoryTimeWindow
-            txtDuplicateDetectionHistoryTimeWindowDays.Text = topicDescription.DuplicateDetectionHistoryTimeWindow.Days.ToString(CultureInfo.InvariantCulture);
-            txtDuplicateDetectionHistoryTimeWindowHours.Text = topicDescription.DuplicateDetectionHistoryTimeWindow.Hours.ToString(CultureInfo.InvariantCulture);
-            txtDuplicateDetectionHistoryTimeWindowMinutes.Text = topicDescription.DuplicateDetectionHistoryTimeWindow.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtDuplicateDetectionHistoryTimeWindowSeconds.Text = topicDescription.DuplicateDetectionHistoryTimeWindow.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text = topicDescription.DuplicateDetectionHistoryTimeWindow.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = topicDescription.DuplicateDetectionHistoryTimeWindow;
 
             // AutoDeleteOnIdle
-            txtAutoDeleteOnIdleDays.Text = topicDescription.AutoDeleteOnIdle.Days.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleHours.Text = topicDescription.AutoDeleteOnIdle.Hours.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleMinutes.Text = topicDescription.AutoDeleteOnIdle.Minutes.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleSeconds.Text = topicDescription.AutoDeleteOnIdle.Seconds.ToString(CultureInfo.InvariantCulture);
-            txtAutoDeleteOnIdleMilliseconds.Text = topicDescription.AutoDeleteOnIdle.Milliseconds.ToString(CultureInfo.InvariantCulture);
+            tsAutoDeleteOnIdle.TimeSpanValue = topicDescription.AutoDeleteOnIdle;
 
             // EnableBatchedOperations
-            checkedListBox.SetItemChecked(EnableBatchedOperationsIndex,
+            checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
                                           topicDescription.EnableBatchedOperations);
             // EnableFilteringMessagesBeforePublishing
-            checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingIndex,
+            checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingItemText,
                                           topicDescription.EnableFilteringMessagesBeforePublishing);
             
-            if (serviceBusHelper.IsCloudNamespace)
+            if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
-                checkedListBox.SetItemChecked(EnablePartitioningIndex, topicDescription.EnablePartitioning);
+                checkedListBox.SetItemChecked(EnablePartitioningItemText, topicDescription.EnablePartitioning);
 
                 // EnableExpress
-                checkedListBox.SetItemChecked(EnableExpressIndex, topicDescription.EnableExpress);
+                checkedListBox.SetItemChecked(EnableExpressItemText, topicDescription.EnableExpress);
             }
 
             // RequiresDuplicateDetection
-            checkedListBox.SetItemChecked(RequiresDuplicateDetectionIndex,
+            checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
                                           topicDescription.RequiresDuplicateDetection);
 
             // SupportOrdering
-            checkedListBox.SetItemChecked(SupportOrderingIndex,
+            checkedListBox.SetItemChecked(SupportOrderingItemText,
                                           topicDescription.SupportOrdering);
 
             // IsAnonymousAccessible
             if (!serviceBusHelper.IsCloudNamespace &&
                 topicDescription != null)
             {
-                checkedListBox.SetItemChecked(IsAnonymousAccessibleIndex,
+                checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
                                               topicDescription.IsAnonymousAccessible);
             }
         }
@@ -458,15 +454,15 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            if (e.Index == EnablePartitioningIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
             {
                 e.NewValue = topicDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == RequiresDuplicateDetectionIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
             {
                 e.NewValue = topicDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
             }
-            if (e.Index == IsAnonymousAccessibleIndex)
+            if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
             {
                 e.NewValue = topicDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
             }
@@ -507,180 +503,53 @@ namespace ServiceBusExplorer.Controls
                             UserMetadata = txtUserMetadata.Text
                         };
 
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text))
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveDays.Text, out days))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveDaysMustBeANumber);
-                                return;
-                            }
+                            description.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveHoursMustBeANumber);
-                                return;
-                            }
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        description.DefaultMessageTimeToLive = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
+                    if (tsDuplicateDetectionHistoryTimeWindow.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowDays.Text))
+                        if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowDays.Text, out days))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowDaysMustBeANumber);
-                                return;
-                            }
+                            description.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowHours.Text, out hours))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowHoursMustBeANumber);
-                                return;
-                            }
+                            writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
+                            return;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMinutes.Text, out minutes))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowSeconds.Text, out seconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        description.DuplicateDetectionHistoryTimeWindow = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
+                    if (tsAutoDeleteOnIdle.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text))
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtAutoDeleteOnIdleDays.Text, out days))
-                            {
-                                writeToLog(AutoDeleteOnIdleDaysMustBeANumber);
-                                return;
-                            }
+                            description.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
-                            {
-                                writeToLog(AutoDeleteOnIdleHoursMustBeANumber);
-                                return;
-                            }
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
-                            {
-                                writeToLog(AutoDeleteOnIdleMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        description.AutoDeleteOnIdle = new TimeSpan(days, hours, minutes, seconds, milliseconds);
                     }
+                    
+                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
+                    description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
 
-                    description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);
-                    if (serviceBusHelper.IsCloudNamespace)
-                    {
-                        description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningIndex);
-                        description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    }
-                    description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionIndex);
-                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
+                    description.EnablePartitioning = checkedListBox.GetItemChecked(EnablePartitioningItemText, defaultValue: false);
+                    description.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+
+                    description.RequiresDuplicateDetection = checkedListBox.GetItemChecked(RequiresDuplicateDetectionItemText);
+                    description.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
                     if (bindingList != null)
@@ -740,11 +609,11 @@ namespace ServiceBusExplorer.Controls
 
                     if (!serviceBusHelper.IsCloudNamespace)
                     {
-                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
+                        description.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText);
                     }
 
                     topicDescription = serviceBusHelper.CreateTopic(description);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
             catch (Exception ex)
@@ -781,192 +650,50 @@ namespace ServiceBusExplorer.Controls
                 {
                     topicDescription.UserMetadata = txtUserMetadata.Text;
 
-                    var days = 0;
-                    var hours = 0;
-                    var minutes = 0;
-                    var seconds = 0;
-                    var milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
+                    if (tsDefaultMessageTimeToLive.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveDays.Text))
+                        if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveDays.Text, out days))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveDaysMustBeANumber);
-                                return;
-                            }
+                            topicDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveHours.Text, out hours))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMinutes.Text, out minutes))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveSeconds.Text, out seconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDefaultMessageTimeToLiveMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDefaultMessageTimeToLiveMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DefaultMessageTimeToLiveMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
-                        if (!timeSpan.IsMaxValue())
-                        {
-                            topicDescription.DefaultMessageTimeToLive = timeSpan;
+                            writeToLog(tsDefaultMessageTimeToLive.GetErrorMessage(DefaultMessageTimeToLive));
+                            return;
                         }
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
+                    if (tsDuplicateDetectionHistoryTimeWindow.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowDays.Text))
+                        if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowDays.Text, out days))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowDaysMustBeANumber);
-                                return;
-                            }
+                            topicDescription.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowHours.Text, out hours))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMinutes.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMinutes.Text, out minutes))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowSeconds.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowSeconds.Text, out seconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtDuplicateDetectionHistoryTimeWindowMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(DuplicateDetectionHistoryTimeWindowMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
-                        if (!timeSpan.IsMaxValue())
-                        {
-                            topicDescription.DuplicateDetectionHistoryTimeWindow = timeSpan;
+                            writeToLog(tsDuplicateDetectionHistoryTimeWindow.GetErrorMessage(DuplicateDetectionHistoryTimeWindow));
+                            return;
                         }
                     }
 
-                    days = 0;
-                    hours = 0;
-                    minutes = 0;
-                    seconds = 0;
-                    milliseconds = 0;
-
-                    if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text) ||
-                        !string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
+                    if (tsAutoDeleteOnIdle.IsFilled)
                     {
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleDays.Text))
+                        if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
                         {
-                            if (!int.TryParse(txtAutoDeleteOnIdleDays.Text, out days))
-                            {
-                                writeToLog(AutoDeleteOnIdleDaysMustBeANumber);
-                                return;
-                            }
+                            topicDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
                         }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleHours.Text))
+                        else
                         {
-                            if (!int.TryParse(txtAutoDeleteOnIdleHours.Text, out hours))
-                            {
-                                writeToLog(AutoDeleteOnIdleHoursMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMinutes.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMinutes.Text, out minutes))
-                            {
-                                writeToLog(AutoDeleteOnIdleMinutesMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleSeconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleSeconds.Text, out seconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleSecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        if (!string.IsNullOrWhiteSpace(txtAutoDeleteOnIdleMilliseconds.Text))
-                        {
-                            if (!int.TryParse(txtAutoDeleteOnIdleMilliseconds.Text, out milliseconds))
-                            {
-                                writeToLog(AutoDeleteOnIdleMillisecondsMustBeANumber);
-                                return;
-                            }
-                        }
-                        var timeSpan = new TimeSpan(days, hours, minutes, seconds, milliseconds);
-                        if (!timeSpan.IsMaxValue())
-                        {
-                            topicDescription.AutoDeleteOnIdle = timeSpan;
+                            writeToLog(tsAutoDeleteOnIdle.GetErrorMessage(AutoDeleteOnIdle));
+                            return;
                         }
                     }
-
-                    topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
-                    topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressIndex);
-                    topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingIndex);
-                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingIndex);
                     
-                    if (!serviceBusHelper.IsCloudNamespace)
-                    {
-                        topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleIndex);
-                    }
+                    topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
+                    topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+                    topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
+                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);                    
+                    topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
                     if (bindingList != null)
@@ -1042,7 +769,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     topicDescription.Status = EntityStatus.Active;
                     topicDescription = serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
-                    InitializeControls();
+                    InitializeControls(initialCall: false);
                 }
             }
         }
@@ -1264,41 +991,6 @@ namespace ServiceBusExplorer.Controls
                         e.Graphics.DrawString(tabName, new Font(e.Font.FontFamily, 8.25F, e.Font.Style), foreBrush, labelRect, sf);
                     }
                 }
-            }
-        }
-
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (Char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
             }
         }
 

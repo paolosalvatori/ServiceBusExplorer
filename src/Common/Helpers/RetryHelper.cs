@@ -156,7 +156,8 @@ namespace ServiceBusExplorer.Helpers
                                                  action.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (TimeoutException ex)
                 {
@@ -169,7 +170,8 @@ namespace ServiceBusExplorer.Helpers
                                                  action.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (Exception ex)
                 {
@@ -183,7 +185,8 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount - numRetries + 1,
                                                  retryCount));
                     writeToLog(string.Format(CaughtGenericException, ex.GetType()));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
             } while (numRetries-- > 0);
         }
@@ -316,7 +319,8 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (MessagingCommunicationException ex)
                 {
@@ -329,7 +333,8 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (MessagingException ex)
                 {
@@ -342,7 +347,8 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (TimeoutException ex)
                 {
@@ -355,7 +361,8 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
                 catch (Exception ex)
                 {
@@ -369,7 +376,8 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount - numRetries + 1,
                                                  retryCount));
                     writeToLog(string.Format(CaughtGenericException, ex.GetType()));
-                    Thread.Sleep(retryTimeout);
+                    
+                    await Task.Delay(retryTimeout);
                 }
             } while (numRetries-- > 0);
             return default(T);

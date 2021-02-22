@@ -32,7 +32,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
         #region Private Fields
         private string property;
         private string @operator;
-        private string dateTime;
+        private DateTime? dateTime;
         #endregion
 
         #region Public Events
@@ -81,7 +81,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
             }
         }
 
-        public string Value
+        public DateTime? Value
         {
             get
             {

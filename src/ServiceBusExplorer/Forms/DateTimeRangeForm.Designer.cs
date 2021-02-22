@@ -131,7 +131,7 @@ namespace ServiceBusExplorer.Forms
             this.dateFromTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dateFromTimePicker.Checked = false;
-            this.dateFromTimePicker.CustomFormat = "ddMMMMyyyy    HH:mm";
+            this.dateFromTimePicker.CustomFormat = "dd MMM yyyy HH:mm:ss";
             this.dateFromTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateFromTimePicker.Location = new System.Drawing.Point(16, 32);
             this.dateFromTimePicker.Name = "dateFromTimePicker";
@@ -170,7 +170,7 @@ namespace ServiceBusExplorer.Forms
             this.dateToTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dateToTimePicker.Checked = false;
-            this.dateToTimePicker.CustomFormat = "ddMMMMyyyy    HH:mm";
+            this.dateToTimePicker.CustomFormat = "dd MMM yyyy HH:mm:ss";
             this.dateToTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateToTimePicker.Location = new System.Drawing.Point(16, 32);
             this.dateToTimePicker.Name = "dateToTimePicker";

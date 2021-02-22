@@ -74,13 +74,13 @@ namespace ServiceBusExplorer.Forms
         public int Count { get; private set; }
         public bool Peek { get; private set; }
         public bool All { get; private set; }
-        public string Inspector { get; private set; }
+        public string? Inspector { get; private set; }
         public long? FromSequenceNumber { get; private set; }
         public string? FromSession { get; private set; }
         #endregion
 
         #region Event Handlers
-        private void btnOk_Click(object sender, EventArgs e)
+        private void btnOk_Click(object? sender, EventArgs? e)
         {
             DialogResult = DialogResult.OK;
             if (int.TryParse(txtMessageCount.Text, out var count))
@@ -130,41 +130,6 @@ namespace ServiceBusExplorer.Forms
             if (control != null)
             {
                 control.ForeColor = SystemColors.ControlText;
-            }
-        }
-
-        private void txtMessageCount_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            OnKeyPress(e);
-
-            var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-            var decimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-            var groupSeparator = numberFormatInfo.NumberGroupSeparator;
-            var negativeSign = numberFormatInfo.NegativeSign;
-
-            var keyInput = e.KeyChar.ToString(CultureInfo.InvariantCulture);
-
-            if (Char.IsDigit(e.KeyChar))
-            {
-                // Digits are OK
-            }
-            else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) ||
-                     keyInput.Equals(negativeSign))
-            {
-                // Decimal separator is OK
-            }
-            else if (e.KeyChar == '\b')
-            {
-                // Backspace key is OK
-            }
-            else if (e.KeyChar == ' ')
-            {
-
-            }
-            else
-            {
-                // Swallow this invalid key and beep
-                e.Handled = true;
             }
         }
 
