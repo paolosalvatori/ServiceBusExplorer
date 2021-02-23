@@ -602,6 +602,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="ServiceBusExplorer.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
