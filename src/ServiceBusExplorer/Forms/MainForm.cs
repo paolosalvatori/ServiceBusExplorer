@@ -40,9 +40,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -339,6 +339,7 @@ namespace ServiceBusExplorer.Forms
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
+            this.Text = $"{serviceBusNamespace.Namespace}";
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
             {
@@ -1383,6 +1384,7 @@ namespace ServiceBusExplorer.Forms
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
+                    this.Text = serviceBusNamespace.Namespace;
 
                     foreach (var userControl in panelMain.Controls.OfType<UserControl>())
                     {
@@ -1866,7 +1868,7 @@ namespace ServiceBusExplorer.Forms
                             serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
                         {
                             panelMain.HeaderText = CreateSubscription;
-                            if( serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper subscriptionNewWrapper)
+                            if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper subscriptionNewWrapper)
                             {
                                 ShowSubscription(new SubscriptionWrapper(null, subscriptionNewWrapper.TopicDescription));
                             }
@@ -3065,7 +3067,7 @@ namespace ServiceBusExplorer.Forms
                         }
                         serviceBusTreeView.SelectedNode.Tag = subWrapper;
 
-                        if (panelMain.Controls[0] is HandleSubscriptionControl control )
+                        if (panelMain.Controls[0] is HandleSubscriptionControl control)
                         {
                             control.RefreshData(subWrapper);
                             WriteToLog(string.Format(SubscriptionRetrievedFormat,
@@ -6430,6 +6432,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
+                        this.Text = serviceBusNamespace.Namespace;
                     }
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
@@ -6437,6 +6440,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
+                    this.Text = serviceBusNamespace.Namespace;
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.Window;
