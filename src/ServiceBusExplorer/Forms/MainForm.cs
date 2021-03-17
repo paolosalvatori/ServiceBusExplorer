@@ -339,7 +339,7 @@ namespace ServiceBusExplorer.Forms
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
-            this.Text = $"{serviceBusNamespace.Namespace}";
+            this.Text = serviceBusNamespace.Namespace;
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
             {
