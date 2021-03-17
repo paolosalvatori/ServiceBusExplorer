@@ -339,7 +339,7 @@ namespace ServiceBusExplorer.Forms
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
-            this.Text = serviceBusNamespace.Namespace;
+            SetTitle(serviceBusNamespace.Namespace);
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
             {
@@ -1384,7 +1384,7 @@ namespace ServiceBusExplorer.Forms
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
-                    this.Text = serviceBusNamespace.Namespace;
+                    SetTitle(serviceBusNamespace.Namespace);
 
                     foreach (var userControl in panelMain.Controls.OfType<UserControl>())
                     {
@@ -3988,6 +3988,12 @@ namespace ServiceBusExplorer.Forms
                 }
             }
         }
+
+        private void SetTitle(string prefix)
+        {
+            this.Text = $"{prefix} - Service Bus Explorer";
+        }
+
         #endregion
 
         #region Public Static Methods
@@ -6432,7 +6438,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
-                        this.Text = serviceBusNamespace.Namespace;
+                        SetTitle(serviceBusNamespace.Namespace);
                     }
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
@@ -6440,7 +6446,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
-                    this.Text = serviceBusNamespace.Namespace;
+                    SetTitle(serviceBusNamespace.Namespace);
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.Window;
