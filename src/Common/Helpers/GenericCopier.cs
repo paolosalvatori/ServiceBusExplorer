@@ -21,7 +21,6 @@
 
 #region Using Directives
 
-using System.Web.Script.Serialization;
 
 #endregion
 
