@@ -14,6 +14,7 @@ namespace ServiceBusExplorer.Common
         private readonly ServiceBusHelper serviceBusHelper;
 
         public event EventHandler<PurgeOperationCompletedEventArgs> PurgeCompleted;
+        public event EventHandler<PurgeOperationFailedEventArgs> PurgeFailed;
 
         public BulkServiceBusPurger(ServiceBusHelper serviceBusHelper)
         {
@@ -38,21 +39,27 @@ namespace ServiceBusExplorer.Common
 
         private async Task Purge(SubscriptionWrapper subscription, bool purgeDeadLetterQueueInstead)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            try
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-            SubscriptionProperties subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscription);
+                SubscriptionProperties subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscription);
 
-            ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
-            long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
+                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
+                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
 
-            stopwatch.Stop();
+                stopwatch.Stop();
 
-            string entityPath = SubscriptionClient.FormatSubscriptionPath(subscription.SubscriptionDescription.TopicPath,
-                                                           subscription.SubscriptionDescription.Name);
+                string entityPath = SubscriptionClient.FormatSubscriptionPath(subscription.SubscriptionDescription.TopicPath,
+                                                               subscription.SubscriptionDescription.Name);
 
-            if (this.PurgeCompleted != null)
-                this.PurgeCompleted(this, new PurgeOperationCompletedEventArgs(entityPath, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(entityPath, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+            }
+            catch (Exception ex)
+            {
+                this.PurgeFailed?.Invoke(this, new PurgeOperationFailedEventArgs(ex));
+            }
         }
     }
 
@@ -69,6 +76,16 @@ namespace ServiceBusExplorer.Common
             this.ElapsedMilliseconds = elapsedMilliseconds;
             this.TotalMessagesPurged = totalMessagesPurged;
             this.IsDeadLetterQueue = isDeadLetterQueue;
+        }
+    }
+
+    public class PurgeOperationFailedEventArgs : EventArgs
+    {
+        public Exception Exception { get; set; }
+
+        public PurgeOperationFailedEventArgs(Exception exception)
+        {
+            this.Exception = exception;
         }
     }
 

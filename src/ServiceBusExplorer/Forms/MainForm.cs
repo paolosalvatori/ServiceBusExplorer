@@ -6688,17 +6688,15 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                BulkServiceBusPurger bulkServiceBusPurger = new BulkServiceBusPurger(this.serviceBusHelper);
-                bulkServiceBusPurger.PurgeCompleted += (o, e) =>
-                {
-                    this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
-                };
+                BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper);
+                purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+                purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
 
-                await bulkServiceBusPurger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
+                await purger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                this.HandleException(ex);
             }
         }
     }
