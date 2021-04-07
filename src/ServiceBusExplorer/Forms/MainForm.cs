@@ -6641,7 +6641,7 @@ namespace ServiceBusExplorer.Forms
         }
         #endregion
 
-        private async void topicPurgeEverythingToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void topicPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
