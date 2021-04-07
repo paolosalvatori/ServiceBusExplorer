@@ -22,6 +22,7 @@
 #region Using Directives
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Common;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -2758,21 +2759,21 @@ namespace ServiceBusExplorer.Forms
                         ShowEntities(EntityType.EventHub);
                         return;
                     }
-                    
+
                     // Notification Hubs
                     if (serviceBusTreeView.SelectedNode == notificationHubListNode)
                     {
                         ShowEntities(EntityType.NotificationHub);
                         return;
                     }
-                    
+
                     // Relays
                     if (serviceBusTreeView.SelectedNode == relayServiceListNode)
                     {
                         ShowEntities(EntityType.Relay);
                         return;
                     }
-                    
+
                     if (serviceBusTreeView.SelectedNode.Tag == null)
                     {
                         return;
@@ -6639,5 +6640,81 @@ namespace ServiceBusExplorer.Forms
             }
         }
         #endregion
+
+        private async void topicPurgeEverythingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.All);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async void topicPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.Messages);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async void topicPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.DeadletteredMessages);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async Task BulkPurge(TreeNode treeNode, BulkPurgeStrategy bulkPurgeStrategy)
+        {
+            List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
+
+            if (treeNode == FindNode(Constants.TopicEntities, rootNode))
+            {
+                subscriptions.AddRange(treeNode.Nodes.Cast<TreeNode>().ToList().SelectMany(tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper)));
+            }
+            else if (treeNode.Tag is TopicDescription)
+            {
+                subscriptions.AddRange(treeNode.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper));
+            }
+
+            if (!subscriptions.Any())
+                return;
+
+            BulkServiceBusPurger bulkServiceBusPurger = new BulkServiceBusPurger(this.serviceBusHelper);
+            bulkServiceBusPurger.PurgeCompleted += (o, e) =>
+            {
+                this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+            };
+
+            await bulkServiceBusPurger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
+        }
     }
 }

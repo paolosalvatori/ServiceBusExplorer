@@ -51,8 +51,8 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCommandLineOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -159,6 +159,11 @@ namespace ServiceBusExplorer.Forms
             this.testTopicMDIMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator35 = new System.Windows.Forms.ToolStripSeparator();
             this.sendMessagesTopicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator70 = new System.Windows.Forms.ToolStripSeparator();
+            this.purgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topicPurgeEverythingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topicPurgeMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.queueContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.changeStatusQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -325,6 +330,11 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
+            this.toolStripSeparator71 = new System.Windows.Forms.ToolStripSeparator();
+            this.purgeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.everythingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.messagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deadletterQueueMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -407,7 +417,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
             this.connectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.connectToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.connectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.connectToolStripMenuItem.Text = "&Connect";
             this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
             // 
@@ -415,19 +425,19 @@ namespace ServiceBusExplorer.Forms
             // 
             this.savedConnectionsToolStripMenuItem.Enabled = false;
             this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
-            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
             // 
             // toolStripSeparatorMain
             // 
             this.toolStripSeparatorMain.Name = "toolStripSeparatorMain";
-            this.toolStripSeparatorMain.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparatorMain.Size = new System.Drawing.Size(177, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.close_Click);
             // 
@@ -533,6 +543,13 @@ namespace ServiceBusExplorer.Forms
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
+            // showCommandLineOptionsToolStripMenuItem
+            // 
+            this.showCommandLineOptionsToolStripMenuItem.Name = "showCommandLineOptionsToolStripMenuItem";
+            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.showCommandLineOptionsToolStripMenuItem.Text = "Show Command Line Options";
+            this.showCommandLineOptionsToolStripMenuItem.Click += new System.EventHandler(this.displayHelpToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -541,16 +558,10 @@ namespace ServiceBusExplorer.Forms
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // showCommandLineOptionsToolStripMenuItem
-            // 
-            this.showCommandLineOptionsToolStripMenuItem.Name = "showCommandLineOptionsToolStripMenuItem";
-            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.showCommandLineOptionsToolStripMenuItem.Text = "Show Command Line Options";
-            this.showCommandLineOptionsToolStripMenuItem.Click += new System.EventHandler(this.displayHelpToolStripMenuItem_Click);
-            // 
             // statusStrip
             // 
             this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip.Location = new System.Drawing.Point(0, 819);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1416, 22);
@@ -575,7 +586,7 @@ namespace ServiceBusExplorer.Forms
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.panelMain);
-            this.splitContainer.Size = new System.Drawing.Size(1384, 570);
+            this.splitContainer.Size = new System.Drawing.Size(1384, 569);
             this.splitContainer.SplitterDistance = 372;
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
@@ -598,7 +609,7 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelTreeView.Name = "panelTreeView";
             this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelTreeView.Size = new System.Drawing.Size(372, 570);
+            this.panelTreeView.Size = new System.Drawing.Size(372, 569);
             this.panelTreeView.TabIndex = 0;
             // 
             // serviceBusTreeView
@@ -612,7 +623,7 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 537);
+            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 536);
             this.serviceBusTreeView.TabIndex = 13;
             this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
@@ -635,7 +646,7 @@ namespace ServiceBusExplorer.Forms
             this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(1008, 570);
+            this.panelMain.Size = new System.Drawing.Size(1008, 569);
             this.panelMain.TabIndex = 0;
             // 
             // mainSplitContainer
@@ -655,7 +666,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.panelLog);
             this.mainSplitContainer.Size = new System.Drawing.Size(1384, 784);
-            this.mainSplitContainer.SplitterDistance = 570;
+            this.mainSplitContainer.SplitterDistance = 569;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -677,7 +688,7 @@ namespace ServiceBusExplorer.Forms
             this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.panelLog.Name = "panelLog";
             this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1384, 210);
+            this.panelLog.Size = new System.Drawing.Size(1384, 211);
             this.panelLog.TabIndex = 0;
             // 
             // lstLog
@@ -692,7 +703,7 @@ namespace ServiceBusExplorer.Forms
             this.lstLog.Location = new System.Drawing.Point(5, 29);
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1374, 177);
+            this.lstLog.Size = new System.Drawing.Size(1374, 178);
             this.lstLog.TabIndex = 4;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
@@ -1321,9 +1332,11 @@ namespace ServiceBusExplorer.Forms
             this.testTopicSDIMenuItem,
             this.testTopicMDIMenuItem,
             this.toolStripSeparator35,
-            this.sendMessagesTopicMenuItem});
+            this.sendMessagesTopicMenuItem,
+            this.toolStripSeparator70,
+            this.purgeToolStripMenuItem});
             this.topicContextMenuStrip.Name = "topicContextMenuStrip";
-            this.topicContextMenuStrip.Size = new System.Drawing.Size(198, 326);
+            this.topicContextMenuStrip.Size = new System.Drawing.Size(198, 354);
             // 
             // changeStatusTopicMenuItem
             // 
@@ -1457,6 +1470,42 @@ namespace ServiceBusExplorer.Forms
             this.sendMessagesTopicMenuItem.Text = "Send Messages";
             this.sendMessagesTopicMenuItem.ToolTipText = "Send test messages to the current topic.";
             this.sendMessagesTopicMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
+            // 
+            // toolStripSeparator70
+            // 
+            this.toolStripSeparator70.Name = "toolStripSeparator70";
+            this.toolStripSeparator70.Size = new System.Drawing.Size(194, 6);
+            // 
+            // purgeToolStripMenuItem
+            // 
+            this.purgeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.topicPurgeEverythingToolStripMenuItem,
+            this.topicPurgeMessagesToolStripMenuItem,
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem});
+            this.purgeToolStripMenuItem.Name = "purgeToolStripMenuItem";
+            this.purgeToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.purgeToolStripMenuItem.Text = "Purge";
+            // 
+            // topicPurgeEverythingToolStripMenuItem
+            // 
+            this.topicPurgeEverythingToolStripMenuItem.Name = "topicPurgeEverythingToolStripMenuItem";
+            this.topicPurgeEverythingToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.topicPurgeEverythingToolStripMenuItem.Text = "Everything";
+            this.topicPurgeEverythingToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeEverythingToolStripMenuItem_Click);
+            // 
+            // topicPurgeMessagesToolStripMenuItem
+            // 
+            this.topicPurgeMessagesToolStripMenuItem.Name = "topicPurgeMessagesToolStripMenuItem";
+            this.topicPurgeMessagesToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.topicPurgeMessagesToolStripMenuItem.Text = "Messages";
+            this.topicPurgeMessagesToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeMessagesToolStripMenuItem_Click);
+            // 
+            // topicPurgeDeadletterQueueMessagesToolStripMenuItem
+            // 
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Name = "topicPurgeDeadletterQueueMessagesToolStripMenuItem";
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Text = "Deadletter Queue Messages";
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // queueContextMenuStrip
             // 
@@ -1670,9 +1719,11 @@ namespace ServiceBusExplorer.Forms
             this.exportTopicsMenuItem,
             this.toolStripSeparator16,
             this.expandSubTreeMenuItem3,
-            this.collapseSubTreeMenuItem3});
+            this.collapseSubTreeMenuItem3,
+            this.toolStripSeparator71,
+            this.purgeToolStripMenuItem1});
             this.topicsContextMenuStrip.Name = "createContextMenuStrip";
-            this.topicsContextMenuStrip.Size = new System.Drawing.Size(169, 182);
+            this.topicsContextMenuStrip.Size = new System.Drawing.Size(181, 232);
             // 
             // createTopicMenuItem
             // 
@@ -2629,7 +2680,7 @@ namespace ServiceBusExplorer.Forms
             this.logoPictureBox.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.logoPictureBox.Location = new System.Drawing.Point(1304, 16);
-            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4);
+            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(96, 12);
             this.logoPictureBox.TabIndex = 23;
@@ -2794,6 +2845,42 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
+            // 
+            // toolStripSeparator71
+            // 
+            this.toolStripSeparator71.Name = "toolStripSeparator71";
+            this.toolStripSeparator71.Size = new System.Drawing.Size(165, 6);
+            // 
+            // purgeToolStripMenuItem1
+            // 
+            this.purgeToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.everythingToolStripMenuItem,
+            this.messagesToolStripMenuItem,
+            this.deadletterQueueMessagesToolStripMenuItem});
+            this.purgeToolStripMenuItem1.Name = "purgeToolStripMenuItem1";
+            this.purgeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.purgeToolStripMenuItem1.Text = "Purge";
+            // 
+            // everythingToolStripMenuItem
+            // 
+            this.everythingToolStripMenuItem.Name = "everythingToolStripMenuItem";
+            this.everythingToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.everythingToolStripMenuItem.Text = "Everything";
+            this.everythingToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeEverythingToolStripMenuItem_Click);
+            // 
+            // messagesToolStripMenuItem
+            // 
+            this.messagesToolStripMenuItem.Name = "messagesToolStripMenuItem";
+            this.messagesToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.messagesToolStripMenuItem.Text = "Messages";
+            this.messagesToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeMessagesToolStripMenuItem_Click);
+            // 
+            // deadletterQueueMessagesToolStripMenuItem
+            // 
+            this.deadletterQueueMessagesToolStripMenuItem.Name = "deadletterQueueMessagesToolStripMenuItem";
+            this.deadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.deadletterQueueMessagesToolStripMenuItem.Text = "Deadletter Queue Messages";
+            this.deadletterQueueMessagesToolStripMenuItem.Click += new System.EventHandler(this.topicPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -3153,6 +3240,16 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator68;
         private System.Windows.Forms.LinkLabel linkLabelNewVersionAvailable;
         private System.Windows.Forms.ToolStripMenuItem showCommandLineOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator70;
+        private System.Windows.Forms.ToolStripMenuItem purgeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem topicPurgeEverythingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem topicPurgeMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem topicPurgeDeadletterQueueMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator71;
+        private System.Windows.Forms.ToolStripMenuItem purgeToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem everythingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem messagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deadletterQueueMessagesToolStripMenuItem;
     }
 }
 

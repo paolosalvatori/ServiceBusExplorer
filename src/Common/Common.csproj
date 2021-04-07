@@ -182,6 +182,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BulkServiceBusPurger.cs" />
     <Compile Include="Helpers\AttributeList.cs" />
     <Compile Include="Helpers\AuthorizationRuleWrapper.cs" />
     <Compile Include="Helpers\BrokeredMessageExtensions.cs" />
