@@ -146,5 +146,13 @@ namespace ServiceBusExplorer.Forms
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
         #endregion
+
+        public static bool ShowAndWaitUserConfirmation(IWin32Window owner, string message)
+        {
+            DeleteForm deleteForm = new DeleteForm(message);
+            DialogResult dialogResult = deleteForm.ShowDialog(owner);
+
+            return dialogResult == DialogResult.OK;
+        }
     }
 }

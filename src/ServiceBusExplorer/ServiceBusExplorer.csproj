@@ -400,6 +400,11 @@
     <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ServiceBusExplorerResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServiceBusExplorerResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UIHelpers\CategorySorter.cs" />
     <Compile Include="UIHelpers\CheckistBoxExtensions.cs" />
     <Compile Include="UIHelpers\ControlHelper.cs" />
@@ -586,6 +591,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceBusExplorerResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ServiceBusExplorerResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="Properties\Settings.settings">

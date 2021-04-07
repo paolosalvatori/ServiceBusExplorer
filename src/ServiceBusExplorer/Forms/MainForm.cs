@@ -6643,78 +6643,63 @@ namespace ServiceBusExplorer.Forms
 
         private async void topicPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode == null)
-                {
-                    return;
-                }
-
-                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.All);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.All);
         }
 
         private async void topicPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (serviceBusTreeView.SelectedNode == null)
-                {
-                    return;
-                }
-
-                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.Messages);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.Messages);
         }
 
         private async void topicPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.DeadletteredMessages);
+        }
+
+        private async Task BulkPurge(TreeNode treeNode, BulkPurgeStrategy bulkPurgeStrategy)
+        {
             try
             {
-                if (serviceBusTreeView.SelectedNode == null)
+                if (treeNode == null)
                 {
                     return;
                 }
 
-                await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.DeadletteredMessages);
+                List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
+                string strategyDescription = ServiceBusExplorerResources.ResourceManager.GetString($"BulkPurgeStrategy_ConfirmationMessage_{bulkPurgeStrategy}");
+                string deleteConfirmation = string.Empty;
+
+                if (treeNode == FindNode(Constants.TopicEntities, rootNode))
+                {
+                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics?";
+                    subscriptions.AddRange(treeNode.Nodes.Cast<TreeNode>().ToList().SelectMany(tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper)));
+                }
+                else if (treeNode.Tag is TopicDescription)
+                {
+                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from the topic {treeNode.Text}?";
+                    subscriptions.AddRange(treeNode.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper));
+                }
+
+                if (!subscriptions.Any())
+                    return;
+
+                if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
+                {
+                    return;
+                }
+
+                BulkServiceBusPurger bulkServiceBusPurger = new BulkServiceBusPurger(this.serviceBusHelper);
+                bulkServiceBusPurger.PurgeCompleted += (o, e) =>
+                {
+                    this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+                };
+
+                await bulkServiceBusPurger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
-        }
-
-        private async Task BulkPurge(TreeNode treeNode, BulkPurgeStrategy bulkPurgeStrategy)
-        {
-            List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
-
-            if (treeNode == FindNode(Constants.TopicEntities, rootNode))
-            {
-                subscriptions.AddRange(treeNode.Nodes.Cast<TreeNode>().ToList().SelectMany(tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper)));
-            }
-            else if (treeNode.Tag is TopicDescription)
-            {
-                subscriptions.AddRange(treeNode.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper));
-            }
-
-            if (!subscriptions.Any())
-                return;
-
-            BulkServiceBusPurger bulkServiceBusPurger = new BulkServiceBusPurger(this.serviceBusHelper);
-            bulkServiceBusPurger.PurgeCompleted += (o, e) =>
-            {
-                this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
-            };
-
-            await bulkServiceBusPurger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
         }
     }
 }
