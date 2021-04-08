@@ -1,29 +1,26 @@
 ﻿using Azure.Messaging.ServiceBus.Administration;
-using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.ServiceBus.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace ServiceBusExplorer.Common
+namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     public class BulkServiceBusPurger
     {
-        private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ServiceBusHelper2 serviceBusHelper;
 
         public event EventHandler<PurgeOperationCompletedEventArgs> PurgeCompleted;
         public event EventHandler<PurgeOperationFailedEventArgs> PurgeFailed;
 
-        public BulkServiceBusPurger(ServiceBusHelper serviceBusHelper)
+        public BulkServiceBusPurger(ServiceBusHelper2 serviceBusHelper)
         {
             this.serviceBusHelper = serviceBusHelper;
         }
 
-        public async Task PurgeSubscriptions(BulkPurgeStrategy bulkPurgeStrategy, List<SubscriptionWrapper> subscriptions)
+        public async Task PurgeSubscriptions(BulkPurgeStrategy bulkPurgeStrategy, List<SubscriptionProperties> subscriptions)
         {
-            foreach (SubscriptionWrapper subscription in subscriptions)
+            foreach (SubscriptionProperties subscription in subscriptions)
             {
                 if ((bulkPurgeStrategy & BulkPurgeStrategy.Messages) == BulkPurgeStrategy.Messages)
                 {
@@ -37,24 +34,19 @@ namespace ServiceBusExplorer.Common
             }
         }
 
-        private async Task PurgeSubscription(SubscriptionWrapper subscription, bool purgeDeadLetterQueueInstead)
+        private async Task PurgeSubscription(SubscriptionProperties subscriptionProperties, bool purgeDeadLetterQueueInstead)
         {
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                SubscriptionProperties subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscription);
-
-                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
+                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper, subscriptionProperties);
                 long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
 
                 stopwatch.Stop();
 
-                string entityPath = SubscriptionClient.FormatSubscriptionPath(subscription.SubscriptionDescription.TopicPath,
-                                                               subscription.SubscriptionDescription.Name);
-
-                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(entityPath, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs($"{subscriptionProperties.TopicName}/subscriptions/{subscriptionProperties.SubscriptionName}", stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
             }
             catch (Exception ex)
             {
@@ -62,9 +54,9 @@ namespace ServiceBusExplorer.Common
             }
         }
 
-        public async Task PurgeQueues(BulkPurgeStrategy bulkPurgeStrategy, List<QueueDescription> queues)
+        public async Task PurgeQueues(BulkPurgeStrategy bulkPurgeStrategy, List<QueueProperties> queues)
         {
-            foreach (QueueDescription queue in queues)
+            foreach (QueueProperties queue in queues)
             {
                 if ((bulkPurgeStrategy & BulkPurgeStrategy.Messages) == BulkPurgeStrategy.Messages)
                 {
@@ -78,16 +70,14 @@ namespace ServiceBusExplorer.Common
             }
         }
 
-        private async Task PurgeQueue(QueueDescription queue, bool purgeDeadLetterQueueInstead)
+        private async Task PurgeQueue(QueueProperties queueProperties, bool purgeDeadLetterQueueInstead)
         {
             try
             {
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                QueueProperties queueProperties = await serviceBusHelper.GetQueueProperties(queue);
-
-                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2(), queueProperties);
+                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper, queueProperties);
                 long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
 
                 stopwatch.Stop();

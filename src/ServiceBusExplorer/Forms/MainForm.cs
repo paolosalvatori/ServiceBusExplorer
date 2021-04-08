@@ -22,10 +22,10 @@
 #region Using Directives
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Common;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
@@ -6697,18 +6697,18 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper);
+                BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
                 purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
 
                 if(subscriptions.Any())
                 {
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
-                    await purger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
+                    await purger.PurgeSubscriptions(bulkPurgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptions));
                 }
                 if(queues.Any())
                 {
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
-                    await purger.PurgeQueues(bulkPurgeStrategy, queues);
+                    await purger.PurgeQueues(bulkPurgeStrategy, await this.serviceBusHelper.GetQueueProperties(queues));
                 }
             }
             catch (Exception ex)
