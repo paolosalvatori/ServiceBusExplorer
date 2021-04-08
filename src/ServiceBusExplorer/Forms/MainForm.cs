@@ -6697,18 +6697,19 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
-                purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
-
                 if(subscriptions.Any())
                 {
+                    TopicSubscriptionServiceBusPurger purger = new TopicSubscriptionServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+                    purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
-                    await purger.PurgeSubscriptions(bulkPurgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptions));
+                    await purger.Purge(bulkPurgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptions));
                 }
                 if(queues.Any())
                 {
+                    QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+                    purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
-                    await purger.PurgeQueues(bulkPurgeStrategy, await this.serviceBusHelper.GetQueueProperties(queues));
+                    await purger.Purge(bulkPurgeStrategy, await this.serviceBusHelper.GetQueueProperties(queues));
                 }
 
                 this.RefreshSelectedEntity();

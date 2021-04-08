@@ -66,15 +66,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             else
             {
-                totalMessagesPurged = await PurgeNonSessionEntity(
-                    purgeDeadLetterQueueInstead: purgeDeadLetterQueueInstead).ConfigureAwait(false);
+                totalMessagesPurged = await PurgeNonSessionEntity(purgeDeadLetterQueueInstead).ConfigureAwait(false);
             }
 
             return totalMessagesPurged;
         }
 
-        ServiceBusReceiver CreateServiceBusReceiver(ServiceBusClient client,
-            bool purgeDeadLetterQueueInstead)
+        ServiceBusReceiver CreateServiceBusReceiver(ServiceBusClient client, bool purgeDeadLetterQueueInstead)
         {
             if (queueProperties != null)
             {
@@ -101,8 +99,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
 
-        async Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(ServiceBusClient client,
-            bool purgeDeadLetterQueueInstead)
+        async Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(ServiceBusClient client, bool purgeDeadLetterQueueInstead)
         {
             if (queueProperties != null)
             {
@@ -339,52 +336,46 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         }
     }
 
-    public class ServiceBusPurger
+    public abstract class ServiceBusPurger<TEntity>
+        where TEntity : class
     {
-        private readonly ServiceBusHelper2 serviceBusHelper;
+        protected readonly ServiceBusHelper2 serviceBusHelper;
 
         public event EventHandler<PurgeOperationCompletedEventArgs> PurgeCompleted;
         public event EventHandler<PurgeOperationFailedEventArgs> PurgeFailed;
 
-        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper)
+        protected ServiceBusPurger(ServiceBusHelper2 serviceBusHelper)
         {
             this.serviceBusHelper = serviceBusHelper;
         }
 
-        public async Task PurgeSubscription(PurgeStrategy purgeStrategy, SubscriptionProperties subscription)
+        public async Task Purge(PurgeStrategy purgeStrategy, TEntity entity)
         {
-            await this.PurgeSubscriptions(purgeStrategy, new List<SubscriptionProperties>() { subscription });
+            await this.Purge(purgeStrategy, new List<TEntity>() { entity });
         }
 
-        public async Task PurgeSubscriptions(PurgeStrategy purgeStrategy, List<SubscriptionProperties> subscriptions)
+        public async Task Purge(PurgeStrategy purgeStrategy, List<TEntity> entities)
         {
-            foreach (SubscriptionProperties subscription in subscriptions)
+            foreach (TEntity subscription in entities)
             {
                 if ((purgeStrategy & PurgeStrategy.Messages) == PurgeStrategy.Messages)
                 {
-                    await this.InternalPurgeSubscription(subscription, false);
+                    await this.InternalPurge(subscription, false);
                 }
 
                 if ((purgeStrategy & PurgeStrategy.DeadletteredMessages) == PurgeStrategy.DeadletteredMessages)
                 {
-                    await this.InternalPurgeSubscription(subscription, true);
+                    await this.InternalPurge(subscription, true);
                 }
             }
         }
 
-        private async Task InternalPurgeSubscription(SubscriptionProperties subscriptionProperties, bool purgeDeadLetterQueueInstead)
+        private async Task InternalPurge(TEntity entity, bool purgeDeadLetterQueueInstead)
         {
             try
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, subscriptionProperties);
-                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
-
-                stopwatch.Stop();
-
-                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs($"{subscriptionProperties.TopicName}/subscriptions/{subscriptionProperties.SubscriptionName}", stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+                PurgeOperationCompletedEventArgs purgeOperationCompletedEventArgs = await this.EntityPurge(entity, purgeDeadLetterQueueInstead);
+                this.PurgeCompleted?.Invoke(this, purgeOperationCompletedEventArgs);
             }
             catch (Exception ex)
             {
@@ -392,45 +383,42 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
 
-        public async Task PurgeQueue(PurgeStrategy purgeStrategy, QueueProperties queue)
+        protected abstract Task<PurgeOperationCompletedEventArgs> EntityPurge(TEntity entity, bool purgeDeadLetterQueueInstead);
+    }
+
+    public class TopicSubscriptionServiceBusPurger : ServiceBusPurger<SubscriptionProperties>
+    {
+        public TopicSubscriptionServiceBusPurger(ServiceBusHelper2 serviceBusHelper) : base(serviceBusHelper) { }
+
+        protected async override Task<PurgeOperationCompletedEventArgs> EntityPurge(SubscriptionProperties entity, bool purgeDeadLetterQueueInstead)
         {
-            await this.PurgeQueues(purgeStrategy, new List<QueueProperties>() { queue });
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, entity);
+            long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
+
+            stopwatch.Stop();
+
+            return new PurgeOperationCompletedEventArgs($"{entity.TopicName}/subscriptions/{entity.SubscriptionName}", stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead);
         }
+    }
 
-        public async Task PurgeQueues(PurgeStrategy purgeStrategy, List<QueueProperties> queues)
+    public class QueueServiceBusPurger : ServiceBusPurger<QueueProperties>
+    {
+        public QueueServiceBusPurger(ServiceBusHelper2 serviceBusHelper) : base(serviceBusHelper) { }
+
+        protected async override Task<PurgeOperationCompletedEventArgs> EntityPurge(QueueProperties entity, bool purgeDeadLetterQueueInstead)
         {
-            foreach (QueueProperties queue in queues)
-            {
-                if ((purgeStrategy & PurgeStrategy.Messages) == PurgeStrategy.Messages)
-                {
-                    await this.InternalPurgeQueue(queue, false);
-                }
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-                if ((purgeStrategy & PurgeStrategy.DeadletteredMessages) == PurgeStrategy.DeadletteredMessages)
-                {
-                    await this.InternalPurgeQueue(queue, true);
-                }
-            }
-        }
+            OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, entity);
+            long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
 
-        private async Task InternalPurgeQueue(QueueProperties queueProperties, bool purgeDeadLetterQueueInstead)
-        {
-            try
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
+            stopwatch.Stop();
 
-                OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, queueProperties);
-                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
-
-                stopwatch.Stop();
-
-                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(queueProperties.Name, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
-            }
-            catch (Exception ex)
-            {
-                this.PurgeFailed?.Invoke(this, new PurgeOperationFailedEventArgs(ex));
-            }
+            return new PurgeOperationCompletedEventArgs(entity.Name, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead);
         }
     }
 
