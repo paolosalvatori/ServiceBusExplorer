@@ -24,26 +24,27 @@ using Azure.Messaging.ServiceBus.Administration;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServiceBusExplorer.ServiceBus.Helpers
 {
-    public class ServiceBusPurger
+    internal class OldServiceBusPurger
     {
         // Either queueProperties or subscriptProperties is used - but never both.
         readonly QueueProperties queueProperties;
         readonly SubscriptionProperties subscriptionProperties;
         readonly ServiceBusHelper2 serviceBusHelper;
 
-        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper, QueueProperties queueProperties)
+        public OldServiceBusPurger(ServiceBusHelper2 serviceBusHelper, QueueProperties queueProperties)
         {
             this.serviceBusHelper = serviceBusHelper;
             this.queueProperties = queueProperties;
         }
 
-        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper, SubscriptionProperties subscriptionProperties)
+        public OldServiceBusPurger(ServiceBusHelper2 serviceBusHelper, SubscriptionProperties subscriptionProperties)
         {
             this.serviceBusHelper = serviceBusHelper;
             this.subscriptionProperties = subscriptionProperties;
@@ -150,7 +151,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 while (consecutiveSessionTimeOuts < enoughZeroReceives && totalMessagesPurged < messagesToPurgeCount)
                 {
                     sessionReceiver = await CreateServiceBusSessionReceiver(
-                        client, 
+                        client,
                         purgeDeadLetterQueueInstead: false)
                         .ConfigureAwait(false);
 
@@ -336,5 +337,134 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
             return subscriptionProperties.RequiresSession;
         }
+    }
+
+    public class ServiceBusPurger
+    {
+        private readonly ServiceBusHelper2 serviceBusHelper;
+
+        public event EventHandler<PurgeOperationCompletedEventArgs> PurgeCompleted;
+        public event EventHandler<PurgeOperationFailedEventArgs> PurgeFailed;
+
+        public ServiceBusPurger(ServiceBusHelper2 serviceBusHelper)
+        {
+            this.serviceBusHelper = serviceBusHelper;
+        }
+
+        public async Task PurgeSubscription(PurgeStrategy purgeStrategy, SubscriptionProperties subscription)
+        {
+            await this.PurgeSubscriptions(purgeStrategy, new List<SubscriptionProperties>() { subscription });
+        }
+
+        public async Task PurgeSubscriptions(PurgeStrategy purgeStrategy, List<SubscriptionProperties> subscriptions)
+        {
+            foreach (SubscriptionProperties subscription in subscriptions)
+            {
+                if ((purgeStrategy & PurgeStrategy.Messages) == PurgeStrategy.Messages)
+                {
+                    await this.InternalPurgeSubscription(subscription, false);
+                }
+
+                if ((purgeStrategy & PurgeStrategy.DeadletteredMessages) == PurgeStrategy.DeadletteredMessages)
+                {
+                    await this.InternalPurgeSubscription(subscription, true);
+                }
+            }
+        }
+
+        private async Task InternalPurgeSubscription(SubscriptionProperties subscriptionProperties, bool purgeDeadLetterQueueInstead)
+        {
+            try
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, subscriptionProperties);
+                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
+
+                stopwatch.Stop();
+
+                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs($"{subscriptionProperties.TopicName}/subscriptions/{subscriptionProperties.SubscriptionName}", stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+            }
+            catch (Exception ex)
+            {
+                this.PurgeFailed?.Invoke(this, new PurgeOperationFailedEventArgs(ex));
+            }
+        }
+
+        public async Task PurgeQueue(PurgeStrategy purgeStrategy, QueueProperties queue)
+        {
+            await this.PurgeQueues(purgeStrategy, new List<QueueProperties>() { queue });
+        }
+
+        public async Task PurgeQueues(PurgeStrategy purgeStrategy, List<QueueProperties> queues)
+        {
+            foreach (QueueProperties queue in queues)
+            {
+                if ((purgeStrategy & PurgeStrategy.Messages) == PurgeStrategy.Messages)
+                {
+                    await this.InternalPurgeQueue(queue, false);
+                }
+
+                if ((purgeStrategy & PurgeStrategy.DeadletteredMessages) == PurgeStrategy.DeadletteredMessages)
+                {
+                    await this.InternalPurgeQueue(queue, true);
+                }
+            }
+        }
+
+        private async Task InternalPurgeQueue(QueueProperties queueProperties, bool purgeDeadLetterQueueInstead)
+        {
+            try
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                OldServiceBusPurger purger = new OldServiceBusPurger(this.serviceBusHelper, queueProperties);
+                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
+
+                stopwatch.Stop();
+
+                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(queueProperties.Name, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+            }
+            catch (Exception ex)
+            {
+                this.PurgeFailed?.Invoke(this, new PurgeOperationFailedEventArgs(ex));
+            }
+        }
+    }
+
+    public class PurgeOperationCompletedEventArgs : EventArgs
+    {
+        public bool IsDeadLetterQueue { get; set; }
+        public string EntityPath { get; set; }
+        public long ElapsedMilliseconds { get; set; }
+        public long TotalMessagesPurged { get; set; }
+
+        public PurgeOperationCompletedEventArgs(string entityPath, long elapsedMilliseconds, long totalMessagesPurged, bool isDeadLetterQueue)
+        {
+            this.EntityPath = entityPath;
+            this.ElapsedMilliseconds = elapsedMilliseconds;
+            this.TotalMessagesPurged = totalMessagesPurged;
+            this.IsDeadLetterQueue = isDeadLetterQueue;
+        }
+    }
+
+    public class PurgeOperationFailedEventArgs : EventArgs
+    {
+        public Exception Exception { get; set; }
+
+        public PurgeOperationFailedEventArgs(Exception exception)
+        {
+            this.Exception = exception;
+        }
+    }
+
+    [Flags]
+    public enum PurgeStrategy
+    {
+        Messages = 1,
+        DeadletteredMessages = 2,
+        All = Messages | DeadletteredMessages
     }
 }

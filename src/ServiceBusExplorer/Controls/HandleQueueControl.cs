@@ -357,63 +357,33 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        public async Task<long> PurgeMessagesAsync()
+        public async Task PurgeMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the {queueDescription.Path} queue?"))
-            {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
-            }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var queueProperties = await serviceBusHelper.GetQueueProperties(queueDescription);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), queueProperties);
-                var count = await purger.Purge();
-                stopwatch.Stop();
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
-
-                return count;
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await this.DoPurge(PurgeStrategy.DeadletteredMessages, $"Would you like to purge the {queueDescription.Path} queue?");
         }
 
 
-        public async Task<long> PurgeDeadletterQueueMessagesAsync()
+        public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?"))
-            {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
-            }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var newSdkQueueDescription = await serviceBusHelper.GetQueueProperties(queueDescription);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), newSdkQueueDescription);
-                var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
-                stopwatch.Stop();
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the dead-letter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+            await this.DoPurge(PurgeStrategy.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?");
+        }
 
-                return count;
-            }
-            finally
+        private async Task DoPurge(PurgeStrategy purgeStrategy, string deleteConfirmation)
+        {
+            if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
             {
-                Application.UseWaitCursor = false;
+                return;
             }
+
+            Application.UseWaitCursor = true;
+
+            ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+            purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
+            purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
+            await purger.PurgeQueue(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription));
+
+            MainForm.SingletonMainForm.RefreshSelectedEntity();
+            Application.UseWaitCursor = false;
         }
 
         public void GetDeadletterMessages()

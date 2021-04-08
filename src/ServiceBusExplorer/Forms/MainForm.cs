@@ -6643,20 +6643,20 @@ namespace ServiceBusExplorer.Forms
 
         private async void bulkPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.All);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.All);
         }
 
         private async void bulkPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.Messages);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.Messages);
         }
 
         private async void bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.DeadletteredMessages);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.DeadletteredMessages);
         }
 
-        private async Task BulkPurge(TreeNode treeNode, BulkPurgeStrategy bulkPurgeStrategy)
+        private async Task BulkPurge(TreeNode treeNode, PurgeStrategy bulkPurgeStrategy)
         {
             try
             {
@@ -6697,7 +6697,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
                 purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
 
                 if(subscriptions.Any())
@@ -6710,6 +6710,8 @@ namespace ServiceBusExplorer.Forms
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
                     await purger.PurgeQueues(bulkPurgeStrategy, await this.serviceBusHelper.GetQueueProperties(queues));
                 }
+
+                this.RefreshSelectedEntity();
             }
             catch (Exception ex)
             {

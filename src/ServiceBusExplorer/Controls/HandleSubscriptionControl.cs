@@ -363,64 +363,32 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        public async Task<long> PurgeMessagesAsync()
+        public async Task PurgeMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?"))
-            {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
-            }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
-                var count = await purger.Purge();
-                stopwatch.Stop();
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                    subscriptionWrapper.SubscriptionDescription.Name);
-                writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
-                return count;
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await this.DoPurge(PurgeStrategy.Messages, $"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
-        public async Task<long> PurgeDeadletterQueueMessagesAsync()
+        public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?"))
+            await this.DoPurge(PurgeStrategy.Messages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+        }
+
+        private async Task DoPurge(PurgeStrategy purgeStrategy, string deleteConfirmation)
+        {
+            if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
             {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
+                return;
             }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
-                var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
-                stopwatch.Stop();
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                           subscriptionWrapper.SubscriptionDescription.Name);
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the dead-letter queue of the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
-                return count;
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+
+            Application.UseWaitCursor = true;
+
+            ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+            purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
+            purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+            await purger.PurgeSubscription(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper));
+
+            MainForm.SingletonMainForm.RefreshSelectedEntity();
+            Application.UseWaitCursor = false;
         }
         #endregion
 
@@ -1404,7 +1372,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     subscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
@@ -1532,7 +1500,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     subscriptionWrapper.SubscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
