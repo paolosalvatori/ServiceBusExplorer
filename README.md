@@ -7,6 +7,8 @@
 # Service Bus Explorer
 The Service Bus Explorer allows users to connect to a Service Bus namespace and efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
 
+There are no dedicated developers so development is entirely based on voluntary effort.
+
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
 # Installation
@@ -29,8 +31,8 @@ Here are some guidelines concerning contributions:
 	- `master` is only for releases
 - Every pull request is built by AppVeyor and should preferably be linked to a GitHub issue.
 - Write unit tests, if applicable
+- We have started to migrate from the old SDK to the latest SDKs for Service Bus, Event Hubs, Relay and Notification Hubs. Therefore, new classes should not depend on the old SDK unless absolutely necessary.  
 
-If you just want to help out, feel free to pick one of our issues with the [`help wanted`](https://github.com/paolosalvatori/ServiceBusExplorer/labels/help%20wanted) label.
 
 # Development Environment
 
