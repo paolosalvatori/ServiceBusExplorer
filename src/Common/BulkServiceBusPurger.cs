@@ -27,17 +27,17 @@ namespace ServiceBusExplorer.Common
             {
                 if ((bulkPurgeStrategy & BulkPurgeStrategy.Messages) == BulkPurgeStrategy.Messages)
                 {
-                    await this.Purge(subscription, false);
+                    await this.PurgeSubscription(subscription, false);
                 }
 
                 if ((bulkPurgeStrategy & BulkPurgeStrategy.DeadletteredMessages) == BulkPurgeStrategy.DeadletteredMessages)
                 {
-                    await this.Purge(subscription, true);
+                    await this.PurgeSubscription(subscription, true);
                 }
             }
         }
 
-        private async Task Purge(SubscriptionWrapper subscription, bool purgeDeadLetterQueueInstead)
+        private async Task PurgeSubscription(SubscriptionWrapper subscription, bool purgeDeadLetterQueueInstead)
         {
             try
             {
@@ -55,6 +55,44 @@ namespace ServiceBusExplorer.Common
                                                                subscription.SubscriptionDescription.Name);
 
                 this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(entityPath, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
+            }
+            catch (Exception ex)
+            {
+                this.PurgeFailed?.Invoke(this, new PurgeOperationFailedEventArgs(ex));
+            }
+        }
+
+        public async Task PurgeQueues(BulkPurgeStrategy bulkPurgeStrategy, List<QueueDescription> queues)
+        {
+            foreach (QueueDescription queue in queues)
+            {
+                if ((bulkPurgeStrategy & BulkPurgeStrategy.Messages) == BulkPurgeStrategy.Messages)
+                {
+                    await this.PurgeQueue(queue, false);
+                }
+
+                if ((bulkPurgeStrategy & BulkPurgeStrategy.DeadletteredMessages) == BulkPurgeStrategy.DeadletteredMessages)
+                {
+                    await this.PurgeQueue(queue, true);
+                }
+            }
+        }
+
+        private async Task PurgeQueue(QueueDescription queue, bool purgeDeadLetterQueueInstead)
+        {
+            try
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                QueueProperties queueProperties = await serviceBusHelper.GetQueueProperties(queue);
+
+                ServiceBusPurger purger = new ServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2(), queueProperties);
+                long totalMessagesPurged = await purger.Purge(purgeDeadLetterQueueInstead);
+
+                stopwatch.Stop();
+
+                this.PurgeCompleted?.Invoke(this, new PurgeOperationCompletedEventArgs(queueProperties.Name, stopwatch.ElapsedMilliseconds, totalMessagesPurged, purgeDeadLetterQueueInstead));
             }
             catch (Exception ex)
             {

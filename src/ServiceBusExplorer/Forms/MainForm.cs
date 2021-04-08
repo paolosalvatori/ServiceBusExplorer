@@ -6641,17 +6641,17 @@ namespace ServiceBusExplorer.Forms
         }
         #endregion
 
-        private async void topicPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void bulkPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.All);
         }
 
-        private async void topicPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void bulkPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.Messages);
         }
 
-        private async void topicPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await this.BulkPurge(serviceBusTreeView.SelectedNode, BulkPurgeStrategy.DeadletteredMessages);
         }
@@ -6666,6 +6666,8 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
+                List<QueueDescription> queues = new List<QueueDescription>();
+
                 string strategyDescription = ServiceBusExplorerResources.ResourceManager.GetString($"BulkPurgeStrategy_ConfirmationMessage_{bulkPurgeStrategy}");
                 string deleteConfirmation = string.Empty;
 
@@ -6674,14 +6676,21 @@ namespace ServiceBusExplorer.Forms
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics?";
                     subscriptions.AddRange(treeNode.Nodes.Cast<TreeNode>().ToList().SelectMany(tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper)));
                 }
+                else if (treeNode == FindNode(Constants.QueueEntities, rootNode))
+                {
+                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues?";
+                    queues.AddRange(treeNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as QueueDescription));
+                }
                 else if (treeNode.Tag is TopicDescription)
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from the topic {treeNode.Text}?";
                     subscriptions.AddRange(treeNode.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper));
                 }
 
-                if (!subscriptions.Any())
+                if (!subscriptions.Any() && !queues.Any())
+                {
                     return;
+                }
 
                 if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
                 {
@@ -6689,10 +6698,18 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper);
-                purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
                 purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
 
-                await purger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
+                if(subscriptions.Any())
+                {
+                    purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+                    await purger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);
+                }
+                if(queues.Any())
+                {
+                    purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
+                    await purger.PurgeQueues(bulkPurgeStrategy, queues);
+                }
             }
             catch (Exception ex)
             {
