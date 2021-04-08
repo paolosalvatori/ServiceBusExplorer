@@ -148,8 +148,8 @@ namespace ServiceBusExplorer
         private const string MessagePropertyFormat = " - Key=[{0}] Value=[{1}]";
         private const string MessageDeferred = " - The message was deferred.";
         private const string ReadMessageDeferred = " - Read deferred message.";
-        private const string MessageMovedToDeadLetterQueue = " - The message was moved to the DeadLetter queue.";
-        private const string MessageReadFromDeadLetterQueue = " - The message was read from the DeadLetter queue.";
+        private const string MessageMovedToDeadLetterQueue = " - The message was moved to the Dead-letter queue.";
+        private const string MessageReadFromDeadLetterQueue = " - The message was read from the Dead-letter queue.";
         private const string NoMessageWasReceived = "Receiver[{0}]: no message was received.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
         private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";

@@ -64,7 +64,7 @@ namespace ServiceBusExplorer.Controls
         // CheckListBox item texts
         //***************************
         private const string EnableBatchedOperationsItemText = "Enable Batched Operations";
-        private const string EnableDeadLetteringOnMessageExpirationItemText = "Enable Dead Lettering On Message Expiration";
+        private const string EnableDeadLetteringOnMessageExpirationItemText = "Enable Dead-lettering On Message Expiration";
         private const string EnablePartitioningItemText = "Enable Partitioning";
         private const string EnableExpressItemText = "Enable Express";
         private const string RequiresDuplicateDetectionItemText = "Requires Duplicate Detection";
@@ -116,25 +116,25 @@ namespace ServiceBusExplorer.Controls
         private const string MessagesPeekedFromTheQueue = "[{0}] messages peeked from the queue [{1}].";
 
         private const string MessagesPeekedFromTheDeadletterQueue =
-            "[{0}] messages peeked from the deadletter queue of the queue [{1}].";
+            "[{0}] messages peeked from the dead-letter queue of the queue [{1}].";
 
         private const string MessagesPeekedFromTheTransferDeadletterQueue =
-            "[{0}] messages peeked from the transfer deadletter queue of the queue [{1}].";
+            "[{0}] messages peeked from the transfer dead-letter queue of the queue [{1}].";
 
         private const string MessagesReceivedFromTheQueue = "[{0}] messages received from the queue [{1}].";
 
         private const string MessagesReceivedFromTheDeadletterQueue =
-            "[{0}] messages received from the deadletter queue of the queue [{1}].";
+            "[{0}] messages received from the dead-letter queue of the queue [{1}].";
 
         private const string MessagesReceivedFromTheTransferDeadletterQueue =
-            "[{0}] messages received from the transfer deadletter queue of the queue [{1}].";
+            "[{0}] messages received from the transfer dead-letter queue of the queue [{1}].";
 
         private const string SessionsGotFromTheQueue = "[{0}] sessions retrieved for the queue [{1}].";
         private const string RetrieveMessagesFromQueue = "Retrieve messages from queue";
-        private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from deadletter queue";
+        private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from dead-letter queue";
 
         private const string RetrieveMessagesFromTransferDeadletterQueue =
-            "Retrieve messages from transfer deadletter queue";
+            "Retrieve messages from transfer dead-letter queue";
 
         private const string AuthorizationRuleDeleteMessage = "The Authorization Rule will be permanently deleted";
         private const string SelectEntityDialogTitle = "Select a target Queue or Topic";
@@ -155,10 +155,10 @@ namespace ServiceBusExplorer.Controls
             "The timeout  of [{0}] seconds has expired and no message was retrieved from the queue [{1}].";
 
         private const string NoMessageReceivedFromTheDeadletterQueue =
-            "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the queue [{1}].";
+            "The timeout  of [{0}] seconds has expired and no message was retrieved from the dead-letter queue of the queue [{1}].";
 
         private const string NoMessageReceivedFromTheTransferDeadletterQueue =
-            "The timeout  of [{0}] seconds has expired and no message was retrieved from the transfer deadletter queue of the queue [{1}].";
+            "The timeout  of [{0}] seconds has expired and no message was retrieved from the transfer dead-letter queue of the queue [{1}].";
 
         //***************************
         // Tooltips
@@ -186,7 +186,7 @@ namespace ServiceBusExplorer.Controls
             "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
 
         private const string MaxDeliveryCountTooltip =
-            "Gets or sets the maximum delivery count. A message is automatically deadlettered after this number of deliveries.";
+            "Gets or sets the maximum delivery count. A message is automatically dead-lettered after this number of deliveries.";
 
         private const string DeleteTooltip = "Delete the row.";
 
@@ -389,7 +389,7 @@ namespace ServiceBusExplorer.Controls
 
         public async Task<long> PurgeDeadletterQueueMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the deadletter queue of the {queueDescription.Path} queue?"))
+            using (var deleteForm = new DeleteForm($"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?"))
             {
                 if (deleteForm.ShowDialog() != DialogResult.OK)
                 {
@@ -406,7 +406,7 @@ namespace ServiceBusExplorer.Controls
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+                writeToLog($"[{count}] messages have been purged from the dead-letter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
 
                 return count;
             }
@@ -3370,12 +3370,12 @@ namespace ServiceBusExplorer.Controls
             if (messages.Count() == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"deadletter subqueue for the {queueDescription.Path} queue?";
+                    $"dead-letter subqueue for the {queueDescription.Path} queue?";
             }
             else
             {
                 confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"deadletter subqueue for {queueDescription.Path} queue?";
+                    $"dead-letter subqueue for {queueDescription.Path} queue?";
             }
 
             using (var deleteForm = new DeleteForm(confirmationText))

@@ -6689,7 +6689,7 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 BulkServiceBusPurger purger = new BulkServiceBusPurger(this.serviceBusHelper);
-                purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " deadletter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+                purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
                 purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
 
                 await purger.PurgeSubscriptions(bulkPurgeStrategy, subscriptions);

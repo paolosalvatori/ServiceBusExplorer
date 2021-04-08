@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BulkPurgeStrategy_ConfirmationMessage_All" xml:space="preserve">
-    <value>all (messages and deadlettered messages)</value>
+    <value>all (messages and dead-lettered messages)</value>
   </data>
   <data name="BulkPurgeStrategy_ConfirmationMessage_DeadletteredMessages" xml:space="preserve">
-    <value>all deadlettered messages</value>
+    <value>all dead-lettered messages</value>
   </data>
   <data name="BulkPurgeStrategy_ConfirmationMessage_Messages" xml:space="preserve">
     <value>all messages</value>

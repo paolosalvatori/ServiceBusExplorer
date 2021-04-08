@@ -61,7 +61,7 @@ namespace ServiceBusExplorer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to all (messages and deadlettered messages).
+        ///   Looks up a localized string similar to all (messages and dead-lettered messages).
         /// </summary>
         internal static string BulkPurgeStrategy_ConfirmationMessage_All {
             get {
@@ -70,7 +70,7 @@ namespace ServiceBusExplorer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to all deadlettered messages.
+        ///   Looks up a localized string similar to all dead-lettered messages.
         /// </summary>
         internal static string BulkPurgeStrategy_ConfirmationMessage_DeadletteredMessages {
             get {
