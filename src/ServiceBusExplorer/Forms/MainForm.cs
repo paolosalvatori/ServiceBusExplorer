@@ -6632,6 +6632,41 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private async void purgeAllMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode == null)
+                {
+                    return;
+                }
+
+                // Queue Node
+                if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
+                {
+                    var control = panelMain.Controls[0] as HandleQueueControl;
+                    if (control != null)
+                    {
+                        await control.PurgeAllMessagesAsync();
+                    }
+                }
+
+                // Subscription Node
+                if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
+                {
+                    var control = panelMain.Controls[0] as HandleSubscriptionControl;
+                    if (control != null)
+                    {
+                        await control.PurgeAllMessagesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
         private void linkLabelNewVersionAvailable_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             using (var form = new NewVersionAvailableForm())

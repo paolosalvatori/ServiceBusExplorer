@@ -368,6 +368,11 @@ namespace ServiceBusExplorer.Controls
             await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?");
         }
 
+        public async Task PurgeAllMessagesAsync()
+        {
+            await this.DoPurge(PurgeStrategies.All, $"Would you like to purge all (messages and dead-lettered messages) from the {queueDescription.Path} queue?");
+        }
+
         private async Task DoPurge(PurgeStrategies purgeStrategy, string deleteConfirmation)
         {
             if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))

@@ -194,6 +194,7 @@ namespace ServiceBusExplorer.Forms
             this.queueReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.queuePurgeMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.queuePurgeDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.queuePurgeAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getQueueMessageSessionsSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.getQueueMessageSessionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topicsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -344,6 +345,7 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
+            this.subscriptionPurgeAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -1185,10 +1187,11 @@ namespace ServiceBusExplorer.Forms
             this.subReceiveToolStripSeparator,
             this.subscriptionPurgeMessagesMenuItem,
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem,
+            this.subscriptionPurgeAllMenuItem,
             this.getSubscriptionMessageSessionsSeparator,
             this.getSubscriptionMessageSessionsMenuItem});
             this.subscriptionContextMenuStrip.Name = "subscriptionContextMenuStrip";
-            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(313, 426);
+            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(313, 448);
             // 
             // removeSubscriptionMenuItem
             // 
@@ -1592,10 +1595,11 @@ namespace ServiceBusExplorer.Forms
             this.queueReceiveToolStripSeparator,
             this.queuePurgeMessagesMenuItem,
             this.queuePurgeDeadletterQueueMessagesMenuItem,
+            this.queuePurgeAllMenuItem,
             this.getQueueMessageSessionsSeparator,
             this.getQueueMessageSessionsMenuItem});
             this.queueContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.queueContextMenuStrip.Size = new System.Drawing.Size(313, 420);
+            this.queueContextMenuStrip.Size = new System.Drawing.Size(313, 442);
             // 
             // changeStatusQueueMenuItem
             // 
@@ -1749,6 +1753,13 @@ namespace ServiceBusExplorer.Forms
             this.queuePurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
             this.queuePurgeDeadletterQueueMessagesMenuItem.Text = "Purge Dead-letter Queue Messages";
             this.queuePurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
+            // 
+            // queuePurgeAllMenuItem
+            // 
+            this.queuePurgeAllMenuItem.Name = "queuePurgeAllMenuItem";
+            this.queuePurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queuePurgeAllMenuItem.Text = "Purge All Messages";
+            this.queuePurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // getQueueMessageSessionsSeparator
             // 
@@ -2787,7 +2798,7 @@ namespace ServiceBusExplorer.Forms
             this.logoPictureBox.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.logoPictureBox.Location = new System.Drawing.Point(1304, 16);
-            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(96, 12);
             this.logoPictureBox.TabIndex = 23;
@@ -2952,6 +2963,13 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
+            // 
+            // subscriptionPurgeAllMenuItem
+            // 
+            this.subscriptionPurgeAllMenuItem.Name = "subscriptionPurgeAllMenuItem";
+            this.subscriptionPurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionPurgeAllMenuItem.Text = "Purge All Messages";
+            this.subscriptionPurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // MainForm
             // 
@@ -3330,6 +3348,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem deadletterQueueMessagesToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator76;
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem queuePurgeAllMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeAllMenuItem;
     }
 }
 
