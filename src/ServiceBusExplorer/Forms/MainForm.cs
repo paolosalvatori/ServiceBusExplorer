@@ -6643,20 +6643,20 @@ namespace ServiceBusExplorer.Forms
 
         private async void bulkPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.All);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategies.All);
         }
 
         private async void bulkPurgeMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.Messages);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategies.Messages);
         }
 
         private async void bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategy.DeadletteredMessages);
+            await this.BulkPurge(serviceBusTreeView.SelectedNode, PurgeStrategies.DeadletteredMessages);
         }
 
-        private async Task BulkPurge(TreeNode treeNode, PurgeStrategy bulkPurgeStrategy)
+        private async Task BulkPurge(TreeNode treeNode, PurgeStrategies bulkPurgeStrategy)
         {
             try
             {

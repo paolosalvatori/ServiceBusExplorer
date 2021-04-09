@@ -365,15 +365,15 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategy.Messages, $"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
         public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategy.Messages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
-        private async Task DoPurge(PurgeStrategy purgeStrategy, string deleteConfirmation)
+        private async Task DoPurge(PurgeStrategies purgeStrategy, string deleteConfirmation)
         {
             if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
             {

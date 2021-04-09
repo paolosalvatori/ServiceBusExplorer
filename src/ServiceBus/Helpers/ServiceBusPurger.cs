@@ -43,23 +43,23 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             this.serviceBusHelper = serviceBusHelper;
         }
 
-        public async Task Purge(PurgeStrategy purgeStrategy, TEntity entity)
+        public async Task Purge(PurgeStrategies purgeStrategy, TEntity entity)
         {
             await this.Purge(purgeStrategy, new List<TEntity>() { entity });
         }
 
-        public async Task Purge(PurgeStrategy purgeStrategy, List<TEntity> entities)
+        public async Task Purge(PurgeStrategies purgeStrategy, List<TEntity> entities)
         {
             foreach (TEntity subscription in entities)
             {
-                if ((purgeStrategy & PurgeStrategy.Messages) == PurgeStrategy.Messages)
+                if ((purgeStrategy & PurgeStrategies.Messages) == PurgeStrategies.Messages)
                 {
-                    await this.InternalPurge(subscription, false);
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: false);
                 }
 
-                if ((purgeStrategy & PurgeStrategy.DeadletteredMessages) == PurgeStrategy.DeadletteredMessages)
+                if ((purgeStrategy & PurgeStrategies.DeadletteredMessages) == PurgeStrategies.DeadletteredMessages)
                 {
-                    await this.InternalPurge(subscription, true);
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: true);
                 }
             }
         }
@@ -255,39 +255,31 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         protected abstract ServiceBusReceiver CreateServiceBusReceiver(TEntity entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead);
 
         protected abstract Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(TEntity entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead);
-    }
 
-    public class PurgeOperationCompletedEventArgs : EventArgs
-    {
-        public bool IsDeadLetterQueue { get; set; }
-        public string EntityPath { get; set; }
-        public long ElapsedMilliseconds { get; set; }
-        public long TotalMessagesPurged { get; set; }
-
-        public PurgeOperationCompletedEventArgs(string entityPath, long elapsedMilliseconds, long totalMessagesPurged, bool isDeadLetterQueue)
+        public class PurgeOperationCompletedEventArgs : EventArgs
         {
-            this.EntityPath = entityPath;
-            this.ElapsedMilliseconds = elapsedMilliseconds;
-            this.TotalMessagesPurged = totalMessagesPurged;
-            this.IsDeadLetterQueue = isDeadLetterQueue;
+            public bool IsDeadLetterQueue { get; set; }
+            public string EntityPath { get; set; }
+            public long ElapsedMilliseconds { get; set; }
+            public long TotalMessagesPurged { get; set; }
+
+            public PurgeOperationCompletedEventArgs(string entityPath, long elapsedMilliseconds, long totalMessagesPurged, bool isDeadLetterQueue)
+            {
+                this.EntityPath = entityPath;
+                this.ElapsedMilliseconds = elapsedMilliseconds;
+                this.TotalMessagesPurged = totalMessagesPurged;
+                this.IsDeadLetterQueue = isDeadLetterQueue;
+            }
         }
-    }
 
-    public class PurgeOperationFailedEventArgs : EventArgs
-    {
-        public Exception Exception { get; set; }
-
-        public PurgeOperationFailedEventArgs(Exception exception)
+        public class PurgeOperationFailedEventArgs : EventArgs
         {
-            this.Exception = exception;
-        }
-    }
+            public Exception Exception { get; set; }
 
-    [Flags]
-    public enum PurgeStrategy
-    {
-        Messages = 1,
-        DeadletteredMessages = 2,
-        All = Messages | DeadletteredMessages
+            public PurgeOperationFailedEventArgs(Exception exception)
+            {
+                this.Exception = exception;
+            }
+        }
     }
 }

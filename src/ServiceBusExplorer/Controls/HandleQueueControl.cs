@@ -359,16 +359,16 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategy.DeadletteredMessages, $"Would you like to purge the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the {queueDescription.Path} queue?");
         }
 
 
         public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategy.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?");
         }
 
-        private async Task DoPurge(PurgeStrategy purgeStrategy, string deleteConfirmation)
+        private async Task DoPurge(PurgeStrategies purgeStrategy, string deleteConfirmation)
         {
             if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
             {

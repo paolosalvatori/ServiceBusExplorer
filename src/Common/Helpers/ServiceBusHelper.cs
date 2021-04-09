@@ -5305,7 +5305,7 @@ namespace ServiceBusExplorer
 
         public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)
         {
-            return (await this.GetQueueProperties(new List<QueueDescription>() { oldQueueDescription })).FirstOrDefault();
+            return (await this.GetQueueProperties(new List<QueueDescription>() { oldQueueDescription }).ConfigureAwait(false)).FirstOrDefault();
         }
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
@@ -5323,7 +5323,7 @@ namespace ServiceBusExplorer
 
         public async Task<SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
         {
-            return (await this.GetSubscriptionProperties(new List<SubscriptionWrapper>() { oldSubscriptionWrapper })).FirstOrDefault();
+            return (await this.GetSubscriptionProperties(new List<SubscriptionWrapper>() { oldSubscriptionWrapper }).ConfigureAwait(false)).FirstOrDefault();
         }
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
