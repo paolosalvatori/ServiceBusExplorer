@@ -255,31 +255,5 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         protected abstract ServiceBusReceiver CreateServiceBusReceiver(TEntity entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead);
 
         protected abstract Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(TEntity entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead);
-
-        public class PurgeOperationCompletedEventArgs : EventArgs
-        {
-            public bool IsDeadLetterQueue { get; set; }
-            public string EntityPath { get; set; }
-            public long ElapsedMilliseconds { get; set; }
-            public long TotalMessagesPurged { get; set; }
-
-            public PurgeOperationCompletedEventArgs(string entityPath, long elapsedMilliseconds, long totalMessagesPurged, bool isDeadLetterQueue)
-            {
-                this.EntityPath = entityPath;
-                this.ElapsedMilliseconds = elapsedMilliseconds;
-                this.TotalMessagesPurged = totalMessagesPurged;
-                this.IsDeadLetterQueue = isDeadLetterQueue;
-            }
-        }
-
-        public class PurgeOperationFailedEventArgs : EventArgs
-        {
-            public Exception Exception { get; set; }
-
-            public PurgeOperationFailedEventArgs(Exception exception)
-            {
-                this.Exception = exception;
-            }
-        }
     }
 }
