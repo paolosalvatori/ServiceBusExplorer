@@ -45,7 +45,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public async Task Purge(PurgeStrategies purgeStrategy, TEntity entity)
         {
-            await this.Purge(purgeStrategy, new List<TEntity>() { entity });
+            await this.Purge(purgeStrategy, new List<TEntity>() { entity })
+                .ConfigureAwait(false);
         }
 
         public async Task Purge(PurgeStrategies purgeStrategy, List<TEntity> entities)
@@ -54,12 +55,14 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             {
                 if ((purgeStrategy & PurgeStrategies.Messages) == PurgeStrategies.Messages)
                 {
-                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: false);
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: false)
+                        .ConfigureAwait(false);
                 }
 
                 if ((purgeStrategy & PurgeStrategies.DeadletteredMessages) == PurgeStrategies.DeadletteredMessages)
                 {
-                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: true);
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: true)
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -98,7 +101,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             long totalMessagesPurged = 0;
             var consecutiveSessionTimeOuts = 0;
             ServiceBusSessionReceiver sessionReceiver = null;
-            long messagesToPurgeCount = await GetMessageCount(entity, false)
+            long messagesToPurgeCount = await GetMessageCount(entity, deadLetterQueueData: false)
                 .ConfigureAwait(false);
 
             var client = new ServiceBusClient(

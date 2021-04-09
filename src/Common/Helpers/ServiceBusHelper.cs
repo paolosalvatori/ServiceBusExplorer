@@ -5315,7 +5315,7 @@ namespace ServiceBusExplorer
 
             foreach(QueueDescription oldQueueDescription in oldQueueDescriptions)
             {
-               result.Add(await administrationClient.GetQueueAsync(oldQueueDescription.Path));
+               result.Add(await administrationClient.GetQueueAsync(oldQueueDescription.Path).ConfigureAwait(false));
             }
 
             return result;
