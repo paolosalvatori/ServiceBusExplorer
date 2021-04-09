@@ -143,6 +143,7 @@ namespace ServiceBusExplorer.Forms
             this.subReceiveToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.subscriptionPurgeMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.subscriptionPurgeAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getSubscriptionMessageSessionsSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.getSubscriptionMessageSessionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topicContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -345,7 +346,6 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
-            this.subscriptionPurgeAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -1351,6 +1351,13 @@ namespace ServiceBusExplorer.Forms
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Text = "Purge Dead-letter Queue Messages";
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
+            // 
+            // subscriptionPurgeAllMenuItem
+            // 
+            this.subscriptionPurgeAllMenuItem.Name = "subscriptionPurgeAllMenuItem";
+            this.subscriptionPurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionPurgeAllMenuItem.Text = "Purge All Messages";
+            this.subscriptionPurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // getSubscriptionMessageSessionsSeparator
             // 
@@ -2963,13 +2970,6 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
-            // 
-            // subscriptionPurgeAllMenuItem
-            // 
-            this.subscriptionPurgeAllMenuItem.Name = "subscriptionPurgeAllMenuItem";
-            this.subscriptionPurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
-            this.subscriptionPurgeAllMenuItem.Text = "Purge All Messages";
-            this.subscriptionPurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // MainForm
             // 
