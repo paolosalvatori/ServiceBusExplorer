@@ -89,6 +89,7 @@ namespace ServiceBusExplorer.Controls
         private const string SequenceNumberValue = "SequenceNumber";
         private const string MessageSize = "Size";
         private const string Label = "Label";
+        private const string ScheduledEnqueueTimeUtc = "ScheduledEnqueueTimeUtc";
         private const string EnqueuedTimeUtc = "EnqueuedTimeUtc";
         private const string ExpiresAtUtc = "ExpiresAtUtc";
         private const string SessionId = "SessionId";
@@ -376,7 +377,7 @@ namespace ServiceBusExplorer.Controls
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds / 1000}] seconds.");
 
                 return count;
             }
@@ -406,7 +407,7 @@ namespace ServiceBusExplorer.Controls
                 var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
+                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds / 1000}] seconds.");
 
                 return count;
             }
@@ -762,6 +763,15 @@ namespace ServiceBusExplorer.Controls
                 };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
+                    Width = 120
+                };
+                messagesDataGridView.Columns.Add(textBoxColumn);
+
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -904,6 +914,15 @@ namespace ServiceBusExplorer.Controls
                 };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
+                    Width = 120
+                };
+                deadletterDataGridView.Columns.Add(textBoxColumn);
+
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -980,6 +999,15 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = Label,
                     Name = Label,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
                     Width = 120
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
@@ -3216,18 +3244,33 @@ namespace ServiceBusExplorer.Controls
         {
             var cell = messagesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
+
+            if (e.Value is DateTime dateTime)
+            {
+                e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
+            }
         }
 
         private void deadletterDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             var cell = deadletterDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
+
+            if (e.Value is DateTime dateTime)
+            {
+                e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
+            }
         }
 
         private void transferDeadletterDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             var cell = transferDeadletterDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
+
+            if (e.Value is DateTime dateTime)
+            {
+                e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
+            }
         }
 
         private void grouperMessageText_CustomPaint(PaintEventArgs obj)
