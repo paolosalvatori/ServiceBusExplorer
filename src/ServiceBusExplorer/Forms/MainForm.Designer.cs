@@ -346,6 +346,17 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
+            this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
+            this.messagesToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deadletterMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator77 = new System.Windows.Forms.ToolStripSeparator();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator78 = new System.Windows.Forms.ToolStripSeparator();
+            this.purgeToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.messagesToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deadletterQueueMessagesToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator79 = new System.Windows.Forms.ToolStripSeparator();
+            this.allMessagesToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -2029,9 +2040,10 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator22,
             this.expandSubTreeMenuItem9,
             this.collapseSubTreeMenuItem9,
-            this.toolStripSeparator74});
+            this.toolStripSeparator74,
+            this.toolStripMenuItem20});
             this.queueFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.queueFolderContextMenuStrip.Size = new System.Drawing.Size(163, 132);
+            this.queueFolderContextMenuStrip.Size = new System.Drawing.Size(163, 154);
             // 
             // folderCreateQueueMenuItem
             // 
@@ -2098,9 +2110,11 @@ namespace ServiceBusExplorer.Forms
             this.folderExportTopicsMenuItem,
             this.toolStripSeparator23,
             this.expandSubTreeMenuItem10,
-            this.collapseSubTreeMenuItem10});
+            this.collapseSubTreeMenuItem10,
+            this.toolStripSeparator78,
+            this.purgeToolStripMenuItem3});
             this.topicFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.topicFolderContextMenuStrip.Size = new System.Drawing.Size(163, 126);
+            this.topicFolderContextMenuStrip.Size = new System.Drawing.Size(163, 154);
             // 
             // folderCreateTopicMenuItem
             // 
@@ -2971,6 +2985,85 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
             // 
+            // toolStripMenuItem20
+            // 
+            this.toolStripMenuItem20.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.messagesToolStripMenuItem2,
+            this.deadletterMessagesToolStripMenuItem,
+            this.toolStripSeparator77,
+            this.allToolStripMenuItem});
+            this.toolStripMenuItem20.Name = "toolStripMenuItem20";
+            this.toolStripMenuItem20.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem20.Text = "Purge";
+            // 
+            // messagesToolStripMenuItem2
+            // 
+            this.messagesToolStripMenuItem2.Name = "messagesToolStripMenuItem2";
+            this.messagesToolStripMenuItem2.Size = new System.Drawing.Size(187, 22);
+            this.messagesToolStripMenuItem2.Text = "Messages";
+            this.messagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
+            // 
+            // deadletterMessagesToolStripMenuItem
+            // 
+            this.deadletterMessagesToolStripMenuItem.Name = "deadletterMessagesToolStripMenuItem";
+            this.deadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.deadletterMessagesToolStripMenuItem.Text = "Dead-letter Queue Messages";
+            this.deadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator77
+            // 
+            this.toolStripSeparator77.Name = "toolStripSeparator77";
+            this.toolStripSeparator77.Size = new System.Drawing.Size(184, 6);
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.allToolStripMenuItem.Text = "All Messages";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator78
+            // 
+            this.toolStripSeparator78.Name = "toolStripSeparator78";
+            this.toolStripSeparator78.Size = new System.Drawing.Size(177, 6);
+            // 
+            // purgeToolStripMenuItem3
+            // 
+            this.purgeToolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.messagesToolStripMenuItem3,
+            this.deadletterQueueMessagesToolStripMenuItem2,
+            this.toolStripSeparator79,
+            this.allMessagesToolStripMenuItem2});
+            this.purgeToolStripMenuItem3.Name = "purgeToolStripMenuItem3";
+            this.purgeToolStripMenuItem3.Size = new System.Drawing.Size(162, 22);
+            this.purgeToolStripMenuItem3.Text = "Purge";
+            // 
+            // messagesToolStripMenuItem3
+            // 
+            this.messagesToolStripMenuItem3.Name = "messagesToolStripMenuItem3";
+            this.messagesToolStripMenuItem3.Size = new System.Drawing.Size(225, 22);
+            this.messagesToolStripMenuItem3.Text = "Messages";
+            this.messagesToolStripMenuItem3.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
+            // 
+            // deadletterQueueMessagesToolStripMenuItem2
+            // 
+            this.deadletterQueueMessagesToolStripMenuItem2.Name = "deadletterQueueMessagesToolStripMenuItem2";
+            this.deadletterQueueMessagesToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.deadletterQueueMessagesToolStripMenuItem2.Text = "Dead-letter Queue Messages";
+            this.deadletterQueueMessagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator79
+            // 
+            this.toolStripSeparator79.Name = "toolStripSeparator79";
+            this.toolStripSeparator79.Size = new System.Drawing.Size(222, 6);
+            // 
+            // allMessagesToolStripMenuItem2
+            // 
+            this.allMessagesToolStripMenuItem2.Name = "allMessagesToolStripMenuItem2";
+            this.allMessagesToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.allMessagesToolStripMenuItem2.Text = "All Messages";
+            this.allMessagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3350,6 +3443,17 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem queuePurgeAllMenuItem;
         private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeAllMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem20;
+        private System.Windows.Forms.ToolStripMenuItem messagesToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem deadletterMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator77;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator78;
+        private System.Windows.Forms.ToolStripMenuItem purgeToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem messagesToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem deadletterQueueMessagesToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator79;
+        private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem2;
     }
 }
 

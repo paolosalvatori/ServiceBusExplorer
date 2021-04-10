@@ -6701,25 +6701,33 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
+                Func<TreeNode, IEnumerable<SubscriptionWrapper>> subscriptionsExtractor = tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper);
+
                 List<QueueDescription> queues = new List<QueueDescription>();
 
                 string strategyDescription = ServiceBusExplorerResources.ResourceManager.GetString($"BulkPurgeStrategy_ConfirmationMessage_{bulkPurgeStrategy}");
                 string deleteConfirmation = string.Empty;
 
-                if (treeNode == FindNode(Constants.TopicEntities, rootNode))
+                if (treeNode == FindNode(Constants.TopicEntities, rootNode)
+                    || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Topic))
                 {
-                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics?";
-                    subscriptions.AddRange(treeNode.Nodes.Cast<TreeNode>().ToList().SelectMany(tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper)));
+                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
+                    
+                    List<TreeNode> topicTreeNodes = new List<TreeNode>();
+                    this.FindTopicsNodesRecursive(topicTreeNodes, treeNode);
+
+                    subscriptions.AddRange(topicTreeNodes.SelectMany(subscriptionsExtractor));
                 }
-                else if (treeNode == FindNode(Constants.QueueEntities, rootNode))
+                else if (treeNode == FindNode(Constants.QueueEntities, rootNode) 
+                    || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Queue))
                 {
-                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues?";
-                    queues.AddRange(treeNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as QueueDescription));
+                    deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
+                    this.FindQueuesRecursive(queues, treeNode);
                 }
                 else if (treeNode.Tag is TopicDescription)
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from the topic {treeNode.Text}?";
-                    subscriptions.AddRange(treeNode.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper));
+                    subscriptions.AddRange(subscriptionsExtractor(treeNode));
                 }
 
                 if (!subscriptions.Any() && !queues.Any())
@@ -6732,14 +6740,14 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                if(subscriptions.Any())
+                if (subscriptions.Any())
                 {
                     TopicSubscriptionServiceBusPurger purger = new TopicSubscriptionServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
                     purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
                     purger.PurgeCompleted += (o, e) => this.WriteToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
                     await purger.Purge(bulkPurgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptions));
                 }
-                if(queues.Any())
+                if (queues.Any())
                 {
                     QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
                     purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
@@ -6752,6 +6760,28 @@ namespace ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 this.HandleException(ex);
+            }
+        }
+
+        private void FindQueuesRecursive(List<QueueDescription> queues, TreeNode parent)
+        {
+            foreach (TreeNode child in parent.Nodes)
+            {
+                if (child.Tag is QueueDescription)
+                    queues.Add(child.Tag as QueueDescription);
+                else if (child.Tag is UrlSegmentWrapper)
+                    this.FindQueuesRecursive(queues, child);
+            }
+        }
+
+        private void FindTopicsNodesRecursive(List<TreeNode> topicNodes, TreeNode parent)
+        {
+            foreach (TreeNode child in parent.Nodes)
+            {
+                if (child.Tag is TopicDescription)
+                    topicNodes.Add(child);
+                else if (child.Tag is UrlSegmentWrapper)
+                    this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
     }
