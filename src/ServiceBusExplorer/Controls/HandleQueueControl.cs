@@ -377,7 +377,7 @@ namespace ServiceBusExplorer.Controls
                 var count = await purger.Purge();
                 stopwatch.Stop();
                 MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds / 1000}] seconds.");
+                writeToLog($"[{count}] messages have been purged from the [{queueDescription.Path}] queue in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
 
                 return count;
             }
