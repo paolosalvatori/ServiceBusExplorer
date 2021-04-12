@@ -167,7 +167,7 @@ namespace ServiceBusExplorer.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "DeleteForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Warning";
             this.mainPanel.ResumeLayout(false);
             this.mainPanel.PerformLayout();
