@@ -1013,6 +1013,15 @@ namespace ServiceBusExplorer.Controls
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
+                // Create the Label column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = Label,
+                    Name = Label,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -1027,15 +1036,6 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = ExpiresAtUtc,
                     Name = ExpiresAtUtc,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Label column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
                     Width = 120
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
