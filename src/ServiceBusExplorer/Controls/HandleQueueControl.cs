@@ -89,9 +89,10 @@ namespace ServiceBusExplorer.Controls
         private const string SequenceNumberValue = "SequenceNumber";
         private const string MessageSize = "Size";
         private const string Label = "Label";
-        private const string ScheduledEnqueueTimeUtc = "ScheduledEnqueueTimeUtc";
         private const string EnqueuedTimeUtc = "EnqueuedTimeUtc";
         private const string ExpiresAtUtc = "ExpiresAtUtc";
+        private const string ScheduledEnqueueTimeUtc = "ScheduledEnqueueTimeUtc";
+        private const string LockedUntilUtc = "LockedUntilUtc";
         private const string SessionId = "SessionId";
         private const string Path = "Path";
         private const string Mode = "Mode";
@@ -763,15 +764,6 @@ namespace ServiceBusExplorer.Controls
                 };
                 messagesDataGridView.Columns.Add(textBoxColumn);
 
-                // Create the ScheduledEnqueueTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ScheduledEnqueueTimeUtc,
-                    Name = ScheduledEnqueueTimeUtc,
-                    Width = 120
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -786,6 +778,24 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = ExpiresAtUtc,
                     Name = ExpiresAtUtc,
+                    Width = 120
+                };
+                messagesDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
+                    Width = 120
+                };
+                messagesDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the LockedUntilUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = LockedUntilUtc,
+                    Name = LockedUntilUtc,
                     Width = 120
                 };
                 messagesDataGridView.Columns.Add(textBoxColumn);
@@ -914,15 +924,6 @@ namespace ServiceBusExplorer.Controls
                 };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
 
-                // Create the ScheduledEnqueueTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ScheduledEnqueueTimeUtc,
-                    Name = ScheduledEnqueueTimeUtc,
-                    Width = 120
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -937,6 +938,24 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = ExpiresAtUtc,
                     Name = ExpiresAtUtc,
+                    Width = 120
+                };
+                deadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
+                    Width = 120
+                };
+                deadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the LockedUntilUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = LockedUntilUtc,
+                    Name = LockedUntilUtc,
                     Width = 120
                 };
                 deadletterDataGridView.Columns.Add(textBoxColumn);
@@ -994,15 +1013,6 @@ namespace ServiceBusExplorer.Controls
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-                // Create the Label column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
                 // Create the ScheduledEnqueueTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -1026,6 +1036,24 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = ExpiresAtUtc,
                     Name = ExpiresAtUtc,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the Label column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = Label,
+                    Name = Label,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the LockedUntilUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = LockedUntilUtc,
+                    Name = LockedUntilUtc,
                     Width = 120
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
@@ -3245,7 +3273,7 @@ namespace ServiceBusExplorer.Controls
             var cell = messagesDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
 
-            if (e.Value is DateTime dateTime)
+            if (e.Value is DateTime dateTime && dateTime != default)
             {
                 e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
             }
@@ -3256,7 +3284,7 @@ namespace ServiceBusExplorer.Controls
             var cell = deadletterDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
 
-            if (e.Value is DateTime dateTime)
+            if (e.Value is DateTime dateTime && dateTime != default)
             {
                 e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
             }
@@ -3267,7 +3295,7 @@ namespace ServiceBusExplorer.Controls
             var cell = transferDeadletterDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
             cell.ToolTipText = DoubleClickMessage;
 
-            if (e.Value is DateTime dateTime)
+            if (e.Value is DateTime dateTime && dateTime != default)
             {
                 e.Value = dateTime.ToString(CultureInfo.CurrentCulture);
             }
