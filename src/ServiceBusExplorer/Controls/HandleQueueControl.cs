@@ -1013,15 +1013,6 @@ namespace ServiceBusExplorer.Controls
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-                // Create the ScheduledEnqueueTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ScheduledEnqueueTimeUtc,
-                    Name = ScheduledEnqueueTimeUtc,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
                 // Create the EnqueuedTimeUtc column
                 textBoxColumn = new DataGridViewTextBoxColumn
                 {
@@ -1045,6 +1036,15 @@ namespace ServiceBusExplorer.Controls
                 {
                     DataPropertyName = Label,
                     Name = Label,
+                    Width = 120
+                };
+                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+                // Create the ScheduledEnqueueTimeUtc column
+                textBoxColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = ScheduledEnqueueTimeUtc,
+                    Name = ScheduledEnqueueTimeUtc,
                     Width = 120
                 };
                 transferDeadletterDataGridView.Columns.Add(textBoxColumn);
