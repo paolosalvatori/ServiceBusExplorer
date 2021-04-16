@@ -1904,6 +1904,11 @@ namespace ServiceBusExplorer.Forms
 
         private void serviceBusTreeView_KeyDown(object sender, KeyEventArgs keyEventArgs)
         {
+            if (keyEventArgs.Modifiers == (Keys.Alt | Keys.Control) && keyEventArgs.KeyCode == Keys.Delete) // ignore three-finger salute
+            {
+                return;
+            }
+
             switch (keyEventArgs.KeyCode)
             {
                 case Keys.Delete: // purge entity
