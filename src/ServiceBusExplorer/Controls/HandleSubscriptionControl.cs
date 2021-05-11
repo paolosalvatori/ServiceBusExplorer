@@ -370,7 +370,7 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
         public async Task PurgeAllMessagesAsync()
