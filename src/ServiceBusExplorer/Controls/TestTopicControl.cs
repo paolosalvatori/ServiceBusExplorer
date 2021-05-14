@@ -602,10 +602,10 @@ namespace ServiceBusExplorer.Controls
                     }
                     if (!cts.IsCancellationRequested)
                     {
-                        Invoke((MethodInvoker) delegate
+                        Invoke((MethodInvoker) async delegate
                         {
                             btnStart.Text = StartCaption;
-                            MainForm.SingletonMainForm.RefreshSelectedEntity();
+                            await MainForm.SingletonMainForm.RefreshSelectedEntity();
                         });
                     }
                 };
