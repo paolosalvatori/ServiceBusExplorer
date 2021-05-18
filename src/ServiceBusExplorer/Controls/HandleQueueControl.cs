@@ -1304,7 +1304,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    MessageReceiver messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1387,7 +1387,7 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
-                    MessageReceiver messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -1415,7 +1415,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    MessageReceiver messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
                     
                     var totalRetrieved = 0;
                     int retrieved;
