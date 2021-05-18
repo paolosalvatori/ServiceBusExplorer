@@ -148,8 +148,8 @@ namespace ServiceBusExplorer
         private const string MessagePropertyFormat = " - Key=[{0}] Value=[{1}]";
         private const string MessageDeferred = " - The message was deferred.";
         private const string ReadMessageDeferred = " - Read deferred message.";
-        private const string MessageMovedToDeadLetterQueue = " - The message was moved to the DeadLetter queue.";
-        private const string MessageReadFromDeadLetterQueue = " - The message was read from the DeadLetter queue.";
+        private const string MessageMovedToDeadLetterQueue = " - The message was moved to the Dead-letter queue.";
+        private const string MessageReadFromDeadLetterQueue = " - The message was read from the Dead-letter queue.";
         private const string NoMessageWasReceived = "Receiver[{0}]: no message was received.";
         private const string SenderStatisticsHeader = "Sender[{0}]:";
         private const string SenderStatisticsLine1 = " - Message Count=[{0}] Messages Sent/Sec=[{1:F1}] Total Elapsed Time (ms)=[{2}]";
@@ -3009,7 +3009,7 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            
+
                             await Task.Delay(thinkTime);
                         }
                     }
@@ -3077,7 +3077,7 @@ namespace ServiceBusExplorer
                         if (senderThinkTime)
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
-                            
+
                             await Task.Delay(thinkTime);
                         }
                     }
@@ -3995,7 +3995,7 @@ namespace ServiceBusExplorer
             {
                 return;
             }
-            
+
             for (var i = 0; i < messageList.Count; i++)
             {
                 try
@@ -4233,7 +4233,7 @@ namespace ServiceBusExplorer
                             var stopwatch = Stopwatch.StartNew();
                             var messageEnumerable = messageReceiver.ReceiveBatch(batchSize, TimeSpan.FromSeconds(timeout));
                             stopwatch.Stop();
-                            
+
                             messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
                             if (messageInspector != null)
                             {
@@ -4251,7 +4251,7 @@ namespace ServiceBusExplorer
                                     stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
-                                    
+
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -4366,7 +4366,7 @@ namespace ServiceBusExplorer
                                     var stopwatch = Stopwatch.StartNew();
                                     messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
                                     stopwatch.Stop();
-                                    
+
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                     {
                                         maximumCompleteTime = stopwatch.ElapsedMilliseconds;
@@ -5305,25 +5305,47 @@ namespace ServiceBusExplorer
 
         public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)
         {
-            var administrationClient = new ServiceBusAdministrationClient(connectionString);
+            return (await this.GetQueueProperties(new List<QueueDescription>() { oldQueueDescription }).ConfigureAwait(false)).FirstOrDefault();
+        }
 
-            return await administrationClient.GetQueueAsync(oldQueueDescription.Path);
+        public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
+        {
+            var administrationClient = new ServiceBusAdministrationClient(connectionString);
+            var result = new List<QueueProperties>();
+
+            foreach(QueueDescription oldQueueDescription in oldQueueDescriptions)
+            {
+               result.Add(await administrationClient.GetQueueAsync(oldQueueDescription.Path).ConfigureAwait(false));
+            }
+
+            return result;
         }
 
         public async Task<SubscriptionProperties> GetSubscriptionProperties(SubscriptionWrapper oldSubscriptionWrapper)
         {
+            return (await this.GetSubscriptionProperties(new List<SubscriptionWrapper>() { oldSubscriptionWrapper }).ConfigureAwait(false)).FirstOrDefault();
+        }
+
+        public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
+        {
             var managementClient = new ServiceBusAdministrationClient(connectionString);
+            var result = new List<SubscriptionProperties>();
 
-            var topicResponse = await managementClient.GetTopicAsync(
-                oldSubscriptionWrapper.TopicDescription.Path)
-                .ConfigureAwait(false);
+            foreach (SubscriptionWrapper oldSubscriptionWrapper in oldSubscriptionWrappers)
+            {
+                var topicResponse = await managementClient.GetTopicAsync(
+                    oldSubscriptionWrapper.TopicDescription.Path)
+                    .ConfigureAwait(false);
 
-            var subscriptionResponse = await managementClient.GetSubscriptionAsync(
-                topicResponse.Value.Name,
-                oldSubscriptionWrapper.SubscriptionDescription.Name)
-                .ConfigureAwait(false);
+                var subscriptionResponse = await managementClient.GetSubscriptionAsync(
+                    topicResponse.Value.Name,
+                    oldSubscriptionWrapper.SubscriptionDescription.Name)
+                    .ConfigureAwait(false);
 
-            return subscriptionResponse.Value;
+                result.Add(subscriptionResponse.Value);
+            }
+
+            return result;
         }
         #endregion
 

@@ -135,8 +135,8 @@ namespace ServiceBusExplorer.Controls
         private const string EnableReceiverCommitTooltip = "Enable transaction commit for message receivers.";
         private const string EnableMessageIdUpdateTooltip = "Enable automatic message id update.";
         private const string OneSessionPerSenderTaskTooltip = "Use one session per sender task.";
-        private const string EnableMoveToDeadLetterTooltip = "When this option is enabled, all received messages are moved to the DeadLetter queue.";
-        private const string EnableReadFromDeadLetterTooltip = "When this option is enabled, the receivers attempts to read messages from the DeadLetter queue.";
+        private const string EnableMoveToDeadLetterTooltip = "When this option is enabled, all received messages are moved to the Dead-letter queue.";
+        private const string EnableReadFromDeadLetterTooltip = "When this option is enabled, the receivers attempts to read messages from the Dead-letter queue.";
         private const string EnableCreateNewMessagingFactoryForSender = "Creating a new messaging factory for each sender task";
         private const string EnableCreateNewMessagingFactoryForReceiver = "Creating a new messaging factory for each receiver task";
 
@@ -602,10 +602,10 @@ namespace ServiceBusExplorer.Controls
                     }
                     if (!cts.IsCancellationRequested)
                     {
-                        Invoke((MethodInvoker) delegate
+                        Invoke((MethodInvoker) async delegate
                         {
                             btnStart.Text = StartCaption;
-                            MainForm.SingletonMainForm.RefreshSelectedEntity();
+                            await MainForm.SingletonMainForm.RefreshSelectedEntity();
                         });
                     }
                 };

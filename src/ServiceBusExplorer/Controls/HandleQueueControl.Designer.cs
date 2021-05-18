@@ -18,6 +18,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HandleQueueControl));
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
+            this.btnTransferDeadletterQueue = new System.Windows.Forms.Button();
             this.btnChangeStatus = new System.Windows.Forms.Button();
             this.btnCancelUpdate = new System.Windows.Forms.Button();
             this.btnCreateDelete = new System.Windows.Forms.Button();
@@ -135,9 +137,7 @@
             this.deadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.btnPurgeDeadletterQueueMessages = new System.Windows.Forms.Button();
             this.btnPurgeMessages = new System.Windows.Forms.Button();
-            this.btnTransferDeadletterQueue = new System.Windows.Forms.Button();
             this.transferDeadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.transferDeadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitTransferDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -244,6 +244,44 @@
             ((System.ComponentModel.ISupportInitialize)(this.transferDeadletterBindingSource)).BeginInit();
             this.transferDeadletterContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // btnPurgeDeadletterQueueMessages
+            // 
+            this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(279, 504);
+            this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
+            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(72, 24);
+            this.btnPurgeDeadletterQueueMessages.TabIndex = 14;
+            this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
+            this.toolTip.SetToolTip(this.btnPurgeDeadletterQueueMessages, "Purge Dead-letter Queue");
+            this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
+            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
+            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // btnTransferDeadletterQueue
+            // 
+            this.btnTransferDeadletterQueue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTransferDeadletterQueue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnTransferDeadletterQueue.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnTransferDeadletterQueue.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnTransferDeadletterQueue.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnTransferDeadletterQueue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTransferDeadletterQueue.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnTransferDeadletterQueue.Location = new System.Drawing.Point(597, 504);
+            this.btnTransferDeadletterQueue.Name = "btnTransferDeadletterQueue";
+            this.btnTransferDeadletterQueue.Size = new System.Drawing.Size(72, 24);
+            this.btnTransferDeadletterQueue.TabIndex = 16;
+            this.btnTransferDeadletterQueue.Text = "Transf DLQ";
+            this.toolTip.SetToolTip(this.btnTransferDeadletterQueue, "Transfer Dead-letter Queue");
+            this.btnTransferDeadletterQueue.UseVisualStyleBackColor = false;
+            this.btnTransferDeadletterQueue.Click += new System.EventHandler(this.btnTransferDlq_Click);
             // 
             // btnChangeStatus
             // 
@@ -375,7 +413,7 @@
             this.grouperAutoDeleteOnIdle.GroupTitle = "Auto Delete On Idle";
             this.grouperAutoDeleteOnIdle.Location = new System.Drawing.Point(328, 8);
             this.grouperAutoDeleteOnIdle.Name = "grouperAutoDeleteOnIdle";
-            this.grouperAutoDeleteOnIdle.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperAutoDeleteOnIdle.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperAutoDeleteOnIdle.PaintGroupBox = true;
             this.grouperAutoDeleteOnIdle.RoundCorners = 4;
             this.grouperAutoDeleteOnIdle.ShadowColor = System.Drawing.Color.DarkGray;
@@ -387,6 +425,7 @@
             // tsAutoDeleteOnIdle
             // 
             this.tsAutoDeleteOnIdle.Location = new System.Drawing.Point(13, 25);
+            this.tsAutoDeleteOnIdle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tsAutoDeleteOnIdle.Name = "tsAutoDeleteOnIdle";
             this.tsAutoDeleteOnIdle.Size = new System.Drawing.Size(273, 42);
             this.tsAutoDeleteOnIdle.TabIndex = 26;
@@ -410,7 +449,7 @@
             this.grouperQueueInformation.GroupTitle = "Queue Information";
             this.grouperQueueInformation.Location = new System.Drawing.Point(640, 8);
             this.grouperQueueInformation.Name = "grouperQueueInformation";
-            this.grouperQueueInformation.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperQueueInformation.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperQueueInformation.PaintGroupBox = true;
             this.grouperQueueInformation.RoundCorners = 4;
             this.grouperQueueInformation.ShadowColor = System.Drawing.Color.DarkGray;
@@ -465,7 +504,7 @@
             this.groupergrouperDefaultMessageTimeToLive.GroupTitle = "Default Message Time To Live";
             this.groupergrouperDefaultMessageTimeToLive.Location = new System.Drawing.Point(328, 96);
             this.groupergrouperDefaultMessageTimeToLive.Name = "groupergrouperDefaultMessageTimeToLive";
-            this.groupergrouperDefaultMessageTimeToLive.Padding = new System.Windows.Forms.Padding(20);
+            this.groupergrouperDefaultMessageTimeToLive.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.groupergrouperDefaultMessageTimeToLive.PaintGroupBox = true;
             this.groupergrouperDefaultMessageTimeToLive.RoundCorners = 4;
             this.groupergrouperDefaultMessageTimeToLive.ShadowColor = System.Drawing.Color.DarkGray;
@@ -477,6 +516,7 @@
             // tsDefaultMessageTimeToLive
             // 
             this.tsDefaultMessageTimeToLive.Location = new System.Drawing.Point(13, 25);
+            this.tsDefaultMessageTimeToLive.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tsDefaultMessageTimeToLive.Name = "tsDefaultMessageTimeToLive";
             this.tsDefaultMessageTimeToLive.Size = new System.Drawing.Size(273, 42);
             this.tsDefaultMessageTimeToLive.TabIndex = 27;
@@ -499,7 +539,7 @@
             this.grouperQueueSettings.GroupTitle = "Queue Settings";
             this.grouperQueueSettings.Location = new System.Drawing.Point(328, 272);
             this.grouperQueueSettings.Name = "grouperQueueSettings";
-            this.grouperQueueSettings.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperQueueSettings.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperQueueSettings.PaintGroupBox = true;
             this.grouperQueueSettings.RoundCorners = 4;
             this.grouperQueueSettings.ShadowColor = System.Drawing.Color.DarkGray;
@@ -517,7 +557,7 @@
             this.checkedListBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.checkedListBox.FormattingEnabled = true;
             this.checkedListBox.Location = new System.Drawing.Point(16, 32);
-            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8);
+            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
             this.checkedListBox.Name = "checkedListBox";
             this.checkedListBox.Size = new System.Drawing.Size(264, 109);
             this.checkedListBox.TabIndex = 0;
@@ -554,7 +594,7 @@
             this.grouperQueueProperties.GroupTitle = "Queue Properties";
             this.grouperQueueProperties.Location = new System.Drawing.Point(16, 184);
             this.grouperQueueProperties.Name = "grouperQueueProperties";
-            this.grouperQueueProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperQueueProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperQueueProperties.PaintGroupBox = true;
             this.grouperQueueProperties.RoundCorners = 4;
             this.grouperQueueProperties.ShadowColor = System.Drawing.Color.DarkGray;
@@ -587,9 +627,9 @@
             this.lblForwardDeadLetteredMessagesTo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblForwardDeadLetteredMessagesTo.Location = new System.Drawing.Point(16, 208);
             this.lblForwardDeadLetteredMessagesTo.Name = "lblForwardDeadLetteredMessagesTo";
-            this.lblForwardDeadLetteredMessagesTo.Size = new System.Drawing.Size(186, 13);
+            this.lblForwardDeadLetteredMessagesTo.Size = new System.Drawing.Size(182, 13);
             this.lblForwardDeadLetteredMessagesTo.TabIndex = 37;
-            this.lblForwardDeadLetteredMessagesTo.Text = "Forward Dead Lettered Messages To:";
+            this.lblForwardDeadLetteredMessagesTo.Text = "Forward Dead-lettered Messages To:";
             // 
             // txtForwardDeadLetteredMessagesTo
             // 
@@ -760,7 +800,7 @@
             this.grouperLockDuration.GroupTitle = "Lock Duration";
             this.grouperLockDuration.Location = new System.Drawing.Point(328, 184);
             this.grouperLockDuration.Name = "grouperLockDuration";
-            this.grouperLockDuration.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperLockDuration.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperLockDuration.PaintGroupBox = true;
             this.grouperLockDuration.RoundCorners = 4;
             this.grouperLockDuration.ShadowColor = System.Drawing.Color.DarkGray;
@@ -772,6 +812,7 @@
             // tsLockDuration
             // 
             this.tsLockDuration.Location = new System.Drawing.Point(13, 25);
+            this.tsLockDuration.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tsLockDuration.Name = "tsLockDuration";
             this.tsLockDuration.Size = new System.Drawing.Size(273, 42);
             this.tsLockDuration.TabIndex = 28;
@@ -792,7 +833,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Duplicate Detection History Time Window";
             this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(16, 96);
             this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
-            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
             this.grouperDuplicateDetectionHistoryTimeWindow.RoundCorners = 4;
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowColor = System.Drawing.Color.DarkGray;
@@ -804,6 +845,7 @@
             // tsDuplicateDetectionHistoryTimeWindow
             // 
             this.tsDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(13, 25);
+            this.tsDuplicateDetectionHistoryTimeWindow.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tsDuplicateDetectionHistoryTimeWindow.Name = "tsDuplicateDetectionHistoryTimeWindow";
             this.tsDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(273, 42);
             this.tsDuplicateDetectionHistoryTimeWindow.TabIndex = 29;
@@ -825,7 +867,7 @@
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(16, 8);
             this.grouperPath.Name = "grouperPath";
-            this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperPath.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperPath.PaintGroupBox = true;
             this.grouperPath.RoundCorners = 4;
             this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
@@ -884,7 +926,7 @@
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(16, 8);
             this.grouperAuthorizationRuleList.Name = "grouperAuthorizationRuleList";
-            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperAuthorizationRuleList.PaintGroupBox = true;
             this.grouperAuthorizationRuleList.RoundCorners = 4;
             this.grouperAuthorizationRuleList.ShadowColor = System.Drawing.Color.DarkGray;
@@ -930,7 +972,7 @@
             this.tabPageMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageMessages.Location = new System.Drawing.Point(4, 22);
             this.tabPageMessages.Name = "tabPageMessages";
-            this.tabPageMessages.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageMessages.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPageMessages.Size = new System.Drawing.Size(968, 454);
             this.tabPageMessages.TabIndex = 5;
             this.tabPageMessages.Text = "Messages";
@@ -971,7 +1013,7 @@
             // 
             this.messageMainSplitContainer.Panel2.Controls.Add(this.grouperMessageText);
             this.messageMainSplitContainer.Size = new System.Drawing.Size(606, 432);
-            this.messageMainSplitContainer.SplitterDistance = 212;
+            this.messageMainSplitContainer.SplitterDistance = 211;
             this.messageMainSplitContainer.SplitterWidth = 8;
             this.messageMainSplitContainer.TabIndex = 0;
             // 
@@ -993,13 +1035,13 @@
             this.grouperMessageList.GroupTitle = "Message List";
             this.grouperMessageList.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageList.Name = "grouperMessageList";
-            this.grouperMessageList.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperMessageList.PaintGroupBox = true;
             this.grouperMessageList.RoundCorners = 4;
             this.grouperMessageList.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageList.ShadowControl = false;
             this.grouperMessageList.ShadowThickness = 1;
-            this.grouperMessageList.Size = new System.Drawing.Size(606, 212);
+            this.grouperMessageList.Size = new System.Drawing.Size(606, 211);
             this.grouperMessageList.TabIndex = 17;
             this.grouperMessageList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageList_CustomPaint);
             // 
@@ -1046,7 +1088,7 @@
             this.messagesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.messagesDataGridView.ShowCellErrors = false;
             this.messagesDataGridView.ShowRowErrors = false;
-            this.messagesDataGridView.Size = new System.Drawing.Size(574, 162);
+            this.messagesDataGridView.Size = new System.Drawing.Size(574, 161);
             this.messagesDataGridView.TabIndex = 0;
             this.messagesDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             this.messagesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_CellDoubleClick);
@@ -1076,13 +1118,13 @@
             this.grouperMessageText.GroupTitle = "Message Text";
             this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageText.Name = "grouperMessageText";
-            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperMessageText.PaintGroupBox = true;
             this.grouperMessageText.RoundCorners = 4;
             this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(606, 212);
+            this.grouperMessageText.Size = new System.Drawing.Size(606, 213);
             this.grouperMessageText.TabIndex = 26;
             this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
             // 
@@ -1136,7 +1178,7 @@
             // 
             this.messagePropertiesSplitContainer.Panel2.Controls.Add(this.grouperMessageCustomProperties);
             this.messagePropertiesSplitContainer.Size = new System.Drawing.Size(314, 432);
-            this.messagePropertiesSplitContainer.SplitterDistance = 212;
+            this.messagePropertiesSplitContainer.SplitterDistance = 211;
             this.messagePropertiesSplitContainer.SplitterWidth = 8;
             this.messagePropertiesSplitContainer.TabIndex = 0;
             // 
@@ -1156,13 +1198,13 @@
             this.grouperMessageSystemProperties.GroupTitle = "Message System Properties";
             this.grouperMessageSystemProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageSystemProperties.Name = "grouperMessageSystemProperties";
-            this.grouperMessageSystemProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageSystemProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperMessageSystemProperties.PaintGroupBox = true;
             this.grouperMessageSystemProperties.RoundCorners = 4;
             this.grouperMessageSystemProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageSystemProperties.ShadowControl = false;
             this.grouperMessageSystemProperties.ShadowThickness = 1;
-            this.grouperMessageSystemProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperMessageSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperMessageSystemProperties.TabIndex = 20;
             this.grouperMessageSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageSystemProperties_CustomPaint);
             // 
@@ -1176,7 +1218,7 @@
             this.messagePropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.messagePropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.messagePropertyGrid.Name = "messagePropertyGrid";
-            this.messagePropertyGrid.Size = new System.Drawing.Size(281, 164);
+            this.messagePropertyGrid.Size = new System.Drawing.Size(281, 163);
             this.messagePropertyGrid.TabIndex = 2;
             this.messagePropertyGrid.ToolbarVisible = false;
             // 
@@ -1196,13 +1238,13 @@
             this.grouperMessageCustomProperties.GroupTitle = "Message Custom Properties";
             this.grouperMessageCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperMessageCustomProperties.Name = "grouperMessageCustomProperties";
-            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperMessageCustomProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperMessageCustomProperties.PaintGroupBox = true;
             this.grouperMessageCustomProperties.RoundCorners = 4;
             this.grouperMessageCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageCustomProperties.ShadowControl = false;
             this.grouperMessageCustomProperties.ShadowThickness = 1;
-            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperMessageCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperMessageCustomProperties.TabIndex = 27;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
@@ -1228,7 +1270,7 @@
             this.tabPageDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDeadletter.Location = new System.Drawing.Point(4, 22);
             this.tabPageDeadletter.Name = "tabPageDeadletter";
-            this.tabPageDeadletter.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDeadletter.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPageDeadletter.Size = new System.Drawing.Size(968, 454);
             this.tabPageDeadletter.TabIndex = 7;
             this.tabPageDeadletter.Text = "Deadletter";
@@ -1269,7 +1311,7 @@
             // 
             this.deadletterMainSplitContainer.Panel2.Controls.Add(this.grouperDeadletterText);
             this.deadletterMainSplitContainer.Size = new System.Drawing.Size(606, 432);
-            this.deadletterMainSplitContainer.SplitterDistance = 212;
+            this.deadletterMainSplitContainer.SplitterDistance = 211;
             this.deadletterMainSplitContainer.SplitterWidth = 8;
             this.deadletterMainSplitContainer.TabIndex = 0;
             // 
@@ -1291,13 +1333,13 @@
             this.grouperDeadletterList.GroupTitle = "Message List";
             this.grouperDeadletterList.Location = new System.Drawing.Point(0, 0);
             this.grouperDeadletterList.Name = "grouperDeadletterList";
-            this.grouperDeadletterList.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDeadletterList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperDeadletterList.PaintGroupBox = true;
             this.grouperDeadletterList.RoundCorners = 4;
             this.grouperDeadletterList.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperDeadletterList.ShadowControl = false;
             this.grouperDeadletterList.ShadowThickness = 1;
-            this.grouperDeadletterList.Size = new System.Drawing.Size(606, 212);
+            this.grouperDeadletterList.Size = new System.Drawing.Size(606, 211);
             this.grouperDeadletterList.TabIndex = 17;
             this.grouperDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterList_CustomPaint);
             // 
@@ -1344,7 +1386,7 @@
             this.deadletterDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.deadletterDataGridView.ShowCellErrors = false;
             this.deadletterDataGridView.ShowRowErrors = false;
-            this.deadletterDataGridView.Size = new System.Drawing.Size(574, 162);
+            this.deadletterDataGridView.Size = new System.Drawing.Size(574, 161);
             this.deadletterDataGridView.TabIndex = 0;
             this.deadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             this.deadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.deadletterDataGridView_CellDoubleClick);
@@ -1374,13 +1416,13 @@
             this.grouperDeadletterText.GroupTitle = "Message Text";
             this.grouperDeadletterText.Location = new System.Drawing.Point(0, 0);
             this.grouperDeadletterText.Name = "grouperDeadletterText";
-            this.grouperDeadletterText.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDeadletterText.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperDeadletterText.PaintGroupBox = true;
             this.grouperDeadletterText.RoundCorners = 4;
             this.grouperDeadletterText.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperDeadletterText.ShadowControl = false;
             this.grouperDeadletterText.ShadowThickness = 1;
-            this.grouperDeadletterText.Size = new System.Drawing.Size(606, 212);
+            this.grouperDeadletterText.Size = new System.Drawing.Size(606, 213);
             this.grouperDeadletterText.TabIndex = 26;
             this.grouperDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterText_CustomPaint);
             // 
@@ -1434,7 +1476,7 @@
             // 
             this.deadletterPropertiesSplitContainer.Panel2.Controls.Add(this.grouperDeadletterCustomProperties);
             this.deadletterPropertiesSplitContainer.Size = new System.Drawing.Size(314, 432);
-            this.deadletterPropertiesSplitContainer.SplitterDistance = 212;
+            this.deadletterPropertiesSplitContainer.SplitterDistance = 211;
             this.deadletterPropertiesSplitContainer.SplitterWidth = 8;
             this.deadletterPropertiesSplitContainer.TabIndex = 0;
             // 
@@ -1454,13 +1496,13 @@
             this.grouperDeadletterSystemProperties.GroupTitle = "Message System Properties";
             this.grouperDeadletterSystemProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperDeadletterSystemProperties.Name = "grouperDeadletterSystemProperties";
-            this.grouperDeadletterSystemProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDeadletterSystemProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperDeadletterSystemProperties.PaintGroupBox = true;
             this.grouperDeadletterSystemProperties.RoundCorners = 4;
             this.grouperDeadletterSystemProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperDeadletterSystemProperties.ShadowControl = false;
             this.grouperDeadletterSystemProperties.ShadowThickness = 1;
-            this.grouperDeadletterSystemProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperDeadletterSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperDeadletterSystemProperties.TabIndex = 20;
             this.grouperDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterSystemProperties_CustomPaint);
             // 
@@ -1474,7 +1516,7 @@
             this.deadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.deadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.deadletterPropertyGrid.Name = "deadletterPropertyGrid";
-            this.deadletterPropertyGrid.Size = new System.Drawing.Size(281, 163);
+            this.deadletterPropertyGrid.Size = new System.Drawing.Size(281, 162);
             this.deadletterPropertyGrid.TabIndex = 1;
             this.deadletterPropertyGrid.ToolbarVisible = false;
             // 
@@ -1494,13 +1536,13 @@
             this.grouperDeadletterCustomProperties.GroupTitle = "Message Custom Properties";
             this.grouperDeadletterCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperDeadletterCustomProperties.Name = "grouperDeadletterCustomProperties";
-            this.grouperDeadletterCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDeadletterCustomProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperDeadletterCustomProperties.PaintGroupBox = true;
             this.grouperDeadletterCustomProperties.RoundCorners = 4;
             this.grouperDeadletterCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperDeadletterCustomProperties.ShadowControl = false;
             this.grouperDeadletterCustomProperties.ShadowThickness = 1;
-            this.grouperDeadletterCustomProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperDeadletterCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperDeadletterCustomProperties.TabIndex = 27;
             this.grouperDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
             // 
@@ -1526,7 +1568,7 @@
             this.tabPageTransferDeadletter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageTransferDeadletter.Location = new System.Drawing.Point(4, 22);
             this.tabPageTransferDeadletter.Name = "tabPageTransferDeadletter";
-            this.tabPageTransferDeadletter.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageTransferDeadletter.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPageTransferDeadletter.Size = new System.Drawing.Size(968, 454);
             this.tabPageTransferDeadletter.TabIndex = 10;
             this.tabPageTransferDeadletter.Text = "Transfer Deadletter";
@@ -1566,7 +1608,7 @@
             // 
             this.transferMainSplitContainer.Panel2.Controls.Add(this.grouperTransferDeadletterText);
             this.transferMainSplitContainer.Size = new System.Drawing.Size(606, 432);
-            this.transferMainSplitContainer.SplitterDistance = 212;
+            this.transferMainSplitContainer.SplitterDistance = 211;
             this.transferMainSplitContainer.SplitterWidth = 8;
             this.transferMainSplitContainer.TabIndex = 0;
             // 
@@ -1587,13 +1629,13 @@
             this.grouperTransferDeadletterList.GroupTitle = "Message List";
             this.grouperTransferDeadletterList.Location = new System.Drawing.Point(0, 0);
             this.grouperTransferDeadletterList.Name = "grouperTransferDeadletterList";
-            this.grouperTransferDeadletterList.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperTransferDeadletterList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperTransferDeadletterList.PaintGroupBox = true;
             this.grouperTransferDeadletterList.RoundCorners = 4;
             this.grouperTransferDeadletterList.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTransferDeadletterList.ShadowControl = false;
             this.grouperTransferDeadletterList.ShadowThickness = 1;
-            this.grouperTransferDeadletterList.Size = new System.Drawing.Size(606, 212);
+            this.grouperTransferDeadletterList.Size = new System.Drawing.Size(606, 211);
             this.grouperTransferDeadletterList.TabIndex = 17;
             this.grouperTransferDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterList_CustomPaint);
             // 
@@ -1625,7 +1667,7 @@
             this.transferDeadletterDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.transferDeadletterDataGridView.ShowCellErrors = false;
             this.transferDeadletterDataGridView.ShowRowErrors = false;
-            this.transferDeadletterDataGridView.Size = new System.Drawing.Size(574, 162);
+            this.transferDeadletterDataGridView.Size = new System.Drawing.Size(574, 161);
             this.transferDeadletterDataGridView.TabIndex = 0;
             this.transferDeadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             this.transferDeadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.transferDeadletterDataGridView_CellDoubleClick);
@@ -1655,13 +1697,13 @@
             this.grouperTransferDeadletterText.GroupTitle = "Message Text";
             this.grouperTransferDeadletterText.Location = new System.Drawing.Point(0, 0);
             this.grouperTransferDeadletterText.Name = "grouperTransferDeadletterText";
-            this.grouperTransferDeadletterText.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperTransferDeadletterText.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperTransferDeadletterText.PaintGroupBox = true;
             this.grouperTransferDeadletterText.RoundCorners = 4;
             this.grouperTransferDeadletterText.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTransferDeadletterText.ShadowControl = false;
             this.grouperTransferDeadletterText.ShadowThickness = 1;
-            this.grouperTransferDeadletterText.Size = new System.Drawing.Size(606, 212);
+            this.grouperTransferDeadletterText.Size = new System.Drawing.Size(606, 213);
             this.grouperTransferDeadletterText.TabIndex = 26;
             this.grouperTransferDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterText_CustomPaint);
             // 
@@ -1715,7 +1757,7 @@
             // 
             this.transferDeadletterPropertiesSplitContainer.Panel2.Controls.Add(this.grouperTransferDeadletterCustomProperties);
             this.transferDeadletterPropertiesSplitContainer.Size = new System.Drawing.Size(314, 432);
-            this.transferDeadletterPropertiesSplitContainer.SplitterDistance = 212;
+            this.transferDeadletterPropertiesSplitContainer.SplitterDistance = 211;
             this.transferDeadletterPropertiesSplitContainer.SplitterWidth = 8;
             this.transferDeadletterPropertiesSplitContainer.TabIndex = 0;
             // 
@@ -1735,13 +1777,13 @@
             this.grouperTransferDeadletterSystemProperties.GroupTitle = "Message System Properties";
             this.grouperTransferDeadletterSystemProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperTransferDeadletterSystemProperties.Name = "grouperTransferDeadletterSystemProperties";
-            this.grouperTransferDeadletterSystemProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperTransferDeadletterSystemProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperTransferDeadletterSystemProperties.PaintGroupBox = true;
             this.grouperTransferDeadletterSystemProperties.RoundCorners = 4;
             this.grouperTransferDeadletterSystemProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTransferDeadletterSystemProperties.ShadowControl = false;
             this.grouperTransferDeadletterSystemProperties.ShadowThickness = 1;
-            this.grouperTransferDeadletterSystemProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperTransferDeadletterSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperTransferDeadletterSystemProperties.TabIndex = 20;
             this.grouperTransferDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterSystemProperties_CustomPaint);
             // 
@@ -1755,7 +1797,7 @@
             this.transferDeadletterPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.transferDeadletterPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.transferDeadletterPropertyGrid.Name = "transferDeadletterPropertyGrid";
-            this.transferDeadletterPropertyGrid.Size = new System.Drawing.Size(281, 164);
+            this.transferDeadletterPropertyGrid.Size = new System.Drawing.Size(281, 163);
             this.transferDeadletterPropertyGrid.TabIndex = 1;
             this.transferDeadletterPropertyGrid.ToolbarVisible = false;
             // 
@@ -1775,13 +1817,13 @@
             this.grouperTransferDeadletterCustomProperties.GroupTitle = "Message Custom Properties";
             this.grouperTransferDeadletterCustomProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperTransferDeadletterCustomProperties.Name = "grouperTransferDeadletterCustomProperties";
-            this.grouperTransferDeadletterCustomProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperTransferDeadletterCustomProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperTransferDeadletterCustomProperties.PaintGroupBox = true;
             this.grouperTransferDeadletterCustomProperties.RoundCorners = 4;
             this.grouperTransferDeadletterCustomProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTransferDeadletterCustomProperties.ShadowControl = false;
             this.grouperTransferDeadletterCustomProperties.ShadowThickness = 1;
-            this.grouperTransferDeadletterCustomProperties.Size = new System.Drawing.Size(314, 212);
+            this.grouperTransferDeadletterCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperTransferDeadletterCustomProperties.TabIndex = 27;
             this.grouperTransferDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
             // 
@@ -1807,7 +1849,7 @@
             this.tabPageSessions.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageSessions.Location = new System.Drawing.Point(4, 22);
             this.tabPageSessions.Name = "tabPageSessions";
-            this.tabPageSessions.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSessions.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPageSessions.Size = new System.Drawing.Size(968, 454);
             this.tabPageSessions.TabIndex = 6;
             this.tabPageSessions.Text = "Sessions";
@@ -1848,7 +1890,7 @@
             // 
             this.sessionMainSplitContainer.Panel2.Controls.Add(this.grouperSessionState);
             this.sessionMainSplitContainer.Size = new System.Drawing.Size(606, 432);
-            this.sessionMainSplitContainer.SplitterDistance = 212;
+            this.sessionMainSplitContainer.SplitterDistance = 211;
             this.sessionMainSplitContainer.SplitterWidth = 8;
             this.sessionMainSplitContainer.TabIndex = 1;
             // 
@@ -1868,13 +1910,13 @@
             this.grouperSessionList.GroupTitle = "Session List";
             this.grouperSessionList.Location = new System.Drawing.Point(0, 0);
             this.grouperSessionList.Name = "grouperSessionList";
-            this.grouperSessionList.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperSessionList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperSessionList.PaintGroupBox = true;
             this.grouperSessionList.RoundCorners = 4;
             this.grouperSessionList.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperSessionList.ShadowControl = false;
             this.grouperSessionList.ShadowThickness = 1;
-            this.grouperSessionList.Size = new System.Drawing.Size(606, 212);
+            this.grouperSessionList.Size = new System.Drawing.Size(606, 211);
             this.grouperSessionList.TabIndex = 20;
             this.grouperSessionList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionList_CustomPaint);
             // 
@@ -1898,7 +1940,7 @@
             this.sessionsDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.sessionsDataGridView.ShowCellErrors = false;
             this.sessionsDataGridView.ShowRowErrors = false;
-            this.sessionsDataGridView.Size = new System.Drawing.Size(571, 162);
+            this.sessionsDataGridView.Size = new System.Drawing.Size(571, 161);
             this.sessionsDataGridView.TabIndex = 0;
             this.sessionsDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             this.sessionsDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.sessionsDataGridView_DataError);
@@ -1925,13 +1967,13 @@
             this.grouperSessionState.GroupTitle = "Session State";
             this.grouperSessionState.Location = new System.Drawing.Point(0, 0);
             this.grouperSessionState.Name = "grouperSessionState";
-            this.grouperSessionState.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperSessionState.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperSessionState.PaintGroupBox = true;
             this.grouperSessionState.RoundCorners = 4;
             this.grouperSessionState.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperSessionState.ShadowControl = false;
             this.grouperSessionState.ShadowThickness = 1;
-            this.grouperSessionState.Size = new System.Drawing.Size(606, 212);
+            this.grouperSessionState.Size = new System.Drawing.Size(606, 213);
             this.grouperSessionState.TabIndex = 26;
             this.grouperSessionState.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionState_CustomPaint);
             // 
@@ -1944,7 +1986,7 @@
             this.txtSessionState.MaxLength = 0;
             this.txtSessionState.Multiline = true;
             this.txtSessionState.Name = "txtSessionState";
-            this.txtSessionState.Size = new System.Drawing.Size(574, 164);
+            this.txtSessionState.Size = new System.Drawing.Size(574, 165);
             this.txtSessionState.TabIndex = 13;
             // 
             // grouperSessionProperties
@@ -1963,7 +2005,7 @@
             this.grouperSessionProperties.GroupTitle = "Session System Properties";
             this.grouperSessionProperties.Location = new System.Drawing.Point(0, 0);
             this.grouperSessionProperties.Name = "grouperSessionProperties";
-            this.grouperSessionProperties.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperSessionProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperSessionProperties.PaintGroupBox = true;
             this.grouperSessionProperties.RoundCorners = 4;
             this.grouperSessionProperties.ShadowColor = System.Drawing.Color.DarkGray;
@@ -2034,7 +2076,7 @@
             this.btnDeadletter.Name = "btnDeadletter";
             this.btnDeadletter.Size = new System.Drawing.Size(72, 24);
             this.btnDeadletter.TabIndex = 4;
-            this.btnDeadletter.Text = "Deadletter";
+            this.btnDeadletter.Text = "Dead-letter";
             this.btnDeadletter.UseVisualStyleBackColor = false;
             this.btnDeadletter.Click += new System.EventHandler(this.btnDeadletter_Click);
             // 
@@ -2050,7 +2092,7 @@
             this.saveSelectedMessagesToolStripMenuItem,
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 164);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -2176,25 +2218,6 @@
             this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
             this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
             // 
-            // btnPurgeDeadletterQueueMessages
-            // 
-            this.btnPurgeDeadletterQueueMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPurgeDeadletterQueueMessages.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPurgeDeadletterQueueMessages.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPurgeDeadletterQueueMessages.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPurgeDeadletterQueueMessages.Location = new System.Drawing.Point(279, 504);
-            this.btnPurgeDeadletterQueueMessages.Name = "btnPurgeDeadletterQueueMessages";
-            this.btnPurgeDeadletterQueueMessages.Size = new System.Drawing.Size(72, 24);
-            this.btnPurgeDeadletterQueueMessages.TabIndex = 14;
-            this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
-            this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
-            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
-            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
             // btnPurgeMessages
             // 
             this.btnPurgeMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -2213,23 +2236,6 @@
             this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
             this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // btnTransferDeadletterQueue
-            // 
-            this.btnTransferDeadletterQueue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTransferDeadletterQueue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnTransferDeadletterQueue.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnTransferDeadletterQueue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTransferDeadletterQueue.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnTransferDeadletterQueue.Location = new System.Drawing.Point(597, 504);
-            this.btnTransferDeadletterQueue.Name = "btnTransferDeadletterQueue";
-            this.btnTransferDeadletterQueue.Size = new System.Drawing.Size(72, 24);
-            this.btnTransferDeadletterQueue.TabIndex = 16;
-            this.btnTransferDeadletterQueue.Text = "Transf DLQ";
-            this.btnTransferDeadletterQueue.UseVisualStyleBackColor = false;
-            this.btnTransferDeadletterQueue.Click += new System.EventHandler(this.btnTransferDlq_Click);
             // 
             // transferDeadletterContextMenuStrip
             // 

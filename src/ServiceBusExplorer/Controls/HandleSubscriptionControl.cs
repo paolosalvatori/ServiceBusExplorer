@@ -96,15 +96,15 @@ namespace ServiceBusExplorer.Controls
         const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
 
         private const string MessagesPeekedFromTheSubscription = "[{0}] messages peeked from the subscription [{1}].";
-        private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the deadletter queue of the subscription [{1}].";
+        private const string MessagesPeekedFromTheDeadletterQueue = "[{0}] messages peeked from the dead-letter queue of the subscription [{1}].";
         private const string MessagesReceivedFromTheSubscription = "[{0}] messages received from the subscription [{1}].";
-        private const string MessagesReceivedFromTheDeadletterQueue = "[{0}] messages received from the deadletter queue of the subscription [{1}].";
+        private const string MessagesReceivedFromTheDeadletterQueue = "[{0}] messages received from the dead-letter queue of the subscription [{1}].";
         private const string SessionsGotFromTheSubscription = "[{0}] sessions retrieved for the subscription [{1}].";
         private const string NoMessageReceivedFromTheSubscription = "The timeout  of [{0}] seconds has expired and no message was retrieved from the subscription [{1}].";
-        private const string NoMessageReceivedFromTheDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the deadletter queue of the subscription [{1}].";
+        private const string NoMessageReceivedFromTheDeadletterQueue = "The timeout  of [{0}] seconds has expired and no message was retrieved from the dead-letter queue of the subscription [{1}].";
 
         private const string RetrieveMessagesFromSubscription = "Retrieve messages from subscription";
-        private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from deadletter queue";
+        private const string RetrieveMessagesFromDeadletterQueue = "Retrieve messages from dead-letter queue";
         private const string SelectEntityDialogTitle = "Select a target Queue or Topic";
         private const string SelectEntityGrouperTitle = "Forward To";
         private const string SelectEntityLabelText = "Target Queue or Topic:";
@@ -126,11 +126,11 @@ namespace ServiceBusExplorer.Controls
         private const string FilterExpressionTooltip = "Gets or sets the filter expression of the default rule.";
         private const string FilterActionTooltip = "Gets or sets the filter action of the default rule.";
         private const string LockDurationTooltip = "Gets or sets the lock duration timespan associated with this queue.";
-        private const string MaxDeliveryCountTooltip = "Gets or sets the maximum delivery count. A message is automatically deadlettered after this number of deliveries.";
+        private const string MaxDeliveryCountTooltip = "Gets or sets the maximum delivery count. A message is automatically dead-lettered after this number of deliveries.";
         private const string UserMetadataTooltip = "Gets or sets the user metadata.";
         private const string AutoDeleteOnIdleTooltip = "Gets or sets the maximum period of idleness after which the queue is auto deleted.";
         private const string ForwardToTooltip = "Gets or sets the path to the recipient to which the message is forwarded.";
-        private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead lettered message is forwarded.";
+        private const string ForwardDeadLetteredMessagesToTooltip = "Gets or sets the path to the recipient to which the dead-lettered message is forwarded.";
 
         //***************************
         // Property Labels
@@ -141,7 +141,7 @@ namespace ServiceBusExplorer.Controls
         private const string UpdatedAt = "Updated At";
         private const string MessageCount = "Message Count";
         private const string ActiveMessageCount = "Active Message Count";
-        private const string DeadletterMessageCount = "DeadLetter Message Count";
+        private const string DeadletterMessageCount = "Dead-letter Message Count";
         private const string ScheduledMessageCount = "Scheduled Message Count";
         private const string TransferMessageCount = "Transfer Message Count";
         private const string TransferDeadLetterMessageCount = "Transfer DL Message Count";
@@ -363,64 +363,37 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        public async Task<long> PurgeMessagesAsync()
+        public async Task PurgeMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?"))
-            {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
-            }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var subscriptionProperties = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionProperties);
-                var count = await purger.Purge();
-                stopwatch.Stop();
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                    subscriptionWrapper.SubscriptionDescription.Name);
-                writeToLog($"[{count}] messages have been purged from the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
-                return count;
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
-        public async Task<long> PurgeDeadletterQueueMessagesAsync()
+        public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            using (var deleteForm = new DeleteForm($"Would you like to purge the deadletter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?"))
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+        }
+
+        public async Task PurgeAllMessagesAsync()
+        {
+            await this.DoPurge(PurgeStrategies.All, $"Would you like to purge all (messages and dead-lettered messages) from the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+        }
+
+        private async Task DoPurge(PurgeStrategies purgeStrategy, string deleteConfirmation)
+        {
+            if (!DeleteForm.ShowAndWaitUserConfirmation(this, deleteConfirmation))
             {
-                if (deleteForm.ShowDialog() != DialogResult.OK)
-                {
-                    return 0;
-                }
+                return;
             }
-            try
-            {
-                Application.UseWaitCursor = true;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var subscriptionWrapper2 = await serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper);
-                var purger = new ServiceBusPurger(serviceBusHelper.GetServiceBusHelper2(), subscriptionWrapper2);
-                var count = await purger.Purge(purgeDeadLetterQueueInstead: true);
-                stopwatch.Stop();
-                var entityPath = SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                           subscriptionWrapper.SubscriptionDescription.Name);
-                MainForm.SingletonMainForm.RefreshSelectedEntity();
-                writeToLog($"[{count}] messages have been purged from the deadletter queue of the [{entityPath}] subscription in [{stopwatch.ElapsedMilliseconds/1000}] seconds.");
-                return count;
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
-            }
+
+            Application.UseWaitCursor = true;
+
+            TopicSubscriptionServiceBusPurger purger = new TopicSubscriptionServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+            purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
+            purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
+            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper));
+
+            await MainForm.SingletonMainForm.RefreshSelectedEntity();
+            Application.UseWaitCursor = false;
         }
         #endregion
 
@@ -1404,7 +1377,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     subscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
@@ -1532,7 +1505,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     subscriptionWrapper.SubscriptionDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnFilterEvaluationExceptions = checkedListBox.GetItemChecked(EnableDeadLetteringOnFilterEvaluationExceptionsIndex);
                     subscriptionWrapper.SubscriptionDescription.EnableDeadLetteringOnMessageExpiration = checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationIndex);
@@ -2242,12 +2215,12 @@ namespace ServiceBusExplorer.Controls
             if (messages.Count() == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"deadletter subqueue for the {subscriptionWrapper.SubscriptionDescription.Name} subscription?";
+                    $"dead-letter subqueue for the {subscriptionWrapper.SubscriptionDescription.Name} subscription?";
             }
             else
             {
                 confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"deadletter subqueue for {subscriptionWrapper.SubscriptionDescription.Name} subscription?";
+                    $"dead-letter subqueue for {subscriptionWrapper.SubscriptionDescription.Name} subscription?";
             }
 
             using (var deleteForm = new DeleteForm(confirmationText))
@@ -2291,7 +2264,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = false;
             }
 
-            MainForm.SingletonMainForm.RefreshSelectedEntity();
+            await MainForm.SingletonMainForm.RefreshSelectedEntity();
         }
 
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -2319,7 +2292,7 @@ namespace ServiceBusExplorer.Controls
             deadletterDataGridView_CellDoubleClick(deadletterDataGridView, new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
         }
 
-        private void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2344,8 +2317,8 @@ namespace ServiceBusExplorer.Controls
 
             // Rather than getting the updated entities from the forms we refresh all queues and topics to keep things 
             // simple.
-            MainForm.SingletonMainForm.RefreshQueues();
-            MainForm.SingletonMainForm.RefreshTopics();
+            await MainForm.SingletonMainForm.RefreshQueues();
+            await MainForm.SingletonMainForm.RefreshTopics();
         }
 
         private void pictFindMessagesByDate_Click(object sender, EventArgs e)
