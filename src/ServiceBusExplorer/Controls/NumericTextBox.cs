@@ -82,19 +82,47 @@ namespace ServiceBusExplorer.Controls
 
         public bool IsFilled => !string.IsNullOrWhiteSpace(Text);
 
-        public bool IsValidIntegerValue => int.TryParse(Text, out _);
+        public bool IsValidIntegerValue => TryParseInt(out _);
 
-        public int IntegerValue => int.Parse(Text);
+        public int IntegerValue => TryParseInt(out var value) ? value : throw new FormatException($"Unable to parse value {Text} to integer value");
 
-        public bool IsValidDecimalValue => decimal.TryParse(Text, out _);
+        public bool IsValidDecimalValue => TryParseDecimal(out _);
 
-        public decimal DecimalValue => decimal.Parse(Text);
+        public decimal DecimalValue => TryParseDecimal(out var value) ? value : throw new FormatException($"Unable to parse value {Text} to decimal value");
 
         public bool AllowSpace { set; get; }
 
         public bool AllowDecimal { set; get; }
 
         public bool AllowNegative { set; get; }
+
+        public bool IsZeroWhenEmpty { get; set; }
+
+        #endregion
+
+        #region Private methods
+
+        private bool TryParseInt(out int value)
+        {
+            if (!IsFilled && IsZeroWhenEmpty)
+            {
+                value = 0;
+                return true;
+            }
+
+            return int.TryParse(Text, out value);
+        }
+
+        private bool TryParseDecimal(out decimal value)
+        {
+            if (!IsFilled && IsZeroWhenEmpty)
+            {
+                value = 0;
+                return true;
+            }
+
+            return decimal.TryParse(Text, out value);
+        }
 
         #endregion
     }
