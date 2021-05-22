@@ -437,11 +437,6 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                if (messageTabControl.SelectedIndex == MessageTabPage && string.IsNullOrWhiteSpace(txtMessageText.Text))
-                {
-                    writeToLog(MessageCannotBeNull);
-                    return false;
-                }
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
                     !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
