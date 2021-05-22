@@ -380,7 +380,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
-            this.mainTabControl.TabIndex = 4;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             this.mainTabControl.SelectedIndexChanged += new System.EventHandler(this.mainTabControl_SelectedIndexChanged);
             // 
@@ -427,7 +427,7 @@
             this.grouperNotificationHubInformation.ShadowControl = false;
             this.grouperNotificationHubInformation.ShadowThickness = 1;
             this.grouperNotificationHubInformation.Size = new System.Drawing.Size(296, 325);
-            this.grouperNotificationHubInformation.TabIndex = 36;
+            this.grouperNotificationHubInformation.TabIndex = 7;
             // 
             // propertyListView
             // 
@@ -485,7 +485,7 @@
             this.grouperUserMetadata.ShadowControl = false;
             this.grouperUserMetadata.ShadowThickness = 1;
             this.grouperUserMetadata.Size = new System.Drawing.Size(304, 88);
-            this.grouperUserMetadata.TabIndex = 34;
+            this.grouperUserMetadata.TabIndex = 3;
             // 
             // txtUserMetadata
             // 
@@ -495,7 +495,7 @@
             this.txtUserMetadata.Location = new System.Drawing.Point(20, 48);
             this.txtUserMetadata.Name = "txtUserMetadata";
             this.txtUserMetadata.Size = new System.Drawing.Size(232, 20);
-            this.txtUserMetadata.TabIndex = 28;
+            this.txtUserMetadata.TabIndex = 2;
             // 
             // lblUserMetadata
             // 
@@ -504,7 +504,7 @@
             this.lblUserMetadata.Location = new System.Drawing.Point(20, 32);
             this.lblUserMetadata.Name = "lblUserMetadata";
             this.lblUserMetadata.Size = new System.Drawing.Size(142, 13);
-            this.lblUserMetadata.TabIndex = 30;
+            this.lblUserMetadata.TabIndex = 1;
             this.lblUserMetadata.Text = "Notification Hub Description:";
             // 
             // btnOpenDescriptionForm
@@ -519,7 +519,7 @@
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(260, 48);
             this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
             this.btnOpenDescriptionForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenDescriptionForm.TabIndex = 29;
+            this.btnOpenDescriptionForm.TabIndex = 0;
             this.btnOpenDescriptionForm.Text = "...";
             this.btnOpenDescriptionForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenDescriptionForm.UseVisualStyleBackColor = false;
@@ -553,7 +553,7 @@
             this.grouperGoogleCloudMessaggingSettings.ShadowControl = false;
             this.grouperGoogleCloudMessaggingSettings.ShadowThickness = 1;
             this.grouperGoogleCloudMessaggingSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperGoogleCloudMessaggingSettings.TabIndex = 33;
+            this.grouperGoogleCloudMessaggingSettings.TabIndex = 4;
             // 
             // btnClearGcmNotification
             // 
@@ -567,7 +567,7 @@
             this.btnClearGcmNotification.Location = new System.Drawing.Point(216, 124);
             this.btnClearGcmNotification.Name = "btnClearGcmNotification";
             this.btnClearGcmNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearGcmNotification.TabIndex = 36;
+            this.btnClearGcmNotification.TabIndex = 4;
             this.btnClearGcmNotification.Text = "Clear";
             this.btnClearGcmNotification.UseVisualStyleBackColor = false;
             this.btnClearGcmNotification.Click += new System.EventHandler(this.btnClearGcmNotification_Click);
@@ -581,7 +581,7 @@
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
             this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
-            this.txtGcmEndpoint.TabIndex = 27;
+            this.txtGcmEndpoint.TabIndex = 3;
             // 
             // lblGcmEndpoint
             // 
@@ -590,7 +590,7 @@
             this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 76);
             this.lblGcmEndpoint.Name = "lblGcmEndpoint";
             this.lblGcmEndpoint.Size = new System.Drawing.Size(79, 13);
-            this.lblGcmEndpoint.TabIndex = 26;
+            this.lblGcmEndpoint.TabIndex = 2;
             this.lblGcmEndpoint.Text = "GCM Endpoint:";
             // 
             // lblGcmApiKey
@@ -600,7 +600,7 @@
             this.lblGcmApiKey.Location = new System.Drawing.Point(16, 32);
             this.lblGcmApiKey.Name = "lblGcmApiKey";
             this.lblGcmApiKey.Size = new System.Drawing.Size(75, 13);
-            this.lblGcmApiKey.TabIndex = 25;
+            this.lblGcmApiKey.TabIndex = 0;
             this.lblGcmApiKey.Text = "GCM API Key:";
             // 
             // txtGcmApiKey
@@ -612,7 +612,7 @@
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
             this.txtGcmApiKey.Name = "txtGcmApiKey";
             this.txtGcmApiKey.Size = new System.Drawing.Size(272, 20);
-            this.txtGcmApiKey.TabIndex = 0;
+            this.txtGcmApiKey.TabIndex = 1;
             // 
             // grouperWindowsPhoneNotificationSettings
             // 
@@ -643,7 +643,7 @@
             this.grouperWindowsPhoneNotificationSettings.ShadowControl = false;
             this.grouperWindowsPhoneNotificationSettings.ShadowThickness = 1;
             this.grouperWindowsPhoneNotificationSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperWindowsPhoneNotificationSettings.TabIndex = 32;
+            this.grouperWindowsPhoneNotificationSettings.TabIndex = 2;
             // 
             // btnClearMpnsNotification
             // 
@@ -657,7 +657,7 @@
             this.btnClearMpnsNotification.Location = new System.Drawing.Point(216, 124);
             this.btnClearMpnsNotification.Name = "btnClearMpnsNotification";
             this.btnClearMpnsNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearMpnsNotification.TabIndex = 35;
+            this.btnClearMpnsNotification.TabIndex = 4;
             this.btnClearMpnsNotification.Text = "Clear";
             this.btnClearMpnsNotification.UseVisualStyleBackColor = false;
             this.btnClearMpnsNotification.Click += new System.EventHandler(this.btnClearMpnsNotification_Click);
@@ -669,7 +669,7 @@
             this.checkBoxEnableUnauthenticatedMpns.Location = new System.Drawing.Point(16, 92);
             this.checkBoxEnableUnauthenticatedMpns.Name = "checkBoxEnableUnauthenticatedMpns";
             this.checkBoxEnableUnauthenticatedMpns.Size = new System.Drawing.Size(224, 17);
-            this.checkBoxEnableUnauthenticatedMpns.TabIndex = 29;
+            this.checkBoxEnableUnauthenticatedMpns.TabIndex = 2;
             this.checkBoxEnableUnauthenticatedMpns.Text = "Enable unauthenticated push notifications";
             this.checkBoxEnableUnauthenticatedMpns.UseVisualStyleBackColor = true;
             this.checkBoxEnableUnauthenticatedMpns.CheckedChanged += new System.EventHandler(this.checkBoxEnableUnauthenticatedMpns_CheckedChanged);
@@ -686,7 +686,7 @@
             this.btnMpnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
             this.btnMpnsCredentialUploadCertificate.Name = "btnMpnsCredentialUploadCertificate";
             this.btnMpnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
-            this.btnMpnsCredentialUploadCertificate.TabIndex = 28;
+            this.btnMpnsCredentialUploadCertificate.TabIndex = 3;
             this.btnMpnsCredentialUploadCertificate.Text = "Upload";
             this.btnMpnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
             this.btnMpnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnMpnsCredentialUploadCertificate_Click);
@@ -698,7 +698,7 @@
             this.lblMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
             this.lblMpnsCredentialCertificateThumbprint.Name = "lblMpnsCredentialCertificateThumbprint";
             this.lblMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
-            this.lblMpnsCredentialCertificateThumbprint.TabIndex = 27;
+            this.lblMpnsCredentialCertificateThumbprint.TabIndex = 0;
             this.lblMpnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
             // 
             // txtMpnsCredentialCertificateThumbprint
@@ -711,7 +711,7 @@
             this.txtMpnsCredentialCertificateThumbprint.Name = "txtMpnsCredentialCertificateThumbprint";
             this.txtMpnsCredentialCertificateThumbprint.ReadOnly = true;
             this.txtMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(272, 20);
-            this.txtMpnsCredentialCertificateThumbprint.TabIndex = 26;
+            this.txtMpnsCredentialCertificateThumbprint.TabIndex = 1;
             // 
             // grouperAppleNotificationSettings
             // 
@@ -743,7 +743,7 @@
             this.grouperAppleNotificationSettings.ShadowControl = false;
             this.grouperAppleNotificationSettings.ShadowThickness = 1;
             this.grouperAppleNotificationSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperAppleNotificationSettings.TabIndex = 15;
+            this.grouperAppleNotificationSettings.TabIndex = 5;
             // 
             // btnClearApnsNotification
             // 
@@ -757,7 +757,7 @@
             this.btnClearApnsNotification.Location = new System.Drawing.Point(216, 124);
             this.btnClearApnsNotification.Name = "btnClearApnsNotification";
             this.btnClearApnsNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearApnsNotification.TabIndex = 34;
+            this.btnClearApnsNotification.TabIndex = 5;
             this.btnClearApnsNotification.Text = "Clear";
             this.btnClearApnsNotification.UseVisualStyleBackColor = false;
             this.btnClearApnsNotification.Click += new System.EventHandler(this.btnClearApnsNotification_Click);
@@ -771,7 +771,7 @@
             this.txtApnsEndpoint.Name = "txtApnsEndpoint";
             this.txtApnsEndpoint.ReadOnly = true;
             this.txtApnsEndpoint.Size = new System.Drawing.Size(272, 20);
-            this.txtApnsEndpoint.TabIndex = 33;
+            this.txtApnsEndpoint.TabIndex = 3;
             // 
             // lblApnsEndpoint
             // 
@@ -780,7 +780,7 @@
             this.lblApnsEndpoint.Location = new System.Drawing.Point(16, 76);
             this.lblApnsEndpoint.Name = "lblApnsEndpoint";
             this.lblApnsEndpoint.Size = new System.Drawing.Size(84, 13);
-            this.lblApnsEndpoint.TabIndex = 32;
+            this.lblApnsEndpoint.TabIndex = 2;
             this.lblApnsEndpoint.Text = "APNS Endpoint:";
             // 
             // btnApnsCredentialUploadCertificate
@@ -795,7 +795,7 @@
             this.btnApnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
             this.btnApnsCredentialUploadCertificate.Name = "btnApnsCredentialUploadCertificate";
             this.btnApnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
-            this.btnApnsCredentialUploadCertificate.TabIndex = 31;
+            this.btnApnsCredentialUploadCertificate.TabIndex = 4;
             this.btnApnsCredentialUploadCertificate.Text = "Upload";
             this.btnApnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
             this.btnApnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnApnsCredentialUploadCertificate_Click);
@@ -807,7 +807,7 @@
             this.lblApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
             this.lblApnsCredentialCertificateThumbprint.Name = "lblApnsCredentialCertificateThumbprint";
             this.lblApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
-            this.lblApnsCredentialCertificateThumbprint.TabIndex = 30;
+            this.lblApnsCredentialCertificateThumbprint.TabIndex = 0;
             this.lblApnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
             // 
             // txtApnsCredentialCertificateThumbprint
@@ -820,7 +820,7 @@
             this.txtApnsCredentialCertificateThumbprint.Name = "txtApnsCredentialCertificateThumbprint";
             this.txtApnsCredentialCertificateThumbprint.ReadOnly = true;
             this.txtApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(272, 20);
-            this.txtApnsCredentialCertificateThumbprint.TabIndex = 29;
+            this.txtApnsCredentialCertificateThumbprint.TabIndex = 1;
             // 
             // grouperWindowsNotificationSettings
             // 
@@ -851,7 +851,7 @@
             this.grouperWindowsNotificationSettings.ShadowControl = false;
             this.grouperWindowsNotificationSettings.ShadowThickness = 1;
             this.grouperWindowsNotificationSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperWindowsNotificationSettings.TabIndex = 14;
+            this.grouperWindowsNotificationSettings.TabIndex = 1;
             // 
             // btnClearWnsNotification
             // 
@@ -865,7 +865,7 @@
             this.btnClearWnsNotification.Location = new System.Drawing.Point(216, 124);
             this.btnClearWnsNotification.Name = "btnClearWnsNotification";
             this.btnClearWnsNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearWnsNotification.TabIndex = 37;
+            this.btnClearWnsNotification.TabIndex = 4;
             this.btnClearWnsNotification.Text = "Clear";
             this.btnClearWnsNotification.UseVisualStyleBackColor = false;
             this.btnClearWnsNotification.Click += new System.EventHandler(this.btnClearWnsNotification_Click);
@@ -878,7 +878,7 @@
             this.txtClientSecret.Location = new System.Drawing.Point(16, 92);
             this.txtClientSecret.Name = "txtClientSecret";
             this.txtClientSecret.Size = new System.Drawing.Size(272, 20);
-            this.txtClientSecret.TabIndex = 1;
+            this.txtClientSecret.TabIndex = 3;
             // 
             // lblClientSecret
             // 
@@ -887,7 +887,7 @@
             this.lblClientSecret.Location = new System.Drawing.Point(16, 76);
             this.lblClientSecret.Name = "lblClientSecret";
             this.lblClientSecret.Size = new System.Drawing.Size(70, 13);
-            this.lblClientSecret.TabIndex = 29;
+            this.lblClientSecret.TabIndex = 2;
             this.lblClientSecret.Text = "Client Secret:";
             // 
             // lblPackageSid
@@ -897,7 +897,7 @@
             this.lblPackageSid.Location = new System.Drawing.Point(16, 32);
             this.lblPackageSid.Name = "lblPackageSid";
             this.lblPackageSid.Size = new System.Drawing.Size(74, 13);
-            this.lblPackageSid.TabIndex = 25;
+            this.lblPackageSid.TabIndex = 0;
             this.lblPackageSid.Text = "Package SID:";
             // 
             // txtPackageSid
@@ -909,7 +909,7 @@
             this.txtPackageSid.Location = new System.Drawing.Point(16, 48);
             this.txtPackageSid.Name = "txtPackageSid";
             this.txtPackageSid.Size = new System.Drawing.Size(272, 20);
-            this.txtPackageSid.TabIndex = 0;
+            this.txtPackageSid.TabIndex = 1;
             // 
             // grouperDuplicateDetectionHistoryTimeWindow
             // 
@@ -934,14 +934,14 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowControl = false;
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowThickness = 1;
             this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(296, 88);
-            this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 12;
+            this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 6;
             // 
             // tsRegistrationTimeToLive
             // 
             this.tsRegistrationTimeToLive.Location = new System.Drawing.Point(13, 29);
             this.tsRegistrationTimeToLive.Name = "tsRegistrationTimeToLive";
             this.tsRegistrationTimeToLive.Size = new System.Drawing.Size(273, 42);
-            this.tsRegistrationTimeToLive.TabIndex = 26;
+            this.tsRegistrationTimeToLive.TabIndex = 0;
             this.tsRegistrationTimeToLive.TimeSpanValue = null;
             // 
             // grouperPath
@@ -969,7 +969,7 @@
             this.grouperPath.ShadowControl = false;
             this.grouperPath.ShadowThickness = 1;
             this.grouperPath.Size = new System.Drawing.Size(304, 88);
-            this.grouperPath.TabIndex = 13;
+            this.grouperPath.TabIndex = 0;
             // 
             // lblRelativeURI
             // 
@@ -978,7 +978,7 @@
             this.lblRelativeURI.Location = new System.Drawing.Point(16, 32);
             this.lblRelativeURI.Name = "lblRelativeURI";
             this.lblRelativeURI.Size = new System.Drawing.Size(71, 13);
-            this.lblRelativeURI.TabIndex = 22;
+            this.lblRelativeURI.TabIndex = 0;
             this.lblRelativeURI.Text = "Relative URI:";
             // 
             // txtPath
@@ -990,7 +990,7 @@
             this.txtPath.Location = new System.Drawing.Point(16, 48);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(272, 20);
-            this.txtPath.TabIndex = 0;
+            this.txtPath.TabIndex = 1;
             // 
             // tabPageAuthorization
             // 
@@ -1545,8 +1545,8 @@
             this.tabTemplateNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateNotificationTags.Location = new System.Drawing.Point(4, 24);
             this.tabTemplateNotificationTags.Name = "tabTemplateNotificationTags";
-            this.tabTemplateNotificationTags.Size = new System.Drawing.Size(452, 153);
             this.tabTemplateNotificationTags.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTemplateNotificationTags.Size = new System.Drawing.Size(451, 154);
             this.tabTemplateNotificationTags.TabIndex = 5;
             this.tabTemplateNotificationTags.Text = "Notification Tags";
             // 
@@ -1574,7 +1574,7 @@
             this.grouperTemplateTags.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTemplateTags.ShadowControl = false;
             this.grouperTemplateTags.ShadowThickness = 1;
-            this.grouperTemplateTags.Size = new System.Drawing.Size(420, 132);
+            this.grouperTemplateTags.Size = new System.Drawing.Size(419, 133);
             this.grouperTemplateTags.TabIndex = 16;
             this.grouperTemplateTags.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTemplateTags_CustomPaint);
             // 
@@ -1590,7 +1590,7 @@
             this.templateTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.templateTagsDataGridView.Location = new System.Drawing.Point(16, 32);
             this.templateTagsDataGridView.Name = "templateTagsDataGridView";
-            this.templateTagsDataGridView.Size = new System.Drawing.Size(387, 80);
+            this.templateTagsDataGridView.Size = new System.Drawing.Size(386, 81);
             this.templateTagsDataGridView.TabIndex = 3;
             this.templateTagsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.templateTagsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -1678,8 +1678,8 @@
             this.tabTemplateAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
             this.tabTemplateAdditionalHeaders.Name = "tabTemplateAdditionalHeaders";
-            this.tabTemplateAdditionalHeaders.Size = new System.Drawing.Size(452, 396);
             this.tabTemplateAdditionalHeaders.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTemplateAdditionalHeaders.Size = new System.Drawing.Size(453, 396);
             this.tabTemplateAdditionalHeaders.TabIndex = 5;
             this.tabTemplateAdditionalHeaders.Text = "Additional Headers";
             // 
@@ -1707,7 +1707,7 @@
             this.grouperTemplateAdditionalHeaders.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperTemplateAdditionalHeaders.ShadowControl = false;
             this.grouperTemplateAdditionalHeaders.ShadowThickness = 1;
-            this.grouperTemplateAdditionalHeaders.Size = new System.Drawing.Size(421, 371);
+            this.grouperTemplateAdditionalHeaders.Size = new System.Drawing.Size(422, 371);
             this.grouperTemplateAdditionalHeaders.TabIndex = 20;
             this.grouperTemplateAdditionalHeaders.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTemplateAdditionalHeaders_CustomPaint);
             // 
@@ -1723,7 +1723,7 @@
             this.templateHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.templateHeadersDataGridView.Location = new System.Drawing.Point(16, 32);
             this.templateHeadersDataGridView.Name = "templateHeadersDataGridView";
-            this.templateHeadersDataGridView.Size = new System.Drawing.Size(388, 327);
+            this.templateHeadersDataGridView.Size = new System.Drawing.Size(389, 327);
             this.templateHeadersDataGridView.TabIndex = 0;
             this.templateHeadersDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.templateHeadersDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -1897,8 +1897,8 @@
             this.tabMpnsNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsNotificationTags.Location = new System.Drawing.Point(4, 24);
             this.tabMpnsNotificationTags.Name = "tabMpnsNotificationTags";
-            this.tabMpnsNotificationTags.Size = new System.Drawing.Size(452, 153);
             this.tabMpnsNotificationTags.Padding = new System.Windows.Forms.Padding(3);
+            this.tabMpnsNotificationTags.Size = new System.Drawing.Size(451, 154);
             this.tabMpnsNotificationTags.TabIndex = 5;
             this.tabMpnsNotificationTags.Text = "Notification Tags";
             // 
@@ -1926,7 +1926,7 @@
             this.grouperMpnsTags.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMpnsTags.ShadowControl = false;
             this.grouperMpnsTags.ShadowThickness = 1;
-            this.grouperMpnsTags.Size = new System.Drawing.Size(420, 132);
+            this.grouperMpnsTags.Size = new System.Drawing.Size(419, 133);
             this.grouperMpnsTags.TabIndex = 16;
             this.grouperMpnsTags.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMpnsTags_CustomPaint);
             // 
@@ -1942,7 +1942,7 @@
             this.mpnsTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.mpnsTagsDataGridView.Location = new System.Drawing.Point(16, 32);
             this.mpnsTagsDataGridView.Name = "mpnsTagsDataGridView";
-            this.mpnsTagsDataGridView.Size = new System.Drawing.Size(387, 80);
+            this.mpnsTagsDataGridView.Size = new System.Drawing.Size(386, 81);
             this.mpnsTagsDataGridView.TabIndex = 3;
             this.mpnsTagsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.mpnsTagsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -2036,8 +2036,8 @@
             this.tabMpnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
             this.tabMpnsAdditionalHeaders.Name = "tabMpnsAdditionalHeaders";
-            this.tabMpnsAdditionalHeaders.Size = new System.Drawing.Size(452, 396);
             this.tabMpnsAdditionalHeaders.Padding = new System.Windows.Forms.Padding(3);
+            this.tabMpnsAdditionalHeaders.Size = new System.Drawing.Size(453, 396);
             this.tabMpnsAdditionalHeaders.TabIndex = 5;
             this.tabMpnsAdditionalHeaders.Text = "Additional Headers";
             // 
@@ -2065,7 +2065,7 @@
             this.grouperMpnsAdditionalHeaders.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMpnsAdditionalHeaders.ShadowControl = false;
             this.grouperMpnsAdditionalHeaders.ShadowThickness = 1;
-            this.grouperMpnsAdditionalHeaders.Size = new System.Drawing.Size(421, 371);
+            this.grouperMpnsAdditionalHeaders.Size = new System.Drawing.Size(422, 371);
             this.grouperMpnsAdditionalHeaders.TabIndex = 20;
             this.grouperMpnsAdditionalHeaders.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMpnsAdditionalHeaders_CustomPaint);
             // 
@@ -2081,7 +2081,7 @@
             this.mpnsHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.mpnsHeadersDataGridView.Location = new System.Drawing.Point(16, 32);
             this.mpnsHeadersDataGridView.Name = "mpnsHeadersDataGridView";
-            this.mpnsHeadersDataGridView.Size = new System.Drawing.Size(388, 327);
+            this.mpnsHeadersDataGridView.Size = new System.Drawing.Size(389, 327);
             this.mpnsHeadersDataGridView.TabIndex = 0;
             this.mpnsHeadersDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.mpnsHeadersDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -2255,8 +2255,8 @@
             this.tabWnsNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsNotificationTags.Location = new System.Drawing.Point(4, 24);
             this.tabWnsNotificationTags.Name = "tabWnsNotificationTags";
-            this.tabWnsNotificationTags.Size = new System.Drawing.Size(452, 153);
             this.tabWnsNotificationTags.Padding = new System.Windows.Forms.Padding(3);
+            this.tabWnsNotificationTags.Size = new System.Drawing.Size(451, 154);
             this.tabWnsNotificationTags.TabIndex = 5;
             this.tabWnsNotificationTags.Text = "Notification Tags";
             // 
@@ -2284,7 +2284,7 @@
             this.grouperWnsTags.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperWnsTags.ShadowControl = false;
             this.grouperWnsTags.ShadowThickness = 1;
-            this.grouperWnsTags.Size = new System.Drawing.Size(420, 132);
+            this.grouperWnsTags.Size = new System.Drawing.Size(419, 133);
             this.grouperWnsTags.TabIndex = 16;
             this.grouperWnsTags.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperWnsTags_CustomPaint);
             // 
@@ -2300,7 +2300,7 @@
             this.wnsTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.wnsTagsDataGridView.Location = new System.Drawing.Point(16, 32);
             this.wnsTagsDataGridView.Name = "wnsTagsDataGridView";
-            this.wnsTagsDataGridView.Size = new System.Drawing.Size(387, 80);
+            this.wnsTagsDataGridView.Size = new System.Drawing.Size(386, 81);
             this.wnsTagsDataGridView.TabIndex = 3;
             this.wnsTagsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.wnsTagsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -2394,8 +2394,8 @@
             this.tabWnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
             this.tabWnsAdditionalHeaders.Name = "tabWnsAdditionalHeaders";
-            this.tabWnsAdditionalHeaders.Size = new System.Drawing.Size(452, 396);
             this.tabWnsAdditionalHeaders.Padding = new System.Windows.Forms.Padding(3);
+            this.tabWnsAdditionalHeaders.Size = new System.Drawing.Size(453, 396);
             this.tabWnsAdditionalHeaders.TabIndex = 5;
             this.tabWnsAdditionalHeaders.Text = "Additional Headers";
             // 
@@ -2423,7 +2423,7 @@
             this.grouperWnsAdditionalHeaders.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperWnsAdditionalHeaders.ShadowControl = false;
             this.grouperWnsAdditionalHeaders.ShadowThickness = 1;
-            this.grouperWnsAdditionalHeaders.Size = new System.Drawing.Size(421, 371);
+            this.grouperWnsAdditionalHeaders.Size = new System.Drawing.Size(422, 371);
             this.grouperWnsAdditionalHeaders.TabIndex = 20;
             this.grouperWnsAdditionalHeaders.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperWnsAdditionalHeaders_CustomPaint);
             // 
@@ -2439,7 +2439,7 @@
             this.wnsHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.wnsHeadersDataGridView.Location = new System.Drawing.Point(16, 32);
             this.wnsHeadersDataGridView.Name = "wnsHeadersDataGridView";
-            this.wnsHeadersDataGridView.Size = new System.Drawing.Size(388, 327);
+            this.wnsHeadersDataGridView.Size = new System.Drawing.Size(389, 327);
             this.wnsHeadersDataGridView.TabIndex = 0;
             this.wnsHeadersDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.wnsHeadersDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -2612,8 +2612,8 @@
             this.tabAppleNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleNotificationTags.Location = new System.Drawing.Point(4, 24);
             this.tabAppleNotificationTags.Name = "tabAppleNotificationTags";
-            this.tabAppleNotificationTags.Size = new System.Drawing.Size(452, 153);
             this.tabAppleNotificationTags.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAppleNotificationTags.Size = new System.Drawing.Size(451, 154);
             this.tabAppleNotificationTags.TabIndex = 5;
             this.tabAppleNotificationTags.Text = "Notification Tags";
             // 
@@ -2641,7 +2641,7 @@
             this.grouperAppleTags.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperAppleTags.ShadowControl = false;
             this.grouperAppleTags.ShadowThickness = 1;
-            this.grouperAppleTags.Size = new System.Drawing.Size(420, 132);
+            this.grouperAppleTags.Size = new System.Drawing.Size(419, 133);
             this.grouperAppleTags.TabIndex = 16;
             this.grouperAppleTags.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperAppleTags_CustomPaint);
             // 
@@ -2657,7 +2657,7 @@
             this.appleTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.appleTagsDataGridView.Location = new System.Drawing.Point(16, 32);
             this.appleTagsDataGridView.Name = "appleTagsDataGridView";
-            this.appleTagsDataGridView.Size = new System.Drawing.Size(387, 80);
+            this.appleTagsDataGridView.Size = new System.Drawing.Size(386, 81);
             this.appleTagsDataGridView.TabIndex = 3;
             this.appleTagsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.appleTagsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
@@ -2744,8 +2744,8 @@
             this.tabAppleNotificationExpiry.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleNotificationExpiry.Location = new System.Drawing.Point(4, 24);
             this.tabAppleNotificationExpiry.Name = "tabAppleNotificationExpiry";
-            this.tabAppleNotificationExpiry.Size = new System.Drawing.Size(452, 153);
             this.tabAppleNotificationExpiry.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAppleNotificationExpiry.Size = new System.Drawing.Size(453, 154);
             this.tabAppleNotificationExpiry.TabIndex = 5;
             this.tabAppleNotificationExpiry.Text = "Notification Expiry";
             // 
@@ -2773,7 +2773,7 @@
             this.grouperApnsExpiry.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperApnsExpiry.ShadowControl = false;
             this.grouperApnsExpiry.ShadowThickness = 1;
-            this.grouperApnsExpiry.Size = new System.Drawing.Size(421, 132);
+            this.grouperApnsExpiry.Size = new System.Drawing.Size(422, 133);
             this.grouperApnsExpiry.TabIndex = 19;
             // 
             // tsApnsExpiry
@@ -2949,8 +2949,8 @@
             this.tabGcmNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabGcmNotificationTags.Location = new System.Drawing.Point(4, 24);
             this.tabGcmNotificationTags.Name = "tabGcmNotificationTags";
-            this.tabGcmNotificationTags.Size = new System.Drawing.Size(452, 153);
             this.tabGcmNotificationTags.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGcmNotificationTags.Size = new System.Drawing.Size(451, 154);
             this.tabGcmNotificationTags.TabIndex = 5;
             this.tabGcmNotificationTags.Text = "Notification Tags";
             // 
@@ -2978,7 +2978,7 @@
             this.grouperGcmTags.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperGcmTags.ShadowControl = false;
             this.grouperGcmTags.ShadowThickness = 1;
-            this.grouperGcmTags.Size = new System.Drawing.Size(417, 132);
+            this.grouperGcmTags.Size = new System.Drawing.Size(416, 133);
             this.grouperGcmTags.TabIndex = 16;
             this.grouperGcmTags.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperGcmTags_CustomPaint);
             // 
@@ -2994,7 +2994,7 @@
             this.gcmTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.gcmTagsDataGridView.Location = new System.Drawing.Point(16, 32);
             this.gcmTagsDataGridView.Name = "gcmTagsDataGridView";
-            this.gcmTagsDataGridView.Size = new System.Drawing.Size(384, 80);
+            this.gcmTagsDataGridView.Size = new System.Drawing.Size(383, 81);
             this.gcmTagsDataGridView.TabIndex = 3;
             this.gcmTagsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
             this.gcmTagsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
