@@ -798,7 +798,7 @@
             this.grouperMessageList.ShadowControl = false;
             this.grouperMessageList.ShadowThickness = 1;
             this.grouperMessageList.Size = new System.Drawing.Size(608, 212);
-            this.grouperMessageList.TabIndex = 17;
+            this.grouperMessageList.TabIndex = 0;
             this.grouperMessageList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageList_CustomPaint);
             // 
             // eventDataDataGridView
@@ -857,7 +857,7 @@
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(608, 212);
-            this.grouperMessageText.TabIndex = 26;
+            this.grouperMessageText.TabIndex = 0;
             // 
             // txtMessageText
             // 
@@ -875,13 +875,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -935,7 +936,7 @@
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
             this.grouperMessageProperties.Size = new System.Drawing.Size(312, 212);
-            this.grouperMessageProperties.TabIndex = 20;
+            this.grouperMessageProperties.TabIndex = 0;
             // 
             // eventDataPropertyGrid
             // 
@@ -948,7 +949,7 @@
             this.eventDataPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.eventDataPropertyGrid.Name = "eventDataPropertyGrid";
             this.eventDataPropertyGrid.Size = new System.Drawing.Size(280, 164);
-            this.eventDataPropertyGrid.TabIndex = 2;
+            this.eventDataPropertyGrid.TabIndex = 0;
             this.eventDataPropertyGrid.ToolbarVisible = false;
             // 
             // grouperEventDataCustomProperties
@@ -974,7 +975,7 @@
             this.grouperEventDataCustomProperties.ShadowControl = false;
             this.grouperEventDataCustomProperties.ShadowThickness = 1;
             this.grouperEventDataCustomProperties.Size = new System.Drawing.Size(312, 212);
-            this.grouperEventDataCustomProperties.TabIndex = 27;
+            this.grouperEventDataCustomProperties.TabIndex = 0;
             // 
             // eventDataPropertyListView
             // 

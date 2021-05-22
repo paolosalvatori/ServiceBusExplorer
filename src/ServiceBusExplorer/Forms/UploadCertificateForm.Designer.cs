@@ -123,7 +123,7 @@ namespace ServiceBusExplorer.Forms
             this.lblCertificatePath.Location = new System.Drawing.Point(16, 16);
             this.lblCertificatePath.Name = "lblCertificatePath";
             this.lblCertificatePath.Size = new System.Drawing.Size(82, 13);
-            this.lblCertificatePath.TabIndex = 31;
+            this.lblCertificatePath.TabIndex = 0;
             this.lblCertificatePath.Text = "Certificate Path:";
             // 
             // txtCertificatePath
@@ -135,7 +135,7 @@ namespace ServiceBusExplorer.Forms
             this.txtCertificatePath.Location = new System.Drawing.Point(16, 32);
             this.txtCertificatePath.Name = "txtCertificatePath";
             this.txtCertificatePath.Size = new System.Drawing.Size(336, 20);
-            this.txtCertificatePath.TabIndex = 28;
+            this.txtCertificatePath.TabIndex = 1;
             // 
             // lblCertificatePassword
             // 
@@ -144,7 +144,7 @@ namespace ServiceBusExplorer.Forms
             this.lblCertificatePassword.Location = new System.Drawing.Point(16, 60);
             this.lblCertificatePassword.Name = "lblCertificatePassword";
             this.lblCertificatePassword.Size = new System.Drawing.Size(78, 13);
-            this.lblCertificatePassword.TabIndex = 30;
+            this.lblCertificatePassword.TabIndex = 3;
             this.lblCertificatePassword.Text = "Certificate Key:";
             // 
             // txtCertificatePassword
@@ -155,7 +155,7 @@ namespace ServiceBusExplorer.Forms
             this.txtCertificatePassword.Name = "txtCertificatePassword";
             this.txtCertificatePassword.PasswordChar = '*';
             this.txtCertificatePassword.Size = new System.Drawing.Size(368, 20);
-            this.txtCertificatePassword.TabIndex = 29;
+            this.txtCertificatePassword.TabIndex = 4;
             // 
             // btnOpenFileDialog
             // 
@@ -169,7 +169,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenFileDialog.Location = new System.Drawing.Point(360, 32);
             this.btnOpenFileDialog.Name = "btnOpenFileDialog";
             this.btnOpenFileDialog.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenFileDialog.TabIndex = 4;
+            this.btnOpenFileDialog.TabIndex = 2;
             this.btnOpenFileDialog.Text = "...";
             this.btnOpenFileDialog.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenFileDialog.UseVisualStyleBackColor = false;

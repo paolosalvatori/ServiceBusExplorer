@@ -140,7 +140,7 @@ namespace ServiceBusExplorer.Forms
             this.lblSelectTargetEntity.Location = new System.Drawing.Point(16, 32);
             this.lblSelectTargetEntity.Name = "lblSelectTargetEntity";
             this.lblSelectTargetEntity.Size = new System.Drawing.Size(104, 13);
-            this.lblSelectTargetEntity.TabIndex = 24;
+            this.lblSelectTargetEntity.TabIndex = 0;
             this.lblSelectTargetEntity.Text = "Current Namespace:";
             // 
             // lblTargetQueueTopic
@@ -151,7 +151,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTargetQueueTopic.Location = new System.Drawing.Point(16, 350);
             this.lblTargetQueueTopic.Name = "lblTargetQueueTopic";
             this.lblTargetQueueTopic.Size = new System.Drawing.Size(118, 13);
-            this.lblTargetQueueTopic.TabIndex = 23;
+            this.lblTargetQueueTopic.TabIndex = 2;
             this.lblTargetQueueTopic.Text = "Target Queue or Topic:";
             // 
             // txtEntity
@@ -162,7 +162,7 @@ namespace ServiceBusExplorer.Forms
             this.txtEntity.Name = "txtEntity";
             this.txtEntity.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtEntity.Size = new System.Drawing.Size(429, 20);
-            this.txtEntity.TabIndex = 1;
+            this.txtEntity.TabIndex = 3;
             this.txtEntity.TextChanged += new System.EventHandler(this.txtForwardTo_TextChanged);
             // 
             // serviceBusTreeView
@@ -179,7 +179,7 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
             this.serviceBusTreeView.Size = new System.Drawing.Size(429, 294);
-            this.serviceBusTreeView.TabIndex = 0;
+            this.serviceBusTreeView.TabIndex = 1;
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             // 
             // imageList

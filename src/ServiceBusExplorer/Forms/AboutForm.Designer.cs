@@ -77,7 +77,7 @@ namespace ServiceBusExplorer.Forms
             this.lblCorporation.Location = new System.Drawing.Point(177, 277);
             this.lblCorporation.Name = "lblCorporation";
             this.lblCorporation.Size = new System.Drawing.Size(107, 13);
-            this.lblCorporation.TabIndex = 39;
+            this.lblCorporation.TabIndex = 7;
             this.lblCorporation.Text = "Microsoft Corporation";
             // 
             // lblName
@@ -88,7 +88,7 @@ namespace ServiceBusExplorer.Forms
             this.lblName.Location = new System.Drawing.Point(177, 258);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(117, 16);
-            this.lblName.TabIndex = 37;
+            this.lblName.TabIndex = 6;
             this.lblName.Text = "Paolo Salvatori";
             // 
             // lblExeVersion
@@ -98,7 +98,7 @@ namespace ServiceBusExplorer.Forms
             this.lblExeVersion.Location = new System.Drawing.Point(177, 146);
             this.lblExeVersion.Name = "lblExeVersion";
             this.lblExeVersion.Size = new System.Drawing.Size(81, 13);
-            this.lblExeVersion.TabIndex = 42;
+            this.lblExeVersion.TabIndex = 1;
             this.lblExeVersion.Text = "Version: 1.0.0.0";
             // 
             // label2
@@ -109,7 +109,7 @@ namespace ServiceBusExplorer.Forms
             this.label2.Location = new System.Drawing.Point(177, 126);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(158, 16);
-            this.label2.TabIndex = 41;
+            this.label2.TabIndex = 0;
             this.label2.Text = "Service Bus Explorer";
             // 
             // mailLinkLabel
@@ -119,7 +119,7 @@ namespace ServiceBusExplorer.Forms
             this.mailLinkLabel.Location = new System.Drawing.Point(272, 294);
             this.mailLinkLabel.Name = "mailLinkLabel";
             this.mailLinkLabel.Size = new System.Drawing.Size(114, 13);
-            this.mailLinkLabel.TabIndex = 43;
+            this.mailLinkLabel.TabIndex = 9;
             this.mailLinkLabel.TabStop = true;
             this.mailLinkLabel.Text = "paolos@microsoft.com";
             this.mailLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.mailLinkLabel_LinkClicked);
@@ -131,7 +131,7 @@ namespace ServiceBusExplorer.Forms
             this.blogLinkLabel.Location = new System.Drawing.Point(272, 310);
             this.blogLinkLabel.Name = "blogLinkLabel";
             this.blogLinkLabel.Size = new System.Drawing.Size(150, 13);
-            this.blogLinkLabel.TabIndex = 44;
+            this.blogLinkLabel.TabIndex = 11;
             this.blogLinkLabel.TabStop = true;
             this.blogLinkLabel.Text = "http://blogs.msdn.com/paolos";
             this.blogLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.blogLinkLabel_LinkClicked);
@@ -143,7 +143,7 @@ namespace ServiceBusExplorer.Forms
             this.twitterLinkLabel.Location = new System.Drawing.Point(272, 325);
             this.twitterLinkLabel.Name = "twitterLinkLabel";
             this.twitterLinkLabel.Size = new System.Drawing.Size(145, 13);
-            this.twitterLinkLabel.TabIndex = 45;
+            this.twitterLinkLabel.TabIndex = 13;
             this.twitterLinkLabel.TabStop = true;
             this.twitterLinkLabel.Text = "https://twitter.com/babosbird";
             this.twitterLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.twitterLinkLabel_LinkClicked);
@@ -156,7 +156,7 @@ namespace ServiceBusExplorer.Forms
             this.label1.Location = new System.Drawing.Point(178, 293);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
-            this.label1.TabIndex = 46;
+            this.label1.TabIndex = 8;
             this.label1.Text = "Email:";
             // 
             // label4
@@ -167,7 +167,7 @@ namespace ServiceBusExplorer.Forms
             this.label4.Location = new System.Drawing.Point(178, 308);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(39, 13);
-            this.label4.TabIndex = 47;
+            this.label4.TabIndex = 10;
             this.label4.Text = "Blog:";
             // 
             // label5
@@ -178,7 +178,7 @@ namespace ServiceBusExplorer.Forms
             this.label5.Location = new System.Drawing.Point(178, 325);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(57, 13);
-            this.label5.TabIndex = 48;
+            this.label5.TabIndex = 12;
             this.label5.Text = "Twitter:";
             // 
             // label3
@@ -189,7 +189,7 @@ namespace ServiceBusExplorer.Forms
             this.label3.Location = new System.Drawing.Point(177, 214);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(93, 16);
-            this.label3.TabIndex = 50;
+            this.label3.TabIndex = 4;
             this.label3.Text = "GitHub URL:";
             // 
             // siteLinkLabel
@@ -199,7 +199,7 @@ namespace ServiceBusExplorer.Forms
             this.siteLinkLabel.Location = new System.Drawing.Point(178, 230);
             this.siteLinkLabel.Name = "siteLinkLabel";
             this.siteLinkLabel.Size = new System.Drawing.Size(262, 13);
-            this.siteLinkLabel.TabIndex = 49;
+            this.siteLinkLabel.TabIndex = 5;
             this.siteLinkLabel.TabStop = true;
             this.siteLinkLabel.Text = "https://github.com/paolosalvatori/ServiceBusExplorer";
             this.siteLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.siteLinkLabel_LinkClicked);
@@ -211,7 +211,7 @@ namespace ServiceBusExplorer.Forms
             this.lblClientVersion.Location = new System.Drawing.Point(177, 188);
             this.lblClientVersion.Name = "lblClientVersion";
             this.lblClientVersion.Size = new System.Drawing.Size(152, 13);
-            this.lblClientVersion.TabIndex = 52;
+            this.lblClientVersion.TabIndex = 3;
             this.lblClientVersion.Text = "Version: Could not be retrieved";
             // 
             // label7
@@ -222,7 +222,7 @@ namespace ServiceBusExplorer.Forms
             this.label7.Location = new System.Drawing.Point(177, 170);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(139, 16);
-            this.label7.TabIndex = 51;
+            this.label7.TabIndex = 2;
             this.label7.Text = "Service Bus Client";
             // 
             // AboutForm

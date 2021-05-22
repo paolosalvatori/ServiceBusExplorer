@@ -1080,14 +1080,13 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1375,13 +1374,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1567,7 +1567,7 @@
             this.grouperSessionList.ShadowControl = false;
             this.grouperSessionList.ShadowThickness = 1;
             this.grouperSessionList.Size = new System.Drawing.Size(606, 211);
-            this.grouperSessionList.TabIndex = 20;
+            this.grouperSessionList.TabIndex = 0;
             this.grouperSessionList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionList_CustomPaint);
             // 
             // sessionsDataGridView
@@ -1624,7 +1624,7 @@
             this.grouperSessionState.ShadowControl = false;
             this.grouperSessionState.ShadowThickness = 1;
             this.grouperSessionState.Size = new System.Drawing.Size(606, 213);
-            this.grouperSessionState.TabIndex = 26;
+            this.grouperSessionState.TabIndex = 0;
             this.grouperSessionState.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionState_CustomPaint);
             // 
             // txtSessionState
@@ -1637,7 +1637,7 @@
             this.txtSessionState.Multiline = true;
             this.txtSessionState.Name = "txtSessionState";
             this.txtSessionState.Size = new System.Drawing.Size(574, 163);
-            this.txtSessionState.TabIndex = 13;
+            this.txtSessionState.TabIndex = 0;
             // 
             // grouperSessionProperties
             // 
@@ -1662,7 +1662,7 @@
             this.grouperSessionProperties.ShadowControl = false;
             this.grouperSessionProperties.ShadowThickness = 1;
             this.grouperSessionProperties.Size = new System.Drawing.Size(314, 432);
-            this.grouperSessionProperties.TabIndex = 19;
+            this.grouperSessionProperties.TabIndex = 0;
             this.grouperSessionProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionProperties_CustomPaint);
             // 
             // sessionPropertyGrid
@@ -1676,7 +1676,7 @@
             this.sessionPropertyGrid.Location = new System.Drawing.Point(16, 32);
             this.sessionPropertyGrid.Name = "sessionPropertyGrid";
             this.sessionPropertyGrid.Size = new System.Drawing.Size(281, 384);
-            this.sessionPropertyGrid.TabIndex = 1;
+            this.sessionPropertyGrid.TabIndex = 0;
             this.sessionPropertyGrid.ToolbarVisible = false;
             // 
             // deadletterContextMenuStrip
