@@ -370,7 +370,7 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {subscriptionWrapper.SubscriptionDescription.Name} subscription?");
         }
 
         public async Task PurgeAllMessagesAsync()
@@ -392,7 +392,7 @@ namespace ServiceBusExplorer.Controls
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
             await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper), writeToLog);
 
-            MainForm.SingletonMainForm.RefreshSelectedEntity();
+            await MainForm.SingletonMainForm.RefreshSelectedEntity();
             Application.UseWaitCursor = false;
         }
         #endregion
@@ -2264,7 +2264,7 @@ namespace ServiceBusExplorer.Controls
                 Application.UseWaitCursor = false;
             }
 
-            MainForm.SingletonMainForm.RefreshSelectedEntity();
+            await MainForm.SingletonMainForm.RefreshSelectedEntity();
         }
 
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -2292,7 +2292,7 @@ namespace ServiceBusExplorer.Controls
             deadletterDataGridView_CellDoubleClick(deadletterDataGridView, new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
         }
 
-        private void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2317,8 +2317,8 @@ namespace ServiceBusExplorer.Controls
 
             // Rather than getting the updated entities from the forms we refresh all queues and topics to keep things 
             // simple.
-            MainForm.SingletonMainForm.RefreshQueues();
-            MainForm.SingletonMainForm.RefreshTopics();
+            await MainForm.SingletonMainForm.RefreshQueues();
+            await MainForm.SingletonMainForm.RefreshTopics();
         }
 
         private void pictFindMessagesByDate_Click(object sender, EventArgs e)
