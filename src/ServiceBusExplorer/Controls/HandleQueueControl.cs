@@ -385,7 +385,7 @@ namespace ServiceBusExplorer.Controls
             QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
-            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription));
+            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription), writeToLog);
 
             MainForm.SingletonMainForm.RefreshSelectedEntity();
             Application.UseWaitCursor = false;

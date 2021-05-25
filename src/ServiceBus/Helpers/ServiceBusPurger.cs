@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 
 namespace ServiceBusExplorer.ServiceBus.Helpers
 {
+    using Utilities.Helpers;
+
     public abstract class ServiceBusPurger<TEntity>
         where TEntity : class
     {
@@ -43,31 +45,31 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             this.serviceBusHelper = serviceBusHelper;
         }
 
-        public async Task Purge(PurgeStrategies purgeStrategy, TEntity entity)
+        public async Task Purge(PurgeStrategies purgeStrategy, TEntity entity, WriteToLogDelegate writeToLog)
         {
-            await this.Purge(purgeStrategy, new List<TEntity>() { entity })
+            await this.Purge(purgeStrategy, new List<TEntity>() { entity }, writeToLog)
                 .ConfigureAwait(false);
         }
 
-        public async Task Purge(PurgeStrategies purgeStrategy, List<TEntity> entities)
+        public async Task Purge(PurgeStrategies purgeStrategy, List<TEntity> entities, WriteToLogDelegate writeToLog)
         {
             foreach (TEntity subscription in entities)
             {
                 if ((purgeStrategy & PurgeStrategies.Messages) == PurgeStrategies.Messages)
                 {
-                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: false)
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: false, writeToLog: writeToLog)
                         .ConfigureAwait(false);
                 }
 
                 if ((purgeStrategy & PurgeStrategies.DeadletteredMessages) == PurgeStrategies.DeadletteredMessages)
                 {
-                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: true)
+                    await this.InternalPurge(subscription, purgeDeadLetterQueueInstead: true, writeToLog: writeToLog)
                         .ConfigureAwait(false);
                 }
             }
         }
 
-        private async Task InternalPurge(TEntity entity, bool purgeDeadLetterQueueInstead)
+        private async Task InternalPurge(TEntity entity, bool purgeDeadLetterQueueInstead, WriteToLogDelegate writeToLog)
         {
             try
             {
@@ -78,7 +80,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 if (!purgeDeadLetterQueueInstead && this.EntityRequiresSession(entity))
                 {
-                    totalMessagesPurged = await this.PurgeSessionEntity(entity).ConfigureAwait(false);
+                    totalMessagesPurged = await this.PurgeSessionEntity(entity, writeToLog).ConfigureAwait(false);
                 }
                 else
                 {
@@ -96,11 +98,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
 
-        private async Task<long> PurgeSessionEntity(TEntity entity)
+        private async Task<long> PurgeSessionEntity(TEntity entity, WriteToLogDelegate writeToLog)
         {
             long totalMessagesPurged = 0;
-            var consecutiveSessionTimeOuts = 0;
-            ServiceBusSessionReceiver sessionReceiver = null;
+            int consecutiveSessionTimeOuts = 0;
             long messagesToPurgeCount = await GetMessageCount(entity, deadLetterQueueData: false)
                 .ConfigureAwait(false);
 
@@ -108,52 +109,64 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
               serviceBusHelper.ConnectionString,
               new ServiceBusClientOptions
               {
+                  RetryOptions = new ServiceBusRetryOptions
+                  {
+                      TryTimeout = TimeSpan.FromMilliseconds(1000),
+                      MaxRetries = 0
+                  },
                   TransportType = serviceBusHelper.TransportType
               });
 
-            try
-            {
-                const int enoughZeroReceives = 3;
+            const int maxSessionTimeOuts = 3;
+            long lastLoggedMessageCount = 0;
 
-                while (consecutiveSessionTimeOuts < enoughZeroReceives && totalMessagesPurged < messagesToPurgeCount)
+            while (consecutiveSessionTimeOuts < maxSessionTimeOuts && totalMessagesPurged < messagesToPurgeCount)
+            {
+                try
                 {
-                    sessionReceiver = await CreateServiceBusSessionReceiver(entity,
-                        client,
-                        purgeDeadLetterQueueInstead: false)
+                    var sessionReceiver = await CreateServiceBusSessionReceiver(entity,
+                            client,
+                            purgeDeadLetterQueueInstead: false)
                         .ConfigureAwait(false);
 
-                    var consecutiveZeroBatchReceives = 0;
 
-                    while (consecutiveZeroBatchReceives < enoughZeroReceives
-                        && totalMessagesPurged < messagesToPurgeCount)
+                    while (true)
                     {
                         var messages = await sessionReceiver.ReceiveMessagesAsync(
-                            maxMessages: 1000,
-                            maxWaitTime: TimeSpan.FromMilliseconds(1000))
+                                maxMessages: 1000,
+                                maxWaitTime: TimeSpan.FromMilliseconds(250))
                             .ConfigureAwait(false);
 
                         if (messages != null && messages.Any())
                         {
-                            Interlocked.Add(ref totalMessagesPurged, messages.Count());
-                            consecutiveZeroBatchReceives = 0;
+                            consecutiveSessionTimeOuts = 0;
+                            Interlocked.Add(ref totalMessagesPurged, messages.Count);
+
+                            if (totalMessagesPurged - lastLoggedMessageCount > 100)
+                            {
+                                lastLoggedMessageCount = totalMessagesPurged;
+                                writeToLog($"[{totalMessagesPurged}] messages have been purged out of [{messagesToPurgeCount}].");
+                            }
                         }
                         else
                         {
-                            ++consecutiveZeroBatchReceives;
+                            break;
                         }
                     }
 
                     await sessionReceiver.CloseAsync().ConfigureAwait(false);
                 }
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
+                {
+                    ++consecutiveSessionTimeOuts;
+                }
+                catch
+                {
+                    break;
+                }
             }
-            catch (TimeoutException)
-            {
-                ++consecutiveSessionTimeOuts;
-            }
-            finally
-            {
-                await client.DisposeAsync().ConfigureAwait(false);
-            }
+
+            await client.DisposeAsync().ConfigureAwait(false);
 
             return totalMessagesPurged;
         }

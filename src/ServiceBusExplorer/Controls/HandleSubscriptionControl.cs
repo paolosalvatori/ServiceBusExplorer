@@ -390,7 +390,7 @@ namespace ServiceBusExplorer.Controls
             TopicSubscriptionServiceBusPurger purger = new TopicSubscriptionServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
-            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper));
+            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper), writeToLog);
 
             MainForm.SingletonMainForm.RefreshSelectedEntity();
             Application.UseWaitCursor = false;
