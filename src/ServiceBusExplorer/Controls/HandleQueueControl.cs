@@ -359,7 +359,7 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {queueDescription.Path} queue?");
         }
 
 
