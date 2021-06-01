@@ -53,20 +53,20 @@ namespace ServiceBusExplorer.Helpers
 
         public static BrokeredMessage Clone(this BrokeredMessage message, Stream stream, bool omitAllProperties)
         {
-            if (stream == null)
-            {
-                return null;
-            }
-            if (stream.CanSeek)
+            if (stream != null && stream.CanSeek)
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
+
             var clone = message.Clone();
+
             if (omitAllProperties)
             {
                 clone.Properties.Clear();
             }
+
             BodyStreamPropertyInfo.SetValue(clone, stream);
+
             return clone;
         }
 
