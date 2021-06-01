@@ -37,6 +37,7 @@
             this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tabFilesPage = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
             this.grouperMessageFiles = new ServiceBusExplorer.Controls.Grouper();
             this.radioButtonBinaryFile = new System.Windows.Forms.RadioButton();
             this.radioButtonJsonTemplate = new System.Windows.Forms.RadioButton();
@@ -186,7 +187,6 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.btnClearFiles = new System.Windows.Forms.Button();
             this.btnSelectFiles = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.mainTabControl.SuspendLayout();
             this.mainTabMessagePage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -241,7 +241,7 @@
             this.btnStart.Location = new System.Drawing.Point(840, 438);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(72, 24);
-            this.btnStart.TabIndex = 3;
+            this.btnStart.TabIndex = 4;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = false;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -260,7 +260,7 @@
             this.btnCancel.Location = new System.Drawing.Point(920, 438);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 4;
+            this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -282,7 +282,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 414);
-            this.mainTabControl.TabIndex = 11;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // mainTabMessagePage
@@ -329,7 +329,7 @@
             this.messageTabControl.Name = "messageTabControl";
             this.messageTabControl.SelectedIndex = 0;
             this.messageTabControl.Size = new System.Drawing.Size(459, 366);
-            this.messageTabControl.TabIndex = 11;
+            this.messageTabControl.TabIndex = 0;
             this.messageTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.messageTabControl_DrawItem);
             // 
             // tabMessagePage
@@ -368,7 +368,7 @@
             this.grouperMessageFormat.ShadowControl = false;
             this.grouperMessageFormat.ShadowThickness = 1;
             this.grouperMessageFormat.Size = new System.Drawing.Size(416, 70);
-            this.grouperMessageFormat.TabIndex = 22;
+            this.grouperMessageFormat.TabIndex = 1;
             this.grouperMessageFormat.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageFormat_CustomPaint);
             // 
             // cboMessageFormat
@@ -409,7 +409,7 @@
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(416, 240);
-            this.grouperMessageText.TabIndex = 21;
+            this.grouperMessageText.TabIndex = 0;
             // 
             // txtMessageText
             // 
@@ -459,6 +459,17 @@
             this.tabFilesPage.TabIndex = 5;
             this.tabFilesPage.Text = "Files";
             // 
+            // label2
+            // 
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label2.Location = new System.Drawing.Point(16, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(416, 56);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "The default is to just send one message so if you have selected muliple files and" +
+    " want to send all of them you have to change the Message Count on the Sender tab" +
+    ".";
+            // 
             // grouperMessageFiles
             // 
             this.grouperMessageFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -489,7 +500,7 @@
             this.grouperMessageFiles.ShadowControl = false;
             this.grouperMessageFiles.ShadowThickness = 1;
             this.grouperMessageFiles.Size = new System.Drawing.Size(416, 247);
-            this.grouperMessageFiles.TabIndex = 17;
+            this.grouperMessageFiles.TabIndex = 1;
             this.grouperMessageFiles.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageFiles_CustomPaint);
             // 
             // radioButtonBinaryFile
@@ -500,7 +511,7 @@
             this.radioButtonBinaryFile.Location = new System.Drawing.Point(104, 216);
             this.radioButtonBinaryFile.Name = "radioButtonBinaryFile";
             this.radioButtonBinaryFile.Size = new System.Drawing.Size(73, 17);
-            this.radioButtonBinaryFile.TabIndex = 15;
+            this.radioButtonBinaryFile.TabIndex = 3;
             this.radioButtonBinaryFile.Text = "Binary File";
             this.radioButtonBinaryFile.UseVisualStyleBackColor = true;
             // 
@@ -512,7 +523,7 @@
             this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 216);
             this.radioButtonJsonTemplate.Name = "radioButtonJsonTemplate";
             this.radioButtonJsonTemplate.Size = new System.Drawing.Size(100, 17);
-            this.radioButtonJsonTemplate.TabIndex = 14;
+            this.radioButtonJsonTemplate.TabIndex = 4;
             this.radioButtonJsonTemplate.TabStop = true;
             this.radioButtonJsonTemplate.Text = "JSON Template";
             this.radioButtonJsonTemplate.UseVisualStyleBackColor = true;
@@ -525,7 +536,7 @@
             this.radioButtonXmlTemplate.Location = new System.Drawing.Point(305, 216);
             this.radioButtonXmlTemplate.Name = "radioButtonXmlTemplate";
             this.radioButtonXmlTemplate.Size = new System.Drawing.Size(94, 17);
-            this.radioButtonXmlTemplate.TabIndex = 9;
+            this.radioButtonXmlTemplate.TabIndex = 5;
             this.radioButtonXmlTemplate.TabStop = true;
             this.radioButtonXmlTemplate.Text = "XML Template";
             this.radioButtonXmlTemplate.UseVisualStyleBackColor = true;
@@ -539,7 +550,7 @@
             this.radioButtonTextFile.Location = new System.Drawing.Point(16, 216);
             this.radioButtonTextFile.Name = "radioButtonTextFile";
             this.radioButtonTextFile.Size = new System.Drawing.Size(65, 17);
-            this.radioButtonTextFile.TabIndex = 7;
+            this.radioButtonTextFile.TabIndex = 2;
             this.radioButtonTextFile.TabStop = true;
             this.radioButtonTextFile.Text = "Text File";
             this.radioButtonTextFile.UseVisualStyleBackColor = true;
@@ -551,7 +562,7 @@
             this.checkBoxFileName.Location = new System.Drawing.Point(22, 35);
             this.checkBoxFileName.Name = "checkBoxFileName";
             this.checkBoxFileName.Size = new System.Drawing.Size(54, 17);
-            this.checkBoxFileName.TabIndex = 4;
+            this.checkBoxFileName.TabIndex = 1;
             this.checkBoxFileName.Text = "Name";
             this.checkBoxFileName.UseVisualStyleBackColor = true;
             this.checkBoxFileName.CheckedChanged += new System.EventHandler(this.checkBoxFileName_CheckedChanged);
@@ -571,7 +582,7 @@
             this.messageFileListView.Name = "messageFileListView";
             this.messageFileListView.OwnerDraw = true;
             this.messageFileListView.Size = new System.Drawing.Size(384, 176);
-            this.messageFileListView.TabIndex = 2;
+            this.messageFileListView.TabIndex = 0;
             this.messageFileListView.UseCompatibleStateImageBehavior = false;
             this.messageFileListView.View = System.Windows.Forms.View.Details;
             this.messageFileListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.messageFileListView_DrawColumnHeader);
@@ -628,7 +639,7 @@
             this.grouperBrokeredMessageGenerator.ShadowControl = false;
             this.grouperBrokeredMessageGenerator.ShadowThickness = 1;
             this.grouperBrokeredMessageGenerator.Size = new System.Drawing.Size(416, 310);
-            this.grouperBrokeredMessageGenerator.TabIndex = 35;
+            this.grouperBrokeredMessageGenerator.TabIndex = 0;
             this.grouperBrokeredMessageGenerator.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperBrokeredMessageGenerator_CustomPaint);
             // 
             // lblRegistration
@@ -638,7 +649,7 @@
             this.lblRegistration.Location = new System.Drawing.Point(16, 80);
             this.lblRegistration.Name = "lblRegistration";
             this.lblRegistration.Size = new System.Drawing.Size(57, 13);
-            this.lblRegistration.TabIndex = 35;
+            this.lblRegistration.TabIndex = 2;
             this.lblRegistration.Text = "Properties:";
             // 
             // brokeredMessageGeneratorPropertyGrid
@@ -653,7 +664,7 @@
             this.brokeredMessageGeneratorPropertyGrid.Location = new System.Drawing.Point(16, 96);
             this.brokeredMessageGeneratorPropertyGrid.Name = "brokeredMessageGeneratorPropertyGrid";
             this.brokeredMessageGeneratorPropertyGrid.Size = new System.Drawing.Size(384, 198);
-            this.brokeredMessageGeneratorPropertyGrid.TabIndex = 34;
+            this.brokeredMessageGeneratorPropertyGrid.TabIndex = 3;
             this.brokeredMessageGeneratorPropertyGrid.ToolbarVisible = false;
             // 
             // cboBrokeredMessageGeneratorType
@@ -666,7 +677,7 @@
             this.cboBrokeredMessageGeneratorType.Location = new System.Drawing.Point(16, 48);
             this.cboBrokeredMessageGeneratorType.Name = "cboBrokeredMessageGeneratorType";
             this.cboBrokeredMessageGeneratorType.Size = new System.Drawing.Size(384, 21);
-            this.cboBrokeredMessageGeneratorType.TabIndex = 33;
+            this.cboBrokeredMessageGeneratorType.TabIndex = 1;
             this.cboBrokeredMessageGeneratorType.SelectedIndexChanged += new System.EventHandler(this.cboBrokeredMessageGeneratorType_SelectedIndexChanged);
             // 
             // lblRegistrationType
@@ -676,7 +687,7 @@
             this.lblRegistrationType.Location = new System.Drawing.Point(16, 32);
             this.lblRegistrationType.Name = "lblRegistrationType";
             this.lblRegistrationType.Size = new System.Drawing.Size(130, 13);
-            this.lblRegistrationType.TabIndex = 32;
+            this.lblRegistrationType.TabIndex = 0;
             this.lblRegistrationType.Text = "Message Generator Type:";
             // 
             // grouperMessageProperties
@@ -702,7 +713,7 @@
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
             this.grouperMessageProperties.Size = new System.Drawing.Size(461, 366);
-            this.grouperMessageProperties.TabIndex = 15;
+            this.grouperMessageProperties.TabIndex = 0;
             this.grouperMessageProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageProperties_CustomPaint);
             // 
             // propertiesDataGridView
@@ -748,7 +759,7 @@
             this.senderEnabledCheckBox.Location = new System.Drawing.Point(880, 12);
             this.senderEnabledCheckBox.Name = "senderEnabledCheckBox";
             this.senderEnabledCheckBox.Size = new System.Drawing.Size(75, 19);
-            this.senderEnabledCheckBox.TabIndex = 14;
+            this.senderEnabledCheckBox.TabIndex = 2;
             this.senderEnabledCheckBox.Text = "Enabled:";
             this.senderEnabledCheckBox.UseVisualStyleBackColor = true;
             this.senderEnabledCheckBox.CheckedChanged += new System.EventHandler(this.senderEnabledCheckBox_CheckedChanged);
@@ -800,7 +811,7 @@
             this.grouperSender.ShadowControl = false;
             this.grouperSender.ShadowThickness = 1;
             this.grouperSender.Size = new System.Drawing.Size(328, 350);
-            this.grouperSender.TabIndex = 17;
+            this.grouperSender.TabIndex = 1;
             this.grouperSender.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSender_CustomPaint);
             // 
             // checkBoxSendNewFactory
@@ -810,7 +821,7 @@
             this.checkBoxSendNewFactory.Location = new System.Drawing.Point(16, 232);
             this.checkBoxSendNewFactory.Name = "checkBoxSendNewFactory";
             this.checkBoxSendNewFactory.Size = new System.Drawing.Size(254, 17);
-            this.checkBoxSendNewFactory.TabIndex = 90;
+            this.checkBoxSendNewFactory.TabIndex = 13;
             this.checkBoxSendNewFactory.Text = "Create New Messaging Factory for Each Sender";
             this.checkBoxSendNewFactory.UseVisualStyleBackColor = true;
             // 
@@ -822,7 +833,7 @@
             this.cboSenderInspector.Location = new System.Drawing.Point(96, 323);
             this.cboSenderInspector.Name = "cboSenderInspector";
             this.cboSenderInspector.Size = new System.Drawing.Size(216, 21);
-            this.cboSenderInspector.TabIndex = 89;
+            this.cboSenderInspector.TabIndex = 23;
             // 
             // lblSenderInspector
             // 
@@ -831,7 +842,7 @@
             this.lblSenderInspector.Location = new System.Drawing.Point(16, 327);
             this.lblSenderInspector.Name = "lblSenderInspector";
             this.lblSenderInspector.Size = new System.Drawing.Size(77, 13);
-            this.lblSenderInspector.TabIndex = 88;
+            this.lblSenderInspector.TabIndex = 22;
             this.lblSenderInspector.Text = "Msg Inspector:";
             // 
             // txtMessageCount
@@ -842,7 +853,7 @@
             this.txtMessageCount.Location = new System.Drawing.Point(96, 259);
             this.txtMessageCount.Name = "txtMessageCount";
             this.txtMessageCount.Size = new System.Drawing.Size(72, 20);
-            this.txtMessageCount.TabIndex = 87;
+            this.txtMessageCount.TabIndex = 15;
             // 
             // txtSenderThinkTime
             // 
@@ -850,7 +861,7 @@
             this.txtSenderThinkTime.Location = new System.Drawing.Point(240, 200);
             this.txtSenderThinkTime.Name = "txtSenderThinkTime";
             this.txtSenderThinkTime.Size = new System.Drawing.Size(72, 20);
-            this.txtSenderThinkTime.TabIndex = 85;
+            this.txtSenderThinkTime.TabIndex = 12;
             this.txtSenderThinkTime.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblSenderThinkTime
@@ -860,7 +871,7 @@
             this.lblSenderThinkTime.Location = new System.Drawing.Point(176, 204);
             this.lblSenderThinkTime.Name = "lblSenderThinkTime";
             this.lblSenderThinkTime.Size = new System.Drawing.Size(67, 13);
-            this.lblSenderThinkTime.TabIndex = 86;
+            this.lblSenderThinkTime.TabIndex = 11;
             this.lblSenderThinkTime.Text = "Interval (ms):";
             // 
             // checkBoxSenderThinkTime
@@ -870,7 +881,7 @@
             this.checkBoxSenderThinkTime.Location = new System.Drawing.Point(16, 204);
             this.checkBoxSenderThinkTime.Name = "checkBoxSenderThinkTime";
             this.checkBoxSenderThinkTime.Size = new System.Drawing.Size(101, 17);
-            this.checkBoxSenderThinkTime.TabIndex = 84;
+            this.checkBoxSenderThinkTime.TabIndex = 10;
             this.checkBoxSenderThinkTime.Text = "Use Think Time";
             this.checkBoxSenderThinkTime.UseVisualStyleBackColor = true;
             this.checkBoxSenderThinkTime.CheckedChanged += new System.EventHandler(this.checkBoxSenderThinkTime_CheckedChanged);
@@ -880,7 +891,7 @@
             this.txtSendTaskCount.Location = new System.Drawing.Point(240, 259);
             this.txtSendTaskCount.Name = "txtSendTaskCount";
             this.txtSendTaskCount.Size = new System.Drawing.Size(72, 20);
-            this.txtSendTaskCount.TabIndex = 11;
+            this.txtSendTaskCount.TabIndex = 17;
             this.txtSendTaskCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // checkBoxSendBatch
@@ -1015,7 +1026,7 @@
             this.lblSendBatchSize.Location = new System.Drawing.Point(176, 295);
             this.lblSendBatchSize.Name = "lblSendBatchSize";
             this.lblSendBatchSize.Size = new System.Drawing.Size(61, 13);
-            this.lblSendBatchSize.TabIndex = 80;
+            this.lblSendBatchSize.TabIndex = 20;
             this.lblSendBatchSize.Text = "Batch Size:";
             // 
             // txtSendBatchSize
@@ -1023,7 +1034,7 @@
             this.txtSendBatchSize.Location = new System.Drawing.Point(240, 291);
             this.txtSendBatchSize.Name = "txtSendBatchSize";
             this.txtSendBatchSize.Size = new System.Drawing.Size(72, 20);
-            this.txtSendBatchSize.TabIndex = 13;
+            this.txtSendBatchSize.TabIndex = 21;
             this.txtSendBatchSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblBody
@@ -1033,7 +1044,7 @@
             this.lblBody.Location = new System.Drawing.Point(16, 295);
             this.lblBody.Name = "lblBody";
             this.lblBody.Size = new System.Drawing.Size(61, 13);
-            this.lblBody.TabIndex = 75;
+            this.lblBody.TabIndex = 18;
             this.lblBody.Text = "Body Type:";
             // 
             // cboBodyType
@@ -1048,7 +1059,7 @@
             this.cboBodyType.Location = new System.Drawing.Point(96, 291);
             this.cboBodyType.Name = "cboBodyType";
             this.cboBodyType.Size = new System.Drawing.Size(72, 21);
-            this.cboBodyType.TabIndex = 12;
+            this.cboBodyType.TabIndex = 19;
             // 
             // lblSendTaskCount
             // 
@@ -1057,7 +1068,7 @@
             this.lblSendTaskCount.Location = new System.Drawing.Point(176, 263);
             this.lblSendTaskCount.Name = "lblSendTaskCount";
             this.lblSendTaskCount.Size = new System.Drawing.Size(65, 13);
-            this.lblSendTaskCount.TabIndex = 76;
+            this.lblSendTaskCount.TabIndex = 16;
             this.lblSendTaskCount.Text = "Task Count:";
             // 
             // lblCount
@@ -1067,7 +1078,7 @@
             this.lblCount.Location = new System.Drawing.Point(16, 263);
             this.lblCount.Name = "lblCount";
             this.lblCount.Size = new System.Drawing.Size(84, 13);
-            this.lblCount.TabIndex = 73;
+            this.lblCount.TabIndex = 14;
             this.lblCount.Text = "Message Count:";
             // 
             // grouperMessage
@@ -1125,7 +1136,7 @@
             this.checkBoxForcePersistence.Location = new System.Drawing.Point(112, 204);
             this.checkBoxForcePersistence.Name = "checkBoxForcePersistence";
             this.checkBoxForcePersistence.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxForcePersistence.TabIndex = 72;
+            this.checkBoxForcePersistence.TabIndex = 11;
             this.checkBoxForcePersistence.UseVisualStyleBackColor = true;
             // 
             // lblForcePersistence
@@ -1135,7 +1146,7 @@
             this.lblForcePersistence.Location = new System.Drawing.Point(16, 204);
             this.lblForcePersistence.Name = "lblForcePersistence";
             this.lblForcePersistence.Size = new System.Drawing.Size(95, 13);
-            this.lblForcePersistence.TabIndex = 71;
+            this.lblForcePersistence.TabIndex = 10;
             this.lblForcePersistence.Text = "Force Persistence:";
             // 
             // lblContentType
@@ -1145,7 +1156,7 @@
             this.lblContentType.Location = new System.Drawing.Point(304, 108);
             this.lblContentType.Name = "lblContentType";
             this.lblContentType.Size = new System.Drawing.Size(71, 13);
-            this.lblContentType.TabIndex = 70;
+            this.lblContentType.TabIndex = 16;
             this.lblContentType.Text = "ContentType:";
             // 
             // txtContentType
@@ -1155,7 +1166,7 @@
             this.txtContentType.Location = new System.Drawing.Point(400, 104);
             this.txtContentType.Name = "txtContentType";
             this.txtContentType.Size = new System.Drawing.Size(176, 20);
-            this.txtContentType.TabIndex = 5;
+            this.txtContentType.TabIndex = 17;
             this.txtContentType.TextChanged += new System.EventHandler(this.txtContentType_TextChanged);
             // 
             // txtScheduledEnqueueTimeUtc
@@ -1163,7 +1174,7 @@
             this.txtScheduledEnqueueTimeUtc.Location = new System.Drawing.Point(112, 168);
             this.txtScheduledEnqueueTimeUtc.Name = "txtScheduledEnqueueTimeUtc";
             this.txtScheduledEnqueueTimeUtc.Size = new System.Drawing.Size(176, 20);
-            this.txtScheduledEnqueueTimeUtc.TabIndex = 8;
+            this.txtScheduledEnqueueTimeUtc.TabIndex = 9;
             this.txtScheduledEnqueueTimeUtc.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblScheduledEnqueueTimeUtc
@@ -1173,7 +1184,7 @@
             this.lblScheduledEnqueueTimeUtc.Location = new System.Drawing.Point(16, 172);
             this.lblScheduledEnqueueTimeUtc.Name = "lblScheduledEnqueueTimeUtc";
             this.lblScheduledEnqueueTimeUtc.Size = new System.Drawing.Size(81, 13);
-            this.lblScheduledEnqueueTimeUtc.TabIndex = 58;
+            this.lblScheduledEnqueueTimeUtc.TabIndex = 8;
             this.lblScheduledEnqueueTimeUtc.Text = "Schedule (sec):";
             // 
             // txtTo
@@ -1181,7 +1192,7 @@
             this.txtTo.Location = new System.Drawing.Point(112, 72);
             this.txtTo.Name = "txtTo";
             this.txtTo.Size = new System.Drawing.Size(176, 20);
-            this.txtTo.TabIndex = 2;
+            this.txtTo.TabIndex = 3;
             // 
             // lblTo
             // 
@@ -1190,7 +1201,7 @@
             this.lblTo.Location = new System.Drawing.Point(16, 76);
             this.lblTo.Name = "lblTo";
             this.lblTo.Size = new System.Drawing.Size(23, 13);
-            this.lblTo.TabIndex = 69;
+            this.lblTo.TabIndex = 2;
             this.lblTo.Text = "To:";
             // 
             // txtTimeToLive
@@ -1200,7 +1211,7 @@
             this.txtTimeToLive.Location = new System.Drawing.Point(400, 168);
             this.txtTimeToLive.Name = "txtTimeToLive";
             this.txtTimeToLive.Size = new System.Drawing.Size(176, 20);
-            this.txtTimeToLive.TabIndex = 9;
+            this.txtTimeToLive.TabIndex = 21;
             this.txtTimeToLive.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblTimeToLive
@@ -1210,7 +1221,7 @@
             this.lblTimeToLive.Location = new System.Drawing.Point(304, 172);
             this.lblTimeToLive.Name = "lblTimeToLive";
             this.lblTimeToLive.Size = new System.Drawing.Size(80, 13);
-            this.lblTimeToLive.TabIndex = 68;
+            this.lblTimeToLive.TabIndex = 20;
             this.lblTimeToLive.Text = "TimeToLive (s):";
             // 
             // lblReplyToSessionId
@@ -1220,7 +1231,7 @@
             this.lblReplyToSessionId.Location = new System.Drawing.Point(304, 140);
             this.lblReplyToSessionId.Name = "lblReplyToSessionId";
             this.lblReplyToSessionId.Size = new System.Drawing.Size(96, 13);
-            this.lblReplyToSessionId.TabIndex = 67;
+            this.lblReplyToSessionId.TabIndex = 18;
             this.lblReplyToSessionId.Text = "ReplyToSessionId:";
             // 
             // txtReplyToSessionId
@@ -1230,7 +1241,7 @@
             this.txtReplyToSessionId.Location = new System.Drawing.Point(400, 136);
             this.txtReplyToSessionId.Name = "txtReplyToSessionId";
             this.txtReplyToSessionId.Size = new System.Drawing.Size(176, 20);
-            this.txtReplyToSessionId.TabIndex = 7;
+            this.txtReplyToSessionId.TabIndex = 19;
             // 
             // lblReplyTo
             // 
@@ -1239,7 +1250,7 @@
             this.lblReplyTo.Location = new System.Drawing.Point(16, 108);
             this.lblReplyTo.Name = "lblReplyTo";
             this.lblReplyTo.Size = new System.Drawing.Size(50, 13);
-            this.lblReplyTo.TabIndex = 66;
+            this.lblReplyTo.TabIndex = 4;
             this.lblReplyTo.Text = "ReplyTo:";
             // 
             // txtReplyTo
@@ -1247,7 +1258,7 @@
             this.txtReplyTo.Location = new System.Drawing.Point(112, 104);
             this.txtReplyTo.Name = "txtReplyTo";
             this.txtReplyTo.Size = new System.Drawing.Size(176, 20);
-            this.txtReplyTo.TabIndex = 4;
+            this.txtReplyTo.TabIndex = 5;
             // 
             // txtCorrelationId
             // 
@@ -1256,7 +1267,7 @@
             this.txtCorrelationId.Location = new System.Drawing.Point(400, 72);
             this.txtCorrelationId.Name = "txtCorrelationId";
             this.txtCorrelationId.Size = new System.Drawing.Size(176, 20);
-            this.txtCorrelationId.TabIndex = 3;
+            this.txtCorrelationId.TabIndex = 15;
             // 
             // lblCorrelationId
             // 
@@ -1265,7 +1276,7 @@
             this.lblCorrelationId.Location = new System.Drawing.Point(304, 76);
             this.lblCorrelationId.Name = "lblCorrelationId";
             this.lblCorrelationId.Size = new System.Drawing.Size(69, 13);
-            this.lblCorrelationId.TabIndex = 65;
+            this.lblCorrelationId.TabIndex = 14;
             this.lblCorrelationId.Text = "CorrelationId:";
             // 
             // lblSessionId
@@ -1275,7 +1286,7 @@
             this.lblSessionId.Location = new System.Drawing.Point(304, 44);
             this.lblSessionId.Name = "lblSessionId";
             this.lblSessionId.Size = new System.Drawing.Size(56, 13);
-            this.lblSessionId.TabIndex = 64;
+            this.lblSessionId.TabIndex = 12;
             this.lblSessionId.Text = "SessionId:";
             // 
             // txtSessionId
@@ -1286,7 +1297,7 @@
             this.txtSessionId.Location = new System.Drawing.Point(400, 40);
             this.txtSessionId.Name = "txtSessionId";
             this.txtSessionId.Size = new System.Drawing.Size(176, 20);
-            this.txtSessionId.TabIndex = 1;
+            this.txtSessionId.TabIndex = 13;
             // 
             // lblLabel
             // 
@@ -1295,7 +1306,7 @@
             this.lblLabel.Location = new System.Drawing.Point(16, 140);
             this.lblLabel.Name = "lblLabel";
             this.lblLabel.Size = new System.Drawing.Size(36, 13);
-            this.lblLabel.TabIndex = 57;
+            this.lblLabel.TabIndex = 6;
             this.lblLabel.Text = "Label:";
             // 
             // txtLabel
@@ -1303,7 +1314,7 @@
             this.txtLabel.Location = new System.Drawing.Point(112, 136);
             this.txtLabel.Name = "txtLabel";
             this.txtLabel.Size = new System.Drawing.Size(176, 20);
-            this.txtLabel.TabIndex = 6;
+            this.txtLabel.TabIndex = 7;
             this.txtLabel.TextChanged += new System.EventHandler(this.txtLabel_TextChanged);
             // 
             // lblMessageId
@@ -1313,7 +1324,7 @@
             this.lblMessageId.Location = new System.Drawing.Point(16, 44);
             this.lblMessageId.Name = "lblMessageId";
             this.lblMessageId.Size = new System.Drawing.Size(62, 13);
-            this.lblMessageId.TabIndex = 41;
+            this.lblMessageId.TabIndex = 0;
             this.lblMessageId.Text = "MessageId:";
             // 
             // txtMessageId
@@ -1321,7 +1332,7 @@
             this.txtMessageId.Location = new System.Drawing.Point(112, 40);
             this.txtMessageId.Name = "txtMessageId";
             this.txtMessageId.Size = new System.Drawing.Size(176, 20);
-            this.txtMessageId.TabIndex = 0;
+            this.txtMessageId.TabIndex = 1;
             // 
             // mainTabReceiverPage
             // 
@@ -1830,7 +1841,7 @@
             this.grouperReceiverStatistics.ShadowControl = false;
             this.grouperReceiverStatistics.ShadowThickness = 1;
             this.grouperReceiverStatistics.Size = new System.Drawing.Size(128, 352);
-            this.grouperReceiverStatistics.TabIndex = 131;
+            this.grouperReceiverStatistics.TabIndex = 2;
             // 
             // receiverLayoutPanel
             // 
@@ -1888,7 +1899,7 @@
             this.lblReceiverLastTime.Location = new System.Drawing.Point(3, 19);
             this.lblReceiverLastTime.Name = "lblReceiverLastTime";
             this.lblReceiverLastTime.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverLastTime.TabIndex = 113;
+            this.lblReceiverLastTime.TabIndex = 1;
             this.lblReceiverLastTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverLastCaption
@@ -1898,7 +1909,7 @@
             this.lblReceiverLastCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverLastCaption.Name = "lblReceiverLastCaption";
             this.lblReceiverLastCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblReceiverLastCaption.TabIndex = 112;
+            this.lblReceiverLastCaption.TabIndex = 0;
             this.lblReceiverLastCaption.Text = "Last Time";
             // 
             // tableLayoutPanel16
@@ -1928,7 +1939,7 @@
             this.lblReceiverAverageTime.Location = new System.Drawing.Point(3, 19);
             this.lblReceiverAverageTime.Name = "lblReceiverAverageTime";
             this.lblReceiverAverageTime.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverAverageTime.TabIndex = 116;
+            this.lblReceiverAverageTime.TabIndex = 1;
             this.lblReceiverAverageTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverAverageCaption
@@ -1938,7 +1949,7 @@
             this.lblReceiverAverageCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverAverageCaption.Name = "lblReceiverAverageCaption";
             this.lblReceiverAverageCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblReceiverAverageCaption.TabIndex = 115;
+            this.lblReceiverAverageCaption.TabIndex = 0;
             this.lblReceiverAverageCaption.Text = "Average Time";
             // 
             // tableLayoutPanel15
@@ -1968,7 +1979,7 @@
             this.lblReceiverMinimumTime.Location = new System.Drawing.Point(3, 19);
             this.lblReceiverMinimumTime.Name = "lblReceiverMinimumTime";
             this.lblReceiverMinimumTime.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverMinimumTime.TabIndex = 118;
+            this.lblReceiverMinimumTime.TabIndex = 1;
             this.lblReceiverMinimumTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverMinimumCaption
@@ -1978,7 +1989,7 @@
             this.lblReceiverMinimumCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverMinimumCaption.Name = "lblReceiverMinimumCaption";
             this.lblReceiverMinimumCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblReceiverMinimumCaption.TabIndex = 117;
+            this.lblReceiverMinimumCaption.TabIndex = 0;
             this.lblReceiverMinimumCaption.Text = "Minimum Time";
             // 
             // tableLayoutPanel14
@@ -2008,7 +2019,7 @@
             this.lblReceiverMaximumTime.Location = new System.Drawing.Point(3, 19);
             this.lblReceiverMaximumTime.Name = "lblReceiverMaximumTime";
             this.lblReceiverMaximumTime.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverMaximumTime.TabIndex = 126;
+            this.lblReceiverMaximumTime.TabIndex = 1;
             this.lblReceiverMaximumTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverMaximumCaption
@@ -2018,7 +2029,7 @@
             this.lblReceiverMaximumCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverMaximumCaption.Name = "lblReceiverMaximumCaption";
             this.lblReceiverMaximumCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblReceiverMaximumCaption.TabIndex = 125;
+            this.lblReceiverMaximumCaption.TabIndex = 0;
             this.lblReceiverMaximumCaption.Text = "Maximum Time";
             // 
             // tableLayoutPanel12
@@ -2048,7 +2059,7 @@
             this.lblReceiverMessagesPerSecond.Location = new System.Drawing.Point(3, 19);
             this.lblReceiverMessagesPerSecond.Name = "lblReceiverMessagesPerSecond";
             this.lblReceiverMessagesPerSecond.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverMessagesPerSecond.TabIndex = 141;
+            this.lblReceiverMessagesPerSecond.TabIndex = 1;
             this.lblReceiverMessagesPerSecond.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverMessagesPerSecondCaption
@@ -2058,7 +2069,7 @@
             this.lblReceiverMessagesPerSecondCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverMessagesPerSecondCaption.Name = "lblReceiverMessagesPerSecondCaption";
             this.lblReceiverMessagesPerSecondCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblReceiverMessagesPerSecondCaption.TabIndex = 140;
+            this.lblReceiverMessagesPerSecondCaption.TabIndex = 0;
             this.lblReceiverMessagesPerSecondCaption.Text = "Messages/Sec";
             // 
             // tableLayoutPanel6
@@ -2088,7 +2099,7 @@
             this.lblReceiverMessageNumber.Location = new System.Drawing.Point(3, 20);
             this.lblReceiverMessageNumber.Name = "lblReceiverMessageNumber";
             this.lblReceiverMessageNumber.Size = new System.Drawing.Size(84, 13);
-            this.lblReceiverMessageNumber.TabIndex = 125;
+            this.lblReceiverMessageNumber.TabIndex = 1;
             this.lblReceiverMessageNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReceiverCallsSuccessedCaption
@@ -2098,7 +2109,7 @@
             this.lblReceiverCallsSuccessedCaption.Location = new System.Drawing.Point(3, 0);
             this.lblReceiverCallsSuccessedCaption.Name = "lblReceiverCallsSuccessedCaption";
             this.lblReceiverCallsSuccessedCaption.Size = new System.Drawing.Size(84, 20);
-            this.lblReceiverCallsSuccessedCaption.TabIndex = 124;
+            this.lblReceiverCallsSuccessedCaption.TabIndex = 0;
             this.lblReceiverCallsSuccessedCaption.Text = "Messages Total";
             // 
             // grouperSenderStatistics
@@ -2125,7 +2136,7 @@
             this.grouperSenderStatistics.ShadowControl = false;
             this.grouperSenderStatistics.ShadowThickness = 1;
             this.grouperSenderStatistics.Size = new System.Drawing.Size(128, 360);
-            this.grouperSenderStatistics.TabIndex = 130;
+            this.grouperSenderStatistics.TabIndex = 0;
             // 
             // senderLayoutPanel
             // 
@@ -2183,7 +2194,7 @@
             this.lblSenderAverageTime.Location = new System.Drawing.Point(3, 19);
             this.lblSenderAverageTime.Name = "lblSenderAverageTime";
             this.lblSenderAverageTime.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderAverageTime.TabIndex = 117;
+            this.lblSenderAverageTime.TabIndex = 1;
             this.lblSenderAverageTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderAverageCaption
@@ -2193,7 +2204,7 @@
             this.lblSenderAverageCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderAverageCaption.Name = "lblSenderAverageCaption";
             this.lblSenderAverageCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblSenderAverageCaption.TabIndex = 116;
+            this.lblSenderAverageCaption.TabIndex = 0;
             this.lblSenderAverageCaption.Text = "Average Time";
             // 
             // tableLayoutPanel2
@@ -2223,7 +2234,7 @@
             this.lblSenderLastTime.Location = new System.Drawing.Point(3, 19);
             this.lblSenderLastTime.Name = "lblSenderLastTime";
             this.lblSenderLastTime.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderLastTime.TabIndex = 113;
+            this.lblSenderLastTime.TabIndex = 1;
             this.lblSenderLastTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderLastCaption
@@ -2233,7 +2244,7 @@
             this.lblSenderLastCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderLastCaption.Name = "lblSenderLastCaption";
             this.lblSenderLastCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblSenderLastCaption.TabIndex = 112;
+            this.lblSenderLastCaption.TabIndex = 0;
             this.lblSenderLastCaption.Text = "Last Time";
             // 
             // tableLayoutPanel4
@@ -2263,7 +2274,7 @@
             this.lblSenderMinimumTime.Location = new System.Drawing.Point(3, 19);
             this.lblSenderMinimumTime.Name = "lblSenderMinimumTime";
             this.lblSenderMinimumTime.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderMinimumTime.TabIndex = 118;
+            this.lblSenderMinimumTime.TabIndex = 1;
             this.lblSenderMinimumTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderMinimumCaption
@@ -2273,7 +2284,7 @@
             this.lblSenderMinimumCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderMinimumCaption.Name = "lblSenderMinimumCaption";
             this.lblSenderMinimumCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblSenderMinimumCaption.TabIndex = 117;
+            this.lblSenderMinimumCaption.TabIndex = 0;
             this.lblSenderMinimumCaption.Text = "Minimum Time";
             // 
             // tableLayoutPanel5
@@ -2303,7 +2314,7 @@
             this.lblSenderMaximumTime.Location = new System.Drawing.Point(3, 19);
             this.lblSenderMaximumTime.Name = "lblSenderMaximumTime";
             this.lblSenderMaximumTime.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderMaximumTime.TabIndex = 126;
+            this.lblSenderMaximumTime.TabIndex = 1;
             this.lblSenderMaximumTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderMaximumCaption
@@ -2313,7 +2324,7 @@
             this.lblSenderMaximumCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderMaximumCaption.Name = "lblSenderMaximumCaption";
             this.lblSenderMaximumCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblSenderMaximumCaption.TabIndex = 125;
+            this.lblSenderMaximumCaption.TabIndex = 0;
             this.lblSenderMaximumCaption.Text = "Maximum Time";
             // 
             // tableLayoutPanel8
@@ -2343,7 +2354,7 @@
             this.lblSenderMessagesPerSecond.Location = new System.Drawing.Point(3, 19);
             this.lblSenderMessagesPerSecond.Name = "lblSenderMessagesPerSecond";
             this.lblSenderMessagesPerSecond.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderMessagesPerSecond.TabIndex = 141;
+            this.lblSenderMessagesPerSecond.TabIndex = 1;
             this.lblSenderMessagesPerSecond.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderMessagesPerSecondCaption
@@ -2353,7 +2364,7 @@
             this.lblSenderMessagesPerSecondCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderMessagesPerSecondCaption.Name = "lblSenderMessagesPerSecondCaption";
             this.lblSenderMessagesPerSecondCaption.Size = new System.Drawing.Size(84, 19);
-            this.lblSenderMessagesPerSecondCaption.TabIndex = 140;
+            this.lblSenderMessagesPerSecondCaption.TabIndex = 0;
             this.lblSenderMessagesPerSecondCaption.Text = "Messages/Sec";
             // 
             // tableLayoutPanel10
@@ -2383,7 +2394,7 @@
             this.lblSenderMessageNumber.Location = new System.Drawing.Point(3, 20);
             this.lblSenderMessageNumber.Name = "lblSenderMessageNumber";
             this.lblSenderMessageNumber.Size = new System.Drawing.Size(84, 13);
-            this.lblSenderMessageNumber.TabIndex = 125;
+            this.lblSenderMessageNumber.TabIndex = 1;
             this.lblSenderMessageNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblSenderCallsSuccessedCaption
@@ -2393,7 +2404,7 @@
             this.lblSenderCallsSuccessedCaption.Location = new System.Drawing.Point(3, 0);
             this.lblSenderCallsSuccessedCaption.Name = "lblSenderCallsSuccessedCaption";
             this.lblSenderCallsSuccessedCaption.Size = new System.Drawing.Size(84, 20);
-            this.lblSenderCallsSuccessedCaption.TabIndex = 124;
+            this.lblSenderCallsSuccessedCaption.TabIndex = 0;
             this.lblSenderCallsSuccessedCaption.Text = "Messages Total";
             // 
             // chart
@@ -2485,7 +2496,7 @@
             this.chart.Series.Add(series3);
             this.chart.Series.Add(series4);
             this.chart.Size = new System.Drawing.Size(668, 352);
-            this.chart.TabIndex = 129;
+            this.chart.TabIndex = 1;
             title1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             title1.Name = "Title";
             title1.ShadowColor = System.Drawing.Color.Transparent;
@@ -2505,7 +2516,7 @@
             this.btnOpenFile.Location = new System.Drawing.Point(760, 438);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(72, 24);
-            this.btnOpenFile.TabIndex = 2;
+            this.btnOpenFile.TabIndex = 3;
             this.btnOpenFile.Text = "Open";
             this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
@@ -2525,7 +2536,7 @@
             this.btnClearFiles.Location = new System.Drawing.Point(680, 438);
             this.btnClearFiles.Name = "btnClearFiles";
             this.btnClearFiles.Size = new System.Drawing.Size(72, 24);
-            this.btnClearFiles.TabIndex = 1;
+            this.btnClearFiles.TabIndex = 2;
             this.btnClearFiles.Text = "Clear Files";
             this.btnClearFiles.UseVisualStyleBackColor = false;
             this.btnClearFiles.Click += new System.EventHandler(this.btnClearFiles_Click);
@@ -2542,21 +2553,10 @@
             this.btnSelectFiles.Location = new System.Drawing.Point(601, 438);
             this.btnSelectFiles.Name = "btnSelectFiles";
             this.btnSelectFiles.Size = new System.Drawing.Size(72, 24);
-            this.btnSelectFiles.TabIndex = 0;
+            this.btnSelectFiles.TabIndex = 1;
             this.btnSelectFiles.Text = "Select Files";
             this.btnSelectFiles.UseVisualStyleBackColor = false;
             this.btnSelectFiles.Click += new System.EventHandler(this.btnSelectFiles_Click);
-            // 
-            // label2
-            // 
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label2.Location = new System.Drawing.Point(16, 19);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(416, 56);
-            this.label2.TabIndex = 34;
-            this.label2.Text = "The default is to just send one message so if you have selected muliple files and" +
-    " want to send all of them you have to change the Message Count on the Sender tab" +
-    ".";
             // 
             // TestTopicControl
             // 

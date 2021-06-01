@@ -117,7 +117,7 @@
             this.tsAutoDeleteOnIdle.Location = new System.Drawing.Point(13, 25);
             this.tsAutoDeleteOnIdle.Name = "tsAutoDeleteOnIdle";
             this.tsAutoDeleteOnIdle.Size = new System.Drawing.Size(273, 42);
-            this.tsAutoDeleteOnIdle.TabIndex = 28;
+            this.tsAutoDeleteOnIdle.TabIndex = 0;
             this.tsAutoDeleteOnIdle.TimeSpanValue = null;
             // 
             // groupergrouperDefaultMessageTimeToLive
@@ -142,14 +142,14 @@
             this.groupergrouperDefaultMessageTimeToLive.ShadowControl = false;
             this.groupergrouperDefaultMessageTimeToLive.ShadowThickness = 1;
             this.groupergrouperDefaultMessageTimeToLive.Size = new System.Drawing.Size(296, 80);
-            this.groupergrouperDefaultMessageTimeToLive.TabIndex = 2;
+            this.groupergrouperDefaultMessageTimeToLive.TabIndex = 3;
             // 
             // tsDefaultMessageTimeToLive
             // 
             this.tsDefaultMessageTimeToLive.Location = new System.Drawing.Point(13, 25);
             this.tsDefaultMessageTimeToLive.Name = "tsDefaultMessageTimeToLive";
             this.tsDefaultMessageTimeToLive.Size = new System.Drawing.Size(273, 42);
-            this.tsDefaultMessageTimeToLive.TabIndex = 26;
+            this.tsDefaultMessageTimeToLive.TabIndex = 0;
             this.tsDefaultMessageTimeToLive.TimeSpanValue = null;
             // 
             // grouperTopicSettings
@@ -226,7 +226,7 @@
             this.lblRelativeURI.Location = new System.Drawing.Point(16, 28);
             this.lblRelativeURI.Name = "lblRelativeURI";
             this.lblRelativeURI.Size = new System.Drawing.Size(71, 13);
-            this.lblRelativeURI.TabIndex = 22;
+            this.lblRelativeURI.TabIndex = 0;
             this.lblRelativeURI.Text = "Relative URI:";
             // 
             // txtPath
@@ -238,7 +238,7 @@
             this.txtPath.Location = new System.Drawing.Point(16, 44);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(576, 20);
-            this.txtPath.TabIndex = 0;
+            this.txtPath.TabIndex = 1;
             // 
             // grouperDuplicateDetectionHistoryTimeWindow
             // 
@@ -269,7 +269,7 @@
             this.tsDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(13, 25);
             this.tsDuplicateDetectionHistoryTimeWindow.Name = "tsDuplicateDetectionHistoryTimeWindow";
             this.tsDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(273, 42);
-            this.tsDuplicateDetectionHistoryTimeWindow.TabIndex = 27;
+            this.tsDuplicateDetectionHistoryTimeWindow.TabIndex = 0;
             this.tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = null;
             // 
             // grouperTopicProperties
@@ -301,7 +301,7 @@
             this.grouperTopicProperties.ShadowControl = false;
             this.grouperTopicProperties.ShadowThickness = 1;
             this.grouperTopicProperties.Size = new System.Drawing.Size(296, 256);
-            this.grouperTopicProperties.TabIndex = 3;
+            this.grouperTopicProperties.TabIndex = 2;
             // 
             // lblMaxTopicSizeInGB
             // 
@@ -310,7 +310,7 @@
             this.lblMaxTopicSizeInGB.Location = new System.Drawing.Point(252, 48);
             this.lblMaxTopicSizeInGB.Name = "lblMaxTopicSizeInGB";
             this.lblMaxTopicSizeInGB.Size = new System.Drawing.Size(31, 13);
-            this.lblMaxTopicSizeInGB.TabIndex = 33;
+            this.lblMaxTopicSizeInGB.TabIndex = 2;
             this.lblMaxTopicSizeInGB.Text = "1 GB";
             // 
             // trackBarMaxTopicSize
@@ -326,7 +326,7 @@
             this.trackBarMaxTopicSize.Minimum = 1;
             this.trackBarMaxTopicSize.Name = "trackBarMaxTopicSize";
             this.trackBarMaxTopicSize.Size = new System.Drawing.Size(248, 29);
-            this.trackBarMaxTopicSize.TabIndex = 35;
+            this.trackBarMaxTopicSize.TabIndex = 1;
             this.trackBarMaxTopicSize.TextTickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBarMaxTopicSize.TickColor = System.Drawing.Color.Black;
             this.trackBarMaxTopicSize.TickHeight = 4;
@@ -349,7 +349,7 @@
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
             this.txtUserMetadata.Size = new System.Drawing.Size(232, 152);
-            this.txtUserMetadata.TabIndex = 2;
+            this.txtUserMetadata.TabIndex = 4;
             // 
             // lblUserMetadata
             // 
@@ -358,7 +358,7 @@
             this.lblUserMetadata.Location = new System.Drawing.Point(16, 72);
             this.lblUserMetadata.Name = "lblUserMetadata";
             this.lblUserMetadata.Size = new System.Drawing.Size(88, 13);
-            this.lblUserMetadata.TabIndex = 27;
+            this.lblUserMetadata.TabIndex = 3;
             this.lblUserMetadata.Text = "User Description:";
             // 
             // btnOpenDescriptionForm
@@ -373,7 +373,7 @@
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(256, 88);
             this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
             this.btnOpenDescriptionForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenDescriptionForm.TabIndex = 3;
+            this.btnOpenDescriptionForm.TabIndex = 5;
             this.btnOpenDescriptionForm.Text = "...";
             this.btnOpenDescriptionForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenDescriptionForm.UseVisualStyleBackColor = false;
@@ -388,7 +388,7 @@
             this.lblMaxTopicSize.Location = new System.Drawing.Point(16, 28);
             this.lblMaxTopicSize.Name = "lblMaxTopicSize";
             this.lblMaxTopicSize.Size = new System.Drawing.Size(118, 13);
-            this.lblMaxTopicSize.TabIndex = 24;
+            this.lblMaxTopicSize.TabIndex = 0;
             this.lblMaxTopicSize.Text = "Max Queue Size In GB:";
             // 
             // grouperTopicInformation
@@ -462,7 +462,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
-            this.mainTabControl.TabIndex = 19;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // tabPageAuthorization
