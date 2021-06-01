@@ -106,7 +106,7 @@
             this.btnStart.Location = new System.Drawing.Point(840, 438);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(72, 24);
-            this.btnStart.TabIndex = 0;
+            this.btnStart.TabIndex = 1;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = false;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -125,7 +125,7 @@
             this.btnCancel.Location = new System.Drawing.Point(920, 438);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 1;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -145,7 +145,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 414);
-            this.mainTabControl.TabIndex = 9;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // mainTabReceiverPage
@@ -213,7 +213,7 @@
             this.grouperReceiver.ShadowControl = false;
             this.grouperReceiver.ShadowThickness = 1;
             this.grouperReceiver.Size = new System.Drawing.Size(936, 350);
-            this.grouperReceiver.TabIndex = 16;
+            this.grouperReceiver.TabIndex = 0;
             this.grouperReceiver.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperReceiver_CustomPaint);
             // 
             // cboReceiverInspector
@@ -225,7 +225,7 @@
             this.cboReceiverInspector.Location = new System.Drawing.Point(704, 264);
             this.cboReceiverInspector.Name = "cboReceiverInspector";
             this.cboReceiverInspector.Size = new System.Drawing.Size(216, 21);
-            this.cboReceiverInspector.TabIndex = 151;
+            this.cboReceiverInspector.TabIndex = 29;
             // 
             // lblReceiverInspector
             // 
@@ -235,7 +235,7 @@
             this.lblReceiverInspector.Location = new System.Drawing.Point(624, 268);
             this.lblReceiverInspector.Name = "lblReceiverInspector";
             this.lblReceiverInspector.Size = new System.Drawing.Size(77, 13);
-            this.lblReceiverInspector.TabIndex = 150;
+            this.lblReceiverInspector.TabIndex = 28;
             this.lblReceiverInspector.Text = "Msg Inspector:";
             // 
             // txtReceiverThinkTime
@@ -245,7 +245,7 @@
             this.txtReceiverThinkTime.Location = new System.Drawing.Point(848, 232);
             this.txtReceiverThinkTime.Name = "txtReceiverThinkTime";
             this.txtReceiverThinkTime.Size = new System.Drawing.Size(72, 20);
-            this.txtReceiverThinkTime.TabIndex = 148;
+            this.txtReceiverThinkTime.TabIndex = 27;
             this.txtReceiverThinkTime.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblReceiverThinkTime
@@ -256,7 +256,7 @@
             this.lblReceiverThinkTime.Location = new System.Drawing.Point(784, 236);
             this.lblReceiverThinkTime.Name = "lblReceiverThinkTime";
             this.lblReceiverThinkTime.Size = new System.Drawing.Size(67, 13);
-            this.lblReceiverThinkTime.TabIndex = 149;
+            this.lblReceiverThinkTime.TabIndex = 26;
             this.lblReceiverThinkTime.Text = "Interval (ms):";
             // 
             // checkBoxReceiverThinkTime
@@ -267,7 +267,7 @@
             this.checkBoxReceiverThinkTime.Location = new System.Drawing.Point(624, 236);
             this.checkBoxReceiverThinkTime.Name = "checkBoxReceiverThinkTime";
             this.checkBoxReceiverThinkTime.Size = new System.Drawing.Size(101, 17);
-            this.checkBoxReceiverThinkTime.TabIndex = 147;
+            this.checkBoxReceiverThinkTime.TabIndex = 25;
             this.checkBoxReceiverThinkTime.Text = "Use Think Time";
             this.checkBoxReceiverThinkTime.UseVisualStyleBackColor = true;
             this.checkBoxReceiverThinkTime.CheckedChanged += new System.EventHandler(this.checkBoxReceiverThinkTime_CheckedChanged);
@@ -277,7 +277,7 @@
             this.txtReceiveTaskCount.Location = new System.Drawing.Point(88, 40);
             this.txtReceiveTaskCount.Name = "txtReceiveTaskCount";
             this.txtReceiveTaskCount.Size = new System.Drawing.Size(104, 20);
-            this.txtReceiveTaskCount.TabIndex = 0;
+            this.txtReceiveTaskCount.TabIndex = 1;
             this.txtReceiveTaskCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // lblReceiveBatchSize
@@ -287,7 +287,7 @@
             this.lblReceiveBatchSize.Location = new System.Drawing.Point(16, 76);
             this.lblReceiveBatchSize.Name = "lblReceiveBatchSize";
             this.lblReceiveBatchSize.Size = new System.Drawing.Size(61, 13);
-            this.lblReceiveBatchSize.TabIndex = 124;
+            this.lblReceiveBatchSize.TabIndex = 6;
             this.lblReceiveBatchSize.Text = "Batch Size:";
             // 
             // txtReceiveBatchSize
@@ -295,7 +295,7 @@
             this.txtReceiveBatchSize.Location = new System.Drawing.Point(88, 72);
             this.txtReceiveBatchSize.Name = "txtReceiveBatchSize";
             this.txtReceiveBatchSize.Size = new System.Drawing.Size(104, 20);
-            this.txtReceiveBatchSize.TabIndex = 3;
+            this.txtReceiveBatchSize.TabIndex = 7;
             this.txtReceiveBatchSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // txtPrefetchCount
@@ -305,7 +305,7 @@
             this.txtPrefetchCount.Location = new System.Drawing.Point(504, 40);
             this.txtPrefetchCount.Name = "txtPrefetchCount";
             this.txtPrefetchCount.Size = new System.Drawing.Size(104, 20);
-            this.txtPrefetchCount.TabIndex = 2;
+            this.txtPrefetchCount.TabIndex = 5;
             this.txtPrefetchCount.Text = "0";
             this.txtPrefetchCount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
@@ -316,7 +316,7 @@
             this.lblPrefetchCount.Location = new System.Drawing.Point(416, 44);
             this.lblPrefetchCount.Name = "lblPrefetchCount";
             this.lblPrefetchCount.Size = new System.Drawing.Size(81, 13);
-            this.lblPrefetchCount.TabIndex = 123;
+            this.lblPrefetchCount.TabIndex = 4;
             this.lblPrefetchCount.Text = "Prefetch Count:";
             // 
             // txtReceiveTimeout
@@ -324,7 +324,7 @@
             this.txtReceiveTimeout.Location = new System.Drawing.Point(304, 40);
             this.txtReceiveTimeout.Name = "txtReceiveTimeout";
             this.txtReceiveTimeout.Size = new System.Drawing.Size(104, 20);
-            this.txtReceiveTimeout.TabIndex = 1;
+            this.txtReceiveTimeout.TabIndex = 3;
             this.txtReceiveTimeout.Text = "1";
             this.txtReceiveTimeout.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
@@ -333,7 +333,7 @@
             this.txtServerTimeout.Location = new System.Drawing.Point(304, 72);
             this.txtServerTimeout.Name = "txtServerTimeout";
             this.txtServerTimeout.Size = new System.Drawing.Size(104, 20);
-            this.txtServerTimeout.TabIndex = 4;
+            this.txtServerTimeout.TabIndex = 9;
             this.txtServerTimeout.Text = "5";
             this.txtServerTimeout.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
@@ -344,7 +344,7 @@
             this.lblServerTimeout.Location = new System.Drawing.Point(209, 76);
             this.lblServerTimeout.Name = "lblServerTimeout";
             this.lblServerTimeout.Size = new System.Drawing.Size(96, 13);
-            this.lblServerTimeout.TabIndex = 122;
+            this.lblServerTimeout.TabIndex = 8;
             this.lblServerTimeout.Text = "Server Timeout (s):";
             // 
             // txtFilterExpression
@@ -357,7 +357,7 @@
             this.txtFilterExpression.Name = "txtFilterExpression";
             this.txtFilterExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtFilterExpression.Size = new System.Drawing.Size(520, 230);
-            this.txtFilterExpression.TabIndex = 6;
+            this.txtFilterExpression.TabIndex = 13;
             this.txtFilterExpression.Text = "1=1";
             // 
             // lblFilterExpr
@@ -367,7 +367,7 @@
             this.lblFilterExpr.Location = new System.Drawing.Point(16, 108);
             this.lblFilterExpr.Name = "lblFilterExpr";
             this.lblFilterExpr.Size = new System.Drawing.Size(32, 13);
-            this.lblFilterExpr.TabIndex = 121;
+            this.lblFilterExpr.TabIndex = 12;
             this.lblFilterExpr.Text = "Filter:";
             // 
             // cboReceivedMode
@@ -383,7 +383,7 @@
             this.cboReceivedMode.Location = new System.Drawing.Point(504, 72);
             this.cboReceivedMode.Name = "cboReceivedMode";
             this.cboReceivedMode.Size = new System.Drawing.Size(104, 21);
-            this.cboReceivedMode.TabIndex = 5;
+            this.cboReceivedMode.TabIndex = 11;
             this.cboReceivedMode.SelectedIndexChanged += new System.EventHandler(this.cboReceivedMode_SelectedIndexChanged);
             // 
             // label1
@@ -393,7 +393,7 @@
             this.label1.Location = new System.Drawing.Point(416, 76);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 13);
-            this.label1.TabIndex = 120;
+            this.label1.TabIndex = 10;
             this.label1.Text = "Receive Mode:";
             // 
             // lblReceiveTaskCount
@@ -403,7 +403,7 @@
             this.lblReceiveTaskCount.Location = new System.Drawing.Point(16, 44);
             this.lblReceiveTaskCount.Name = "lblReceiveTaskCount";
             this.lblReceiveTaskCount.Size = new System.Drawing.Size(65, 13);
-            this.lblReceiveTaskCount.TabIndex = 119;
+            this.lblReceiveTaskCount.TabIndex = 0;
             this.lblReceiveTaskCount.Text = "Task Count:";
             // 
             // lblServerWaitTime
@@ -413,7 +413,7 @@
             this.lblServerWaitTime.Location = new System.Drawing.Point(200, 44);
             this.lblServerWaitTime.Name = "lblServerWaitTime";
             this.lblServerWaitTime.Size = new System.Drawing.Size(105, 13);
-            this.lblServerWaitTime.TabIndex = 118;
+            this.lblServerWaitTime.TabIndex = 2;
             this.lblServerWaitTime.Text = "Receive Timeout (s):";
             // 
             // checkBoxReceiveBatch
@@ -424,7 +424,7 @@
             this.checkBoxReceiveBatch.Location = new System.Drawing.Point(624, 140);
             this.checkBoxReceiveBatch.Name = "checkBoxReceiveBatch";
             this.checkBoxReceiveBatch.Size = new System.Drawing.Size(97, 17);
-            this.checkBoxReceiveBatch.TabIndex = 14;
+            this.checkBoxReceiveBatch.TabIndex = 20;
             this.checkBoxReceiveBatch.Text = "Receive Batch";
             this.checkBoxReceiveBatch.UseVisualStyleBackColor = true;
             this.checkBoxReceiveBatch.CheckedChanged += new System.EventHandler(this.checkBoxReceiveBatch_CheckedChanged);
@@ -437,7 +437,7 @@
             this.checkBoxReceiverUseTransaction.Location = new System.Drawing.Point(624, 44);
             this.checkBoxReceiverUseTransaction.Name = "checkBoxReceiverUseTransaction";
             this.checkBoxReceiverUseTransaction.Size = new System.Drawing.Size(104, 17);
-            this.checkBoxReceiverUseTransaction.TabIndex = 8;
+            this.checkBoxReceiverUseTransaction.TabIndex = 14;
             this.checkBoxReceiverUseTransaction.Text = "Use Transaction";
             this.checkBoxReceiverUseTransaction.UseVisualStyleBackColor = true;
             this.checkBoxReceiverUseTransaction.CheckedChanged += new System.EventHandler(this.checkBoxReceiverUseTransaction_CheckedChanged);
@@ -450,7 +450,7 @@
             this.checkBoxDeferMessage.Location = new System.Drawing.Point(784, 172);
             this.checkBoxDeferMessage.Name = "checkBoxDeferMessage";
             this.checkBoxDeferMessage.Size = new System.Drawing.Size(98, 17);
-            this.checkBoxDeferMessage.TabIndex = 17;
+            this.checkBoxDeferMessage.TabIndex = 23;
             this.checkBoxDeferMessage.Text = "Defer Message";
             this.checkBoxDeferMessage.UseVisualStyleBackColor = true;
             this.checkBoxDeferMessage.CheckedChanged += new System.EventHandler(this.checkBoxDeferMessage_CheckedChanged);
@@ -464,7 +464,7 @@
             this.checkBoxReceiverEnableGraph.Location = new System.Drawing.Point(784, 108);
             this.checkBoxReceiverEnableGraph.Name = "checkBoxReceiverEnableGraph";
             this.checkBoxReceiverEnableGraph.Size = new System.Drawing.Size(91, 17);
-            this.checkBoxReceiverEnableGraph.TabIndex = 13;
+            this.checkBoxReceiverEnableGraph.TabIndex = 19;
             this.checkBoxReceiverEnableGraph.Text = "Enable Graph";
             this.checkBoxReceiverEnableGraph.UseVisualStyleBackColor = true;
             // 
@@ -478,7 +478,7 @@
             this.checkBoxCompleteReceive.Location = new System.Drawing.Point(784, 140);
             this.checkBoxCompleteReceive.Name = "checkBoxCompleteReceive";
             this.checkBoxCompleteReceive.Size = new System.Drawing.Size(113, 17);
-            this.checkBoxCompleteReceive.TabIndex = 15;
+            this.checkBoxCompleteReceive.TabIndex = 21;
             this.checkBoxCompleteReceive.Text = "Complete Receive";
             this.checkBoxCompleteReceive.UseVisualStyleBackColor = true;
             // 
@@ -490,7 +490,7 @@
             this.checkBoxReceiverEnableStatistics.Location = new System.Drawing.Point(624, 108);
             this.checkBoxReceiverEnableStatistics.Name = "checkBoxReceiverEnableStatistics";
             this.checkBoxReceiverEnableStatistics.Size = new System.Drawing.Size(104, 17);
-            this.checkBoxReceiverEnableStatistics.TabIndex = 12;
+            this.checkBoxReceiverEnableStatistics.TabIndex = 18;
             this.checkBoxReceiverEnableStatistics.Text = "Enable Statistics";
             this.checkBoxReceiverEnableStatistics.UseVisualStyleBackColor = true;
             this.checkBoxReceiverEnableStatistics.CheckedChanged += new System.EventHandler(this.checkBoxReceiverEnableStatistics_CheckedChanged);
@@ -503,7 +503,7 @@
             this.checkBoxReadFromDeadLetter.Location = new System.Drawing.Point(624, 204);
             this.checkBoxReadFromDeadLetter.Name = "checkBoxReadFromDeadLetter";
             this.checkBoxReadFromDeadLetter.Size = new System.Drawing.Size(169, 17);
-            this.checkBoxReadFromDeadLetter.TabIndex = 18;
+            this.checkBoxReadFromDeadLetter.TabIndex = 24;
             this.checkBoxReadFromDeadLetter.Text = "Read From DeadLetter Queue";
             this.checkBoxReadFromDeadLetter.UseVisualStyleBackColor = true;
             this.checkBoxReadFromDeadLetter.CheckedChanged += new System.EventHandler(this.checkBoxReadFromDeadLetter_CheckedChanged);
@@ -516,7 +516,7 @@
             this.checkBoxMoveToDeadLetter.Location = new System.Drawing.Point(624, 172);
             this.checkBoxMoveToDeadLetter.Name = "checkBoxMoveToDeadLetter";
             this.checkBoxMoveToDeadLetter.Size = new System.Drawing.Size(160, 17);
-            this.checkBoxMoveToDeadLetter.TabIndex = 16;
+            this.checkBoxMoveToDeadLetter.TabIndex = 22;
             this.checkBoxMoveToDeadLetter.Text = "Move To DeadLetter Queue";
             this.checkBoxMoveToDeadLetter.UseVisualStyleBackColor = true;
             this.checkBoxMoveToDeadLetter.CheckedChanged += new System.EventHandler(this.checkBoxMoveToDeadLetter_CheckedChanged);
@@ -529,7 +529,7 @@
             this.checkBoxReceiverVerboseLogging.Location = new System.Drawing.Point(784, 76);
             this.checkBoxReceiverVerboseLogging.Name = "checkBoxReceiverVerboseLogging";
             this.checkBoxReceiverVerboseLogging.Size = new System.Drawing.Size(101, 17);
-            this.checkBoxReceiverVerboseLogging.TabIndex = 11;
+            this.checkBoxReceiverVerboseLogging.TabIndex = 17;
             this.checkBoxReceiverVerboseLogging.Text = "Enable Verbose";
             this.checkBoxReceiverVerboseLogging.UseVisualStyleBackColor = true;
             // 
@@ -544,7 +544,7 @@
             this.checkBoxReceiverCommitTransaction.Location = new System.Drawing.Point(784, 44);
             this.checkBoxReceiverCommitTransaction.Name = "checkBoxReceiverCommitTransaction";
             this.checkBoxReceiverCommitTransaction.Size = new System.Drawing.Size(119, 17);
-            this.checkBoxReceiverCommitTransaction.TabIndex = 9;
+            this.checkBoxReceiverCommitTransaction.TabIndex = 15;
             this.checkBoxReceiverCommitTransaction.Text = "Commit Transaction";
             this.checkBoxReceiverCommitTransaction.UseVisualStyleBackColor = true;
             // 
@@ -558,7 +558,7 @@
             this.checkBoxEnableReceiverLogging.Location = new System.Drawing.Point(624, 76);
             this.checkBoxEnableReceiverLogging.Name = "checkBoxEnableReceiverLogging";
             this.checkBoxEnableReceiverLogging.Size = new System.Drawing.Size(100, 17);
-            this.checkBoxEnableReceiverLogging.TabIndex = 10;
+            this.checkBoxEnableReceiverLogging.TabIndex = 16;
             this.checkBoxEnableReceiverLogging.Text = "Enable Logging";
             this.checkBoxEnableReceiverLogging.UseVisualStyleBackColor = true;
             this.checkBoxEnableReceiverLogging.CheckedChanged += new System.EventHandler(this.checkBoxEnableReceiverLogging_CheckedChanged);

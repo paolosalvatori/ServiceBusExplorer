@@ -104,7 +104,7 @@
             this.lblRelativeURI.Location = new System.Drawing.Point(16, 28);
             this.lblRelativeURI.Name = "lblRelativeURI";
             this.lblRelativeURI.Size = new System.Drawing.Size(71, 13);
-            this.lblRelativeURI.TabIndex = 22;
+            this.lblRelativeURI.TabIndex = 0;
             this.lblRelativeURI.Text = "Relative URI:";
             // 
             // txtPath
@@ -116,7 +116,7 @@
             this.txtPath.Location = new System.Drawing.Point(16, 44);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(576, 20);
-            this.txtPath.TabIndex = 0;
+            this.txtPath.TabIndex = 1;
             this.txtPath.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // grouperEventHubProperties
@@ -150,7 +150,7 @@
             this.grouperEventHubProperties.ShadowControl = false;
             this.grouperEventHubProperties.ShadowThickness = 1;
             this.grouperEventHubProperties.Size = new System.Drawing.Size(608, 344);
-            this.grouperEventHubProperties.TabIndex = 3;
+            this.grouperEventHubProperties.TabIndex = 1;
             // 
             // lblMessageRetentionInDaysValue
             // 
@@ -159,7 +159,7 @@
             this.lblMessageRetentionInDaysValue.Location = new System.Drawing.Point(272, 316);
             this.lblMessageRetentionInDaysValue.Name = "lblMessageRetentionInDaysValue";
             this.lblMessageRetentionInDaysValue.Size = new System.Drawing.Size(19, 13);
-            this.lblMessageRetentionInDaysValue.TabIndex = 38;
+            this.lblMessageRetentionInDaysValue.TabIndex = 4;
             this.lblMessageRetentionInDaysValue.Text = "16";
             // 
             // lblMessageRetentionInDays
@@ -170,7 +170,7 @@
             this.lblMessageRetentionInDays.Location = new System.Drawing.Point(16, 296);
             this.lblMessageRetentionInDays.Name = "lblMessageRetentionInDays";
             this.lblMessageRetentionInDays.Size = new System.Drawing.Size(141, 13);
-            this.lblMessageRetentionInDays.TabIndex = 28;
+            this.lblMessageRetentionInDays.TabIndex = 2;
             this.lblMessageRetentionInDays.Text = "Message Retention In Days:";
             // 
             // trackBarMessageRetentionInDays
@@ -187,7 +187,7 @@
             this.trackBarMessageRetentionInDays.Minimum = 1;
             this.trackBarMessageRetentionInDays.Name = "trackBarMessageRetentionInDays";
             this.trackBarMessageRetentionInDays.Size = new System.Drawing.Size(256, 29);
-            this.trackBarMessageRetentionInDays.TabIndex = 37;
+            this.trackBarMessageRetentionInDays.TabIndex = 3;
             this.trackBarMessageRetentionInDays.TextTickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBarMessageRetentionInDays.TickColor = System.Drawing.Color.Black;
             this.trackBarMessageRetentionInDays.TickHeight = 4;
@@ -207,7 +207,7 @@
             this.lblPartitionCount.Location = new System.Drawing.Point(312, 296);
             this.lblPartitionCount.Name = "lblPartitionCount";
             this.lblPartitionCount.Size = new System.Drawing.Size(79, 13);
-            this.lblPartitionCount.TabIndex = 30;
+            this.lblPartitionCount.TabIndex = 5;
             this.lblPartitionCount.Text = "Partition Count:";
             // 
             // trackBarPartitionCount
@@ -224,7 +224,7 @@
             this.trackBarPartitionCount.Minimum = 2;
             this.trackBarPartitionCount.Name = "trackBarPartitionCount";
             this.trackBarPartitionCount.Size = new System.Drawing.Size(256, 29);
-            this.trackBarPartitionCount.TabIndex = 36;
+            this.trackBarPartitionCount.TabIndex = 6;
             this.trackBarPartitionCount.TextTickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBarPartitionCount.TickColor = System.Drawing.Color.Black;
             this.trackBarPartitionCount.TickFrequency = 5;
@@ -244,7 +244,7 @@
             this.lblPartitionCountValue.Location = new System.Drawing.Point(568, 316);
             this.lblPartitionCountValue.Name = "lblPartitionCountValue";
             this.lblPartitionCountValue.Size = new System.Drawing.Size(19, 13);
-            this.lblPartitionCountValue.TabIndex = 35;
+            this.lblPartitionCountValue.TabIndex = 7;
             this.lblPartitionCountValue.Text = "16";
             // 
             // txtUserMetadata
@@ -258,7 +258,7 @@
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
             this.txtUserMetadata.Size = new System.Drawing.Size(576, 240);
-            this.txtUserMetadata.TabIndex = 2;
+            this.txtUserMetadata.TabIndex = 1;
             // 
             // lblUserMetadata
             // 
@@ -267,7 +267,7 @@
             this.lblUserMetadata.Location = new System.Drawing.Point(16, 28);
             this.lblUserMetadata.Name = "lblUserMetadata";
             this.lblUserMetadata.Size = new System.Drawing.Size(88, 13);
-            this.lblUserMetadata.TabIndex = 27;
+            this.lblUserMetadata.TabIndex = 0;
             this.lblUserMetadata.Text = "User Description:";
             // 
             // grouperEventHubInformation
@@ -295,7 +295,7 @@
             this.grouperEventHubInformation.ShadowControl = false;
             this.grouperEventHubInformation.ShadowThickness = 1;
             this.grouperEventHubInformation.Size = new System.Drawing.Size(312, 432);
-            this.grouperEventHubInformation.TabIndex = 6;
+            this.grouperEventHubInformation.TabIndex = 2;
             // 
             // propertyListView
             // 
@@ -305,6 +305,7 @@
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameColumnHeader,
             this.valueColumnHeader});
+            this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
@@ -340,7 +341,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
-            this.mainTabControl.TabIndex = 19;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // tabPageAuthorization

@@ -92,7 +92,7 @@ namespace ServiceBusExplorer.Forms
             this.btnClose.Location = new System.Drawing.Point(880, 464);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(72, 24);
-            this.btnClose.TabIndex = 2;
+            this.btnClose.TabIndex = 1;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = false;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -110,7 +110,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.Location = new System.Drawing.Point(800, 464);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
-            this.btnSave.TabIndex = 1;
+            this.btnSave.TabIndex = 0;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -177,7 +177,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(608, 206);
-            this.grouperMessageText.TabIndex = 26;
+            this.grouperMessageText.TabIndex = 0;
             // 
             // txtMessageText
             // 
@@ -202,6 +202,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -236,7 +237,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.ShadowControl = false;
             this.grouperMessageCustomProperties.ShadowThickness = 1;
             this.grouperMessageCustomProperties.Size = new System.Drawing.Size(608, 216);
-            this.grouperMessageCustomProperties.TabIndex = 27;
+            this.grouperMessageCustomProperties.TabIndex = 0;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
             // propertiesDataGridView
@@ -281,7 +282,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
             this.grouperMessageProperties.Size = new System.Drawing.Size(312, 430);
-            this.grouperMessageProperties.TabIndex = 19;
+            this.grouperMessageProperties.TabIndex = 0;
             // 
             // messagePropertyGrid
             // 

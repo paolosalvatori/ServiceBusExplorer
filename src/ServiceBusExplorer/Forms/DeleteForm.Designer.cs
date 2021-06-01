@@ -74,7 +74,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.Location = new System.Drawing.Point(144, 72);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
-            this.btnOk.TabIndex = 29;
+            this.btnOk.TabIndex = 3;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -92,7 +92,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(224, 72);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 30;
+            this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -109,7 +109,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(312, 64);
-            this.mainPanel.TabIndex = 33;
+            this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // lblMessage
@@ -118,7 +118,7 @@ namespace ServiceBusExplorer.Forms
             this.lblMessage.Location = new System.Drawing.Point(60, 24);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(33, 13);
-            this.lblMessage.TabIndex = 34;
+            this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "Label";
             // 
             // pictureBox1
@@ -135,7 +135,7 @@ namespace ServiceBusExplorer.Forms
             this.buttonsPanel.Location = new System.Drawing.Point(0, 63);
             this.buttonsPanel.Name = "buttonsPanel";
             this.buttonsPanel.Size = new System.Drawing.Size(312, 49);
-            this.buttonsPanel.TabIndex = 34;
+            this.buttonsPanel.TabIndex = 1;
             // 
             // accidentalDeletionPreventionCheckControl
             // 
@@ -148,7 +148,7 @@ namespace ServiceBusExplorer.Forms
             this.accidentalDeletionPreventionCheckControl.Location = new System.Drawing.Point(0, 65);
             this.accidentalDeletionPreventionCheckControl.Name = "accidentalDeletionPreventionCheckControl";
             this.accidentalDeletionPreventionCheckControl.Size = new System.Drawing.Size(312, 157);
-            this.accidentalDeletionPreventionCheckControl.TabIndex = 35;
+            this.accidentalDeletionPreventionCheckControl.TabIndex = 2;
             this.accidentalDeletionPreventionCheckControl.Visible = false;
             // 
             // DeleteForm

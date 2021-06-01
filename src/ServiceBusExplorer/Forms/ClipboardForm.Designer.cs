@@ -72,7 +72,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCopy.Location = new System.Drawing.Point(144, 72);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(72, 24);
-            this.btnCopy.TabIndex = 29;
+            this.btnCopy.TabIndex = 1;
             this.btnCopy.Text = "Copy";
             this.btnCopy.UseVisualStyleBackColor = false;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
@@ -90,7 +90,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(224, 72);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 30;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -107,7 +107,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(312, 64);
-            this.mainPanel.TabIndex = 33;
+            this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
             // lblUrl
@@ -116,7 +116,7 @@ namespace ServiceBusExplorer.Forms
             this.lblUrl.Location = new System.Drawing.Point(56, 24);
             this.lblUrl.Name = "lblUrl";
             this.lblUrl.Size = new System.Drawing.Size(33, 13);
-            this.lblUrl.TabIndex = 34;
+            this.lblUrl.TabIndex = 0;
             this.lblUrl.Text = "Label";
             // 
             // pictureBox1

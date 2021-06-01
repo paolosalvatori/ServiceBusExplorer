@@ -118,7 +118,7 @@
             this.btnStart.Location = new System.Drawing.Point(840, 438);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(72, 24);
-            this.btnStart.TabIndex = 1;
+            this.btnStart.TabIndex = 2;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = false;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -137,7 +137,7 @@
             this.btnCancel.Location = new System.Drawing.Point(920, 438);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 2;
+            this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -158,7 +158,7 @@
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 414);
-            this.mainTabControl.TabIndex = 2;
+            this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // mainTabMessagePage
@@ -218,7 +218,7 @@
             this.grouperMessageFormat.ShadowControl = false;
             this.grouperMessageFormat.ShadowThickness = 1;
             this.grouperMessageFormat.Size = new System.Drawing.Size(448, 70);
-            this.grouperMessageFormat.TabIndex = 22;
+            this.grouperMessageFormat.TabIndex = 1;
             this.grouperMessageFormat.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageFormat_CustomPaint);
             // 
             // cboMessageFormat
@@ -259,7 +259,7 @@
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(448, 288);
-            this.grouperMessageText.TabIndex = 21;
+            this.grouperMessageText.TabIndex = 0;
             // 
             // txtMessageText
             // 
@@ -284,7 +284,6 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -321,8 +320,8 @@
             this.grouperMessageHeaders.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageHeaders.ShadowControl = false;
             this.grouperMessageHeaders.ShadowThickness = 1;
-            this.grouperMessageHeaders.Size = new System.Drawing.Size(464, 366);
-            this.grouperMessageHeaders.TabIndex = 15;
+            this.grouperMessageHeaders.Size = new System.Drawing.Size(452, 366);
+            this.grouperMessageHeaders.TabIndex = 0;
             this.grouperMessageHeaders.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageHeaders_CustomPaint);
             // 
             // headersDataGridView
@@ -337,8 +336,8 @@
             this.headersDataGridView.Location = new System.Drawing.Point(16, 32);
             this.headersDataGridView.Name = "headersDataGridView";
             this.headersDataGridView.RowHeadersWidth = 20;
-            this.headersDataGridView.Size = new System.Drawing.Size(432, 318);
-            this.headersDataGridView.TabIndex = 10;
+            this.headersDataGridView.Size = new System.Drawing.Size(420, 318);
+            this.headersDataGridView.TabIndex = 0;
             this.headersDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.headersDataGridView_DataError);
             this.headersDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.headersDataGridView_RowsAdded);
             this.headersDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.headersDataGridView_RowsRemoved);
@@ -993,7 +992,7 @@
             this.btnOpenFile.Location = new System.Drawing.Point(760, 438);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(72, 24);
-            this.btnOpenFile.TabIndex = 0;
+            this.btnOpenFile.TabIndex = 1;
             this.btnOpenFile.Text = "Open";
             this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);

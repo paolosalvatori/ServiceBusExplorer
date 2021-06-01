@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.Location = new System.Drawing.Point(264, 248);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
-            this.btnOk.TabIndex = 2;
+            this.btnOk.TabIndex = 1;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -94,7 +94,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(344, 248);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 3;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -126,7 +126,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperCaption.ShadowControl = false;
             this.grouperCaption.ShadowThickness = 1;
             this.grouperCaption.Size = new System.Drawing.Size(400, 216);
-            this.grouperCaption.TabIndex = 33;
+            this.grouperCaption.TabIndex = 0;
             this.grouperCaption.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperCaption_CustomPaint);
             // 
             // dataGridView
@@ -142,7 +142,7 @@ namespace ServiceBusExplorer.Forms
             this.dataGridView.Location = new System.Drawing.Point(16, 32);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.Size = new System.Drawing.Size(368, 168);
-            this.dataGridView.TabIndex = 1;
+            this.dataGridView.TabIndex = 0;
             this.dataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridView_DataError);
             this.dataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
             this.dataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
