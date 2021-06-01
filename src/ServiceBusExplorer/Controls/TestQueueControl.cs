@@ -77,7 +77,6 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // Messages
         //***************************
-        private const string MessageCannotBeNull = "The Message field cannot be null.";
         private const string ReceiveTimeoutCannotBeNull = "The receive timeout field cannot be null and must be a non negative integer number.";
         private const string SessionTimeoutCannotBeNull = "The session timeout field cannot be null and must be a non negative integer number.";
         private const string PrefetchCountCannotBeNull = "The prefetch count field cannot be null and must be an integer number.";
@@ -437,11 +436,6 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                if (messageTabControl.SelectedIndex == MessageTabPage && string.IsNullOrWhiteSpace(txtMessageText.Text))
-                {
-                    writeToLog(MessageCannotBeNull);
-                    return false;
-                }
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
                     !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
