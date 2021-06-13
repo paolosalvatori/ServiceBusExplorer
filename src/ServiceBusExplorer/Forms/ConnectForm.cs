@@ -84,11 +84,6 @@ namespace ServiceBusExplorer.Forms
         //***************************
         private const string ConnectionStringCannotBeNull = "The connection string cannot be null.";
 
-        private const string ConnectionStringCannotBeEntitySpecific = "The connection string cannot be entity specific.";
-
-        private const string ConnectionStringCannotBeEntitySpecificDetails = "Please make sure there is no \"EntityPath\" in the connection string. The connection string should be a namespace-level connection string and have the manage permission.";
-
-
         #endregion
 
         #region Private Instance Fields
@@ -619,18 +614,6 @@ namespace ServiceBusExplorer.Forms
                     serviceBusConnectionStringBuilder.Endpoints.Count == 0)
                 {
                     MainForm.StaticWriteToLog("The connection string does not contain any endpoint.");
-                    return;
-                }
-
-                if (serviceBusConnectionStringBuilder.EntityPath != null)
-                {
-                    MainForm.StaticWriteToLog(ConnectionStringCannotBeEntitySpecific);
-                    MessageBox.Show(
-                        this,
-                        $"{ConnectionStringCannotBeEntitySpecific}\n\n{ConnectionStringCannotBeEntitySpecificDetails}",
-                        "Save connection string",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
                     return;
                 }
 
