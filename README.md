@@ -5,7 +5,7 @@
 **Contributors:** [Many](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
 
 # Service Bus Explorer
-The Service Bus Explorer allows users to efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
+The Service Bus Explorer allows users to efficiently administer messaging entities. The tool provides advanced features like import/export functionality and the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
