@@ -5,9 +5,7 @@
 **Contributors:** [Many](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
 
 # Service Bus Explorer
-The Service Bus Explorer allows users to connect to a Service Bus namespace and efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
-
-There are no dedicated developers so development is entirely based on voluntary effort.
+The Service Bus Explorer allows users to connect to efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
@@ -25,6 +23,8 @@ curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/
 ```
 
 # Contributions
+There are no dedicated developers so development is entirely based on voluntary effort.
+
 Here are some guidelines concerning contributions:
 
 - All contributions should be done on `develop`
@@ -48,8 +48,6 @@ Similar to the postal service delivering letters, Service Bus is flexible inform
 
 The message sender can also require a variety of delivery characteristics including transactions, duplicate detection, time-based expiration, and batching. These patterns have postal analogies as well: repeat delivery, required signature, address change, or recall.
 
-Service Bus supports two distinct messaging patterns: Azure Relay and Service Bus Messaging.
-
 For more information, feel free to read the official documentation [here](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
 
 # Service Bus Explorer for Windows Server
@@ -57,11 +55,6 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 
 # Documentation
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
-
-# GitHub
-The source code of the tool is now available on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
-
-<a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png)</a>
 
 # Videos
 For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
