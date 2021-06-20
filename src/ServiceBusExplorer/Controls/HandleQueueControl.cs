@@ -359,7 +359,7 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {queueDescription.Path} queue?");
         }
 
 
@@ -1240,6 +1240,22 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private MessageReceiver BuildMessageReceiver(ReceiveMode receiveMode, string? fromSession = null)
+        {
+            if (fromSession == null && !queueDescription.RequiresSession)
+            {
+                return serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, receiveMode);
+            }
+
+            var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path, receiveMode);
+            var sessionAcceptTimeout = TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout);
+            if (fromSession != null)
+            {
+                return queueClient.AcceptMessageSession(fromSession, sessionAcceptTimeout);
+            }
+            return queueClient.AcceptMessageSession(sessionAcceptTimeout);
+        }
+
         private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
@@ -1255,18 +1271,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     var totalRetrieved = 0;
 
-                    MessageReceiver receiver;
-                    if (fromSession != null)
-                    {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.PeekLock);
-                        receiver = queueClient.AcceptMessageSession(fromSession);
-                    }
-                    else
-                    {
-                        receiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, ReceiveMode.PeekLock);
-                    }
-
+                    var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
                     while (totalRetrieved < count)
                     {
                         IEnumerable<BrokeredMessage> messageEnumerable;
@@ -1299,28 +1304,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    MessageReceiver messageReceiver;
-                    if (queueDescription.RequiresSession)
-                    {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.ReceiveAndDelete);
-                        if (fromSession != null)
-                        {
-                            messageReceiver = queueClient.AcceptMessageSession(fromSession,
-                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        }
-                        else
-                        {
-                            messageReceiver =
-                                queueClient.AcceptMessageSession(
-                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        }
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path,
-                            ReceiveMode.ReceiveAndDelete);
-                    }
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1403,17 +1387,7 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
-                    MessageReceiver messageReceiver;
-                    if (fromSession != null)
-                    {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.PeekLock);
-                        messageReceiver = queueClient.AcceptMessageSession(fromSession);
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, ReceiveMode.PeekLock);
-                    }
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -1441,30 +1415,8 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    MessageReceiver messageReceiver;
-                    if (queueDescription.RequiresSession)
-                    {
-                        var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
-                            ReceiveMode.ReceiveAndDelete);
-                        if (fromSession != null)
-                        {
-                            messageReceiver =
-                                queueClient.AcceptMessageSession(fromSession,
-                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        }
-                        else
-                        {
-                            messageReceiver =
-                            queueClient.AcceptMessageSession(
-                                TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        }
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path,
-                            ReceiveMode.ReceiveAndDelete);
-                    }
-
+                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    
                     var totalRetrieved = 0;
                     int retrieved;
                     do

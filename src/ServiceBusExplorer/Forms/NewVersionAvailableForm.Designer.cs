@@ -65,11 +65,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblExeVersion.AutoSize = true;
             this.lblExeVersion.BackColor = System.Drawing.Color.Transparent;
-            this.lblExeVersion.Location = new System.Drawing.Point(22, 100);
-            this.lblExeVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblExeVersion.Location = new System.Drawing.Point(16, 81);
             this.lblExeVersion.Name = "lblExeVersion";
-            this.lblExeVersion.Size = new System.Drawing.Size(108, 17);
-            this.lblExeVersion.TabIndex = 42;
+            this.lblExeVersion.Size = new System.Drawing.Size(81, 13);
+            this.lblExeVersion.TabIndex = 1;
             this.lblExeVersion.Text = "Version: 1.0.0.0";
             // 
             // label2
@@ -77,11 +76,10 @@ namespace ServiceBusExplorer.Forms
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(22, 66);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(16, 54);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(205, 20);
-            this.label2.TabIndex = 41;
+            this.label2.Size = new System.Drawing.Size(158, 16);
+            this.label2.TabIndex = 0;
             this.label2.Text = "Service Bus Explorer";
             // 
             // labelLatestVersion
@@ -90,11 +88,10 @@ namespace ServiceBusExplorer.Forms
             this.labelLatestVersion.BackColor = System.Drawing.Color.Transparent;
             this.labelLatestVersion.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold);
             this.labelLatestVersion.ForeColor = System.Drawing.Color.Red;
-            this.labelLatestVersion.Location = new System.Drawing.Point(22, 131);
-            this.labelLatestVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelLatestVersion.Location = new System.Drawing.Point(16, 106);
             this.labelLatestVersion.Name = "labelLatestVersion";
-            this.labelLatestVersion.Size = new System.Drawing.Size(244, 20);
-            this.labelLatestVersion.TabIndex = 54;
+            this.labelLatestVersion.Size = new System.Drawing.Size(185, 16);
+            this.labelLatestVersion.TabIndex = 2;
             this.labelLatestVersion.Text = "New Version is Available";
             // 
             // linkLabelnewVersion
@@ -103,11 +100,10 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelnewVersion.AutoSize = true;
             this.linkLabelnewVersion.BackColor = System.Drawing.Color.Transparent;
             this.linkLabelnewVersion.ForeColor = System.Drawing.Color.Navy;
-            this.linkLabelnewVersion.Location = new System.Drawing.Point(22, 165);
-            this.linkLabelnewVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabelnewVersion.Location = new System.Drawing.Point(16, 134);
             this.linkLabelnewVersion.Name = "linkLabelnewVersion";
-            this.linkLabelnewVersion.Size = new System.Drawing.Size(266, 17);
-            this.linkLabelnewVersion.TabIndex = 53;
+            this.linkLabelnewVersion.Size = new System.Drawing.Size(220, 13);
+            this.linkLabelnewVersion.TabIndex = 3;
             this.linkLabelnewVersion.TabStop = true;
             this.linkLabelnewVersion.Text = "https://github.com/xxxxxxxxxxxxxxxx/xxxxxxx";
             this.linkLabelnewVersion.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelnewVersion_LinkClicked);
@@ -117,21 +113,20 @@ namespace ServiceBusExplorer.Forms
             this.labelReleaseInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelReleaseInfo.AutoSize = true;
             this.labelReleaseInfo.BackColor = System.Drawing.Color.Transparent;
-            this.labelReleaseInfo.Location = new System.Drawing.Point(22, 196);
-            this.labelReleaseInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelReleaseInfo.Location = new System.Drawing.Point(16, 159);
             this.labelReleaseInfo.Name = "labelReleaseInfo";
-            this.labelReleaseInfo.Size = new System.Drawing.Size(78, 17);
-            this.labelReleaseInfo.TabIndex = 55;
+            this.labelReleaseInfo.Size = new System.Drawing.Size(59, 13);
+            this.labelReleaseInfo.TabIndex = 4;
             this.labelReleaseInfo.Text = "releaseInfo";
             // 
             // NewVersionAvailableForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(779, 543);
+            this.ClientSize = new System.Drawing.Size(584, 441);
             this.Controls.Add(this.labelReleaseInfo);
             this.Controls.Add(this.labelLatestVersion);
             this.Controls.Add(this.linkLabelnewVersion);
@@ -141,7 +136,6 @@ namespace ServiceBusExplorer.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "NewVersionAvailableForm";

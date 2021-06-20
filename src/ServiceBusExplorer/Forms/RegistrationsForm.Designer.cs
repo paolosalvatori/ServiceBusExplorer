@@ -126,7 +126,7 @@ namespace ServiceBusExplorer.Forms
             this.radioButton1.Location = new System.Drawing.Point(24, 80);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(39, 17);
-            this.radioButton1.TabIndex = 8;
+            this.radioButton1.TabIndex = 4;
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "All:";
             this.radioButton1.UseVisualStyleBackColor = true;
@@ -134,10 +134,13 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtTop
             // 
+            this.txtTop.AllowDecimal = false;
+            this.txtTop.AllowNegative = false;
+            this.txtTop.AllowSpace = false;
             this.txtTop.Location = new System.Drawing.Point(232, 80);
             this.txtTop.Name = "txtTop";
             this.txtTop.Size = new System.Drawing.Size(152, 20);
-            this.txtTop.TabIndex = 7;
+            this.txtTop.TabIndex = 6;
             this.txtTop.Text = "100";
             // 
             // lblTop
@@ -146,7 +149,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTop.Location = new System.Drawing.Point(112, 84);
             this.lblTop.Name = "lblTop";
             this.lblTop.Size = new System.Drawing.Size(113, 13);
-            this.lblTop.TabIndex = 6;
+            this.lblTop.TabIndex = 5;
             this.lblTop.Text = "Top Count/Page Size:";
             // 
             // txtTag
@@ -163,7 +166,7 @@ namespace ServiceBusExplorer.Forms
             this.txtPnsHandle.Location = new System.Drawing.Point(112, 16);
             this.txtPnsHandle.Name = "txtPnsHandle";
             this.txtPnsHandle.Size = new System.Drawing.Size(272, 20);
-            this.txtPnsHandle.TabIndex = 2;
+            this.txtPnsHandle.TabIndex = 1;
             // 
             // btnTag
             // 
@@ -171,7 +174,7 @@ namespace ServiceBusExplorer.Forms
             this.btnTag.Location = new System.Drawing.Point(24, 48);
             this.btnTag.Name = "btnTag";
             this.btnTag.Size = new System.Drawing.Size(47, 17);
-            this.btnTag.TabIndex = 1;
+            this.btnTag.TabIndex = 2;
             this.btnTag.Text = "Tag:";
             this.btnTag.UseVisualStyleBackColor = true;
             this.btnTag.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);

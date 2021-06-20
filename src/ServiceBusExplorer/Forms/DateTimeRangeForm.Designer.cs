@@ -75,7 +75,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.Location = new System.Drawing.Point(96, 204);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
-            this.btnOk.TabIndex = 0;
+            this.btnOk.TabIndex = 2;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -93,7 +93,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(176, 204);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 1;
+            this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -124,7 +124,7 @@ namespace ServiceBusExplorer.Forms
             this.grpFromDateTime.ShadowControl = false;
             this.grpFromDateTime.ShadowThickness = 1;
             this.grpFromDateTime.Size = new System.Drawing.Size(232, 80);
-            this.grpFromDateTime.TabIndex = 33;
+            this.grpFromDateTime.TabIndex = 0;
             // 
             // dateFromTimePicker
             // 
@@ -137,7 +137,7 @@ namespace ServiceBusExplorer.Forms
             this.dateFromTimePicker.Name = "dateFromTimePicker";
             this.dateFromTimePicker.ShowCheckBox = true;
             this.dateFromTimePicker.Size = new System.Drawing.Size(203, 20);
-            this.dateFromTimePicker.TabIndex = 36;
+            this.dateFromTimePicker.TabIndex = 0;
             // 
             // grpToDateTime
             // 
@@ -163,7 +163,7 @@ namespace ServiceBusExplorer.Forms
             this.grpToDateTime.ShadowControl = false;
             this.grpToDateTime.ShadowThickness = 1;
             this.grpToDateTime.Size = new System.Drawing.Size(232, 80);
-            this.grpToDateTime.TabIndex = 34;
+            this.grpToDateTime.TabIndex = 1;
             // 
             // dateToTimePicker
             // 
@@ -176,7 +176,7 @@ namespace ServiceBusExplorer.Forms
             this.dateToTimePicker.Name = "dateToTimePicker";
             this.dateToTimePicker.ShowCheckBox = true;
             this.dateToTimePicker.Size = new System.Drawing.Size(203, 20);
-            this.dateToTimePicker.TabIndex = 36;
+            this.dateToTimePicker.TabIndex = 0;
             // 
             // DateTimeRangeForm
             // 

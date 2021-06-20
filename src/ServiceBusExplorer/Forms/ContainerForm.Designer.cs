@@ -141,7 +141,7 @@ namespace ServiceBusExplorer.Forms
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
             this.panelMain.Size = new System.Drawing.Size(1008, 504);
-            this.panelMain.TabIndex = 1;
+            this.panelMain.TabIndex = 0;
             // 
             // panelLog
             // 
@@ -162,7 +162,7 @@ namespace ServiceBusExplorer.Forms
             this.panelLog.Name = "panelLog";
             this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
             this.panelLog.Size = new System.Drawing.Size(1008, 188);
-            this.panelLog.TabIndex = 1;
+            this.panelLog.TabIndex = 0;
             // 
             // lstLog
             // 
@@ -177,7 +177,7 @@ namespace ServiceBusExplorer.Forms
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lstLog.Size = new System.Drawing.Size(998, 155);
-            this.lstLog.TabIndex = 4;
+            this.lstLog.TabIndex = 0;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
             // 
@@ -297,7 +297,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -341,7 +341,7 @@ namespace ServiceBusExplorer.Forms
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Size = new System.Drawing.Size(1040, 24);
-            this.mainMenuStrip.TabIndex = 25;
+            this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
             // toolStripMenuItem1
@@ -426,7 +426,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
             this.toolStripMenuItem10.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(252, 22);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(253, 22);
             this.toolStripMenuItem10.Text = "&About Service Bus Explorer";
             this.toolStripMenuItem10.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 

@@ -101,7 +101,7 @@ namespace ServiceBusExplorer.Forms
             this.btnClose.Location = new System.Drawing.Point(880, 508);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(72, 24);
-            this.btnClose.TabIndex = 2;
+            this.btnClose.TabIndex = 8;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = false;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -119,7 +119,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.Location = new System.Drawing.Point(800, 508);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
-            this.btnSave.TabIndex = 1;
+            this.btnSave.TabIndex = 7;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -187,7 +187,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageText.ShadowControl = false;
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(666, 225);
-            this.grouperMessageText.TabIndex = 26;
+            this.grouperMessageText.TabIndex = 0;
             // 
             // chkAutoindent
             // 
@@ -201,7 +201,7 @@ namespace ServiceBusExplorer.Forms
             this.chkAutoindent.Name = "chkAutoindent";
             this.chkAutoindent.Padding = new System.Windows.Forms.Padding(18, 0, 9, 0);
             this.chkAutoindent.Size = new System.Drawing.Size(104, 17);
-            this.chkAutoindent.TabIndex = 155;
+            this.chkAutoindent.TabIndex = 0;
             this.chkAutoindent.Text = "Autoindent";
             this.chkAutoindent.UseVisualStyleBackColor = false;
             this.chkAutoindent.CheckedChanged += new System.EventHandler(this.ChkAutoindent_CheckedChanged);
@@ -229,7 +229,6 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -238,7 +237,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageText.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtMessageText.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtMessageText.ServiceColors")));
             this.txtMessageText.Size = new System.Drawing.Size(632, 176);
-            this.txtMessageText.TabIndex = 0;
+            this.txtMessageText.TabIndex = 1;
             this.txtMessageText.Zoom = 100;
             // 
             // grouperMessageCustomProperties
@@ -265,7 +264,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageCustomProperties.ShadowControl = false;
             this.grouperMessageCustomProperties.ShadowThickness = 1;
             this.grouperMessageCustomProperties.Size = new System.Drawing.Size(666, 241);
-            this.grouperMessageCustomProperties.TabIndex = 27;
+            this.grouperMessageCustomProperties.TabIndex = 0;
             this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
             // legend
@@ -325,7 +324,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
             this.grouperMessageProperties.Size = new System.Drawing.Size(254, 474);
-            this.grouperMessageProperties.TabIndex = 19;
+            this.grouperMessageProperties.TabIndex = 0;
             // 
             // messagePropertyGrid
             // 
@@ -350,7 +349,7 @@ namespace ServiceBusExplorer.Forms
             this.lblBody.Location = new System.Drawing.Point(322, 512);
             this.lblBody.Name = "lblBody";
             this.lblBody.Size = new System.Drawing.Size(61, 13);
-            this.lblBody.TabIndex = 77;
+            this.lblBody.TabIndex = 2;
             this.lblBody.Text = "Body Type:";
             // 
             // cboBodyType
@@ -367,7 +366,7 @@ namespace ServiceBusExplorer.Forms
             this.cboBodyType.Location = new System.Drawing.Point(386, 509);
             this.cboBodyType.Name = "cboBodyType";
             this.cboBodyType.Size = new System.Drawing.Size(100, 21);
-            this.cboBodyType.TabIndex = 76;
+            this.cboBodyType.TabIndex = 3;
             // 
             // cboSenderInspector
             // 
@@ -380,7 +379,7 @@ namespace ServiceBusExplorer.Forms
             this.cboSenderInspector.MaximumSize = new System.Drawing.Size(198, 0);
             this.cboSenderInspector.Name = "cboSenderInspector";
             this.cboSenderInspector.Size = new System.Drawing.Size(198, 21);
-            this.cboSenderInspector.TabIndex = 152;
+            this.cboSenderInspector.TabIndex = 1;
             // 
             // lblReceiverInspector
             // 
@@ -390,7 +389,7 @@ namespace ServiceBusExplorer.Forms
             this.lblReceiverInspector.Location = new System.Drawing.Point(16, 512);
             this.lblReceiverInspector.Name = "lblReceiverInspector";
             this.lblReceiverInspector.Size = new System.Drawing.Size(100, 13);
-            this.lblReceiverInspector.TabIndex = 151;
+            this.lblReceiverInspector.TabIndex = 0;
             this.lblReceiverInspector.Text = "Message Inspector:";
             // 
             // btnSubmit
@@ -404,7 +403,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSubmit.Location = new System.Drawing.Point(720, 508);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(72, 24);
-            this.btnSubmit.TabIndex = 0;
+            this.btnSubmit.TabIndex = 6;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = false;
             this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
@@ -415,7 +414,7 @@ namespace ServiceBusExplorer.Forms
             this.chkNewMessageId.Location = new System.Drawing.Point(621, 502);
             this.chkNewMessageId.Name = "chkNewMessageId";
             this.chkNewMessageId.Size = new System.Drawing.Size(93, 39);
-            this.chkNewMessageId.TabIndex = 153;
+            this.chkNewMessageId.TabIndex = 5;
             this.chkNewMessageId.Text = "Generate new MessageId";
             this.chkNewMessageId.UseVisualStyleBackColor = true;
             // 
@@ -425,7 +424,7 @@ namespace ServiceBusExplorer.Forms
             this.chkRemove.Location = new System.Drawing.Point(491, 502);
             this.chkRemove.Name = "chkRemove";
             this.chkRemove.Size = new System.Drawing.Size(124, 39);
-            this.chkRemove.TabIndex = 154;
+            this.chkRemove.TabIndex = 4;
             this.chkRemove.Text = "Remove message from DLQ";
             this.chkRemove.UseVisualStyleBackColor = true;
             this.chkRemove.Visible = false;

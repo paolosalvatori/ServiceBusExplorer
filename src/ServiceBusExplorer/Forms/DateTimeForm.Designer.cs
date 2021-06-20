@@ -72,7 +72,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.Location = new System.Drawing.Point(96, 104);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
-            this.btnOk.TabIndex = 0;
+            this.btnOk.TabIndex = 1;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -90,7 +90,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.Location = new System.Drawing.Point(176, 104);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 1;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -122,7 +122,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperCaption.ShadowControl = false;
             this.grouperCaption.ShadowThickness = 1;
             this.grouperCaption.Size = new System.Drawing.Size(232, 72);
-            this.grouperCaption.TabIndex = 33;
+            this.grouperCaption.TabIndex = 0;
             // 
             // dateTimePicker
             // 
@@ -135,7 +135,7 @@ namespace ServiceBusExplorer.Forms
             this.dateTimePicker.Name = "dateTimePicker";
             this.dateTimePicker.ShowCheckBox = true;
             this.dateTimePicker.Size = new System.Drawing.Size(203, 20);
-            this.dateTimePicker.TabIndex = 36;
+            this.dateTimePicker.TabIndex = 0;
             // 
             // DateTimeForm
             // 
