@@ -32,9 +32,9 @@
     <!--<Version>$version$</Version>-->
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Paolo Salvatori</Authors>
-    <PackageIconUrl>https://raw.githubusercontent.com/paolosalvatori/ServiceBusExplorer/master/src/ServiceBusExplorer/Icons/NewServiceBusExplorerLogo.ico</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <PackageId>servicebusexplorer</PackageId>
-    <PackageLicenseUrl>https://github.com/paolosalvatori/ServiceBusExplorer#license</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/paolosalvatori/ServiceBusExplorer</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/paolosalvatori/ServiceBusExplorer/releases</PackageReleaseNotes>
     <PackageTags>servicebusexplorer azure azureservicebus servicebus explorer eventhub queue subscription relay notificationhub</PackageTags>
@@ -64,6 +64,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>NewServiceBusExplorerLogo.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/paolosalvatori/ServiceBusExplorer</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
@@ -517,6 +521,10 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -531,6 +539,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Icons\NewServiceBusExplorerLogo.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
