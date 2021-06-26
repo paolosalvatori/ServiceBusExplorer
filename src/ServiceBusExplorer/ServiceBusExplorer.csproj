@@ -6,6 +6,7 @@
     <ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net462</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
