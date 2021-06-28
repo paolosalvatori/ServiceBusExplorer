@@ -52,16 +52,16 @@ build:
 after_build:
   - ps: >-
       # Remove ALL xml files.
-      Push-Location $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\net462
+      Push-Location $($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release
         Get-ChildItem -Include *.xml -Recurse | % { Remove-Item $_.FullName }
       Pop-Location
   - ps: >-
       # Reset VERIFICATION file.
       (Set-Content -Value "VERIFICATION=MD5" -Path $env:APPVEYOR_BUILD_FOLDER\VERIFICATION.txt)
-  - ps: .\Generate-VerificationFile.ps1 -Version $env:GitVersion_MajorMinorPatch -TemplateFilePath VERIFICATION-Template.txt -ExePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\net462\ServiceBusExplorer.exe" -OutputFilePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt"
-  - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\net462\*.*
+  - ps: .\Generate-VerificationFile.ps1 -Version $env:GitVersion_MajorMinorPatch -TemplateFilePath VERIFICATION-Template.txt -ExePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\ServiceBusExplorer.exe" -OutputFilePath "$($env:APPVEYOR_BUILD_FOLDER)\src\ServiceBusExplorer\bin\Release\VERIFICATION.txt"
+  - 7z a ServiceBusExplorer-%GitVersion_MajorMinorPatch%.zip %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\bin\Release\*.*
   - ps: (Get-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:GitVersion_MajorMinorPatch") | Set-Content $env:APPVEYOR_BUILD_FOLDER\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
-  # - appveyor-retry choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
+  - appveyor-retry choco pack %APPVEYOR_BUILD_FOLDER%\src\ServiceBusExplorer\ServiceBusExplorer.nuspec
 
 #---------------------------------#
 #      after build - on_success   #
