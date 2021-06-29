@@ -22,9 +22,7 @@
 #region Using Directives
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Xml;
 
 #endregion
 
@@ -37,70 +35,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
         private const string TypeNotSupported = "Type not supported: {0}";
         #endregion
 
-        #region Static Fields
-        private static readonly Dictionary<Type, string> clrToEDMMappingDictionary = new Dictionary<Type, string>();
-        #endregion
-
-        #region Static Constructor
-        static ConversionHelper()
-        {
-            clrToEDMMappingDictionary.Add(typeof(byte), "Edm.Byte");
-            clrToEDMMappingDictionary.Add(typeof(short), "Edm.Int16");
-            clrToEDMMappingDictionary.Add(typeof(int), "Edm.Int32");
-            clrToEDMMappingDictionary.Add(typeof(long), "Edm.Int64");
-            clrToEDMMappingDictionary.Add(typeof(float), "Edm.Single");
-            clrToEDMMappingDictionary.Add(typeof(double), "Edm.Double");
-            clrToEDMMappingDictionary.Add(typeof(decimal), "Edm.Decimal");
-            clrToEDMMappingDictionary.Add(typeof(byte[]), "Edm.Binary");
-            clrToEDMMappingDictionary.Add(typeof(Guid), "Edm.Guid");
-            clrToEDMMappingDictionary.Add(typeof(DateTime), "Edm.DateTime");
-            clrToEDMMappingDictionary.Add(typeof(bool), "Edm.Boolean");
-        }
-        #endregion
-
         #region Public Static Methods
-        public static object MapEDMTypeToCLRType(string type, string value, bool isNull)
-        {
-            if (isNull)
-            {
-                return null;
-            }
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                return value;
-            }
-            switch (type)
-            {
-                case "Edm.String":
-                    return value;
-                case "Edm.Byte":
-                    return Convert.ChangeType(value, typeof(byte));
-                case "Edm.SByte":
-                    return Convert.ChangeType(value, typeof(sbyte));
-                case "Edm.Int16":
-                    return Convert.ChangeType(value, typeof(short));
-                case "Edm.Int32":
-                    return Convert.ChangeType(value, typeof(int));
-                case "Edm.Int64":
-                    return Convert.ChangeType(value, typeof(long));
-                case "Edm.Single":
-                    return Convert.ChangeType(value, typeof(float));
-                case "Edm.Double":
-                    return Convert.ChangeType(value, typeof(double));
-                case "Edm.Boolean":
-                    return Convert.ChangeType(value, typeof(bool));
-                case "Edm.Decimal":
-                    return Convert.ChangeType(value, typeof(decimal));
-                case "Edm.DateTime":
-                    return XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.RoundtripKind);
-                case "Edm.Binary":
-                    return Convert.FromBase64String(value);
-                case "Edm.Guid":
-                    return new Guid(value);
-            }
-            throw new NotSupportedException(string.Format(TypeNotSupported, type));
-        }
-
         public static object MapStringTypeToCLRType(string type, object value)
         {
             if (string.IsNullOrWhiteSpace(type))
@@ -112,14 +47,24 @@ namespace ServiceBusExplorer.Utilities.Helpers
                 case "String":
                     var s = value as string;
                     return s != null ? s.Trim() : null;
+                case "Char":
+                    return Convert.ChangeType(value, typeof(char));
+                case "SByte":
+                    return Convert.ChangeType(value, typeof(sbyte));
                 case "Byte":
                     return Convert.ChangeType(value, typeof(byte));
                 case "Int16":
                     return Convert.ChangeType(value, typeof(short));
+                case "UInt16":
+                    return Convert.ChangeType(value, typeof(ushort));
                 case "Int32":
                     return Convert.ChangeType(value, typeof(int));
+                case "UInt32":
+                    return Convert.ChangeType(value, typeof(uint));
                 case "Int64":
                     return Convert.ChangeType(value, typeof(long));
+                case "UInt64":
+                    return Convert.ChangeType(value, typeof(ulong)); 
                 case "Single":
                     return Convert.ChangeType(value, typeof(float));
                 case "Double":
@@ -138,16 +83,6 @@ namespace ServiceBusExplorer.Utilities.Helpers
                     return new Guid(value.ToString());
             }
             throw new NotSupportedException(string.Format(TypeNotSupported, type));
-        }
-
-        public static string MapCLRTypeToEDMType(Type type)
-        {
-            if (type != null &&
-                clrToEDMMappingDictionary.ContainsKey(type))
-            {
-                return clrToEDMMappingDictionary[type];
-            }
-            return null;
         }
         #endregion
     }
