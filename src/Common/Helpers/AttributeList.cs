@@ -34,7 +34,6 @@ namespace ServiceBusExplorer.Helpers
         #region Public Conctructors
         public AttributeList()
         {
-
         }
 
         public AttributeList(AttributeCollection ac)
