@@ -638,6 +638,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceBusTreeView.HideSelection = false;
             this.serviceBusTreeView.ImageIndex = 0;
             this.serviceBusTreeView.ImageList = this.imageList;
             this.serviceBusTreeView.Indent = 20;
