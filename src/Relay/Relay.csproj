@@ -9,7 +9,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Relay" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Azure.Relay" Version="2.0.15596" />
   </ItemGroup>
 
 
