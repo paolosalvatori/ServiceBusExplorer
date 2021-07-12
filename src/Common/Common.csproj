@@ -15,26 +15,26 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.6.0" />
-    <PackageReference Include="Azure.Core.Amqp" Version="1.0.0" />
-    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.2.0" />
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Azure.Amqp" Version="2.4.8" />
+    <PackageReference Include="Azure.Core" Version="1.16.0" />
+    <PackageReference Include="Azure.Core.Amqp" Version="1.2.0" />
+    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.5.0" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.2.1" />
+    <PackageReference Include="Microsoft.Azure.Amqp" Version="2.4.13" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
-    <PackageReference Include="Microsoft.Azure.Relay" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Azure.Relay" Version="2.0.15596" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.4.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.5.0" />
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="5.4.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="5.4.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.11.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.11.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.22" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.6.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Memory.Data" Version="1.0.1" />
+    <PackageReference Include="System.Memory.Data" Version="1.0.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.WebSockets" Version="4.0.0" />
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.0.2" />
@@ -51,7 +51,7 @@
     <PackageReference Include="System.Threading.Channels" Version="4.6.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />

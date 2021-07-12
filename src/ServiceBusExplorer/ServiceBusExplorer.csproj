@@ -548,11 +548,11 @@
     <PackageReference Include="GitVersion.CommandLine" Version="5.6.1" />
     <PackageReference Include="GitVersionTask" Version="5.5.1" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Add.ico" />

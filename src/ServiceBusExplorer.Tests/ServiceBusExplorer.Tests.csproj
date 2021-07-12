@@ -11,7 +11,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -29,6 +28,6 @@
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.1.1" />
   </ItemGroup>
 </Project>
