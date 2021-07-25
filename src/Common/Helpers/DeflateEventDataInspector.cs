@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -40,10 +40,13 @@ namespace ServiceBusExplorer.Helpers
             {
                 return null;
             }
-            if (stream.CanSeek)
+
+            if (!stream.CanSeek)
             {
-                stream.Seek(0, SeekOrigin.Begin);
+                throw new InvalidOperationException("Stream is not seekable");
             }
+
+            stream.Seek(0, SeekOrigin.Begin);
             return eventData.Clone(Compress(stream));
         }
 
@@ -54,10 +57,13 @@ namespace ServiceBusExplorer.Helpers
             {
                 return null;
             }
-            if (stream.CanSeek)
+
+            if (!stream.CanSeek)
             {
-                stream.Seek(0, SeekOrigin.Begin);
+                throw new InvalidOperationException("Stream is not seekable");
             }
+
+            stream.Seek(0, SeekOrigin.Begin);
             return eventData.Clone(Decompress(stream));
         } 
         #endregion
