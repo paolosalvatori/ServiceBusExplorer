@@ -15,6 +15,8 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 choco install ServiceBusExplorer
 ```
 
+The default location of the executable is C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe.
+
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
 
 ## Using GitHub
