@@ -121,6 +121,7 @@ namespace ServiceBusExplorer.Forms
             this.collapseSubTreeMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.subscriptionContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeStatusSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -1177,6 +1178,7 @@ namespace ServiceBusExplorer.Forms
             this.subscriptionContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.subscriptionContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeSubscriptionMenuItem,
+            this.duplicateSubscriptionMenuItem,
             this.changeStatusSubscriptionMenuItem,
             this.refreshSubscriptionMenuItem,
             this.toolStripSeparator7,
@@ -1212,6 +1214,14 @@ namespace ServiceBusExplorer.Forms
             this.removeSubscriptionMenuItem.Text = "Delete Subscription";
             this.removeSubscriptionMenuItem.ToolTipText = "Delete the current subscription.";
             this.removeSubscriptionMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // duplicateSubscriptionMenuItem
+            // 
+            this.duplicateSubscriptionMenuItem.Name = "duplicateSubscriptionMenuItem";
+            this.duplicateSubscriptionMenuItem.Size = new System.Drawing.Size(581, 38);
+            this.duplicateSubscriptionMenuItem.Text = "Duplicate Subscription";
+            this.duplicateSubscriptionMenuItem.ToolTipText = "Duplicate current subscription including rules and actions.";
+            this.duplicateSubscriptionMenuItem.Click += new System.EventHandler(this.duplicateSubscriptionMenuItem_Click);
             // 
             // changeStatusSubscriptionMenuItem
             // 
@@ -3455,6 +3465,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem deadletterQueueMessagesToolStripMenuItem2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator79;
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem duplicateSubscriptionMenuItem;
     }
 }
 
