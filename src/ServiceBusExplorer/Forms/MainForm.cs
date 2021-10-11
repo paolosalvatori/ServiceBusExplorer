@@ -92,6 +92,7 @@ namespace ServiceBusExplorer.Forms
         private const string CreateNotificationHub = "Create Notification Hub";
         private const string AddRule = "Add Rule";
         private const string DuplicateSubscriptionFormat = "Duplicate Subscription: {0}";
+        private const string DuplicateQueueFormat = "Duplicate Queue: {0}";
         private const string ViewQueueFormat = "View Queue: {0}";
         private const string ViewTopicFormat = "View Topic: {0}";
         private const string ViewSubscriptionFormat = "View Subscription: {0}";
@@ -4684,7 +4685,7 @@ namespace ServiceBusExplorer.Forms
             return consumerGroupNode;
         }
 
-        private void ShowQueue(QueueDescription queue, string path)
+        private void ShowQueue(QueueDescription queue, string path, bool duplicateQueue = false)
         {
             HandleQueueControl queueControl = null;
 
@@ -4697,7 +4698,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path);
+                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue);
                 queueControl.SuspendDrawing();
                 queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(queueControl);
@@ -6804,5 +6805,11 @@ namespace ServiceBusExplorer.Forms
             ShowSubscription(subscriptionWrapper, true);
         }
 
+        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
+        {
+            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
+            ShowQueue(queueWrappper, queueWrappper.Path, true);
+        }
     }
 }
