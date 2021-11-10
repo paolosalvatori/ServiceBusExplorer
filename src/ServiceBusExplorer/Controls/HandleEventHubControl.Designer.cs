@@ -154,6 +154,7 @@
             // 
             // lblMessageRetentionInDaysValue
             // 
+            this.lblMessageRetentionInDaysValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMessageRetentionInDaysValue.AutoSize = true;
             this.lblMessageRetentionInDaysValue.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblMessageRetentionInDaysValue.Location = new System.Drawing.Point(272, 316);
@@ -239,6 +240,7 @@
             // 
             // lblPartitionCountValue
             // 
+            this.lblPartitionCountValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblPartitionCountValue.AutoSize = true;
             this.lblPartitionCountValue.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblPartitionCountValue.Location = new System.Drawing.Point(568, 316);
