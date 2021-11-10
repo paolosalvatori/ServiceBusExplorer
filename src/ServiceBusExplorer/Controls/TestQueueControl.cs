@@ -2182,5 +2182,15 @@ namespace ServiceBusExplorer.Controls
         }
 
         #endregion
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

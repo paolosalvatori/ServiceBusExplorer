@@ -282,6 +282,7 @@
             this.mainTabControl.Size = new System.Drawing.Size(976, 414);
             this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
+            this.mainTabControl.SelectedIndexChanged += new System.EventHandler(this.mainTabControl_SelectedIndexChanged);
             // 
             // mainTabMessagePage
             // 
@@ -432,7 +433,6 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -468,6 +468,7 @@
             this.label2.Text = "The default is to just send one message so if you have selected muliple files and" +
     " want to send all of them you have to change the Message Count on the Sender tab" +
     ".";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // grouperMessageFiles
             // 
@@ -852,6 +853,7 @@
             this.txtMessageCount.AllowDecimal = false;
             this.txtMessageCount.AllowNegative = false;
             this.txtMessageCount.AllowSpace = false;
+            this.txtMessageCount.IsZeroWhenEmpty = false;
             this.txtMessageCount.Location = new System.Drawing.Point(96, 264);
             this.txtMessageCount.Name = "txtMessageCount";
             this.txtMessageCount.Size = new System.Drawing.Size(72, 20);
