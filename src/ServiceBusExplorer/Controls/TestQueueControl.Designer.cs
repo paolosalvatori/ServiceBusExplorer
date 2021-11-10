@@ -282,7 +282,6 @@
             this.mainTabControl.Size = new System.Drawing.Size(976, 414);
             this.mainTabControl.TabIndex = 0;
             this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
-            this.mainTabControl.SelectedIndexChanged += new System.EventHandler(this.mainTabControl_SelectedIndexChanged);
             // 
             // mainTabMessagePage
             // 
@@ -468,7 +467,6 @@
             this.label2.Text = "The default is to just send one message so if you have selected muliple files and" +
     " want to send all of them you have to change the Message Count on the Sender tab" +
     ".";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // grouperMessageFiles
             // 
