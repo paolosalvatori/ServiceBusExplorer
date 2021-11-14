@@ -22,26 +22,9 @@
 #region Using Directives
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Enums;
-using Cursor = System.Windows.Forms.Cursor;
-using FastColoredTextBoxNS;
-using ServiceBusExplorer.UIHelpers;
-using static ServiceBusExplorer.ServiceBusHelper;
 using ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
