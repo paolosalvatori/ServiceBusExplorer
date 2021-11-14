@@ -47,16 +47,9 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestQueueControl : UserControl
+    public partial class TestQueueControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -155,11 +148,6 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Instance Fields
         private readonly QueueDescription queueDescription;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
@@ -192,7 +180,6 @@ namespace ServiceBusExplorer.Controls
         private int senderTaskCount = 1;
         private int receiverTaskCount = 1;
         private bool isSenderFaulted;
-        private bool isReadyToStoreMessageText;
         private Filter filter;
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IBrokeredMessageGenerator brokeredMessageGenerator;
@@ -231,13 +218,9 @@ namespace ServiceBusExplorer.Controls
                                 Func<Task> stopLog,
                                 Action startLog,
                                 ServiceBusHelper serviceBusHelper,
-                                QueueDescription queueDescription)
+                                QueueDescription queueDescription) :
+            base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.queueDescription = queueDescription;
             InitializeComponent();
             InitializeControls();
