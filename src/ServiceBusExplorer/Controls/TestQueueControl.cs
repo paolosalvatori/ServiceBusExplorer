@@ -192,6 +192,7 @@ namespace ServiceBusExplorer.Controls
         private int senderTaskCount = 1;
         private int receiverTaskCount = 1;
         private bool isSenderFaulted;
+        private bool isReadyToStoreMessageText;
         private Filter filter;
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IBrokeredMessageGenerator brokeredMessageGenerator;
@@ -205,22 +206,22 @@ namespace ServiceBusExplorer.Controls
         #region Private Static Fields
         static readonly List<string> Types = new List<string>
         {
-            "Boolean", 
-            "Byte", 
+            "Boolean",
+            "Byte",
             "Int16",
             "Int32",
             "Int64",
-            "Single", 
-            "Double", 
-            "Decimal", 
-            "Guid", 
-            "DateTime", 
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
             "String",
             "Char",
             "UInt64",
             "UInt32",
             "UInt16",
-            "SByte", 
+            "SByte",
         };
         #endregion
 
@@ -289,7 +290,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         messageFileListView.Items.Add(new ListViewItem(new[]
                                                         {
-                                                            tuple.Item1, 
+                                                            tuple.Item1,
                                                             tuple.Item2
                                                         }));
                     }
@@ -367,6 +368,7 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                isReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null &&
                                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
@@ -631,11 +633,11 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker) async delegate
-                            {
-                                btnStart.Text = StartCaption;
-                                await MainForm.SingletonMainForm.RefreshSelectedEntity();
-                            });
+                            Invoke((MethodInvoker)async delegate
+                           {
+                               btnStart.Text = StartCaption;
+                               await MainForm.SingletonMainForm.RefreshSelectedEntity();
+                           });
                         }
                     };
 
@@ -1951,12 +1953,13 @@ namespace ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = $"{(fileInfo.Length%1024 == 0 ? fileInfo.Length/1024 : fileInfo.Length/1024 + 1)} KB";
+                var size = $"{(fileInfo.Length % 1024 == 0 ? fileInfo.Length / 1024 : fileInfo.Length / 1024 + 1)} KB";
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
                     fileInfo.FullName,
                     size
-                }) { Checked = true });
+                })
+                { Checked = true });
                 mainForm.FileNames.Add(new Tuple<string, string>(fileInfo.FullName, size));
             }
             checkBoxFileName.Checked = messageFileListView.Items.Cast<ListViewItem>().All(i => i.Checked);
@@ -2159,7 +2162,10 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            mainForm.MessageText = txtMessageText.Text;
+            if (isReadyToStoreMessageText)
+            {
+                mainForm.MessageText = txtMessageText.Text;
+            }
         }
 
         private void txtContentType_TextChanged(object sender, EventArgs e)
