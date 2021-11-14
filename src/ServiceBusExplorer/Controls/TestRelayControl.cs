@@ -49,16 +49,9 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestRelayControl : UserControl
+    public partial class TestRelayControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -98,10 +91,6 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Instance Fields
         private readonly RelayDescription relayDescription;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private System.ServiceModel.Channels.Binding binding;
         private CancellationTokenSource managerCancellationTokenSource;
@@ -117,7 +106,6 @@ namespace ServiceBusExplorer.Controls
         private double senderMaximumTime;
         private double senderAverageTime;
         private double senderTotalTime;
-        private readonly ServiceBusHelper serviceBusHelper;
         #endregion
 
         #region Public Constructors
@@ -127,13 +115,10 @@ namespace ServiceBusExplorer.Controls
                                 Action startLog,
                                 RelayDescription relayDescription, 
                                 ServiceBusHelper serviceBusHelper)
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
+
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
             this.relayDescription = relayDescription;
-            this.serviceBusHelper = serviceBusHelper;
             InitializeComponent();
             InitializeControls();
         } 
@@ -247,6 +232,8 @@ namespace ServiceBusExplorer.Controls
                 headersDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
                 headersDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 headersDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                isReadyToStoreMessageText = true;
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null &&
@@ -1221,10 +1208,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void grouperMessageFormat_CustomPaint(PaintEventArgs e)

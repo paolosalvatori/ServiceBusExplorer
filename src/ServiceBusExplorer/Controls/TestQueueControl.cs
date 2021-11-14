@@ -218,8 +218,8 @@ namespace ServiceBusExplorer.Controls
                                 Func<Task> stopLog,
                                 Action startLog,
                                 ServiceBusHelper serviceBusHelper,
-                                QueueDescription queueDescription) :
-            base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
+                                QueueDescription queueDescription) 
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
             this.queueDescription = queueDescription;
             InitializeComponent();
