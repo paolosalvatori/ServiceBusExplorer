@@ -2145,10 +2145,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if (isReadyToStoreMessageText)
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void txtContentType_TextChanged(object sender, EventArgs e)
