@@ -109,11 +109,11 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Public Constructors
-        public TestRelayControl(MainForm mainForm, 
+        public TestRelayControl(MainForm mainForm,
                                 WriteToLogDelegate writeToLog,
                                 Func<Task> stopLog,
                                 Action startLog,
-                                RelayDescription relayDescription, 
+                                RelayDescription relayDescription,
                                 ServiceBusHelper serviceBusHelper)
             : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
 
@@ -121,7 +121,7 @@ namespace ServiceBusExplorer.Controls
             this.relayDescription = relayDescription;
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -174,7 +174,7 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 bindingSource.DataSource = CustomMessageHeaderInfo.Headers;
-                
+
 
                 // Initialize the DataGridView.
                 headersDataGridView.AutoGenerateColumns = false;
@@ -184,29 +184,29 @@ namespace ServiceBusExplorer.Controls
 
                 // Create the Name column
                 var textBoxColumn = new DataGridViewTextBoxColumn
-                                        {
-                                            DataPropertyName = HeaderName, 
-                                            Name = HeaderName, 
-                                            Width = 90
-                                        };
+                {
+                    DataPropertyName = HeaderName,
+                    Name = HeaderName,
+                    Width = 90
+                };
                 headersDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Type column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                                        {
-                                            DataPropertyName = HeaderNamespace,
-                                            Name = HeaderNamespace,
-                                            Width = 84
-                                        };
+                {
+                    DataPropertyName = HeaderNamespace,
+                    Name = HeaderNamespace,
+                    Width = 84
+                };
                 headersDataGridView.Columns.Add(textBoxColumn);
 
                 // Create the Value column
                 textBoxColumn = new DataGridViewTextBoxColumn
-                                    {
-                                        DataPropertyName = HeaderValue, 
-                                        Name = HeaderValue, 
-                                        Width = 102
-                                    };
+                {
+                    DataPropertyName = HeaderValue,
+                    Name = HeaderValue,
+                    Width = 102
+                };
                 headersDataGridView.Columns.Add(textBoxColumn);
 
                 // Set Grid style
@@ -434,7 +434,7 @@ namespace ServiceBusExplorer.Controls
                                         {
                                             requestChannelFactory = new ChannelFactory<IRequestChannel>(binding, serviceBusHelper.GetRelayUri(relayDescription).AbsoluteUri);
                                         }
-                                        
+
                                         requestChannelFactory.Endpoint.Contract.SessionMode = SessionMode.Allowed;
                                         if (ServiceBusBindingHelper.GetRelayClientAuthenticationType(binding) == RelayClientAuthenticationType.RelayAccessToken)
                                         {
@@ -845,10 +845,12 @@ namespace ServiceBusExplorer.Controls
             {
                 await stopLog();
             }
+
             if (managerCancellationTokenSource != null)
             {
                 managerCancellationTokenSource.Cancel();
             }
+
             if (senderCancellationTokenSource != null)
             {
                 senderCancellationTokenSource.Cancel();
@@ -865,7 +867,7 @@ namespace ServiceBusExplorer.Controls
         {
             DrawTabControlTabs(mainTabControl, e, null);
         }
-       
+
         private void checkBoxEnableSenderLogging_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxSenderVerboseLogging.Enabled = checkBoxEnableSenderLogging.Checked;
@@ -881,12 +883,13 @@ namespace ServiceBusExplorer.Controls
             try
             {
                 openFileDialog.FileName = string.Empty;
-                if (openFileDialog.ShowDialog() != DialogResult.OK || 
+                if (openFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(openFileDialog.FileName) ||
                     !File.Exists(openFileDialog.FileName))
                 {
                     return;
                 }
+
                 using (var reader = new StreamReader(openFileDialog.FileName))
                 {
                     var text = reader.ReadToEnd();
@@ -894,6 +897,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         return;
                     }
+
                     LanguageDetector.SetFormattedMessage(serviceBusHelper, text, txtMessageText);
                     if (mainForm != null)
                     {
@@ -954,10 +958,10 @@ namespace ServiceBusExplorer.Controls
             return ok &&
                    !type.IsPrimitive &&
                    !type.IsEnum &&
-                   type != typeof (string) &&
-                   type != typeof (TimeSpan) &&
-                   type != typeof (DateTime) &&
-                   type != typeof (DateTimeOffset);
+                   type != typeof(string) &&
+                   type != typeof(TimeSpan) &&
+                   type != typeof(DateTime) &&
+                   type != typeof(DateTimeOffset);
         }
 
         private void bindingTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -1007,7 +1011,7 @@ namespace ServiceBusExplorer.Controls
         {
             lock (this)
             {
-                var elapsedSeconds = (double) elapsedMilliseconds/1000;
+                var elapsedSeconds = (double)elapsedMilliseconds / 1000;
 
                 if (direction == DirectionType.Send)
                 {
@@ -1021,8 +1025,8 @@ namespace ServiceBusExplorer.Controls
                     }
                     senderTotalTime += elapsedSeconds;
                     senderMessageNumber += messageNumber;
-                    senderAverageTime = senderMessageNumber > 0 ? senderTotalTime/senderMessageNumber : 0;
-                    senderMessagesPerSecond = senderTotalTime > 0 ? senderMessageNumber * senderTaskCount/senderTotalTime : 0;
+                    senderAverageTime = senderMessageNumber > 0 ? senderTotalTime / senderMessageNumber : 0;
+                    senderMessagesPerSecond = senderTotalTime > 0 ? senderMessageNumber * senderTaskCount / senderTotalTime : 0;
 
                     lblSenderLastTime.Text = string.Format(LabelFormat, elapsedSeconds);
                     lblSenderLastTime.Refresh();
