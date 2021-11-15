@@ -72,3 +72,4 @@ Here are a couple of alternatives:
 - **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
 - **Serverless360** _(paid with free trial, SaaS, web based)_
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
+- **Purple Explorer** _(free, open source, cross platform)
