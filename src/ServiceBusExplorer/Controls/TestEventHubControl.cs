@@ -47,16 +47,9 @@ namespace ServiceBusExplorer.Controls
     using ServiceBusExplorer.Utilities.Helpers;
     using static ServiceBusExplorer.ServiceBusHelper;
 
-    public partial class TestEventHubControl : UserControl
+    public partial class TestEventHubControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -113,11 +106,6 @@ namespace ServiceBusExplorer.Controls
         #region Private Instance Fields
         private readonly EventHubDescription eventHubDescription;
         private readonly PartitionDescription partitionDescription;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private List<EventHubClient> eventHubClientCollection = new List<EventHubClient>();
         private CancellationTokenSource senderCancellationTokenSource;
@@ -155,12 +143,9 @@ namespace ServiceBusExplorer.Controls
                                    ServiceBusHelper serviceBusHelper,
                                    EventHubDescription eventHubDescription,
                                    PartitionDescription partitionDescription)
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
+
             this.eventHubDescription = eventHubDescription;
             this.partitionDescription = partitionDescription;
             InitializeComponent();
@@ -289,6 +274,7 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                isReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null && 
                                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
@@ -1374,10 +1360,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
