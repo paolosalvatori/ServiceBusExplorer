@@ -35,6 +35,7 @@
             this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
             this.txtMessageText = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tabFilesPage = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
             this.grouperMessageFiles = new ServiceBusExplorer.Controls.Grouper();
             this.radioButtonBinaryFile = new System.Windows.Forms.RadioButton();
             this.radioButtonJsonTemplate = new System.Windows.Forms.RadioButton();
@@ -262,7 +263,7 @@
             this.grouperMessageFormat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageFormat.ForeColor = System.Drawing.Color.White;
             this.grouperMessageFormat.GroupImage = null;
-            this.grouperMessageFormat.GroupTitle = "Message Format";
+            this.grouperMessageFormat.GroupTitle = "Event Format";
             this.grouperMessageFormat.Location = new System.Drawing.Point(16, 208);
             this.grouperMessageFormat.Name = "grouperMessageFormat";
             this.grouperMessageFormat.Padding = new System.Windows.Forms.Padding(20);
@@ -303,7 +304,7 @@
             this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageText.ForeColor = System.Drawing.Color.White;
             this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Message Text";
+            this.grouperMessageText.GroupTitle = "Event Text";
             this.grouperMessageText.Location = new System.Drawing.Point(16, 8);
             this.grouperMessageText.Name = "grouperMessageText";
             this.grouperMessageText.Padding = new System.Windows.Forms.Padding(20);
@@ -338,7 +339,6 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -354,6 +354,7 @@
             // tabFilesPage
             // 
             this.tabFilesPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabFilesPage.Controls.Add(this.label2);
             this.tabFilesPage.Controls.Add(this.grouperMessageFiles);
             this.tabFilesPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabFilesPage.Location = new System.Drawing.Point(4, 24);
@@ -362,6 +363,17 @@
             this.tabFilesPage.Size = new System.Drawing.Size(451, 292);
             this.tabFilesPage.TabIndex = 5;
             this.tabFilesPage.Text = "Files";
+            // 
+            // label2
+            // 
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label2.Location = new System.Drawing.Point(16, 10);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(416, 56);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "The default is to just send one event, so if you have selected muliple files and " +
+    "want to send all of them you have to change the Event Data Count on the Sender t" +
+    "ab.";
             // 
             // grouperMessageFiles
             // 
@@ -384,7 +396,7 @@
             this.grouperMessageFiles.ForeColor = System.Drawing.Color.White;
             this.grouperMessageFiles.GroupImage = null;
             this.grouperMessageFiles.GroupTitle = "Message Files";
-            this.grouperMessageFiles.Location = new System.Drawing.Point(16, 8);
+            this.grouperMessageFiles.Location = new System.Drawing.Point(16, 69);
             this.grouperMessageFiles.Name = "grouperMessageFiles";
             this.grouperMessageFiles.Padding = new System.Windows.Forms.Padding(20);
             this.grouperMessageFiles.PaintGroupBox = true;
@@ -392,7 +404,7 @@
             this.grouperMessageFiles.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageFiles.ShadowControl = false;
             this.grouperMessageFiles.ShadowThickness = 1;
-            this.grouperMessageFiles.Size = new System.Drawing.Size(416, 271);
+            this.grouperMessageFiles.Size = new System.Drawing.Size(416, 210);
             this.grouperMessageFiles.TabIndex = 16;
             this.grouperMessageFiles.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageFiles_CustomPaint);
             // 
@@ -401,7 +413,7 @@
             this.radioButtonBinaryFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.radioButtonBinaryFile.AutoSize = true;
             this.radioButtonBinaryFile.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonBinaryFile.Location = new System.Drawing.Point(104, 240);
+            this.radioButtonBinaryFile.Location = new System.Drawing.Point(104, 179);
             this.radioButtonBinaryFile.Name = "radioButtonBinaryFile";
             this.radioButtonBinaryFile.Size = new System.Drawing.Size(73, 17);
             this.radioButtonBinaryFile.TabIndex = 19;
@@ -413,7 +425,7 @@
             this.radioButtonJsonTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.radioButtonJsonTemplate.AutoSize = true;
             this.radioButtonJsonTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 240);
+            this.radioButtonJsonTemplate.Location = new System.Drawing.Point(192, 179);
             this.radioButtonJsonTemplate.Name = "radioButtonJsonTemplate";
             this.radioButtonJsonTemplate.Size = new System.Drawing.Size(100, 17);
             this.radioButtonJsonTemplate.TabIndex = 18;
@@ -426,7 +438,7 @@
             this.radioButtonXmlTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.radioButtonXmlTemplate.AutoSize = true;
             this.radioButtonXmlTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(305, 240);
+            this.radioButtonXmlTemplate.Location = new System.Drawing.Point(305, 179);
             this.radioButtonXmlTemplate.Name = "radioButtonXmlTemplate";
             this.radioButtonXmlTemplate.Size = new System.Drawing.Size(94, 17);
             this.radioButtonXmlTemplate.TabIndex = 17;
@@ -440,7 +452,7 @@
             this.radioButtonTextFile.AutoSize = true;
             this.radioButtonTextFile.Checked = true;
             this.radioButtonTextFile.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radioButtonTextFile.Location = new System.Drawing.Point(17, 239);
+            this.radioButtonTextFile.Location = new System.Drawing.Point(17, 178);
             this.radioButtonTextFile.Name = "radioButtonTextFile";
             this.radioButtonTextFile.Size = new System.Drawing.Size(65, 17);
             this.radioButtonTextFile.TabIndex = 16;
@@ -474,7 +486,7 @@
             this.messageFileListView.Location = new System.Drawing.Point(16, 32);
             this.messageFileListView.Name = "messageFileListView";
             this.messageFileListView.OwnerDraw = true;
-            this.messageFileListView.Size = new System.Drawing.Size(384, 200);
+            this.messageFileListView.Size = new System.Drawing.Size(384, 139);
             this.messageFileListView.TabIndex = 2;
             this.messageFileListView.UseCompatibleStateImageBehavior = false;
             this.messageFileListView.View = System.Windows.Forms.View.Details;
@@ -606,7 +618,7 @@
             this.grouperPartitionKey.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperPartitionKey.ShadowControl = false;
             this.grouperPartitionKey.ShadowThickness = 1;
-            this.grouperPartitionKey.Size = new System.Drawing.Size(428, 72);
+            this.grouperPartitionKey.Size = new System.Drawing.Size(404, 72);
             this.grouperPartitionKey.TabIndex = 1;
             this.grouperPartitionKey.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperPartitionKey_CustomPaint);
             // 
@@ -618,7 +630,7 @@
             this.txtPartitionKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPartitionKey.Location = new System.Drawing.Point(16, 32);
             this.txtPartitionKey.Name = "txtPartitionKey";
-            this.txtPartitionKey.Size = new System.Drawing.Size(396, 20);
+            this.txtPartitionKey.Size = new System.Drawing.Size(372, 20);
             this.txtPartitionKey.TabIndex = 0;
             // 
             // grouperMessageProperties
@@ -636,7 +648,7 @@
             this.grouperMessageProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperMessageProperties.ForeColor = System.Drawing.Color.White;
             this.grouperMessageProperties.GroupImage = null;
-            this.grouperMessageProperties.GroupTitle = "Message Properties";
+            this.grouperMessageProperties.GroupTitle = "Event Properties";
             this.grouperMessageProperties.Location = new System.Drawing.Point(0, 32);
             this.grouperMessageProperties.Name = "grouperMessageProperties";
             this.grouperMessageProperties.Padding = new System.Windows.Forms.Padding(20);
@@ -645,7 +657,7 @@
             this.grouperMessageProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessageProperties.ShadowControl = false;
             this.grouperMessageProperties.ShadowThickness = 1;
-            this.grouperMessageProperties.Size = new System.Drawing.Size(428, 192);
+            this.grouperMessageProperties.Size = new System.Drawing.Size(404, 192);
             this.grouperMessageProperties.TabIndex = 0;
             this.grouperMessageProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageProperties_CustomPaint);
             // 
@@ -661,7 +673,7 @@
             this.propertiesDataGridView.Location = new System.Drawing.Point(16, 32);
             this.propertiesDataGridView.Name = "propertiesDataGridView";
             this.propertiesDataGridView.RowHeadersWidth = 24;
-            this.propertiesDataGridView.Size = new System.Drawing.Size(396, 144);
+            this.propertiesDataGridView.Size = new System.Drawing.Size(372, 144);
             this.propertiesDataGridView.TabIndex = 0;
             this.propertiesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.propertiesDataGridView_DataError);
             this.propertiesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.propertiesDataGridView_RowsAdded);
@@ -743,6 +755,7 @@
             this.txtSendBatchSize.AllowDecimal = false;
             this.txtSendBatchSize.AllowNegative = false;
             this.txtSendBatchSize.AllowSpace = false;
+            this.txtSendBatchSize.IsZeroWhenEmpty = false;
             this.txtSendBatchSize.Location = new System.Drawing.Point(272, 104);
             this.txtSendBatchSize.Name = "txtSendBatchSize";
             this.txtSendBatchSize.Size = new System.Drawing.Size(104, 20);
@@ -795,6 +808,7 @@
             this.txtMessageCount.AllowDecimal = false;
             this.txtMessageCount.AllowNegative = false;
             this.txtMessageCount.AllowSpace = false;
+            this.txtMessageCount.IsZeroWhenEmpty = false;
             this.txtMessageCount.Location = new System.Drawing.Point(272, 200);
             this.txtMessageCount.Name = "txtMessageCount";
             this.txtMessageCount.Size = new System.Drawing.Size(104, 20);
@@ -805,6 +819,7 @@
             this.txtSendTaskCount.AllowDecimal = false;
             this.txtSendTaskCount.AllowNegative = false;
             this.txtSendTaskCount.AllowSpace = false;
+            this.txtSendTaskCount.IsZeroWhenEmpty = false;
             this.txtSendTaskCount.Location = new System.Drawing.Point(272, 168);
             this.txtSendTaskCount.Name = "txtSendTaskCount";
             this.txtSendTaskCount.Size = new System.Drawing.Size(104, 20);
@@ -816,6 +831,7 @@
             this.txtSenderThinkTime.AllowNegative = false;
             this.txtSenderThinkTime.AllowSpace = false;
             this.txtSenderThinkTime.Enabled = false;
+            this.txtSenderThinkTime.IsZeroWhenEmpty = false;
             this.txtSenderThinkTime.Location = new System.Drawing.Point(272, 136);
             this.txtSenderThinkTime.Name = "txtSenderThinkTime";
             this.txtSenderThinkTime.Size = new System.Drawing.Size(104, 20);
@@ -1513,5 +1529,6 @@
         private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
         private Grouper grouperPartitionKey;
         private System.Windows.Forms.TextBox txtPartitionKey;
+        private System.Windows.Forms.Label label2;
     }
 }
