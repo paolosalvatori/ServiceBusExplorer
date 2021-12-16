@@ -175,21 +175,15 @@
     <Compile Update="Controls\StandardValueEditorUI.designer.cs">
       <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
     </Compile>
-    <Compile Update="Controls\TestRelayControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Controls\TestRelayControl.cs" />
     <Compile Update="Controls\TestRelayControl.Designer.cs">
       <DependentUpon>TestRelayControl.cs</DependentUpon>
     </Compile>
-    <Compile Update="Controls\TestSubscriptionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Controls\TestSubscriptionControl.cs" />
     <Compile Update="Controls\TestSubscriptionControl.Designer.cs">
       <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
     </Compile>
-    <Compile Update="Controls\TestQueueControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Controls\TestQueueControl.cs" />
     <Compile Update="Controls\TestQueueControl.Designer.cs">
       <DependentUpon>TestQueueControl.cs</DependentUpon>
     </Compile>
