@@ -19,7 +19,7 @@ namespace ServiceBusExplorer.UIHelpers
             IsReadOnly = isReadOnly;
         }
 
-        public override Type PropertyType => _dictionary[_key].GetType();
+        public override Type PropertyType => _dictionary[_key]?.GetType();
 
         public override void SetValue(object component, object value)
         {

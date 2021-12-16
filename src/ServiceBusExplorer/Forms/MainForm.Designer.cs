@@ -121,6 +121,7 @@ namespace ServiceBusExplorer.Forms
             this.collapseSubTreeMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.subscriptionContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeStatusSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -357,6 +358,7 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
+            this.duplicateQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -638,6 +640,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceBusTreeView.HideSelection = false;
             this.serviceBusTreeView.ImageIndex = 0;
             this.serviceBusTreeView.ImageList = this.imageList;
             this.serviceBusTreeView.Indent = 20;
@@ -1176,6 +1179,7 @@ namespace ServiceBusExplorer.Forms
             this.subscriptionContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.subscriptionContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeSubscriptionMenuItem,
+            this.duplicateSubscriptionMenuItem,
             this.changeStatusSubscriptionMenuItem,
             this.refreshSubscriptionMenuItem,
             this.toolStripSeparator7,
@@ -1211,6 +1215,14 @@ namespace ServiceBusExplorer.Forms
             this.removeSubscriptionMenuItem.Text = "Delete Subscription";
             this.removeSubscriptionMenuItem.ToolTipText = "Delete the current subscription.";
             this.removeSubscriptionMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // duplicateSubscriptionMenuItem
+            // 
+            this.duplicateSubscriptionMenuItem.Name = "duplicateSubscriptionMenuItem";
+            this.duplicateSubscriptionMenuItem.Size = new System.Drawing.Size(581, 38);
+            this.duplicateSubscriptionMenuItem.Text = "Duplicate Subscription";
+            this.duplicateSubscriptionMenuItem.ToolTipText = "Duplicate current subscription including rules and actions.";
+            this.duplicateSubscriptionMenuItem.Click += new System.EventHandler(this.duplicateSubscriptionMenuItem_Click);
             // 
             // changeStatusSubscriptionMenuItem
             // 
@@ -1595,6 +1607,7 @@ namespace ServiceBusExplorer.Forms
             this.deleteQueueMenuItem,
             this.refreshQueueMenuItem,
             this.renameQueueMenuItem,
+            this.duplicateQueueMenuItem,
             this.toolStripSeparator5,
             this.exportQueueMenuItem,
             this.toolStripSeparator11,
@@ -3064,6 +3077,14 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
             // 
+            // duplicateQueueMenuItem
+            // 
+            this.duplicateQueueMenuItem.Name = "duplicateQueueMenuItem";
+            this.duplicateQueueMenuItem.Size = new System.Drawing.Size(581, 38);
+            this.duplicateQueueMenuItem.Text = "Duplicate Queue";
+            this.duplicateQueueMenuItem.ToolTipText = "Duplicate the selected Queue not including Authorization Rules.";
+            this.duplicateQueueMenuItem.Click += new System.EventHandler(this.duplicateQueueMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3454,6 +3475,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem deadletterQueueMessagesToolStripMenuItem2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator79;
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem duplicateSubscriptionMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem duplicateQueueMenuItem;
     }
 }
 

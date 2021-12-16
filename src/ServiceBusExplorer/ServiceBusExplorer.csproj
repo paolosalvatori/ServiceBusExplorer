@@ -1,25 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <!--<Platform Condition=" '$(Platform)' == '' ">x86</Platform>-->
+    <UseWindowsForms>true</UseWindowsForms>
     <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServiceBusExplorer</RootNamespace>
-    <AssemblyName>ServiceBusExplorer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net462</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -36,598 +24,535 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <LangVersion>8</LangVersion>
+    <AssemblyTitle>Service Bus Explorer</AssemblyTitle>
+    <Company>Paolo Salvatori</Company>
+    <Product>Service Bus Explorer</Product>
+    <Description>The Service Bus Explorer allows users to connect to a Service Bus namespace and administer messaging entities in an easy manner. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.</Description>
+    <Copyright>Copyright 2017 Paolo Salvatori</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Authors>Paolo Salvatori</Authors>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageId>servicebusexplorer</PackageId>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/paolosalvatori/ServiceBusExplorer</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/paolosalvatori/ServiceBusExplorer/releases</PackageReleaseNotes>
+    <PackageTags>servicebusexplorer azure azureservicebus servicebus explorer eventhub queue subscription relay notificationhub</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>NewServiceBusExplorerLogo.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup />
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject />
   </PropertyGroup>
-  <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageIcon>NewServiceBusExplorerLogo.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/paolosalvatori/ServiceBusExplorer</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
       <HintPath>Libraries\FastColoredTextBox.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Design" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineOptions.cs" />
-    <Compile Include="Controls\AccidentalDeletionPreventionCheckControl.cs">
+    <Compile Update="Controls\AccidentalDeletionPreventionCheckControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\AccidentalDeletionPreventionCheckControl.Designer.cs">
+    <Compile Update="Controls\AccidentalDeletionPreventionCheckControl.Designer.cs">
       <DependentUpon>AccidentalDeletionPreventionCheckControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CheckBoxComboBox.cs">
+    <Compile Update="Controls\CheckBoxComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\CheckBoxComboBox.Designer.cs" />
-    <Compile Include="Controls\DataGridViewColorPickerColumn.cs" />
-    <Compile Include="Controls\GripBounds.cs" />
-    <Compile Include="Controls\HandleConsumerGroupControl.cs">
+    <Compile Update="Controls\HandleConsumerGroupControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleConsumerGroupControl.Designer.cs">
+    <Compile Update="Controls\HandleConsumerGroupControl.Designer.cs">
       <DependentUpon>HandleConsumerGroupControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleEventHubControl.cs">
+    <Compile Update="Controls\HandleEventHubControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleEventHubControl.Designer.cs">
+    <Compile Update="Controls\HandleEventHubControl.Designer.cs">
       <DependentUpon>HandleEventHubControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandlePartitionControl.cs">
+    <Compile Update="Controls\HandlePartitionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandlePartitionControl.Designer.cs">
+    <Compile Update="Controls\HandlePartitionControl.Designer.cs">
       <DependentUpon>HandlePartitionControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleRelayControl.cs">
+    <Compile Update="Controls\HandleRelayControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleRelayControl.Designer.cs">
+    <Compile Update="Controls\HandleRelayControl.Designer.cs">
       <DependentUpon>HandleRelayControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PartitionListenerControl.cs">
+    <Compile Update="Controls\PartitionListenerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\PartitionListenerControl.Designer.cs">
+    <Compile Update="Controls\PartitionListenerControl.Designer.cs">
       <DependentUpon>PartitionListenerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ListenerControl.cs">
+    <Compile Update="Controls\ListenerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ListenerControl.Designer.cs">
+    <Compile Update="Controls\ListenerControl.Designer.cs">
       <DependentUpon>ListenerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleNotificationHubControl.cs">
+    <Compile Update="Controls\HandleNotificationHubControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleNotificationHubControl.designer.cs">
+    <Compile Update="Controls\HandleNotificationHubControl.designer.cs">
       <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DataGridViewDateTimePickerColumn.cs" />
-    <Compile Include="Controls\Grouper.cs">
+    <Compile Update="Controls\Grouper.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\NativeMethods.cs" />
-    <Compile Include="Controls\NumericTextBox.cs">
+    <Compile Update="Controls\NumericTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Popup.cs">
+    <Compile Update="Controls\Popup.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Popup.Designer.cs" />
-    <Compile Include="Controls\PopupComboBox.cs">
+    <Compile Update="Controls\PopupComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\PopupComboBox.Designer.cs" />
-    <Compile Include="Controls\ReadOnlyPropertyGrid.cs">
+    <Compile Update="Controls\ReadOnlyPropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\TestEventHubControl.cs">
+    <Compile Update="Controls\TestEventHubControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestEventHubControl.Designer.cs">
+    <Compile Update="Controls\TestEventHubControl.Designer.cs">
       <DependentUpon>TestEventHubControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TimeSpanControl.cs">
+    <Compile Update="Controls\TimeSpanControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TimeSpanControl.Designer.cs">
+    <Compile Update="Controls\TimeSpanControl.Designer.cs">
       <DependentUpon>TimeSpanControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TrackBar.cs">
+    <Compile Update="Controls\TrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\TrackBarDesigner.cs" />
-    <Compile Include="Controls\StandardValueEditorUI.cs">
+    <Compile Update="Controls\StandardValueEditorUI.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\StandardValueEditorUI.designer.cs">
+    <Compile Update="Controls\StandardValueEditorUI.designer.cs">
       <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TestRelayControl.cs">
+    <Compile Update="Controls\TestRelayControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestRelayControl.Designer.cs">
+    <Compile Update="Controls\TestRelayControl.Designer.cs">
       <DependentUpon>TestRelayControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TestSubscriptionControl.cs">
+    <Compile Update="Controls\TestSubscriptionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestSubscriptionControl.Designer.cs">
+    <Compile Update="Controls\TestSubscriptionControl.Designer.cs">
       <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TestQueueControl.cs">
+    <Compile Update="Controls\TestQueueControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestQueueControl.Designer.cs">
+    <Compile Update="Controls\TestQueueControl.Designer.cs">
       <DependentUpon>TestQueueControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TestTopicControl.cs">
+    <Compile Update="Controls\TestTopicControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\TestTopicControl.Designer.cs">
+    <Compile Update="Controls\TestTopicControl.Designer.cs">
       <DependentUpon>TestTopicControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleRuleControl.cs">
+    <Compile Update="Controls\HandleRuleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleRuleControl.Designer.cs">
+    <Compile Update="Controls\HandleRuleControl.Designer.cs">
       <DependentUpon>HandleRuleControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleSubscriptionControl.cs">
+    <Compile Update="Controls\HandleSubscriptionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleSubscriptionControl.Designer.cs">
+    <Compile Update="Controls\HandleSubscriptionControl.Designer.cs">
       <DependentUpon>HandleSubscriptionControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleTopicControl.cs">
+    <Compile Update="Controls\HandleTopicControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleTopicControl.Designer.cs">
+    <Compile Update="Controls\HandleTopicControl.Designer.cs">
       <DependentUpon>HandleTopicControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HeaderPanel.cs">
+    <Compile Update="Controls\HeaderPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\HeaderPanel.designer.cs">
+    <Compile Update="Controls\HeaderPanel.designer.cs">
       <DependentUpon>HeaderPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HandleQueueControl.cs">
+    <Compile Update="Controls\HandleQueueControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\HandleQueueControl.Designer.cs">
+    <Compile Update="Controls\HandleQueueControl.Designer.cs">
       <DependentUpon>HandleQueueControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ChangeQueueStatusForm.cs">
+    <Compile Update="Forms\ChangeQueueStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ChangeQueueStatusForm.Designer.cs">
+    <Compile Update="Forms\ChangeQueueStatusForm.Designer.cs">
       <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ConnectForm.cs">
+    <Compile Update="Forms\ConnectForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ConnectForm.designer.cs">
+    <Compile Update="Forms\ConnectForm.designer.cs">
       <DependentUpon>ConnectForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ClipboardForm.cs">
+    <Compile Update="Forms\ClipboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ClipboardForm.Designer.cs">
+    <Compile Update="Forms\ClipboardForm.Designer.cs">
       <DependentUpon>ClipboardForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ContainerForm.cs">
+    <Compile Update="Forms\ContainerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ContainerForm.Designer.cs">
+    <Compile Update="Forms\ContainerForm.Designer.cs">
       <DependentUpon>ContainerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ChangeStatusForm.cs">
+    <Compile Update="Forms\ChangeStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ChangeStatusForm.Designer.cs">
+    <Compile Update="Forms\ChangeStatusForm.Designer.cs">
       <DependentUpon>ChangeStatusForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CollectionEditorForm.cs">
+    <Compile Update="Forms\CollectionEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\CollectionEditorForm.Designer.cs">
+    <Compile Update="Forms\CollectionEditorForm.Designer.cs">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DateTimeRangeForm.cs">
+    <Compile Update="Forms\DateTimeRangeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DateTimeRangeForm.Designer.cs">
+    <Compile Update="Forms\DateTimeRangeForm.Designer.cs">
       <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\EventDataForm.cs">
+    <Compile Update="Forms\EventDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\EventDataForm.Designer.cs">
+    <Compile Update="Forms\EventDataForm.Designer.cs">
       <DependentUpon>EventDataForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\NewVersionAvailableForm.cs">
+    <Compile Update="Forms\NewVersionAvailableForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\NewVersionAvailableForm.designer.cs">
+    <Compile Update="Forms\NewVersionAvailableForm.designer.cs">
       <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ParameterForm.cs">
+    <Compile Update="Forms\ParameterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ParameterForm.Designer.cs">
+    <Compile Update="Forms\ParameterForm.Designer.cs">
       <DependentUpon>ParameterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\RegistrationForm.cs">
+    <Compile Update="Forms\RegistrationForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\RegistrationForm.Designer.cs">
+    <Compile Update="Forms\RegistrationForm.Designer.cs">
       <DependentUpon>RegistrationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\UploadCertificateForm.cs">
+    <Compile Update="Forms\UploadCertificateForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\UploadCertificateForm.Designer.cs">
+    <Compile Update="Forms\UploadCertificateForm.Designer.cs">
       <DependentUpon>UploadCertificateForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MessageForm.cs">
+    <Compile Update="Forms\MessageForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MessageForm.Designer.cs">
+    <Compile Update="Forms\MessageForm.Designer.cs">
       <DependentUpon>MessageForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ReceiveModeForm.cs">
+    <Compile Update="Forms\ReceiveModeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ReceiveModeForm.Designer.cs">
+    <Compile Update="Forms\ReceiveModeForm.Designer.cs">
       <DependentUpon>ReceiveModeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DateTimeForm.cs">
+    <Compile Update="Forms\DateTimeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DateTimeForm.Designer.cs">
+    <Compile Update="Forms\DateTimeForm.Designer.cs">
       <DependentUpon>DateTimeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FilterForm.cs">
+    <Compile Update="Forms\FilterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FilterForm.Designer.cs">
+    <Compile Update="Forms\FilterForm.Designer.cs">
       <DependentUpon>FilterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\RegistrationsForm.cs">
+    <Compile Update="Forms\RegistrationsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\RegistrationsForm.Designer.cs">
+    <Compile Update="Forms\RegistrationsForm.Designer.cs">
       <DependentUpon>RegistrationsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SelectEntityForm.cs">
+    <Compile Update="Forms\SelectEntityForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SelectEntityForm.Designer.cs">
+    <Compile Update="Forms\SelectEntityForm.Designer.cs">
       <DependentUpon>SelectEntityForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\TextForm.cs">
+    <Compile Update="Forms\TextForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\TextForm.Designer.cs">
+    <Compile Update="Forms\TextForm.Designer.cs">
       <DependentUpon>TextForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\OptionForm.cs">
+    <Compile Update="Forms\OptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptionForm.Designer.cs">
+    <Compile Update="Forms\OptionForm.Designer.cs">
       <DependentUpon>OptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DeleteForm.cs">
+    <Compile Update="Forms\DeleteForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DeleteForm.Designer.cs">
+    <Compile Update="Forms\DeleteForm.Designer.cs">
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Forms\AboutForm.cs">
+    <Compile Update="Forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\AboutForm.Designer.cs">
+    <Compile Update="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ServiceBusExplorerResources.Designer.cs">
+    <Compile Update="ServiceBusExplorerResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceBusExplorerResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UIHelpers\CategorySorter.cs" />
-    <Compile Include="UIHelpers\CheckistBoxExtensions.cs" />
-    <Compile Include="UIHelpers\ControlHelper.cs" />
-    <Compile Include="UIHelpers\CustomCollectionEditor.cs" />
-    <Compile Include="UIHelpers\CustomColorHelper.cs" />
-    <Compile Include="UIHelpers\CustomComponentModel.cs" />
-    <Compile Include="UIHelpers\CustomObject.cs" />
-    <Compile Include="UIHelpers\CustomPropertyDescriptor.cs" />
-    <Compile Include="UIHelpers\CustomStyleHelper.cs" />
-    <Compile Include="UIHelpers\CustomTextEditor.cs" />
-    <Compile Include="Forms\MainForm.cs">
+    <Compile Update="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
+    <Compile Update="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UIHelpers\DataGridViewDeleteButtonCell.cs" />
-    <Compile Include="UIHelpers\DictionaryPropertyDescriptor.cs" />
-    <Compile Include="UIHelpers\DictionaryPropertyGridAdapter.cs" />
-    <Compile Include="UIHelpers\DynamicCustomTypeDescriptor.cs" />
-    <Compile Include="UIHelpers\EventProcessor.cs" />
-    <Compile Include="UIHelpers\EventProcessorFactory.cs" />
-    <Compile Include="UIHelpers\EventProcessorFactoryConfiguration.cs" />
-    <Compile Include="UIHelpers\LanguageDetector.cs" />
-    <Compile Include="UIHelpers\MonitorRule.cs" />
-    <Compile Include="UIHelpers\MonitorRuleList.cs" />
-    <Compile Include="UIHelpers\NativeMethods.cs" />
-    <Compile Include="UIHelpers\PropertyDescriptorList.cs" />
-    <Compile Include="UIHelpers\PropertySorter.cs" />
-    <Compile Include="UIHelpers\PropertyValuePaintEditor.cs" />
-    <Compile Include="UIHelpers\ProviderInstaller.cs" />
-    <Compile Include="UIHelpers\ReadOnlyEditor.cs" />
-    <Compile Include="UIHelpers\ScrollBarHelper.cs" />
-    <Compile Include="UIHelpers\StandardValueEditor.cs" />
-    <Compile Include="UIHelpers\StandardValuesConverter.cs" />
-    <Compile Include="UIHelpers\TabControlHelper.cs" />
-    <Compile Include="UIHelpers\TreeViewHelper.cs" />
-    <EmbeddedResource Include="Controls\AccidentalDeletionPreventionCheckControl.resx">
+    <EmbeddedResource Update="Controls\AccidentalDeletionPreventionCheckControl.resx">
       <DependentUpon>AccidentalDeletionPreventionCheckControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleConsumerGroupControl.resx">
+    <EmbeddedResource Update="Controls\HandleConsumerGroupControl.resx">
       <DependentUpon>HandleConsumerGroupControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleEventHubControl.resx">
+    <EmbeddedResource Update="Controls\HandleEventHubControl.resx">
       <DependentUpon>HandleEventHubControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandlePartitionControl.resx">
+    <EmbeddedResource Update="Controls\HandlePartitionControl.resx">
       <DependentUpon>HandlePartitionControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleRelayControl.resx">
+    <EmbeddedResource Update="Controls\HandleRelayControl.resx">
       <DependentUpon>HandleRelayControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PartitionListenerControl.resx">
+    <EmbeddedResource Update="Controls\PartitionListenerControl.resx">
       <DependentUpon>PartitionListenerControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ListenerControl.resx">
+    <EmbeddedResource Update="Controls\ListenerControl.resx">
       <DependentUpon>ListenerControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleNotificationHubControl.resx">
+    <EmbeddedResource Update="Controls\HandleNotificationHubControl.resx">
       <DependentUpon>HandleNotificationHubControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Grouper.resx">
+    <EmbeddedResource Update="Controls\Grouper.resx">
       <DependentUpon>Grouper.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestEventHubControl.resx">
+    <EmbeddedResource Update="Controls\TestEventHubControl.resx">
       <DependentUpon>TestEventHubControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TimeSpanControl.resx">
+    <EmbeddedResource Update="Controls\TimeSpanControl.resx">
       <DependentUpon>TimeSpanControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TrackBar.resx">
+    <EmbeddedResource Update="Controls\TrackBar.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\StandardValueEditorUI.resx">
+    <EmbeddedResource Update="Controls\StandardValueEditorUI.resx">
       <DependentUpon>StandardValueEditorUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestRelayControl.resx">
+    <EmbeddedResource Update="Controls\TestRelayControl.resx">
       <DependentUpon>TestRelayControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestSubscriptionControl.resx">
+    <EmbeddedResource Update="Controls\TestSubscriptionControl.resx">
       <DependentUpon>TestSubscriptionControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestQueueControl.resx">
+    <EmbeddedResource Update="Controls\TestQueueControl.resx">
       <DependentUpon>TestQueueControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\TestTopicControl.resx">
+    <EmbeddedResource Update="Controls\TestTopicControl.resx">
       <DependentUpon>TestTopicControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleRuleControl.resx">
+    <EmbeddedResource Update="Controls\HandleRuleControl.resx">
       <DependentUpon>HandleRuleControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleSubscriptionControl.resx">
+    <EmbeddedResource Update="Controls\HandleSubscriptionControl.resx">
       <DependentUpon>HandleSubscriptionControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleTopicControl.resx">
+    <EmbeddedResource Update="Controls\HandleTopicControl.resx">
       <DependentUpon>HandleTopicControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HeaderPanel.resx">
+    <EmbeddedResource Update="Controls\HeaderPanel.resx">
       <DependentUpon>HeaderPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HandleQueueControl.resx">
+    <EmbeddedResource Update="Controls\HandleQueueControl.resx">
       <DependentUpon>HandleQueueControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AboutForm.resx">
+    <EmbeddedResource Update="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ChangeQueueStatusForm.resx">
+    <EmbeddedResource Update="Forms\ChangeQueueStatusForm.resx">
       <DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ClipboardForm.resx">
+    <EmbeddedResource Update="Forms\ClipboardForm.resx">
       <DependentUpon>ClipboardForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ContainerForm.resx">
+    <EmbeddedResource Update="Forms\ContainerForm.resx">
       <DependentUpon>ContainerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ChangeStatusForm.resx">
+    <EmbeddedResource Update="Forms\ChangeStatusForm.resx">
       <DependentUpon>ChangeStatusForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CollectionEditorForm.resx">
+    <EmbeddedResource Update="Forms\CollectionEditorForm.resx">
       <DependentUpon>CollectionEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DateTimeRangeForm.resx">
+    <EmbeddedResource Update="Forms\DateTimeRangeForm.resx">
       <DependentUpon>DateTimeRangeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EventDataForm.resx">
+    <EmbeddedResource Update="Forms\EventDataForm.resx">
       <DependentUpon>EventDataForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewVersionAvailableForm.resx">
+    <EmbeddedResource Update="Forms\NewVersionAvailableForm.resx">
       <DependentUpon>NewVersionAvailableForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ParameterForm.resx">
+    <EmbeddedResource Update="Forms\ParameterForm.resx">
       <DependentUpon>ParameterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RegistrationForm.resx">
+    <EmbeddedResource Update="Forms\RegistrationForm.resx">
       <DependentUpon>RegistrationForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UploadCertificateForm.resx">
+    <EmbeddedResource Update="Forms\UploadCertificateForm.resx">
       <DependentUpon>UploadCertificateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MessageForm.resx">
+    <EmbeddedResource Update="Forms\MessageForm.resx">
       <DependentUpon>MessageForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ReceiveModeForm.resx">
+    <EmbeddedResource Update="Forms\ReceiveModeForm.resx">
       <DependentUpon>ReceiveModeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DateTimeForm.resx">
+    <EmbeddedResource Update="Forms\DateTimeForm.resx">
       <DependentUpon>DateTimeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterForm.resx">
+    <EmbeddedResource Update="Forms\FilterForm.resx">
       <DependentUpon>FilterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RegistrationsForm.resx">
+    <EmbeddedResource Update="Forms\RegistrationsForm.resx">
       <DependentUpon>RegistrationsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SelectEntityForm.resx">
+    <EmbeddedResource Update="Forms\SelectEntityForm.resx">
       <DependentUpon>SelectEntityForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TextForm.resx">
+    <EmbeddedResource Update="Forms\TextForm.resx">
       <DependentUpon>TextForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OptionForm.resx">
+    <EmbeddedResource Update="Forms\OptionForm.resx">
       <DependentUpon>OptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DeleteForm.resx">
+    <EmbeddedResource Update="Forms\DeleteForm.resx">
       <DependentUpon>DeleteForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx">
+    <EmbeddedResource Update="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ConnectForm.resx">
+    <EmbeddedResource Update="Forms\ConnectForm.resx">
       <DependentUpon>ConnectForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="ServiceBusExplorerResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ServiceBusExplorerResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="App.config" />
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="ServiceBusExplorer.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <None Include="Icons\NewServiceBusExplorerLogo.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="GitVersion.CommandLine" Version="5.6.1" PrivateAssets="all" />
-    <PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="all" />
+    <PackageReference Include="GitVersion.CommandLine" Version="5.6.1" />
+    <PackageReference Include="GitVersionTask" Version="5.5.1" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
-      <Version>4.5.0</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Add.ico" />
@@ -721,50 +646,24 @@
     <None Include="Images\MicrosoftAzureWhiteLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{de07dbeb-d772-49ba-bceb-a7ce29308ae3}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventHubs\EventHubs.csproj">
-      <Project>{7eb5ea53-5031-4e4e-b78c-38d370af9a9f}</Project>
-      <Name>EventHubs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj">
-      <Project>{e836c914-9bfe-4c1c-96e5-6a414cdef485}</Project>
-      <Name>NotificationHubs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relay\Relay.csproj">
-      <Project>{c6f6fa8e-2003-421d-8f06-aaf6bf205f01}</Project>
-      <Name>Relay</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj">
-      <Project>{6e3c130a-6b47-47d1-84df-7270977e8857}</Project>
-      <Name>ServiceBus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\EventHubs\EventHubs.csproj" />
+    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
+    <ProjectReference Include="..\Relay\Relay.csproj" />
+    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <Compile Remove="Helpers\ConnectionStringHelper.cs" />
+    <Compile Remove="Controls\Windows\HeaderPanel.cs" />
+    <Compile Remove="Controls\Windows\HeaderPanel.Designer.cs" />
+    <Compile Remove="obj\x86\Debug\.NETFramework,Version=v4.6.2.AssemblyAttributes.cs" />
+    <Compile Remove="obj\x86\Debug\AssemblyInfo.g.cs" />
+    <Compile Remove="obj\x86\Debug\GitVersionInformation.g.cs" />
+    <Compile Remove="obj\x86\Debug\GitVersionTaskAssemblyInfo.g.cs" />
+    <Compile Remove="obj\x86\Release\.NETFramework,Version=v4.6.2.AssemblyAttributes.cs" />
+    <Compile Remove="obj\x86\Release\AssemblyInfo.g.cs" />
+    <Compile Remove="obj\x86\Release\GitVersionInformation.g.cs" />
+    <Compile Remove="obj\x86\Release\GitVersionTaskAssemblyInfo.g.cs" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

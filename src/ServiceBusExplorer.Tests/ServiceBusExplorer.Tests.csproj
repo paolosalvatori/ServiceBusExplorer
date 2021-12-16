@@ -1,101 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServiceBusExplorer.Tests</RootNamespace>
-    <AssemblyName>ServiceBusExplorer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net462</TargetFramework>
     <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <AssemblyTitle>ServiceBusExplorer.Tests</AssemblyTitle>
+    <Company>Microsoft</Company>
+    <Product>ServiceBusExplorer.Tests</Product>
+    <Copyright>Copyright © Microsoft 2016</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.0.3" />
-    <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ServiceBusHelperTest.cs" />
-    <Compile Include="Helpers\TwoFilesConfigurationTests.cs" />
-    <Compile Include="Helpers\ConversionHelperTests.cs" />
-    <Compile Include="Helpers\JsonSerializerHelperTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{de07dbeb-d772-49ba-bceb-a7ce29308ae3}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventHubs\EventHubs.csproj">
-      <Project>{7eb5ea53-5031-4e4e-b78c-38d370af9a9f}</Project>
-      <Name>EventHubs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj">
-      <Project>{e836c914-9bfe-4c1c-96e5-6a414cdef485}</Project>
-      <Name>NotificationHubs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Relay\Relay.csproj">
-      <Project>{c6f6fa8e-2003-421d-8f06-aaf6bf205f01}</Project>
-      <Name>Relay</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj">
-      <Project>{32754f39-e353-4607-94fe-b9b9acfd58ef}</Project>
-      <Name>ServiceBusExplorer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj">
-      <Project>{6e3c130a-6b47-47d1-84df-7270977e8857}</Project>
-      <Name>ServiceBus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{93e8bc02-bcd2-4867-a990-fec96d24e9ee}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Artifacts\" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\EventHubs\EventHubs.csproj" />
+    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
+    <ProjectReference Include="..\Relay\Relay.csproj" />
+    <ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj" />
+    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus">
-      <Version>6.0.0</Version>
-    </PackageReference>
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.2.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

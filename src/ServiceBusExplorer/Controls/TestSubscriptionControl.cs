@@ -42,16 +42,9 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestSubscriptionControl : UserControl
+    public partial class TestSubscriptionControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -95,11 +88,6 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Instance Fields
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly SubscriptionWrapper subscriptionWrapper;
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
@@ -130,12 +118,8 @@ namespace ServiceBusExplorer.Controls
                                        Action startLog,
                                        ServiceBusHelper serviceBusHelper, 
                                        SubscriptionWrapper subscriptionWrapper)
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
             InitializeControls();

@@ -92,7 +92,27 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Static Fields
-        static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "TimeSpan", "String" };
+
+        static readonly List<string> Types = new List<string>
+        {
+            "Boolean", 
+            "Byte", 
+            "Int16", 
+            "Int32", 
+            "Int64", 
+            "Single", 
+            "Double", 
+            "Decimal", 
+            "Guid", 
+            "DateTime", 
+            "TimeSpan", 
+            "String", 
+            "Char",
+            "UInt64",
+            "UInt32",
+            "UInt16",
+            "SByte"
+        };
         #endregion
 
         #region Public Properties
