@@ -122,9 +122,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
             while (consecutiveSessionTimeOuts < maxSessionTimeOuts && totalMessagesPurged < messagesToPurgeCount)
             {
+                ServiceBusSessionReceiver sessionReceiver = null;
+
                 try
                 {
-                    var sessionReceiver = await CreateServiceBusSessionReceiver(entity,
+                    sessionReceiver = await CreateServiceBusSessionReceiver(entity,
                             client,
                             purgeDeadLetterQueueInstead: false)
                         .ConfigureAwait(false);
@@ -153,8 +155,6 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                             break;
                         }
                     }
-
-                    await sessionReceiver.CloseAsync().ConfigureAwait(false);
                 }
                 catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
                 {
@@ -163,6 +163,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 catch
                 {
                     break;
+                }
+                finally
+                {
+                    if (sessionReceiver != null)
+                        await sessionReceiver.CloseAsync().ConfigureAwait(false);
                 }
             }
 
