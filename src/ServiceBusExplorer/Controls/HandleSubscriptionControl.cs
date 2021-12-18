@@ -2153,7 +2153,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(subscriptionWrapper, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -2278,7 +2278,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(subscriptionWrapper, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                                 .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
