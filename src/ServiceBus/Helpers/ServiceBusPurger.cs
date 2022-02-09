@@ -102,76 +102,86 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         {
             long totalMessagesPurged = 0;
             int consecutiveSessionTimeOuts = 0;
+            int consecutiveNoMessagesReceived = 0;
+            const int maxSessionTimeOuts = 3;
+            const int maxNoMessagesReceived = 5;
+            long lastLoggedMessageCount = 0;
+
             long messagesToPurgeCount = await GetMessageCount(entity, deadLetterQueueData: false)
                 .ConfigureAwait(false);
 
             var client = new ServiceBusClient(
-              serviceBusHelper.ConnectionString,
-              new ServiceBusClientOptions
-              {
-                  RetryOptions = new ServiceBusRetryOptions
-                  {
-                      TryTimeout = TimeSpan.FromMilliseconds(1000),
-                      MaxRetries = 0
-                  },
-                  TransportType = serviceBusHelper.TransportType
-              });
-
-            const int maxSessionTimeOuts = 3;
-            long lastLoggedMessageCount = 0;
-
-            while (consecutiveSessionTimeOuts < maxSessionTimeOuts && totalMessagesPurged < messagesToPurgeCount)
-            {
-                ServiceBusSessionReceiver sessionReceiver = null;
-
-                try
+                serviceBusHelper.ConnectionString,
+                new ServiceBusClientOptions
                 {
-                    sessionReceiver = await CreateServiceBusSessionReceiver(entity,
-                            client,
-                            purgeDeadLetterQueueInstead: false)
-                        .ConfigureAwait(false);
-
-
-                    while (true)
+                    RetryOptions = new ServiceBusRetryOptions
                     {
-                        var messages = await sessionReceiver.ReceiveMessagesAsync(
-                                maxMessages: 1000,
-                                maxWaitTime: TimeSpan.FromMilliseconds(250))
+                        TryTimeout = TimeSpan.FromMilliseconds(1000),
+                        MaxRetries = 0
+                    },
+                    TransportType = serviceBusHelper.TransportType
+                });
+
+            try
+            {
+                while (consecutiveSessionTimeOuts < maxSessionTimeOuts
+                       && consecutiveNoMessagesReceived < maxNoMessagesReceived
+                       && totalMessagesPurged < messagesToPurgeCount)
+                {
+                    ServiceBusSessionReceiver sessionReceiver = null;
+
+                    try
+                    {
+                        sessionReceiver = await CreateServiceBusSessionReceiver(entity,
+                                client,
+                                purgeDeadLetterQueueInstead: false)
                             .ConfigureAwait(false);
-
-                        if (messages != null && messages.Any())
+                        
+                        while (true)
                         {
-                            consecutiveSessionTimeOuts = 0;
-                            Interlocked.Add(ref totalMessagesPurged, messages.Count);
+                            var messages = await sessionReceiver.ReceiveMessagesAsync(
+                                    maxMessages: 1000,
+                                    maxWaitTime: TimeSpan.FromMilliseconds(250 * (consecutiveNoMessagesReceived + 1)))
+                                .ConfigureAwait(false);
 
-                            if (totalMessagesPurged - lastLoggedMessageCount > 100)
+                            if (messages != null && messages.Any())
                             {
-                                lastLoggedMessageCount = totalMessagesPurged;
-                                writeToLog($"[{totalMessagesPurged}] messages have been purged out of [{messagesToPurgeCount}].");
+                                consecutiveSessionTimeOuts = 0;
+                                consecutiveNoMessagesReceived = 0;
+                                Interlocked.Add(ref totalMessagesPurged, messages.Count);
+
+                                if (totalMessagesPurged - lastLoggedMessageCount > 100)
+                                {
+                                    lastLoggedMessageCount = totalMessagesPurged;
+                                    writeToLog($"[{totalMessagesPurged}] messages have been purged out of [{messagesToPurgeCount}].");
+                                }
+                            }
+                            else
+                            {
+                                ++consecutiveNoMessagesReceived;
+                                break;
                             }
                         }
-                        else
-                        {
-                            break;
-                        }
+                    }
+                    catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
+                    {
+                        ++consecutiveSessionTimeOuts;
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                    finally
+                    {
+                        if (sessionReceiver != null)
+                            await sessionReceiver.CloseAsync().ConfigureAwait(false);
                     }
                 }
-                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
-                {
-                    ++consecutiveSessionTimeOuts;
-                }
-                catch
-                {
-                    break;
-                }
-                finally
-                {
-                    if (sessionReceiver != null)
-                        await sessionReceiver.CloseAsync().ConfigureAwait(false);
-                }
             }
-
-            await client.DisposeAsync().ConfigureAwait(false);
+            finally
+            {
+                await client.DisposeAsync().ConfigureAwait(false);
+            }
 
             return totalMessagesPurged;
         }
@@ -180,16 +190,15 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         {
             long messagesToPurgeCount = await GetMessageCount(entity, purgeDeadLetterQueueInstead).ConfigureAwait(false);
             long purgedMessagesCount = 0;
-            var messageCount = messagesToPurgeCount;
-            var retries = 0;
+            long messageCount = messagesToPurgeCount;
+            int retries = 0;
 
             // Sometimes it does not start polling or quits polling while not done
             while (purgedMessagesCount < messagesToPurgeCount && messageCount >= 1 && retries < 3)
             {
                 purgedMessagesCount += await DoPurgeNonSessionEntity(entity,
-                    messagesToPurgeCount: messagesToPurgeCount,
-                    purgeDeadLetterSubqueueInstead: purgeDeadLetterQueueInstead
-                    )
+                        messagesToPurgeCount: messagesToPurgeCount,
+                        purgeDeadLetterSubqueueInstead: purgeDeadLetterQueueInstead)
                     .ConfigureAwait(false);
 
                 messageCount = await GetMessageCount(entity, purgeDeadLetterQueueInstead).ConfigureAwait(false);
@@ -202,59 +211,60 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         private async Task<long> DoPurgeNonSessionEntity(TEntity entity, long messagesToPurgeCount, bool purgeDeadLetterSubqueueInstead)
         {
             long totalMessagesPurged = 0;
-            var taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
+            int taskCount = Math.Min((int)messagesToPurgeCount / 1000 + 1, 20);
             var tasks = new Task[taskCount];
-            var quit = false;  // This instance controls all the receiving tasks
 
             var client = new ServiceBusClient(
                 serviceBusHelper.ConnectionString,
-                new ServiceBusClientOptions { TransportType = serviceBusHelper.TransportType });
+                new ServiceBusClientOptions
+                {
+                    RetryOptions = new ServiceBusRetryOptions
+                    {
+                        TryTimeout = TimeSpan.FromMilliseconds(1000),
+                        MaxRetries = 0
+                    },
+                    TransportType = serviceBusHelper.TransportType
+                });
 
             try
             {
-                for (var taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
+                for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
                 {
                     tasks[taskIndex] = Task.Run(async () =>
                     {
-                        ServiceBusReceiver receiver = CreateServiceBusReceiver(entity, client, purgeDeadLetterSubqueueInstead);
+                        var receiver = CreateServiceBusReceiver(entity, client, purgeDeadLetterSubqueueInstead);
 
                         try
                         {
-                            var consecutiveZeroBatchReceives = 0;
+                            int consecutiveZeroBatchReceives = 0;
                             const int enoughZeroBatchReceives = 3;
 
-                            while (!quit && Interlocked.Read(ref totalMessagesPurged) < messagesToPurgeCount)
+                            while (consecutiveZeroBatchReceives < enoughZeroBatchReceives
+                                   && Interlocked.Read(ref totalMessagesPurged) < messagesToPurgeCount)
                             {
-                                IEnumerable<ServiceBusReceivedMessage> messages;
-
-                                messages = await receiver.ReceiveMessagesAsync(
-                                    maxMessages: 1000,
-                                    maxWaitTime: TimeSpan.FromMilliseconds(20000 * (consecutiveZeroBatchReceives + 1)))
-                                   .ConfigureAwait(false);
-
-                                // ReSharper disable once PossibleMultipleEnumeration
+                                var messages = await receiver.ReceiveMessagesAsync(
+                                        maxMessages: 1000,
+                                        maxWaitTime: TimeSpan.FromMilliseconds(1500 * (consecutiveZeroBatchReceives + 1)))
+                                    .ConfigureAwait(false);
+                                
                                 if (messages != null && messages.Any())
                                 {
-                                    // ReSharper disable once PossibleMultipleEnumeration
-                                    long messageCount = messages.Count();
+                                    consecutiveZeroBatchReceives = 0;
+                                    long messageCount = messages.Count;
                                     Interlocked.Add(ref totalMessagesPurged, messageCount);
                                 }
                                 else
                                 {
                                     ++consecutiveZeroBatchReceives;
-                                    if (consecutiveZeroBatchReceives >= enoughZeroBatchReceives)
-                                        quit = true;
                                 }
                             }
                         }
                         finally
                         {
-                            if (null != receiver)
-                            {
+                            if (receiver != null)
                                 await receiver.CloseAsync().ConfigureAwait(false);
-                            }
                         }
-                    });  // End of lambda 
+                    });
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
