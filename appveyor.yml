@@ -16,6 +16,7 @@ assembly_info:
 environment:
   choco_token:
     secure: 68Fr+kbT0ilhb84AyU/kKVWJw74urnreRDCpZ2L89v0cJeuEGcOchKGIFsy4Hp+V
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1 # GitVersion issue workaround
 
 
 #---------------------------------#
