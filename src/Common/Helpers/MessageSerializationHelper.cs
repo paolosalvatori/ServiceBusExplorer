@@ -93,7 +93,17 @@ namespace ServiceBusExplorer.Helpers
                     try
                     {
                         var value = keyValuePair.Value.GetValue(entityEnumerable[i], null);
-                        entityDictionary[camelCase] = value;
+
+                        if (camelCase == "properties")
+                        {
+                            // TODO: do not hard-code everything to strings, discover the type and use it
+                            entityDictionary[camelCase] = ((Dictionary<string, object>)value)
+                                .Select(x => new MessagePropertyInfo(x.Key, "String", x.Value)).ToArray();
+                        }
+                        else
+                        {
+                            entityDictionary[camelCase] = value;
+                        }
                     }
                     // ReSharper disable once EmptyGeneralCatchClause
                     catch (Exception)
