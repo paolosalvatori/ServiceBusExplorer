@@ -1,5 +1,4 @@
-﻿#region Copyright
-//=======================================================================================
+﻿//=======================================================================================
 // Microsoft Business Platform Division Customer Advisory Team  
 //
 // This sample is supplemental to the technical guidance published on the community
@@ -17,9 +16,6 @@
 // KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
-#endregion
-
-#region Using Directives
 
 using System;
 using System.Collections.Generic;
@@ -30,86 +26,33 @@ using ServiceBusExplorer.Utilities.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-#endregion
-
 namespace ServiceBusExplorer.Helpers
 {
     public class MessageSerializationHelper
     {
-        #region Private Static Fields
-        private static readonly Dictionary<string, Dictionary<string, PropertyInfo>> propertyCache = new Dictionary<string, Dictionary<string, PropertyInfo>>();
-        #endregion
-
-        #region Public Static Methods
+        static readonly Dictionary<string, Dictionary<string, PropertyInfo>> propertyCache = new Dictionary<string, Dictionary<string, PropertyInfo>>();
 
         public static string Serialize(IEnumerable<object> entities, IEnumerable<string> bodies, bool doNotSerializeBody = false)
         {
-            var entityEnumerable = entities as object[] ?? entities.ToArray();
-            var bodyEnumerable = bodies as string[] ?? bodies.ToArray();
-            if (entityEnumerable.Length == 0 || bodyEnumerable.Length == 0 ||
-                entityEnumerable.Length != bodyEnumerable.Length)
+            var entityArray = entities as object[] ?? entities.ToArray();
+            var bodyArray = bodies as string[] ?? bodies.ToArray();
+            if (entityArray.Length == 0 || bodyArray.Length == 0 || entityArray.Length != bodyArray.Length)
             {
                 return null;
             }
-            var type = entityEnumerable[0].GetType();
+            var type = entityArray[0].GetType();
             GetProperties(type);
             if (!propertyCache.ContainsKey(type.FullName))
             {
                 return null;
             }
-            var propertyDictionary = propertyCache[type.FullName];
-            var entityList = new List<SortedDictionary<string, object>>(entityEnumerable.Length); 
-            for (var i = 0; i < entityEnumerable.Length; i++)
-            {
-                var entityDictionary = new SortedDictionary<string, object>();
-                if (!doNotSerializeBody && JsonSerializerHelper.IsJson(bodyEnumerable[i]))
-                {
-                    try
-                    {
-                        entityDictionary.Add("body", JObject.Parse(bodyEnumerable[i]));
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            entityDictionary.Add("body", JArray.Parse(bodyEnumerable[i]));
-                        }
-                        catch (Exception)
-                        {
-                            entityDictionary.Add("body", bodyEnumerable[i]);
-                        }
-                    }
-                }
-                else
-                {
-                    entityDictionary.Add("body", bodyEnumerable[i]);
-                }
-                foreach (var keyValuePair in propertyDictionary)
-                {
-                    var camelCase = string.Format("{0}{1}",
-                                                  keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
-                                                  keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
-                    entityDictionary.Add(camelCase, null);
-                    try
-                    {
-                        var value = keyValuePair.Value.GetValue(entityEnumerable[i], null);
 
-                        if (camelCase == "properties")
-                        {
-                            // TODO: do not hard-code everything to strings, discover the type and use it
-                            entityDictionary[camelCase] = ((Dictionary<string, object>)value)
-                                .Select(x => new MessagePropertyInfo(x.Key, "String", x.Value)).ToArray();
-                        }
-                        else
-                        {
-                            entityDictionary[camelCase] = value;
-                        }
-                    }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch (Exception)
-                    {
-                    }
-                }
+            var entityList = new List<SortedDictionary<string, object>>(entityArray.Length);
+
+            for (var i = 0; i < entityArray.Length; i++)
+            {
+                var entityDictionary = PrepareMessageForSerialization(entityArray[i], bodyArray[i], doNotSerializeBody);
+
                 entityList.Add(entityDictionary);
             }
             return JsonSerializerHelper.Serialize(entityList.ToArray(), Formatting.Indented);
@@ -117,16 +60,34 @@ namespace ServiceBusExplorer.Helpers
 
         public static string Serialize(object entity, string body, bool doNotSerializeBody = false)
         {
+            var entityDictionary = PrepareMessageForSerialization(entity, body, doNotSerializeBody);
+
+            return entityDictionary == null
+                ? null
+                : JsonSerializerHelper.Serialize(entityDictionary, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Prepare a single message for serialization
+        /// </summary>
+        /// <param name="entity"><see cref="BrokeredMessageTemplate"/>></param>
+        /// <param name="body">Message payload</param>
+        /// <param name="doNotSerializeBody">Keep body message as a serialized string</param>
+        /// <returns>null if cannot prepare the message or a serializable object</returns>
+        static SortedDictionary<string, object> PrepareMessageForSerialization(object entity, string body, bool doNotSerializeBody)
+        {
             if (entity == null)
             {
                 return null;
             }
+
             var type = entity.GetType();
             GetProperties(type);
             if (!propertyCache.ContainsKey(type.FullName))
             {
                 return null;
             }
+
             var propertyDictionary = propertyCache[type.FullName];
             var entityDictionary = new SortedDictionary<string, object>();
             if (!doNotSerializeBody && JsonSerializerHelper.IsJson(body))
@@ -151,11 +112,12 @@ namespace ServiceBusExplorer.Helpers
             {
                 entityDictionary.Add("body", body);
             }
+
             foreach (var keyValuePair in propertyDictionary)
             {
                 var camelCase = string.Format("{0}{1}",
-                                              keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
-                                              keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
+                    keyValuePair.Key.Substring(0, 1).ToLower(CultureInfo.InvariantCulture),
+                    keyValuePair.Key.Substring(1, keyValuePair.Key.Length - 1));
                 entityDictionary.Add(camelCase, null);
                 try
                 {
@@ -172,25 +134,23 @@ namespace ServiceBusExplorer.Helpers
                         entityDictionary[camelCase] = value;
                     }
                 }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch (Exception)
                 {
                 }
             }
-            return JsonSerializerHelper.Serialize(entityDictionary, Formatting.Indented);
-        }
-        #endregion
 
-        #region Private Static Methods
-        private static void GetProperties(Type type)
+            return entityDictionary;
+        }
+
+         static void GetProperties(Type type)
         {
             if (type == null)
             {
                 return;
             }
             var fullName = type.FullName;
-            if (string.IsNullOrWhiteSpace(fullName) ||
-                propertyCache.ContainsKey(fullName))
+            if (string.IsNullOrWhiteSpace(fullName) || propertyCache.ContainsKey(fullName))
             {
                 return;
             }
@@ -202,6 +162,5 @@ namespace ServiceBusExplorer.Helpers
             var propertyDictionary = propertyArray.Where(p => p.CanRead && p.Name != "ExtensionData").ToDictionary(p => p.Name);
             propertyCache[fullName] = propertyDictionary;
         }
-        #endregion
     }
 }
