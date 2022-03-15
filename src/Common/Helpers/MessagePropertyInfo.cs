@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Helpers
 
         // TODO: figure out what to do with the Type property
         [XmlElement(ElementName = "type", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        [JsonProperty(PropertyName = "type", Order = 2, Required = /*Required.Always*/ Required.Default)]
+        [JsonProperty(PropertyName = "type", Order = 2, Required = Required.Default)]
         public string Type { get; set; }
 
         [XmlIgnore]
