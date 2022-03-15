@@ -127,7 +127,13 @@ namespace ServiceBusExplorer.Helpers
                     {
                         // TODO: do not hard-code everything to strings, discover the type and use it
                         entityDictionary[camelCase] = ((Dictionary<string, object>)value)
-                            .Select(x => new MessagePropertyInfo(x.Key, "String", x.Value)).ToArray();
+                            .Select(x =>
+                            {
+                                var typeName = x.Value.GetType().ToString().Replace("System.", "");
+
+                                return new MessagePropertyInfo(x.Key, typeName, x.Value);
+                            })
+                            .ToArray();
                     }
                     else
                     {
