@@ -4766,8 +4766,7 @@ namespace ServiceBusExplorer
                 if (messageToRead.Properties.ContainsKey("Content-Encoding"))
                 {
                     var encoding = inboundMessage.Properties["Content-Encoding"].ToString();
-                    if (encoding == "gzip")
-                        gzipDecompress = true;
+                    gzipDecompress = encoding == "gzip";
                 }
                 if (stream != null)
                 {
