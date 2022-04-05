@@ -656,7 +656,7 @@ namespace ServiceBusExplorer.Forms
             }
             using (var writer = new StreamWriter(saveFileDialog.FileName))
             {
-                writer.Write(MessageSerializationHelper.Serialize(brokeredMessage, txtMessageText.Text));
+                writer.Write(MessageSerializationHelper.Serialize(brokeredMessage, txtMessageText.Text, doNotSerializeBody: true));
             }
         }
 
