@@ -1304,6 +1304,8 @@ namespace ServiceBusExplorer.Controls
 
         private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
+            MessageReceiver messageReceiver = null;
+
             try
             {
                 mainTabControl.SuspendDrawing();
@@ -1317,18 +1319,18 @@ namespace ServiceBusExplorer.Controls
                 {
                     var totalRetrieved = 0;
 
-                    var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+                    messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
                     while (totalRetrieved < count)
                     {
                         IEnumerable<BrokeredMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, count);
+                            messageEnumerable = messageReceiver.PeekBatch(fromSequenceNumber.Value, count);
                         }
                         else
                         {
-                            messageEnumerable = receiver.PeekBatch(count);
+                            messageEnumerable = messageReceiver.PeekBatch(count);
                         }
 
                         if (messageEnumerable == null)
@@ -1350,7 +1352,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1418,6 +1420,8 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
+                messageReceiver?.Close();
+
                 mainTabControl.ResumeLayout();
                 mainTabControl.ResumeDrawing();
                 tabPageMessages.ResumeLayout();
@@ -1428,12 +1432,14 @@ namespace ServiceBusExplorer.Controls
 
         private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
+            MessageReceiver messageReceiver = null;
+
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
                 if (peek)
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+                    messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -1454,15 +1460,17 @@ namespace ServiceBusExplorer.Controls
                             {
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
+
                             brokeredMessages.Add(message);
                         }
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
-                    
+                    messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1474,6 +1482,7 @@ namespace ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         if (message != null)
                         {
@@ -1482,8 +1491,10 @@ namespace ServiceBusExplorer.Controls
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
@@ -1502,10 +1513,12 @@ namespace ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] == null)
                 {
                     EnablePage(MessagesTabPage);
                 }
+
                 if (mainTabControl.TabPages[MessagesTabPage] != null)
                 {
                     mainTabControl.SelectTab(MessagesTabPage);
@@ -1521,10 +1534,16 @@ namespace ServiceBusExplorer.Controls
             {
                 HandleException(e);
             }
+            finally
+            {
+                messageReceiver?.Close();
+            }
         }
 
         private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
+            QueueClient queueClient = null;
+
             try
             {
                 mainTabControl.SuspendDrawing();
@@ -1538,7 +1557,7 @@ namespace ServiceBusExplorer.Controls
                 var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
                     var retrieved = 0;
                     do
@@ -1573,7 +1592,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1652,6 +1671,8 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
+                queueClient?.Close();
+
                 mainTabControl.ResumeLayout();
                 mainTabControl.ResumeDrawing();
                 tabPageDeadletter.ResumeLayout();
@@ -1799,6 +1820,8 @@ namespace ServiceBusExplorer.Controls
 
         private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
+            QueueClient queueClient = null;
+
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
@@ -1806,7 +1829,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
                         BrokeredMessage message;
@@ -1824,17 +1847,20 @@ namespace ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         if (messageInspector != null)
                         {
                             message = messageInspector.AfterReceiveMessage(message);
                         }
+
                         brokeredMessages.Add(message);
                     }
+
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1845,16 +1871,19 @@ namespace ServiceBusExplorer.Controls
                         {
                             continue;
                         }
+
                         totalRetrieved += retrieved;
                         if (message != null)
                         {
                             brokeredMessages.Add(messageInspector != null
-                            ? messageInspector.AfterReceiveMessage(message)
-                            : message);
+                                ? messageInspector.AfterReceiveMessage(message)
+                                : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
+
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
@@ -1874,10 +1903,12 @@ namespace ServiceBusExplorer.Controls
                 {
                     OnRefresh?.Invoke();
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] == null)
                 {
                     EnablePage(DeadletterTabPage);
                 }
+
                 if (mainTabControl.TabPages[DeadletterTabPage] != null)
                 {
                     mainTabControl.SelectTab(DeadletterTabPage);
@@ -1890,6 +1921,10 @@ namespace ServiceBusExplorer.Controls
             catch (Exception e)
             {
                 HandleException(e);
+            }
+            finally
+            {
+                queueClient?.Close();
             }
         }
 
