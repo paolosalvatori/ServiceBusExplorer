@@ -435,7 +435,7 @@ namespace ServiceBusExplorer.Controls
             }
             else
             {
-                ConfigureReadUserInterface();
+                ConfigureCreateUserInterface();
             }
         }
 
