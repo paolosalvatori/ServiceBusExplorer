@@ -52,6 +52,8 @@ using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
 namespace ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
+    using System.IO.Compression;
+    using System.Web.UI.WebControls;
     using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
@@ -4757,9 +4759,15 @@ namespace ServiceBusExplorer
                 return null;
             }
             var inboundMessage = messageToRead.Clone();
+            bool gzipDecompress = false;
             try
             {
                 stream = inboundMessage.GetBody<Stream>();
+                if (messageToRead.Properties.ContainsKey("Content-Encoding"))
+                {
+                    var encoding = inboundMessage.Properties["Content-Encoding"].ToString();
+                    gzipDecompress = encoding == "gzip";
+                }
                 if (stream != null)
                 {
                     var element = new BinaryMessageEncodingBindingElement
@@ -4776,6 +4784,15 @@ namespace ServiceBusExplorer
                     var encoderFactory = element.CreateMessageEncoderFactory();
                     var encoder = encoderFactory.Encoder;
                     var stringBuilder = new StringBuilder();
+                    if (gzipDecompress)
+                    {
+                        var mso = new MemoryStream();
+                        using (var gs = new GZipStream(stream, CompressionMode.Decompress))
+                        {
+                            gs.CopyTo(mso);
+                        }
+                        stream = mso;
+                    }
                     var message = encoder.ReadMessage(stream, MaxBufferSize);
                     using (var reader = message.GetReaderAtBodyContents())
                     {
@@ -4796,6 +4813,15 @@ namespace ServiceBusExplorer
                 try
                 {
                     stream = inboundMessage.GetBody<Stream>();
+                    if (gzipDecompress)
+                    {
+                        var mso = new MemoryStream();
+                        using (var gs = new GZipStream(stream, CompressionMode.Decompress))
+                        {
+                            gs.CopyTo(mso);
+                        }
+                        stream = mso;
+                    }
                     if (stream != null)
                     {
                         var element = new BinaryMessageEncodingBindingElement
@@ -4823,7 +4849,7 @@ namespace ServiceBusExplorer
                 {
                     try
                     {
-                        messageText = AttemptToReadByteArrayBody(messageToRead.Clone());
+                        messageText = AttemptToReadByteArrayBody(messageToRead.Clone(), gzipDecompress);
                         bodyType = BodyType.ByteArray;
                     }
                     catch (Exception)
@@ -4881,9 +4907,29 @@ namespace ServiceBusExplorer
             return messageText;
         }
 
-        private string AttemptToReadByteArrayBody(BrokeredMessage brokeredMessage)
+        private string DecompressAsString(byte[] bytes)
+        {
+            string result;
+            using (var msi = new MemoryStream(bytes))
+            {
+                using (var mso = new MemoryStream())
+                {
+                    using (var gs = new GZipStream(msi, CompressionMode.Decompress))
+                    {
+                        gs.CopyTo(mso);
+                    }
+                    result = Encoding.UTF8.GetString(mso.ToArray());
+                }
+            }
+
+            return result;
+        }
+
+        private string AttemptToReadByteArrayBody(BrokeredMessage brokeredMessage, bool compress)
         {
             var body = brokeredMessage.GetBody<byte[]>();
+            if (compress)
+               return DecompressAsString(body);
             return Encoding.UTF8.GetString(body);
         }
 
