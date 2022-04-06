@@ -139,7 +139,7 @@ namespace ServiceBusExplorer.Helpers
         /// Gets or sets the message of the BrokeredMessage object.
         /// </summary>
         [XmlIgnore]
-        [JsonProperty(PropertyName = "message", Order = 13)]
+        [JsonProperty(PropertyName = "body", Order = 13)]
         public string Message 
         {
             get
@@ -155,7 +155,7 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Gets or sets the message of the BrokeredMessage object.
         /// </summary>
-        [XmlElement(ElementName = "message", Type = typeof(XmlCDataSection), Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
+        [XmlElement(ElementName = "body", Type = typeof(XmlCDataSection), Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
         public XmlCDataSection CData 
         {
             get

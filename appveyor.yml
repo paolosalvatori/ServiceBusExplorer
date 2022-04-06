@@ -16,6 +16,7 @@ assembly_info:
 environment:
   choco_token:
     secure: 68Fr+kbT0ilhb84AyU/kKVWJw74urnreRDCpZ2L89v0cJeuEGcOchKGIFsy4Hp+V
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1 # GitVersion issue workaround
 
 
 #---------------------------------#
@@ -87,7 +88,7 @@ artifacts:
 notifications:
   - provider: GitHubPullRequest
     auth_token:
-      secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
+      secure: a/WGT6eXKEH9TdksK6aUV+XCQeoRGYxlVvzuVPjOWy1zgza8eCqaeh+Sirc06C2h # encrypted token from GitHub
     template: "{{#passed}}:white_check_mark:{{/passed}}{{#failed}}:x:{{/failed}} [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}}) (commit {{commitUrl}} by @{{&commitAuthorUsername}})"
 
 #---------------------------------#
@@ -97,7 +98,7 @@ notifications:
 deploy:
   - provider: GitHub
     auth_token:
-      secure: SDw1gs4noXA0eUpBoBcbT2XNYwf0Bg7gHR/TpP2Y/gQS/QYST7toE0oRzoKV/2U6 # encrypted token from GitHub
+      secure: a/WGT6eXKEH9TdksK6aUV+XCQeoRGYxlVvzuVPjOWy1zgza8eCqaeh+Sirc06C2h # encrypted token from GitHub
     artifact: /.*\.*/           # upload all NuGet packages to release assets
     description: ServiceBus Explorer build %APPVEYOR_BUILD_VERSION%.
     draft: false
