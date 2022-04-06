@@ -30,6 +30,8 @@
     <Description>The Service Bus Explorer allows users to connect to a Service Bus namespace and administer messaging entities in an easy manner. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.</Description>
     <Copyright>Copyright 2017 Paolo Salvatori</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <Authors>Paolo Salvatori</Authors>
     <PackageIconUrl></PackageIconUrl>
     <PackageId>servicebusexplorer</PackageId>
@@ -525,7 +527,7 @@
       <PackagePath></PackagePath>
     </None>
     <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Compile Update="Properties\Resources.Designer.cs">
