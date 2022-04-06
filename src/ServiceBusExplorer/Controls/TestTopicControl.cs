@@ -47,16 +47,9 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestTopicControl : UserControl
+    public partial class TestTopicControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -155,11 +148,6 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Instance Fields
         private readonly TopicDescription topic;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly List<SubscriptionDescription> subscriptionList;
         private readonly BindingSource bindingSource = new BindingSource();
         private int receiveTimeout = 60;
@@ -203,7 +191,26 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+
+        static readonly List<string> Types = new List<string>
+        {
+            "Boolean",
+            "Byte",
+            "Int16",
+            "Int32",
+            "Int64",
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
+            "String",
+            "Char",
+            "UInt64",
+            "UInt32",
+            "UInt16",
+            "SByte"
+        };
         #endregion
 
         #region Public Constructors
@@ -214,12 +221,9 @@ namespace ServiceBusExplorer.Controls
                                 ServiceBusHelper serviceBusHelper,
                                 TopicDescription topic,
                                 List<SubscriptionDescription> subscriptionList)
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
+
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.topic = topic;
             this.subscriptionList = subscriptionList;
             InitializeComponent();
@@ -350,6 +354,8 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                isReadyToStoreMessageText = true;
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null &&
@@ -2146,7 +2152,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            mainForm.MessageText = txtMessageText.Text;
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void txtContentType_TextChanged(object sender, EventArgs e)

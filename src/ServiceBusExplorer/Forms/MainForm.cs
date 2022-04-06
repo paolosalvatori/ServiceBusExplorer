@@ -91,6 +91,8 @@ namespace ServiceBusExplorer.Forms
         private const string CreateConsumerGroup = "Create Consumer Group";
         private const string CreateNotificationHub = "Create Notification Hub";
         private const string AddRule = "Add Rule";
+        private const string DuplicateSubscriptionFormat = "Duplicate Subscription: {0}";
+        private const string DuplicateQueueFormat = "Duplicate Queue: {0}";
         private const string ViewQueueFormat = "View Queue: {0}";
         private const string ViewTopicFormat = "View Topic: {0}";
         private const string ViewSubscriptionFormat = "View Subscription: {0}";
@@ -4683,7 +4685,7 @@ namespace ServiceBusExplorer.Forms
             return consumerGroupNode;
         }
 
-        private void ShowQueue(QueueDescription queue, string path)
+        private void ShowQueue(QueueDescription queue, string path, bool duplicateQueue = false)
         {
             HandleQueueControl queueControl = null;
 
@@ -4696,7 +4698,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path);
+                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue);
                 queueControl.SuspendDrawing();
                 queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(queueControl);
@@ -4755,7 +4757,13 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void ShowSubscription(SubscriptionWrapper wrapper)
+        /// <summary>
+        /// Shows the subscription panel.
+        /// Depending on the current state this either draws a Create, Duplicate or Read view panel.
+        /// </summary>
+        /// <param name="wrapper">Wrapper to </param>
+        /// <param name="duplicateCurrentSubscription">If set the rendered subscription panel will be a "Duplicate" form.</param>
+        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false) 
         {
             HandleSubscriptionControl subscriptionControl = null;
 
@@ -4768,7 +4776,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                subscriptionControl = new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper);
+                subscriptionControl = new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper, duplicateCurrentSubscription);
                 subscriptionControl.SuspendDrawing();
                 subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(subscriptionControl);
@@ -6788,6 +6796,20 @@ namespace ServiceBusExplorer.Forms
                 else if (child.Tag is UrlSegmentWrapper)
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
+        }
+        
+        private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
+        {
+            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+            panelMain.HeaderText = string.Format(DuplicateSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
+            ShowSubscription(subscriptionWrapper, true);
+        }
+
+        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
+        {
+            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
+            ShowQueue(queueWrappper, queueWrappper.Path, true);
         }
     }
 }

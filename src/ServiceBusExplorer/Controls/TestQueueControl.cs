@@ -47,16 +47,9 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestQueueControl : UserControl
+    public partial class TestQueueControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -155,11 +148,6 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Instance Fields
         private readonly QueueDescription queueDescription;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
@@ -203,7 +191,25 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> Types = new List<string> { "Boolean", "Byte", "Int16", "Int32", "Int64", "Single", "Double", "Decimal", "Guid", "DateTime", "String" };
+        static readonly List<string> Types = new List<string>
+        {
+            "Boolean",
+            "Byte",
+            "Int16",
+            "Int32",
+            "Int64",
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
+            "String",
+            "Char",
+            "UInt64",
+            "UInt32",
+            "UInt16",
+            "SByte",
+        };
         #endregion
 
         #region Public Constructors
@@ -212,13 +218,9 @@ namespace ServiceBusExplorer.Controls
                                 Func<Task> stopLog,
                                 Action startLog,
                                 ServiceBusHelper serviceBusHelper,
-                                QueueDescription queueDescription)
+                                QueueDescription queueDescription) 
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
             this.queueDescription = queueDescription;
             InitializeComponent();
             InitializeControls();
@@ -271,7 +273,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         messageFileListView.Items.Add(new ListViewItem(new[]
                                                         {
-                                                            tuple.Item1, 
+                                                            tuple.Item1,
                                                             tuple.Item2
                                                         }));
                     }
@@ -349,6 +351,7 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                isReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null &&
                                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
@@ -613,11 +616,11 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker) async delegate
-                            {
-                                btnStart.Text = StartCaption;
-                                await MainForm.SingletonMainForm.RefreshSelectedEntity();
-                            });
+                            Invoke((MethodInvoker)async delegate
+                           {
+                               btnStart.Text = StartCaption;
+                               await MainForm.SingletonMainForm.RefreshSelectedEntity();
+                           });
                         }
                     };
 
@@ -830,13 +833,31 @@ namespace ServiceBusExplorer.Controls
                                                                                                           bindingSource.Cast<MessagePropertyInfo>());
                                                 messageTextList.Add(text);
                                             }
-                                            else if (radioButtonJsonTemplate.Checked)
+                                            else if (radioButtonJsonTemplate.Checked) // JSON
                                             {
                                                 try
                                                 {
-                                                    var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
-                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
-                                                    messageTextList.Add(brokeredMessageTemplate.Message);
+                                                    // Multiple messages
+                                                    if (text.StartsWith("[", StringComparison.OrdinalIgnoreCase))
+                                                    {
+                                                        var brokeredMessageTemplates = JsonSerializerHelper.Deserialize<List<BrokeredMessageTemplate>>(text);
+                                                        foreach (var item in brokeredMessageTemplates)
+                                                        {
+                                                            template = serviceBusHelper.CreateBrokeredMessageTemplate(item);
+                                                            messageTemplateList.Add(template);
+                                                            messageTextList.Add(item.Message);
+                                                        }
+
+                                                        messageCount = messageTemplateList.Count; // change the default of 1 message
+
+                                                        template = null; // clear template to avoid adding it again at the end of the method
+                                                    }
+                                                    else // single message
+                                                    {
+                                                        var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
+                                                        template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
+                                                        messageTextList.Add(brokeredMessageTemplate.Message);
+                                                    }
                                                 }
                                                 catch (Exception)
                                                 {
@@ -1933,12 +1954,13 @@ namespace ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = $"{(fileInfo.Length%1024 == 0 ? fileInfo.Length/1024 : fileInfo.Length/1024 + 1)} KB";
+                var size = $"{(fileInfo.Length % 1024 == 0 ? fileInfo.Length / 1024 : fileInfo.Length / 1024 + 1)} KB";
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
                     fileInfo.FullName,
                     size
-                }) { Checked = true });
+                })
+                { Checked = true });
                 mainForm.FileNames.Add(new Tuple<string, string>(fileInfo.FullName, size));
             }
             checkBoxFileName.Checked = messageFileListView.Items.Cast<ListViewItem>().All(i => i.Checked);
@@ -2141,7 +2163,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            mainForm.MessageText = txtMessageText.Text;
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void txtContentType_TextChanged(object sender, EventArgs e)

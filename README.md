@@ -5,9 +5,7 @@
 **Contributors:** [Many](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
 
 # Service Bus Explorer
-The Service Bus Explorer allows users to connect to a Service Bus namespace and efficiently administer messaging entities. The tool provides advanced features like import/export functionality or the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
-
-There are no dedicated developers so development is entirely based on voluntary effort.
+The Service Bus Explorer allows users to efficiently administer messaging entities. The tool provides advanced features like import/export functionality and the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
@@ -17,6 +15,8 @@ There are no dedicated developers so development is entirely based on voluntary 
 choco install ServiceBusExplorer
 ```
 
+The default location of the executable is C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe.
+
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
 
 ## Using GitHub
@@ -25,6 +25,8 @@ curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/
 ```
 
 # Contributions
+There are no dedicated developers so development is entirely based on voluntary effort.
+
 Here are some guidelines concerning contributions:
 
 - All contributions should be done on `develop`
@@ -48,8 +50,6 @@ Similar to the postal service delivering letters, Service Bus is flexible inform
 
 The message sender can also require a variety of delivery characteristics including transactions, duplicate detection, time-based expiration, and batching. These patterns have postal analogies as well: repeat delivery, required signature, address change, or recall.
 
-Service Bus supports two distinct messaging patterns: Azure Relay and Service Bus Messaging.
-
 For more information, feel free to read the official documentation [here](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
 
 # Service Bus Explorer for Windows Server
@@ -57,11 +57,6 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 
 # Documentation
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
-
-# GitHub
-The source code of the tool is now available on [GitHub](https://github.com/paolosalvatori/ServiceBusExplorer) as a public project. Now you have the opportunity to contribute to the evolution of the tool!
-
-<a href="https://github.com/paolosalvatori/ServiceBusExplorer/releases" >![here](./media/download.png)</a>
 
 # Videos
 For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
@@ -77,8 +72,4 @@ Here are a couple of alternatives:
 - **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
 - **Serverless360** _(paid with free trial, SaaS, web based)_
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
-
-# License
-Microsoft Corporation ("Microsoft") grants you a nonexclusive, perpetual, royalty-free right to use and modify the software code provided by us for the purposes of illustration ("Sample Code") and to reproduce and distribute the object code form of the Sample Code, provided that you agree: (i) to not use our name, logo, or trademarks to market your software product in which the Sample Code is embedded; (ii) to include a valid copyright notice on your software product in which the Sample  Code is embedded; and (iii) to indemnify, hold harmless, and defend us and our suppliers from and against any claims or lawsuits, whether in an action of contract, tort or otherwise, including attorneys' fees, that arise or result from the use or distribution  of the Sample Code or the use or other dealings in the Sample Code. Unless applicable law gives you more rights, Microsoft reserves all other rights not expressly granted herein, whether by implication, estoppel or otherwise.
-
-THE SAMPLE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL MICROSOFT OR ITS LICENSORS BE LIABLE  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- **Purple Explorer** _(free, open source, cross platform)

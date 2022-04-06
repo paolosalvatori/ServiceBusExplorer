@@ -257,6 +257,7 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<BrokeredMessage> transferDeadletterBindingList = default!;
         private SortableBindingList<MessageSession> sessionBindingList = default!;
         private bool buttonsMoved;
+        private readonly bool duplicateQueue;
 
         #endregion
 
@@ -291,7 +292,7 @@ namespace ServiceBusExplorer.Controls
         #region Public Constructors
 
         public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            QueueDescription queueDescription, string path)
+            QueueDescription queueDescription, string path, bool duplicateQueue)
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
@@ -299,6 +300,7 @@ namespace ServiceBusExplorer.Controls
             this.path = path;
             this.queueDescription = queueDescription;
             this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+            this.duplicateQueue = duplicateQueue;
 
             InitializeComponent();
             InitializeControls(initialCall: true);
@@ -674,372 +676,416 @@ namespace ServiceBusExplorer.Controls
 
             if (queueDescription != null)
             {
-                // Initialize textboxes
-                txtPath.ReadOnly = true;
-                txtPath.BackColor = SystemColors.Window;
-                txtPath.GotFocus += textBox_GotFocus;
-
-                txtMessageText.ReadOnly = true;
-                txtMessageText.BackColor = SystemColors.Window;
-                txtMessageText.GotFocus += textBox_GotFocus;
-
-                txtDeadletterText.ReadOnly = true;
-                txtDeadletterText.BackColor = SystemColors.Window;
-                txtDeadletterText.GotFocus += textBox_GotFocus;
-
-                txtSessionState.ReadOnly = true;
-                txtSessionState.BackColor = SystemColors.Window;
-                txtSessionState.GotFocus += textBox_GotFocus;
-
-                trackBarMaxQueueSize.Enabled = false;
-
-                // Initialize Controls with Data
-                InitializeData();
-
-                // Set Grid style
-                messagesDataGridView.EnableHeadersVisualStyles = false;
-                messagesDataGridView.AutoGenerateColumns = false;
-                messagesDataGridView.AutoSize = true;
-
-                // Create the MessageId column
-                var textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the SequenceNumber column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Size column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Label column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the EnqueuedTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the ExpiresAtUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
-                messagesDataGridView.Columns.Add(textBoxColumn);
-
-                // Set the selection background color for all the cells.
-                messagesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-                messagesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-                // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-                // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-                messagesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-                // Set the background color for all rows and for alternating rows.  
-                // The value for alternating rows overrides the value for all rows. 
-                messagesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                messagesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                //messagesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-                //messagesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set the row and column header styles.
-                messagesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                messagesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                messagesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                messagesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set Grid style
-                sessionsDataGridView.EnableHeadersVisualStyles = false;
-                sessionsDataGridView.AutoGenerateColumns = false;
-                sessionsDataGridView.AutoSize = true;
-
-                // Create the SessionId column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SessionId,
-                    Name = SessionId,
-                    Width = 120
-                };
-                sessionsDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Path column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Path,
-                    Name = Path,
-                    Width = 120
-                };
-                sessionsDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Mode column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Mode,
-                    Name = Mode,
-                    Width = 120
-                };
-                sessionsDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the BatchFlushInterval column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = BatchFlushInterval,
-                    Name = BatchFlushInterval,
-                    Width = 120
-                };
-                sessionsDataGridView.Columns.Add(textBoxColumn);
-
-                // Set the selection background color for all the cells.
-                sessionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-                sessionsDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-                // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-                // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-                sessionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-                // Set the background color for all rows and for alternating rows.  
-                // The value for alternating rows overrides the value for all rows. 
-                sessionsDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                sessionsDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                //sessionsDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-                //sessionsDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set the row and column header styles.
-                sessionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                sessionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                sessionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                sessionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set Grid style
-                deadletterDataGridView.EnableHeadersVisualStyles = false;
-                deadletterDataGridView.AutoGenerateColumns = false;
-                deadletterDataGridView.AutoSize = true;
-
-                // Create the MessageId column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the SequenceNumber column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Size column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Label column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the EnqueuedTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the ExpiresAtUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
-                deadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Set the selection background color for all the cells.
-                deadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-                deadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-                // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-                // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-                deadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-                // Set the background color for all rows and for alternating rows.  
-                // The value for alternating rows overrides the value for all rows. 
-                deadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                deadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                //deadletterDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-                //deadletterDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set the row and column header styles.
-                deadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                deadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set Grid style
-                transferDeadletterDataGridView.EnableHeadersVisualStyles = false;
-                transferDeadletterDataGridView.AutoGenerateColumns = false;
-                transferDeadletterDataGridView.AutoSize = true;
-
-                // Create the MessageId column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageId,
-                    Name = MessageId,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the SequenceNumber column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = SequenceNumberValue,
-                    Name = SequenceNumberName,
-                    Width = 52
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Size column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = MessageSize,
-                    Name = MessageSize,
-                    Width = 52
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the Label column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = Label,
-                    Name = Label,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the EnqueuedTimeUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = EnqueuedTimeUtc,
-                    Name = EnqueuedTimeUtc,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Create the ExpiresAtUtc column
-                textBoxColumn = new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = ExpiresAtUtc,
-                    Name = ExpiresAtUtc,
-                    Width = 120
-                };
-                transferDeadletterDataGridView.Columns.Add(textBoxColumn);
-
-                // Set the selection background color for all the cells.
-                transferDeadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-                transferDeadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
-
-                // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
-
-                // Set the background color for all rows and for alternating rows.  
-                // The value for alternating rows overrides the value for all rows. 
-                transferDeadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                transferDeadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                // Set the row and column header styles.
-                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                transferDeadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-                transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-
-                checkedListBox.ItemCheck += checkedListBox_ItemCheck;
-
-                toolTip.SetToolTip(txtPath, PathTooltip);
-                toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
-                toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
-                toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
-                toolTip.SetToolTip(trackBarMaxQueueSize, MaxQueueSizeTooltip);
-                toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
-                toolTip.SetToolTip(tsDuplicateDetectionHistoryTimeWindow, DuplicateDetectionHistoryTimeWindowTooltip);
-                toolTip.SetToolTip(tsLockDuration, LockDurationTooltip);
-                toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
-                toolTip.SetToolTip(txtMaxDeliveryCount, MaxDeliveryCountTooltip);
+               if (duplicateQueue)
+               {
+                   ConfigureDuplicateUserInterface();
+               }
+               else
+               {
+                   ConfigureReadUserInterface();
+               }
             }
             else
             {
-                // Initialize buttons
-                btnCreateDelete.Text = CreateText;
-                btnCancelUpdate.Text = CancelText;
-                btnRefresh.Visible = false;
-                btnChangeStatus.Visible = false;
-                btnMessages.Visible = false;
-                btnSessions.Visible = false;
-                btnDeadletter.Visible = false;
-                btnPurgeMessages.Visible = false;
-                btnPurgeDeadletterQueueMessages.Visible = false;
-                btnTransferDeadletterQueue.Visible = false;
-
-                // Create BindingList for Authorization Rules
-                var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-                {
-                    AllowEdit = true,
-                    AllowNew = true,
-                    AllowRemove = true
-                };
-                bindingList.ListChanged += bindingList_ListChanged;
-                authorizationRulesBindingSource.DataSource = bindingList;
-                authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
-
-                if (!string.IsNullOrWhiteSpace(path))
-                {
-                    txtPath.Text = path;
-                }
-                txtPath.Focus();
+                ConfigureCreateUserInterface();
             }
         }
+
+        /// <summary>
+        /// Configures the user interface for the ReadOnly view.
+        /// </summary>
+        private void ConfigureReadUserInterface()
+        {
+            // Initialize textboxes
+            txtPath.ReadOnly = true;
+            txtPath.BackColor = SystemColors.Window;
+            txtPath.GotFocus += textBox_GotFocus;
+
+            txtMessageText.ReadOnly = true;
+            txtMessageText.BackColor = SystemColors.Window;
+            txtMessageText.GotFocus += textBox_GotFocus;
+
+            txtDeadletterText.ReadOnly = true;
+            txtDeadletterText.BackColor = SystemColors.Window;
+            txtDeadletterText.GotFocus += textBox_GotFocus;
+
+            txtSessionState.ReadOnly = true;
+            txtSessionState.BackColor = SystemColors.Window;
+            txtSessionState.GotFocus += textBox_GotFocus;
+
+            trackBarMaxQueueSize.Enabled = false;
+
+            // Initialize Controls with Data
+            InitializeData();
+
+            // Set Grid style
+            messagesDataGridView.EnableHeadersVisualStyles = false;
+            messagesDataGridView.AutoGenerateColumns = false;
+            messagesDataGridView.AutoSize = true;
+
+            // Create the MessageId column
+            var textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
+
+            // Set the selection background color for all the cells.
+            messagesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            messagesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            messagesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            messagesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            messagesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //messagesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //messagesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            messagesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            messagesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            messagesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            messagesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set Grid style
+            sessionsDataGridView.EnableHeadersVisualStyles = false;
+            sessionsDataGridView.AutoGenerateColumns = false;
+            sessionsDataGridView.AutoSize = true;
+
+            // Create the SessionId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SessionId,
+                Name = SessionId,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Path column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Path,
+                Name = Path,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Mode column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Mode,
+                Name = Mode,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the BatchFlushInterval column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = BatchFlushInterval,
+                Name = BatchFlushInterval,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
+
+            // Set the selection background color for all the cells.
+            sessionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            sessionsDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            sessionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            sessionsDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            sessionsDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //sessionsDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //sessionsDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            sessionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            sessionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set Grid style
+            deadletterDataGridView.EnableHeadersVisualStyles = false;
+            deadletterDataGridView.AutoGenerateColumns = false;
+            deadletterDataGridView.AutoSize = true;
+
+            // Create the MessageId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Set the selection background color for all the cells.
+            deadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            deadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            deadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            deadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            deadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //deadletterDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //deadletterDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            deadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            deadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set Grid style
+            transferDeadletterDataGridView.EnableHeadersVisualStyles = false;
+            transferDeadletterDataGridView.AutoGenerateColumns = false;
+            transferDeadletterDataGridView.AutoSize = true;
+
+            // Create the MessageId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+
+            // Set the selection background color for all the cells.
+            transferDeadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            transferDeadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            transferDeadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            transferDeadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            // Set the row and column header styles.
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+            checkedListBox.ItemCheck += checkedListBox_ItemCheck;
+
+            toolTip.SetToolTip(txtPath, PathTooltip);
+            toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
+            toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
+            toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
+            toolTip.SetToolTip(trackBarMaxQueueSize, MaxQueueSizeTooltip);
+            toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
+            toolTip.SetToolTip(tsDuplicateDetectionHistoryTimeWindow, DuplicateDetectionHistoryTimeWindowTooltip);
+            toolTip.SetToolTip(tsLockDuration, LockDurationTooltip);
+            toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
+            toolTip.SetToolTip(txtMaxDeliveryCount, MaxDeliveryCountTooltip);
+        }
+
+        /// <summary>
+        /// Configures the user interface for the duplicate view.
+        /// This view pre-populates the view with the data of an existing queue description.
+        /// </summary>
+        private void ConfigureDuplicateUserInterface()
+        {
+            InitializeData();
+
+            // clear property list view for old queue
+            propertyListView.Items.Clear();
+
+            // special handling for max size if partitioning is enabled
+            trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16 
+                : queueDescription.MaxSizeInGigabytes();
+
+            ConfigureCreateUserInterface();
+        }
+
+        /// <summary>
+        /// Configures the users interface for the create view.
+        /// </summary>
+        private void ConfigureCreateUserInterface()
+        {
+            // Initialize buttons
+            btnCreateDelete.Text = CreateText;
+            btnCancelUpdate.Text = CancelText;
+            btnRefresh.Visible = false;
+            btnChangeStatus.Visible = false;
+            btnMessages.Visible = false;
+            btnSessions.Visible = false;
+            btnDeadletter.Visible = false;
+            btnPurgeMessages.Visible = false;
+            btnPurgeDeadletterQueueMessages.Visible = false;
+            btnTransferDeadletterQueue.Visible = false;
+
+            // Create BindingList for Authorization Rules
+            var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
+            {
+                AllowEdit = true,
+                AllowNew = true,
+                AllowRemove = true
+            };
+            bindingList.ListChanged += bindingList_ListChanged;
+            authorizationRulesBindingSource.DataSource = bindingList;
+            authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                txtPath.Text = path;
+            }
+            txtPath.Focus();
+        }
+
+
 
         private void bindingList_ListChanged(object sender, ListChangedEventArgs e)
         {
@@ -3086,7 +3132,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3133,7 +3179,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3265,7 +3311,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueDescription, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                     .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3439,7 +3485,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueDescription, transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                     .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3957,7 +4003,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)

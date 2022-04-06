@@ -47,16 +47,9 @@ namespace ServiceBusExplorer.Controls
     using ServiceBusExplorer.Utilities.Helpers;
     using static ServiceBusExplorer.ServiceBusHelper;
 
-    public partial class TestEventHubControl : UserControl
+    public partial class TestEventHubControl : TestControlBase
     {
         #region Private Constants
-        //***************************
-        // Formats
-        //***************************
-        private const string ExceptionFormat = "Exception: {0}";
-        private const string InnerExceptionFormat = "InnerException: {0}";
-        private const string LabelFormat = "{0:0.000}";
-
         //***************************
         // Properties & Types
         //***************************
@@ -72,13 +65,12 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // Messages
         //***************************
-        private const string MessageCannotBeNull = "The Message field cannot be null.";
         private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string SenderBatchSizeMustBeANumber = "The Sender Batch Size field must be an integer number greater than zero.";
         private const string SenderThinkTimeMustBeANumber = "The Sender Think Time field must be an integer number greater than zero.";
-        private const string NoMessageSelected = "No message to send has been selected.";
+        private const string NoFileSelected = "No file to send has been selected.";
         private const string SelectEventDataGenerator = "Select an EventData generator...";
         private const string InvalidJsonTemplate = "{0} is an invalid JSON template. The file will be used as text message rather than a template.";
         private const string InvalidXmlTemplate = "{0} is an invalid XML template. The file will be used as text message rather than a template.";
@@ -114,11 +106,6 @@ namespace ServiceBusExplorer.Controls
         #region Private Instance Fields
         private readonly EventHubDescription eventHubDescription;
         private readonly PartitionDescription partitionDescription;
-        private readonly ServiceBusHelper serviceBusHelper;
-        private readonly MainForm mainForm;
-        private readonly WriteToLogDelegate writeToLog;
-        private readonly Func<Task> stopLog;
-        private readonly Action startLog;
         private readonly BindingSource bindingSource = new BindingSource();
         private List<EventHubClient> eventHubClientCollection = new List<EventHubClient>();
         private CancellationTokenSource senderCancellationTokenSource;
@@ -156,12 +143,9 @@ namespace ServiceBusExplorer.Controls
                                    ServiceBusHelper serviceBusHelper,
                                    EventHubDescription eventHubDescription,
                                    PartitionDescription partitionDescription)
+            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
-            this.mainForm = mainForm;
-            this.writeToLog = writeToLog;
-            this.stopLog = stopLog;
-            this.startLog = startLog;
-            this.serviceBusHelper = serviceBusHelper;
+
             this.eventHubDescription = eventHubDescription;
             this.partitionDescription = partitionDescription;
             InitializeComponent();
@@ -290,6 +274,7 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
+                isReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
                                                      mainForm != null && 
                                                      !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
@@ -340,11 +325,6 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
-                {
-                    writeToLog(MessageCannotBeNull);
-                    return false;
-                }
                 if (!int.TryParse(txtMessageCount.Text, out var temp) || temp < 0)
                 {
                     writeToLog(MessageCountMustBeANumber);
@@ -547,7 +527,7 @@ namespace ServiceBusExplorer.Controls
                                 .ToList();
                             if (fileList.Count == 0)
                             {
-                                writeToLog(NoMessageSelected);
+                                writeToLog(NoFileSelected);
                                 return;
                             }
                             foreach (var fileName in fileList)
@@ -1380,10 +1360,7 @@ namespace ServiceBusExplorer.Controls
 
         private void txtMessageText_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtMessageText.Text))
-            {
-                mainForm.MessageText = txtMessageText.Text;
-            }
+            base.OnMessageTextChanged(txtMessageText.Text);
         }
 
         private void cboMessageFormat_SelectedIndexChanged(object sender, EventArgs e)
