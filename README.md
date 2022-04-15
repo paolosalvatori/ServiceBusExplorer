@@ -73,4 +73,4 @@ Here are a couple of alternatives:
 - **Serverless360** _(paid with free trial, SaaS, web based)_
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
 - **[Purple Explorer](https://github.com/telstrapurple/PurpleExplorer)** _(free, open source, cross platform)
-- **Superbus** _(paid with free trial, macOS)_
+- **[Superbus](https://superbus.app/)** _(paid with a free trial, macOS)_
