@@ -5324,7 +5324,11 @@ namespace ServiceBusExplorer
         {
             if (Uri.IsWellFormedUriString(address, UriKind.Absolute))
             {
-                var uri = new Uri(address, UriKind.Absolute);
+                var uri = new UriBuilder(new Uri(address, UriKind.Absolute))
+                {
+                    Scheme = NamespaceUri.Scheme,
+                    Port = NamespaceUri.Port
+                }.Uri;
                 if (NamespaceUri.IsBaseOf(uri))
                 {
                     var uriRelativeToNamespace = NamespaceUri.MakeRelativeUri(uri);
