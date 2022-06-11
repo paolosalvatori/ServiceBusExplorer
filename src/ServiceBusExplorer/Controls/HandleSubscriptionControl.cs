@@ -2813,7 +2813,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)
@@ -2894,7 +2894,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies));
+                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)
