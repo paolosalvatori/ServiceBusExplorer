@@ -44,6 +44,8 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
+    using Common.Helpers;
+
     public partial class HandleSubscriptionControl : UserControl
     {
         #region Private Constants
@@ -237,10 +239,19 @@ namespace ServiceBusExplorer.Controls
                     txtMessageText.Text = string.Empty;
                     messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
-                    var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                           serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                                           null;
+
+                    var messageInspector = receiveModeForm.ToBrokeredMessageInspector(serviceBusHelper);
+                    //var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
+                    //                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
+                    //                       Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
+                    //                       null;
+
+                    //if (!string.IsNullOrEmpty(receiveModeForm.Filter))
+                    //{
+                    //    // Wrap the current inspector in a filter
+                    //    messageInspector = new FilteredBrokeredMessageInspector(receiveModeForm.Filter, messageInspector);
+                    //}
+
                     if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                     {
                         ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
@@ -264,10 +275,19 @@ namespace ServiceBusExplorer.Controls
                 txtDeadletterText.Text = string.Empty;
                 deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                    Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                    null;
+
+                var messageInspector = receiveModeForm.ToBrokeredMessageInspector(serviceBusHelper);
+                //var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
+                //                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
+                //    Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
+                //    null;
+
+                //if (!string.IsNullOrEmpty(receiveModeForm.Filter))
+                //{
+                //    // Wrap the current inspector in a filter
+                //    messageInspector = new FilteredBrokeredMessageInspector(receiveModeForm.Filter, messageInspector);
+                //}
+
                 if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                 {
                     ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
@@ -290,10 +310,19 @@ namespace ServiceBusExplorer.Controls
                 txtDeadletterText.Text = string.Empty;
                 deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                    Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                    null;
+
+                var messageInspector = receiveModeForm.ToBrokeredMessageInspector(serviceBusHelper);
+                //var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
+                //                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
+                //    Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
+                //    null;
+
+                //if (!string.IsNullOrEmpty(receiveModeForm.Filter))
+                //{
+                //    // Wrap the current inspector in a filter
+                //    messageInspector = new FilteredBrokeredMessageInspector(receiveModeForm.Filter, messageInspector);
+                //}
+
                 if (subscriptionWrapper.TopicDescription.EnablePartitioning)
                 {
                     ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
@@ -1133,6 +1162,7 @@ namespace ServiceBusExplorer.Controls
                                 count - totalRetrieved);
                         }
 
+                        // TODO: Should we count before/after filtering?
                         var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Count();
                         if (retrieved == 0)
@@ -1140,7 +1170,7 @@ namespace ServiceBusExplorer.Controls
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
+                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(messageInspector.AfterReceiveMessage).Where(x => x != null) : enumerable);
                     }
                     while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
@@ -1257,7 +1287,11 @@ namespace ServiceBusExplorer.Controls
                             {
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
-                            brokeredMessages.Add(message);
+
+                            if (message != null)
+                            {
+                                brokeredMessages.Add(message);
+                            }
                         }
                         else
                         {

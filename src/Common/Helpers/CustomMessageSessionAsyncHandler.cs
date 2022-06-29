@@ -88,6 +88,10 @@ namespace ServiceBusExplorer.Helpers
                 if (configuration.MessageInspector != null)
                 {
                     message = configuration.MessageInspector.AfterReceiveMessage(message);
+                    if (message == null)
+                    {
+                        return;
+                    }
                 }
                 if (configuration.Logging)
                 {

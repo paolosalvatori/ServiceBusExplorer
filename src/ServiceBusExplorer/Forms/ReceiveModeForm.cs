@@ -77,6 +77,7 @@ namespace ServiceBusExplorer.Forms
         public string? Inspector { get; private set; }
         public long? FromSequenceNumber { get; private set; }
         public string? FromSession { get; private set; }
+        public string? Filter { get; private set; }
         #endregion
 
         #region Event Handlers
@@ -100,6 +101,11 @@ namespace ServiceBusExplorer.Forms
                 {
                     FromSequenceNumber = fromSequenceNumber;
                 }
+            }
+
+            if (!string.IsNullOrEmpty(txtFilter.Text))
+            {
+                Filter = txtFilter.Text;
             }
 
             if (!string.IsNullOrEmpty(txtFromSession.Text))

@@ -28,6 +28,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.ServiceModel.Channels;
+using System.Xml;
 
 #endregion
 
@@ -35,7 +37,10 @@ namespace ServiceBusExplorer.Helpers
 {
     public static class BrokeredMessageExtensions
     {
+        public const string UnableToReadMessageBody = "Unable to read the message body.";
+
         private static readonly PropertyInfo BodyStreamPropertyInfo;
+        private const int MaxBufferSize = 262144; // 256 KB
 
         static BrokeredMessageExtensions()
         {
@@ -49,6 +54,134 @@ namespace ServiceBusExplorer.Helpers
             catch (Exception)
             {
             }
+        }
+
+        /// <summary>
+        /// Reads the content of the BrokeredMessage passed as argument.
+        /// </summary>
+        /// <param name="messageToRead">The BrokeredMessage to read.</param>
+        /// <returns>The content of the BrokeredMessage.</returns>
+        public static string GetMessageText(this BrokeredMessage messageToRead)
+        {
+            string messageText = null;
+            Stream stream = null;
+
+            if (messageToRead == null)
+            {
+                return null;
+            }
+            var inboundMessage = messageToRead.Clone();
+            try
+            {
+                stream = inboundMessage.GetBody<Stream>();
+                if (stream != null)
+                {
+                    var element = new BinaryMessageEncodingBindingElement
+                    {
+                        ReaderQuotas = new XmlDictionaryReaderQuotas
+                        {
+                            MaxArrayLength = int.MaxValue,
+                            MaxBytesPerRead = int.MaxValue,
+                            MaxDepth = int.MaxValue,
+                            MaxNameTableCharCount = int.MaxValue,
+                            MaxStringContentLength = int.MaxValue
+                        }
+                    };
+                    var encoderFactory = element.CreateMessageEncoderFactory();
+                    var encoder = encoderFactory.Encoder;
+                    var stringBuilder = new StringBuilder();
+                    var message = encoder.ReadMessage(stream, MaxBufferSize);
+                    using (var reader = message.GetReaderAtBodyContents())
+                    {
+                        // The XmlWriter is used just to indent the XML message
+                        var settings = new XmlWriterSettings { Indent = true };
+                        using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+                        {
+                            xmlWriter.WriteNode(reader, true);
+                        }
+                    }
+                    messageText = stringBuilder.ToString();
+                }
+            }
+            catch (Exception)
+            {
+                inboundMessage = messageToRead.Clone();
+                try
+                {
+                    stream = inboundMessage.GetBody<Stream>();
+                    if (stream != null)
+                    {
+                        var element = new BinaryMessageEncodingBindingElement
+                        {
+                            ReaderQuotas = new XmlDictionaryReaderQuotas
+                            {
+                                MaxArrayLength = int.MaxValue,
+                                MaxBytesPerRead = int.MaxValue,
+                                MaxDepth = int.MaxValue,
+                                MaxNameTableCharCount = int.MaxValue,
+                                MaxStringContentLength = int.MaxValue
+                            }
+                        };
+                        var encoderFactory = element.CreateMessageEncoderFactory();
+                        var encoder = encoderFactory.Encoder;
+                        var message = encoder.ReadMessage(stream, MaxBufferSize);
+                        using (var reader = message.GetReaderAtBodyContents())
+                        {
+                            messageText = reader.ReadString();
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        if (stream != null)
+                        {
+                            try
+                            {
+                                stream.Seek(0, SeekOrigin.Begin);
+                                var serializer = new CustomDataContractBinarySerializer(typeof(string));
+                                messageText = serializer.ReadObject(stream) as string;
+                            }
+                            catch (Exception)
+                            {
+                                try
+                                {
+                                    stream.Seek(0, SeekOrigin.Begin);
+                                    using (var reader = new StreamReader(stream))
+                                    {
+                                        messageText = reader.ReadToEnd();
+                                        if (messageText.ToCharArray().GroupBy(c => c).
+                                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
+                                            Select(g => g.First()).Any())
+                                        {
+                                            stream.Seek(0, SeekOrigin.Begin);
+                                            using (var binaryReader = new BinaryReader(stream))
+                                            {
+                                                var bytes = binaryReader.ReadBytes((int)stream.Length);
+                                                messageText = BitConverter.ToString(bytes).Replace('-', ' ');
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    messageText = UnableToReadMessageBody;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            messageText = UnableToReadMessageBody;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        messageText = UnableToReadMessageBody;
+                    }
+                }
+            }
+            return messageText;
         }
 
         public static BrokeredMessage Clone(this BrokeredMessage message, Stream stream, bool omitAllProperties)
