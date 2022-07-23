@@ -17,7 +17,7 @@ jobs:
       env:
         STEP_RELEASE_VERSION: ${{ inputs.release-version }}
       run: |
-        echo "OUTPUT_PATH=$env:GITHUB_WORKSPACE\MainApp\bin\Release\net462" >> $env:GITHUB_ENV
+        echo "OUTPUT_PATH=$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\bin\Release\net462" >> $env:GITHUB_ENV
         echo "RELEASE_VERSION=$env:STEP_RELEASE_VERSION" >> $env:GITHUB_ENV
        
     - uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
       id: get-cached-build
       uses: actions/cache@v3.0.5
       with:
-        path: MainApp/bin/Release/net462
+        path: src/ServiceBusExplorer/bin/Release/net462
         key: cached-output
 
     - name: Did we get a cache hit
