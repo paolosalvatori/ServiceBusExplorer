@@ -38,8 +38,8 @@ jobs:
         vs-version: '[17.2,18.0)'
 
     - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}\src
-      run: nuget restore $env:SOLUTION_FILE_PATH
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore $env:SOLUTION_FILE_PATH\src
 
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
