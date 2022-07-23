@@ -20,7 +20,7 @@ jobs:
 
     steps:     
     
-    - name: Download and install nunit console runner
+    - name: Download and install NUnit console runner
       run: |
         $nunitVersion='3.15.2'
         $consoleFileName="NUnit.Console-$NUnitVersion.msi"
@@ -38,16 +38,15 @@ jobs:
         vs-version: '[17.2,18.0)'
 
     - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{env.GITHUB_WORKSPACE}}/src
       run: nuget restore $env:SOLUTION_FILE_PATH
 
     - name: Show version
-      run: echo "Buildning version ${{ inputs.release-version }}"
+      run: echo "Building version ${{ inputs.release-version }}"
 
     - name: Build
       env:
         Version: ${{ inputs.release-version }}
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference for parameters
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
