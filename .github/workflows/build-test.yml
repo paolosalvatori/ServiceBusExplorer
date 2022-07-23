@@ -51,7 +51,7 @@ jobs:
 
     - name: Run tests
       run: |
-        $process = Start-Process -FilePath "C:\Program Files (x86)\NUnit.org\nunit-console\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
+        $process = Start-Process -FilePath "C:\Program Files (x86)\NUnit.org\nunit-console\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
         Wait-Process -InputObject $process
         Get-Content -Path .\TestResult.xml
         if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
