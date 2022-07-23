@@ -23,7 +23,7 @@ jobs:
     - name: Download and install nunit console runner
       run: |
         $nunitVersion='3.15.2'
-        $consoleFileName=NUnit.Console-$NUnitVersion.msi
+        $consoleFileName="NUnit.Console-$NUnitVersion.msi"
         Invoke-WebRequest -Uri https://github.com/nunit/nunit-console/releases/download/$NUnitVersion/$consoleFileName -Outfile $consoleFileName
         Start-Process -FilePath "msiexec.exe"  -ArgumentList "/quiet", "/i", """$consoleFileName"""
 
