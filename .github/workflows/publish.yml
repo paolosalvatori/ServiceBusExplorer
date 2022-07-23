@@ -45,7 +45,7 @@ jobs:
         (Set-Content -Value "VERIFICATION=MD5" -Path $env:GITHUB_WORKSPACE\src\VERIFICATION.txt)
       
     - name: Generate verification file
-      run: .\src\Generate-VerificationFile.ps1 -Version $env:RELEASE_VERSION -TemplateFilePath src\VERIFICATION-Template.txt -ExePath "$env:OUTPUT_PATH\ServiceBusExplorer.exe" -OutputFilePath "$env:OUTPUT_PATH\VERIFICATION.txt"
+      run: .\Generate-VerificationFile.ps1 -Version $env:RELEASE_VERSION -TemplateFilePath VERIFICATION-Template.txt -ExePath "$env:OUTPUT_PATH\ServiceBusExplorer.exe" -OutputFilePath "$env:OUTPUT_PATH\VERIFICATION.txt"
 
     - name: Modify .nuspec file
       run: (Get-Content $env:GITHUB_WORKSPACE\src\ServiceBusExplorer\ServiceBusExplorer.nuspec).Replace("`$version`$", "$env:RELEASE_VERSION") | Set-Content $env:GITHUB_WORKSPACE\src\ServiceBusExplorer\ServiceBusExplorer.nuspec

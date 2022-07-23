@@ -7,6 +7,10 @@ on:
         required: true
         type: string
         default: '0.0.0'
+      cache-build:
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
 
 env:
@@ -58,6 +62,7 @@ jobs:
 
     - name: Cache build
       uses: actions/cache@v3.0.5
+      if: cache-build
       with:
         path: src/ServiceBusExplorer/bin/Release
         key: cached-output
