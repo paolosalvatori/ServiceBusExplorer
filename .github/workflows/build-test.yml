@@ -53,8 +53,8 @@ jobs:
         Version: ${{ inputs.release-version }}
       run: |
         echo "env version is ${{env.Version}}"
-        echo "env version is $env.version"
-        msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
+        echo "env version is $env:version"
+        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
       run: |
