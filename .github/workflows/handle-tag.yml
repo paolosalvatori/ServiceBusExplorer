@@ -1,0 +1,39 @@
+name: Handle tag
+
+on:
+  push:
+    tags: 
+      - '[0-9]+.[0-9]+.[0-9]+**'
+  workflow_dispatch:
+
+jobs:
+  get-version:
+    runs-on: windows-2022
+    steps:
+    - name: Get version from tag
+      id: extract-tag
+      shell: bash
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    
+    - name: Check output to get version number
+      run: |
+        echo "release_version is $env:RELEASE_VERSION"
+        if ($env:RELEASE_VERSION -eq $null -or $env:RELEASE_VERSION -eq '') {
+          echo "Setting release version to 0.0.0"
+          echo "RELEASE_VERSION=0.0.0" >> $env:GITHUB_ENV
+        }
+        
+    outputs:
+        release-version: ${{ env.RELEASE_VERSION }}
+
+  call-build-test:
+    needs: get-version
+    uses: ./.github/workflows/build-test.yml
+    with: 
+      release-version: ${{ needs.get-version.outputs.release-version }}
+
+  publish-it:
+    needs: [get-version, call-build-test]
+    uses: ./.github/workflows/publish.yml
+    with: 
+      release-version: ${{ needs.get-version.outputs.release-version }}

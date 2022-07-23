@@ -1,0 +1,64 @@
+name: build-test
+  
+on: 
+  workflow_call:
+    inputs:
+      release-version:
+        required: true
+        type: string
+        default: '0.0.0'
+  workflow_dispatch:
+
+env:
+  SOLUTION_FILE_PATH: .
+  BUILD_CONFIGURATION: Release
+
+jobs:
+  build_test_publish:
+    name: Build and run unit tests
+    runs-on: windows-2022
+
+    steps:     
+    
+    - name: Download and install nunit console runner
+      run: |
+        $nunitVersion='3.15.2'
+        $consoleFileName=NUnit.Console-$NUnitVersion.msi
+        Invoke-WebRequest -Uri https://github.com/nunit/nunit-console/releases/download/$NUnitVersion/$consoleFileName -Outfile $consoleFileName
+        Start-Process -FilePath "msiexec.exe"  -ArgumentList "/quiet", "/i", """$consoleFileName"""
+
+    - name: Git configuration
+      run: git config --global core.autocrlf false
+
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild for VS 2022 to PATH 
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.2,18.0)'
+
+    - name: Restore NuGet packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore $env:SOLUTION_FILE_PATH
+
+    - name: Show version
+      run: echo "Buildning version ${{ inputs.release-version }}"
+
+    - name: Build
+      env:
+        Version: ${{ inputs.release-version }}
+      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference for parameters
+      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Run tests
+      run: |
+        $process = Start-Process -FilePath "C:\Program Files (x86)\NUnit.org\nunit-console\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\BothFrameworks.Tests\BothFrameworks.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
+        Wait-Process -InputObject $process
+        Get-Content -Path .\TestResult.xml
+        if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
+
+    - name: Cache build
+      uses: actions/cache@v3.0.5
+      with:
+        path: MainApp/bin/Release/net462
+        key: cached-output

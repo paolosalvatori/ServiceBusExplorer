@@ -1,0 +1,80 @@
+name: publish
+  
+on: 
+  workflow_call:
+    inputs:
+      release-version:
+        required: true
+        type: string
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: publish
+    runs-on: windows-2022
+    steps:
+    - name: Set output path
+      env:
+        STEP_RELEASE_VERSION: ${{ inputs.release-version }}
+      run: |
+        echo "OUTPUT_PATH=$env:GITHUB_WORKSPACE\MainApp\bin\Release\net462" >> $env:GITHUB_ENV
+        echo "RELEASE_VERSION=$env:STEP_RELEASE_VERSION" >> $env:GITHUB_ENV
+       
+    - uses: actions/checkout@v3
+
+    - name: Get cached build
+      id: get-cached-build
+      uses: actions/cache@v3.0.5
+      with:
+        path: MainApp/bin/Release/net462
+        key: cached-output
+
+    - name: Did we get a cache hit
+      if: steps.get-cached-build.outputs.cache-hit != 'true'
+      run: |
+        echo "The cached output was not found"
+        exit 1
+
+    - name: Remove ALL xml files.
+      run: | 
+        Push-Location $env:OUTPUT_PATH
+        Get-ChildItem -Include *.xml -Recurse | % { Remove-Item $_.FullName }
+        Pop-Location
+
+    - name: Reset verification file
+      run:  |
+        (Set-Content -Value "VERIFICATION=MD5" -Path $env:GITHUB_WORKSPACE\VERIFICATION.txt)
+      
+    - name: Generate verification file
+      run: .\Generate-VerificationFile.ps1 -Version $env:RELEASE_VERSION -TemplateFilePath VERIFICATION-Template.txt -ExePath "$env:OUTPUT_PATH\MainApp.exe" -OutputFilePath "$env:OUTPUT_PATH\VERIFICATION.txt"
+
+    - name: Modify .nuspec file
+      run: (Get-Content $env:GITHUB_WORKSPACE\MainApp\MainApp.nuspec).Replace("`$version`$", "$env:RELEASE_VERSION") | Set-Content $env:GITHUB_WORKSPACE\MainApp\MainApp.nuspec
+
+    - name: Pack Chocolatey 
+      run: choco pack $env:GITHUB_WORKSPACE\MainApp\MainApp.nuspec
+
+    - name: Create filenames for zip and nupkg
+      run: |
+        $stepFilename = "MainApp-$($env:RELEASE_VERSION)"
+        echo "ZipFilename=MainApp-$($env:RELEASE_VERSION).zip" >> $env:GITHUB_ENV
+        echo "NupkgFilename=MainApp.$($env:RELEASE_VERSION).nupkg" >> $env:GITHUB_ENV
+   
+    - name: Compress output
+      run: |
+        7z a $env:ZipFilename $env:OUTPUT_PATH\*.*
+        
+    - name: Create the release
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+      continue-on-error: true
+      run: |
+        gh release create ${{ env.RELEASE_VERSION }}  --draft --generate-notes
+
+    - name: Upload build output zipped
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+      run: |
+        gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
