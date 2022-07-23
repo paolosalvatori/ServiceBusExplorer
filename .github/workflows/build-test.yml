@@ -56,17 +56,8 @@ jobs:
         Get-Content -Path .\TestResult.xml
         if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
 
-    - name: tree it
-      run: get-childitem . -Recurse
-
-    - name: Check dir
-      run: |
-        dir src
-        dir src\servicebusexplorer
-        dir src\servicebusexplorer\bin
-
     - name: Cache build
       uses: actions/cache@v3.0.5
       with:
-        path: src/ServiceBusExplorer/bin/Release/net462
+        path: src/ServiceBusExplorer/bin/Release
         key: cached-output
