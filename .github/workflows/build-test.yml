@@ -21,9 +21,7 @@ jobs:
   build_test_publish:
     name: Build and run unit tests
     runs-on: windows-2022
-
-    steps:     
-    
+    steps:        
     - name: Download and install NUnit console runner
       run: |
         $nunitVersion='3.15.2'
@@ -48,12 +46,20 @@ jobs:
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
 
+    - name: Set fileversion on all .NET Framework assemblies and assembly version on the exe
+      env:
+        Version: ${{ inputs.release-version }}
+      run: |
+        $sbeFileName = "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\Properties\AssemblyInfo.cs"
+        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyVersion' -Version ${{env.Version}}
+        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}      
+        .\SetVersion -FileName "$env:GITHUB_WORKSPACE\src\Common\Properties\AssemblyInfo.cs" -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}
+        .\SetVersion -FileName "$env:GITHUB_WORKSPACE\src\NotificationHubs\Properties\AssemblyInfo.cs" -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}      
+
     - name: Build
       env:
         Version: ${{ inputs.release-version }}
       run: |
-        echo "env version is ${{env.Version}}"
-        echo "env version is $env:version"
         msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
@@ -68,4 +74,4 @@ jobs:
       if: ${{ inputs.cache-build }}
       with:
         path: src/ServiceBusExplorer/bin/Release
-        key: cached-output
+        key: cached-output-${{ github.sha }}

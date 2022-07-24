@@ -27,7 +27,7 @@ jobs:
       uses: actions/cache@v3.0.5
       with:
         path: src/ServiceBusExplorer/bin/Release
-        key: cached-output
+        key: cached-output-${{ github.sha }}
 
     - name: Did we get a cache hit
       if: steps.get-cached-build.outputs.cache-hit != 'true'
@@ -75,4 +75,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
       run: |
+        Start-Sleep 1 
         gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
