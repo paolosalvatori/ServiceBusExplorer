@@ -7,6 +7,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-tag-branch:
+    # This job is based on replies in https://github.community/t/how-to-create-filter-on-both-tag-and-branch/16936/6
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get tag commit hash
+      id: tag-commit-hash
+      run: |
+        hash=${{ github.sha }}
+        echo "::set-output name=tag-hash::${hash}"
+        echo $hash
+
+    - name: Checkout master
+      uses: actions/checkout@v3
+      with:
+        ref: master
+
+    - name: Get latest master commit hash
+      id: master-commit-hash
+      run: |
+        hash=$(git log -n1 --format=format:"%H")
+        echo "::set-output name=master-hash::${hash}"
+        echo $hash
+
+    - name: Exit if tag commit hash don't match master commit hash
+      if: steps.tag-commit-hash.outputs.tag-hash != steps.master-commit-hash.outputs.master-hash
+      run: |
+        echo "Tag was not on the master branch. Exiting."
+        exit 1
+
   get-version:
     runs-on: windows-2022
     steps:
@@ -27,14 +56,14 @@ jobs:
         release-version: ${{ env.RELEASE_VERSION }}
 
   call-build-test:
-    needs: get-version
+    needs: [check-tag-branch, get-version]
     uses: ./.github/workflows/build-test.yml
     with: 
       release-version: ${{ needs.get-version.outputs.release-version }}
       cache-build: true
 
   publish-it:
-    needs: [get-version, call-build-test]
+    needs: [check-tag-branch, get-version, call-build-test]
     uses: ./.github/workflows/publish.yml
     with: 
       release-version: ${{ needs.get-version.outputs.release-version }}
