@@ -74,4 +74,4 @@ Here are a couple of alternatives:
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
 - **[Purple Explorer](https://github.com/telstrapurple/PurpleExplorer)** _(free, open source, cross platform)
 - **[Superbus](https://superbus.app/)** _(paid with a free trial, macOS)_
-- **[Service Bus Cloud Explorer](https://servicebus.cloudbricks.io/)** _(paid with a free basic plan, SaaS, web based)_
+- **[Service Bus Cloud Explorer](https://cloudbricks.io/products/service_bus_cloud_explorer/)** _(paid with a free basic plan, SaaS, web based)_
