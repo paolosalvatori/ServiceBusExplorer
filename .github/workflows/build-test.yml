@@ -60,7 +60,7 @@ jobs:
       env:
         Version: ${{ inputs.release-version }}
       run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}},Version=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
+        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
       run: |
