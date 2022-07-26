@@ -32,7 +32,7 @@ jobs:
     - name: Did we get a cache hit
       if: steps.get-cached-build.outputs.cache-hit != 'true'
       run: |
-        echo "The cached output was not found"
+        echo "Couldn't find build artifacts. Expected to find artifacts in cache but no items were found."
         exit 1
 
     - name: Remove ALL xml files.
