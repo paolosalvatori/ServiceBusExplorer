@@ -22,12 +22,8 @@ jobs:
     name: Build and run unit tests
     runs-on: windows-2022
     steps:        
-    - name: Download and install NUnit console runner
-      run: |
-        $nunitVersion='3.15.2'
-        $consoleFileName="NUnit.Console-$NUnitVersion.msi"
-        Invoke-WebRequest -Uri https://github.com/nunit/nunit-console/releases/download/$NUnitVersion/$consoleFileName -Outfile $consoleFileName
-        Start-Process -FilePath "msiexec.exe"  -ArgumentList "/quiet", "/i", """$consoleFileName"""
+    - name: Install NUnit Console Runner v3.15.2
+      run: Install-Package NUnit.ConsoleRunner -Force -RequiredVersion 3.15.2
 
     - name: Git configuration
       run: git config --global core.autocrlf false

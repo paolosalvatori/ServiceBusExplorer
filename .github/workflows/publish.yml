@@ -77,3 +77,9 @@ jobs:
       run: |
         Start-Sleep 1 
         gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
+
+    - name: Publish to Chocolatey
+      env:
+        CHOCO_TOKEN: ${{ secrets.ChocoToken }}
+      run: |
+        choco push $env:NupkgFilename -k="$env:CHOCO_TOKEN"
