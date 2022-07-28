@@ -21,9 +21,11 @@ jobs:
   build_test_publish:
     name: Build and run unit tests
     runs-on: windows-2022
+    env:
+      NUnitVersion: '3.15.2'
     steps:        
-    - name: Install NUnit Console Runner v3.15.2
-      run: Install-Package NUnit.ConsoleRunner -Force -RequiredVersion 3.15.2
+    - name: Install NUnit Console Runner 
+      run: Install-Package NUnit.ConsoleRunner -Force -RequiredVersion $env:NUnitVersion
 
     - name: Git configuration
       run: git config --global core.autocrlf false
@@ -60,7 +62,7 @@ jobs:
 
     - name: Run tests
       run: |
-        $process = Start-Process -FilePath "C:\Program Files (x86)\NUnit.org\nunit-console\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
+        $process = Start-Process -FilePath "C:\Program Files\PackageManagement\NuGet\Packages\NUnit.ConsoleRunner.$env:NUnitVersion\tools\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
         Wait-Process -InputObject $process
         Get-Content -Path .\TestResult.xml
         if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
