@@ -67,7 +67,7 @@ For more information on how to use the Service Bus Explorer, see the following v
 # Alternative Service Bus Management Tools
 Service Bus Explorer is only one of the management tools available for Azure Service Bus.
 
-Here are a couple of alternatives:
+Here are a couple of alternatives. We do not take responsibility for them though:
 
 - **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
 - **Serverless360** _(paid with free trial, SaaS, web based)_
