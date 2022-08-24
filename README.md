@@ -29,8 +29,7 @@ There are no dedicated developers so development is entirely based on voluntary 
 
 Here are some guidelines concerning contributions:
 
-- All contributions should be done on `develop`
-	- `master` is only for releases
+- All contributions should be done on `master`.
 - Every pull request is built by GitHub Actions and should preferably be linked to a GitHub issue.
 - Write unit tests, if applicable.
 - We have started to migrate from the old SDK to the latest SDKs for Service Bus, Event Hubs, Relay and Notification Hubs. Therefore, new classes should not depend on the old SDK unless absolutely necessary.  
