@@ -820,9 +820,27 @@ namespace ServiceBusExplorer.Controls
                                         {
                                             try
                                             {
-                                                var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
-                                                template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
-                                                messageTextList.Add(brokeredMessageTemplate.Message);
+                                                // Multiple messages
+                                                if (text.StartsWith("[", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    var brokeredMessageTemplates = JsonSerializerHelper.Deserialize<List<BrokeredMessageTemplate>>(text);
+                                                    foreach (var item in brokeredMessageTemplates)
+                                                    {
+                                                        template = serviceBusHelper.CreateBrokeredMessageTemplate(item);
+                                                        messageTemplateList.Add(template);
+                                                        messageTextList.Add(item.Message);
+                                                    }
+
+                                                    messageCount = messageTemplateList.Count; // change the default of 1 message
+
+                                                    template = null; // clear template to avoid adding it again at the end of the method
+                                                }
+                                                else // single message
+                                                {
+                                                    var brokeredMessageTemplate = JsonSerializerHelper.Deserialize<BrokeredMessageTemplate>(text);
+                                                    template = serviceBusHelper.CreateBrokeredMessageTemplate(brokeredMessageTemplate);
+                                                    messageTextList.Add(brokeredMessageTemplate.Message);
+                                                }
                                             }
                                             catch (Exception)
                                             {

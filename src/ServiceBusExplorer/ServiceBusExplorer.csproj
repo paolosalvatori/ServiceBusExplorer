@@ -546,18 +546,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="GitVersion.CommandLine" Version="5.9.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="GitVersionTask" Version="5.5.1" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.4.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.2.0" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="WindowsAzure.ServiceBus" Version="6.2.2" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icons\Add.ico" />

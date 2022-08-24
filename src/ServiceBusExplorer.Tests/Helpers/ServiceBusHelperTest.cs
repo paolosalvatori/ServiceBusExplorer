@@ -30,6 +30,35 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Test]
+        public void GetAddressRelativeToNamespace_AbsoluteUriUnderNamespace_Different_Scheme_ReturnsRelativePath()
+        {
+            var helper = new ServiceBusHelper((m, a) => { });
+            helper.NamespaceUri = new Uri("sb://aaa.test.com/");
+
+            Assert.That(helper.GetAddressRelativeToNamespace("http://aaa.test.com/some/path/segments/name"), Is.EqualTo("some/path/segments/name"));
+        }
+
+        [Test]
+        public void GetAddressRelativeToNamespace_AbsoluteUriUnderNamespace_Different_Scheme_Port_Specified_ReturnsRelativePath()
+        {
+            var helper = new ServiceBusHelper((m, a) => { });
+            helper.NamespaceUri = new Uri("sb://aaa.test.com:80/");
+
+            Assert.That(helper.GetAddressRelativeToNamespace("http://aaa.test.com:80/some/path/segments/name"), Is.EqualTo("some/path/segments/name"));
+        }
+
+        [TestCase(":80", ":81")]
+        [TestCase(":80", "")]
+        [TestCase("", ":80")]
+        public void GetAddressRelativeToNamespace_AbsoluteUriUnderNamespace_Different_Scheme_Different_Port_ReturnsLastSegment(string namespacePort, string port)
+        {
+            var helper = new ServiceBusHelper((m, a) => { });
+            helper.NamespaceUri = new Uri($"sb://aaa.test.com{namespacePort}/");
+
+            Assert.That(helper.GetAddressRelativeToNamespace($"http://aaa.test.com{port}/some/path/segments/name"), Is.EqualTo("some/path/segments/name"));
+        }
+
+        [Test]
         public void GetAddressRelativeToNamespace_AbsoluteUriNotUnderNamespace_ReturnsLastSegment()
         {
             var helper = new ServiceBusHelper((m, a) => { });

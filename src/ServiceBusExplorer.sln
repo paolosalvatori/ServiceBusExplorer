@@ -1,20 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29001.49
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer", "ServiceBusExplorer\ServiceBusExplorer.csproj", "{32754F39-E353-4607-94FE-B9B9ACFD58EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusExplorer", "ServiceBusExplorer\ServiceBusExplorer.csproj", "{32754F39-E353-4607-94FE-B9B9ACFD58EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B59933A5-4AE0-4340-9102-578619A93341}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		..\appveyor.yml = ..\appveyor.yml
-		..\GitVersion.yml = ..\GitVersion.yml
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusExplorer.Tests", "ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "{41D3C27D-37FF-43B8-AAC0-4F483E507698}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBusExplorer.Tests", "ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "{41D3C27D-37FF-43B8-AAC0-4F483E507698}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus", "ServiceBus\ServiceBus.csproj", "{6E3C130A-6B47-47D1-84DF-7270977E8857}"
 EndProject
@@ -24,9 +22,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventHubs", "EventHubs\Even
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilities", "Utilities\Utilities.csproj", "{93E8BC02-BCD2-4867-A990-FEC96D24E9EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{DE07DBEB-D772-49BA-BCEB-A7CE29308AE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{DE07DBEB-D772-49BA-BCEB-A7CE29308AE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationHubs", "NotificationHubs\NotificationHubs.csproj", "{E836C914-9BFE-4C1C-96E5-6A414CDEF485}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationHubs", "NotificationHubs\NotificationHubs.csproj", "{E836C914-9BFE-4C1C-96E5-6A414CDEF485}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{BE2F817A-76F4-4E0C-96F7-7430CD94D08B}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build-test.yml = ..\.github\workflows\build-test.yml
+		..\.github\workflows\handle-pull-request.yml = ..\.github\workflows\handle-pull-request.yml
+		..\.github\workflows\handle-tag.yml = ..\.github\workflows\handle-tag.yml
+		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +109,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BE2F817A-76F4-4E0C-96F7-7430CD94D08B} = {B59933A5-4AE0-4340-9102-578619A93341}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4F44BEA-0E43-45A8-9708-A8A0E6EF3EC5}
