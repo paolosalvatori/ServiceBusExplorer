@@ -65,7 +65,6 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // Messages
         //***************************
-        private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string SenderBatchSizeMustBeANumber = "The Sender Batch Size field must be an integer number greater than zero.";
@@ -276,10 +275,7 @@ namespace ServiceBusExplorer.Controls
 
                 isReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
-                                                     mainForm != null && 
-                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                                     mainForm.MessageText :
-                                                     DefaultMessageText, 
+                                                     mainForm.MessageText ?? string.Empty, 
                                                      txtMessageText);
 
                 txtPartitionKey.Text = Guid.NewGuid().ToString();

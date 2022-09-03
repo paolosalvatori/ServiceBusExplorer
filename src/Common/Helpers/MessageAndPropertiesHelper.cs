@@ -52,7 +52,6 @@ namespace ServiceBusExplorer.Helpers
         private const string Key = "Key";
         private const string Type = "Type";
         private const string Value = "Value";
-        private const string DefaultMessageText = "Hi mate, how are you?";
         #endregion
 
         #region Private Static Fields
@@ -146,15 +145,8 @@ namespace ServiceBusExplorer.Helpers
             out string messageText, out string messageFile)
         {
             messageText = ReadMessage();
-            messageFile = string.Empty;
+            messageFile = configuration.GetStringValue(ConfigurationParameters.FileParameter);
 
-            if (string.IsNullOrWhiteSpace(messageText))
-            {
-                messageText = configuration.GetStringValue(ConfigurationParameters.MessageParameter,
-                   DefaultMessageText);
-            }
-
-            messageFile = configuration.GetStringValue(ConfigurationParameters.FileParameter, messageFile);
             if (!string.IsNullOrWhiteSpace(messageFile) && File.Exists(messageFile))
             {
                 using (var streamReader = new StreamReader(messageFile))

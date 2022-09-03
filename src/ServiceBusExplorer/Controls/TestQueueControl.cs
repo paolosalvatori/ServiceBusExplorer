@@ -73,7 +73,6 @@ namespace ServiceBusExplorer.Controls
         private const string ReceiveTimeoutCannotBeNull = "The receive timeout field cannot be null and must be a non negative integer number.";
         private const string SessionTimeoutCannotBeNull = "The session timeout field cannot be null and must be a non negative integer number.";
         private const string PrefetchCountCannotBeNull = "The prefetch count field cannot be null and must be an integer number.";
-        private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string ReceiveTaskCountMustBeANumber = "The Receiver Task Count field must be an integer number greater than zero.";
@@ -352,16 +351,12 @@ namespace ServiceBusExplorer.Controls
                 propertiesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 isReadyToStoreMessageText = true;
+
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
-                                                     mainForm != null &&
-                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                                     mainForm.MessageText :
-                                                     DefaultMessageText,
+                                                     mainForm.MessageText ?? string.Empty,
                                                      txtMessageText);
 
-                txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
-                                mainForm.Label :
-                                DefaultMessageText;
+                txtLabel.Text = mainForm.Label ?? string.Empty;
 
                 txtMessageId.Text = Guid.NewGuid().ToString();
                 if (queueDescription.RequiresSession)
