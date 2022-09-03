@@ -160,3 +160,6 @@ $RECYCLE.BIN/
 
 # JetBrains Rider
 .idea/
+
+# The new Debug Profile file
+/src/ServiceBusExplorer/Properties/launchSettings.json
