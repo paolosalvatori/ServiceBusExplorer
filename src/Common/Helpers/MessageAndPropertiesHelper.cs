@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -69,15 +69,17 @@ namespace ServiceBusExplorer.Helpers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(message))
+                if (null == message)
                 {
                     return;
                 }
+
                 using (var memoryStream = new MemoryStream())
                 {
                     using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
                     {
                         var settings = new XmlWriterSettings { Indent = true };
+
                         using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
                         {
                             xmlWriter.WriteStartElement(Message, Namespace);
@@ -91,6 +93,7 @@ namespace ServiceBusExplorer.Helpers
                             xmlWriter.WriteEndElement();
                         }
                     }
+
                     var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
                     WriteFile(messageFilePath, xml);
                 }
