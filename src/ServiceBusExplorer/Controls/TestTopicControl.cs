@@ -72,7 +72,6 @@ namespace ServiceBusExplorer.Controls
         private const string ReceiveTimeoutCannotBeNull = "The receive timeout field cannot be null and must a non negative integer number.";
         private const string SessionTimeoutCannotBeNull = "The session timeout field cannot be null and must be a non negative integer number.";
         private const string PrefetchCountCannotBeNull = "The prefetch count field cannot be null and must be an integer number.";
-        private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string ReceiveTaskCountMustBeANumber = "The Receiver Task Count field must be an integer number greater than zero.";
@@ -238,6 +237,7 @@ namespace ServiceBusExplorer.Controls
         #region Private Methods
         private void InitializeControls()
         {
+
             try
             {
                 // Get Brokered Message Generator and Inspector classes
@@ -346,8 +346,6 @@ namespace ServiceBusExplorer.Controls
                 // The value for alternating rows overrides the value for all rows. 
                 propertiesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
                 propertiesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                //propertiesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-                //propertiesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 // Set the row and column header styles.
                 propertiesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
@@ -358,15 +356,10 @@ namespace ServiceBusExplorer.Controls
                 isReadyToStoreMessageText = true;
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
-                                                     mainForm != null &&
-                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                                     mainForm.MessageText :
-                                                     DefaultMessageText,
+                                                     mainForm.MessageText ?? string.Empty,
                                                      txtMessageText);
 
-                txtLabel.Text = !string.IsNullOrWhiteSpace(mainForm?.Label) ?
-                                mainForm.Label :
-                                DefaultMessageText;
+                txtLabel.Text = mainForm.Label ?? string.Empty;
                 txtMessageId.Text = Guid.NewGuid().ToString();
                 checkBoxOneSessionPerTask.Checked = false;
                 txtMessageCount.Text = DefaultMessageCount;
