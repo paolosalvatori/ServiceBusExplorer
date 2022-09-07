@@ -30,8 +30,7 @@ jobs:
         echo "::set-output name=master-hash::${hash}"
         echo $hash
 
-    - name: Verify tag commit matches master commit
-      description: Exit if tag commit hash don't match master commit hash
+    - name: Verify tag commit matches master commit - exit if they don't match
       if: steps.tag-commit-hash.outputs.tag-hash != steps.master-commit-hash.outputs.master-hash
       run: |
         echo "Tag was not on the master branch. Exiting."
