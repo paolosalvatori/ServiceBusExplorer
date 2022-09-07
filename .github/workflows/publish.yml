@@ -80,6 +80,6 @@ jobs:
 
     - name: Publish to Chocolatey
       env:
-        CHOCO_TOKEN: ${{ secrets.ChocoToken }}
+        CHOCO_TOKEN: ${{ secrets.CHOKOTOKEN }}
       run: |
         choco push $env:NupkgFilename -k="$env:CHOCO_TOKEN"
