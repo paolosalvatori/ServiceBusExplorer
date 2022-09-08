@@ -65,5 +65,8 @@ jobs:
   publish-it:
     needs: [check-tag-branch, get-version, call-build-test]
     uses: ./.github/workflows/publish.yml
+    secrets:
+      CHOKO_TOKEN: ${{ secrets.CHOKOTOKEN}}
     with: 
       release-version: ${{ needs.get-version.outputs.release-version }}
+
