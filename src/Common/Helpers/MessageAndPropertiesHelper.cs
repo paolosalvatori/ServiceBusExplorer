@@ -254,7 +254,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 if (!File.Exists(messageFilePath))
                 {
-                    return null;
+                    return string.Empty;
                 }
 
                 using (var reader = new StreamReader(messageFilePath))
@@ -272,7 +272,7 @@ namespace ServiceBusExplorer.Helpers
             catch (Exception)
             {
             }
-            return null;
+            return string.Empty;
         }
 
         private static void WriteFile(string path, string content)
