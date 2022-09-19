@@ -3,7 +3,7 @@ name: publish
 on: 
   workflow_call:
     secrets:
-      CHOKO_TOKEN: 
+      CHOCO_TOKEN: 
         required: true
     inputs:
       release-version:
