@@ -302,7 +302,7 @@ namespace ServiceBusExplorer.Controls
 
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
             {
-            this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+                this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
             }
 
             this.duplicateQueue = duplicateQueue;
