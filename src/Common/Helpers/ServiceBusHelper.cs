@@ -422,6 +422,19 @@ namespace ServiceBusExplorer
             }
         }
 
+        public string ConnectionStringWithoutEntityPath
+        {
+            get
+            { 
+                var builder = new ServiceBusConnectionStringBuilder(connectionString)
+                {
+                    EntityPath = string.Empty
+                };
+
+                return builder.ToString();
+            }
+        }
+
         /// <summary>
         /// Gets or sets the connection string.
         /// </summary>
@@ -677,7 +690,7 @@ namespace ServiceBusExplorer
             MessagingFactory factory;
             if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
+                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
             }
             else
             {
@@ -732,18 +745,7 @@ namespace ServiceBusExplorer
                 // such as queues, topics, subscriptions, and rules, in your service namespace. 
                 // You must provide service namespace address and access credentials in order 
                 // to manage your service namespace.
-                if (serviceBusNamespace.EntityPath != string.Empty)
-                {
-                    var csBuilder = new ServiceBusConnectionStringBuilder(connectionString)
-                    {
-                        EntityPath = string.Empty
-                    };
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString = csBuilder.ToString());
-                }
-                else
-                {
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(connectionString);
-                }
+                namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
 
                 // Set retry count
                 if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
@@ -779,7 +781,7 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                MessagingFactory = MessagingFactory.CreateFromConnectionString(connectionString);
+                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
                 return true;
             });
@@ -5306,18 +5308,6 @@ namespace ServiceBusExplorer
                 receiverList.Add(messageReceiver);
                 ReceiveNextMessage(messageCount, 0, messageReceiver, encoder, complete, receiveTimeout);
             }
-        }
-
-        public string GetHostWithoutNamespace()
-        {
-            if (namespaceUri == null ||
-                string.IsNullOrWhiteSpace(namespaceUri.Host))
-            {
-                return null;
-            }
-            var host = namespaceUri.Host;
-            var index = host.IndexOf('.');
-            return host.Substring(index);
         }
 
         public string GetAddressRelativeToNamespace(string address)

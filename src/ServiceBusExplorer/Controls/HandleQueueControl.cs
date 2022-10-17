@@ -299,7 +299,12 @@ namespace ServiceBusExplorer.Controls
             this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
             this.queueDescription = queueDescription;
+
+            if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
+            {
             this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+            }
+
             this.duplicateQueue = duplicateQueue;
 
             InitializeComponent();

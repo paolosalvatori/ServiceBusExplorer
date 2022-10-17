@@ -154,7 +154,12 @@ namespace ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            
+            if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
+            {
             this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+            }
+            
             this.topicDescription = topicDescription;
             this.path = path;
 
