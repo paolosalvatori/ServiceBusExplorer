@@ -32,6 +32,18 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public string ConnectionString { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
+        public bool ConnectionStringContainsEntityPath()
+        {
+            var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
+            
+            if (connectionStringProperties?.EntityPath != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<bool> IsPremiumNamespace()
         {
             var administrationClient = new ServiceBusAdministrationClient(ConnectionString);
