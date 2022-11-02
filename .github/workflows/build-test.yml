@@ -46,8 +46,7 @@ jobs:
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
 
-    - name: Get digital version
-      id: get-digital-version
+    - name: Get number version
       env:
         ReleaseVersion: ${{ inputs.release-version }}
       run: |
@@ -73,8 +72,6 @@ jobs:
         .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyInformationalVersion' -VersionString ${{env.ReleaseVersion}}   
 
     - name: Build
-      # env:
-      #   Version: ${{ inputs.release-version }}
       run: |
         msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
 
