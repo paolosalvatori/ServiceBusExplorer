@@ -28,7 +28,6 @@ jobs:
       id: get-number-version
       run: |
         [Version]$numberVersion = .\GetNumberVersion -Version ${{ inputs.release-version }}
-        echo "Got version $numberVersion"
         [bool]$prerelease = $true
         
         if ("$numberVersion" -eq "${{ inputs.release-version }}") {
@@ -36,14 +35,6 @@ jobs:
         }
         
         echo "PRERELEASE=$prerelease" >> $env:GITHUB_ENV
-
-    - name: Dump env
-      run: env | sort
-   
-    - name: Dump GitHub context
-      env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
 
     - name: Get cached build
       id: get-cached-build
@@ -102,7 +93,7 @@ jobs:
         gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
 
     - name: Publish to Chocolatey if not prerelease
-      if: ${{ ! env.PRERELEASE }}
+      if: ${{ env.PRERELEASE == 'FALSE' }}
       env:
         CHOCO_TOKEN: ${{ secrets.CHOCO_TOKEN }}
       run: |
