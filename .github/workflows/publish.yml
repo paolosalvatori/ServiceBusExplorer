@@ -27,7 +27,7 @@ jobs:
     - name: Verify release version and get just the numbers and the dots
       id: get-number-version
       run: |
-        [string]$numberVersion = .\GetNumberVersion -Version ${{ inputs.release-version }}
+        [Version]$numberVersion = .\GetNumberVersion -Version ${{ inputs.release-version }}
         echo "Got version $numberVersion"
         [bool]$prelease = $false
         if ($numberVersion -eq ${{ inputs.release-version }}) {
