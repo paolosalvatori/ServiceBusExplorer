@@ -1,15 +1,21 @@
 param(
-    [Parameter(Mandatory)]
+	[Parameter(Mandatory)]
 	[string]
-    $FileName,
+	$FileName,
 
-    [Parameter(Mandatory)]
-    [string]
-    $PropertyName,
+	[Parameter(Mandatory)]
+	[string]
+	$PropertyName,
 
-    [Parameter(Mandatory)]
+	[Parameter(Mandatory, 
+		ParameterSetName = 'Version')]
 	[Version]
-    $Version
+	$Version,
+
+	[Parameter(Mandatory, 
+		ParameterSetName = 'VersionString')]
+	[string]
+	$VersionString
 )
 
 Set-StrictMode -Version 2
@@ -17,20 +23,22 @@ Set-StrictMode -Version 2
 $pattern = "^\[assembly: $PropertyName\(""(.*)""\)\]$"
 $found = $false
 
+if ($Version) {
+	$VersionString = $Version
+}
+
 $content = (Get-Content $fileName -Encoding UTF8) | ForEach-Object {
-	if ($_ -match $pattern) 
-	{
-		"[assembly: $PropertyName(""{0}"")]" -f $Version
-        $found = $true
+	if ($_ -match $pattern) {
+  	   	"[assembly: $PropertyName(""{0}"")]" -f $VersionString
+		$found = $true
 	} 
-	else 
-	{
+	else {
 		$_
 	}
 } 
 
 if (-not $found) {
-  $content += "[assembly: $PropertyName(""{0}"")]" -f $Version
+	$content += "[assembly: $PropertyName(""{0}"")]" -f $VersionString
 }
 
 $content | Set-Content $fileName -Encoding UTF8
