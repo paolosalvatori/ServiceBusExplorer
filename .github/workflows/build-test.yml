@@ -46,21 +46,37 @@ jobs:
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
 
+    - name: Get digital version
+      id: get-digital-version
+      env:
+        ReleaseVersion: ${{ inputs.release-version }}
+      run: |
+        $numberVersion = .\GetNumberVersion -Version ${{env.ReleaseVersion}}
+        echo "Setting numberVersion to $numberVersion"
+        echo "NUMBER_VERSION=$numberVersion" >> $env:GITHUB_ENV
+
     - name: Set fileversion on all .NET Framework assemblies and assembly version on the exe
       env:
-        Version: ${{ inputs.release-version }}
+        ReleaseVersion: ${{ inputs.release-version }}
       run: |
         $sbeFileName = "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\Properties\AssemblyInfo.cs"
-        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyVersion' -Version ${{env.Version}}
-        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}      
-        .\SetVersion -FileName "$env:GITHUB_WORKSPACE\src\Common\Properties\AssemblyInfo.cs" -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}
-        .\SetVersion -FileName "$env:GITHUB_WORKSPACE\src\NotificationHubs\Properties\AssemblyInfo.cs" -PropertyName 'AssemblyFileVersion' -Version ${{env.Version}}      
+        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyVersion' -Version ${{env.NUMBER_VERSION}}
+        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}   
+        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyInformationalVersion' -Version ${{env.ReleaseVersion}}   
+
+        $commonInfoFile = "$env:GITHUB_WORKSPACE\src\Common\Properties\AssemblyInfo.cs"
+        .\SetVersion -FileName $commonInfoFile -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}
+        .\SetVersion -FileName $commonInfoFile -PropertyName 'AssemblyInformationalVersion' -Version ${{env.ReleaseVersion}}   
+
+        $notificationHubsInfoFile = "$env:GITHUB_WORKSPACE\src\NotificationHubs\Properties\AssemblyInfo.cs"
+        .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}      
+        .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyInformationalVersion' -Version ${{env.ReleaseVersion}}   
 
     - name: Build
-      env:
-        Version: ${{ inputs.release-version }}
+      # env:
+      #   Version: ${{ inputs.release-version }}
       run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.Version}} ${{env.SOLUTION_FILE_PATH}}
+        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
       run: |
