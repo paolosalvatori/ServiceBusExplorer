@@ -86,7 +86,7 @@ jobs:
         if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
 
     - name: Cache build
-      uses: actions/cache@v3.0.5
+      uses: actions/cache@v3.0.11
       if: ${{ inputs.cache-build }}
       with:
         path: src/ServiceBusExplorer/bin/Release
