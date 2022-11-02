@@ -29,11 +29,13 @@ jobs:
       run: |
         [Version]$numberVersion = .\GetNumberVersion -Version ${{ inputs.release-version }}
         echo "Got version $numberVersion"
-        [bool]$prelease = $false
+        [bool]$prerelease = $true
+        
         if ("$numberVersion" -eq "${{ inputs.release-version }}") {
-          $prelease = $True
+          $prerelease = $false
         }
-        echo "PRELEASE=$prerelease" >> $env:GITHUB_ENV
+        
+        echo "PRERELEASE=$prerelease" >> $env:GITHUB_ENV
 
     - name: Get cached build
       id: get-cached-build
