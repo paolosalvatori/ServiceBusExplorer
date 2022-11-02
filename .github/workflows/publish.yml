@@ -37,6 +37,14 @@ jobs:
         
         echo "PRERELEASE=$prerelease" >> $env:GITHUB_ENV
 
+    - name: Dump env
+      run: env | sort
+   
+    - name: Dump GitHub context
+      env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
     - name: Get cached build
       id: get-cached-build
       uses: actions/cache@v3.0.5
@@ -94,7 +102,7 @@ jobs:
         gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
 
     - name: Publish to Chocolatey if not prerelease
-      if: ${{ ! env.prerelease }}
+      if: ${{ ! env.PRERELEASE }}
       env:
         CHOCO_TOKEN: ${{ secrets.CHOCO_TOKEN }}
       run: |
