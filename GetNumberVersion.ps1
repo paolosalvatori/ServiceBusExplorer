@@ -2,14 +2,10 @@
 param(
     [Parameter(Mandatory=$false)]
 	[string]
-    $Version = '0.0.0'
+    $Version 
 )
 
 Set-StrictMode -Version 3
-
-if ($Version -match "^\d+\.\d+\.\d+$") {
-	return $Version
-}
 
 # RegEx from https://semver.org/
 [string]$semanticRegEx = '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
