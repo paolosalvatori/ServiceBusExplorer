@@ -3,7 +3,7 @@ name: Handle tag
 on:
   push:
     tags: 
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       id: tag-commit-hash
       run: |
         hash=${{ github.sha }}
-        echo "::set-output name=tag-hash::${hash}"
+        echo "{name}=tag-hash::${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
     - name: Checkout main
@@ -27,7 +27,7 @@ jobs:
       id: main-commit-hash
       run: |
         hash=$(git log -n1 --format=format:"%H")
-        echo "::set-output name=main-hash::${hash}"
+        echo "{name}=main-hash::${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
     - name: Verify tag commit matches main commit - exit if they don't match

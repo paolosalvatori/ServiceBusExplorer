@@ -24,9 +24,21 @@ jobs:
        
     - uses: actions/checkout@v3
 
+    - name: Verify release version and get just the numbers and the dots
+      id: get-number-version
+      run: |
+        [Version]$numberVersion = .\GetNumberVersion -Version ${{ inputs.release-version }}
+        [bool]$prerelease = $true
+        
+        if ("$numberVersion" -eq "${{ inputs.release-version }}") {
+          $prerelease = $false
+        }
+        
+        echo "PRERELEASE=$prerelease" >> $env:GITHUB_ENV
+
     - name: Get cached build
       id: get-cached-build
-      uses: actions/cache@v3.0.5
+      uses: actions/cache@v3.0.11
       with:
         path: src/ServiceBusExplorer/bin/Release
         key: cached-output-${{ github.sha }}
@@ -80,7 +92,8 @@ jobs:
         Start-Sleep 1 
         gh release upload ${{ env.RELEASE_VERSION }} $env:ZipFilename $env:NupkgFilename
 
-    - name: Publish to Chocolatey
+    - name: Publish to Chocolatey if not prerelease
+      if: ${{ env.PRERELEASE == 'FALSE' }}
       env:
         CHOCO_TOKEN: ${{ secrets.CHOCO_TOKEN }}
       run: |
