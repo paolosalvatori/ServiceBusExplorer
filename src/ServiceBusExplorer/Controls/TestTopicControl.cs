@@ -895,6 +895,7 @@ namespace ServiceBusExplorer.Controls
                                 HandleException(ex);
                             }
                         }
+                        messageCount = fileList.Count();
                     }
                     else // Brokered Message Generator Tab
                     {
