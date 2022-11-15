@@ -6714,7 +6714,7 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 List<SubscriptionWrapper> subscriptions = new List<SubscriptionWrapper>();
-                Func<TreeNode, IEnumerable<SubscriptionWrapper>> subscriptionsExtractor = tn => tn.FirstNode.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper);
+                Func<TreeNode, IEnumerable<SubscriptionWrapper>> subscriptionsExtractor = tn => tn.FirstNode?.Nodes.Cast<TreeNode>().Select(n => n.Tag as SubscriptionWrapper) ?? Enumerable.Empty<SubscriptionWrapper>();
 
                 List<QueueDescription> queues = new List<QueueDescription>();
 
