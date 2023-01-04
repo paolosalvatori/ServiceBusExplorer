@@ -5,7 +5,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
 
@@ -70,6 +70,7 @@
     <PackageIcon>NewServiceBusExplorerLogo.jpg</PackageIcon>
     <RepositoryUrl>https://github.com/paolosalvatori/ServiceBusExplorer</RepositoryUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastColoredTextBox">
