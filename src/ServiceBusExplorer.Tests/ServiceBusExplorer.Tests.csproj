@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyTitle>ServiceBusExplorer.Tests</AssemblyTitle>
     <Company>Microsoft</Company>
