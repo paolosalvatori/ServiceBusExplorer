@@ -24,13 +24,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ServiceBusExplorer.Controls;
-using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
@@ -48,7 +46,7 @@ namespace ServiceBusExplorer.Forms
         private const string StartsWithFormat = "Startswith({0}, '{1}') Eq true";
         private const string MessageCountFormat = "MessageCount {0} {1}";
         private const string TimeFilterFormat = "{0} {1} '{2}'";
-        
+
         //***************************
         // Constants
         //***************************
@@ -65,7 +63,7 @@ namespace ServiceBusExplorer.Forms
         private const string TimeFilterOperator = "Operator";
         private const string TimeFilterValue = "Value";
 
-         //***************************
+        //***************************
         // RegeEx Patterns & Groups
         //***************************
         private const string AndPattern = @"\s+and\s+";
@@ -81,7 +79,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Static Fields
-        private static readonly List<string> properties = new List<string> { "CreatedAt", "AccessedAt", "UpdatedAt"};
+        private static readonly List<string> properties = new List<string> { "CreatedAt", "AccessedAt", "UpdatedAt" };
         private static readonly List<string> operators = new List<string> { "Ge", "Gt", "Le", "Lt", "Eq", "Ne" };
         private static readonly List<TimeFilterInfo> timeFilters = new List<TimeFilterInfo>();
         #endregion
@@ -347,7 +345,7 @@ namespace ServiceBusExplorer.Forms
 
                 // Initialize control values
                 txtStartsWith.Text = string.Empty;
-                txtMessageCount.Text = string.Empty;              
+                txtMessageCount.Text = string.Empty;
                 cboMessageCountOperator.SelectedIndex = 0;
                 //timeFilterDataGridView.Rows.Clear();
                 timeFilters.Clear();
@@ -410,11 +408,11 @@ namespace ServiceBusExplorer.Forms
                             !string.IsNullOrWhiteSpace(timeFilterValue))
                         {
                             timeFilters.Add(new TimeFilterInfo
-                                {
-                                    Property = timeFilterProperty,
-                                    Operator = timeFilterOperator,
-                                    Value = DateTime.Parse(timeFilterValue)
-                                });
+                            {
+                                Property = timeFilterProperty,
+                                Operator = timeFilterOperator,
+                                Value = DateTime.Parse(timeFilterValue)
+                            });
                         }
                     }
                 }

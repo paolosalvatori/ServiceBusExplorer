@@ -561,6 +561,7 @@ namespace ServiceBusExplorer.Forms
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily,
                     (float)optionForm.MainSettings.TreeViewFontSize);
+                serviceBusTreeView.ItemHeight = serviceBusTreeView.Font.Height;
                 RetryHelper.RetryCount = optionForm.MainSettings.RetryCount;
                 RetryHelper.RetryTimeout = optionForm.MainSettings.RetryTimeout;
                 ReceiveTimeout = optionForm.MainSettings.ReceiveTimeout;
@@ -4043,6 +4044,7 @@ namespace ServiceBusExplorer.Forms
             {
                 treeViewFontSize = tempTreeViewFontSize;
                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
+                serviceBusTreeView.ItemHeight = serviceBusTreeView.Font.Height;
             }
 
             RetryHelper.RetryCount = readSettings.RetryCount;
@@ -4230,7 +4232,7 @@ namespace ServiceBusExplorer.Forms
                         ok = true;
                     }
                     var width = panelMain.Width - 4;
-                    var height = panelMain.Height - 26;
+                    var height = panelMain.Height - /*26;*/ (LogicalToDeviceUnits(panelMain.HeaderHeight) + 6);
                     control.Width = width < ControlMinWidth ? ControlMinWidth : width;
                     control.Height = height < ControlMinHeight ? ControlMinHeight : height;
                 }
@@ -5293,7 +5295,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 topicControl = new HandleTopicControl(WriteToLog, serviceBusHelper, topic, path);
                 topicControl.SuspendDrawing();
-                topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                topicControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(topicControl);
                 SetControlSize(topicControl);
                 topicControl.OnCancel += MainForm_OnCancel;
@@ -5347,7 +5349,7 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="wrapper">Wrapper to </param>
         /// <param name="duplicateCurrentSubscription">If set the rendered subscription panel will be a "Duplicate" form.</param>
-        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false) 
+        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false)
         {
             HandleSubscriptionControl subscriptionControl = null;
 
@@ -6637,6 +6639,7 @@ namespace ServiceBusExplorer.Forms
             splitContainer.SplitterDistance = splitterContainerDistance;
             lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
             serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
+            serviceBusTreeView.ItemHeight = serviceBusTreeView.Font.Height;
         }
 
         private void receiveMessages_Click(object sender, EventArgs e)
@@ -7443,13 +7446,13 @@ namespace ServiceBusExplorer.Forms
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Topic))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
-                    
+
                     List<TreeNode> topicTreeNodes = new List<TreeNode>();
                     this.FindTopicsNodesRecursive(topicTreeNodes, treeNode);
 
                     subscriptions.AddRange(topicTreeNodes.SelectMany(subscriptionsExtractor));
                 }
-                else if (treeNode == FindNode(Constants.QueueEntities, rootNode) 
+                else if (treeNode == FindNode(Constants.QueueEntities, rootNode)
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Queue))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";

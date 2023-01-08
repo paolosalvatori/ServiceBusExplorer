@@ -3,7 +3,7 @@
     <ProjectGuid>{DE07DBEB-D772-49BA-BCEB-A7CE29308AE3}</ProjectGuid>
     <RootNamespace>ServiceBusExplorer.Common</RootNamespace>
     <AssemblyName>ServiceBusExplorer.Common</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <LangVersion>latest</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
