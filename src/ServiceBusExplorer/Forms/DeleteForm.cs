@@ -38,6 +38,7 @@ namespace ServiceBusExplorer.Forms
         //***************************
         private const string MessageFormat = "The {0} {1} will be permanently deleted.";
         private const string Unknown = "Unknown";
+        private const int widthPadding = 88;
         #endregion
 
         #region Private Fields
@@ -50,7 +51,7 @@ namespace ServiceBusExplorer.Forms
         {
             InitializeComponent();
             lblMessage.Text = string.Format(message);
-            Width = lblMessage.Width + 88;
+            Width = lblMessage.Width + LogicalToDeviceUnits(widthPadding);
         }
 
         public DeleteForm(string entityName, string entityType)
@@ -59,7 +60,7 @@ namespace ServiceBusExplorer.Forms
             lblMessage.Text = string.Format(MessageFormat,
                                             entityType ?? Unknown,
                                             entityName ?? Unknown);
-            Width = lblMessage.Width + 88;
+            Width = lblMessage.Width + LogicalToDeviceUnits(widthPadding);
         }
         #endregion
 

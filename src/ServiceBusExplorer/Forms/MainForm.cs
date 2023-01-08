@@ -5259,7 +5259,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue);
                 queueControl.SuspendDrawing();
-                queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                queueControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(queueControl);
                 SetControlSize(queueControl);
                 queueControl.OnCancel += MainForm_OnCancel;
@@ -5364,7 +5364,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 subscriptionControl = new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper, duplicateCurrentSubscription);
                 subscriptionControl.SuspendDrawing();
-                subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                subscriptionControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(subscriptionControl);
                 SetControlSize(subscriptionControl);
                 subscriptionControl.OnCancel += MainForm_OnCancel;
@@ -5433,7 +5433,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 relayServiceControl = new HandleRelayControl(WriteToLog, serviceBusHelper, relayService, path);
                 relayServiceControl.SuspendDrawing();
-                relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                relayServiceControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(relayServiceControl);
                 SetControlSize(relayServiceControl);
                 relayServiceControl.OnCancel += MainForm_OnCancel;
@@ -5468,7 +5468,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 ruleControl = new HandleRuleControl(WriteToLog, serviceBusHelper, wrapper, isFirstRule);
                 ruleControl.SuspendDrawing();
-                ruleControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                ruleControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(ruleControl);
                 SetControlSize(ruleControl);
                 ruleControl.OnCancel += MainForm_OnCancel;
@@ -5502,7 +5502,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 eventHubControl = new HandleEventHubControl(WriteToLog, serviceBusHelper, eventHub);
                 eventHubControl.SuspendDrawing();
-                eventHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                eventHubControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(eventHubControl);
                 SetControlSize(eventHubControl);
                 eventHubControl.OnCancel += MainForm_OnCancel;
@@ -5547,7 +5547,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 partitionControl = new HandlePartitionControl(WriteToLog, serviceBusHelper, partition);
                 partitionControl.SuspendDrawing();
-                partitionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                partitionControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(partitionControl);
                 partitionControl.OnRefresh += MainForm_OnRefresh;
                 SetControlSize(partitionControl);
@@ -5581,7 +5581,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 notificationHubControl = new HandleConsumerGroupControl(WriteToLog, serviceBusHelper, notificationHub, eventHubname);
                 notificationHubControl.SuspendDrawing();
-                notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                notificationHubControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(notificationHubControl);
                 SetControlSize(notificationHubControl);
                 notificationHubControl.OnCancel += MainForm_OnCancel;
@@ -5616,7 +5616,7 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
                 notificationHubControl = new HandleNotificationHubControl(WriteToLog, serviceBusHelper, notificationHub);
                 notificationHubControl.SuspendDrawing();
-                notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                notificationHubControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                 panelMain.Controls.Add(notificationHubControl);
                 SetControlSize(notificationHubControl);
                 notificationHubControl.OnCancel += MainForm_OnCancel;
@@ -5658,7 +5658,7 @@ namespace ServiceBusExplorer.Forms
                                                         serviceBusHelper,
                                                         queueDescription);
                     queueControl.SuspendDrawing();
-                    queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                    queueControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                     panelMain.Controls.Add(queueControl);
                     SetControlSize(queueControl);
                     queueControl.OnCancel += MainForm_OnCancel;
@@ -5706,7 +5706,7 @@ namespace ServiceBusExplorer.Forms
                                                         topicDescription,
                                                         subscriptionList);
                     topicControl.SuspendDrawing();
-                    topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                    topicControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                     panelMain.Controls.Add(topicControl);
                     SetControlSize(topicControl);
                     topicControl.OnCancel += MainForm_OnCancel;
@@ -5753,7 +5753,7 @@ namespace ServiceBusExplorer.Forms
                                                                       serviceBusHelper,
                                                                       subscriptionWrapper);
                     subscriptionControl.SuspendDrawing();
-                    subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                    subscriptionControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                     panelMain.Controls.Add(subscriptionControl);
                     SetControlSize(subscriptionControl);
                     subscriptionControl.OnCancel += MainForm_OnCancel;
@@ -5800,7 +5800,7 @@ namespace ServiceBusExplorer.Forms
                                                                relayDescription,
                                                                serviceBusHelper);
                     relayServiceControl.SuspendDrawing();
-                    relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                    relayServiceControl.Location = new Point(1, LogicalToDeviceUnits(panelLog.HeaderHeight) + 1);
                     panelMain.Controls.Add(relayServiceControl);
                     SetControlSize(relayServiceControl);
                     relayServiceControl.OnCancel += MainForm_OnCancel;
