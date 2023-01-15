@@ -21,26 +21,24 @@
 
 #region Using Directives
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Windows.Forms;
 
 #endregion
 
 namespace ServiceBusExplorer.Controls
 {
     public partial class HandleRuleControl : UserControl
-    {   
+    {
         #region Private Constants
         //***************************
         // Formats
@@ -86,7 +84,7 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             InitializeData();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -244,8 +242,8 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                if (btnCreateDelete.Text == RemoveText 
-                    && !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription?.Name) 
+                if (btnCreateDelete.Text == RemoveText
+                    && !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription?.Name)
                     && !string.IsNullOrWhiteSpace(ruleWrapper.RuleDescription?.Name))
                 {
                     using (var deleteForm = new DeleteForm(ruleWrapper.RuleDescription.Name, RuleEntity.ToLower()))
@@ -400,18 +398,22 @@ namespace ServiceBusExplorer.Controls
 
         void HandleRuleControl_Resize(object sender, EventArgs e)
         {
-            var width = (Size.Width - 48) / 2;
-            var height = Size.Height - 152;
+            grouperFilter.SuspendDrawing();
+            grouperFilter.SuspendLayout();
+
+            var width = (Size.Width - LogicalToDeviceUnits(48)) / 2;
+            var height = Size.Height - LogicalToDeviceUnits(152);
             grouperFilter.Size = new Size(width, height);
             grouperAction.Size = new Size(width, height);
-            grouperAction.Location = new Point(grouperFilter.Location.X + width + 16, 
-                                                         grouperAction.Location.Y);
-            grouperName.Size = new Size(width, grouperName.Size.Height);
-            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - 80, 
-                                             grouperCreatedAt.Size.Height);
-            grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + 16,
-                                                  grouperCreatedAt.Location.Y);
+            grouperAction.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperFilter.Location.Y);
+            grouperName.Size = new Size(width, grouperFilterType.Size.Height);
+            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - LogicalToDeviceUnits(80),
+                                             grouperFilterType.Size.Height);
+            grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperName.Location.Y);
             grouperCorrelationFilter.Size = new Size(width, height);
+
+            grouperFilter.ResumeLayout(true);
+            grouperFilter.ResumeDrawing(true);
         }
 
         void button_MouseEnter(object sender, EventArgs e)

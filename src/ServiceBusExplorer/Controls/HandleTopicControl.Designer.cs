@@ -289,7 +289,7 @@
             this.checkedListBox.CheckOnClick = true;
             this.checkedListBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.checkedListBox.FormattingEnabled = true;
-            this.checkedListBox.Location = new System.Drawing.Point(10, 28);
+            this.checkedListBox.Location = new System.Drawing.Point(10, 30);
             this.checkedListBox.Margin = new System.Windows.Forms.Padding(8);
             this.checkedListBox.Name = "checkedListBox";
             this.checkedListBox.Size = new System.Drawing.Size(290, 124);
@@ -451,7 +451,7 @@
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
-            this.txtUserMetadata.Size = new System.Drawing.Size(246, 152);
+            this.txtUserMetadata.Size = new System.Drawing.Size(246, 154);
             this.txtUserMetadata.TabIndex = 4;
             // 
             // lblUserMetadata
