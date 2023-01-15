@@ -355,6 +355,12 @@ namespace ServiceBusExplorer.Controls
         {
             grouperFilter.Visible = !checkBoxIsCorrelationFilter.Checked;
             grouperCorrelationFilter.Visible = checkBoxIsCorrelationFilter.Checked;
+            if (checkBoxIsCorrelationFilter.Checked)
+            {
+                tableLayoutPanel1.Controls.Add(grouperCorrelationFilter, 0, 1);
+                grouperCorrelationFilter.Dock = DockStyle.Fill;
+                grouperCorrelationFilter.Margin = grouperFilter.Margin;
+            }
         }
 
         private void authorizationRulesDataGridView_Resize(object sender, EventArgs e)
