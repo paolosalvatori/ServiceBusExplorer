@@ -398,22 +398,22 @@ namespace ServiceBusExplorer.Controls
 
         void HandleRuleControl_Resize(object sender, EventArgs e)
         {
-            grouperFilter.SuspendDrawing();
-            grouperFilter.SuspendLayout();
+            //grouperFilter.SuspendDrawing();
+            //grouperFilter.SuspendLayout();
 
-            var width = (Size.Width - LogicalToDeviceUnits(48)) / 2;
-            var height = Size.Height - LogicalToDeviceUnits(152);
-            grouperFilter.Size = new Size(width, height);
-            grouperAction.Size = new Size(width, height);
-            grouperAction.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperFilter.Location.Y);
-            grouperName.Size = new Size(width, grouperFilterType.Size.Height);
-            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - LogicalToDeviceUnits(80),
-                                             grouperFilterType.Size.Height);
-            grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperName.Location.Y);
-            grouperCorrelationFilter.Size = new Size(width, height);
+            //var width = (Size.Width - LogicalToDeviceUnits(48)) / 2;
+            //var height = Size.Height - LogicalToDeviceUnits(152);
+            //grouperFilter.Size = new Size(width, height);
+            //grouperAction.Size = new Size(width, height);
+            //grouperAction.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperFilter.Location.Y);
+            //grouperName.Size = new Size(width, grouperFilterType.Size.Height);
+            //grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - LogicalToDeviceUnits(80),
+            //                                 grouperFilterType.Size.Height);
+            //grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + LogicalToDeviceUnits(16), grouperName.Location.Y);
+            //grouperCorrelationFilter.Size = new Size(width, height);
 
-            grouperFilter.ResumeLayout(true);
-            grouperFilter.ResumeDrawing(true);
+            //grouperFilter.ResumeLayout(true);
+            //grouperFilter.ResumeDrawing(true);
         }
 
         void button_MouseEnter(object sender, EventArgs e)
