@@ -418,7 +418,7 @@
             this.grouperNotificationHubInformation.ForeColor = System.Drawing.Color.White;
             this.grouperNotificationHubInformation.GroupImage = null;
             this.grouperNotificationHubInformation.GroupTitle = "Notification Hub Information";
-            this.grouperNotificationHubInformation.Location = new System.Drawing.Point(656, 112);
+            this.grouperNotificationHubInformation.Location = new System.Drawing.Point(642, 106);
             this.grouperNotificationHubInformation.Name = "grouperNotificationHubInformation";
             this.grouperNotificationHubInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperNotificationHubInformation.PaintGroupBox = true;
@@ -426,7 +426,7 @@
             this.grouperNotificationHubInformation.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperNotificationHubInformation.ShadowControl = false;
             this.grouperNotificationHubInformation.ShadowThickness = 1;
-            this.grouperNotificationHubInformation.Size = new System.Drawing.Size(296, 325);
+            this.grouperNotificationHubInformation.Size = new System.Drawing.Size(310, 331);
             this.grouperNotificationHubInformation.TabIndex = 7;
             // 
             // propertyListView
@@ -441,7 +441,7 @@
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
-            this.propertyListView.Size = new System.Drawing.Size(264, 277);
+            this.propertyListView.Size = new System.Drawing.Size(278, 283);
             this.propertyListView.TabIndex = 0;
             this.propertyListView.UseCompatibleStateImageBehavior = false;
             this.propertyListView.View = System.Windows.Forms.View.Details;
@@ -476,7 +476,7 @@
             this.grouperUserMetadata.ForeColor = System.Drawing.Color.White;
             this.grouperUserMetadata.GroupImage = null;
             this.grouperUserMetadata.GroupTitle = "User Metdata";
-            this.grouperUserMetadata.Location = new System.Drawing.Point(336, 16);
+            this.grouperUserMetadata.Location = new System.Drawing.Point(326, 8);
             this.grouperUserMetadata.Name = "grouperUserMetadata";
             this.grouperUserMetadata.Padding = new System.Windows.Forms.Padding(20);
             this.grouperUserMetadata.PaintGroupBox = true;
@@ -544,7 +544,7 @@
             this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
             this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
-            this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
+            this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(326, 106);
             this.grouperGoogleCloudMessaggingSettings.Name = "grouperGoogleCloudMessaggingSettings";
             this.grouperGoogleCloudMessaggingSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperGoogleCloudMessaggingSettings.PaintGroupBox = true;
@@ -634,7 +634,7 @@
             this.grouperWindowsPhoneNotificationSettings.ForeColor = System.Drawing.Color.White;
             this.grouperWindowsPhoneNotificationSettings.GroupImage = null;
             this.grouperWindowsPhoneNotificationSettings.GroupTitle = "Windows Phone Notification Settings";
-            this.grouperWindowsPhoneNotificationSettings.Location = new System.Drawing.Point(16, 280);
+            this.grouperWindowsPhoneNotificationSettings.Location = new System.Drawing.Point(16, 276);
             this.grouperWindowsPhoneNotificationSettings.Name = "grouperWindowsPhoneNotificationSettings";
             this.grouperWindowsPhoneNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperWindowsPhoneNotificationSettings.PaintGroupBox = true;
@@ -734,7 +734,7 @@
             this.grouperAppleNotificationSettings.ForeColor = System.Drawing.Color.White;
             this.grouperAppleNotificationSettings.GroupImage = null;
             this.grouperAppleNotificationSettings.GroupTitle = "Apple Notification Settings";
-            this.grouperAppleNotificationSettings.Location = new System.Drawing.Point(336, 280);
+            this.grouperAppleNotificationSettings.Location = new System.Drawing.Point(326, 276);
             this.grouperAppleNotificationSettings.Name = "grouperAppleNotificationSettings";
             this.grouperAppleNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperAppleNotificationSettings.PaintGroupBox = true;
@@ -842,7 +842,7 @@
             this.grouperWindowsNotificationSettings.ForeColor = System.Drawing.Color.White;
             this.grouperWindowsNotificationSettings.GroupImage = null;
             this.grouperWindowsNotificationSettings.GroupTitle = "Windows Notification Settings";
-            this.grouperWindowsNotificationSettings.Location = new System.Drawing.Point(16, 112);
+            this.grouperWindowsNotificationSettings.Location = new System.Drawing.Point(16, 106);
             this.grouperWindowsNotificationSettings.Name = "grouperWindowsNotificationSettings";
             this.grouperWindowsNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperWindowsNotificationSettings.PaintGroupBox = true;
@@ -925,7 +925,7 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.Color.White;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Registration Time To Live";
-            this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(656, 16);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(642, 8);
             this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
             this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20);
             this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
@@ -933,14 +933,14 @@
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowControl = false;
             this.grouperDuplicateDetectionHistoryTimeWindow.ShadowThickness = 1;
-            this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(296, 88);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(310, 88);
             this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 6;
             // 
             // tsRegistrationTimeToLive
             // 
             this.tsRegistrationTimeToLive.Location = new System.Drawing.Point(13, 29);
             this.tsRegistrationTimeToLive.Name = "tsRegistrationTimeToLive";
-            this.tsRegistrationTimeToLive.Size = new System.Drawing.Size(273, 42);
+            this.tsRegistrationTimeToLive.Size = new System.Drawing.Size(290, 42);
             this.tsRegistrationTimeToLive.TabIndex = 0;
             this.tsRegistrationTimeToLive.TimeSpanValue = null;
             // 
@@ -960,7 +960,7 @@
             this.grouperPath.ForeColor = System.Drawing.Color.White;
             this.grouperPath.GroupImage = null;
             this.grouperPath.GroupTitle = "Path";
-            this.grouperPath.Location = new System.Drawing.Point(16, 16);
+            this.grouperPath.Location = new System.Drawing.Point(16, 8);
             this.grouperPath.Name = "grouperPath";
             this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
             this.grouperPath.PaintGroupBox = true;

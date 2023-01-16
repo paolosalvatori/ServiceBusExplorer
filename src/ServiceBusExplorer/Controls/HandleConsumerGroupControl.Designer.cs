@@ -84,7 +84,7 @@
             this.grouperName.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperName.ShadowControl = false;
             this.grouperName.ShadowThickness = 1;
-            this.grouperName.Size = new System.Drawing.Size(608, 80);
+            this.grouperName.Size = new System.Drawing.Size(628, 80);
             this.grouperName.TabIndex = 0;
             // 
             // lblRelativeURI
@@ -105,7 +105,7 @@
             this.txtName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtName.Location = new System.Drawing.Point(16, 44);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(576, 20);
+            this.txtName.Size = new System.Drawing.Size(596, 20);
             this.txtName.TabIndex = 0;
             this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
             // 
@@ -133,7 +133,7 @@
             this.grouperConsumerGroupProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperConsumerGroupProperties.ShadowControl = false;
             this.grouperConsumerGroupProperties.ShadowThickness = 1;
-            this.grouperConsumerGroupProperties.Size = new System.Drawing.Size(608, 344);
+            this.grouperConsumerGroupProperties.Size = new System.Drawing.Size(628, 344);
             this.grouperConsumerGroupProperties.TabIndex = 1;
             // 
             // txtUserMetadata
@@ -146,7 +146,7 @@
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
-            this.txtUserMetadata.Size = new System.Drawing.Size(576, 280);
+            this.txtUserMetadata.Size = new System.Drawing.Size(596, 280);
             this.txtUserMetadata.TabIndex = 1;
             // 
             // lblUserMetadata
@@ -175,7 +175,7 @@
             this.grouperConsumerGroupInformation.ForeColor = System.Drawing.Color.White;
             this.grouperConsumerGroupInformation.GroupImage = null;
             this.grouperConsumerGroupInformation.GroupTitle = "Consumer Group Information";
-            this.grouperConsumerGroupInformation.Location = new System.Drawing.Point(640, 8);
+            this.grouperConsumerGroupInformation.Location = new System.Drawing.Point(652, 8);
             this.grouperConsumerGroupInformation.Name = "grouperConsumerGroupInformation";
             this.grouperConsumerGroupInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperConsumerGroupInformation.PaintGroupBox = true;
@@ -183,7 +183,7 @@
             this.grouperConsumerGroupInformation.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperConsumerGroupInformation.ShadowControl = false;
             this.grouperConsumerGroupInformation.ShadowThickness = 1;
-            this.grouperConsumerGroupInformation.Size = new System.Drawing.Size(312, 432);
+            this.grouperConsumerGroupInformation.Size = new System.Drawing.Size(300, 432);
             this.grouperConsumerGroupInformation.TabIndex = 2;
             // 
             // propertyListView
@@ -195,7 +195,7 @@
             this.nameColumnHeader,
             this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
-            this.propertyListView.Location = new System.Drawing.Point(16, 32);
+            this.propertyListView.Location = new System.Drawing.Point(11, 34);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
             this.propertyListView.Size = new System.Drawing.Size(279, 384);
