@@ -353,6 +353,9 @@ namespace ServiceBusExplorer.Controls
 
         void checkBoxIsCorrelationFilter_CheckedChanged(object sender, EventArgs e)
         {
+            this.SuspendDrawing();
+            this.SuspendLayout();
+
             grouperFilter.Visible = !checkBoxIsCorrelationFilter.Checked;
             grouperCorrelationFilter.Visible = checkBoxIsCorrelationFilter.Checked;
             if (checkBoxIsCorrelationFilter.Checked)
@@ -361,6 +364,9 @@ namespace ServiceBusExplorer.Controls
                 grouperCorrelationFilter.Dock = DockStyle.Fill;
                 grouperCorrelationFilter.Margin = grouperFilter.Margin;
             }
+
+            this.ResumeDrawing();
+            this.ResumeLayout();
         }
 
         private void authorizationRulesDataGridView_Resize(object sender, EventArgs e)
