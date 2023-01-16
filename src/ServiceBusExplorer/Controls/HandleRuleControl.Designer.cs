@@ -50,6 +50,7 @@ namespace ServiceBusExplorer.Controls
             this.txtSqlFilterAction = new System.Windows.Forms.TextBox();
             this.grouperFilter = new ServiceBusExplorer.Controls.Grouper();
             this.txtFilterExpression = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.grouperFilterType.SuspendLayout();
             this.grouperCorrelationFilter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).BeginInit();
@@ -59,6 +60,7 @@ namespace ServiceBusExplorer.Controls
             this.tableLayoutPanel1.SuspendLayout();
             this.grouperAction.SuspendLayout();
             this.grouperFilter.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCreateDelete
@@ -144,30 +146,14 @@ namespace ServiceBusExplorer.Controls
             this.grouperCorrelationFilter.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCorrelationFilter.BorderThickness = 1F;
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterTo);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterTo);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterSessionId);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterSessionId);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterReplyToSessionId);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterReplyToSessionId);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterReplyTo);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterReplyTo);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterMessageId);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterMessageId);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterLabel);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterLabel);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterCorrelationId);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterCorrelationId);
-            this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterContentType);
-            this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterContentType);
-            this.grouperCorrelationFilter.Controls.Add(this.authorizationRulesDataGridView);
+            this.grouperCorrelationFilter.Controls.Add(this.tableLayoutPanel2);
             this.grouperCorrelationFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperCorrelationFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperCorrelationFilter.ForeColor = System.Drawing.Color.White;
             this.grouperCorrelationFilter.GroupImage = null;
             this.grouperCorrelationFilter.GroupTitle = "Correlation Filter";
             this.grouperCorrelationFilter.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.grouperCorrelationFilter.Location = new System.Drawing.Point(16, 2000);
+            this.grouperCorrelationFilter.Location = new System.Drawing.Point(16, 400);
             this.grouperCorrelationFilter.Name = "grouperCorrelationFilter";
             this.grouperCorrelationFilter.Padding = new System.Windows.Forms.Padding(40, 38, 40, 38);
             this.grouperCorrelationFilter.PaintGroupBox = true;
@@ -181,17 +167,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterTo
             // 
-            this.txtCorrelationFilterTo.Location = new System.Drawing.Point(128, 228);
+            this.txtCorrelationFilterTo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterTo.Location = new System.Drawing.Point(111, 216);
             this.txtCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterTo.Name = "txtCorrelationFilterTo";
-            this.txtCorrelationFilterTo.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterTo.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterTo.TabIndex = 15;
             // 
             // lblCorrelationFilterTo
             // 
             this.lblCorrelationFilterTo.AutoSize = true;
             this.lblCorrelationFilterTo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterTo.Location = new System.Drawing.Point(16, 228);
+            this.lblCorrelationFilterTo.Location = new System.Drawing.Point(6, 210);
             this.lblCorrelationFilterTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterTo.Name = "lblCorrelationFilterTo";
             this.lblCorrelationFilterTo.Size = new System.Drawing.Size(20, 13);
@@ -200,17 +187,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterSessionId
             // 
-            this.txtCorrelationFilterSessionId.Location = new System.Drawing.Point(128, 200);
+            this.txtCorrelationFilterSessionId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterSessionId.Location = new System.Drawing.Point(111, 186);
             this.txtCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterSessionId.Name = "txtCorrelationFilterSessionId";
-            this.txtCorrelationFilterSessionId.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterSessionId.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterSessionId.TabIndex = 13;
             // 
             // lblCorrelationFilterSessionId
             // 
             this.lblCorrelationFilterSessionId.AutoSize = true;
             this.lblCorrelationFilterSessionId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterSessionId.Location = new System.Drawing.Point(16, 200);
+            this.lblCorrelationFilterSessionId.Location = new System.Drawing.Point(6, 180);
             this.lblCorrelationFilterSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterSessionId.Name = "lblCorrelationFilterSessionId";
             this.lblCorrelationFilterSessionId.Size = new System.Drawing.Size(53, 13);
@@ -219,17 +207,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterReplyToSessionId
             // 
-            this.txtCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(128, 172);
+            this.txtCorrelationFilterReplyToSessionId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(111, 156);
             this.txtCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterReplyToSessionId.Name = "txtCorrelationFilterReplyToSessionId";
-            this.txtCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterReplyToSessionId.TabIndex = 11;
             // 
             // lblCorrelationFilterReplyToSessionId
             // 
             this.lblCorrelationFilterReplyToSessionId.AutoSize = true;
             this.lblCorrelationFilterReplyToSessionId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(16, 172);
+            this.lblCorrelationFilterReplyToSessionId.Location = new System.Drawing.Point(6, 150);
             this.lblCorrelationFilterReplyToSessionId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterReplyToSessionId.Name = "lblCorrelationFilterReplyToSessionId";
             this.lblCorrelationFilterReplyToSessionId.Size = new System.Drawing.Size(93, 13);
@@ -238,17 +227,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterReplyTo
             // 
-            this.txtCorrelationFilterReplyTo.Location = new System.Drawing.Point(128, 144);
+            this.txtCorrelationFilterReplyTo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterReplyTo.Location = new System.Drawing.Point(111, 126);
             this.txtCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterReplyTo.Name = "txtCorrelationFilterReplyTo";
-            this.txtCorrelationFilterReplyTo.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterReplyTo.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterReplyTo.TabIndex = 9;
             // 
             // lblCorrelationFilterReplyTo
             // 
             this.lblCorrelationFilterReplyTo.AutoSize = true;
             this.lblCorrelationFilterReplyTo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterReplyTo.Location = new System.Drawing.Point(16, 144);
+            this.lblCorrelationFilterReplyTo.Location = new System.Drawing.Point(6, 120);
             this.lblCorrelationFilterReplyTo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterReplyTo.Name = "lblCorrelationFilterReplyTo";
             this.lblCorrelationFilterReplyTo.Size = new System.Drawing.Size(47, 13);
@@ -257,17 +247,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterMessageId
             // 
-            this.txtCorrelationFilterMessageId.Location = new System.Drawing.Point(128, 116);
+            this.txtCorrelationFilterMessageId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterMessageId.Location = new System.Drawing.Point(111, 96);
             this.txtCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterMessageId.Name = "txtCorrelationFilterMessageId";
-            this.txtCorrelationFilterMessageId.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterMessageId.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterMessageId.TabIndex = 7;
             // 
             // lblCorrelationFilterMessageId
             // 
             this.lblCorrelationFilterMessageId.AutoSize = true;
             this.lblCorrelationFilterMessageId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterMessageId.Location = new System.Drawing.Point(16, 116);
+            this.lblCorrelationFilterMessageId.Location = new System.Drawing.Point(6, 90);
             this.lblCorrelationFilterMessageId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterMessageId.Name = "lblCorrelationFilterMessageId";
             this.lblCorrelationFilterMessageId.Size = new System.Drawing.Size(59, 13);
@@ -276,17 +267,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterLabel
             // 
-            this.txtCorrelationFilterLabel.Location = new System.Drawing.Point(128, 88);
+            this.txtCorrelationFilterLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterLabel.Location = new System.Drawing.Point(111, 66);
             this.txtCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterLabel.Name = "txtCorrelationFilterLabel";
-            this.txtCorrelationFilterLabel.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterLabel.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterLabel.TabIndex = 5;
             // 
             // lblCorrelationFilterLabel
             // 
             this.lblCorrelationFilterLabel.AutoSize = true;
             this.lblCorrelationFilterLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterLabel.Location = new System.Drawing.Point(16, 88);
+            this.lblCorrelationFilterLabel.Location = new System.Drawing.Point(6, 60);
             this.lblCorrelationFilterLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterLabel.Name = "lblCorrelationFilterLabel";
             this.lblCorrelationFilterLabel.Size = new System.Drawing.Size(33, 13);
@@ -295,17 +287,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterCorrelationId
             // 
-            this.txtCorrelationFilterCorrelationId.Location = new System.Drawing.Point(128, 60);
+            this.txtCorrelationFilterCorrelationId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterCorrelationId.Location = new System.Drawing.Point(111, 36);
             this.txtCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterCorrelationId.Name = "txtCorrelationFilterCorrelationId";
-            this.txtCorrelationFilterCorrelationId.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterCorrelationId.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterCorrelationId.TabIndex = 3;
             // 
             // lblCorrelationFilterCorrelationId
             // 
             this.lblCorrelationFilterCorrelationId.AutoSize = true;
             this.lblCorrelationFilterCorrelationId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterCorrelationId.Location = new System.Drawing.Point(16, 60);
+            this.lblCorrelationFilterCorrelationId.Location = new System.Drawing.Point(6, 30);
             this.lblCorrelationFilterCorrelationId.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterCorrelationId.Name = "lblCorrelationFilterCorrelationId";
             this.lblCorrelationFilterCorrelationId.Size = new System.Drawing.Size(66, 13);
@@ -314,17 +307,18 @@ namespace ServiceBusExplorer.Controls
             // 
             // txtCorrelationFilterContentType
             // 
-            this.txtCorrelationFilterContentType.Location = new System.Drawing.Point(128, 32);
+            this.txtCorrelationFilterContentType.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCorrelationFilterContentType.Location = new System.Drawing.Point(111, 6);
             this.txtCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6);
             this.txtCorrelationFilterContentType.Name = "txtCorrelationFilterContentType";
-            this.txtCorrelationFilterContentType.Size = new System.Drawing.Size(314, 20);
+            this.txtCorrelationFilterContentType.Size = new System.Drawing.Size(306, 20);
             this.txtCorrelationFilterContentType.TabIndex = 1;
             // 
             // lblCorrelationFilterContentType
             // 
             this.lblCorrelationFilterContentType.AutoSize = true;
             this.lblCorrelationFilterContentType.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCorrelationFilterContentType.Location = new System.Drawing.Point(16, 32);
+            this.lblCorrelationFilterContentType.Location = new System.Drawing.Point(6, 0);
             this.lblCorrelationFilterContentType.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblCorrelationFilterContentType.Name = "lblCorrelationFilterContentType";
             this.lblCorrelationFilterContentType.Size = new System.Drawing.Size(68, 13);
@@ -337,8 +331,10 @@ namespace ServiceBusExplorer.Controls
             this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tableLayoutPanel2.SetColumnSpan(this.authorizationRulesDataGridView, 2);
+            this.authorizationRulesDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.authorizationRulesDataGridView.Location = new System.Drawing.Point(16, 256);
+            this.authorizationRulesDataGridView.Location = new System.Drawing.Point(8, 248);
             this.authorizationRulesDataGridView.Margin = new System.Windows.Forms.Padding(8);
             this.authorizationRulesDataGridView.MultiSelect = false;
             this.authorizationRulesDataGridView.Name = "authorizationRulesDataGridView";
@@ -346,7 +342,7 @@ namespace ServiceBusExplorer.Controls
             this.authorizationRulesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.authorizationRulesDataGridView.ShowCellErrors = false;
             this.authorizationRulesDataGridView.ShowRowErrors = false;
-            this.authorizationRulesDataGridView.Size = new System.Drawing.Size(426, 96);
+            this.authorizationRulesDataGridView.Size = new System.Drawing.Size(407, 77);
             this.authorizationRulesDataGridView.TabIndex = 0;
             this.authorizationRulesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.authorizationRulesDataGridView_RowsAdded);
             this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
@@ -566,6 +562,46 @@ namespace ServiceBusExplorer.Controls
             this.txtFilterExpression.Size = new System.Drawing.Size(423, 210);
             this.txtFilterExpression.TabIndex = 0;
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
+            this.tableLayoutPanel2.Controls.Add(this.authorizationRulesDataGridView, 0, 8);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterTo, 1, 7);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterContentType, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterSessionId, 1, 6);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterTo, 0, 7);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterReplyToSessionId, 1, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterCorrelationId, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterReplyTo, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterLabel, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterMessageId, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterSessionId, 0, 6);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterLabel, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterMessageId, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterCorrelationId, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterReplyTo, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtCorrelationFilterContentType, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblCorrelationFilterReplyToSessionId, 0, 5);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(19, 36);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 9;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(423, 333);
+            this.tableLayoutPanel2.TabIndex = 9;
+            // 
             // HandleRuleControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -581,7 +617,6 @@ namespace ServiceBusExplorer.Controls
             this.grouperFilterType.ResumeLayout(false);
             this.grouperFilterType.PerformLayout();
             this.grouperCorrelationFilter.ResumeLayout(false);
-            this.grouperCorrelationFilter.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
             this.grouperCreatedAt.ResumeLayout(false);
             this.grouperCreatedAt.PerformLayout();
@@ -594,6 +629,8 @@ namespace ServiceBusExplorer.Controls
             this.grouperAction.PerformLayout();
             this.grouperFilter.ResumeLayout(false);
             this.grouperFilter.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -634,5 +671,6 @@ namespace ServiceBusExplorer.Controls
         private System.Windows.Forms.TextBox txtFilterExpression;
         private Grouper grouperAction;
         private System.Windows.Forms.TextBox txtSqlFilterAction;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }
