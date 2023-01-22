@@ -2333,10 +2333,6 @@ namespace ServiceBusExplorer.Controls
             btnRefresh.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;
             btnCreateDelete.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;
             btnCancelUpdate.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;
-            if (mainTabControl.SelectedTab == tabPageDescription)
-            {
-                HandleNotificationHubControl_Resize(null, null);
-            }
         }
 
         private void btnRegistrations_Click(object sender, EventArgs e)
@@ -2484,29 +2480,6 @@ namespace ServiceBusExplorer.Controls
             {
                 HandleException(ex);
             }
-        }
-
-        private void HandleNotificationHubControl_Resize(object sender, EventArgs e)
-        {
-            var width = (tabPageDescription.Size.Width - 64 - grouperDuplicateDetectionHistoryTimeWindow.Size.Width) / 2;
-            var height = (tabPageDescription.Size.Height - grouperPath.Size.Height - 48) / 2;
-
-            grouperPath.Size = new Size(width, grouperPath.Size.Height);
-            grouperUserMetadata.Size = new Size(width, grouperUserMetadata.Size.Height);
-            grouperUserMetadata.Location = new Point(grouperPath.Location.X + width + 16,
-                                                     grouperPath.Location.Y);
-            grouperWindowsNotificationSettings.Size = new Size(width, height);
-            grouperGoogleCloudMessaggingSettings.Size = new Size(width, height);
-            grouperWindowsPhoneNotificationSettings.Size = new Size(width, height);
-            grouperAppleNotificationSettings.Size = new Size(width, height);
-
-            grouperGoogleCloudMessaggingSettings.Location = new Point(grouperWindowsNotificationSettings.Location.X + width + 16,
-                                                                      grouperWindowsNotificationSettings.Location.Y);
-            grouperWindowsPhoneNotificationSettings.Location = new Point(grouperWindowsPhoneNotificationSettings.Location.X,
-                                                                         grouperWindowsNotificationSettings.Location.Y + height + 8);
-
-            grouperAppleNotificationSettings.Location = new Point(grouperWindowsNotificationSettings.Location.X + width + 16,
-                                                                  grouperWindowsNotificationSettings.Location.Y + height + 8);
         }
 
         private void cboMpnsNotificationTemplate_SelectedIndexChanged(object sender, EventArgs e)
