@@ -613,7 +613,6 @@ namespace ServiceBusExplorer.Controls
             this.Controls.Add(this.grouperCorrelationFilter);
             this.Name = "HandleRuleControl";
             this.Size = new System.Drawing.Size(968, 400);
-            this.Resize += new System.EventHandler(this.HandleRuleControl_Resize);
             this.grouperFilterType.ResumeLayout(false);
             this.grouperFilterType.PerformLayout();
             this.grouperCorrelationFilter.ResumeLayout(false);
