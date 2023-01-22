@@ -21,6 +21,11 @@
 
 #region Using Directives
 
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -29,18 +34,11 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
-using FastColoredTextBoxNS;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
@@ -175,7 +173,7 @@ namespace ServiceBusExplorer.Controls
         public ListenerControl(WriteToLogDelegate writeToLog,
                                Func<Task> stopLog,
                                Action startLog,
-                               ServiceBusHelper serviceBusHelper, 
+                               ServiceBusHelper serviceBusHelper,
                                EntityDescription entityDescription)
         {
             this.logStopped = false;
@@ -213,7 +211,7 @@ namespace ServiceBusExplorer.Controls
         private bool RequiresSession()
         {
             var description = entityDescription as QueueDescription;
-            if (description != null )
+            if (description != null)
             {
                 return description.RequiresSession;
             }
@@ -245,7 +243,7 @@ namespace ServiceBusExplorer.Controls
             cboMessageSizePerSecond.SelectedIndex = 3;
 
             // Set default Receive Mode
-            cboReceivedMode.SelectedIndex = requiresSession? 1 : 0;
+            cboReceivedMode.SelectedIndex = requiresSession ? 1 : 0;
 
             // Hide caret
             txtMessagesPerSecond.GotFocus += textBox_GotFocus;
@@ -327,7 +325,7 @@ namespace ServiceBusExplorer.Controls
             toolTip.SetToolTip(cboReceivedMode, ReceiveModeTooltip);
             toolTip.SetToolTip(txtAutoRenewTimeout, AutoRenewTimeoutTooltip);
             toolTip.SetToolTip(txtMessageWaitTimeout, MessageWaitTimeoutTooltip);
-            
+
             toolTip.SetToolTip(checkBoxAutoComplete, AutoCompleteTooltip);
             toolTip.SetToolTip(checkBoxLogging, LoggingTooltip);
             toolTip.SetToolTip(checkBoxVerbose, VerboseTooltip);
@@ -398,16 +396,15 @@ namespace ServiceBusExplorer.Controls
             // Background
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, endX, -1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, endX, -1);
             // Bottom horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
+            e.Graphics.DrawLine(SystemPens.ControlDark, startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
             // Right vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width, roundedFontSize + 6);
-            e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
+            e.Graphics.DrawLine(SystemPens.ControlDark, endX, -1, endX, e.Bounds.Height + 1);
+
+            e.DrawText();
         }
 
         private void listView_DrawItem(object sender, DrawListViewItemEventArgs e)
@@ -525,7 +522,7 @@ namespace ServiceBusExplorer.Controls
                     // If we have images, process them.
                     if (images != null)
                     {
-                        // Get sice and image.
+                        // Get size and image.
                         var size = images.ImageSize;
                         Image icon = null;
                         if (page.ImageIndex > -1)
@@ -931,27 +928,27 @@ namespace ServiceBusExplorer.Controls
                         queueClient.PrefetchCount = txtPrefetchCount.IntegerValue;
                         if (currentQueue.RequiresSession)
                         {
-                           await queueClient.RegisterSessionHandlerFactoryAsync(
-                                    new CustomMessageSessionAsyncHandlerFactory(new CustomMessageSessionAsyncHandlerConfiguration
-                                    {
-                                        Logging = logging,
-                                        Tracking = tracking,
-                                        AutoComplete = autoComplete,
-                                        MessageEncoder = encoder,
-                                        ReceiveMode = receiveMode,
-                                        GetElapsedTime = GetElapsedTime,
-                                        UpdateStatistics = UpdateStatistics,
-                                        WriteToLog = writeToLog,
-                                        MessageInspector = receiverBrokeredMessageInspector,
-                                        ServiceBusHelper = serviceBusHelper,
-                                        TrackMessage = bm => Invoke(new Action<BrokeredMessage>(m => messageCollection.Add(m)), bm)
-                                    }), GetSessionHandlerOptions());
+                            await queueClient.RegisterSessionHandlerFactoryAsync(
+                                     new CustomMessageSessionAsyncHandlerFactory(new CustomMessageSessionAsyncHandlerConfiguration
+                                     {
+                                         Logging = logging,
+                                         Tracking = tracking,
+                                         AutoComplete = autoComplete,
+                                         MessageEncoder = encoder,
+                                         ReceiveMode = receiveMode,
+                                         GetElapsedTime = GetElapsedTime,
+                                         UpdateStatistics = UpdateStatistics,
+                                         WriteToLog = writeToLog,
+                                         MessageInspector = receiverBrokeredMessageInspector,
+                                         ServiceBusHelper = serviceBusHelper,
+                                         TrackMessage = bm => Invoke(new Action<BrokeredMessage>(m => messageCollection.Add(m)), bm)
+                                     }), GetSessionHandlerOptions());
                         }
                         else
                         {
-                            #pragma warning disable 4014
-                            Task.Run(() => queueClient.OnMessageAsync(OnMessageAsync, GetOnMessageOptions())); 
-                            #pragma warning restore 4014
+#pragma warning disable 4014
+                            Task.Run(() => queueClient.OnMessageAsync(OnMessageAsync, GetOnMessageOptions()));
+#pragma warning restore 4014
                         }
                     }
 
@@ -981,14 +978,14 @@ namespace ServiceBusExplorer.Controls
                         }
                         else
                         {
-                            #pragma warning disable 4014
-                            Task.Run(() => subscriptionClient.OnMessageAsync(OnMessageAsync, GetOnMessageOptions())); 
-                            #pragma warning restore 4014
+#pragma warning disable 4014
+                            Task.Run(() => subscriptionClient.OnMessageAsync(OnMessageAsync, GetOnMessageOptions()));
+#pragma warning restore 4014
                         }
                     }
-                    #pragma warning disable 4014
-                    Task.Run(new Action(RefreshGraph));          
-                    #pragma warning restore 4014
+#pragma warning disable 4014
+                    Task.Run(new Action(RefreshGraph));
+#pragma warning restore 4014
                     GetElapsedTime();
                 }
                 catch (Exception ex)
@@ -1040,7 +1037,7 @@ namespace ServiceBusExplorer.Controls
                 // Gets or sets the time needed before the session renew its state.
                 AutoRenewTimeout = TimeSpan.FromSeconds(30),
                 // Gets or sets the time needed before the message waiting expires.
-                MessageWaitTimeout  = TimeSpan.FromSeconds(30)
+                MessageWaitTimeout = TimeSpan.FromSeconds(30)
             };
             // Allows to get notified of any errors encountered by the message pump
             options.ExceptionReceived += LogErrors;
@@ -1135,7 +1132,7 @@ namespace ServiceBusExplorer.Controls
                 grouperEntityInformation.Size = new Size(grouperEntityInformation.Size.Width, tabPageListener.Size.Height - grouperStatistics.Size.Height - grouperOptions.Size.Height - 40);
                 grouperEntityInformation.Location = new Point(640, 136);
             }
-            var width = requiresSession ? (grouperOptions.Size.Width - 112) / 6 : (grouperOptions.Size.Width - 80) / 4; 
+            var width = requiresSession ? (grouperOptions.Size.Width - 112) / 6 : (grouperOptions.Size.Width - 80) / 4;
             txtMaxConcurrentCalls.Size = new Size(width, txtMaxConcurrentCalls.Size.Height);
             txtRefreshInformation.Size = new Size(width, txtRefreshInformation.Size.Height);
             txtPrefetchCount.Size = new Size(width, txtPrefetchCount.Size.Height);
@@ -1149,7 +1146,7 @@ namespace ServiceBusExplorer.Controls
             checkBoxLogging.Location = new Point(width + 32, checkBoxLogging.Location.Y);
             checkBoxVerbose.Location = new Point(2 * width + 48, checkBoxVerbose.Location.Y);
             checkBoxTrackMessages.Location = new Point(3 * width + 64, checkBoxTrackMessages.Location.Y);
-            
+
             if (requiresSession)
             {
                 txtAutoRenewTimeout.Size = new Size(width, txtAutoRenewTimeout.Size.Height);
@@ -1260,14 +1257,14 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                     // ReSharper disable once EmptyGeneralCatchClause
-                    catch 
+                    catch
                     {
                     }
-                    
+
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
-            catch 
+            catch
             {
             }
             // ReSharper disable FunctionNeverReturns
@@ -1411,8 +1408,8 @@ namespace ServiceBusExplorer.Controls
                         if (InvokeRequired)
                         {
                             Invoke(new Action<long, long, long, bool>(InternalUpdateStatistics),
-                                   new object[] { receiveTuple.Item1, 
-                                                  receiveTuple.Item2, 
+                                   new object[] { receiveTuple.Item1,
+                                                  receiveTuple.Item2,
                                                   receiveTuple.Item3,
                                                   graph});
                         }

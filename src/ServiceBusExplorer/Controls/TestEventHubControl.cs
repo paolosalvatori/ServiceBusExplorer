@@ -21,6 +21,10 @@
 
 #region Using Directives
 
+using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -32,10 +36,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 using Cursor = System.Windows.Forms.Cursor;
 
 #endregion
@@ -88,7 +88,7 @@ namespace ServiceBusExplorer.Controls
         private const string EnableSenderLoggingTooltip = "Enable logging of message content and properties for message senders.";
         private const string EnableSenderVerboseLoggingTooltip = "Enable verbose logging for message senders.";
         private const string EnablePartitionKeyUpdateTooltip = "Enable automatic PartitionKey update. The tool generates a new GUID at each call. Note: the value of the checkbox is ignored and the PartitionKey is never updated when using JSON or XML templates or an EventData generator.";
-        
+
         //***************************
         // Tab Pages
         //***************************
@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Controls
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IEventDataGenerator senderEventDataGenerator;
         private IEventDataInspector senderEventDataInspector;
-        
+
         #endregion
 
         #region Private Static Fields
@@ -189,7 +189,7 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                 }
-                
+
                 // Set chart layout
                 SetGraphLayout();
 
@@ -200,7 +200,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         messageFileListView.Items.Add(new ListViewItem(new[]
                                                         {
-                                                            tuple.Item1, 
+                                                            tuple.Item1,
                                                             tuple.Item2
                                                         }));
                     }
@@ -296,7 +296,7 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(checkBoxUpdatePartitionKey, EnablePartitionKeyUpdateTooltip);
 
                 splitContainer.SplitterWidth = 16;
-                splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth)/2;
+                splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth) / 2;
                 propertiesDataGridView.Size = txtMessageText.Size;
 
                 // Send to Partition
@@ -413,7 +413,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker) delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
                         }
                     };
 
@@ -813,7 +813,7 @@ namespace ServiceBusExplorer.Controls
                     // If we have images, process them.
                     if (images != null)
                     {
-                        // Get sice and image.
+                        // Get size and image.
                         var size = images.ImageSize;
                         Image icon = null;
                         if (page.ImageIndex > -1)
@@ -874,7 +874,7 @@ namespace ServiceBusExplorer.Controls
             DrawTabControlTabs(mainTabControl, e, null);
         }
 
-       private void checkBoxEnableSenderLogging_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxEnableSenderLogging_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxSenderVerboseLogging.Enabled = checkBoxEnableSenderLogging.Checked;
         }
@@ -890,7 +890,7 @@ namespace ServiceBusExplorer.Controls
             {
                 openFileDialog.FileName = string.Empty;
                 openFileDialog.Multiselect = false;
-                if (openFileDialog.ShowDialog() != DialogResult.OK || 
+                if (openFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(openFileDialog.FileName) ||
                     !File.Exists(openFileDialog.FileName))
                 {
@@ -1000,7 +1000,7 @@ namespace ServiceBusExplorer.Controls
             chart.Visible = true;
 
             grouperSenderStatistics.Visible = true;
-            
+
             var title = new Title
             {
                 Font = new Font("Microsoft Sans Serif", 8.25F,
@@ -1081,7 +1081,7 @@ namespace ServiceBusExplorer.Controls
                                    propertiesDataGridView.Size.Width + 1,
                                    propertiesDataGridView.Size.Height + 1);
         }
-        
+
         private void checkBoxSenderThinkTime_CheckedChanged(object sender, EventArgs e)
         {
             txtSenderThinkTime.Enabled = checkBoxSenderThinkTime.Checked;
@@ -1103,9 +1103,9 @@ namespace ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = string.Format("{0} KB", fileInfo.Length%1024 == 0
-                                                       ? fileInfo.Length/1024
-                                                       : fileInfo.Length/1024 + 1);
+                var size = string.Format("{0} KB", fileInfo.Length % 1024 == 0
+                                                       ? fileInfo.Length / 1024
+                                                       : fileInfo.Length / 1024 + 1);
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
                     fileInfo.FullName,
@@ -1160,16 +1160,15 @@ namespace ServiceBusExplorer.Controls
             // Background
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, endX, -1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, endX, -1);
             // Bottom horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
+            e.Graphics.DrawLine(SystemPens.ControlDark, startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
             // Right vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width, roundedFontSize + 6);
-            e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
+            e.Graphics.DrawLine(SystemPens.ControlDark, endX, -1, endX, e.Bounds.Height + 1);
+
+            e.DrawText();
         }
 
         private void messageFileListView_DrawItem(object sender, DrawListViewItemEventArgs e)

@@ -21,6 +21,14 @@
 
 #region Using Directives
 
+using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.NotificationHubs.Messaging;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.NotificationHubs.Helpers;
+using ServiceBusExplorer.Properties;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,14 +41,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using Microsoft.Azure.NotificationHubs;
-using Microsoft.Azure.NotificationHubs.Messaging;
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Properties;
-using ServiceBusExplorer.Utilities.Helpers;
-using ServiceBusExplorer.NotificationHubs.Helpers;
 
 #endregion
 
@@ -1751,7 +1751,7 @@ namespace ServiceBusExplorer.Controls
                     // If we have images, process them.
                     if (images != null)
                     {
-                        // Get sice and image.
+                        // Get size and image.
                         var size = images.ImageSize;
                         Image icon = null;
                         if (page.ImageIndex > -1)
@@ -2083,7 +2083,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<NotificationHubAuthorizationRuleWrapper>;
                     if (bindingList != null)
                     {
@@ -2325,7 +2325,7 @@ namespace ServiceBusExplorer.Controls
                 control.ForeColor = SystemColors.ControlText;
             }
         }
-        
+
         private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRegistrations.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;
@@ -2879,16 +2879,15 @@ namespace ServiceBusExplorer.Controls
             // Background
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, endX, -1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, endX, -1);
             // Bottom horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
+            e.Graphics.DrawLine(SystemPens.ControlDark, startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
             // Right vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width, roundedFontSize + 6);
-            e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
+            e.Graphics.DrawLine(SystemPens.ControlDark, endX, -1, endX, e.Bounds.Height + 1);
+
+            e.DrawText();
         }
 
         private void listView_DrawItem(object sender, DrawListViewItemEventArgs e)
