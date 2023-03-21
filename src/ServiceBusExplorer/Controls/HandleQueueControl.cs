@@ -3426,6 +3426,7 @@ namespace ServiceBusExplorer.Controls
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
 
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            resubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
             deleteSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
