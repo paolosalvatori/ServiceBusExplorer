@@ -2259,6 +2259,7 @@ namespace ServiceBusExplorer.Controls
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
@@ -2268,6 +2269,26 @@ namespace ServiceBusExplorer.Controls
         private void repairAndResubmitMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             messagesDataGridView_CellDoubleClick(messagesDataGridView, new DataGridViewCellEventArgs(0, currentMessageRowIndex));
+        }
+
+        private void resubmitMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (messagesDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                using (var form = new MessageForm(subscriptionWrapper, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                {
+                    form.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         private void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2372,6 +2393,7 @@ namespace ServiceBusExplorer.Controls
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
 
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            resubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             deleteSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
@@ -2385,6 +2407,35 @@ namespace ServiceBusExplorer.Controls
         private void repairAndResubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deadletterDataGridView_CellDoubleClick(deadletterDataGridView, new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
+        }
+
+        private async void resubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (deadletterDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                using (var form = new MessageForm(subscriptionWrapper, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                {
+                    form.ShowDialog();
+                    if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
+                    {
+                        RemoveDeadletterDataGridRows(form.RemovedSequenceNumbers);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+
+            // Rather than getting the updated entities from the forms we refresh all queues and topics to keep things 
+            // simple.
+            await MainForm.SingletonMainForm.RefreshQueues();
+            await MainForm.SingletonMainForm.RefreshTopics();
         }
 
         private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
