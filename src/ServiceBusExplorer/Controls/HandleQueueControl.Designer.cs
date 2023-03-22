@@ -1154,7 +1154,6 @@
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1452,7 +1451,6 @@
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1733,7 +1731,6 @@
             this.txtTransferDeadletterText.CharWidth = 8;
             this.txtTransferDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTransferDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtTransferDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtTransferDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTransferDeadletterText.IsReplaceMode = false;
             this.txtTransferDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -2096,7 +2093,7 @@
             this.saveSelectedMessagesToolStripMenuItem,
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 164);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 186);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -2110,6 +2107,7 @@
             this.resubmitMessageToolStripMenuItem.Name = "resubmitMessageToolStripMenuItem";
             this.resubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitMessageToolStripMenuItem.Text = "Resubmit Selected Message";
+            this.resubmitMessageToolStripMenuItem.ToolTipText = "Resubmits the message with unchanged body.";
             this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
@@ -2167,7 +2165,7 @@
             this.deleteSelectedMessageToolStripMenuItem,
             this.deleteSelectedMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 230);
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 208);
             // 
             // repairAndResubmitDeadletterToolStripMenuItem
             // 
@@ -2181,6 +2179,7 @@
             this.resubmitDeadletterToolStripMenuItem.Name = "resubmitDeadletterToolStripMenuItem";
             this.resubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitDeadletterToolStripMenuItem.Text = "Resubmit Selected Message";
+            this.resubmitDeadletterToolStripMenuItem.ToolTipText = "Resubmits the deadletter message with unchanged body.";
             this.resubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.resubmitDeadletterMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedDeadletterInBatchModeToolStripMenuItem
