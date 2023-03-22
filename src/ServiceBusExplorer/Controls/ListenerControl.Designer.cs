@@ -78,6 +78,7 @@
             this.messageCustomPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -273,6 +274,7 @@
             this.txtMessageSizePerSecond.AllowDecimal = false;
             this.txtMessageSizePerSecond.AllowNegative = false;
             this.txtMessageSizePerSecond.AllowSpace = false;
+            this.txtMessageSizePerSecond.IsZeroWhenEmpty = false;
             this.txtMessageSizePerSecond.Location = new System.Drawing.Point(160, 88);
             this.txtMessageSizePerSecond.Name = "txtMessageSizePerSecond";
             this.txtMessageSizePerSecond.Size = new System.Drawing.Size(88, 20);
@@ -293,6 +295,7 @@
             this.txtAverageDuration.AllowDecimal = false;
             this.txtAverageDuration.AllowNegative = false;
             this.txtAverageDuration.AllowSpace = false;
+            this.txtAverageDuration.IsZeroWhenEmpty = false;
             this.txtAverageDuration.Location = new System.Drawing.Point(16, 88);
             this.txtAverageDuration.Name = "txtAverageDuration";
             this.txtAverageDuration.Size = new System.Drawing.Size(80, 20);
@@ -303,6 +306,7 @@
             this.txtMessagesTotal.AllowDecimal = false;
             this.txtMessagesTotal.AllowNegative = false;
             this.txtMessagesTotal.AllowSpace = false;
+            this.txtMessagesTotal.IsZeroWhenEmpty = false;
             this.txtMessagesTotal.Location = new System.Drawing.Point(16, 48);
             this.txtMessagesTotal.Name = "txtMessagesTotal";
             this.txtMessagesTotal.Size = new System.Drawing.Size(128, 20);
@@ -323,6 +327,7 @@
             this.txtMessagesPerSecond.AllowDecimal = false;
             this.txtMessagesPerSecond.AllowNegative = false;
             this.txtMessagesPerSecond.AllowSpace = false;
+            this.txtMessagesPerSecond.IsZeroWhenEmpty = false;
             this.txtMessagesPerSecond.Location = new System.Drawing.Point(160, 48);
             this.txtMessagesPerSecond.Name = "txtMessagesPerSecond";
             this.txtMessagesPerSecond.Size = new System.Drawing.Size(88, 20);
@@ -530,6 +535,7 @@
             this.txtMessageWaitTimeout.AllowDecimal = false;
             this.txtMessageWaitTimeout.AllowNegative = false;
             this.txtMessageWaitTimeout.AllowSpace = false;
+            this.txtMessageWaitTimeout.IsZeroWhenEmpty = false;
             this.txtMessageWaitTimeout.Location = new System.Drawing.Point(632, 48);
             this.txtMessageWaitTimeout.Name = "txtMessageWaitTimeout";
             this.txtMessageWaitTimeout.Size = new System.Drawing.Size(96, 20);
@@ -551,6 +557,7 @@
             this.txtAutoRenewTimeout.AllowDecimal = false;
             this.txtAutoRenewTimeout.AllowNegative = false;
             this.txtAutoRenewTimeout.AllowSpace = false;
+            this.txtAutoRenewTimeout.IsZeroWhenEmpty = false;
             this.txtAutoRenewTimeout.Location = new System.Drawing.Point(496, 48);
             this.txtAutoRenewTimeout.Name = "txtAutoRenewTimeout";
             this.txtAutoRenewTimeout.Size = new System.Drawing.Size(96, 20);
@@ -572,6 +579,7 @@
             this.txtPrefetchCount.AllowDecimal = false;
             this.txtPrefetchCount.AllowNegative = false;
             this.txtPrefetchCount.AllowSpace = false;
+            this.txtPrefetchCount.IsZeroWhenEmpty = false;
             this.txtPrefetchCount.Location = new System.Drawing.Point(256, 48);
             this.txtPrefetchCount.Name = "txtPrefetchCount";
             this.txtPrefetchCount.Size = new System.Drawing.Size(96, 20);
@@ -686,6 +694,7 @@
             this.txtRefreshInformation.AllowDecimal = false;
             this.txtRefreshInformation.AllowNegative = false;
             this.txtRefreshInformation.AllowSpace = false;
+            this.txtRefreshInformation.IsZeroWhenEmpty = false;
             this.txtRefreshInformation.Location = new System.Drawing.Point(136, 48);
             this.txtRefreshInformation.Name = "txtRefreshInformation";
             this.txtRefreshInformation.Size = new System.Drawing.Size(96, 20);
@@ -708,6 +717,7 @@
             this.txtMaxConcurrentCalls.AllowDecimal = false;
             this.txtMaxConcurrentCalls.AllowNegative = false;
             this.txtMaxConcurrentCalls.AllowSpace = false;
+            this.txtMaxConcurrentCalls.IsZeroWhenEmpty = false;
             this.txtMaxConcurrentCalls.Location = new System.Drawing.Point(16, 48);
             this.txtMaxConcurrentCalls.Name = "txtMaxConcurrentCalls";
             this.txtMaxConcurrentCalls.Size = new System.Drawing.Size(96, 20);
@@ -1010,12 +1020,13 @@
             // 
             this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitMessageToolStripMenuItem,
+            this.resubmitMessageToolStripMenuItem,
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
             this.toolStripSeparator1,
             this.saveSelectedMessageToolStripMenuItem,
             this.saveSelectedMessagesToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 98);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 142);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -1023,6 +1034,13 @@
             this.repairAndResubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitMessageToolStripMenuItem.Text = "Repair and Resubmit Selected Message";
             this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
+            // 
+            // resubmitMessageToolStripMenuItem
+            // 
+            this.resubmitMessageToolStripMenuItem.Name = "resubmitMessageToolStripMenuItem";
+            this.resubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.resubmitMessageToolStripMenuItem.Text = "Resubmit Selected Message";
+            this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
             // 
@@ -1226,5 +1244,6 @@
         private FastColoredTextBoxNS.FastColoredTextBox txtMessageText;
         private Grouper grouperMessageCustomProperties;
         private System.Windows.Forms.PropertyGrid messageCustomPropertyGrid;
+        private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
     }
 }
