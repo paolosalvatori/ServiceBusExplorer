@@ -2273,25 +2273,15 @@ namespace ServiceBusExplorer.Controls
 
         private void resubmitMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (messagesDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                using (var form = new MessageForm(subscriptionWrapper, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
-                {
-                    form.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+            ResubmitSelectedMessages();
         }
 
         private void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResubmitSelectedMessages();
+        }
+
+        private void ResubmitSelectedMessages()
         {
             try
             {
@@ -2299,8 +2289,9 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new MessageForm(subscriptionWrapper, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -2411,34 +2402,15 @@ namespace ServiceBusExplorer.Controls
 
         private async void resubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                using (var form = new MessageForm(subscriptionWrapper, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
-                {
-                    form.ShowDialog();
-                    if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
-                    {
-                        RemoveDeadletterDataGridRows(form.RemovedSequenceNumbers);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-
-            // Rather than getting the updated entities from the forms we refresh all queues and topics to keep things 
-            // simple.
-            await MainForm.SingletonMainForm.RefreshQueues();
-            await MainForm.SingletonMainForm.RefreshTopics();
+            await ResubmitSelectedDeadletterMessages();
         }
 
         private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await ResubmitSelectedDeadletterMessages();
+        }
+
+        private async Task ResubmitSelectedDeadletterMessages()
         {
             try
             {
@@ -2446,8 +2418,9 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 using (var form = new MessageForm(subscriptionWrapper, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())

@@ -724,69 +724,15 @@ namespace ServiceBusExplorer.Controls
 
         private async void resubmitMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (messagesDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                string entityPath;
-                using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
-                {
-                    if (form.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    if (string.IsNullOrWhiteSpace(form.Path))
-                    {
-                        return;
-                    }
-                    entityPath = form.Path;
-                }
-                var sent = 0;
-                var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
-                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
-                {
-                    var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm.UseAscii, out var bodyType);
-                    if (bodyType == BodyType.Wcf)
-                    {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                         new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                         new UriBuilder
-                                         {
-                                             Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
-                                             Scheme = "sb"
-                                         }.Uri;
-                        return serviceBusHelper.CreateMessageForWcfReceiver(message,
-                                                                            0,
-                                                                            false,
-                                                                            false,
-                                                                            wcfUri);
-                    }
-                    return serviceBusHelper.CreateMessageForApiReceiver(message,
-                                                                        0,
-                                                                        false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
-                });
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
-                if (brokeredMessages.Any())
-                {
-                    sent = brokeredMessages.Count();
-                    await messageSender.SendBatchAsync(brokeredMessages);
-                }
-                writeToLog(string.Format(MessageSentMessage, sent, entityPath));
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+            await ResubmitSelectedMessages();
         }
 
         private async void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await ResubmitSelectedMessages();
+        }
+
+        private async Task ResubmitSelectedMessages()
         {
             try
             {
@@ -794,6 +740,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 string entityPath;
                 using (var form = new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText))
                 {
@@ -801,12 +748,15 @@ namespace ServiceBusExplorer.Controls
                     {
                         return;
                     }
+
                     if (string.IsNullOrWhiteSpace(form.Path))
                     {
                         return;
                     }
+
                     entityPath = form.Path;
                 }
+
                 var sent = 0;
                 var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
                 var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
@@ -815,26 +765,27 @@ namespace ServiceBusExplorer.Controls
                     serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm.UseAscii, out var bodyType);
                     if (bodyType == BodyType.Wcf)
                     {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                         new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                         new UriBuilder
-                                         {
-                                             Host = serviceBusHelper.NamespaceUri.Host,
-                                             Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
-                                             Scheme = "sb"
-                                         }.Uri;
+                        var wcfUri = serviceBusHelper.IsCloudNamespace
+                            ? new Uri(serviceBusHelper.NamespaceUri, messageSender.Path)
+                            : new UriBuilder
+                            {
+                                Host = serviceBusHelper.NamespaceUri.Host,
+                                Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
+                                Scheme = "sb"
+                            }.Uri;
                         return serviceBusHelper.CreateMessageForWcfReceiver(message,
-                                                                            0,
-                                                                            false,
-                                                                            false,
-                                                                            wcfUri);
+                            0,
+                            false,
+                            false,
+                            wcfUri);
                     }
+
                     return serviceBusHelper.CreateMessageForApiReceiver(message,
-                                                                        0,
-                                                                        false,
-                                                                        false,
-                                                                        bodyType,
-                                                                        null);
+                        0,
+                        false,
+                        false,
+                        bodyType,
+                        null);
                 });
                 IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
                 if (brokeredMessages.Any())
@@ -842,6 +793,7 @@ namespace ServiceBusExplorer.Controls
                     sent = brokeredMessages.Count();
                     await messageSender.SendBatchAsync(brokeredMessages);
                 }
+
                 writeToLog(string.Format(MessageSentMessage, sent, entityPath));
             }
             catch (Exception ex)
