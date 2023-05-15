@@ -1345,6 +1345,14 @@ namespace ServiceBusExplorer.Controls
                 {
                     using (var deleteForm = new DeleteForm(subscriptionWrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower()))
                     {
+                        var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+
+                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                                                                defaultValue: false);
+
+                        if (!disableExtendedAccidentalDeletionPrevention)
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionWrapper.SubscriptionDescription.Name} {SubscriptionEntity.ToLower()}");
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.DeleteSubscription(subscriptionWrapper.SubscriptionDescription);

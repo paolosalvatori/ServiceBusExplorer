@@ -250,6 +250,14 @@ namespace ServiceBusExplorer.Controls
                 {
                     using (var deleteForm = new DeleteForm(ruleWrapper.RuleDescription.Name, RuleEntity.ToLower()))
                     {
+                        var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+
+                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                                                                defaultValue: false);
+
+                        if (!disableExtendedAccidentalDeletionPrevention)
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {ruleWrapper.RuleDescription.Name} {RuleEntity.ToLower()}");
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             serviceBusHelper.RemoveRule(ruleWrapper.SubscriptionDescription, ruleWrapper.RuleDescription);

@@ -2010,6 +2010,15 @@ namespace ServiceBusExplorer.Controls
                 {
                     using (var deleteForm = new DeleteForm(notificationHubDescription.Path, NotificationHubEntity.ToLower()))
                     {
+                        var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+
+                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                                                                defaultValue: false);
+
+                        if (!disableExtendedAccidentalDeletionPrevention)
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {notificationHubDescription.Path} {NotificationHubEntity.ToLower()}");
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.DeleteNotificationHub(notificationHubDescription);

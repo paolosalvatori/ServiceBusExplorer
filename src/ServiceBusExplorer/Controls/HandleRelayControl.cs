@@ -410,6 +410,14 @@ namespace ServiceBusExplorer.Controls
                 {
                     using (var deleteForm = new DeleteForm(relayDescription.Path, RelayEntity.ToLower()))
                     {
+                        var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+
+                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                                                                defaultValue: false);
+
+                        if (!disableExtendedAccidentalDeletionPrevention)
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {relayDescription.Path} {RelayEntity.ToLower()}");
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.NamespaceManager.DeleteRelayAsync(relayDescription.Path);

@@ -485,6 +485,14 @@ namespace ServiceBusExplorer.Controls
                 {
                     using (var deleteForm = new DeleteForm(topicDescription.Path, TopicEntity.ToLower()))
                     {
+                        var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+
+                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                                                                defaultValue: false);
+
+                        if (!disableExtendedAccidentalDeletionPrevention)
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {topicDescription.Path} {TopicEntity.ToLower()}");
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.DeleteTopic(topicDescription);
