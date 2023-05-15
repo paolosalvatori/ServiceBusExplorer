@@ -67,7 +67,6 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // Messages
         //***************************
-        private const string DefaultMessageText = "Hi mate, how are you?";
         private const string MessageCountMustBeANumber = "The Message Count field must be an integer number greater or equal to zero.";
         private const string SendTaskCountMustBeANumber = "The Sender Task Count field must be an integer number greater than zero.";
         private const string MessageCannotBeNull = "The Message field cannot be null.";
@@ -224,8 +223,6 @@ namespace ServiceBusExplorer.Controls
                 // The value for alternating rows overrides the value for all rows. 
                 headersDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
                 headersDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                //headersDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-                //headersDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
                 // Set the row and column header styles.
                 headersDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
@@ -236,10 +233,7 @@ namespace ServiceBusExplorer.Controls
                 isReadyToStoreMessageText = true;
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper,
-                                                     mainForm != null &&
-                                                     !string.IsNullOrWhiteSpace(mainForm.MessageText) ?
-                                                     mainForm.MessageText :
-                                                     DefaultMessageText,
+                                                     mainForm.MessageText ?? string.Empty,
                                                      txtMessageText);
 
                 // Set Tooltips
@@ -247,7 +241,6 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(txtSendTaskCount, SendTaskCountTooltip);
 
                 splitContainer.SplitterWidth = 16;
-
             }
             catch (Exception ex)
             {
@@ -259,12 +252,6 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
-                {
-                    writeToLog(MessageCannotBeNull);
-                    return false;
-                }
-
                 if (!int.TryParse(txtMessageCount.Text, out var temp) || temp < 0)
                 {
                     writeToLog(MessageCountMustBeANumber);

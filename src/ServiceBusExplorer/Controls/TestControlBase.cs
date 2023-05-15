@@ -57,6 +57,11 @@ namespace ServiceBusExplorer.Controls
                                 Action startLog,
                                 ServiceBusHelper serviceBusHelper)
         {
+            if (mainForm == null)
+            {
+                throw new ArgumentNullException(nameof(mainForm));
+            }
+
             this.mainForm = mainForm;
             this.writeToLog = writeToLog;
             this.stopLog = stopLog;

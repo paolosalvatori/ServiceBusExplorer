@@ -86,7 +86,7 @@ namespace ServiceBusExplorer.UIHelpers
                 throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
             }
 
-            if (string.IsNullOrEmpty(messageText))
+            if (null == messageText)
             {
                 throw new ArgumentNullException(nameof(messageText), $"{nameof(messageText)} parameter cannot be null");
             }

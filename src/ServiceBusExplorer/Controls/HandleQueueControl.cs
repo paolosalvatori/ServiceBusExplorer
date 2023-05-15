@@ -299,7 +299,12 @@ namespace ServiceBusExplorer.Controls
             this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
             this.queueDescription = queueDescription;
-            this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+
+            if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
+            {
+                this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
+            }
+
             this.duplicateQueue = duplicateQueue;
 
             InitializeComponent();
@@ -2741,6 +2746,29 @@ namespace ServiceBusExplorer.Controls
         private void dataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             CalculateLastColumnWidth(sender);
+        }
+
+        private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIdx = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                Alignment = StringAlignment.Far,
+
+                LineAlignment = StringAlignment.Center
+            };
+
+            Size textSize = TextRenderer.MeasureText(rowIdx, this.Font);
+
+            if (grid.RowHeadersWidth < textSize.Width + 20)
+            {
+                grid.RowHeadersWidth = textSize.Width + 20;
+            }
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth - 4, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
 
         private void dataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)

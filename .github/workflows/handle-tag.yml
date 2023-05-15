@@ -3,7 +3,7 @@ name: Handle tag
 on:
   push:
     tags: 
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
 jobs:
@@ -15,26 +15,25 @@ jobs:
       id: tag-commit-hash
       run: |
         hash=${{ github.sha }}
-        echo "::set-output name=tag-hash::${hash}"
+        echo "{name}=tag-hash::${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
-    - name: Checkout master
+    - name: Checkout main
       uses: actions/checkout@v3
       with:
-        ref: master
+        ref: main
 
-    - name: Get latest master commit hash
-      id: master-commit-hash
+    - name: Get latest main commit hash
+      id: main-commit-hash
       run: |
         hash=$(git log -n1 --format=format:"%H")
-        echo "::set-output name=master-hash::${hash}"
+        echo "{name}=main-hash::${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
-    - name: Verify tag commit matches master commit
-      description: Exit if tag commit hash don't match master commit hash
-      if: steps.tag-commit-hash.outputs.tag-hash != steps.master-commit-hash.outputs.master-hash
+    - name: Verify tag commit matches main commit - exit if they don't match
+      if: steps.tag-commit-hash.outputs.tag-hash != steps.main-commit-hash.outputs.main-hash
       run: |
-        echo "Tag was not on the master branch. Exiting."
+        echo "Tag was not on the main branch. Exiting."
         exit 1
 
   get-version:
@@ -66,5 +65,8 @@ jobs:
   publish-it:
     needs: [check-tag-branch, get-version, call-build-test]
     uses: ./.github/workflows/publish.yml
+    secrets:
+      CHOCO_TOKEN: ${{ secrets.CHOCOTOKEN }}
     with: 
       release-version: ${{ needs.get-version.outputs.release-version }}
+
