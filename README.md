@@ -7,6 +7,12 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
+# Software requirements
+The following software is required to run ServiceBusExplorer. It may run on other versions.
+
+- Windows 10 or later
+- .NET Framework 4.6.2
+
 # Installation
 ## Using [Chocolatey](https://chocolatey.org/install)
 ```
