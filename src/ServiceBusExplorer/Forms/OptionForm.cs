@@ -41,7 +41,6 @@ namespace ServiceBusExplorer.Forms
 {
     using System.ComponentModel;
     using System.Configuration;
-    using System.Web.UI.Design;
     using Utilities.Helpers;
 
     public partial class OptionForm : Form
@@ -253,8 +252,6 @@ namespace ServiceBusExplorer.Forms
             MainSettings.MessageBodyType = MainSettings.MessageBodyType; // .Stream.ToString();
 
             disableAccidentalDeletionPrevention.Checked = MainSettings.DisableAccidentalDeletionPrevention;
-            disableExtendedAccidentalDeletionPrevention.Checked = MainSettings.DisableExtendedAccidentalDeletionPrevention || MainSettings.DisableAccidentalDeletionPrevention;
-            disableExtendedAccidentalDeletionPrevention.Enabled = !disableAccidentalDeletionPrevention.Checked;
 
             overrideDefaultProxyCheckBox.Checked = MainSettings.ProxyOverrideDefault;
             txtProxyAddress.Text = MainSettings.ProxyAddress;
@@ -435,15 +432,7 @@ namespace ServiceBusExplorer.Forms
 
         void disableAccidentalDeletionPrevention_CheckedChanged(object sender, EventArgs e)
         {
-            disableExtendedAccidentalDeletionPrevention.Enabled = !disableAccidentalDeletionPrevention.Checked;
-            disableExtendedAccidentalDeletionPrevention.Checked = disableAccidentalDeletionPrevention.Checked;
             MainSettings.DisableAccidentalDeletionPrevention = disableAccidentalDeletionPrevention.Checked;
-            MainSettings.DisableExtendedAccidentalDeletionPrevention = disableExtendedAccidentalDeletionPrevention.Checked;
-        }
-
-        void disableExtendedAccidentalDeletionPrevention_CheckedChanged(object sender, EventArgs e)
-        {
-            MainSettings.DisableExtendedAccidentalDeletionPrevention = disableExtendedAccidentalDeletionPrevention.Checked;
         }
 
         void cboConfigFile_SelectionChangeCommitted(object sender, EventArgs e)
@@ -654,8 +643,6 @@ namespace ServiceBusExplorer.Forms
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.DisableAccidentalDeletionPrevention,
                 MainSettings.DisableAccidentalDeletionPrevention);
-            SaveSetting(configuration, readSettings, ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
-                MainSettings.DisableExtendedAccidentalDeletionPrevention);
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyOverrideDefault,
                 MainSettings.ProxyOverrideDefault);
@@ -754,8 +741,6 @@ namespace ServiceBusExplorer.Forms
             cboDefaultMessageBodyType.SelectedIndex = (int)bodyType;
 
             disableAccidentalDeletionPrevention.Checked = mainSettings.DisableAccidentalDeletionPrevention;
-            disableExtendedAccidentalDeletionPrevention.Checked = MainSettings.DisableExtendedAccidentalDeletionPrevention || mainSettings.DisableAccidentalDeletionPrevention;
-            disableExtendedAccidentalDeletionPrevention.Enabled = !disableAccidentalDeletionPrevention.Checked;
 
             overrideDefaultProxyCheckBox.Checked = mainSettings.ProxyOverrideDefault;
             txtProxyAddress.Text = mainSettings.ProxyAddress;

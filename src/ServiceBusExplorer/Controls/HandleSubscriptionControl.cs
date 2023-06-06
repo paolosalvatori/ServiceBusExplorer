@@ -1347,11 +1347,11 @@ namespace ServiceBusExplorer.Controls
                     {
                         var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
 
-                        bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
-                                                                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
-                                                                defaultValue: false);
+                        bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                               ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                                                               defaultValue: false);
 
-                        if (!disableExtendedAccidentalDeletionPrevention)
+                        if (!disableAccidentalDeletionPrevention)
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionWrapper.SubscriptionDescription.Name} {SubscriptionEntity.ToLower()}");
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {

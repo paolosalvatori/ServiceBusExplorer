@@ -220,8 +220,6 @@ namespace ServiceBusExplorer.Helpers
 
             resultProperties.DisableAccidentalDeletionPrevention = configuration.GetBoolValue
                 (ConfigurationParameters.DisableAccidentalDeletionPrevention, currentSettings.DisableAccidentalDeletionPrevention, writeToLog);
-            resultProperties.DisableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue
-                (ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention, currentSettings.DisableExtendedAccidentalDeletionPrevention, writeToLog);
 
             resultProperties.ProxyOverrideDefault = configuration.GetBoolValue(ConfigurationParameters.ProxyOverrideDefault, currentSettings.ProxyOverrideDefault, writeToLog);
             resultProperties.ProxyUseDefaultCredentials = configuration.GetBoolValue(ConfigurationParameters.ProxyUseDefaultCredentials, currentSettings.ProxyUseDefaultCredentials, writeToLog);

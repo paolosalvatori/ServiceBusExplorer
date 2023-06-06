@@ -69,7 +69,6 @@ namespace ServiceBusExplorer.Helpers
         public Enums.EncodingType EncodingType { get; set; }
 
         public bool DisableAccidentalDeletionPrevention { get; set; }
-        public bool DisableExtendedAccidentalDeletionPrevention { get; set; }
 
         public bool ProxyOverrideDefault { get; set; }
         public string ProxyAddress { get; set; }
@@ -290,9 +289,6 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.DisableAccidentalDeletionPrevention:
                     return DisableAccidentalDeletionPrevention;
-
-                case ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention:
-                    return DisableExtendedAccidentalDeletionPrevention;
 
                 case ConfigurationParameters.Encoding:
                     return EncodingType;

@@ -421,8 +421,6 @@ namespace ServiceBusExplorer.Forms
 
             mainSettings.DisableAccidentalDeletionPrevention = configuration.GetBoolValue(
                 ConfigurationParameters.DisableAccidentalDeletionPrevention, defaultValue: false, WriteToLog);
-            mainSettings.DisableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
-                ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention, defaultValue: false, WriteToLog);
 
             var lastConfigFileUse = configFileUse;
 
@@ -1949,8 +1947,8 @@ namespace ServiceBusExplorer.Forms
 
                     var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
 
-                    bool disableExtendedAccidentalDeletionPrevention = configuration.GetBoolValue(
-                                                            ConfigurationParameters.DisableExtendedAccidentalDeletionPrevention,
+                    bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                                            ConfigurationParameters.DisableAccidentalDeletionPrevention,
                                                             defaultValue: false);
 
                     // Root Node
@@ -2145,7 +2143,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
                         {
-                            if (!disableExtendedAccidentalDeletionPrevention)
+                            if (!disableAccidentalDeletionPrevention)
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {queueDescription.Path} {QueueEntity.ToLower()}");
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
@@ -2173,7 +2171,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
                             {
-                                if (!disableExtendedAccidentalDeletionPrevention)
+                                if (!disableAccidentalDeletionPrevention)
                                     deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionDescriptions.Count} subscriptions");
 
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
@@ -2190,7 +2188,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(topicDescription.Path, TopicEntity.ToLower()))
                         {
-                            if (!disableExtendedAccidentalDeletionPrevention)
+                            if (!disableAccidentalDeletionPrevention)
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {TopicEntity.ToLower()} {topicDescription.Path}");
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
@@ -2206,7 +2204,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         using (var deleteForm = new DeleteForm(relayDescription.Path, RelayEntity.ToLower()))
                         {
-                            if (!disableExtendedAccidentalDeletionPrevention)
+                            if (!disableAccidentalDeletionPrevention)
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {RelayEntity.ToLower()} {relayDescription.Path}");
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
@@ -2296,7 +2294,7 @@ namespace ServiceBusExplorer.Forms
                             {
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
-                                    if (!disableExtendedAccidentalDeletionPrevention)
+                                    if (!disableAccidentalDeletionPrevention)
                                         deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionDescriptions.Count()} subscriptions");
 
                                     await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
@@ -2314,7 +2312,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             using (var deleteForm = new DeleteForm(subscriptionWrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower()))
                             {
-                                if (!disableExtendedAccidentalDeletionPrevention)
+                                if (!disableAccidentalDeletionPrevention)
                                     deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {SubscriptionEntity.ToLower()} {subscriptionWrapper.SubscriptionDescription.Name}");
 
                                 if (deleteForm.ShowDialog() == DialogResult.OK)

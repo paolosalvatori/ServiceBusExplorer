@@ -74,8 +74,6 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenConfig = new System.Windows.Forms.Button();
             this.tabOptionsControl = new System.Windows.Forms.TabControl();
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
-            this.disableExtendedAccidentalDeletionPrevention = new System.Windows.Forms.CheckBox();
-            this.lblDisableExtendedAccidentalDeletionPrevention = new System.Windows.Forms.Label();
             this.cboSelectedMessageCounts = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblMessageCounts = new System.Windows.Forms.Label();
             this.disableAccidentalDeletionPrevention = new System.Windows.Forms.CheckBox();
@@ -152,15 +150,15 @@ namespace ServiceBusExplorer.Forms
             this.tabPageColors = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
             this.dgNodeColors = new System.Windows.Forms.DataGridView();
-            this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IsLeaf = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colorDataGridViewTextBoxColumn = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
             this.nodeColorsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainPanel = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewColorPickerColumn1 = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IsLeaf = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colorDataGridViewTextBoxColumn = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -194,7 +192,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(255, 463);
+            this.btnOk.Location = new System.Drawing.Point(255, 437);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 1;
@@ -212,7 +210,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Location = new System.Drawing.Point(528, 463);
+            this.btnReset.Location = new System.Drawing.Point(528, 437);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(72, 24);
             this.btnReset.TabIndex = 4;
@@ -230,7 +228,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(435, 463);
+            this.btnSave.Location = new System.Drawing.Point(435, 437);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 3;
@@ -336,8 +334,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabOptionsControl
             // 
-            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabOptionsControl.Controls.Add(this.tabPageGeneral);
             this.tabOptionsControl.Controls.Add(this.tabPageReceiving);
@@ -349,15 +346,13 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Location = new System.Drawing.Point(16, 39);
             this.tabOptionsControl.Name = "tabOptionsControl";
             this.tabOptionsControl.SelectedIndex = 0;
-            this.tabOptionsControl.Size = new System.Drawing.Size(584, 411);
+            this.tabOptionsControl.Size = new System.Drawing.Size(584, 386);
             this.tabOptionsControl.TabIndex = 3;
             this.tabOptionsControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControlOptions_DrawItem);
             // 
             // tabPageGeneral
             // 
             this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.tabPageGeneral.Controls.Add(this.disableExtendedAccidentalDeletionPrevention);
-            this.tabPageGeneral.Controls.Add(this.lblDisableExtendedAccidentalDeletionPrevention);
             this.tabPageGeneral.Controls.Add(this.cboSelectedMessageCounts);
             this.tabPageGeneral.Controls.Add(this.lblMessageCounts);
             this.tabPageGeneral.Controls.Add(this.disableAccidentalDeletionPrevention);
@@ -383,29 +378,10 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabPageGeneral.Name = "tabPageGeneral";
             this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(576, 385);
+            this.tabPageGeneral.Size = new System.Drawing.Size(576, 360);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageGeneral_Paint);
-            // 
-            // disableExtendedAccidentalDeletionPrevention
-            // 
-            this.disableExtendedAccidentalDeletionPrevention.AutoSize = true;
-            this.disableExtendedAccidentalDeletionPrevention.Location = new System.Drawing.Point(260, 358);
-            this.disableExtendedAccidentalDeletionPrevention.Name = "disableExtendedAccidentalDeletionPrevention";
-            this.disableExtendedAccidentalDeletionPrevention.Size = new System.Drawing.Size(15, 14);
-            this.disableExtendedAccidentalDeletionPrevention.TabIndex = 23;
-            this.disableExtendedAccidentalDeletionPrevention.UseVisualStyleBackColor = true;
-            this.disableExtendedAccidentalDeletionPrevention.CheckedChanged += new System.EventHandler(this.disableExtendedAccidentalDeletionPrevention_CheckedChanged);
-            // 
-            // lblDisableExtendedAccidentalDeletionPrevention
-            // 
-            this.lblDisableExtendedAccidentalDeletionPrevention.AutoSize = true;
-            this.lblDisableExtendedAccidentalDeletionPrevention.Location = new System.Drawing.Point(16, 358);
-            this.lblDisableExtendedAccidentalDeletionPrevention.Name = "lblDisableExtendedAccidentalDeletionPrevention";
-            this.lblDisableExtendedAccidentalDeletionPrevention.Size = new System.Drawing.Size(242, 13);
-            this.lblDisableExtendedAccidentalDeletionPrevention.TabIndex = 22;
-            this.lblDisableExtendedAccidentalDeletionPrevention.Text = "Disable Extended Accidental Deletion Prevention:";
             // 
             // cboSelectedMessageCounts
             // 
@@ -694,7 +670,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageReceiving.Location = new System.Drawing.Point(4, 22);
             this.tabPageReceiving.Name = "tabPageReceiving";
             this.tabPageReceiving.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageReceiving.Size = new System.Drawing.Size(576, 385);
+            this.tabPageReceiving.Size = new System.Drawing.Size(576, 360);
             this.tabPageReceiving.TabIndex = 1;
             this.tabPageReceiving.Text = "Receiving";
             // 
@@ -898,7 +874,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageSending.Controls.Add(this.savePropertiesToFileCheckBox);
             this.tabPageSending.Location = new System.Drawing.Point(4, 22);
             this.tabPageSending.Name = "tabPageSending";
-            this.tabPageSending.Size = new System.Drawing.Size(576, 385);
+            this.tabPageSending.Size = new System.Drawing.Size(576, 360);
             this.tabPageSending.TabIndex = 2;
             this.tabPageSending.Text = "Sending";
             this.tabPageSending.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageSending_Paint);
@@ -1115,7 +1091,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageConnectivity.Controls.Add(this.lblConnectivityMode);
             this.tabPageConnectivity.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectivity.Name = "tabPageConnectivity";
-            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 385);
+            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 360);
             this.tabPageConnectivity.TabIndex = 3;
             this.tabPageConnectivity.Text = "Connectivity";
             this.tabPageConnectivity.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageConnectivity_Paint);
@@ -1182,7 +1158,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageProxy.Location = new System.Drawing.Point(4, 22);
             this.tabPageProxy.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageProxy.Name = "tabPageProxy";
-            this.tabPageProxy.Size = new System.Drawing.Size(576, 385);
+            this.tabPageProxy.Size = new System.Drawing.Size(576, 360);
             this.tabPageProxy.TabIndex = 4;
             this.tabPageProxy.Text = "Proxy";
             // 
@@ -1357,7 +1333,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageColors.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageColors.Name = "tabPageColors";
             this.tabPageColors.Padding = new System.Windows.Forms.Padding(16, 25, 16, 25);
-            this.tabPageColors.Size = new System.Drawing.Size(576, 385);
+            this.tabPageColors.Size = new System.Drawing.Size(576, 329);
             this.tabPageColors.TabIndex = 5;
             this.tabPageColors.Text = "Colors";
             this.tabPageColors.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageColors_Paint);
@@ -1410,30 +1386,6 @@ namespace ServiceBusExplorer.Forms
             this.dgNodeColors.Size = new System.Drawing.Size(544, 263);
             this.dgNodeColors.TabIndex = 0;
             // 
-            // textDataGridViewTextBoxColumn
-            // 
-            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
-            this.textDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.textDataGridViewTextBoxColumn.HeaderText = "Text (regexp)";
-            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
-            // 
-            // IsLeaf
-            // 
-            this.IsLeaf.DataPropertyName = "IsLeaf";
-            this.IsLeaf.FillWeight = 30F;
-            this.IsLeaf.HeaderText = "Leaf";
-            this.IsLeaf.MinimumWidth = 20;
-            this.IsLeaf.Name = "IsLeaf";
-            // 
-            // colorDataGridViewTextBoxColumn
-            // 
-            this.colorDataGridViewTextBoxColumn.DataPropertyName = "Color";
-            this.colorDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
-            this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
-            this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
             // nodeColorsBindingSource
             // 
             this.nodeColorsBindingSource.DataSource = typeof(ServiceBusExplorer.Utilities.Helpers.NodeColorInfo);
@@ -1449,7 +1401,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Controls.Add(this.label1);
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(614, 457);
+            this.mainPanel.Size = new System.Drawing.Size(614, 432);
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
@@ -1463,7 +1415,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(343, 463);
+            this.btnCancel.Location = new System.Drawing.Point(343, 437);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 2;
@@ -1495,13 +1447,37 @@ namespace ServiceBusExplorer.Forms
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             this.dataGridViewTextBoxColumn2.Width = 270;
             // 
+            // textDataGridViewTextBoxColumn
+            // 
+            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
+            this.textDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.textDataGridViewTextBoxColumn.HeaderText = "Text (regexp)";
+            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
+            // 
+            // IsLeaf
+            // 
+            this.IsLeaf.DataPropertyName = "IsLeaf";
+            this.IsLeaf.FillWeight = 30F;
+            this.IsLeaf.HeaderText = "Leaf";
+            this.IsLeaf.MinimumWidth = 20;
+            this.IsLeaf.Name = "IsLeaf";
+            // 
+            // colorDataGridViewTextBoxColumn
+            // 
+            this.colorDataGridViewTextBoxColumn.DataPropertyName = "Color";
+            this.colorDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
+            this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
+            this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
             // OptionForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(615, 499);
+            this.ClientSize = new System.Drawing.Size(615, 473);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnReset);
@@ -1650,7 +1626,5 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn IsLeaf;
         private DataGridViewColorPickerColumn colorDataGridViewTextBoxColumn;
-        private System.Windows.Forms.CheckBox disableExtendedAccidentalDeletionPrevention;
-        private System.Windows.Forms.Label lblDisableExtendedAccidentalDeletionPrevention;
     }
 }
