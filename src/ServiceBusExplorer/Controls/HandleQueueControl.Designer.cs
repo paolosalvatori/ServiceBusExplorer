@@ -116,6 +116,7 @@
             this.btnDeadletter = new System.Windows.Forms.Button();
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,6 +125,7 @@
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2088,6 +2090,7 @@
             this.messagesContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitMessageToolStripMenuItem,
+            this.resubmitMessageToolStripMenuItem,
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
             this.toolStripSeparator1,
             this.saveSelectedMessageToolStripMenuItem,
@@ -2095,7 +2098,7 @@
             this.saveSelectedMessagesToolStripMenuItem,
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 186);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -2103,6 +2106,14 @@
             this.repairAndResubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitMessageToolStripMenuItem.Text = "Repair and Resubmit Selected Message";
             this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
+            // 
+            // resubmitMessageToolStripMenuItem
+            // 
+            this.resubmitMessageToolStripMenuItem.Name = "resubmitMessageToolStripMenuItem";
+            this.resubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.resubmitMessageToolStripMenuItem.Text = "Resubmit Selected Message";
+            this.resubmitMessageToolStripMenuItem.ToolTipText = "Resubmits the message with unchanged body.";
+            this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
             // 
@@ -2149,6 +2160,7 @@
             this.deadletterContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.deadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitDeadletterToolStripMenuItem,
+            this.resubmitDeadletterToolStripMenuItem,
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
             this.toolStripSeparator2,
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
@@ -2158,7 +2170,7 @@
             this.deleteSelectedMessageToolStripMenuItem,
             this.deleteSelectedMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 186);
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 208);
             // 
             // repairAndResubmitDeadletterToolStripMenuItem
             // 
@@ -2166,6 +2178,14 @@
             this.repairAndResubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitDeadletterToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
             this.repairAndResubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitDeadletterMessageToolStripMenuItem_Click);
+            // 
+            // resubmitDeadletterToolStripMenuItem
+            // 
+            this.resubmitDeadletterToolStripMenuItem.Name = "resubmitDeadletterToolStripMenuItem";
+            this.resubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.resubmitDeadletterToolStripMenuItem.Text = "Resubmit Selected Message";
+            this.resubmitDeadletterToolStripMenuItem.ToolTipText = "Resubmits the deadletter message with unchanged body.";
+            this.resubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.resubmitDeadletterMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedDeadletterInBatchModeToolStripMenuItem
             // 
@@ -2554,5 +2574,7 @@
         private System.Windows.Forms.PropertyGrid messageCustomPropertyGrid;
         private System.Windows.Forms.PropertyGrid deadletterCustomPropertyGrid;
         private System.Windows.Forms.PropertyGrid transferDeadletterCustomPropertyGrid;
+        private System.Windows.Forms.ToolStripMenuItem resubmitDeadletterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
     }
 }
