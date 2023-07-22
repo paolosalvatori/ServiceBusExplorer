@@ -37,12 +37,13 @@ using ServiceBusExplorer.Enums;
 using Microsoft.ServiceBus.Messaging;
 using static ServiceBusExplorer.ServiceBusHelper;
 using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class TestSubscriptionControl : TestControlBase
+    public partial class TestSubscriptionControl : UserControl
     {
         #region Private Constants
         //***************************
@@ -107,6 +108,7 @@ namespace ServiceBusExplorer.Controls
         private int receiverBatchSize = 1;
         private int receiverThinkTime;
         private Filter filter;
+        private TestControlHelper controlHelper;
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IBrokeredMessageInspector receiverBrokeredMessageInspector;
         #endregion
@@ -118,8 +120,8 @@ namespace ServiceBusExplorer.Controls
                                        Action startLog,
                                        ServiceBusHelper serviceBusHelper, 
                                        SubscriptionWrapper subscriptionWrapper)
-            : base(mainForm, writeToLog, stopLog, startLog, serviceBusHelper)
         {
+            controlHelper = new TestControlHelper(mainForm, writeToLog, stopLog, startLog, serviceBusHelper);
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
             InitializeControls();
@@ -139,24 +141,24 @@ namespace ServiceBusExplorer.Controls
                 cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
                 cboReceiverInspector.SelectedIndex = 0;
 
-                if (serviceBusHelper?.BrokeredMessageInspectors != null)
+                if (controlHelper.ServiceBusHelper?.BrokeredMessageInspectors != null)
                 {
-                    foreach (var key in serviceBusHelper.BrokeredMessageInspectors.Keys)
+                    foreach (var key in controlHelper.ServiceBusHelper.BrokeredMessageInspectors.Keys)
                     {
                         cboReceiverInspector.Items.Add(key);
                     }
                 }
 
                 // Set Think Time
-                txtReceiverThinkTime.Text = mainForm.ReceiverThinkTime.ToString(CultureInfo.InvariantCulture);
-                receiverThinkTime = mainForm.ReceiverThinkTime;
+                txtReceiverThinkTime.Text = controlHelper.MainForm.ReceiverThinkTime.ToString(CultureInfo.InvariantCulture);
+                receiverThinkTime = controlHelper.MainForm.ReceiverThinkTime;
 
                 // Set Task Count
                 txtReceiveTaskCount.Text = DefaultReceiverTaskCount;
                 cboReceivedMode.SelectedIndex = 1;
-                txtReceiveTimeout.Text = mainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
-                txtServerTimeout.Text = mainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
-                txtPrefetchCount.Text = mainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
+                txtReceiveTimeout.Text = controlHelper.MainForm?.ReceiveTimeout.ToString(CultureInfo.InvariantCulture);
+                txtServerTimeout.Text = controlHelper.MainForm?.ServerTimeout.ToString(CultureInfo.InvariantCulture);
+                txtPrefetchCount.Text = controlHelper.MainForm?.PrefetchCount.ToString(CultureInfo.InvariantCulture);
                 txtReceiveBatchSize.Text = DefaulReceiveBatchSize;
                 txtReceiveBatchSize.Enabled = false;
 
@@ -188,7 +190,7 @@ namespace ServiceBusExplorer.Controls
                     !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
                 {
-                    writeToLog(ReceiveTimeoutCannotBeNull);
+                    controlHelper.WriteToLog(ReceiveTimeoutCannotBeNull);
                     return false;
                 }
                 receiveTimeout = temp;
@@ -196,32 +198,32 @@ namespace ServiceBusExplorer.Controls
                     !int.TryParse(txtServerTimeout.Text, out temp) ||
                     temp < 0)
                 {
-                    writeToLog(SessionTimeoutCannotBeNull);
+                    controlHelper.WriteToLog(SessionTimeoutCannotBeNull);
                     return false;
                 }
                 sessionTimeout = temp;
                 if (string.IsNullOrWhiteSpace(txtPrefetchCount.Text) ||
                     !int.TryParse(txtPrefetchCount.Text, out temp))
                 {
-                    writeToLog(PrefetchCountCannotBeNull);
+                    controlHelper.WriteToLog(PrefetchCountCannotBeNull);
                     return false;
                 }
                 prefetchCount = temp;
                 if (!int.TryParse(txtReceiveBatchSize.Text, out temp) || temp <= 0)
                 {
-                    writeToLog(ReceiverBatchSizeMustBeANumber);
+                    controlHelper.WriteToLog(ReceiverBatchSizeMustBeANumber);
                     return false;
                 }
                 receiverBatchSize = temp;
                 if (!int.TryParse(txtReceiverThinkTime.Text, out temp) || temp <= 0)
                 {
-                    writeToLog(ReceiverThinkTimeMustBeANumber);
+                    controlHelper.WriteToLog(ReceiverThinkTimeMustBeANumber);
                     return false;
                 }
                 receiverThinkTime = temp;
                 if (!int.TryParse(txtReceiveTaskCount.Text, out temp) || temp <= 0)
                 {
-                    writeToLog(ReceiveTaskCountMustBeANumber);
+                    controlHelper.WriteToLog(ReceiveTaskCountMustBeANumber);
                     return false;
                 }
                 receiverTaskCount = temp;
@@ -233,7 +235,7 @@ namespace ServiceBusExplorer.Controls
                 filter = sqlFilter.Preprocess();
                 if (filter == null)
                 {
-                    writeToLog(FilterExpressionIsNotValid);
+                    controlHelper.WriteToLog(FilterExpressionIsNotValid);
                 }
             }
             catch (Exception ex)
@@ -255,16 +257,16 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                if (serviceBusHelper != null &&
+                if (controlHelper.ServiceBusHelper != null &&
                     ValidateParameters())
                 {
-                    startLog?.Invoke();
+                    controlHelper.StartLog?.Invoke();
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
                     //                                   Retrieve Messaging Factory
                     //*****************************************************************************************************
-                    var messagingFactory = serviceBusHelper.MessagingFactory;
+                    var messagingFactory = controlHelper.ServiceBusHelper.MessagingFactory;
 
                     //*****************************************************************************************************
                     //                                   Initialize Statistics and Manager Action
@@ -380,7 +382,7 @@ namespace ServiceBusExplorer.Controls
                         receiverCancellationTokenSource = new CancellationTokenSource();
                         receiverCancellationTokenSource = new CancellationTokenSource();
                         receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
-                                                      ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
+                                                      ? Activator.CreateInstance(controlHelper.ServiceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
                                                       : null;
 
                         Action<int> receiverAction = taskId =>
@@ -421,7 +423,7 @@ namespace ServiceBusExplorer.Controls
                                     {
                                         using (var scope = new TransactionScope())
                                         {
-                                            serviceBusHelper.ReceiveMessages(messageReceiver,
+                                            controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
                                                                              taskId,
                                                                              receiveTimeout,
                                                                              filter,
@@ -454,7 +456,7 @@ namespace ServiceBusExplorer.Controls
                                     }
                                     else
                                     {
-                                        serviceBusHelper.ReceiveMessages(messageReceiver,
+                                        controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
                                                                          taskId,
                                                                          receiveTimeout,
                                                                          filter,
@@ -475,7 +477,7 @@ namespace ServiceBusExplorer.Controls
                                     }
                                     if (!string.IsNullOrWhiteSpace(traceMessage))
                                     {
-                                        writeToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                                        controlHelper.WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
                                     }
                                     allSessionsAccepted = !currentSubscription.RequiresSession;
                                 }
@@ -483,7 +485,7 @@ namespace ServiceBusExplorer.Controls
                                 {
                                     if (currentSubscription.RequiresSession)
                                     {
-                                        writeToLog(string.Format(NoMoreSessionsToAccept, taskId));
+                                        controlHelper.WriteToLog(string.Format(NoMoreSessionsToAccept, taskId));
                                         allSessionsAccepted = true;
                                     }
                                     else
@@ -551,10 +553,10 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
+            controlHelper.WriteToLog(string.Format(CultureInfo.CurrentCulture, TestControlHelper.ExceptionFormat, ex.Message));
             if (!string.IsNullOrWhiteSpace(ex.InnerException?.Message))
             {
-                writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
+                controlHelper.WriteToLog(string.Format(CultureInfo.CurrentCulture, TestControlHelper.InnerExceptionFormat, ex.InnerException.Message));
             }
         }
 
@@ -659,9 +661,9 @@ namespace ServiceBusExplorer.Controls
 
         internal async Task CancelActions()
         {
-            if (stopLog != null)
+            if (controlHelper.StopLog != null)
             {
-                await stopLog();
+                await controlHelper.StopLog();
             }
             managerCancellationTokenSource?.Cancel();
             graphCancellationTokenSource?.Cancel();
@@ -765,15 +767,15 @@ namespace ServiceBusExplorer.Controls
                     receiverAverageTime = receiverMessageNumber > 0 ? receiverTotalTime/receiverMessageNumber : 0;
                     receiverMessagesPerSecond = receiverTotalTime > 0 ? receiverMessageNumber * receiverTaskCount / receiverTotalTime : 0;
 
-                    lblReceiverLastTime.Text = string.Format(LabelFormat, elapsedSeconds);
+                    lblReceiverLastTime.Text = string.Format(TestControlHelper.LabelFormat, elapsedSeconds);
                     lblReceiverLastTime.Refresh();
-                    lblReceiverAverageTime.Text = string.Format(LabelFormat, receiverAverageTime);
+                    lblReceiverAverageTime.Text = string.Format(TestControlHelper.LabelFormat, receiverAverageTime);
                     lblReceiverAverageTime.Refresh();
-                    lblReceiverMaximumTime.Text = string.Format(LabelFormat, receiverMaximumTime);
+                    lblReceiverMaximumTime.Text = string.Format(TestControlHelper.LabelFormat, receiverMaximumTime);
                     lblReceiverMaximumTime.Refresh();
-                    lblReceiverMinimumTime.Text = string.Format(LabelFormat, receiverMinimumTime);
+                    lblReceiverMinimumTime.Text = string.Format(TestControlHelper.LabelFormat, receiverMinimumTime);
                     lblReceiverMinimumTime.Refresh();
-                    lblReceiverMessagesPerSecond.Text = string.Format(LabelFormat, receiverMessagesPerSecond);
+                    lblReceiverMessagesPerSecond.Text = string.Format(TestControlHelper.LabelFormat, receiverMessagesPerSecond);
                     lblReceiverMessagesPerSecond.Refresh();
                     lblReceiverMessageNumber.Text = receiverMessageNumber.ToString(CultureInfo.InvariantCulture);
                     lblReceiverMessageNumber.Refresh();
