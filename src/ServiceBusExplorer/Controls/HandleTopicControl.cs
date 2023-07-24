@@ -492,7 +492,10 @@ namespace ServiceBusExplorer.Controls
                                                                defaultValue: false);
 
                         if (!disableAccidentalDeletionPrevention)
+                        {
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {topicDescription.Path} {TopicEntity.ToLower()}");
+                        }
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.DeleteTopic(topicDescription);

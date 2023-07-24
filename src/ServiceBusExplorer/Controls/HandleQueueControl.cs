@@ -2012,7 +2012,10 @@ namespace ServiceBusExplorer.Controls
                                                                defaultValue: false);
 
                         if (!disableAccidentalDeletionPrevention)
+                        {
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {queueDescription.Path} {QueueEntity.ToLower()}");
+                        }
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.DeleteQueue(queueDescription);

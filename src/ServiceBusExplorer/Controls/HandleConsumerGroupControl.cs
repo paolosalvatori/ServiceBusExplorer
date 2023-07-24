@@ -341,7 +341,10 @@ namespace ServiceBusExplorer.Controls
                                                                defaultValue: false);
 
                         if (!disableAccidentalDeletionPrevention)
+                        {
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {consumerGroupDescription.Name} {ConsumerGroupEntity.ToLower()}");
+                        }
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             serviceBusHelper.DeleteConsumerGroup(consumerGroupDescription);

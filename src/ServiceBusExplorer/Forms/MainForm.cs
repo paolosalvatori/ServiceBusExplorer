@@ -2144,7 +2144,9 @@ namespace ServiceBusExplorer.Forms
                         using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
                         {
                             if (!disableAccidentalDeletionPrevention)
+                            {
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {queueDescription.Path} {QueueEntity.ToLower()}");
+                            }
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
@@ -2172,7 +2174,9 @@ namespace ServiceBusExplorer.Forms
                             using (var deleteForm = new DeleteForm(DeleteAllSubscriptions))
                             {
                                 if (!disableAccidentalDeletionPrevention)
+                                {
                                     deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionDescriptions.Count} subscriptions");
+                                }
 
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
@@ -2189,7 +2193,9 @@ namespace ServiceBusExplorer.Forms
                         using (var deleteForm = new DeleteForm(topicDescription.Path, TopicEntity.ToLower()))
                         {
                             if (!disableAccidentalDeletionPrevention)
+                            {
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {TopicEntity.ToLower()} {topicDescription.Path}");
+                            }
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
@@ -2205,7 +2211,9 @@ namespace ServiceBusExplorer.Forms
                         using (var deleteForm = new DeleteForm(relayDescription.Path, RelayEntity.ToLower()))
                         {
                             if (!disableAccidentalDeletionPrevention)
+                            {
                                 deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {RelayEntity.ToLower()} {relayDescription.Path}");
+                            }
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
@@ -2295,7 +2303,9 @@ namespace ServiceBusExplorer.Forms
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {
                                     if (!disableAccidentalDeletionPrevention)
+                                    {
                                         deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {subscriptionDescriptions.Count()} subscriptions");
+                                    }
 
                                     await serviceBusHelper.DeleteSubscriptions(subscriptionDescriptions);
                                 }
@@ -2313,7 +2323,9 @@ namespace ServiceBusExplorer.Forms
                             using (var deleteForm = new DeleteForm(subscriptionWrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower()))
                             {
                                 if (!disableAccidentalDeletionPrevention)
+                                {
                                     deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {SubscriptionEntity.ToLower()} {subscriptionWrapper.SubscriptionDescription.Name}");
+                                }
 
                                 if (deleteForm.ShowDialog() == DialogResult.OK)
                                 {

@@ -417,7 +417,10 @@ namespace ServiceBusExplorer.Controls
                                                                defaultValue: false);
 
                         if (!disableAccidentalDeletionPrevention)
+                        {
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {relayDescription.Path} {RelayEntity.ToLower()}");
+                        }
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             await serviceBusHelper.NamespaceManager.DeleteRelayAsync(relayDescription.Path);

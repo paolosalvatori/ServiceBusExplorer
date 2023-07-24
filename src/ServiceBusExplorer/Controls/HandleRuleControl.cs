@@ -257,7 +257,10 @@ namespace ServiceBusExplorer.Controls
                                                                defaultValue: false);
 
                         if (!disableAccidentalDeletionPrevention)
+                        {
                             deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {ruleWrapper.RuleDescription.Name} {RuleEntity.ToLower()}");
+                        }
+
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
                             serviceBusHelper.RemoveRule(ruleWrapper.SubscriptionDescription, ruleWrapper.RuleDescription);
