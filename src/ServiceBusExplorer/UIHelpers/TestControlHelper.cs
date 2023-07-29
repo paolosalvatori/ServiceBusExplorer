@@ -8,25 +8,25 @@ namespace ServiceBusExplorer.UIHelpers
 {
     internal class TestControlHelper
     {
-        #region Internal Constants
+        #region Public Constants
         //***************************
         // Formats
         //***************************
-        internal const string ExceptionFormat = "Exception: {0}";
-        internal const string InnerExceptionFormat = "InnerException: {0}";
-        internal const string LabelFormat = "{0:0.000}";
+        public const string ExceptionFormat = "Exception: {0}";
+        public const string InnerExceptionFormat = "InnerException: {0}";
+        public const string LabelFormat = "{0:0.000}";
         #endregion
 
-        #region Internal instance properties
-        internal bool IsReadyToStoreMessageText { get; set; }
-        internal ServiceBusHelper ServiceBusHelper { get; }
-        internal MainForm MainForm { get; }
-        internal WriteToLogDelegate WriteToLog { get; }
-        internal Action StartLog { get; }
+        #region Public instance properties
+        public bool IsReadyToStoreMessageText { get; set; }
+        public ServiceBusHelper ServiceBusHelper { get; }
+        public MainForm MainForm { get; }
+        public WriteToLogDelegate WriteToLog { get; }
+        public Action StartLog { get; }
         public Func<Task> StopLog { get; }
         #endregion
 
-        #region Public Constructors
+        #region Public constructor
         public TestControlHelper(MainForm mainForm,
                                 WriteToLogDelegate writeToLog,
                                 Func<Task> stopLog,
@@ -41,8 +41,8 @@ namespace ServiceBusExplorer.UIHelpers
         }
         #endregion
 
-        #region Internal Methods
-        internal void OnMessageTextChanged(string text)
+        #region Public methods
+        public void OnMessageTextChanged(string text)
         {
             if (IsReadyToStoreMessageText)
             {
