@@ -163,3 +163,6 @@ $RECYCLE.BIN/
 
 # The new Debug Profile file
 /src/ServiceBusExplorer/Properties/launchSettings.json
+
+# VS code settings
+.vscode/settings.json
