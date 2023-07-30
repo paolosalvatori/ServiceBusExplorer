@@ -61,12 +61,6 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 # Documentation
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
 
-# Videos
-For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
-
-- [Getting Started with Service Bus. Part 3: Service Bus Explorer](http://www.digitalpodcast.com/items/10765228) by Clemens Vasters
-- [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
-
 # Alternative Service Bus Management Tools
 Service Bus Explorer is only one of the management tools available for Azure Service Bus.
 
