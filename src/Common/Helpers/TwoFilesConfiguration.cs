@@ -467,7 +467,7 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            if (!updatedApp && !updatedApp)
+            if (!updatedUser && !updatedApp)
             {
                 HandleUpdateConfigurationFileError(updatedUser, updatedApp, writeToLog);
             }
