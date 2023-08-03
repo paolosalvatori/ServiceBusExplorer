@@ -2762,7 +2762,7 @@ namespace ServiceBusExplorer.Controls
 
         private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            var grid = sender as DataGridView;
+            var grid = sender as DataGridView ?? throw new ArgumentNullException(nameof(sender));
             var rowIdx = (e.RowIndex + 1).ToString();
 
             var centerFormat = new StringFormat()
