@@ -69,6 +69,6 @@ Here are a couple of alternatives. We do not take responsibility for them though
 - **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
 - **Serverless360** _(paid with free trial, SaaS, web based)_
 - **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
-- **[Purple Explorer](https://github.com/telstrapurple/PurpleExplorer)** _(free, open source, cross platform)
+- **[Purple Explorer](https://github.com/telstrapurple/PurpleExplorer)** _(free, open source, cross platform)_
 - **[Superbus](https://superbus.app/)** _(paid with a free trial, macOS)_
 - **[Service Bus Cloud Explorer](https://cloudbricks.io/products/service_bus_cloud_explorer/)** _(paid with a free basic plan, SaaS, web based)_
