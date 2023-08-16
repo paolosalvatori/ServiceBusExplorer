@@ -34,6 +34,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventGridExplorerLibrary", "EventGridExplorerLibrary\EventGridExplorerLibrary.csproj", "{11FD2BB5-A590-4844-852F-3DBF2A64F840}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,14 @@ Global
 		{E836C914-9BFE-4C1C-96E5-6A414CDEF485}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E836C914-9BFE-4C1C-96E5-6A414CDEF485}.Release|x86.ActiveCfg = Release|Any CPU
 		{E836C914-9BFE-4C1C-96E5-6A414CDEF485}.Release|x86.Build.0 = Release|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Debug|x86.Build.0 = Debug|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Release|x86.ActiveCfg = Release|Any CPU
+		{11FD2BB5-A590-4844-852F-3DBF2A64F840}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

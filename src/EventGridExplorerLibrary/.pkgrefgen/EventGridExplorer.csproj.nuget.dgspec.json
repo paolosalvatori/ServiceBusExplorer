@@ -1,0 +1,101 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\ob1\\Azure-EventGrid\\src\\prod\\tools\\EventGridExplorer\\EventGridExplorer.csproj": {}
+  },
+  "projects": {
+    "C:\\ob1\\Azure-EventGrid\\src\\prod\\tools\\EventGridExplorer\\EventGridExplorer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\ob1\\Azure-EventGrid\\src\\prod\\tools\\EventGridExplorer\\EventGridExplorer.csproj",
+        "projectName": "EventGridExplorer",
+        "projectPath": "C:\\ob1\\Azure-EventGrid\\src\\prod\\tools\\EventGridExplorer\\EventGridExplorer.csproj",
+        "packagesPath": "C:\\Users\\t-wangamy\\.nuget\\packages\\",
+        "outputPath": "C:\\ob1\\Azure-EventGrid\\src\\prod\\tools\\EventGridExplorer\\.pkgrefgen\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\ob1\\Azure-EventGrid\\NuGet.Config",
+          "C:\\Users\\t-wangamy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://msazure.pkgs.visualstudio.com/One/_packaging/Azure-Messaging-Feed/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.1": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.1": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.3.0, )",
+              "versionOverride": "[1.3.0, )"
+            },
+            "Azure.Messaging.EventGrid": {
+              "target": "Package",
+              "version": "[4.17.0-beta.1, )",
+              "versionOverride": "[4.17.0-beta.1, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.1.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.Rest.ClientRuntime": {
+              "target": "Package",
+              "version": "[2.3.20, )",
+              "versionOverride": "[2.3.20, )"
+            },
+            "Microsoft.Rest.ClientRuntime.Azure": {
+              "target": "Package",
+              "version": "[3.3.19, )",
+              "versionOverride": "[3.3.19, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.3, )",
+              "versionOverride": "[12.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\CxCache\\.A\\DotNetSDK.yDqgI4Iq8lDmEdgrULHRCA\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

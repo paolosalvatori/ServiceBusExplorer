@@ -36,6 +36,8 @@ namespace ServiceBusExplorer.Forms
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.serviceBusNamespaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventGridNamespaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,6 +121,8 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.expandSubTreeMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseSubTreeMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventGridSubscriptionsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createEventGridSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.subscriptionContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -173,6 +177,12 @@ namespace ServiceBusExplorer.Forms
             this.topicPurgeDeadletterQueueMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator73 = new System.Windows.Forms.ToolStripSeparator();
             this.topicPurgeAllMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventGridTopicContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.publishEventsTopicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteEventGridTopicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventGridSubscriptionContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.receiveEventsSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteEventGridSubscriptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.queueContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.changeStatusQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -217,6 +227,8 @@ namespace ServiceBusExplorer.Forms
             this.deadletterQueueMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator72 = new System.Windows.Forms.ToolStripSeparator();
             this.allMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventGridTopicsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createEventGridTopicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.relayServicesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
@@ -375,10 +387,14 @@ namespace ServiceBusExplorer.Forms
             this.ruleContextMenuStrip.SuspendLayout();
             this.rulesContextMenuStrip.SuspendLayout();
             this.subscriptionsContextMenuStrip.SuspendLayout();
+            this.eventGridSubscriptionsContextMenuStrip.SuspendLayout();
             this.subscriptionContextMenuStrip.SuspendLayout();
             this.topicContextMenuStrip.SuspendLayout();
+            this.eventGridTopicContextMenuStrip.SuspendLayout();
+            this.eventGridSubscriptionContextMenuStrip.SuspendLayout();
             this.queueContextMenuStrip.SuspendLayout();
             this.topicsContextMenuStrip.SuspendLayout();
+            this.eventGridTopicsContextMenuStrip.SuspendLayout();
             this.relayServicesContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.queueFolderContextMenuStrip.SuspendLayout();
@@ -425,6 +441,10 @@ namespace ServiceBusExplorer.Forms
             this.imageList.Images.SetKeyName(21, "groupofusers.ico");
             this.imageList.Images.SetKeyName(22, "groupofusers_grey.ico");
             this.imageList.Images.SetKeyName(23, "PieDiagram.ico");
+            this.imageList.Images.SetKeyName(24, "EventGridNamespace.ico");
+            this.imageList.Images.SetKeyName(25, "EventGridTopic.ico");
+            this.imageList.Images.SetKeyName(26, "EventGridSubscription.ico");
+            this.imageList.Images.SetKeyName(27, "EventGrid.ico");
             // 
             // fileToolStripMenuItem
             // 
@@ -439,11 +459,27 @@ namespace ServiceBusExplorer.Forms
             // 
             // connectToolStripMenuItem
             // 
+            this.connectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.serviceBusNamespaceToolStripMenuItem,
+            this.eventGridNamespaceToolStripMenuItem});
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
             this.connectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.connectToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.connectToolStripMenuItem.Text = "&Connect";
-            this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
+            // 
+            // serviceBusNamespaceToolStripMenuItem
+            // 
+            this.serviceBusNamespaceToolStripMenuItem.Name = "serviceBusNamespaceToolStripMenuItem";
+            this.serviceBusNamespaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.serviceBusNamespaceToolStripMenuItem.Text = "Service Bus Namespace";
+            this.serviceBusNamespaceToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripServiceBusMenuItem_Click);
+            // 
+            // eventGridNamespaceToolStripMenuItem
+            // 
+            this.eventGridNamespaceToolStripMenuItem.Name = "eventGridNamespaceToolStripMenuItem";
+            this.eventGridNamespaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.eventGridNamespaceToolStripMenuItem.Text = "Event Grid Namespace";
+            this.eventGridNamespaceToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripEventGridMenuItem_Click);
             // 
             // savedConnectionsToolStripMenuItem
             // 
@@ -1174,6 +1210,22 @@ namespace ServiceBusExplorer.Forms
             this.collapseSubTreeMenuItem6.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem6.Click += new System.EventHandler(this.collapseEntity_Click);
             // 
+            // eventGridSubscriptionsContextMenuStrip
+            // 
+            this.eventGridSubscriptionsContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.eventGridSubscriptionsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createEventGridSubscriptionMenuItem});
+            this.eventGridSubscriptionsContextMenuStrip.Name = "createEventGridSubscriptionsContextMenuStrip";
+            this.eventGridSubscriptionsContextMenuStrip.Size = new System.Drawing.Size(178, 26);
+            // 
+            // createEventGridSubscriptionMenuItem
+            // 
+            this.createEventGridSubscriptionMenuItem.Name = "createEventGridSubscriptionMenuItem";
+            this.createEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.createEventGridSubscriptionMenuItem.Text = "Create Subscription";
+            this.createEventGridSubscriptionMenuItem.ToolTipText = "Create a new subscription.";
+            this.createEventGridSubscriptionMenuItem.Click += new System.EventHandler(this.createEntity_Click);
+            // 
             // subscriptionContextMenuStrip
             // 
             this.subscriptionContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -1599,6 +1651,56 @@ namespace ServiceBusExplorer.Forms
             this.topicPurgeAllMessagesToolStripMenuItem.Text = "All Messages";
             this.topicPurgeAllMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
+            // eventGridTopicContextMenuStrip
+            // 
+            this.eventGridTopicContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.eventGridTopicContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.publishEventsTopicMenuItem,
+            this.deleteEventGridTopicMenuItem});
+            this.eventGridTopicContextMenuStrip.Name = "eventGridTopicContextMenuStrip";
+            this.eventGridTopicContextMenuStrip.Size = new System.Drawing.Size(146, 48);
+            // 
+            // publishEventsTopicMenuItem
+            // 
+            this.publishEventsTopicMenuItem.Name = "publishEventsTopicMenuItem";
+            this.publishEventsTopicMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.publishEventsTopicMenuItem.Text = "Publish Event";
+            this.publishEventsTopicMenuItem.ToolTipText = "Publish event to the current topic.";
+            this.publishEventsTopicMenuItem.Click += new System.EventHandler(this.publishEvent_Click);
+            // 
+            // deleteEventGridTopicMenuItem
+            // 
+            this.deleteEventGridTopicMenuItem.Name = "deleteEventGridTopicMenuItem";
+            this.deleteEventGridTopicMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.deleteEventGridTopicMenuItem.Text = "Delete Topic";
+            this.deleteEventGridTopicMenuItem.ToolTipText = "Delete current topic.";
+            this.deleteEventGridTopicMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
+            // eventGridSubscriptionContextMenuStrip
+            // 
+            this.eventGridSubscriptionContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.eventGridSubscriptionContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.receiveEventsSubscriptionMenuItem,
+            this.deleteEventGridSubscriptionMenuItem});
+            this.eventGridSubscriptionContextMenuStrip.Name = "eventGridSubscriptionContextMenuStrip";
+            this.eventGridSubscriptionContextMenuStrip.Size = new System.Drawing.Size(177, 48);
+            // 
+            // receiveEventsSubscriptionMenuItem
+            // 
+            this.receiveEventsSubscriptionMenuItem.Name = "receiveEventsSubscriptionMenuItem";
+            this.receiveEventsSubscriptionMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.receiveEventsSubscriptionMenuItem.Text = "Receive Events";
+            this.receiveEventsSubscriptionMenuItem.ToolTipText = "Receive events from the current topic.";
+            this.receiveEventsSubscriptionMenuItem.Click += new System.EventHandler(this.receiveEvent_Click);
+            // 
+            // deleteEventGridSubscriptionMenuItem
+            // 
+            this.deleteEventGridSubscriptionMenuItem.Name = "deleteEventGridSubscriptionMenuItem";
+            this.deleteEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.deleteEventGridSubscriptionMenuItem.Text = "Delete Subscription";
+            this.deleteEventGridSubscriptionMenuItem.ToolTipText = "Delete current subscription.";
+            this.deleteEventGridSubscriptionMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
+            // 
             // queueContextMenuStrip
             // 
             this.queueContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -1944,6 +2046,22 @@ namespace ServiceBusExplorer.Forms
             this.allMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.allMessagesToolStripMenuItem.Text = "All Messages";
             this.allMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
+            // 
+            // eventGridTopicsContextMenuStrip
+            // 
+            this.eventGridTopicsContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.eventGridTopicsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createEventGridTopicMenuItem});
+            this.eventGridTopicsContextMenuStrip.Name = "createEventGridTopicsContextMenuStrip";
+            this.eventGridTopicsContextMenuStrip.Size = new System.Drawing.Size(140, 26);
+            // 
+            // createEventGridTopicMenuItem
+            // 
+            this.createEventGridTopicMenuItem.Name = "createEventGridTopicMenuItem";
+            this.createEventGridTopicMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.createEventGridTopicMenuItem.Text = "Create Topic";
+            this.createEventGridTopicMenuItem.ToolTipText = "Create a new topic.";
+            this.createEventGridTopicMenuItem.Click += new System.EventHandler(this.createEntity_Click);
             // 
             // relayServicesContextMenuStrip
             // 
@@ -3123,10 +3241,14 @@ namespace ServiceBusExplorer.Forms
             this.ruleContextMenuStrip.ResumeLayout(false);
             this.rulesContextMenuStrip.ResumeLayout(false);
             this.subscriptionsContextMenuStrip.ResumeLayout(false);
+            this.eventGridSubscriptionsContextMenuStrip.ResumeLayout(false);
             this.subscriptionContextMenuStrip.ResumeLayout(false);
             this.topicContextMenuStrip.ResumeLayout(false);
+            this.eventGridTopicContextMenuStrip.ResumeLayout(false);
+            this.eventGridSubscriptionContextMenuStrip.ResumeLayout(false);
             this.queueContextMenuStrip.ResumeLayout(false);
             this.topicsContextMenuStrip.ResumeLayout(false);
+            this.eventGridTopicsContextMenuStrip.ResumeLayout(false);
             this.relayServicesContextMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
@@ -3189,6 +3311,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem refreshRulesMenuItem;
         private System.Windows.Forms.ContextMenuStrip subscriptionsContextMenuStrip;
+        private System.Windows.Forms.ContextMenuStrip eventGridSubscriptionsContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem addSubscriptionMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem deleteSubscriptionsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refreshSubscriptionsMenuItem;
@@ -3200,6 +3323,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem refreshSubscriptionMenuItem;
         private System.Windows.Forms.ContextMenuStrip topicContextMenuStrip;
+        private System.Windows.Forms.ContextMenuStrip eventGridTopicContextMenuStrip;
+        private System.Windows.Forms.ContextMenuStrip eventGridSubscriptionContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem deleteTopicMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testTopicSDIMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
@@ -3215,8 +3340,11 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem exportQueueMenuItem;
         private System.Windows.Forms.ContextMenuStrip topicsContextMenuStrip;
+        private System.Windows.Forms.ContextMenuStrip eventGridTopicsContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem createTopicMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteTopicsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createEventGridTopicMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createEventGridSubscriptionMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refreshTopicsMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem exportTopicsMenuItem;
@@ -3289,6 +3417,10 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem queueSendMessageMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator32;
         private System.Windows.Forms.ToolStripMenuItem sendMessagesTopicMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem publishEventsTopicMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem receiveEventsSubscriptionMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteEventGridTopicMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteEventGridSubscriptionMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator33;
         private System.Windows.Forms.ToolStripMenuItem testQueueMDIMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testTopicMDIMenuItem;
@@ -3477,6 +3609,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem duplicateSubscriptionMenuItem;
         private System.Windows.Forms.ToolStripMenuItem duplicateQueueMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem serviceBusNamespaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eventGridNamespaceToolStripMenuItem;
     }
 }
 
