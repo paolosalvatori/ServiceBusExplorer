@@ -97,4 +97,4 @@ jobs:
       env:
         CHOCO_TOKEN: ${{ secrets.CHOCO_TOKEN }}
       run: |
-        choco push $env:NupkgFilename -k="$env:CHOCO_TOKEN"
+        choco push $env:NupkgFilename -k="$env:CHOCO_TOKEN" --source=https://push.chocolatey.org/

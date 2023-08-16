@@ -7,6 +7,12 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
+# Software requirements
+The following software is required to run ServiceBusExplorer. It may run on other versions.
+
+- Windows 10 or later
+- .NET Framework 4.6.2
+
 # Installation
 ## Using [Chocolatey](https://chocolatey.org/install)
 ```
@@ -55,20 +61,21 @@ The Service Bus Explorer 2.1.0 can be used with the Service Bus for Windows Serv
 # Documentation
 [Here](./docs/documentation.md) you can find the tool documentation and a log of the features implemented over time.
 
-# Videos
-For more information on how to use the Service Bus Explorer, see the following videos on Channel9:
-
-- [Getting Started with Service Bus. Part 3: Service Bus Explorer](http://www.digitalpodcast.com/items/10765228) by Clemens Vasters
-- [Cross Platform Notifications using Windows Azure Notifications Hub](http://channel9.msdn.com/Shows/Cloud+Cover/Episode-116-Cross-Platform-Notifications-using-Windows-Azure-Notifications-Hub) by Elio Damaggio, Nick Harris and Chris Risner.
-
 # Alternative Service Bus Management Tools
 Service Bus Explorer is only one of the management tools available for Azure Service Bus.
 
 Here are a couple of alternatives. We do not take responsibility for them though:
 
-- **Microsoft Azure Management Portal** _(SaaS, web based, extremely basic)_
-- **Serverless360** _(paid with free trial, SaaS, web based)_
-- **PowerShell** _([Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps))_
-- **[Purple Explorer](https://github.com/telstrapurple/PurpleExplorer)** _(free, open source, cross platform)
-- **[Superbus](https://superbus.app/)** _(paid with a free trial, macOS)_
-- **[Service Bus Cloud Explorer](https://cloudbricks.io/products/service_bus_cloud_explorer/)** _(paid with a free basic plan, SaaS, web based)_
+| Tool                                     | Description                                   |
+| ---------------------------------------- | --------------------------------------------- |
+| Microsoft Azure Management Portal        | SaaS, web based, extremely basic              |
+| Serverless360                            | paid with free trial, SaaS, web based         |
+| [PowerShell]                             | free, open source, cross platform             |
+| [Purple Explorer]                        | free, open source, cross platform             |
+| [Superbus]                               | paid with a free trial, macOS                 |
+| [Service Bus Cloud Explorer]             | paid with a free basic plan, SaaS, web based  |
+
+[PowerShell]: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps
+[Purple Explorer]: https://github.com/telstrapurple/PurpleExplorer
+[Superbus]: https://superbus.app/
+[Service Bus Cloud Explorer]: https://cloudbricks.io/products/service_bus_cloud_explorer/
