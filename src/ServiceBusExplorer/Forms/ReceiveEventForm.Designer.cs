@@ -28,44 +28,44 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
+            this.grouperReceiveEvents = new ServiceBusExplorer.Controls.Grouper();
             this.txtEventCount = new ServiceBusExplorer.Controls.NumericTextBox();
             this.btnMax = new System.Windows.Forms.RadioButton();
             this.btnTop = new System.Windows.Forms.RadioButton();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grouperMessages.SuspendLayout();
+            this.grouperReceiveEvents.SuspendLayout();
             this.SuspendLayout();
             // 
             // grouperMessages
             // 
-            this.grouperMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.grouperReceiveEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMessages.BackgroundColor = System.Drawing.Color.White;
-            this.grouperMessages.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessages.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessages.BorderThickness = 1F;
-            this.grouperMessages.Controls.Add(this.txtEventCount);
-            this.grouperMessages.Controls.Add(this.btnTop);
-            this.grouperMessages.Controls.Add(this.btnMax);
-            this.grouperMessages.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessages.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessages.ForeColor = System.Drawing.Color.White;
-            this.grouperMessages.GroupImage = null;
-            this.grouperMessages.GroupTitle = "Event Count";
-            this.grouperMessages.Location = new System.Drawing.Point(27, 23);
-            this.grouperMessages.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.grouperMessages.Name = "grouperMessages";
-            this.grouperMessages.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
-            this.grouperMessages.PaintGroupBox = true;
-            this.grouperMessages.RoundCorners = 4;
-            this.grouperMessages.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessages.ShadowControl = false;
-            this.grouperMessages.ShadowThickness = 1;
-            this.grouperMessages.Size = new System.Drawing.Size(308, 102);
-            this.grouperMessages.TabIndex = 43;
+            this.grouperReceiveEvents.BackgroundColor = System.Drawing.Color.White;
+            this.grouperReceiveEvents.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperReceiveEvents.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperReceiveEvents.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperReceiveEvents.BorderThickness = 1F;
+            this.grouperReceiveEvents.Controls.Add(this.txtEventCount);
+            this.grouperReceiveEvents.Controls.Add(this.btnTop);
+            this.grouperReceiveEvents.Controls.Add(this.btnMax);
+            this.grouperReceiveEvents.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperReceiveEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperReceiveEvents.ForeColor = System.Drawing.Color.White;
+            this.grouperReceiveEvents.GroupImage = null;
+            this.grouperReceiveEvents.GroupTitle = "Event Count";
+            this.grouperReceiveEvents.Location = new System.Drawing.Point(27, 23);
+            this.grouperReceiveEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.grouperReceiveEvents.Name = "grouperReceiveEvents";
+            this.grouperReceiveEvents.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
+            this.grouperReceiveEvents.PaintGroupBox = true;
+            this.grouperReceiveEvents.RoundCorners = 4;
+            this.grouperReceiveEvents.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperReceiveEvents.ShadowControl = false;
+            this.grouperReceiveEvents.ShadowThickness = 1;
+            this.grouperReceiveEvents.Size = new System.Drawing.Size(308, 102);
+            this.grouperReceiveEvents.TabIndex = 43;
             // 
             // txtEventCount
             // 
@@ -106,6 +106,7 @@
             this.btnTop.TabStop = true;
             this.btnTop.Text = "Top";
             this.btnTop.UseVisualStyleBackColor = true;
+            this.btnTop.CheckedChanged += new System.EventHandler(this.receiveEvents_CheckedChanged);
             // 
             // btnOk
             // 
@@ -149,19 +150,19 @@
             this.ClientSize = new System.Drawing.Size(365, 200);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.grouperMessages);
+            this.Controls.Add(this.grouperReceiveEvents);
             this.MaximumSize = new System.Drawing.Size(387, 256);
             this.MinimumSize = new System.Drawing.Size(387, 256);
             this.Name = "ReceiveEventForm";
             this.Text = "Receive Events";
-            this.grouperMessages.ResumeLayout(false);
-            this.grouperMessages.PerformLayout();
+            this.grouperReceiveEvents.ResumeLayout(false);
+            this.grouperReceiveEvents.PerformLayout();
             this.ResumeLayout(false);
         }
 
         #endregion
 
-        private Controls.Grouper grouperMessages;
+        private Controls.Grouper grouperReceiveEvents;
         private Controls.NumericTextBox txtEventCount;
         private System.Windows.Forms.RadioButton btnMax;
         private System.Windows.Forms.RadioButton btnTop;

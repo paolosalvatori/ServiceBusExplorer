@@ -24,7 +24,7 @@ namespace Microsoft.Azure.Management.EventGrid
     /// <summary>
     /// Azure EventGrid Management Client
     /// </summary>
-    public partial class EventGridManagementClient : ServiceClient<EventGridManagementClient>
+    public partial class EventGridManagementClient : ServiceClient<EventGridManagementClient>, IEventGridManagementClient, IAzureClient
     {
         /// <summary>
         /// The base URI of the service.
@@ -269,7 +269,7 @@ namespace Microsoft.Azure.Management.EventGrid
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
-        public EventGridManagementClient(System.Uri baseUri, ServiceClientCredentials credentials, params DelegatingHandler[] handlers) : this(handlers)
+        public EventGridManagementClient(System.Uri baseUri, ServiceClientCredentials credentials, string subscriptionId, string apiVersion, int retryTimeout, params DelegatingHandler[] handlers) : this(handlers)
         {
             if (baseUri == null)
             {
@@ -279,8 +279,21 @@ namespace Microsoft.Azure.Management.EventGrid
             {
                 throw new System.ArgumentNullException("credentials");
             }
+            if (apiVersion == null)
+            {
+                throw new System.ArgumentNullException("apiVersion");
+            }
+            if (subscriptionId == null)
+            {
+                throw new System.ArgumentNullException("subscriptionId");
+            }
+
+            ApiVersion = apiVersion;
             BaseUri = baseUri;
             Credentials = credentials;
+            SubscriptionId = subscriptionId;
+            LongRunningOperationRetryTimeout = retryTimeout;
+
             if (Credentials != null)
             {
                 Credentials.InitializeServiceClient(this);
@@ -335,10 +348,7 @@ namespace Microsoft.Azure.Management.EventGrid
             Namespaces = new NamespacesOperations(this);
             NamespaceTopicEventSubscriptions = new NamespaceTopicEventSubscriptionsOperations(this);
             NamespaceTopics = new NamespaceTopicsOperations(this);
-            BaseUri = new System.Uri("https://10.135.30.79:553");
-            ApiVersion = "2020-10-15-preview";
             AcceptLanguage = "en-US";
-            LongRunningOperationRetryTimeout = 30;
             GenerateClientRequestId = true;
             SerializationSettings = new JsonSerializerSettings
             {

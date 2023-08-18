@@ -1442,7 +1442,13 @@ namespace ServiceBusExplorer.Forms
                     NamespaceName = connectForm.NamespaceName;
                     ResourceGroupName = connectForm.ResourceGroup;
 
-                    eventGridLibrary = new EventGridLibrary(connectForm.ApiVersion, connectForm.SubscriptionId, WriteToLog);
+                    eventGridLibrary = new EventGridLibrary(
+                        connectForm.SubscriptionId,
+                        connectForm.ApiVersion, 
+                        connectForm.RetryTimeout,
+                        connectForm.CloudTenant,
+                        connectForm.CustomId,
+                        WriteToLog);
 
                     SetTitle(connectForm.NamespaceName, "Event Grid");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Event Grid");

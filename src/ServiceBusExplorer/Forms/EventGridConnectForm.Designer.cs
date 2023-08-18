@@ -38,19 +38,28 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.lblResourceGroupName = new System.Windows.Forms.Label();
             this.lblNamespaceName = new System.Windows.Forms.Label();
             this.lblSubscriptionId = new System.Windows.Forms.Label();
             this.lblApiVersion = new System.Windows.Forms.Label();
+            this.lblTimeout = new System.Windows.Forms.Label();
+            this.lblCloud = new System.Windows.Forms.Label();
             this.txtResourceGroupName = new System.Windows.Forms.TextBox();
             this.txtNamespaceName = new System.Windows.Forms.TextBox();
             this.txtSubscriptionId = new System.Windows.Forms.TextBox();
             this.txtApiVersion = new System.Windows.Forms.TextBox();
+            this.txtRetryTimeout = new System.Windows.Forms.TextBox();
+            this.cloudGroupBox = new System.Windows.Forms.GroupBox();
+            this.btnPublicCloud = new System.Windows.Forms.RadioButton();
+            this.btnFairfaxCloud = new System.Windows.Forms.RadioButton();
+            this.btnMooncakeCloud = new System.Windows.Forms.RadioButton();
+            this.btnCustomCloud = new System.Windows.Forms.RadioButton();
+            this.txtCustomId = new System.Windows.Forms.TextBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.pbAzure = new System.Windows.Forms.PictureBox();
             this.grouperEventGridNamespaceSettings = new ServiceBusExplorer.Controls.Grouper();
+            this.cloudGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAzure)).BeginInit();
             this.grouperEventGridNamespaceSettings.SuspendLayout();
             this.SuspendLayout();
@@ -99,9 +108,31 @@ namespace ServiceBusExplorer.Forms
             this.lblApiVersion.TabIndex = 10;
             this.lblApiVersion.Text = "API Version:";
             // 
+            // lblTimeout
+            // 
+            this.lblTimeout.AutoSize = true;
+            this.lblTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblTimeout.Location = new System.Drawing.Point(24, 349);
+            this.lblTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTimeout.Name = "lblTimeout";
+            this.lblTimeout.Size = new System.Drawing.Size(76, 13);
+            this.lblTimeout.TabIndex = 18;
+            this.lblTimeout.Text = "Retry Timeout (ms):";
+            // 
+            // lblCloud
+            // 
+            this.lblCloud.AutoSize = true;
+            this.lblCloud.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblCloud.Location = new System.Drawing.Point(24, 425);
+            this.lblCloud.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCloud.Name = "lblCloud";
+            this.lblCloud.Size = new System.Drawing.Size(74, 13);
+            this.lblCloud.TabIndex = 51;
+            this.lblCloud.Text = "Cloud Tenant:";
+            // 
             // txtResourceGroupName
             // 
-            this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtResourceGroupName.Location = new System.Drawing.Point(24, 74);
@@ -113,7 +144,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtNamespaceName
             // 
-            this.txtNamespaceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtNamespaceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtNamespaceName.Location = new System.Drawing.Point(24, 148);
@@ -124,7 +155,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtSubscriptionId
             // 
-            this.txtSubscriptionId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSubscriptionId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtSubscriptionId.Location = new System.Drawing.Point(24, 220);
@@ -135,7 +166,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtApiVersion
             // 
-            this.txtApiVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtApiVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtApiVersion.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtApiVersion.Location = new System.Drawing.Point(24, 297);
@@ -143,6 +174,96 @@ namespace ServiceBusExplorer.Forms
             this.txtApiVersion.Name = "txtApiVersion";
             this.txtApiVersion.Size = new System.Drawing.Size(502, 20);
             this.txtApiVersion.TabIndex = 17;
+            // 
+            // txtRetryTimeout
+            // 
+            this.txtRetryTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtRetryTimeout.Location = new System.Drawing.Point(24, 373);
+            this.txtRetryTimeout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtRetryTimeout.Name = "txtRetryTimeout";
+            this.txtRetryTimeout.Size = new System.Drawing.Size(502, 20);
+            this.txtRetryTimeout.TabIndex = 19;
+            // 
+            // cloudGroupBox
+            // 
+            this.cloudGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cloudGroupBox.BackColor = System.Drawing.Color.Transparent;
+            this.cloudGroupBox.Controls.Add(this.btnPublicCloud);
+            this.cloudGroupBox.Controls.Add(this.btnFairfaxCloud);
+            this.cloudGroupBox.Controls.Add(this.btnMooncakeCloud);
+            this.cloudGroupBox.Controls.Add(this.btnCustomCloud);
+            this.cloudGroupBox.Controls.Add(this.txtCustomId);
+            this.cloudGroupBox.Location = new System.Drawing.Point(24, 445);
+            this.cloudGroupBox.Name = "cloudGroupBox";
+            this.cloudGroupBox.Size = new System.Drawing.Size(502, 130);
+            this.cloudGroupBox.TabIndex = 53;
+            this.cloudGroupBox.TabStop = false;
+            // 
+            // btnPublicCloud
+            // 
+            this.btnPublicCloud.AutoSize = true;
+            this.btnPublicCloud.Checked = true;
+            this.btnPublicCloud.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnPublicCloud.Location = new System.Drawing.Point(6, 11);
+            this.btnPublicCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnPublicCloud.Name = "btnPublicCloud";
+            this.btnPublicCloud.Size = new System.Drawing.Size(54, 17);
+            this.btnPublicCloud.TabIndex = 40;
+            this.btnPublicCloud.TabStop = true;
+            this.btnPublicCloud.Text = "Public";
+            this.btnPublicCloud.UseVisualStyleBackColor = true;
+            // 
+            // btnFairfaxCloud
+            // 
+            this.btnFairfaxCloud.AutoSize = true;
+            this.btnFairfaxCloud.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnFairfaxCloud.Location = new System.Drawing.Point(6, 40);
+            this.btnFairfaxCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnFairfaxCloud.Name = "btnFairfaxCloud";
+            this.btnFairfaxCloud.Size = new System.Drawing.Size(56, 17);
+            this.btnFairfaxCloud.TabIndex = 40;
+            this.btnFairfaxCloud.Text = "Fairfax";
+            this.btnFairfaxCloud.UseVisualStyleBackColor = true;
+            // 
+            // btnMooncakeCloud
+            // 
+            this.btnMooncakeCloud.AutoSize = true;
+            this.btnMooncakeCloud.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnMooncakeCloud.Location = new System.Drawing.Point(6, 68);
+            this.btnMooncakeCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnMooncakeCloud.Name = "btnMooncakeCloud";
+            this.btnMooncakeCloud.Size = new System.Drawing.Size(76, 17);
+            this.btnMooncakeCloud.TabIndex = 40;
+            this.btnMooncakeCloud.Text = "Mooncake";
+            this.btnMooncakeCloud.UseVisualStyleBackColor = true;
+            // 
+            // btnCustomCloud
+            // 
+            this.btnCustomCloud.AutoSize = true;
+            this.btnCustomCloud.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnCustomCloud.Location = new System.Drawing.Point(6, 96);
+            this.btnCustomCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCustomCloud.Name = "btnCustomCloud";
+            this.btnCustomCloud.Size = new System.Drawing.Size(111, 17);
+            this.btnCustomCloud.TabIndex = 40;
+            this.btnCustomCloud.Text = "Custom Tenant ID";
+            this.btnCustomCloud.UseVisualStyleBackColor = true;
+            this.btnCustomCloud.CheckedChanged += new System.EventHandler(this.customCloud_CheckedChanged);
+            // 
+            // txtCustomId
+            // 
+            this.txtCustomId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCustomId.Enabled = false;
+            this.txtCustomId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtCustomId.Location = new System.Drawing.Point(178, 93);
+            this.txtCustomId.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtCustomId.Name = "txtCustomId";
+            this.txtCustomId.Size = new System.Drawing.Size(307, 20);
+            this.txtCustomId.TabIndex = 41;
             // 
             // btnOk
             // 
@@ -152,7 +273,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(353, 421);
+            this.btnOk.Location = new System.Drawing.Point(353, 673);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(108, 37);
@@ -169,7 +290,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(473, 421);
+            this.btnCancel.Location = new System.Drawing.Point(473, 673);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(108, 37);
@@ -193,11 +314,15 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperEventGridNamespaceSettings
             // 
-            this.grouperEventGridNamespaceSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperEventGridNamespaceSettings.BackgroundColor = System.Drawing.Color.White;
             this.grouperEventGridNamespaceSettings.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperEventGridNamespaceSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperEventGridNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperEventGridNamespaceSettings.BorderThickness = 1F;
+            this.grouperEventGridNamespaceSettings.Controls.Add(this.cloudGroupBox);
+            this.grouperEventGridNamespaceSettings.Controls.Add(this.lblCloud);
+            this.grouperEventGridNamespaceSettings.Controls.Add(this.txtRetryTimeout);
+            this.grouperEventGridNamespaceSettings.Controls.Add(this.lblTimeout);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.txtApiVersion);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.txtSubscriptionId);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.lblApiVersion);
@@ -220,7 +345,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperEventGridNamespaceSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperEventGridNamespaceSettings.ShadowControl = false;
             this.grouperEventGridNamespaceSettings.ShadowThickness = 1;
-            this.grouperEventGridNamespaceSettings.Size = new System.Drawing.Size(552, 357);
+            this.grouperEventGridNamespaceSettings.Size = new System.Drawing.Size(552, 602);
             this.grouperEventGridNamespaceSettings.TabIndex = 37;
             // 
             // EventGridConnectForm
@@ -228,7 +353,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(621, 480);
+            this.ClientSize = new System.Drawing.Size(621, 732);
             this.Controls.Add(this.pbAzure);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
@@ -241,10 +366,13 @@ namespace ServiceBusExplorer.Forms
             this.Name = "EventGridConnectForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connect to an Event Grid Namespace";
+            this.cloudGroupBox.ResumeLayout(false);
+            this.cloudGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAzure)).EndInit();
             this.grouperEventGridNamespaceSettings.ResumeLayout(false);
             this.grouperEventGridNamespaceSettings.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion
@@ -254,10 +382,19 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblResourceGroupName;
         private System.Windows.Forms.Label lblSubscriptionId;
         private System.Windows.Forms.Label lblApiVersion;
+        private System.Windows.Forms.Label lblTimeout;
+        private System.Windows.Forms.Label lblCloud;
         private System.Windows.Forms.TextBox txtNamespaceName;
         private System.Windows.Forms.TextBox txtResourceGroupName;
         private System.Windows.Forms.TextBox txtSubscriptionId;
         private System.Windows.Forms.TextBox txtApiVersion;
+        private System.Windows.Forms.TextBox txtRetryTimeout;
+        private System.Windows.Forms.GroupBox cloudGroupBox;
+        private System.Windows.Forms.RadioButton btnPublicCloud;
+        private System.Windows.Forms.RadioButton btnFairfaxCloud;
+        private System.Windows.Forms.RadioButton btnMooncakeCloud;
+        private System.Windows.Forms.RadioButton btnCustomCloud;
+        private System.Windows.Forms.TextBox txtCustomId;
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.PictureBox pbAzure;

@@ -1,6 +1,7 @@
 ﻿using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
@@ -12,6 +13,9 @@ namespace ServiceBusExplorer.Forms
         public string NamespaceName;
         public string SubscriptionId;
         public string ApiVersion;
+        public int RetryTimeout;
+        public string CloudTenant;
+        public string CustomId;
         public List<string> SelectedEntities = new List<string> { Constants.TopicEntities, Constants.SubscriptionEntities };
         #endregion
 
@@ -20,12 +24,20 @@ namespace ServiceBusExplorer.Forms
             InitializeComponent();
         }
 
+        private void customCloud_CheckedChanged(object sender, EventArgs e)
+        {
+            txtCustomId.Enabled = btnCustomCloud.Checked;
+        }
+
         private void btnOk_Click(object sender, EventArgs e)
         {
             ResourceGroup = txtResourceGroupName.Text.Trim();
             NamespaceName = txtNamespaceName.Text.Trim();
             SubscriptionId = txtSubscriptionId.Text.Trim();
             ApiVersion = txtApiVersion.Text.Trim();
+            RetryTimeout = txtRetryTimeout.Text != string.Empty ? int.Parse(txtRetryTimeout.Text) : 0;
+            CloudTenant = cloudGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
+            CustomId = txtCustomId.Text?.Trim();
 
             DialogResult = DialogResult.OK;
         }

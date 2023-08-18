@@ -24,22 +24,29 @@ namespace EventGridExplorerLibrary
         private const string ArmEndpointUrl = "https://management.azure.com/";
         private const string ScopeUrl = "https://management.core.windows.net/.default";
         private const string AuthorityHostUri = "https://login.microsoftonline.com/";
-        private const string TenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
+        private readonly Dictionary<string, string> tenantIds = new Dictionary<string, string>
+        {
+            { "Public", "72f988bf-86f1-41af-91ab-2d7cd011db47" },
+            { "Fairfax", "cab8a31a-1906-4287-a0d8-4eef66b95f6e" },
+            { "Mooncake", "a55a4d5b-9241-49b1-b4ff-befa8db00269" }
+        };
         private const string ExceptionFormat = "Exception: {0}";
-        private const int Timeout = 5000;
+        private const string TimeoutFormat = "Exception: Receiving events timed out after {0} ms";
         #endregion
 
         #region Private Fields
         private EventGridManagementClient controlPlaneClient;
         private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
+        private int retryTimeout;
+        private string tenantId;
         private readonly WriteToLogDelegate writeToLog = default;
         #endregion
 
-        public EventGridLibrary(string apiVersion, string subscriptionId, WriteToLogDelegate writeToLog)
+        public EventGridLibrary(string subscriptionId, string apiVersion, int retryTimeout, string cloudTenant, string customId, WriteToLogDelegate writeToLog)
         {
-            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential());
-            controlPlaneClient.SubscriptionId = subscriptionId;
-            controlPlaneClient.SetApiVersion(apiVersion);
+            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(), subscriptionId, apiVersion, retryTimeout);
+            this.retryTimeout = retryTimeout;
+            this.tenantId = customId == string.Empty ? tenantIds[cloudTenant] : customId;
             this.writeToLog = writeToLog;
         }
 
@@ -49,7 +56,7 @@ namespace EventGridExplorerLibrary
 
             var credentialOption = new InteractiveBrowserCredentialOptions()
             {
-                TenantId = TenantId,
+                TenantId = tenantId,
                 AuthorityHost = new Uri(AuthorityHostUri)
             };
 
@@ -133,12 +140,13 @@ namespace EventGridExplorerLibrary
             try
             {
                 Task<Response<ReceiveResult>> receiveTask = dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum);
-                if (await Task.WhenAny(receiveTask, Task.Delay(Timeout)) == receiveTask)
+                if (await Task.WhenAny(receiveTask, Task.Delay(retryTimeout)) == receiveTask)
                 {
                     return receiveTask.Result;
                 }
                 else
                 {
+                    writeToLog(string.Format(CultureInfo.CurrentCulture, TimeoutFormat, retryTimeout));
                     return null;
                 }
             }

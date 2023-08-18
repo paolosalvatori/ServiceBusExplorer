@@ -23,6 +23,11 @@ namespace ServiceBusExplorer.Forms
             InitializeComponent();
         }
 
+        private void receiveEvents_CheckedChanged(object sender, EventArgs e)
+        {
+            txtEventCount.Enabled = btnTop.Checked;
+        }
+
         private void btnOk_Click(object sender, EventArgs e)
         {
             try

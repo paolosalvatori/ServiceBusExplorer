@@ -3,16 +3,15 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<UserSecretsId>5e9a3a5e-9d3e-4d94-9e4c-f9d6944d5d5c</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.EventGrid" VersionOverride="4.17.0-beta.1" Version="4.17.0-beta.1" />
-		<PackageReference Include="Azure.Identity" VersionOverride="1.3.0" Version="1.9.0" />
+		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.17.0-beta.1" />
+		<PackageReference Include="Azure.Identity" Version="1.9.0" />
 		<PackageReference Include="Azure.ResourceManager.EventGrid" Version="1.1.0-beta.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime" VersionOverride="2.3.20" Version="2.3.24" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime.Azure" VersionOverride="3.3.19" Version="3.3.19" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
 	</ItemGroup>
 
 	<ItemGroup>

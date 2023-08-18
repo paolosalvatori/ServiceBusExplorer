@@ -56,9 +56,7 @@ namespace ServiceBusExplorer.Forms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PublishEventForm));
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.grouperMessageText = new ServiceBusExplorer.Controls.Grouper();
-            this.grouperMessageProperties = new ServiceBusExplorer.Controls.Grouper();
-            this.grouperCaption = new ServiceBusExplorer.Controls.Grouper();
+            this.grouperPublishEvent = new ServiceBusExplorer.Controls.Grouper();
             this.lblEventSource = new System.Windows.Forms.Label();
             this.lblEventType = new System.Windows.Forms.Label();
             this.lblEventInfo = new System.Windows.Forms.Label();
@@ -69,10 +67,8 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).BeginInit();
             this.messageListTextPropertiesSplitContainer.SuspendLayout();
-            this.grouperCaption.SuspendLayout();
+            this.grouperPublishEvent.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtEventInfo)).BeginInit();
-            this.grouperMessageText.SuspendLayout();
-            this.grouperMessageProperties.SuspendLayout();
             this.SuspendLayout();
             // 
             // messageListTextPropertiesSplitContainer
@@ -84,85 +80,35 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperCaption
             // 
-            this.grouperCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.grouperPublishEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperCaption.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperCaption.BorderThickness = 1F;
-            this.grouperCaption.Controls.Add(this.txtEventInfo);
-            this.grouperCaption.Controls.Add(this.txtEventType);
-            this.grouperCaption.Controls.Add(this.lblEventType);
-            this.grouperCaption.Controls.Add(this.txtEventSource);
-            this.grouperCaption.Controls.Add(this.lblEventInfo);
-            this.grouperCaption.Controls.Add(this.lblEventSource);
-            this.grouperCaption.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperCaption.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperCaption.ForeColor = System.Drawing.Color.White;
-            this.grouperCaption.GroupImage = null;
-            this.grouperCaption.GroupTitle = "Publish Event";
-            this.grouperCaption.Location = new System.Drawing.Point(15, 16);
-            this.grouperCaption.Name = "grouperCaption";
-            this.grouperCaption.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
-            this.grouperCaption.PaintGroupBox = true;
-            this.grouperCaption.RoundCorners = 4;
-            this.grouperCaption.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperCaption.ShadowControl = false;
-            this.grouperCaption.ShadowThickness = 1;
-            this.grouperCaption.Size = new System.Drawing.Size(501, 316);
-            this.grouperCaption.TabIndex = 34;
-            // 
-            // grouperMessageText
-            // 
-            this.grouperMessageText.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageText.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageText.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageText.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.BorderThickness = 1F;
-            this.grouperMessageText.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageText.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageText.GroupImage = null;
-            this.grouperMessageText.GroupTitle = "Message Text";
-            this.grouperMessageText.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageText.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.grouperMessageText.Name = "grouperMessageText";
-            this.grouperMessageText.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
-            this.grouperMessageText.PaintGroupBox = true;
-            this.grouperMessageText.RoundCorners = 4;
-            this.grouperMessageText.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageText.ShadowControl = false;
-            this.grouperMessageText.ShadowThickness = 1;
-            this.grouperMessageText.Size = new System.Drawing.Size(999, 340);
-            this.grouperMessageText.TabIndex = 0;
-            // 
-            // grouperMessageProperties
-            // 
-            this.grouperMessageProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMessageProperties.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperMessageProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessageProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageProperties.BorderThickness = 1F;
-            this.grouperMessageProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperMessageProperties.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grouperMessageProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessageProperties.ForeColor = System.Drawing.Color.White;
-            this.grouperMessageProperties.GroupImage = null;
-            this.grouperMessageProperties.GroupTitle = "Message Properties";
-            this.grouperMessageProperties.Location = new System.Drawing.Point(0, 0);
-            this.grouperMessageProperties.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.grouperMessageProperties.Name = "grouperMessageProperties";
-            this.grouperMessageProperties.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
-            this.grouperMessageProperties.PaintGroupBox = true;
-            this.grouperMessageProperties.RoundCorners = 4;
-            this.grouperMessageProperties.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperMessageProperties.ShadowControl = false;
-            this.grouperMessageProperties.ShadowThickness = 1;
-            this.grouperMessageProperties.Size = new System.Drawing.Size(381, 729);
-            this.grouperMessageProperties.TabIndex = 0;
+            this.grouperPublishEvent.BackgroundColor = System.Drawing.Color.White;
+            this.grouperPublishEvent.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperPublishEvent.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperPublishEvent.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPublishEvent.BorderThickness = 1F;
+            this.grouperPublishEvent.Controls.Add(this.txtEventInfo);
+            this.grouperPublishEvent.Controls.Add(this.txtEventType);
+            this.grouperPublishEvent.Controls.Add(this.lblEventType);
+            this.grouperPublishEvent.Controls.Add(this.txtEventSource);
+            this.grouperPublishEvent.Controls.Add(this.lblEventInfo);
+            this.grouperPublishEvent.Controls.Add(this.lblEventSource);
+            this.grouperPublishEvent.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPublishEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperPublishEvent.ForeColor = System.Drawing.Color.White;
+            this.grouperPublishEvent.GroupImage = null;
+            this.grouperPublishEvent.GroupTitle = "Publish Event";
+            this.grouperPublishEvent.Location = new System.Drawing.Point(15, 16);
+            this.grouperPublishEvent.Name = "grouperPublishEvent";
+            this.grouperPublishEvent.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperPublishEvent.PaintGroupBox = true;
+            this.grouperPublishEvent.RoundCorners = 4;
+            this.grouperPublishEvent.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperPublishEvent.ShadowControl = false;
+            this.grouperPublishEvent.ShadowThickness = 1;
+            this.grouperPublishEvent.Size = new System.Drawing.Size(501, 316);
+            this.grouperPublishEvent.TabIndex = 34;
             // 
             // lblEventSource
             // 
@@ -286,28 +232,22 @@ namespace ServiceBusExplorer.Forms
             this.ClientSize = new System.Drawing.Size(525, 385);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSubmit);
-            this.Controls.Add(this.grouperCaption);
+            this.Controls.Add(this.grouperPublishEvent);
             this.Name = "PublishEventForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Publish Event";
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).EndInit();
             this.messageListTextPropertiesSplitContainer.ResumeLayout(false);
-            this.grouperCaption.ResumeLayout(false);
-            this.grouperCaption.PerformLayout();
+            this.grouperPublishEvent.ResumeLayout(false);
+            this.grouperPublishEvent.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtEventInfo)).EndInit();
-            this.grouperMessageText.ResumeLayout(false);
-            this.grouperMessageText.PerformLayout();
-            this.grouperMessageProperties.ResumeLayout(false);
-            this.grouperMessageProperties.PerformLayout();
             this.ResumeLayout(false);
         }
 
         #endregion
 
         private System.Windows.Forms.SplitContainer messageListTextPropertiesSplitContainer;
-        private Grouper grouperMessageProperties;
-        private Grouper grouperMessageText;
-        private Grouper grouperCaption;
+        private Grouper grouperPublishEvent;
         private System.Windows.Forms.Label lblEventSource;
         private System.Windows.Forms.Label lblEventType;
         private System.Windows.Forms.Label lblEventInfo;
