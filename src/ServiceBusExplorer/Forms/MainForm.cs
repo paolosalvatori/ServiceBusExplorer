@@ -4735,7 +4735,6 @@ namespace ServiceBusExplorer.Forms
                             NamespaceHostname,
                             EventGridNamespaceIconIndex,
                             EventGridNamespaceIconIndex);
-                        rootNode.ContextMenuStrip = rootContextMenuStrip;
                         rootNode.Tag = eventGridNamespace;
 
                         HandleNodeMouseClick(rootNode);
