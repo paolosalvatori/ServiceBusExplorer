@@ -37,7 +37,7 @@ When successful, the data view table is populated with the received events and t
 
 ## Acknowledge/Release/Reject
 
-On the received events listed in the table, the user can multi-select events to perform the acknowledge/release/reject operations.
+The user can multi-select the received events in the table to acknowledge, release, or reject events.
 When successful, the event status column is updated with the operation performed.
 
 ![Event Action](./media/event-action-event-grid.png)
