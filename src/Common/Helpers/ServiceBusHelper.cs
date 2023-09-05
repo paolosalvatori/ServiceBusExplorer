@@ -5060,19 +5060,19 @@ namespace ServiceBusExplorer
         public string GetMessageText(EventData eventDataToRead, out BodyType bodyType, bool doNotSerializeBody = false)
         {
             string eventDataText = null;
-            Stream stream = null;
             bodyType = BodyType.Stream;
             if (eventDataToRead == null)
             {
                 return null;
             }
-            var inboundMessage = eventDataToRead.Clone();
+
+            using var stream = eventDataToRead.GetBodyStream();
+
             var bBodyParsed = false;
             if (!doNotSerializeBody)
             {
                 try
                 {
-                    stream = inboundMessage.GetBodyStream();
                     if (stream != null)
                     {
                         var element = new BinaryMessageEncodingBindingElement
@@ -5106,12 +5106,12 @@ namespace ServiceBusExplorer
                 }
                 catch (Exception)
                 {
-                    inboundMessage = eventDataToRead.Clone();
                     try
                     {
-                        stream = inboundMessage.GetBodyStream();
                         if (stream != null)
                         {
+                            stream.Seek(0, SeekOrigin.Begin);
+
                             var element = new BinaryMessageEncodingBindingElement
                             {
                                 ReaderQuotas = new XmlDictionaryReaderQuotas
@@ -5169,21 +5169,22 @@ namespace ServiceBusExplorer
             {
                 try
                 {
-                    inboundMessage = eventDataToRead.Clone();
-                    stream = inboundMessage.GetBodyStream();
-                    stream.Seek(0, SeekOrigin.Begin);
-                    using (var reader = new StreamReader(stream))
+                    if (stream != null)
                     {
-                        eventDataText = reader.ReadToEnd();
-                        if (eventDataText.ToCharArray().GroupBy(c => c).
-                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
-                            Select(g => g.First()).Any())
+                        stream.Seek(0, SeekOrigin.Begin);
+                        using (var reader = new StreamReader(stream))
                         {
-                            stream.Seek(0, SeekOrigin.Begin);
-                            using (var binaryReader = new BinaryReader(stream))
+                            eventDataText = reader.ReadToEnd();
+                            if (eventDataText.ToCharArray().GroupBy(c => c).
+                                Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
+                                Select(g => g.First()).Any())
                             {
-                                var bytes = binaryReader.ReadBytes((int)stream.Length);
-                                eventDataText = BitConverter.ToString(bytes).Replace('-', ' ');
+                                stream.Seek(0, SeekOrigin.Begin);
+                                using (var binaryReader = new BinaryReader(stream))
+                                {
+                                    var bytes = binaryReader.ReadBytes((int)stream.Length);
+                                    eventDataText = BitConverter.ToString(bytes).Replace('-', ' ');
+                                }
                             }
                         }
                     }

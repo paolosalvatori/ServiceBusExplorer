@@ -644,11 +644,30 @@ namespace ServiceBusExplorer.Controls
             currentEventData = bindingList[e.RowIndex];
             eventDataPropertyGrid.SelectedObject = currentEventData;
 
-            LanguageDetector.SetFormattedMessage(serviceBusHelper, currentEventData.Clone(), txtMessageText);
+            try
+            {
+                //var eventData = currentEventData.Clone();
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, currentEventData, txtMessageText);
+            }
+            catch (Exception exception)
+            {
+                HandleException(exception);
+            }
 
-            var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
-            eventDataPropertyListView.Items.Clear();
-            eventDataPropertyListView.Items.AddRange(listViewItems);
+            try
+            {
+                var type = typeof(EventData);
+                var fieldInfo = type.GetField("properties", BindingFlags.Instance | BindingFlags.NonPublic);
+                var value = fieldInfo.GetValue(currentEventData);
+
+                var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
+                eventDataPropertyListView.Items.Clear();
+                eventDataPropertyListView.Items.AddRange(listViewItems);
+            }
+            catch (Exception exception)
+            {
+                HandleException(exception);
+            }
         }
 
         private void tabPageMessages_Resize(object sender, EventArgs e)
