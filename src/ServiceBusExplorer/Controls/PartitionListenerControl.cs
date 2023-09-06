@@ -45,6 +45,8 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
+    using Abstractions;
+
     public partial class PartitionListenerControl : UserControl
     {
         #region Private Constants
@@ -115,14 +117,13 @@ namespace ServiceBusExplorer.Controls
         private readonly WriteToLogDelegate writeToLog;
         private readonly Func<Task> stopLog;
         private readonly Action startLog;
-        private EventData currentEventData;
-        private int grouperEventDataCustomPropertiesWidth;
+        private EventDataMessage currentEventData;
         private int currentMessageRowIndex;
         private readonly int partitionCount;
         private bool sorting;
-        private readonly SortableBindingList<EventData> eventDataBindingList = new SortableBindingList<EventData> { AllowNew = false, AllowEdit = false, AllowRemove = false };
+        private readonly SortableBindingList<EventDataMessage> eventDataBindingList = new SortableBindingList<EventDataMessage> { AllowNew = false, AllowEdit = false, AllowRemove = false };
         private readonly IList<PartitionRuntimeInformation> partitionRuntumeInformationList = new List<PartitionRuntimeInformation>();
-        private BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
+        private BlockingCollection<EventDataMessage> eventDataCollection = new BlockingCollection<EventDataMessage>();
         private System.Timers.Timer timer;
         private long receiverMessageNumber;
         private long receiverMessageSizeTotal;
@@ -151,6 +152,7 @@ namespace ServiceBusExplorer.Controls
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
+        int grouperEventDataCustomPropertiesWidth;
         public Task AsyncTrackEventDataTask { get; private set; }
 
         #endregion
@@ -631,7 +633,7 @@ namespace ServiceBusExplorer.Controls
 
         private void eventDataDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+            var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
             currentMessageRowIndex = e.RowIndex;
             if (bindingList == null)
             {
@@ -711,7 +713,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+            var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
             if (bindingList == null)
             {
                 return;
@@ -851,7 +853,7 @@ namespace ServiceBusExplorer.Controls
                                                                                                     checkBoxCheckpoint,
                                                                                                     cancellationTokenSource.Token)
                     {
-                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(m)), ev),
+                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(new EventDataMessage(m))), ev),
                         GetElapsedTime = GetElapsedTime,
                         UpdateStatistics = UpdateStatistics,
                         WriteToLog = writeToLog,
@@ -973,7 +975,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 clearing = true;
                 cleared = true;
                 eventDataCollection.Dispose();
-                eventDataCollection = new BlockingCollection<EventData>();
+                eventDataCollection = new BlockingCollection<EventDataMessage>();
                 ClearTrackedMessages();
                 ClearStatistics();
                 ClearCharts();
@@ -1563,8 +1565,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     return;
                 }
-                var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventData);
-                IEnumerable<EventData> events = messages as EventData[] ?? messages.ToArray();
+                var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventDataMessage);
+                IEnumerable<EventDataMessage> events = messages as EventDataMessage[] ?? messages.ToArray();
                 if (!events.Any())
                 {
                     return;
