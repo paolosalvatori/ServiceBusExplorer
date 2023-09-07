@@ -658,11 +658,6 @@ namespace ServiceBusExplorer.Controls
 
             try
             {
-                // Investigation: Properties throws OOTB. Can access the member field but it has no values.
-                // var type = typeof(EventData);
-                // var fieldInfo = type.GetField("properties", BindingFlags.Instance | BindingFlags.NonPublic);
-                // var value = fieldInfo.GetValue(currentEventData);
-
                 var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
                 eventDataPropertyListView.Items.Clear();
                 eventDataPropertyListView.Items.AddRange(listViewItems);
@@ -1523,7 +1518,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     return;
                 }
-                var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+                var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
                 if (bindingList == null)
                 {
                     return;
