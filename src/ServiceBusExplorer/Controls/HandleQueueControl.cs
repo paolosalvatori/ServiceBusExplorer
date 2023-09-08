@@ -235,7 +235,6 @@ namespace ServiceBusExplorer.Controls
 
         private QueueDescription queueDescription = default!;
         private readonly ServiceBusHelper serviceBusHelper = default!;
-        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog = default!;
         private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
@@ -297,9 +296,9 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
-            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
             this.queueDescription = queueDescription;
+            var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
 
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
             {

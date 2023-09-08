@@ -125,7 +125,6 @@ namespace ServiceBusExplorer.Controls
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private TopicDescription topicDescription;
         private readonly ServiceBusHelper serviceBusHelper;
-        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog;
         private readonly bool premiumNamespace;
         private readonly string path;
@@ -153,7 +152,7 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
-            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
             {
