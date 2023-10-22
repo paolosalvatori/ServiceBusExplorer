@@ -117,6 +117,7 @@
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cancelScheduledMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1149,13 +1150,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
             this.txtMessageText.CharWidth = 8;
             this.txtMessageText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMessageText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtMessageText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtMessageText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtMessageText.IsReplaceMode = false;
             this.txtMessageText.Location = new System.Drawing.Point(16, 32);
@@ -1447,13 +1449,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
             this.txtDeadletterText.CharWidth = 8;
             this.txtDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtDeadletterText.IsReplaceMode = false;
             this.txtDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -1728,13 +1731,14 @@
         '\"',
         '\'',
         '\''};
-            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtTransferDeadletterText.BackBrush = null;
             this.txtTransferDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTransferDeadletterText.CharHeight = 14;
             this.txtTransferDeadletterText.CharWidth = 8;
             this.txtTransferDeadletterText.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTransferDeadletterText.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtTransferDeadletterText.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtTransferDeadletterText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTransferDeadletterText.IsReplaceMode = false;
             this.txtTransferDeadletterText.Location = new System.Drawing.Point(16, 32);
@@ -2092,13 +2096,14 @@
             this.repairAndResubmitMessageToolStripMenuItem,
             this.resubmitMessageToolStripMenuItem,
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
+            this.cancelScheduledMessageToolStripMenuItem,
             this.toolStripSeparator1,
             this.saveSelectedMessageToolStripMenuItem,
             this.saveSelectedMessageBodyAsFileToolStripMenuItem,
             this.saveSelectedMessagesToolStripMenuItem,
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 186);
+            this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 208);
             // 
             // repairAndResubmitMessageToolStripMenuItem
             // 
@@ -2114,6 +2119,14 @@
             this.resubmitMessageToolStripMenuItem.Text = "Resubmit Selected Message";
             this.resubmitMessageToolStripMenuItem.ToolTipText = "Resubmits the message with unchanged body.";
             this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
+            // 
+            // cancelScheduledMessageToolStripMenuItem
+            // 
+            this.cancelScheduledMessageToolStripMenuItem.Name = "cancelScheduledMessageToolStripMenuItem";
+            this.cancelScheduledMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.cancelScheduledMessageToolStripMenuItem.Text = "Cancel Selected Scheduled Message";
+            this.cancelScheduledMessageToolStripMenuItem.Visible = false;
+            this.cancelScheduledMessageToolStripMenuItem.Click += new System.EventHandler(this.cancelScheduledMessageToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
             // 
@@ -2576,5 +2589,6 @@
         private System.Windows.Forms.PropertyGrid transferDeadletterCustomPropertyGrid;
         private System.Windows.Forms.ToolStripMenuItem resubmitDeadletterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cancelScheduledMessageToolStripMenuItem;
     }
 }

@@ -523,6 +523,21 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Methods
 
+        bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
+        {
+            foreach (DataGridViewRow row in selectedRows)
+            {
+                var brokeredMessage = row.DataBoundItem as BrokeredMessage;
+
+                if (brokeredMessage?.State != MessageState.Scheduled)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private void InitializeControls(bool initialCall)
         {
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
@@ -2878,14 +2893,17 @@ namespace ServiceBusExplorer.Controls
             {
                 var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
                 currentMessageRowIndex = e.RowIndex;
+
                 if (bindingList == null)
                 {
                     return;
                 }
+
                 if (brokeredMessage == bindingList[e.RowIndex])
                 {
                     return;
                 }
+
                 brokeredMessage = bindingList[e.RowIndex];
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
@@ -3325,15 +3343,30 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
+
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
+
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
+
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            
+            if(AreAllSelectedMessageScheduled(messagesDataGridView.SelectedRows))
+            {
+                SetCancelScheduledMessageToolStripMenuItemText(multipleSelectedRows);
+                cancelScheduledMessageToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                cancelScheduledMessageToolStripMenuItem.Visible = false;
+            }
+
             saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
+            
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -3351,6 +3384,59 @@ namespace ServiceBusExplorer.Controls
         private void resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ResubmitSelectedMessages();
+        }
+
+
+        async void cancelScheduledMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (messagesDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+
+                var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+                bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                       ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                                       defaultValue: false);
+
+                if (!disableAccidentalDeletionPrevention)
+                {
+                    if(MessageBox.Show(FindForm(),
+                        "Are you sure you want to cancel the scheduled message(s)\n\n" +
+                        "They will be permanently removed.\n\n" +
+                        "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
+                        "Cancel Scheduled Message(s)", 
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button2) 
+                        == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+
+                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                    .Select(r => (BrokeredMessage)r.DataBoundItem);
+                var queueClient = QueueClient.CreateFromConnectionString(
+                    serviceBusHelper.ConnectionString, 
+                    queueDescription.Path);
+                var sequenceNumbersToCancel = messages.Select(s => s?.SequenceNumber).ToList();
+
+                foreach (var sequenceNumber in sequenceNumbersToCancel)
+                {
+                    if (null != sequenceNumber)
+                    {
+                        await queueClient.CancelScheduledMessageAsync((long)sequenceNumber);
+                        writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         private void ResubmitSelectedMessages()
@@ -3371,6 +3457,18 @@ namespace ServiceBusExplorer.Controls
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+        }
+
+        void SetCancelScheduledMessageToolStripMenuItemText(bool multipleSelectedRows)
+        {
+            if (multipleSelectedRows)
+            {
+                cancelScheduledMessageToolStripMenuItem.Text = "Cancel Scheduled Messages";
+            }
+            else
+            {
+                cancelScheduledMessageToolStripMenuItem.Text = "Cancel Scheduled Message";
             }
         }
 
