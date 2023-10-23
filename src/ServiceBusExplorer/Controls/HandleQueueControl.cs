@@ -525,17 +525,8 @@ namespace ServiceBusExplorer.Controls
 
         static bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
         {
-            foreach (DataGridViewRow row in selectedRows)
-            {
-                var brokeredMessage = row.DataBoundItem as BrokeredMessage;
-
-                if (brokeredMessage?.State != MessageState.Scheduled)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return selectedRows.Cast<DataGridViewRow>()
+                .All(row => (row.DataBoundItem as BrokeredMessage)?.State == MessageState.Scheduled);
         }
 
         #endregion
