@@ -521,9 +521,9 @@ namespace ServiceBusExplorer.Controls
 
         #endregion
 
-        #region Private Methods
+        #region Private Static Methods
 
-        bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
+        static bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
         {
             foreach (DataGridViewRow row in selectedRows)
             {
@@ -537,6 +537,10 @@ namespace ServiceBusExplorer.Controls
 
             return true;
         }
+
+        #endregion
+
+#       region Privare Instance Methods
 
         private void InitializeControls(bool initialCall)
         {
@@ -3389,53 +3393,46 @@ namespace ServiceBusExplorer.Controls
 
         async void cancelScheduledMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (messagesDataGridView.SelectedRows.Count <= 0)
             {
-                if (messagesDataGridView.SelectedRows.Count <= 0)
+                return;
+            }
+
+            var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+            bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                    ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                                    defaultValue: false);
+
+            if (!disableAccidentalDeletionPrevention)
+            {
+                if(MessageBox.Show(FindForm(),
+                    "Are you sure you want to cancel the scheduled message(s)\n\n" +
+                    "They will be permanently removed.\n\n" +
+                    "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
+                    "Cancel Scheduled Message(s)", 
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2) 
+                    == DialogResult.No)
                 {
                     return;
                 }
-
-                var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
-                bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
-                                       ConfigurationParameters.DisableAccidentalDeletionPrevention,
-                                       defaultValue: false);
-
-                if (!disableAccidentalDeletionPrevention)
-                {
-                    if(MessageBox.Show(FindForm(),
-                        "Are you sure you want to cancel the scheduled message(s)\n\n" +
-                        "They will be permanently removed.\n\n" +
-                        "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
-                        "Cancel Scheduled Message(s)", 
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning,
-                        MessageBoxDefaultButton.Button2) 
-                        == DialogResult.No)
-                    {
-                        return;
-                    }
-                }
-
-                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem);
-                var queueClient = QueueClient.CreateFromConnectionString(
-                    serviceBusHelper.ConnectionString, 
-                    queueDescription.Path);
-                var sequenceNumbersToCancel = messages.Select(s => s?.SequenceNumber).ToList();
-
-                foreach (var sequenceNumber in sequenceNumbersToCancel)
-                {
-                    if (null != sequenceNumber)
-                    {
-                        await queueClient.CancelScheduledMessageAsync((long)sequenceNumber);
-                        writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
-                    }
-                }
             }
-            catch (Exception ex)
+
+            var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(r => (BrokeredMessage)r.DataBoundItem);
+            var queueClient = QueueClient.CreateFromConnectionString(
+                serviceBusHelper.ConnectionString, 
+                queueDescription.Path);
+            var sequenceNumbersToCancel = messages.Select(s => s?.SequenceNumber).ToList();
+
+            foreach (var sequenceNumber in sequenceNumbersToCancel)
             {
-                HandleException(ex);
+                if (null != sequenceNumber)
+                {
+                    await queueClient.CancelScheduledMessageAsync((long)sequenceNumber);
+                    writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
+                }
             }
         }
 
