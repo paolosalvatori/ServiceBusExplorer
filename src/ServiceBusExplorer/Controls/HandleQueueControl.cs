@@ -3462,14 +3462,9 @@ namespace ServiceBusExplorer.Controls
 
         void SetCancelScheduledMessageToolStripMenuItemText(bool multipleSelectedRows)
         {
-            if (multipleSelectedRows)
-            {
-                cancelScheduledMessageToolStripMenuItem.Text = "Cancel Scheduled Messages";
-            }
-            else
-            {
-                cancelScheduledMessageToolStripMenuItem.Text = "Cancel Scheduled Message";
-            }
+             cancelScheduledMessageToolStripMenuItem.Text = multipleSelectedRows
+              ? "Cancel Scheduled Messages"
+              : "Cancel Scheduled Message";
         }
 
         void deleteSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
