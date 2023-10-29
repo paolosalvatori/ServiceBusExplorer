@@ -3396,34 +3396,42 @@ namespace ServiceBusExplorer.Controls
 
             if (!disableAccidentalDeletionPrevention)
             {
-                if(MessageBox.Show(FindForm(),
-                    "Are you sure you want to cancel the scheduled message(s)\n\n" +
+                if(MessageBox.Show(owner: FindForm(),
+                    text: "Are you sure you want to cancel the scheduled message(s)\n\n" +
                     "They will be permanently removed.\n\n" +
                     "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
-                    "Cancel Scheduled Message(s)", 
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button2) 
+                    caption: "Cancel Scheduled Message(s)", 
+                    buttons: MessageBoxButtons.YesNo,
+                    icon: MessageBoxIcon.Warning,
+                    defaultButton: MessageBoxDefaultButton.Button2) 
                     == DialogResult.No)
                 {
                     return;
                 }
             }
 
+    
             var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => (BrokeredMessage)r.DataBoundItem);
             var queueClient = QueueClient.CreateFromConnectionString(
                 serviceBusHelper.ConnectionString, 
                 queueDescription.Path);
-            var sequenceNumbersToCancel = messages.Select(s => s?.SequenceNumber).ToList();
+            var sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
 
-            foreach (var sequenceNumber in sequenceNumbersToCancel)
+            try
             {
-                if (null != sequenceNumber)
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Looks like writeToLog is not thread safe, so we can't use Task.WhenAll
+                foreach (var sequenceNumber in sequenceNumbersToCancel)
                 {
-                    await queueClient.CancelScheduledMessageAsync((long)sequenceNumber);
+                    await queueClient.CancelScheduledMessageAsync(sequenceNumber);
                     writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
                 }
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
         }
 
