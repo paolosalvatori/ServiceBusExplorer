@@ -3394,9 +3394,11 @@ namespace ServiceBusExplorer.Controls
                                     ConfigurationParameters.DisableAccidentalDeletionPrevention,
                                     defaultValue: false);
 
+            var thisForm = FindForm();
+
             if (!disableAccidentalDeletionPrevention)
             {
-                if(MessageBox.Show(owner: FindForm(),
+                if(MessageBox.Show(owner: thisForm,
                     text: "Are you sure you want to cancel the scheduled message(s)\n\n" +
                     "They will be permanently removed.\n\n" +
                     "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
@@ -3411,16 +3413,18 @@ namespace ServiceBusExplorer.Controls
             }
 
     
-            var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                .Select(r => (BrokeredMessage)r.DataBoundItem);
-            var queueClient = QueueClient.CreateFromConnectionString(
+            IEnumerable<BrokeredMessage> messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
+
+            QueueClient? queueClient = QueueClient.CreateFromConnectionString(
                 serviceBusHelper.ConnectionString, 
                 queueDescription.Path);
-            var sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+            
+            List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
 
             try
             {
-                Cursor.Current = Cursors.WaitCursor;
+                thisForm.UseWaitCursor = true;
 
                 // Looks like writeToLog is not thread safe, so we can't use Task.WhenAll
                 foreach (var sequenceNumber in sequenceNumbersToCancel)
@@ -3431,7 +3435,7 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                thisForm.UseWaitCursor = false;
             }
         }
 
