@@ -22,6 +22,7 @@ namespace EventGridExplorerLibrary
         private const string ArmEndpointUrl = "https://management.azure.com/";
         private const string ScopeUrl = "https://management.core.windows.net/.default";
         private const string AuthorityHostUri = "https://login.microsoftonline.com/";
+        private const string DefaultApiVersion = "2023-06-01-preview";
         private readonly Dictionary<string, string> tenantIds = new Dictionary<string, string>
         {
             { "Public", "72f988bf-86f1-41af-91ab-2d7cd011db47" },
@@ -36,18 +37,20 @@ namespace EventGridExplorerLibrary
         private EventGridManagementClient controlPlaneClient;
         private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
         private int retryTimeout;
+        private string tenantId;
         private readonly WriteToLogDelegate writeToLog = default;
         #endregion
 
         public EventGridLibrary(string subscriptionId, string apiVersion, int retryTimeout, string cloudTenant, string customId, WriteToLogDelegate writeToLog)
         {
-            string tenantId = customId == string.Empty ? null : customId;
-            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(tenantId), subscriptionId, apiVersion, retryTimeout);
+            var apiVersionToUse = string.IsNullOrEmpty(apiVersion) ? DefaultApiVersion : apiVersion;
+            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(), subscriptionId, apiVersionToUse , retryTimeout);
             this.retryTimeout = retryTimeout;
+            this.tenantId = customId == string.Empty ? tenantIds[cloudTenant] : customId;
             this.writeToLog = writeToLog;
         }
 
-        public TokenCredentials GetTokenCredential(string tenantId)
+        public TokenCredentials GetTokenCredential()
         {
             string[] scope = { ScopeUrl };
 
