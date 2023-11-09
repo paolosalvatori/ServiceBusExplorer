@@ -5639,7 +5639,7 @@ namespace ServiceBusExplorer.Forms
                                                           UrlSegmentIconIndex,
                                                           UrlSegmentIconIndex);
                         var entityType = EntityType.Queue;
-                        if (tag is QueueProperties)
+                        if (tag is QueueRuntimeProperties)
                         {
                             entityNode.ContextMenuStrip = queueFolderContextMenuStrip;
                         }
@@ -5658,13 +5658,14 @@ namespace ServiceBusExplorer.Forms
                     }
                     else
                     {
-                        if (tag is QueueProperties)
+                        if (tag is QueueRuntimeProperties)
                         {
-                            var queueProperties = tag as QueueProperties;
+                            var queueProperties = tag as QueueRuntimeProperties;
                             entityNode = entityNode.Nodes.Add(segments[i],
-                                                              "GetNameAndMessageCountShouldBeFixed",//GetNameAndMessageCountText(segments[i], queueProperties.MessageCountDetails),
-                                                              queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
-                                                              queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
+                                                              GetNameAndMessageCountText(segments[i], queueProperties),
+                                                              QueueIconIndex, QueueIconIndex
+                                                              /*queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
+                                                              queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex*/);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
                             entityNode.Tag = tag;
                             ApplyColor(entityNode, true);
@@ -5748,6 +5749,21 @@ namespace ServiceBusExplorer.Forms
                 }
             }
             return null;
+        }
+
+        private string GetNameAndMessageCountText(string name, QueueRuntimeProperties details)
+        {
+            MessageCountDetails messageCountDetails = new MessageCountDetails(details.ActiveMessageCount, details.DeadLetterMessageCount, details.ScheduledMessageCount, details.TransferMessageCount, details.TransferDeadLetterMessageCount);
+            var sb = new StringBuilder();
+            sb.Append(name);
+            if (showMessageCount && SelectedMessageCounts.Any())
+            {
+                sb.Append(" (");
+                var counts = SelectedMessageCounts.Select(smc => messageCountRetriever[smc](messageCountDetails));
+                sb.Append(string.Join(", ", counts));
+                sb.Append(")");
+            }
+            return sb.ToString();
         }
 
         private string GetNameAndMessageCountText(string name, MessageCountDetails details)

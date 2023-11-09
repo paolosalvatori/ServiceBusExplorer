@@ -698,7 +698,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// <param name="filter">OData filter.</param>
         /// <returns>Returns an IEnumerable<QueueDescription/> collection of all queues in the service namespace.
         ///          Returns an empty collection if no queue exists in this service namespace.</returns>
-        public async Task<IEnumerable<QueueProperties>> GetQueuesAsync(string filter, int timeoutInSeconds)
+        public async Task<IEnumerable<QueueRuntimeProperties>> GetQueuesAsync(string filter, int timeoutInSeconds)
         {
             if (serviceBusAdministrationClient != null)
             {
@@ -709,20 +709,21 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                     //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
                     //Split on ' OR ' and combine queues returned
                     
-                    var queuesListingResult = /*string.IsNullOrWhiteSpace(filter) ?*/ serviceBusAdministrationClient.GetQueuesAsync() /*: serviceBusAdministrationClient.GetQueuesAsync(/*splitFilter#1#)*/;
+                    var queuesListingResult = /*string.IsNullOrWhiteSpace(filter) ?*/ serviceBusAdministrationClient.GetQueuesRuntimePropertiesAsync() /*: serviceBusAdministrationClient.GetQueuesAsync(/*splitFilter#1#)*/;
                     
-                    IList<QueueProperties> queues = new List<QueueProperties>();
+
+                    // Todo client side filtering
+                    IList<QueueRuntimeProperties> queues = new List<QueueRuntimeProperties>();
 
                     await foreach (var item in queuesListingResult)
                     {
                         queues.Add(item);
                     }
 
-                    //todo add filtering?
                     return queues;
                 }
 
-                return new List<QueueProperties> {
+                return new List<QueueRuntimeProperties> {
                     GetQueueUsingEntityPath(timeoutInSeconds)
                 };
             }
@@ -732,10 +733,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// <summary>
         /// Retrieves a queue in the service bus namespace that matches the entity path.
         /// </summary>
-        private QueueProperties GetQueueUsingEntityPath(int timeoutInSeconds)
+        private QueueRuntimeProperties GetQueueUsingEntityPath(int timeoutInSeconds)
         {
             var taskList = new List<Task>();
-            var getQueueTask = serviceBusAdministrationClient.GetQueueAsync(serviceBusNamespaceInstance.EntityPath);
+            var getQueueTask = serviceBusAdministrationClient.GetQueueRuntimePropertiesAsync(serviceBusNamespaceInstance.EntityPath);
             taskList.Add(getQueueTask);
             taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
             Task.WaitAny(taskList.ToArray());
