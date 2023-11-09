@@ -33,6 +33,7 @@ namespace ServiceBusExplorer.Helpers
     {
         public const string QueueEntities = "Queues";
         public const string TopicEntities = "Topics";
+        public const string SubscriptionEntities = "Subscriptions";
         public const string RelayEntities = "Relays";
         public const string EventHubEntities = "Event Hubs";
         public const string NotificationHubEntities = "Notification Hubs";

@@ -166,3 +166,6 @@ $RECYCLE.BIN/
 
 # VS code settings
 .vscode/settings.json
+
+# Event Grid Explorer Library pkgrefgen
+/src/EventGridExplorerLibrary/.pkgrefgen/
