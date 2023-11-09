@@ -20,6 +20,7 @@
 #endregion
 
 #region Using Directives
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
@@ -269,6 +270,8 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
+            serviceBusHelper2.OnCreate += serviceBusHelper_OnCreate;
+            serviceBusHelper2.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -1099,15 +1102,15 @@ namespace ServiceBusExplorer.Forms
                         {
                             subscriptionsNode = topicNode.Nodes.Add(SubscriptionEntities,
                                                                     SubscriptionEntities,
-                                                                    wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex,
-                                                                    wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex);
+                                                                    wrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex,
+                                                                    wrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionListIconIndex : GreySubscriptionIconIndex);
                             subscriptionsNode.ContextMenuStrip = subscriptionsContextMenuStrip;
                             subscriptionsNode.Tag = new SubscriptionWrapper(null, wrapper.TopicDescription, FilterExpressionHelper.SubscriptionFilterExpression);
                         }
                         var subscriptionNode = subscriptionsNode.Nodes.Add(wrapper.SubscriptionDescription.Name,
                                                                            GetNameAndMessageCountText(wrapper.SubscriptionDescription.Name, wrapper.SubscriptionDescription.MessageCountDetails),
-                                                                           wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
-                                                                           wrapper.SubscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
+                                                                           wrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                           wrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                         subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                         subscriptionNode.Tag = new SubscriptionWrapper(wrapper.SubscriptionDescription, wrapper.TopicDescription);
                         subscriptionsNode.Expand();
@@ -1760,8 +1763,8 @@ namespace ServiceBusExplorer.Forms
             {
                 var subscriptionNode = subscriptionsNode.Nodes.Add(subscriptionDescription.Name,
                                                                    GetNameAndMessageCountText(subscriptionDescription.Name, subscriptionDescription.MessageCountDetails),
-                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
-                                                                   subscriptionDescription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
+                                                                   subscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                   subscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                 subscriptionNode.Tag = new SubscriptionWrapper(subscriptionDescription, topicDescription);
                 if (topicDescription != null)
@@ -2401,7 +2404,7 @@ namespace ServiceBusExplorer.Forms
                     foreach (var dropDownItem in changeStatusQueueMenuItem.DropDownItems)
                     {
                         var dropDownMenuItem = dropDownItem as ToolStripMenuItem;
-                        dropDownMenuItem.Checked = (EntityStatus)dropDownMenuItem.Tag == status;
+                        dropDownMenuItem.Checked = (Microsoft.ServiceBus.Messaging.EntityStatus)dropDownMenuItem.Tag == status;
                     }
                 }
                 else
@@ -2425,12 +2428,12 @@ namespace ServiceBusExplorer.Forms
                 {
                     if (serviceBusTreeView.SelectedNode.Tag is QueueDescription queueDescription)
                     {
-                        var desiredStatus = (EntityStatus)e.ClickedItem.Tag;
+                        var desiredStatus = (Microsoft.ServiceBus.Messaging.EntityStatus)e.ClickedItem.Tag;
                         using (var changeStatusForm = new ChangeStatusForm(queueDescription.Path, QueueEntity.ToLower(), desiredStatus))
                         {
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
-                                queueDescription.Status = (EntityStatus)e.ClickedItem.Tag;
+                                queueDescription.Status = (Microsoft.ServiceBus.Messaging.EntityStatus)e.ClickedItem.Tag;
                                 serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
                                 await RefreshSelectedEntity();
                             }
@@ -2477,9 +2480,9 @@ namespace ServiceBusExplorer.Forms
                     // Topic Node
                     if (serviceBusTreeView.SelectedNode.Tag is TopicDescription topicDescription)
                     {
-                        var desiredStatus = topicDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
+                        var desiredStatus = topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
+                                                          ? Microsoft.ServiceBus.Messaging.EntityStatus.Disabled
+                                                          : Microsoft.ServiceBus.Messaging.EntityStatus.Active;
                         using (var changeStatusForm = new ChangeStatusForm(topicDescription.Path, TopicEntity.ToLower(), desiredStatus))
                         {
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
@@ -2487,7 +2490,7 @@ namespace ServiceBusExplorer.Forms
                                 topicDescription.Status = desiredStatus;
                                 await serviceBusHelper.NamespaceManager.UpdateTopicAsync(topicDescription);
                                 await RefreshSelectedEntity();
-                                changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
+                                changeStatusTopicMenuItem.Text = topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
                                                                      ? DisableTopic
                                                                      : EnableTopic;
                                 var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusTopicMenuItem];
@@ -2506,9 +2509,9 @@ namespace ServiceBusExplorer.Forms
                         if (subscriptionWrapper.TopicDescription != null &&
                             subscriptionWrapper.SubscriptionDescription != null)
                         {
-                            var desiredStatus = subscriptionWrapper.SubscriptionDescription.Status = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active
-                                                                             ? EntityStatus.Disabled
-                                                                             : EntityStatus.Active;
+                            var desiredStatus = subscriptionWrapper.SubscriptionDescription.Status = subscriptionWrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
+                                                                             ? Microsoft.ServiceBus.Messaging.EntityStatus.Disabled
+                                                                             : Microsoft.ServiceBus.Messaging.EntityStatus.Active;
                             using (var changeStatusForm = new ChangeStatusForm(subscriptionWrapper.SubscriptionDescription.Name, SubscriptionEntity.ToLower(), desiredStatus))
                             {
                                 if (changeStatusForm.ShowDialog() == DialogResult.OK)
@@ -2516,7 +2519,7 @@ namespace ServiceBusExplorer.Forms
                                     subscriptionWrapper.SubscriptionDescription.Status = desiredStatus;
                                     await serviceBusHelper.NamespaceManager.UpdateSubscriptionAsync(subscriptionWrapper.SubscriptionDescription);
                                     await RefreshSelectedEntity();
-                                    changeStatusSubscriptionMenuItem.Text = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active
+                                    changeStatusSubscriptionMenuItem.Text = subscriptionWrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
                                                                          ? DisableSubscription
                                                                          : EnableSubscription;
                                     var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusSubscriptionMenuItem];
@@ -2532,9 +2535,9 @@ namespace ServiceBusExplorer.Forms
                     // Event Hub
                     if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription eventHubDescription)
                     {
-                        var desiredStatus = eventHubDescription.Status = eventHubDescription.Status == EntityStatus.Active
-                                                          ? EntityStatus.Disabled
-                                                          : EntityStatus.Active;
+                        var desiredStatus = eventHubDescription.Status = eventHubDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
+                                                          ? Microsoft.ServiceBus.Messaging.EntityStatus.Disabled
+                                                          : Microsoft.ServiceBus.Messaging.EntityStatus.Active;
                         using (var changeStatusForm = new ChangeStatusForm(eventHubDescription.Path, EventHubEntity.ToLower(), desiredStatus))
                         {
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
@@ -2542,7 +2545,7 @@ namespace ServiceBusExplorer.Forms
                                 eventHubDescription.Status = desiredStatus;
                                 await serviceBusHelper.NamespaceManager.UpdateEventHubAsync(eventHubDescription);
                                 await RefreshSelectedEntity();
-                                changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active
+                                changeStatusEventHubMenuItem.Text = eventHubDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
                                                                      ? DisableEventHub
                                                                      : EnableEventHub;
                                 var item = actionsToolStripMenuItem.DropDownItems[ChangeStatusEventHubMenuItem];
@@ -2953,7 +2956,7 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is EventHubDescription)
                     {
                         var eventHubDescription = serviceBusHelper.GetEventHub(((EventHubDescription)serviceBusTreeView.SelectedNode.Tag).Path);
-                        if (eventHubDescription.Status == EntityStatus.Active)
+                        if (eventHubDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active)
                         {
                             serviceBusTreeView.SelectedNode.ImageIndex = EventHubIconIndex;
                             serviceBusTreeView.SelectedNode.SelectedImageIndex = EventHubIconIndex;
@@ -3044,8 +3047,8 @@ namespace ServiceBusExplorer.Forms
                             {
                                 var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
                                                                                    GetNameAndMessageCountText(subscription.Name, subscription.MessageCountDetails),
-                                                                                   subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
-                                                                                   subscription.Status == EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
+                                                                                   subscription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex,
+                                                                                   subscription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? SubscriptionIconIndex : GreySubscriptionIconIndex);
                                 subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                                 subscriptionNode.Tag = new SubscriptionWrapper(subscription, wrapper.TopicDescription);
                                 WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscription.Name, wrapper.TopicDescription.Path), false);
@@ -3099,7 +3102,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         var subscriptionDescription = serviceBusHelper.GetSubscription(subWrapper.SubscriptionDescription.TopicPath, subWrapper.SubscriptionDescription.Name);
                         subWrapper = new SubscriptionWrapper(subscriptionDescription, subWrapper.TopicDescription);
-                        if (subscriptionDescription.Status == EntityStatus.Active)
+                        if (subscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active)
                         {
                             serviceBusTreeView.SelectedNode.ImageIndex = SubscriptionIconIndex;
                             serviceBusTreeView.SelectedNode.SelectedImageIndex = SubscriptionIconIndex;
@@ -3434,7 +3437,7 @@ namespace ServiceBusExplorer.Forms
                 // Topic Node
                 if (node.Tag is TopicDescription topicDescription)
                 {
-                    changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active ? DisableTopic : EnableTopic;
+                    changeStatusTopicMenuItem.Text = topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? DisableTopic : EnableTopic;
                     var list = CloneItems(topicContextMenuStrip.Items);
                     AddImportAndSeparatorMenuItems(list);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
@@ -3461,7 +3464,7 @@ namespace ServiceBusExplorer.Forms
                 // EventHub Node
                 if (node.Tag is EventHubDescription eventHubDescription)
                 {
-                    changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active ? DisableEventHub : EnableEventHub;
+                    changeStatusEventHubMenuItem.Text = eventHubDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? DisableEventHub : EnableEventHub;
                     var list = CloneItems(eventHubContextMenuStrip.Items);
                     AddImportAndSeparatorMenuItems(list);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
@@ -3511,7 +3514,7 @@ namespace ServiceBusExplorer.Forms
                 // Subscription Node
                 if (node.Tag is SubscriptionWrapper subscriptionWrapper)
                 {
-                    changeStatusSubscriptionMenuItem.Text = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active ? DisableSubscription : EnableSubscription;
+                    changeStatusSubscriptionMenuItem.Text = subscriptionWrapper.SubscriptionDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? DisableSubscription : EnableSubscription;
                     getSubscriptionMessageSessionsMenuItem.Visible = subscriptionWrapper.SubscriptionDescription.RequiresSession;
                     getSubscriptionMessageSessionsSeparator.Visible = subscriptionWrapper.SubscriptionDescription.RequiresSession;
                     subReceiveMessagesMenuItem.Visible = string.IsNullOrWhiteSpace(subscriptionWrapper.SubscriptionDescription.ForwardTo);
@@ -3973,7 +3976,7 @@ namespace ServiceBusExplorer.Forms
 
         private void RefreshQueueNode(TreeNode node, QueueDescription queueDescription)
         {
-            if (queueDescription.Status == EntityStatus.Active)
+            if (queueDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active)
             {
                 node.ImageIndex = QueueIconIndex;
                 node.SelectedImageIndex = QueueIconIndex;
@@ -3990,7 +3993,7 @@ namespace ServiceBusExplorer.Forms
 
         private void RefreshTopicNode(TreeNode node, TopicDescription topicDescription)
         {
-            if (topicDescription.Status == EntityStatus.Active)
+            if (topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active)
             {
                 node.ImageIndex = TopicIconIndex;
                 node.SelectedImageIndex = TopicIconIndex;
@@ -4204,7 +4207,7 @@ namespace ServiceBusExplorer.Forms
 
             try
             {
-                if (serviceBusHelper != null && serviceBusHelper.NamespaceUri != null)
+                if (serviceBusHelper != null && serviceBusHelper2.NamespaceUri != null)
                 {
                     Cursor.Current = Cursors.WaitCursor;
                     serviceBusTreeView.SuspendDrawing();
@@ -4219,7 +4222,7 @@ namespace ServiceBusExplorer.Forms
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();
-                        rootNode = serviceBusTreeView.Nodes.Add(serviceBusHelper.NamespaceUri.AbsoluteUri, serviceBusHelper.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
+                        rootNode = serviceBusTreeView.Nodes.Add(serviceBusHelper2.NamespaceUri.AbsoluteUri, serviceBusHelper2.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
                         rootNode.ContextMenuStrip = rootContextMenuStrip;
                         if (SelectedEntities.Contains(Constants.QueueEntities))
                         {
@@ -4233,7 +4236,7 @@ namespace ServiceBusExplorer.Forms
                         }
 
                         // NOTE: Relays are not actually supported by Service Bus for Windows Server
-                        if (serviceBusHelper.IsCloudNamespace)
+                        if (serviceBusHelper2.IsCloudNamespace)
                         {
                             if (SelectedEntities.Contains(Constants.EventHubEntities))
                             {
@@ -4253,7 +4256,7 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
                     updating = true;
-                    if (serviceBusHelper.IsCloudNamespace)
+                    if (serviceBusHelper2.IsCloudNamespace)
                     {
                         if (SelectedEntities.Contains(Constants.EventHubEntities) &&
                             (entityType == EntityType.All ||
@@ -4348,6 +4351,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             try
                             {
+                                //todo getrelays
                                 var relayServices = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
 
                                 relayServiceListNode.Text = Constants.RelayEntities;
@@ -4389,7 +4393,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         try
                         {
-                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
+                            var queues = await serviceBusHelper2.GetQueuesAsync(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
                             queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
@@ -4400,11 +4404,11 @@ namespace ServiceBusExplorer.Forms
                             {
                                 foreach (var queue in queues)
                                 {
-                                    if (string.IsNullOrWhiteSpace(queue.Path))
+                                    if (string.IsNullOrWhiteSpace(queue.Name))
                                     {
                                         continue;
                                     }
-                                    CreateNode(queue.Path, queue, queueListNode, true);
+                                    CreateNode(queue.Name, queue, queueListNode, true);
                                 }
                             }
                             if (entityType == EntityType.Queue)
@@ -4430,6 +4434,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         try
                         {
+                            //todo get topics
                             var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
                             topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
@@ -4559,10 +4564,10 @@ namespace ServiceBusExplorer.Forms
                         {
                             var subscriptionNode = subscriptionsNode.Nodes.Add(subscription.Name,
                                 GetNameAndMessageCountText(subscription.Name, subscription.MessageCountDetails),
-                                subscription.Status == EntityStatus.Active
+                                subscription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
                                     ? SubscriptionIconIndex
                                     : GreySubscriptionIconIndex,
-                                subscription.Status == EntityStatus.Active
+                                subscription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active
                                     ? SubscriptionIconIndex
                                     : GreySubscriptionIconIndex);
                             subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
@@ -5627,7 +5632,7 @@ namespace ServiceBusExplorer.Forms
                                                           UrlSegmentIconIndex,
                                                           UrlSegmentIconIndex);
                         var entityType = EntityType.Queue;
-                        if (tag is QueueDescription)
+                        if (tag is QueueProperties)
                         {
                             entityNode.ContextMenuStrip = queueFolderContextMenuStrip;
                         }
@@ -5646,20 +5651,20 @@ namespace ServiceBusExplorer.Forms
                     }
                     else
                     {
-                        if (tag is QueueDescription)
+                        if (tag is QueueProperties)
                         {
-                            var queueDescription = tag as QueueDescription;
+                            var queueProperties = tag as QueueProperties;
                             entityNode = entityNode.Nodes.Add(segments[i],
-                                                              GetNameAndMessageCountText(segments[i], queueDescription.MessageCountDetails),
-                                                              queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
-                                                              queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
+                                                              "GetNameAndMessageCountShouldBeFixed",//GetNameAndMessageCountText(segments[i], queueProperties.MessageCountDetails),
+                                                              queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex,
+                                                              queueProperties.Status == Azure.Messaging.ServiceBus.Administration.EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
                             entityNode.Tag = tag;
                             ApplyColor(entityNode, true);
 
                             if (log)
                             {
-                                WriteToLog(string.Format(CultureInfo.CurrentCulture, QueueRetrievedFormat, queueDescription.Path), false);
+                                WriteToLog(string.Format(CultureInfo.CurrentCulture, QueueRetrievedFormat, queueProperties.Name), false);
                             }
                             return entityNode;
                         }
@@ -5668,8 +5673,8 @@ namespace ServiceBusExplorer.Forms
                             var topicDescription = tag as TopicDescription;
                             entityNode = entityNode.Nodes.Add(segments[i],
                                                               segments[i],
-                                                              topicDescription.Status == EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex,
-                                                              topicDescription.Status == EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex);
+                                                              topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex,
+                                                              topicDescription.Status == Microsoft.ServiceBus.Messaging.EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex);
                             entityNode.ContextMenuStrip = topicContextMenuStrip;
                             entityNode.Tag = tag;
                             ApplyColor(entityNode, true);

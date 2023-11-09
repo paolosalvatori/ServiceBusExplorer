@@ -621,8 +621,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         #region Public Events
         public delegate void EventHandler(ServiceBusHelperEventArgs args);
-        //public event EventHandler OnDelete;
-        //public event EventHandler OnCreate;
+        public event EventHandler OnDelete;
+        public event EventHandler OnCreate;
         #endregion
 
         
@@ -685,6 +685,86 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         }
         
         // TODO rest van public methods
+        
+
+        /// <summary>
+        /// Retrieves an enumerable collection of all queues in the service bus namespace.
+        /// </summary>
+        /// <param name="filter">OData filter.</param>
+        /// <returns>Returns an IEnumerable<QueueDescription/> collection of all queues in the service namespace.
+        ///          Returns an empty collection if no queue exists in this service namespace.</returns>
+        public async Task<IEnumerable<QueueProperties>> GetQueuesAsync(string filter, int timeoutInSeconds)
+        {
+            if (serviceBusAdministrationClient != null)
+            {
+                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
+                {
+                    var taskList = new List<Task>();
+                    //Documentation states AND is the only logical clause allowed in the filter (And FYI a maximum of only 3 filter expressions allowed)
+                    //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
+                    //Split on ' OR ' and combine queues returned
+                    
+                    var queuesListingResult = /*string.IsNullOrWhiteSpace(filter) ?*/ serviceBusAdministrationClient.GetQueuesAsync() /*: serviceBusAdministrationClient.GetQueuesAsync(/*splitFilter#1#)*/;
+                    
+                    IList<QueueProperties> queues = new List<QueueProperties>();
+
+                    await foreach (var item in queuesListingResult)
+                    {
+                        queues.Add(item);
+                    }
+
+                    //todo add filtering?
+                    return queues;
+                }
+
+                return new List<QueueProperties> {
+                    GetQueueUsingEntityPath(timeoutInSeconds)
+                };
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+        
+        /// <summary>
+        /// Retrieves a queue in the service bus namespace that matches the entity path.
+        /// </summary>
+        private QueueProperties GetQueueUsingEntityPath(int timeoutInSeconds)
+        {
+            var taskList = new List<Task>();
+            var getQueueTask = serviceBusAdministrationClient.GetQueueAsync(serviceBusNamespaceInstance.EntityPath);
+            taskList.Add(getQueueTask);
+            taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
+            Task.WaitAny(taskList.ToArray());
+            if (getQueueTask.IsCompleted)
+            {
+                try
+                {
+                    return getQueueTask.Result;
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerExceptions.First();
+                }
+            }
+            throw new TimeoutException();
+        }
+
+        /// <summary>
+        /// Retrieves the queue from the service namespace.
+        /// </summary>
+        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
+        /// <returns>A QueueDescription handle to the queue, or null if the queue does not exist in the service namespace. </returns>
+        public QueueProperties GetQueue(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                return RetryHelper.RetryFunc(() => serviceBusAdministrationClient.GetQueueAsync(path).Result.Value, writeToLog);
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
         
         #endregion
         
