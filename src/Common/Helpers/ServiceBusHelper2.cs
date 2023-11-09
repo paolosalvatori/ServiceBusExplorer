@@ -659,10 +659,15 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 // such as queues, topics, subscriptions, and rules, in your service namespace.
                 // You must provide service namespace address and access credentials in order
                 // to manage your service namespace.
-                serviceBusAdministrationClient = new ServiceBusAdministrationClient(serviceBusNamespace.Namespace + "servicebus.windows.net", new DefaultAzureCredential());
+                if (!string.IsNullOrEmpty(serviceBusNamespace.SharedAccessKey) && !string.IsNullOrEmpty(serviceBusNamespace.SharedAccessKey)){
+                    serviceBusAdministrationClient = new ServiceBusAdministrationClient(serviceBusNamespace.ConnectionString);
+                } else
+                {
+                    serviceBusAdministrationClient = new ServiceBusAdministrationClient(serviceBusNamespace.Namespace + "servicebus.windows.net", new DefaultAzureCredential());
+                }
 
                 //todo moet retry policy geset worden?
-                
+
 
                 try
                 {
