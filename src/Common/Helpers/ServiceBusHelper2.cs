@@ -673,11 +673,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                     // ignored
                 }
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, connectionString));
-                var namespaceProperties = serviceBusAdministrationClient.GetNamespacePropertiesAsync().Result;
-                namespaceUri = new Uri(namespaceProperties.Value.Name);
+                //var namespaceProperties = serviceBusAdministrationClient.GetNamespacePropertiesAsync().Result;
+                //namespaceUri = new Uri(namespaceProperties.Value.Name);
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
-                ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
-                atomFeedUri = new Uri($"{Uri.UriSchemeHttp}://{namespaceUri.Host}");
+                //ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
+                //atomFeedUri = new Uri($"{Uri.UriSchemeHttp}://{namespaceUri.Host}");
                 
                 return true;
             });
