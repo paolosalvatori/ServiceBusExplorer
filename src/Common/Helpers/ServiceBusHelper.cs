@@ -53,7 +53,6 @@ namespace ServiceBusExplorer
 // ReSharper restore CheckNamespace
 {
     using System.IO.Compression;
-    using System.Web.UI.WebControls;
     using Abstractions;
     using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
@@ -5337,12 +5336,12 @@ namespace ServiceBusExplorer
 
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
-            var serviceBusHelper2 = new ServiceBusHelper2();
-            serviceBusHelper2.ConnectionString = ConnectionString;
-            serviceBusHelper2.TransportType = UseAmqpWebSockets
+            var ServiceBusHelper2 = new ServiceBusHelper2(writeToLog);
+            ServiceBusHelper2.ConnectionString = ConnectionString;
+            ServiceBusHelper2.TransportType = UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
-            return serviceBusHelper2;
+            return ServiceBusHelper2;
         }
 
         public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)

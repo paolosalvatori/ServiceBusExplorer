@@ -204,6 +204,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Instance Fields
         private readonly ServiceBusHelper serviceBusHelper;
+        private readonly ServiceBusHelper2 serviceBusHelper2;
         private TreeNode rootNode;
         private TreeNode currentNode;
         private readonly FieldInfo eventClickFieldInfo;
@@ -265,6 +266,7 @@ namespace ServiceBusExplorer.Forms
             Trace.Listeners.Add(new LogTraceListener(MainForm.StaticWriteToLog));
             mainSingletonMainForm = this;
             serviceBusHelper = new ServiceBusHelper(WriteToLog);
+            serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
@@ -313,9 +315,9 @@ namespace ServiceBusExplorer.Forms
                 Keys.Control | Keys.D5
             };
 
-            foreach (var namespaceKey in serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(k => k))
+            foreach (var namespaceKey in serviceBusHelper2.ServiceBusNamespaces.Keys.OrderBy(k => k))
             {
-                if (serviceBusHelper.ServiceBusNamespaces[namespaceKey].UserCreated)
+                if (serviceBusHelper2.ServiceBusNamespaces[namespaceKey].UserCreated)
                 {
                     var shortcutKey = allowedShortCutKeys.Count > 0 ? allowedShortCutKeys.First() : Keys.None;
                     if (allowedShortCutKeys.Count > 0) allowedShortCutKeys.RemoveAt(0);
@@ -340,8 +342,8 @@ namespace ServiceBusExplorer.Forms
 
         private async void SavedConnectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
-            serviceBusHelper.Connect(serviceBusNamespace);
+            var serviceBusNamespace = serviceBusHelper2.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
+            serviceBusHelper2.Connect(serviceBusNamespace);
             SetTitle(serviceBusNamespace.Namespace);
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
@@ -1384,9 +1386,9 @@ namespace ServiceBusExplorer.Forms
                     SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
-                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
+                    var serviceBusNamespace = ServiceBusNamespace2.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
+                    serviceBusHelper2.Connect(serviceBusNamespace);
                     SetTitle(serviceBusNamespace.Namespace);
 
                     foreach (var userControl in panelMain.Controls.OfType<UserControl>())
@@ -3549,8 +3551,8 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
-                serviceBusHelper.ServiceBusNamespaces =
-                    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
+                serviceBusHelper2.ServiceBusNamespaces =
+                    ServiceBusNamespace2.GetMessagingNamespaces(configuration, WriteToLog);
             }
             catch (Exception ex)
             {
@@ -6485,16 +6487,16 @@ namespace ServiceBusExplorer.Forms
                     var ns = item.Value;
                     if (ns != null)
                     {
-                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
-                        serviceBusHelper.Connect(serviceBusNamespace);
+                        var serviceBusNamespace = ServiceBusNamespace2.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
+                        serviceBusHelper2.Connect(serviceBusNamespace);
                         SetTitle(serviceBusNamespace.Namespace);
                     }
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
                     string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
+                    var serviceBusNamespace = ServiceBusNamespace2.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
+                    serviceBusHelper2.Connect(serviceBusNamespace);
                     SetTitle(serviceBusNamespace.Namespace);
                 }
                 panelMain.Controls.Clear();
