@@ -37,20 +37,19 @@ namespace EventGridExplorerLibrary
         private EventGridManagementClient controlPlaneClient;
         private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
         private int retryTimeout;
-        private string tenantId;
         private readonly WriteToLogDelegate writeToLog = default;
         #endregion
 
         public EventGridLibrary(string subscriptionId, string apiVersion, int retryTimeout, string cloudTenant, string customId, WriteToLogDelegate writeToLog)
         {
+            string tenantId = customId == string.Empty ? null : customId;
             var apiVersionToUse = string.IsNullOrEmpty(apiVersion) ? DefaultApiVersion : apiVersion;
-            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(), subscriptionId, apiVersionToUse , retryTimeout);
+            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(tenantId), subscriptionId, apiVersionToUse , retryTimeout);
             this.retryTimeout = retryTimeout;
-            this.tenantId = customId == string.Empty ? tenantIds[cloudTenant] : customId;
             this.writeToLog = writeToLog;
         }
 
-        public TokenCredentials GetTokenCredential()
+        public TokenCredentials GetTokenCredential(string tenantId)
         {
             string[] scope = { ScopeUrl };
 
