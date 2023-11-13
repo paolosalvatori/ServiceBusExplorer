@@ -24,7 +24,7 @@
 #region Using Directives
 
 #nullable enable
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus.Administration;
 
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
@@ -50,6 +50,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
+    using Azure.Messaging.ServiceBus;
     using Azure.Messaging.ServiceBus.Administration;
     using AccessRights = Microsoft.ServiceBus.Messaging.AccessRights;
     using EntityStatus = Microsoft.ServiceBus.Messaging.EntityStatus;
@@ -222,8 +223,8 @@ namespace ServiceBusExplorer.Controls
         private const string TxtExtension = "txt";
         private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
         private const string AllFilesFilter = "Text Documents|*.txt|JSON Files|*.json|XML Files|*.xml|All Files (*.*)|*.*";
-        private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
-        private const string MessageFileFormatAutoRecognize = "BrokeredMessage_{0}_{1}.txt";
+        private const string MessageFileFormat = "ServiceBusMessage_{0}_{1}.json";
+        private const string MessageFileFormatAutoRecognize = "ServiceBusMessage_{0}_{1}.txt";
 
         //***************************
         // Pages
@@ -245,9 +246,9 @@ namespace ServiceBusExplorer.Controls
         private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private readonly bool premiumNamespace;
-        private BrokeredMessage brokeredMessage = default!;
-        private BrokeredMessage deadletterMessage = default!;
-        private BrokeredMessage transferDeadletterMessage = default!;
+        private ServiceBusMessage ServiceBusMessage = default!;
+        private ServiceBusMessage deadletterMessage = default!;
+        private ServiceBusMessage transferDeadletterMessage = default!;
         private int currentMessageRowIndex = default!;
         private int currentDeadletterMessageRowIndex = default!;
         private int currentTransferDeadletterMessageRowIndex = default!;
@@ -258,9 +259,9 @@ namespace ServiceBusExplorer.Controls
         private DateTime? messagesFilterToDate = default!;
         private DateTime? deadletterFilterFromDate = default!;
         private DateTime? deadletterFilterToDate = default!;
-        private SortableBindingList<BrokeredMessage> messageBindingList = default!;
-        private SortableBindingList<BrokeredMessage> deadletterBindingList = default!;
-        private SortableBindingList<BrokeredMessage> transferDeadletterBindingList = default!;
+        private SortableBindingList<ServiceBusMessage> messageBindingList = default!;
+        private SortableBindingList<ServiceBusMessage> deadletterBindingList = default!;
+        private SortableBindingList<ServiceBusMessage> transferDeadletterBindingList = default!;
         private SortableBindingList<MessageSession> sessionBindingList = default!;
         private bool buttonsMoved;
         private readonly bool duplicateQueue;
@@ -333,7 +334,7 @@ namespace ServiceBusExplorer.Controls
         {
             using (
                 var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromQueue, MainForm.SingletonMainForm.TopCount,
-                    serviceBusHelper.BrokeredMessageInspectors.Keys, queueProperties.RequiresSession))
+                    serviceBusHelper.ServiceBusMessageInspectors.Keys, queueProperties.RequiresSession))
             {
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
@@ -341,10 +342,10 @@ namespace ServiceBusExplorer.Controls
                     messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
                     var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                           serviceBusHelper.BrokeredMessageInspectors.ContainsKey(
+                                           serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(
                                                receiveModeForm.Inspector)
-                        ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector])
-                            as IBrokeredMessageInspector
+                        ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector])
+                            as IServiceBusMessageInspector
                         : null;
                     if (queueProperties.EnablePartitioning)
                     {
@@ -407,7 +408,7 @@ namespace ServiceBusExplorer.Controls
 
         public void GetDeadletterMessages()
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.ServiceBusMessageInspectors.Keys))
             {
                 if (receiveModeForm.ShowDialog() != DialogResult.OK)
                 {
@@ -416,8 +417,8 @@ namespace ServiceBusExplorer.Controls
                 txtDeadletterText.Text = string.Empty;
                 deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
-                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
+                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(receiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector]) as IServiceBusMessageInspector
                     : null;
                 if (queueProperties.EnablePartitioning)
                 {
@@ -432,7 +433,7 @@ namespace ServiceBusExplorer.Controls
 
         public void GetTransferDeadletterMessages()
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromTransferDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
+            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromTransferDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.ServiceBusMessageInspectors.Keys))
             {
                 if (receiveModeForm.ShowDialog() != DialogResult.OK)
                 {
@@ -441,8 +442,8 @@ namespace ServiceBusExplorer.Controls
                 txtTransferDeadletterText.Text = string.Empty;
                 transferDeadletterCustomPropertyGrid.SelectedObject = null;
                 transferDeadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
-                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
+                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(receiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector]) as IServiceBusMessageInspector
                     : null;
                 if (queueProperties.EnablePartitioning)
                 {
@@ -1168,7 +1169,7 @@ namespace ServiceBusExplorer.Controls
             propertyList.AddRange(new[]
             {
                 new[] {Status, queueProperties.Status.ToString()},
-                new[] {IsReadOnly, queueProperties.IsReadOnly.ToString()},
+                /*new[] {IsReadOnly, queueProperties.IsReadOnly.ToString()},
                 new[] {SizeInBytes, queueProperties.SizeInBytes.ToString("N0")},
                 new[] {CreatedAt, queueProperties.CreatedAt.ToString(CultureInfo.CurrentCulture)},
                 new[] {AccessedAt, queueProperties.AccessedAt.ToString(CultureInfo.CurrentCulture)},
@@ -1200,7 +1201,7 @@ namespace ServiceBusExplorer.Controls
                     queueProperties.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
                         CultureInfo.CurrentCulture)
                 },
-                new[] {MessageCount, queueProperties.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
+                new[] {MessageCount, queueProperties.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}*/
             });
 
             propertyListView.Items.Clear();
@@ -1234,16 +1235,16 @@ namespace ServiceBusExplorer.Controls
             }
 
             // MaxQueueSizeInBytes
-            trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
-                ? queueProperties.MaxSizeInGigabytes()
+            trackBarMaxQueueSize.Value = (int)(serviceBusHelper.IsCloudNamespace
+                ? queueProperties.MaxSizeInMegabytes
                 : queueProperties.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
-                ? 11 : queueProperties.MaxSizeInGigabytes();
+                ? 11 : queueProperties.MaxSizeInMegabytes);
 
             // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
-            if (queueProperties.MaxSizeInGigabytes() > 5)
+            if (queueProperties.MaxSizeInMegabytes > 5)
             {
-                trackBarMaxQueueSize.Maximum = queueProperties.MaxSizeInGigabytes();
-                trackBarMaxQueueSize.Value = queueProperties.MaxSizeInGigabytes();
+                trackBarMaxQueueSize.Maximum = (int)queueProperties.MaxSizeInMegabytes;
+                trackBarMaxQueueSize.Value = (int)queueProperties.MaxSizeInMegabytes;
             }
 
             // MaxDeliveryCount
@@ -1267,7 +1268,7 @@ namespace ServiceBusExplorer.Controls
 
             // EnableDeadLetteringOnMessageExpiration
             checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationItemText,
-                queueProperties.EnableDeadLetteringOnMessageExpiration);
+                queueProperties.DeadLetteringOnMessageExpiration);
 
 
             if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
@@ -1315,7 +1316,7 @@ namespace ServiceBusExplorer.Controls
             return queueClient.AcceptMessageSession(sessionAcceptTimeout);
         }
 
-        private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
+        private void GetMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
@@ -1325,7 +1326,7 @@ namespace ServiceBusExplorer.Controls
                 tabPageMessages.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
                 if (peek)
                 {
                     var totalRetrieved = 0;
@@ -1333,7 +1334,7 @@ namespace ServiceBusExplorer.Controls
                     var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
                     while (totalRetrieved < count)
                     {
-                        IEnumerable<BrokeredMessage> messageEnumerable;
+                        IEnumerable<ServiceBusMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1348,18 +1349,18 @@ namespace ServiceBusExplorer.Controls
                         {
                             break;
                         }
-                        var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
+                        var messageArray = messageEnumerable as ServiceBusMessage[] ?? messageEnumerable.ToArray();
                         var partialList = messageInspector != null
                             ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
-                            : new List<BrokeredMessage>(messageArray);
-                        brokeredMessages.AddRange(partialList);
+                            : new List<ServiceBusMessage>(messageArray);
+                        ServiceBusMessages.AddRange(partialList);
                         totalRetrieved += partialList.Count;
                         if (partialList.Count == 0)
                         {
                             break;
                         }
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1373,20 +1374,20 @@ namespace ServiceBusExplorer.Controls
                                 ? MainForm.SingletonMainForm.TopCount
                                 : count - totalRetrieved,
                             TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        var enumerable = messages as ServiceBusMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Length;
                         if (retrieved == 0)
                         {
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null
+                        ServiceBusMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesReceivedFromTheQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
-                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                messageBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -1439,18 +1440,18 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
+        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
                 if (peek)
                 {
                     var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
-                        BrokeredMessage message;
+                        ServiceBusMessage message;
 
                         if (i == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1467,10 +1468,10 @@ namespace ServiceBusExplorer.Controls
                             {
                                 message = messageInspector.AfterReceiveMessage(message);
                             }
-                            brokeredMessages.Add(message);
+                            ServiceBusMessages.Add(message);
                         }
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1490,14 +1491,14 @@ namespace ServiceBusExplorer.Controls
                         totalRetrieved += retrieved;
                         if (message != null)
                         {
-                            brokeredMessages.Add(messageInspector != null
+                            ServiceBusMessages.Add(messageInspector != null
                                 ? messageInspector.AfterReceiveMessage(message)
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesReceivedFromTheQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
-                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                messageBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -1536,7 +1537,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void GetDeadletterMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1546,7 +1547,7 @@ namespace ServiceBusExplorer.Controls
                 tabPageDeadletter.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
 
                 var queuePath = QueueClient.FormatDeadLetterPath(queueProperties.Name);
                 if (peek)
@@ -1556,7 +1557,7 @@ namespace ServiceBusExplorer.Controls
                     var retrieved = 0;
                     do
                     {
-                        IEnumerable<BrokeredMessage> messages;
+                        IEnumerable<ServiceBusMessage> messages;
 
                         if (retrieved == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1571,18 +1572,18 @@ namespace ServiceBusExplorer.Controls
                                 : count - totalRetrieved);
                         }
 
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        var enumerable = messages as ServiceBusMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Length;
                         if (retrieved == 0)
                         {
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null
+                        ServiceBusMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1595,34 +1596,34 @@ namespace ServiceBusExplorer.Controls
                                 ? MainForm.SingletonMainForm.TopCount
                                 : count - totalRetrieved,
                             TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        var enumerable = messages as ServiceBusMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Length;
                         if (retrieved == 0)
                         {
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null
+                        ServiceBusMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     //if (!queueProperties.EnablePartitioning)
                     //{
-                    //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
+                    //    queueClient.CompleteBatch(ServiceBusMessages.Select(bm => bm.LockToken));
                     //}
                     //else
                     //{
-                    //    foreach (var partitionKey in brokeredMessages.Select(bm => bm.PartitionKey).Distinct())
+                    //    foreach (var partitionKey in ServiceBusMessages.Select(bm => bm.PartitionKey).Distinct())
                     //    {
                     //        var key = partitionKey;
                     //        queueClient.CompleteBatch(
-                    //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
+                    //            ServiceBusMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
                     //    }
                     //}
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
 
-                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                deadletterBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -1673,7 +1674,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1683,7 +1684,7 @@ namespace ServiceBusExplorer.Controls
                 tabPageTransferDeadletter.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
 
                 var queuePath = QueueClient.FormatTransferDeadLetterPath(queueProperties.Name);
                 if (peek)
@@ -1693,7 +1694,7 @@ namespace ServiceBusExplorer.Controls
                     var retrieved = 0;
                     do
                     {
-                        IEnumerable<BrokeredMessage> messages;
+                        IEnumerable<ServiceBusMessage> messages;
 
                         if (retrieved == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1708,18 +1709,18 @@ namespace ServiceBusExplorer.Controls
                                 : count - totalRetrieved);
                         }
 
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        var enumerable = messages as ServiceBusMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Length;
                         if (retrieved == 0)
                         {
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null
+                        ServiceBusMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1732,34 +1733,34 @@ namespace ServiceBusExplorer.Controls
                                 ? MainForm.SingletonMainForm.TopCount
                                 : count - totalRetrieved,
                             TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        var enumerable = messages as ServiceBusMessage[] ?? messages.ToArray();
                         retrieved = enumerable.Length;
                         if (retrieved == 0)
                         {
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null
+                        ServiceBusMessages.AddRange(messageInspector != null
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     //if (!queueProperties.EnablePartitioning)
                     //{
-                    //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
+                    //    queueClient.CompleteBatch(ServiceBusMessages.Select(bm => bm.LockToken));
                     //}
                     //else
                     //{
-                    //    foreach (var partitionKey in brokeredMessages.Select(bm => bm.PartitionKey).Distinct())
+                    //    foreach (var partitionKey in ServiceBusMessages.Select(bm => bm.PartitionKey).Distinct())
                     //    {
                     //        var key = partitionKey;
                     //        queueClient.CompleteBatch(
-                    //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
+                    //            ServiceBusMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
                     //    }
                     //}
-                    writeToLog(string.Format(MessagesReceivedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesReceivedFromTheTransferDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
 
-                transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                transferDeadletterBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -1810,11 +1811,11 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
                 var queuePath = QueueClient.FormatDeadLetterPath(queueProperties.Name);
 
                 if (peek)
@@ -1822,7 +1823,7 @@ namespace ServiceBusExplorer.Controls
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
-                        BrokeredMessage message;
+                        ServiceBusMessage message;
 
                         if (i == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1841,9 +1842,9 @@ namespace ServiceBusExplorer.Controls
                         {
                             message = messageInspector.AfterReceiveMessage(message);
                         }
-                        brokeredMessages.Add(message);
+                        ServiceBusMessages.Add(message);
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1861,14 +1862,14 @@ namespace ServiceBusExplorer.Controls
                         totalRetrieved += retrieved;
                         if (message != null)
                         {
-                            brokeredMessages.Add(messageInspector != null
+                            ServiceBusMessages.Add(messageInspector != null
                             ? messageInspector.AfterReceiveMessage(message)
                             : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
-                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                deadletterBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -1906,11 +1907,11 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
-                var brokeredMessages = new List<BrokeredMessage>();
+                var ServiceBusMessages = new List<ServiceBusMessage>();
                 var queuePath = QueueClient.FormatTransferDeadLetterPath(queueProperties.Name);
 
                 if (peek)
@@ -1918,7 +1919,7 @@ namespace ServiceBusExplorer.Controls
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
-                        BrokeredMessage message;
+                        ServiceBusMessage message;
 
                         if (i == 0 && fromSequenceNumber.HasValue)
                         {
@@ -1937,9 +1938,9 @@ namespace ServiceBusExplorer.Controls
                         {
                             message = messageInspector.AfterReceiveMessage(message);
                         }
-                        brokeredMessages.Add(message);
+                        ServiceBusMessages.Add(message);
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1957,14 +1958,14 @@ namespace ServiceBusExplorer.Controls
                         totalRetrieved += retrieved;
                         if (message != null)
                         {
-                            brokeredMessages.Add(messageInspector != null
+                            ServiceBusMessages.Add(messageInspector != null
                                 ? messageInspector.AfterReceiveMessage(message)
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, ServiceBusMessages.Count, queueProperties.Name));
                 }
-                transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                transferDeadletterBindingList = new SortableBindingList<ServiceBusMessage>(ServiceBusMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -2182,7 +2183,7 @@ namespace ServiceBusExplorer.Controls
                             {
                                 if (string.IsNullOrWhiteSpace(rule.SecondaryKey))
                                 {
-                                    description.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
+                                    description.AuthorizationRules.Add(new SharedAccessAuthorizationRule(rule.KeyName,
                                         rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
@@ -2248,7 +2249,8 @@ namespace ServiceBusExplorer.Controls
             }
             if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
             {
-                e.NewValue = queueProperties.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
+                // todo missing public get
+                e.NewValue = /*queueProperties.IsAnonymousAccessible*/false ? CheckState.Checked : CheckState.Unchecked;
             }
         }
 
@@ -2884,22 +2886,22 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = messagesBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 currentMessageRowIndex = e.RowIndex;
                 if (bindingList == null)
                 {
                     return;
                 }
-                if (brokeredMessage == bindingList[e.RowIndex])
+                if (ServiceBusMessage == bindingList[e.RowIndex])
                 {
                     return;
                 }
-                brokeredMessage = bindingList[e.RowIndex];
+                ServiceBusMessage = bindingList[e.RowIndex];
 
-                LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, ServiceBusMessage, txtMessageText);
 
-                messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(brokeredMessage.Properties);
-                messagePropertyGrid.SelectedObject = brokeredMessage;
+                messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(ServiceBusMessage.Properties);
+                messagePropertyGrid.SelectedObject = ServiceBusMessage;
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception)
@@ -3017,7 +3019,7 @@ namespace ServiceBusExplorer.Controls
 
         private void deadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            var bindingList = deadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
             currentDeadletterMessageRowIndex = e.RowIndex;
             if (bindingList == null)
             {
@@ -3037,7 +3039,7 @@ namespace ServiceBusExplorer.Controls
 
         private void transferDeadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
             currentTransferDeadletterMessageRowIndex = e.RowIndex;
             if (bindingList == null)
             {
@@ -3174,7 +3176,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+            var bindingList = messagesBindingSource.DataSource as BindingList<ServiceBusMessage>;
             if (bindingList == null)
             {
                 return;
@@ -3191,7 +3193,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            var bindingList = deadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
             if (bindingList == null)
             {
                 return;
@@ -3221,7 +3223,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
             if (bindingList == null)
             {
                 return;
@@ -3371,7 +3373,7 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 using (var form = new MessageForm(queueProperties, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                           .Select(r => (ServiceBusMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -3395,7 +3397,7 @@ namespace ServiceBusExplorer.Controls
             }
 
             var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                .Select(r => r.DataBoundItem as BrokeredMessage);
+                .Select(r => r.DataBoundItem as ServiceBusMessage);
 
             string confirmationText;
 
@@ -3521,7 +3523,7 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 using (var form = new MessageForm(queueProperties, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                           .Select(r => (ServiceBusMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
@@ -3557,7 +3559,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 using (var form = new MessageForm(queueProperties, transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                    .Select(r => (ServiceBusMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                 }
@@ -3632,7 +3634,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private static bool IsWithinDateTimeRange(BrokeredMessage message, DateTime? fromDateTime, DateTime? toDateTime)
+        private static bool IsWithinDateTimeRange(ServiceBusMessage message, DateTime? fromDateTime, DateTime? toDateTime)
         {
             if (message.EnqueuedTimeUtc < (fromDateTime ?? DateTime.MinValue))
             {
@@ -3647,7 +3649,7 @@ namespace ServiceBusExplorer.Controls
 
         private void FilterMessages()
         {
-            var bindingList = new SortableBindingList<BrokeredMessage>();
+            var bindingList = new SortableBindingList<ServiceBusMessage>();
             try
             {
                 if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression))
@@ -3684,7 +3686,7 @@ namespace ServiceBusExplorer.Controls
                         filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, messagesFilterFromDate, messagesFilterToDate)).ToList();
                     }
 
-                    bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                    bindingList = new SortableBindingList<ServiceBusMessage>(filteredList)
                     {
                         AllowEdit = false,
                         AllowNew = false,
@@ -3707,7 +3709,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     if (messagesDataGridView.Rows.Count > 0)
                     {
-                        brokeredMessage = default!;
+                        ServiceBusMessage = default!;
                         messagesDataGridView_RowEnter(this, new DataGridViewCellEventArgs(0, 0));
                     }
                 }
@@ -3716,7 +3718,7 @@ namespace ServiceBusExplorer.Controls
 
         private void FilterDeadletters()
         {
-            var bindingList = new SortableBindingList<BrokeredMessage>();
+            var bindingList = new SortableBindingList<ServiceBusMessage>();
             try
             {
                 if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression))
@@ -3753,7 +3755,7 @@ namespace ServiceBusExplorer.Controls
                         filteredList = filteredList.Where(msg => IsWithinDateTimeRange(msg, deadletterFilterFromDate, deadletterFilterToDate)).ToList();
                     }
 
-                    bindingList = new SortableBindingList<BrokeredMessage>(filteredList)
+                    bindingList = new SortableBindingList<ServiceBusMessage>(filteredList)
                     {
                         AllowEdit = false,
                         AllowNew = false,
@@ -3958,7 +3960,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = messagesBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4001,7 +4003,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = messagesBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4050,9 +4052,9 @@ namespace ServiceBusExplorer.Controls
                 }
                 var messages =
                     messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage?[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                        .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage?[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4072,9 +4074,9 @@ namespace ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
+                    writer.Write(MessageSerializationHelper.Serialize(ServiceBusMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)
@@ -4094,9 +4096,9 @@ namespace ServiceBusExplorer.Controls
 
                 var messages =
                     messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                        .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                                        .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4112,7 +4114,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                     MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
@@ -4148,7 +4150,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = deadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4191,7 +4193,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = deadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4238,9 +4240,9 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                        .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4260,9 +4262,9 @@ namespace ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
+                    writer.Write(MessageSerializationHelper.Serialize(ServiceBusMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)
@@ -4281,9 +4283,9 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                                     .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                                                     .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4299,7 +4301,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                     MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
@@ -4335,7 +4337,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4379,7 +4381,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<ServiceBusMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -4426,9 +4428,9 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
                 var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                        .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4448,9 +4450,9 @@ namespace ServiceBusExplorer.Controls
                 }
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                          MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
+                    writer.Write(MessageSerializationHelper.Serialize(ServiceBusMessages, bodies, doNotSerializeBody: true));
                 }
             }
             catch (Exception ex)
@@ -4469,9 +4471,9 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                                             .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
+                                                             .Select(r => r.DataBoundItem as ServiceBusMessage);
+                IEnumerable<ServiceBusMessage?> ServiceBusMessages = messages as ServiceBusMessage[] ?? messages.ToArray();
+                if (!ServiceBusMessages.Any())
                 {
                     return;
                 }
@@ -4487,7 +4489,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                var bodies = ServiceBusMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                     MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
                 foreach (var body in bodies)
@@ -4547,7 +4549,7 @@ namespace ServiceBusExplorer.Controls
 
             foreach (DataGridViewRow row in deadletterDataGridView.Rows)
             {
-                var message = (BrokeredMessage)row.DataBoundItem;
+                var message = (ServiceBusMessage)row.DataBoundItem;
 
                 if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
                 {
