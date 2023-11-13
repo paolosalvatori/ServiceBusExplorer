@@ -262,7 +262,7 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<ServiceBusMessage> messageBindingList = default!;
         private SortableBindingList<ServiceBusMessage> deadletterBindingList = default!;
         private SortableBindingList<ServiceBusMessage> transferDeadletterBindingList = default!;
-        private SortableBindingList<MessageSession> sessionBindingList = default!;
+        private SortableBindingList<Azure.Messaging.ServiceBus.Administration> sessionBindingList = default!;
         private bool buttonsMoved;
         private readonly bool duplicateQueue;
 
