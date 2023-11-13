@@ -171,6 +171,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private ServiceBusAdministrationClient serviceBusAdministrationClient;
+        private ServiceBusClient serviceBusClient;
         //private AzureNotificationHubs.serviceBusAdministrationClient notificationHubserviceBusAdministrationClient;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
@@ -191,7 +192,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         #endregion
         
         #region Private Static Fields
-        //private static EncodingType encodingType = EncodingType.ASCII;
+        private static Encoding encodingType = Encoding.ASCII;
         #endregion
         
         #region Public Constructors
@@ -383,18 +384,18 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
 
-        /*public string ConnectionStringWithoutEntityPath
+        public string ConnectionStringWithoutEntityPath
         {
             get
             {
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
+                var builder = ServiceBusConnectionStringProperties .Parse(connectionString);
+
+                // Todo find a way to remove entity path
+                //builder.EntityPath = string.Empty;
 
                 return builder.ToString();
             }
-        }*/
+        }
 
         /// <summary>
         /// Gets or sets the connection string.
@@ -601,10 +602,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public static bool UseAmqpWebSockets { get; set; }
 
-        /*/// <summary>
+        /// <summary>
         /// Gets or sets the encodingType of sent messages
         /// </summary>
-        public static Enums.EncodingType EncodingType
+        public static Encoding EncodingType
         {
             get
             {
@@ -614,15 +615,17 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             {
                 encodingType = value;
             }
-        }*/
+        }
         #endregion
 
         public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);
 
         #region Public Events
         public delegate void EventHandler(ServiceBusHelperEventArgs args);
+#pragma warning disable CS0067 // Event is never used
         public event EventHandler OnDelete;
         public event EventHandler OnCreate;
+#pragma warning restore CS0067 // Event is never used
         #endregion
 
         
@@ -661,9 +664,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 // to manage your service namespace.
                 if (!string.IsNullOrEmpty(serviceBusNamespace.SharedAccessKey) && !string.IsNullOrEmpty(serviceBusNamespace.SharedAccessKey)){
                     serviceBusAdministrationClient = new ServiceBusAdministrationClient(serviceBusNamespace.ConnectionString);
+                    serviceBusClient = new ServiceBusClient(serviceBusNamespace.ConnectionString);
                 } else
                 {
                     serviceBusAdministrationClient = new ServiceBusAdministrationClient(serviceBusNamespace.Namespace + "servicebus.windows.net", new DefaultAzureCredential());
+                    serviceBusClient = new ServiceBusClient(serviceBusNamespace.Namespace + "servicebus.windows.net", new DefaultAzureCredential());
                 }
 
                 //todo moet retry policy geset worden?
@@ -689,13 +694,16 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             return RetryHelper.RetryFunc(func, writeToLog);
         }
         
-        // TODO rest van public methods
         
+        // TODO rest van public methods
 
+        #region queuecontrol
+        
         /// <summary>
         /// Retrieves an enumerable collection of all queues in the service bus namespace.
         /// </summary>
         /// <param name="filter">OData filter.</param>
+        /// <param name="timeoutInSeconds"></param>
         /// <returns>Returns an IEnumerable<QueueDescription/> collection of all queues in the service namespace.
         ///          Returns an empty collection if no queue exists in this service namespace.</returns>
         public async Task<IEnumerable<QueueRuntimeProperties>> GetQueuesAsync(string filter, int timeoutInSeconds)
@@ -704,7 +712,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             {
                 if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
                 {
+                    /*
                     var taskList = new List<Task>();
+                    */
                     //Documentation states AND is the only logical clause allowed in the filter (And FYI a maximum of only 3 filter expressions allowed)
                     //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
                     //Split on ' OR ' and combine queues returned
@@ -753,7 +763,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             throw new TimeoutException();
         }
-
+        
         /// <summary>
         /// Retrieves the queue from the service namespace.
         /// </summary>
@@ -771,6 +781,204 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
+        
+        /// <summary>.
+        /// Creates a new queue in the service namespace with the given name.
+        /// </summary>
+        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
+        /// <returns>Returns a newly-created QueueDescription object.</returns>
+        public QueueProperties CreateQueue(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                var queue = RetryHelper.RetryFunc(() => serviceBusAdministrationClient.CreateQueueAsync(path).Result.Value, writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, path));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                return queue;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Creates a new queue in the service namespace with the given name.
+        /// </summary>
+        /// <param name="description">A QueueDescription object describing the attributes with which the new queue will be created.</param>
+        /// <returns>Returns a newly-created QueueDescription object.</returns>
+        public QueueProperties CreateQueue(QueueProperties description)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(DescriptionCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                var queue = RetryHelper.RetryFunc(() => serviceBusAdministrationClient.CreateQueueAsync(description.Name).Result.Value, writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueCreated, description.Name));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                return queue;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Updates a queue in the service namespace with the given name.
+        /// </summary>
+        /// <param name="description">A QueueDescription object describing the attributes with which the new queue will be updated.</param>
+        /// <returns>Returns an updated QueueDescription object.</returns>
+        public QueueProperties UpdateQueue(QueueProperties description)
+        {
+            if (description == null)
+            {
+                throw new ArgumentException(DescriptionCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                var queue = RetryHelper.RetryFunc(() => serviceBusAdministrationClient.UpdateQueueAsync(description).Result.Value, writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueUpdated, description.Name));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queue, EntityType.Queue));
+                return queue;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+
+        /// <summary>
+        /// Deletes all the queues in the list.
+        /// <param name="queues">A list of queues to delete.</param>
+        /// </summary>
+        public async Task DeleteQueues(IEnumerable<string> queues)
+        {
+            if (queues == null)
+            {
+                return;
+            }
+
+            await Task.WhenAll(queues.Select(DeleteQueue));
+        }
+
+        /// <summary>
+        /// Deletes the queue described by the relative name of the service namespace base address.
+        /// </summary>
+        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
+        public async Task DeleteQueue(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                await RetryHelper.RetryActionAsync(() => serviceBusAdministrationClient.DeleteQueueAsync(path), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Queue));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
+        }
+
+        /// <summary>
+        /// Deletes the queue passed as a argument.
+        /// </summary>
+        /// <param name="queueDescription">The queue to delete.</param>
+        public async Task DeleteQueue(QueueProperties queueDescription)
+        {
+            if (queueDescription == null)
+            {
+                throw new ArgumentException(QueueDescriptionCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                await RetryHelper.RetryActionAsync(() => serviceBusAdministrationClient.DeleteQueueAsync(queueDescription.Name), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Name));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
+        }
+
+        /*
+        /// <summary>
+        /// Renames a queue inside a namespace.
+        /// </summary>
+        /// <param name="path">The path to an existing queue.</param>
+        /// <param name="newPath">The new path to the renamed queue.</param>
+        /// <returns>Returns a QueueDescription with the new name.</returns>
+        public QueueProperties RenameQueue(string path, string newPath)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (string.IsNullOrWhiteSpace(newPath))
+            {
+                throw new ArgumentException(NewPathCannotBeNull);
+            }
+            if (serviceBusAdministrationClient != null)
+            {
+                var queueDescription = RetryHelper.RetryFunc(() => serviceBusAdministrationClient.RenameQueue(path, newPath), writeToLog);
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, QueueRenamed, path, newPath));
+                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new QueueProperties(path), EntityType.Queue));
+                OnCreate?.Invoke(new ServiceBusHelperEventArgs(queueDescription, EntityType.Queue));
+                return queueDescription;
+            }
+            throw new ApplicationException(ServiceBusIsDisconnected);
+        }
+        */
+        
+        #endregion
+        
+        /*/// <summary>
+        /// Retrieves an enumerable collection of all message sessions for the queue passed as argument.
+        /// </summary>
+        /// <param name="path">The queue for which to search message sessions.</param>
+        /// <param name="dateTime">The time the session was last updated.</param>
+        /// <returns>Returns an IEnumerable<QueueDescription/> collection of message sessions.</returns>
+        public IEnumerable<MessageSession> GetMessageSessions(string path, DateTime? dateTime)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (serviceBusAdministrationClient == null)
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+
+            }
+            var queueClient = serviceBusClient.CreateSessionProcessor(path);
+            return RetryHelper.RetryFunc(() => dateTime != null ? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
+        }
+
+        /// <summary>
+        /// Retrieves an enumerable collection of all message sessions for the queue passed as argument.
+        /// </summary>
+        /// <param name="queue">The queue for which to search message sessions.</param>
+        /// <param name="dateTime">The time the session was last updated.</param>
+        /// <returns>Returns an IEnumerable<QueueDescription/> collection of message sessions.</returns>
+        public IEnumerable<MessageSession> GetMessageSessions(QueueDescription queue, DateTime? dateTime)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentException(QueueDescriptionCannotBeNull);
+            }
+            if (messagingFactory == null)
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+
+            }
+            var queueClient = messagingFactory.CreateQueueClient(queue.Path);
+            return RetryHelper.RetryFunc(() => dateTime != null ? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
+        }
+        */
+
+
+        
         
         #endregion
         
@@ -793,24 +1001,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
         
-        /*private static Encoding GetEncoding()
+        private static Encoding GetEncoding()
         {
-            switch (encodingType)
-            {
-                case EncodingType.ASCII:
-                    return Encoding.ASCII;
-                case EncodingType.UTF7:
-                    return Encoding.UTF7;
-                case EncodingType.UTF8:
-                    return Encoding.UTF8;
-                case EncodingType.UTF32:
-                    return Encoding.UTF32;
-                case EncodingType.Unicode:
-                    return Encoding.Unicode;
-                default:
-                    return Encoding.UTF8;
-            }
-        }*/
+            // Todo can possibly go
+            return encodingType;
+        }
         
         private static bool TestNamespaceHostIsContactable(ServiceBusNamespace2 serviceBusNamespace)
         {
