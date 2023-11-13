@@ -32,6 +32,8 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
 {
+    using Azure.Messaging.ServiceBus.Administration;
+
     public partial class SelectEntityForm : Form
     {
         #region Private Constants
@@ -66,7 +68,7 @@ namespace ServiceBusExplorer.Forms
         readonly bool includeEventHubs;
         readonly bool includeNotificationHubs;
         readonly bool includeRelays;
-        readonly QueueDescription queueDescriptionSource;  // Might be null
+        readonly QueueProperties queuePropertiesSource;  // Might be null
         readonly TopicDescription topicDescriptionSource;  // Might be null
         #endregion
 
@@ -122,7 +124,7 @@ namespace ServiceBusExplorer.Forms
         public SelectEntityForm(string dialogTitle,
                                string groupTitle,
                                string labelText,
-                               QueueDescription queueDescriptionSource,
+                               QueueProperties queuePropertiesSource,
                                bool subscriptions = false,
                                bool eventHubs = false,
                                bool notificationHubs = false,
@@ -134,7 +136,7 @@ namespace ServiceBusExplorer.Forms
                                    notificationHubs,
                                    relays)
         {
-            this.queueDescriptionSource = queueDescriptionSource;
+            this.queuePropertiesSource = queuePropertiesSource;
         }
 
         public SelectEntityForm(string dialogTitle,
@@ -185,7 +187,7 @@ namespace ServiceBusExplorer.Forms
             }
 
             // Select the queue where it is coming from since that is likely where it will go
-            if (queueDescriptionSource != null)
+            if (queuePropertiesSource != null)
             {
                 foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
                 {
@@ -193,7 +195,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
                         {
-                            if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
+                            if (FocusNodeIfMatching<QueueProperties>(level1Node, qd => qd.Name, queuePropertiesSource.Name))
                             {
                                 return;
                             }
@@ -265,10 +267,10 @@ namespace ServiceBusExplorer.Forms
         #region Private Methods
         void SetTextAndType(TreeNode node)
         {
-            var queueTag = node.Tag as QueueDescription;
+            var queueTag = node.Tag as QueueProperties;
             if (queueTag != null)
             {
-                txtEntity.Text = queueTag.Path;
+                txtEntity.Text = queueTag.Name;
                 Type = QueueEntity;
                 return;
             }
@@ -334,7 +336,7 @@ namespace ServiceBusExplorer.Forms
                               parent.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.SelectedImageIndex);
             if (node.Tag != null)
             {
-                if (node.Tag is QueueDescription ||
+                if (node.Tag is QueueProperties ||
                     node.Tag is TopicDescription ||
                     (includeSubscriptions && node.Tag is SubscriptionWrapper && ((SubscriptionWrapper)node.Tag).SubscriptionDescription != null) ||
                     (includeEventHubs && (node.Tag is EventHubDescription || node.Tag is ConsumerGroupDescription)) ||

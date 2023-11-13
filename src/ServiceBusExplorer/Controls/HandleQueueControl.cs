@@ -50,6 +50,11 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
+    using Azure.Messaging.ServiceBus.Administration;
+    using AccessRights = Microsoft.ServiceBus.Messaging.AccessRights;
+    using EntityStatus = Microsoft.ServiceBus.Messaging.EntityStatus;
+    using SharedAccessAuthorizationRule = Microsoft.ServiceBus.Messaging.SharedAccessAuthorizationRule;
+
     public partial class HandleQueueControl : UserControl
     {
         #region Private Constants
@@ -233,8 +238,9 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Fields
 
-        private QueueDescription queueDescription = default!;
+        private QueueProperties queueProperties = default!;
         private readonly ServiceBusHelper serviceBusHelper = default!;
+        private readonly ServiceBusHelper2 serviceBusHelper2 = default!;
         private readonly WriteToLogDelegate writeToLog = default!;
         private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
@@ -292,12 +298,13 @@ namespace ServiceBusExplorer.Controls
         #region Public Constructors
 
         public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            QueueDescription queueDescription, string path, bool duplicateQueue)
+            QueueProperties queueProperties, string path, bool duplicateQueue)
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
+            this.serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             this.path = path;
-            this.queueDescription = queueDescription;
+            this.queueProperties = queueProperties;
             var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
 
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
@@ -326,7 +333,7 @@ namespace ServiceBusExplorer.Controls
         {
             using (
                 var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromQueue, MainForm.SingletonMainForm.TopCount,
-                    serviceBusHelper.BrokeredMessageInspectors.Keys, queueDescription.RequiresSession))
+                    serviceBusHelper.BrokeredMessageInspectors.Keys, queueProperties.RequiresSession))
             {
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
@@ -339,7 +346,7 @@ namespace ServiceBusExplorer.Controls
                         ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector])
                             as IBrokeredMessageInspector
                         : null;
-                    if (queueDescription.EnablePartitioning)
+                    if (queueProperties.EnablePartitioning)
                     {
                         ReadMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count,
                             messageInspector, receiveModeForm.FromSequenceNumber, receiveModeForm.FromSession);
@@ -354,7 +361,7 @@ namespace ServiceBusExplorer.Controls
 
         public void PurgeMessages(int numberOfMessages)
         {
-            if (queueDescription.EnablePartitioning)
+            if (queueProperties.EnablePartitioning)
             {
                 ReadMessagesOneAtTheTime(false, true, numberOfMessages, null);
             }
@@ -366,18 +373,18 @@ namespace ServiceBusExplorer.Controls
 
         public async Task PurgeMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.Messages, $"Would you like to purge the {queueProperties.Name} queue?");
         }
 
 
         public async Task PurgeDeadletterQueueMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.DeadletteredMessages, $"Would you like to purge the dead-letter queue of the {queueProperties.Name} queue?");
         }
 
         public async Task PurgeAllMessagesAsync()
         {
-            await this.DoPurge(PurgeStrategies.All, $"Would you like to purge all (messages and dead-lettered messages) from the {queueDescription.Path} queue?");
+            await this.DoPurge(PurgeStrategies.All, $"Would you like to purge all (messages and dead-lettered messages) from the {queueProperties.Name} queue?");
         }
 
         private async Task DoPurge(PurgeStrategies purgeStrategy, string deleteConfirmation)
@@ -392,7 +399,7 @@ namespace ServiceBusExplorer.Controls
             QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
-            await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription));
+            await purger.Purge(purgeStrategy, await this.serviceBusHelper2.GetQueueProperties(queueProperties));
 
             await MainForm.SingletonMainForm.RefreshSelectedEntity();
             Application.UseWaitCursor = false;
@@ -412,7 +419,7 @@ namespace ServiceBusExplorer.Controls
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
                     ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
                     : null;
-                if (queueDescription.EnablePartitioning)
+                if (queueProperties.EnablePartitioning)
                 {
                     ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
@@ -437,7 +444,7 @@ namespace ServiceBusExplorer.Controls
                 var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector)
                     ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector
                     : null;
-                if (queueDescription.EnablePartitioning)
+                if (queueProperties.EnablePartitioning)
                 {
                     ReadTransferDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
                 }
@@ -448,11 +455,11 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        public void RefreshData(QueueDescription queue)
+        public void RefreshData(QueueProperties queue)
         {
             try
             {
-                queueDescription = queue;
+                queueProperties = queue;
                 InitializeData();
             }
             catch (Exception ex)
@@ -470,7 +477,7 @@ namespace ServiceBusExplorer.Controls
                 tabPageSessions.SuspendDrawing();
                 tabPageSessions.SuspendLayout();
 
-                var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path,
+                var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueProperties.Name,
                     ReceiveMode.PeekLock);
                 var sessionEnumerable = queueClient.GetMessageSessions();
                 if (sessionEnumerable == null)
@@ -490,7 +497,7 @@ namespace ServiceBusExplorer.Controls
                     AllowNew = false,
                     AllowRemove = false
                 };
-                writeToLog(string.Format(SessionsGotFromTheQueue, sessionBindingList.Count, queueDescription.Path));
+                writeToLog(string.Format(SessionsGotFromTheQueue, sessionBindingList.Count, queueProperties.Name));
                 sessionsBindingSource.DataSource = sessionBindingList;
                 sessionsDataGridView.DataSource = sessionsBindingSource;
 
@@ -679,7 +686,7 @@ namespace ServiceBusExplorer.Controls
             }
 
 
-            if (queueDescription != null)
+            if (queueProperties != null)
             {
                if (duplicateQueue)
                {
@@ -1049,8 +1056,9 @@ namespace ServiceBusExplorer.Controls
 
             // special handling for max size if partitioning is enabled
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16 
-                : queueDescription.MaxSizeInGigabytes();
+            trackBarMaxQueueSize.Value = (int)(queueProperties.EnablePartitioning
+                ? queueProperties.MaxSizeInMegabytes / 16
+                : queueProperties.MaxSizeInMegabytes);
 
             ConfigureCreateUserInterface();
         }
@@ -1096,14 +1104,14 @@ namespace ServiceBusExplorer.Controls
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (queueDescription != null &&
-                    queueDescription.Authorization.Count > 0 &&
-                    queueDescription.Authorization.Count > e.NewIndex)
+                if (queueProperties != null &&
+                    queueProperties.AuthorizationRules.Count > 0 &&
+                    queueProperties.AuthorizationRules.Count > e.NewIndex)
                 {
-                    var rule = queueDescription.Authorization.ElementAt(e.NewIndex);
+                    var rule = queueProperties.AuthorizationRules.ElementAt(e.NewIndex);
                     if (rule != null)
                     {
-                        queueDescription.Authorization.Remove(rule);
+                        queueProperties.AuthorizationRules.Remove(rule);
                     }
                 }
             }
@@ -1118,7 +1126,7 @@ namespace ServiceBusExplorer.Controls
             btnRefresh.Visible = true;
             btnChangeStatus.Visible = true;
             btnMessages.Visible = true;
-            btnSessions.Visible = queueDescription.RequiresSession;
+            btnSessions.Visible = queueProperties.RequiresSession;
 
             if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
             {
@@ -1130,9 +1138,9 @@ namespace ServiceBusExplorer.Controls
 
             // Authorization Rules
             BindingList<AuthorizationRuleWrapper> bindingList;
-            if (queueDescription.Authorization.Count > 0)
+            if (queueProperties.AuthorizationRules.Count > 0)
             {
-                var enumerable = queueDescription.Authorization.Select(r => new AuthorizationRuleWrapper(r));
+                var enumerable = queueProperties.AuthorizationRules.Select(r => new AuthorizationRuleWrapper(r));
                 bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
                 {
                     AllowEdit = true,
@@ -1159,40 +1167,40 @@ namespace ServiceBusExplorer.Controls
 
             propertyList.AddRange(new[]
             {
-                new[] {Status, queueDescription.Status.ToString()},
-                new[] {IsReadOnly, queueDescription.IsReadOnly.ToString()},
-                new[] {SizeInBytes, queueDescription.SizeInBytes.ToString("N0")},
-                new[] {CreatedAt, queueDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                new[] {AccessedAt, queueDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
-                new[] {UpdatedAt, queueDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
+                new[] {Status, queueProperties.Status.ToString()},
+                new[] {IsReadOnly, queueProperties.IsReadOnly.ToString()},
+                new[] {SizeInBytes, queueProperties.SizeInBytes.ToString("N0")},
+                new[] {CreatedAt, queueProperties.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                new[] {AccessedAt, queueProperties.AccessedAt.ToString(CultureInfo.CurrentCulture)},
+                new[] {UpdatedAt, queueProperties.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
                 new[]
                 {
                     ActiveMessageCount,
-                    queueDescription.MessageCountDetails.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                    queueProperties.MessageCountDetails.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
                 },
                 new[]
                 {
                     DeadLetterCount,
-                    queueDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
+                    queueProperties.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
                         CultureInfo.CurrentCulture)
                 },
                 new[]
                 {
                     ScheduledMessageCount,
-                    queueDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                    queueProperties.MessageCountDetails.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
                 },
                 new[]
                 {
                     TransferMessageCount,
-                    queueDescription.MessageCountDetails.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                    queueProperties.MessageCountDetails.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
                 },
                 new[]
                 {
                     TransferDeadLetterMessageCount,
-                    queueDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
+                    queueProperties.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
                         CultureInfo.CurrentCulture)
                 },
-                new[] {MessageCount, queueDescription.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
+                new[] {MessageCount, queueProperties.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
             });
 
             propertyListView.Items.Clear();
@@ -1202,103 +1210,103 @@ namespace ServiceBusExplorer.Controls
             }
 
             // Path
-            if (!string.IsNullOrWhiteSpace(queueDescription.Path))
+            if (!string.IsNullOrWhiteSpace(queueProperties.Name))
             {
-                txtPath.Text = queueDescription.Path;
+                txtPath.Text = queueProperties.Name;
             }
 
             // UserMetadata
-            if (!string.IsNullOrWhiteSpace(queueDescription.UserMetadata))
+            if (!string.IsNullOrWhiteSpace(queueProperties.UserMetadata))
             {
-                txtUserMetadata.Text = queueDescription.UserMetadata;
+                txtUserMetadata.Text = queueProperties.UserMetadata;
             }
 
             // ForwardTo
-            if (!string.IsNullOrWhiteSpace(queueDescription.ForwardTo))
+            if (!string.IsNullOrWhiteSpace(queueProperties.ForwardTo))
             {
-                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardTo);
+                txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueProperties.ForwardTo);
             }
 
             // ForwardDeadLetteredMessagesTo
-            if (!string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo))
+            if (!string.IsNullOrWhiteSpace(queueProperties.ForwardDeadLetteredMessagesTo))
             {
-                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardDeadLetteredMessagesTo);
+                txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueProperties.ForwardDeadLetteredMessagesTo);
             }
 
             // MaxQueueSizeInBytes
             trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
-                ? queueDescription.MaxSizeInGigabytes()
-                : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
-                ? 11 : queueDescription.MaxSizeInGigabytes();
+                ? queueProperties.MaxSizeInGigabytes()
+                : queueProperties.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
+                ? 11 : queueProperties.MaxSizeInGigabytes();
 
             // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
-            if (queueDescription.MaxSizeInGigabytes() > 5)
+            if (queueProperties.MaxSizeInGigabytes() > 5)
             {
-                trackBarMaxQueueSize.Maximum = queueDescription.MaxSizeInGigabytes();
-                trackBarMaxQueueSize.Value = queueDescription.MaxSizeInGigabytes();
+                trackBarMaxQueueSize.Maximum = queueProperties.MaxSizeInGigabytes();
+                trackBarMaxQueueSize.Value = queueProperties.MaxSizeInGigabytes();
             }
 
             // MaxDeliveryCount
-            txtMaxDeliveryCount.Text = queueDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
+            txtMaxDeliveryCount.Text = queueProperties.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
 
             // DefaultMessageTimeToLive
-            tsDefaultMessageTimeToLive.TimeSpanValue = queueDescription.DefaultMessageTimeToLive;
+            tsDefaultMessageTimeToLive.TimeSpanValue = queueProperties.DefaultMessageTimeToLive;
 
             // DuplicateDetectionHistoryTimeWindow
-            tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = queueDescription.DuplicateDetectionHistoryTimeWindow;
+            tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = queueProperties.DuplicateDetectionHistoryTimeWindow;
 
             // LockDuration
-            tsLockDuration.TimeSpanValue = queueDescription.LockDuration;
+            tsLockDuration.TimeSpanValue = queueProperties.LockDuration;
 
             // AutoDeleteOnIdle
-            tsAutoDeleteOnIdle.TimeSpanValue = queueDescription.AutoDeleteOnIdle;
+            tsAutoDeleteOnIdle.TimeSpanValue = queueProperties.AutoDeleteOnIdle;
 
             // EnableBatchedOperations
             checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
-                queueDescription.EnableBatchedOperations);
+                queueProperties.EnableBatchedOperations);
 
             // EnableDeadLetteringOnMessageExpiration
             checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationItemText,
-                queueDescription.EnableDeadLetteringOnMessageExpiration);
+                queueProperties.EnableDeadLetteringOnMessageExpiration);
 
 
             if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
-                checkedListBox.SetItemChecked(EnablePartitioningItemText, queueDescription.EnablePartitioning);
+                checkedListBox.SetItemChecked(EnablePartitioningItemText, queueProperties.EnablePartitioning);
 
                 // EnableExpress
-                checkedListBox.SetItemChecked(EnableExpressItemText, queueDescription.EnableExpress);
+                checkedListBox.SetItemChecked(EnableExpressItemText, queueProperties.EnableExpress);
             }
 
             // RequiresDuplicateDetection
             checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
-                queueDescription.RequiresDuplicateDetection);
+                queueProperties.RequiresDuplicateDetection);
 
             // RequiresSession
             checkedListBox.SetItemChecked(RequiresSessionItemText,
-                queueDescription.RequiresSession);
+                queueProperties.RequiresSession);
 
             // SupportOrdering
             checkedListBox.SetItemChecked(SupportOrderingItemText,
-                queueDescription.SupportOrdering);
+                queueProperties.SupportOrdering);
 
             // IsAnonymousAccessible
             if (!serviceBusHelper.IsCloudNamespace)
             {
                 checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
-                    queueDescription.IsAnonymousAccessible);
+                    queueProperties.IsAnonymousAccessible);
             }
         }
 
         private MessageReceiver BuildMessageReceiver(ReceiveMode receiveMode, string? fromSession = null)
         {
-            if (fromSession == null && !queueDescription.RequiresSession)
+            if (fromSession == null && !queueProperties.RequiresSession)
             {
-                return serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, receiveMode);
+                return serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueProperties.Name, receiveMode);
             }
 
-            var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path, receiveMode);
+            var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueProperties.Name, receiveMode);
             var sessionAcceptTimeout = TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout);
             if (fromSession != null)
             {
@@ -1351,7 +1359,7 @@ namespace ServiceBusExplorer.Controls
                             break;
                         }
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1376,7 +1384,7 @@ namespace ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1411,7 +1419,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheQueue,
                     MainForm.SingletonMainForm.ReceiveTimeout,
-                    queueDescription.Path));
+                    queueProperties.Name));
             }
             catch (NotSupportedException)
             {
@@ -1462,7 +1470,7 @@ namespace ServiceBusExplorer.Controls
                             brokeredMessages.Add(message);
                         }
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1487,7 +1495,7 @@ namespace ServiceBusExplorer.Controls
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1520,7 +1528,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheQueue,
                     MainForm.SingletonMainForm.ReceiveTimeout,
-                    queueDescription.Path));
+                    queueProperties.Name));
             }
             catch (Exception e)
             {
@@ -1540,7 +1548,7 @@ namespace ServiceBusExplorer.Controls
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<BrokeredMessage>();
 
-                var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatDeadLetterPath(queueProperties.Name);
                 if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
@@ -1574,7 +1582,7 @@ namespace ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1598,7 +1606,7 @@ namespace ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    //if (!queueDescription.EnablePartitioning)
+                    //if (!queueProperties.EnablePartitioning)
                     //{
                     //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
                     //}
@@ -1611,7 +1619,7 @@ namespace ServiceBusExplorer.Controls
                     //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
                     //    }
                     //}
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
 
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
@@ -1645,7 +1653,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueProperties.Name));
             }
             catch (NotSupportedException)
             {
@@ -1677,7 +1685,7 @@ namespace ServiceBusExplorer.Controls
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<BrokeredMessage>();
 
-                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueProperties.Name);
                 if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
@@ -1711,7 +1719,7 @@ namespace ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1735,7 +1743,7 @@ namespace ServiceBusExplorer.Controls
                             ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
                             : enumerable);
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    //if (!queueDescription.EnablePartitioning)
+                    //if (!queueProperties.EnablePartitioning)
                     //{
                     //    queueClient.CompleteBatch(brokeredMessages.Select(bm => bm.LockToken));
                     //}
@@ -1748,7 +1756,7 @@ namespace ServiceBusExplorer.Controls
                     //            brokeredMessages.Where(bm => bm.PartitionKey == key).Select(bm => bm.LockToken));
                     //    }
                     //}
-                    writeToLog(string.Format(MessagesReceivedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesReceivedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
 
                 transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
@@ -1782,7 +1790,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueProperties.Name));
             }
             catch (NotSupportedException)
             {
@@ -1807,7 +1815,7 @@ namespace ServiceBusExplorer.Controls
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
-                var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatDeadLetterPath(queueProperties.Name);
 
                 if (peek)
                 {
@@ -1835,7 +1843,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         brokeredMessages.Add(message);
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1858,7 +1866,7 @@ namespace ServiceBusExplorer.Controls
                             : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1890,7 +1898,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueProperties.Name));
             }
             catch (Exception e)
             {
@@ -1903,7 +1911,7 @@ namespace ServiceBusExplorer.Controls
             try
             {
                 var brokeredMessages = new List<BrokeredMessage>();
-                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
+                var queuePath = QueueClient.FormatTransferDeadLetterPath(queueProperties.Name);
 
                 if (peek)
                 {
@@ -1931,7 +1939,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         brokeredMessages.Add(message);
                     }
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 else
                 {
@@ -1954,7 +1962,7 @@ namespace ServiceBusExplorer.Controls
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueDescription.Path));
+                    writeToLog(string.Format(MessagesPeekedFromTheTransferDeadletterQueue, brokeredMessages.Count, queueProperties.Name));
                 }
                 transferDeadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1984,7 +1992,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (TimeoutException)
             {
-                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
+                writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueProperties.Name));
             }
             catch (Exception e)
             {
@@ -2002,7 +2010,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 if (btnCreateDelete.Text == DeleteText)
                 {
-                    using (var deleteForm = new DeleteForm(queueDescription.Path, QueueEntity.ToLower()))
+                    using (var deleteForm = new DeleteForm(queueProperties.Name, QueueEntity.ToLower()))
                     {
                         var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
 
@@ -2012,12 +2020,12 @@ namespace ServiceBusExplorer.Controls
 
                         if (!disableAccidentalDeletionPrevention)
                         {
-                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {queueDescription.Path} {QueueEntity.ToLower()}");
+                            deleteForm.ShowAccidentalDeletionPreventionCheck(configuration, $"Delete {queueProperties.Name} {QueueEntity.ToLower()}");
                         }
 
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
-                            await serviceBusHelper.DeleteQueue(queueDescription);
+                            await serviceBusHelper.DeleteQueue(queueProperties);
                         }
                     }
                 }
@@ -2046,7 +2054,7 @@ namespace ServiceBusExplorer.Controls
                         return;
                     }
 
-                    var description = new QueueDescription(txtPath.Text)
+                    var description = new QueueProperties(txtPath.Text)
                     {
                         UserMetadata = txtUserMetadata.Text,
                         ForwardTo = txtForwardTo.Text,
@@ -2197,7 +2205,7 @@ namespace ServiceBusExplorer.Controls
                     }
 
 
-                    queueDescription = serviceBusHelper.CreateQueue(description);
+                    queueProperties = serviceBusHelper.CreateQueue(description);
                     InitializeControls(initialCall: false);
                 }
             }
@@ -2222,25 +2230,25 @@ namespace ServiceBusExplorer.Controls
 
         private void checkedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (queueDescription == null)
+            if (queueProperties == null)
             {
                 return;
             }
             if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
             {
-                e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
+                e.NewValue = queueProperties.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == checkedListBox.Items.IndexOf(RequiresSessionItemText))
             {
-                e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
+                e.NewValue = queueProperties.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
             {
-                e.NewValue = queueDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
+                e.NewValue = queueProperties.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
             }
             if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
             {
-                e.NewValue = queueDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
+                e.NewValue = queueProperties.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
             }
         }
 
@@ -2270,9 +2278,9 @@ namespace ServiceBusExplorer.Controls
                         return;
                     }
 
-                    queueDescription.UserMetadata = txtUserMetadata.Text;
-                    queueDescription.ForwardTo = string.IsNullOrWhiteSpace(txtForwardTo.Text) ? null : txtForwardTo.Text;
-                    queueDescription.ForwardDeadLetteredMessagesTo =
+                    queueProperties.UserMetadata = txtUserMetadata.Text;
+                    queueProperties.ForwardTo = string.IsNullOrWhiteSpace(txtForwardTo.Text) ? null : txtForwardTo.Text;
+                    queueProperties.ForwardDeadLetteredMessagesTo =
                         string.IsNullOrWhiteSpace(txtForwardDeadLetteredMessagesTo.Text)
                             ? null
                             : txtForwardDeadLetteredMessagesTo.Text;
@@ -2281,7 +2289,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         if (int.TryParse(txtMaxDeliveryCount.Text, out var value))
                         {
-                            queueDescription.MaxDeliveryCount = value;
+                            queueProperties.MaxDeliveryCount = value;
                         }
                         else
                         {
@@ -2294,7 +2302,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         if (tsDefaultMessageTimeToLive.TimeSpanValue.HasValue)
                         {
-                            queueDescription.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
+                            queueProperties.DefaultMessageTimeToLive = tsDefaultMessageTimeToLive.TimeSpanValue.Value;
                         }
                         else
                         {
@@ -2307,7 +2315,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         if (tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.HasValue)
                         {
-                            queueDescription.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
+                            queueProperties.DuplicateDetectionHistoryTimeWindow = tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue.Value;
                         }
                         else
                         {
@@ -2320,7 +2328,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         if (tsAutoDeleteOnIdle.TimeSpanValue.HasValue)
                         {
-                            queueDescription.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
+                            queueProperties.AutoDeleteOnIdle = tsAutoDeleteOnIdle.TimeSpanValue.Value;
                         }
                         else
                         {
@@ -2333,7 +2341,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         if (tsLockDuration.TimeSpanValue.HasValue)
                         {
-                            queueDescription.LockDuration = tsLockDuration.TimeSpanValue.Value;
+                            queueProperties.LockDuration = tsLockDuration.TimeSpanValue.Value;
                         }
                         else
                         {
@@ -2342,14 +2350,14 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    queueDescription.EnableBatchedOperations =
+                    queueProperties.EnableBatchedOperations =
                         checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
-                    queueDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
-                    queueDescription.EnableDeadLetteringOnMessageExpiration =
+                    queueProperties.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
+                    queueProperties.EnableDeadLetteringOnMessageExpiration =
                         checkedListBox.GetItemChecked(EnableDeadLetteringOnMessageExpirationItemText);
-                    queueDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
+                    queueProperties.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
 
-                    queueDescription.IsAnonymousAccessible =
+                    queueProperties.IsAnonymousAccessible =
                         checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList =
@@ -2390,18 +2398,18 @@ namespace ServiceBusExplorer.Controls
                                 if (string.IsNullOrWhiteSpace(rule.PrimaryKey) &&
                                     string.IsNullOrWhiteSpace(rule.SecondaryKey))
                                 {
-                                    queueDescription.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
+                                    queueProperties.AuthorizationRules.Add(new SharedAccessAuthorizationRule(rule.KeyName,
                                         rightList));
                                 }
                                 else if (string.IsNullOrWhiteSpace(rule.SecondaryKey))
                                 {
-                                    queueDescription.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
+                                    queueProperties.AuthorizationRules.Add(new SharedAccessAuthorizationRule(rule.KeyName,
                                         rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
                                 }
                                 else
                                 {
-                                    queueDescription.Authorization.Add(new SharedAccessAuthorizationRule(rule.KeyName,
+                                    queueProperties.AuthorizationRules.Add(new SharedAccessAuthorizationRule(rule.KeyName,
                                         rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rule.SecondaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey(),
                                         rightList));
@@ -2409,7 +2417,7 @@ namespace ServiceBusExplorer.Controls
                             }
                             else
                             {
-                                queueDescription.Authorization.Add(new AllowRule(rule.IssuerName,
+                                queueProperties.AuthorizationRules.Add(new AllowRule(rule.IssuerName,
                                     rule.ClaimType,
                                     rule.ClaimValue,
                                     rightList));
@@ -2417,18 +2425,18 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    queueDescription.Status = EntityStatus.Disabled;
-                    serviceBusHelper.UpdateQueue(queueDescription);
+                    queueProperties.Status = EntityStatus.Disabled;
+                    serviceBusHelper.UpdateQueue(queueProperties);
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                    queueDescription = serviceBusHelper.GetQueue(queueDescription.Path);
+                    queueProperties = serviceBusHelper.GetQueue(queueProperties.Name);
                 }
                 finally
                 {
-                    queueDescription.Status = EntityStatus.Active;
-                    queueDescription = serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                    queueProperties.Status = EntityStatus.Active;
+                    queueProperties = serviceBusHelper2.UpdateQueue(queueProperties);
                     InitializeData();
                 }
             }
@@ -2508,18 +2516,18 @@ namespace ServiceBusExplorer.Controls
         {
             if (!string.IsNullOrWhiteSpace(path))
             {
-                QueueDescription queueDescriptionSource = default!;
+                QueueProperties queuePropertiesSource = default!;
                 try
                 {
-                    queueDescriptionSource = serviceBusHelper.GetQueue(path);
+                    queuePropertiesSource = serviceBusHelper2.GetQueue(path);
                 }
                 catch (Exception)
                 {
                     // we might have found a topic, and the sdk will throw with an indistinguishable MessagingException error.
                 }
-                if (queueDescriptionSource != null)
+                if (queuePropertiesSource != null)
                 {
-                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, queueDescriptionSource);
+                    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, queuePropertiesSource);
                 }
                 TopicDescription topicDescriptionSource = default!;
                 try
@@ -3171,7 +3179,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueProperties, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3188,7 +3196,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueProperties, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
 
@@ -3218,7 +3226,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueProperties, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3362,7 +3370,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                using (var form = new MessageForm(queueDescription, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueProperties, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                            .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3394,12 +3402,12 @@ namespace ServiceBusExplorer.Controls
             if (messages.Count() == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"dead-letter subqueue for the {queueDescription.Path} queue?";
+                    $"dead-letter subqueue for the {queueProperties.Name} queue?";
             }
             else
             {
                 confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"dead-letter subqueue for {queueDescription.Path} queue?";
+                    $"dead-letter subqueue for {queueProperties.Name} queue?";
             }
 
             using (var deleteForm = new DeleteForm(confirmationText))
@@ -3412,7 +3420,7 @@ namespace ServiceBusExplorer.Controls
 
             var sequenceNumbersToDelete = messages.Select(s => s?.SequenceNumber).ToList();
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+                MainForm.SingletonMainForm.ReceiveTimeout, queueProperties);
 
             try
             {
@@ -3512,7 +3520,7 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                using (var form = new MessageForm(queueDescription, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueProperties, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                            .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
@@ -3548,7 +3556,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                using (var form = new MessageForm(queueDescription, transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueProperties, transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                     .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();

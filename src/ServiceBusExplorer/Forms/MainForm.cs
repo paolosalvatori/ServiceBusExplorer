@@ -1679,7 +1679,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             return;
                         }
-                        serviceBusHelper.RenameQueue(queueDescription.Path, parameterForm.ParameterValues[0]);
+                        serviceBusHelper2.RenameQueue(queueDescription.Path, parameterForm.ParameterValues[0]);
                         return;
                     }
                 }
@@ -2160,7 +2160,7 @@ namespace ServiceBusExplorer.Forms
 
                             if (deleteForm.ShowDialog() == DialogResult.OK)
                             {
-                                await serviceBusHelper.DeleteQueue(queueDescription);
+                                await serviceBusHelper2.DeleteQueue(queueDescription);
                             }
                         }
                         return;
@@ -2404,7 +2404,7 @@ namespace ServiceBusExplorer.Forms
                 if (tag != null)
                 {
                     // Put a check against the item that reflects the current status of the queue
-                    var queueDescription = serviceBusHelper.GetQueue(tag.Path);
+                    var queueDescription = serviceBusHelper2.GetQueue(tag.Path);
                     var status = queueDescription.Status;
                     foreach (var dropDownItem in changeStatusQueueMenuItem.DropDownItems)
                     {
@@ -2439,7 +2439,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 queueDescription.Status = (Microsoft.ServiceBus.Messaging.EntityStatus)e.ClickedItem.Tag;
-                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                serviceBusHelper2.UpdateQueue(queueDescription);
                                 await RefreshSelectedEntity();
                             }
                         }
@@ -2834,7 +2834,7 @@ namespace ServiceBusExplorer.Forms
                     var tag = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
                     if (tag != null)
                     {
-                        var queueDescription = serviceBusHelper.GetQueue(tag.Path);
+                        var queueDescription = serviceBusHelper2.GetQueue(tag.Path);
                         RefreshQueueNode(serviceBusTreeView.SelectedNode, queueDescription);
 
                         // Update the right view

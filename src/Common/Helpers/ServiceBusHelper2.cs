@@ -699,6 +699,24 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         #region queuecontrol
         
+        public async Task<QueueProperties> GetQueueProperties(QueueProperties oldQueueDescription)
+        {
+            return (await this.GetQueueProperties(new List<QueueProperties>() { oldQueueDescription }).ConfigureAwait(false)).FirstOrDefault();
+        }
+
+        public async Task<List<QueueProperties>> GetQueueProperties(List<QueueProperties> oldQueueDescriptions)
+        {
+            var administrationClient = new ServiceBusAdministrationClient(connectionString);
+            var result = new List<QueueProperties>();
+
+            foreach(QueueProperties oldQueueDescription in oldQueueDescriptions)
+            {
+                result.Add(await administrationClient.GetQueueAsync(oldQueueDescription.Name).ConfigureAwait(false));
+            }
+
+            return result;
+        }
+        
         /// <summary>
         /// Retrieves an enumerable collection of all queues in the service bus namespace.
         /// </summary>

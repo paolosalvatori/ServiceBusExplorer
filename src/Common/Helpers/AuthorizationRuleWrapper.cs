@@ -23,7 +23,7 @@
 
 using System;
 using System.Linq;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus.Administration;
 
 #endregion
 
@@ -39,8 +39,6 @@ namespace ServiceBusExplorer.Helpers
         private string keyName;
         private string primaryKey;
         private string secondaryKey;
-        private string claimType;
-        private string claimValue;
         private string issuerName;
         #endregion
 
@@ -61,10 +59,7 @@ namespace ServiceBusExplorer.Helpers
             Manage = rule.Rights.Contains(AccessRights.Manage);
             Send = rule.Rights.Contains(AccessRights.Send);
             Listen = rule.Rights.Contains(AccessRights.Listen);
-            ClaimType = rule.ClaimType;
-            ClaimValue = rule.ClaimValue;
-            IssuerName = rule.IssuerName;
-            Revision = rule.Revision;
+            IssuerName = rule.KeyName;
             CreatedTime = rule.CreatedTime;
             ModifiedTime = rule.ModifiedTime;
             AuthorizationRule = rule;
@@ -122,38 +117,6 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        public string ClaimType
-        {
-            get
-            {
-                return claimType;
-            }
-            set
-            {
-                claimType = value;
-                if (AuthorizationRule != null)
-                {
-                    AuthorizationRule.ClaimType = value;
-                }
-            }
-        }
-
-        public string ClaimValue
-        {
-            get
-            {
-                return claimValue;
-            }
-            set
-            {
-                claimValue = value;
-                if (AuthorizationRule != null)
-                {
-                    AuthorizationRule.ClaimValue = value;
-                }
-            }
-        }
-
         public string IssuerName
         {
             get
@@ -165,15 +128,14 @@ namespace ServiceBusExplorer.Helpers
                 issuerName = value;
                 if (AuthorizationRule != null)
                 {
-                    AuthorizationRule.IssuerName = value;
+                    AuthorizationRule.KeyName = value;
                 }
             }
         }
 
-        public DateTime CreatedTime { get; private set; }
-        public DateTime ModifiedTime { get; private set; }
-        public long Revision { get; private set; }
-        public AuthorizationRule AuthorizationRule { get; private set; }
+        public DateTimeOffset CreatedTime { get; private set; }
+        public DateTimeOffset ModifiedTime { get; private set; }
+        public AuthorizationRule AuthorizationRule { get; }
 
         public bool Manage
         {
@@ -193,7 +155,7 @@ namespace ServiceBusExplorer.Helpers
                 if (AuthorizationRule != null &&
                     !AuthorizationRule.Rights.Contains(AccessRights.Manage))
                 {
-                    AuthorizationRule.Rights = new[] {AccessRights.Manage, AccessRights.Send, AccessRights.Listen};
+                    AuthorizationRule.Rights = new[] {AccessRights.Manage, AccessRights.Send, AccessRights.Listen}.ToList();
                 }
             }
         }
