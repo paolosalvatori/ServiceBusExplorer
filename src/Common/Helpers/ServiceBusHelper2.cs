@@ -171,7 +171,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private ServiceBusAdministrationClient serviceBusAdministrationClient;
-        private ServiceBusClient serviceBusClient;
+        public ServiceBusClient serviceBusClient;
         //private AzureNotificationHubs.serviceBusAdministrationClient notificationHubserviceBusAdministrationClient;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
@@ -237,7 +237,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             Scheme = serviceBusHelper.Scheme;
             ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
-            BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
+            ReceivedMessageInspectors = new ReceivedMessageInspector();
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
@@ -530,9 +530,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public Dictionary<string, ServiceBusNamespace2> ServiceBusNamespaces { get; set; }
 
         /// <summary>
-        /// Gets or sets the dictionary containing BrokeredMessage inspectors.
+        /// Gets or sets the dictionary containing ReceivedMessage inspectors.
         /// </summary>
-        public Dictionary<string, Type> BrokeredMessageInspectors { get; set; }
+        public Dictionary<string, Type> ReceivedMessageInspectors { get; set; }
 
         /// <summary>
         /// Gets or sets the dictionary containing EventData inspectors.
@@ -616,6 +616,15 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 encodingType = value;
             }
         }
+
+        public ServiceBusClient ServiceBusClient
+        {
+            get
+            {
+                return serviceBusClient;
+            }
+        }
+        
         #endregion
 
         public delegate void UpdateStatisticsDelegate(long messageNumber, long elapsedMilliseconds, DirectionType direction);

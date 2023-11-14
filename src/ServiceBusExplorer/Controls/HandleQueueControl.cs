@@ -52,6 +52,7 @@ namespace ServiceBusExplorer.Controls
 {
     using Azure.Messaging.ServiceBus;
     using Azure.Messaging.ServiceBus.Administration;
+    using Microsoft.ServiceBus.Messaging;
     using AccessRights = Microsoft.ServiceBus.Messaging.AccessRights;
     using EntityStatus = Microsoft.ServiceBus.Messaging.EntityStatus;
     using SharedAccessAuthorizationRule = Microsoft.ServiceBus.Messaging.SharedAccessAuthorizationRule;
@@ -262,7 +263,7 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<ServiceBusMessage> messageBindingList = default!;
         private SortableBindingList<ServiceBusMessage> deadletterBindingList = default!;
         private SortableBindingList<ServiceBusMessage> transferDeadletterBindingList = default!;
-        private SortableBindingList<Azure.Messaging.ServiceBus.Administration> sessionBindingList = default!;
+        private SortableBindingList<MessageSession> sessionBindingList = default!;
         private bool buttonsMoved;
         private readonly bool duplicateQueue;
 
@@ -334,7 +335,7 @@ namespace ServiceBusExplorer.Controls
         {
             using (
                 var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromQueue, MainForm.SingletonMainForm.TopCount,
-                    serviceBusHelper.ServiceBusMessageInspectors.Keys, queueProperties.RequiresSession))
+                    serviceBusHelper.BrokeredMessageInspectors.Keys, queueProperties.RequiresSession))
             {
                 if (receiveModeForm.ShowDialog() == DialogResult.OK)
                 {
@@ -342,10 +343,10 @@ namespace ServiceBusExplorer.Controls
                     messageCustomPropertyGrid.SelectedObject = null;
                     messagePropertyGrid.SelectedObject = null;
                     var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                           serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(
+                                           serviceBusHelper.BrokeredMessageInspectors.ContainsKey(
                                                receiveModeForm.Inspector)
-                        ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector])
-                            as IServiceBusMessageInspector
+                        ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector])
+                            as IBrokeredMessageInspector
                         : null;
                     if (queueProperties.EnablePartitioning)
                     {
@@ -408,50 +409,50 @@ namespace ServiceBusExplorer.Controls
 
         public void GetDeadletterMessages()
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.ServiceBusMessageInspectors.Keys))
+            using (var ReceiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
             {
-                if (receiveModeForm.ShowDialog() != DialogResult.OK)
+                if (ReceiveModeForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
                 txtDeadletterText.Text = string.Empty;
                 deadletterCustomPropertyGrid.SelectedObject = null;
                 deadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(receiveModeForm.Inspector)
-                    ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector]) as IServiceBusMessageInspector
+                var messageInspector = !string.IsNullOrEmpty(ReceiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(ReceiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[ReceiveModeForm.Inspector]) as IBrokeredMessageInspector
                     : null;
                 if (queueProperties.EnablePartitioning)
                 {
-                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
+                    ReadDeadletterMessagesOneAtTheTime(ReceiveModeForm.Peek, ReceiveModeForm.All, ReceiveModeForm.Count, messageInspector, ReceiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
+                    GetDeadletterMessages(ReceiveModeForm.Peek, ReceiveModeForm.All, ReceiveModeForm.Count, messageInspector, ReceiveModeForm.FromSequenceNumber);
                 }
             }
         }
 
         public void GetTransferDeadletterMessages()
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromTransferDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.ServiceBusMessageInspectors.Keys))
+            using (var ReceiveModeForm = new ReceiveModeForm(RetrieveMessagesFromTransferDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
             {
-                if (receiveModeForm.ShowDialog() != DialogResult.OK)
+                if (ReceiveModeForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
                 txtTransferDeadletterText.Text = string.Empty;
                 transferDeadletterCustomPropertyGrid.SelectedObject = null;
                 transferDeadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) && serviceBusHelper.ServiceBusMessageInspectors.ContainsKey(receiveModeForm.Inspector)
-                    ? Activator.CreateInstance(serviceBusHelper.ServiceBusMessageInspectors[receiveModeForm.Inspector]) as IServiceBusMessageInspector
+                var messageInspector = !string.IsNullOrEmpty(ReceiveModeForm.Inspector) && serviceBusHelper.BrokeredMessageInspectors.ContainsKey(ReceiveModeForm.Inspector)
+                    ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[ReceiveModeForm.Inspector]) as IBrokeredMessageInspector
                     : null;
                 if (queueProperties.EnablePartitioning)
                 {
-                    ReadTransferDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
+                    ReadTransferDeadletterMessagesOneAtTheTime(ReceiveModeForm.Peek, ReceiveModeForm.All, ReceiveModeForm.Count, messageInspector, ReceiveModeForm.FromSequenceNumber);
                 }
                 else
                 {
-                    GetTransferDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
+                    GetTransferDeadletterMessages(ReceiveModeForm.Peek, ReceiveModeForm.All, ReceiveModeForm.Count, messageInspector, ReceiveModeForm.FromSequenceNumber);
                 }
             }
         }
@@ -478,8 +479,8 @@ namespace ServiceBusExplorer.Controls
                 tabPageSessions.SuspendDrawing();
                 tabPageSessions.SuspendLayout();
 
-                var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueProperties.Name,
-                    ReceiveMode.PeekLock);
+                ReceiverOptions options = new ReceiverOptions();
+                var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueProperties.Name, ReceiveMode.PeekLock);
                 var sessionEnumerable = queueClient.GetMessageSessions();
                 if (sessionEnumerable == null)
                 {
@@ -1082,7 +1083,7 @@ namespace ServiceBusExplorer.Controls
             btnTransferDeadletterQueue.Visible = false;
 
             // Create BindingList for Authorization Rules
-            var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
+            var bindingList = new BindingList<AuthorizationRuleWrapper2>(new List<AuthorizationRuleWrapper2>())
             {
                 AllowEdit = true,
                 AllowNew = true,
@@ -1138,11 +1139,11 @@ namespace ServiceBusExplorer.Controls
             btnDeadletter.Visible = true;
 
             // Authorization Rules
-            BindingList<AuthorizationRuleWrapper> bindingList;
+            BindingList<AuthorizationRuleWrapper2> bindingList;
             if (queueProperties.AuthorizationRules.Count > 0)
             {
-                var enumerable = queueProperties.AuthorizationRules.Select(r => new AuthorizationRuleWrapper(r));
-                bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
+                var enumerable = queueProperties.AuthorizationRules.Select(r => new AuthorizationRuleWrapper2(r));
+                bindingList = new BindingList<AuthorizationRuleWrapper2>(enumerable.ToList())
                 {
                     AllowEdit = true,
                     AllowNew = true,
@@ -1152,7 +1153,7 @@ namespace ServiceBusExplorer.Controls
             }
             else
             {
-                bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
+                bindingList = new BindingList<AuthorizationRuleWrapper2>(new List<AuthorizationRuleWrapper2>())
                 {
                     AllowEdit = true,
                     AllowNew = true,
@@ -1160,7 +1161,7 @@ namespace ServiceBusExplorer.Controls
                 };
             }
             bindingList.ListChanged += bindingList_ListChanged;
-            authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper>(bindingList);
+            authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper2>(bindingList);
             authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
 
             // Initialize property grid
@@ -1277,7 +1278,7 @@ namespace ServiceBusExplorer.Controls
                 checkedListBox.SetItemChecked(EnablePartitioningItemText, queueProperties.EnablePartitioning);
 
                 // EnableExpress
-                checkedListBox.SetItemChecked(EnableExpressItemText, queueProperties.EnableExpress);
+                checkedListBox.SetItemChecked(EnableExpressItemText, /*queueProperties.EnableExpress*/true);
             }
 
             // RequiresDuplicateDetection
@@ -1290,33 +1291,38 @@ namespace ServiceBusExplorer.Controls
 
             // SupportOrdering
             checkedListBox.SetItemChecked(SupportOrderingItemText,
-                queueProperties.SupportOrdering);
+                /*queueProperties.SupportOrdering*/true);
 
             // IsAnonymousAccessible
             if (!serviceBusHelper.IsCloudNamespace)
             {
                 checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
-                    queueProperties.IsAnonymousAccessible);
+                    /*queueProperties.IsAnonymousAccessible*/true);
             }
         }
 
-        private MessageReceiver BuildMessageReceiver(ReceiveMode receiveMode, string? fromSession = null)
+        private ServiceBusReceiver BuildMessageReceiver(ServiceBusReceiveMode serviceBusReceiveMode, string? fromSession = null)
         {
+            var receiverOptions = new ServiceBusReceiverOptions()
+            {
+                ReceiveMode = serviceBusReceiveMode
+            };
             if (fromSession == null && !queueProperties.RequiresSession)
             {
-                return serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueProperties.Name, receiveMode);
+                return serviceBusHelper2.serviceBusClient.CreateReceiver(queueProperties.Name, receiverOptions);
             }
 
-            var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueProperties.Name, receiveMode);
+            var queueClient = serviceBusHelper2.serviceBusClient.CreateReceiver(queueProperties.Name, receiverOptions);
             var sessionAcceptTimeout = TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout);
             if (fromSession != null)
             {
-                return queueClient.AcceptMessageSession(fromSession, sessionAcceptTimeout);
+                return serviceBusHelper2.serviceBusClient.AcceptSessionAsync(queueProperties.Name, fromSession/*, sessionAcceptTimeout*/).Result;
             }
-            return queueClient.AcceptMessageSession(sessionAcceptTimeout);
+            // todo session accept timeout
+            return serviceBusHelper2.serviceBusClient.AcceptNextSessionAsync(queueProperties.Name).Result;
         }
 
-        private void GetMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
+        private async Task GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
@@ -1331,25 +1337,25 @@ namespace ServiceBusExplorer.Controls
                 {
                     var totalRetrieved = 0;
 
-                    var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+                    var receiver = BuildMessageReceiver(ServiceBusReceiveMode.PeekLock, fromSession);
                     while (totalRetrieved < count)
                     {
-                        IEnumerable<ServiceBusMessage> messageEnumerable;
+                        IReadOnlyList<ServiceBusReceivedMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, count);
+                            messageEnumerable = await receiver.PeekMessagesAsync(count, fromSequenceNumber.Value);
                         }
                         else
                         {
-                            messageEnumerable = receiver.PeekBatch(count);
+                            messageEnumerable = await receiver.PeekMessagesAsync(count);
                         }
 
                         if (messageEnumerable == null)
                         {
                             break;
                         }
-                        var messageArray = messageEnumerable as ServiceBusMessage[] ?? messageEnumerable.ToArray();
+                        var messageArray = messageEnumerable as ServiceBusReceivedMessage[] ?? messageEnumerable.ToArray();
                         var partialList = messageInspector != null
                             ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
                             : new List<ServiceBusMessage>(messageArray);
@@ -1364,7 +1370,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ServiceBusReceiveMode.ReceiveAndDelete, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1440,14 +1446,14 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
+        private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         {
             try
             {
                 var ServiceBusMessages = new List<ServiceBusMessage>();
                 if (peek)
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ServiceBusReceiveMode.PeekLock, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -1475,7 +1481,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = BuildMessageReceiver(ServiceBusReceiveMode.ReceiveAndDelete, fromSession);
                     
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1537,7 +1543,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void GetDeadletterMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1552,7 +1558,7 @@ namespace ServiceBusExplorer.Controls
                 var queuePath = QueueClient.FormatDeadLetterPath(queueProperties.Name);
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.PeekLock);
                     var totalRetrieved = 0;
                     var retrieved = 0;
                     do
@@ -1587,7 +1593,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1674,7 +1680,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void GetTransferDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1689,7 +1695,7 @@ namespace ServiceBusExplorer.Controls
                 var queuePath = QueueClient.FormatTransferDeadLetterPath(queueProperties.Name);
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.PeekLock);
                     var totalRetrieved = 0;
                     var retrieved = 0;
                     do
@@ -1724,7 +1730,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1811,7 +1817,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1820,7 +1826,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
                         ServiceBusMessage message;
@@ -1848,7 +1854,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1907,7 +1913,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IServiceBusMessageInspector? messageInspector, long? fromSequenceNumber)
+        private void ReadTransferDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber)
         {
             try
             {
@@ -1916,7 +1922,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (peek)
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
                     {
                         ServiceBusMessage message;
@@ -1944,7 +1950,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
+                    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ServiceBusReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -2531,7 +2537,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle, SelectEntityLabelText, queuePropertiesSource);
                 }
-                TopicDescription topicDescriptionSource = default!;
+                TopicProperties topicDescriptionSource = default!;
                 try
                 {
                     topicDescriptionSource = serviceBusHelper.GetTopic(path);

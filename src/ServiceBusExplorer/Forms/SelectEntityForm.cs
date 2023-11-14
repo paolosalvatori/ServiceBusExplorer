@@ -68,7 +68,7 @@ namespace ServiceBusExplorer.Forms
         readonly bool includeEventHubs;
         readonly bool includeNotificationHubs;
         readonly bool includeRelays;
-        readonly QueueProperties queuePropertiesSource;  // Might be null
+        readonly QueueDescription queueDescriptionSource;  // Might be null
         readonly TopicDescription topicDescriptionSource;  // Might be null
         #endregion
 
@@ -124,7 +124,7 @@ namespace ServiceBusExplorer.Forms
         public SelectEntityForm(string dialogTitle,
                                string groupTitle,
                                string labelText,
-                               QueueProperties queuePropertiesSource,
+                               QueueDescription queueDescriptionSource,
                                bool subscriptions = false,
                                bool eventHubs = false,
                                bool notificationHubs = false,
@@ -136,7 +136,7 @@ namespace ServiceBusExplorer.Forms
                                    notificationHubs,
                                    relays)
         {
-            this.queuePropertiesSource = queuePropertiesSource;
+            this.queueDescriptionSource = queueDescriptionSource;
         }
 
         public SelectEntityForm(string dialogTitle,
@@ -187,7 +187,7 @@ namespace ServiceBusExplorer.Forms
             }
 
             // Select the queue where it is coming from since that is likely where it will go
-            if (queuePropertiesSource != null)
+            if (queueDescriptionSource != null)
             {
                 foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
                 {
@@ -195,7 +195,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
                         {
-                            if (FocusNodeIfMatching<QueueProperties>(level1Node, qd => qd.Name, queuePropertiesSource.Name))
+                            if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
                             {
                                 return;
                             }
@@ -267,10 +267,10 @@ namespace ServiceBusExplorer.Forms
         #region Private Methods
         void SetTextAndType(TreeNode node)
         {
-            var queueTag = node.Tag as QueueProperties;
+            var queueTag = node.Tag as QueueDescription;
             if (queueTag != null)
             {
-                txtEntity.Text = queueTag.Name;
+                txtEntity.Text = queueTag.Path;
                 Type = QueueEntity;
                 return;
             }
@@ -336,7 +336,7 @@ namespace ServiceBusExplorer.Forms
                               parent.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.SelectedImageIndex);
             if (node.Tag != null)
             {
-                if (node.Tag is QueueProperties ||
+                if (node.Tag is QueueDescription ||
                     node.Tag is TopicDescription ||
                     (includeSubscriptions && node.Tag is SubscriptionWrapper && ((SubscriptionWrapper)node.Tag).SubscriptionDescription != null) ||
                     (includeEventHubs && (node.Tag is EventHubDescription || node.Tag is ConsumerGroupDescription)) ||
