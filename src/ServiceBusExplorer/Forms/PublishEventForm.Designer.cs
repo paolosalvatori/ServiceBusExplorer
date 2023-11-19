@@ -57,12 +57,12 @@ namespace ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PublishEventForm));
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
             this.grouperPublishEvent = new ServiceBusExplorer.Controls.Grouper();
-            this.lblEventSource = new System.Windows.Forms.Label();
-            this.lblEventType = new System.Windows.Forms.Label();
-            this.lblEventInfo = new System.Windows.Forms.Label();
-            this.txtEventSource = new System.Windows.Forms.TextBox();
-            this.txtEventType = new System.Windows.Forms.TextBox();
             this.txtEventInfo = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.txtEventType = new System.Windows.Forms.TextBox();
+            this.lblEventType = new System.Windows.Forms.Label();
+            this.txtEventSource = new System.Windows.Forms.TextBox();
+            this.lblEventInfo = new System.Windows.Forms.Label();
+            this.lblEventSource = new System.Windows.Forms.Label();
             this.btnSubmit = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).BeginInit();
@@ -78,7 +78,7 @@ namespace ServiceBusExplorer.Forms
             this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(150, 100);
             this.messageListTextPropertiesSplitContainer.TabIndex = 0;
             // 
-            // grouperCaption
+            // grouperPublishEvent
             // 
             this.grouperPublishEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
@@ -101,7 +101,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.GroupTitle = "Publish Event";
             this.grouperPublishEvent.Location = new System.Drawing.Point(15, 16);
             this.grouperPublishEvent.Name = "grouperPublishEvent";
-            this.grouperPublishEvent.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperPublishEvent.Padding = new System.Windows.Forms.Padding(20);
             this.grouperPublishEvent.PaintGroupBox = true;
             this.grouperPublishEvent.RoundCorners = 4;
             this.grouperPublishEvent.ShadowColor = System.Drawing.Color.DarkGray;
@@ -110,68 +110,22 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.Size = new System.Drawing.Size(501, 316);
             this.grouperPublishEvent.TabIndex = 34;
             // 
-            // lblEventSource
-            // 
-            this.lblEventSource.AutoSize = true;
-            this.lblEventSource.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventSource.Location = new System.Drawing.Point(16, 32);
-            this.lblEventSource.Name = "lblEventSource";
-            this.lblEventSource.Size = new System.Drawing.Size(75, 13);
-            this.lblEventSource.TabIndex = 32;
-            this.lblEventSource.Text = "Event Source:";
-            // 
-            // lblEventType
-            // 
-            this.lblEventType.AutoSize = true;
-            this.lblEventType.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventType.Location = new System.Drawing.Point(16, 79);
-            this.lblEventType.Name = "lblEventType";
-            this.lblEventType.Size = new System.Drawing.Size(65, 13);
-            this.lblEventType.TabIndex = 37;
-            this.lblEventType.Text = "Event Type:";
-            // 
-            // lblEventInfo
-            // 
-            this.lblEventInfo.AutoSize = true;
-            this.lblEventInfo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventInfo.Location = new System.Drawing.Point(16, 126);
-            this.lblEventInfo.Name = "lblEventInfo";
-            this.lblEventInfo.Size = new System.Drawing.Size(110, 13);
-            this.lblEventInfo.TabIndex = 35;
-            this.lblEventInfo.Text = "Event JSON Payload:";
-            // 
-            // txtEventSource
-            // 
-            this.txtEventSource.Location = new System.Drawing.Point(16, 47);
-            this.txtEventSource.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.txtEventSource.Name = "txtEventSource";
-            this.txtEventSource.Size = new System.Drawing.Size(474, 20);
-            this.txtEventSource.TabIndex = 36;
-            // 
-            // txtEventType
-            // 
-            this.txtEventType.Location = new System.Drawing.Point(16, 94);
-            this.txtEventType.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.txtEventType.Name = "txtEventType";
-            this.txtEventType.Size = new System.Drawing.Size(474, 20);
-            this.txtEventType.TabIndex = 38;
-            // 
             // txtEventInfo
             // 
-            this.txtEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEventInfo.AutoCompleteBracketsList = new char[] {
-                '(',
-                ')',
-                '{',
-                '}',
-                '[',
-                ']',
-                '\"',
-                '\"',
-                '\'',
-                '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtEventInfo.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtEventInfo.BackBrush = null;
             this.txtEventInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -179,6 +133,7 @@ namespace ServiceBusExplorer.Forms
             this.txtEventInfo.CharWidth = 8;
             this.txtEventInfo.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtEventInfo.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtEventInfo.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtEventInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtEventInfo.IsReplaceMode = false;
             this.txtEventInfo.Location = new System.Drawing.Point(16, 146);
@@ -190,6 +145,52 @@ namespace ServiceBusExplorer.Forms
             this.txtEventInfo.TabIndex = 39;
             this.txtEventInfo.Zoom = 100;
             // 
+            // txtEventType
+            // 
+            this.txtEventType.Location = new System.Drawing.Point(16, 94);
+            this.txtEventType.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEventType.Name = "txtEventType";
+            this.txtEventType.Size = new System.Drawing.Size(474, 20);
+            this.txtEventType.TabIndex = 38;
+            // 
+            // lblEventType
+            // 
+            this.lblEventType.AutoSize = true;
+            this.lblEventType.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEventType.Location = new System.Drawing.Point(16, 79);
+            this.lblEventType.Name = "lblEventType";
+            this.lblEventType.Size = new System.Drawing.Size(65, 13);
+            this.lblEventType.TabIndex = 37;
+            this.lblEventType.Text = "Event Type:";
+            // 
+            // txtEventSource
+            // 
+            this.txtEventSource.Location = new System.Drawing.Point(16, 47);
+            this.txtEventSource.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEventSource.Name = "txtEventSource";
+            this.txtEventSource.Size = new System.Drawing.Size(474, 20);
+            this.txtEventSource.TabIndex = 36;
+            // 
+            // lblEventInfo
+            // 
+            this.lblEventInfo.AutoSize = true;
+            this.lblEventInfo.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEventInfo.Location = new System.Drawing.Point(16, 126);
+            this.lblEventInfo.Name = "lblEventInfo";
+            this.lblEventInfo.Size = new System.Drawing.Size(110, 13);
+            this.lblEventInfo.TabIndex = 35;
+            this.lblEventInfo.Text = "Event JSON Payload:";
+            // 
+            // lblEventSource
+            // 
+            this.lblEventSource.AutoSize = true;
+            this.lblEventSource.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblEventSource.Location = new System.Drawing.Point(16, 32);
+            this.lblEventSource.Name = "lblEventSource";
+            this.lblEventSource.Size = new System.Drawing.Size(75, 13);
+            this.lblEventSource.TabIndex = 32;
+            this.lblEventSource.Text = "Event Source:";
+            // 
             // btnSubmit
             // 
             this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -199,7 +200,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Location = new System.Drawing.Point(361, 348);
-            this.btnSubmit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSubmit.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(72, 24);
             this.btnSubmit.TabIndex = 1;
@@ -216,7 +217,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(444, 348);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 0;
@@ -233,6 +234,7 @@ namespace ServiceBusExplorer.Forms
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSubmit);
             this.Controls.Add(this.grouperPublishEvent);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PublishEventForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Publish Event";
@@ -242,6 +244,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtEventInfo)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         #endregion

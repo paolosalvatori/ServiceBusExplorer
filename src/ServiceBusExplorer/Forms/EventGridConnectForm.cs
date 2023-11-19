@@ -34,8 +34,10 @@ namespace ServiceBusExplorer.Forms
             ResourceGroup = txtResourceGroupName.Text.Trim();
             NamespaceName = txtNamespaceName.Text.Trim();
             SubscriptionId = txtSubscriptionId.Text.Trim();
-            ApiVersion = txtApiVersion.Text.Trim();
-            RetryTimeout = txtRetryTimeout.Text != string.Empty ? int.Parse(txtRetryTimeout.Text) : 0;
+            ApiVersion = cboApiVersion.Text.Trim(); 
+
+            var retryTimoutInSeconds = txtRetryTimeout.Text != string.Empty ? int.Parse(txtRetryTimeout.Text) : 0;
+            RetryTimeout = retryTimoutInSeconds * 1000; // Convert to milliseconds
             CloudTenant = cloudGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
             CustomId = txtCustomId.Text?.Trim();
 
@@ -46,6 +48,11 @@ namespace ServiceBusExplorer.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void EventGridConnectForm_Load(object sender, EventArgs e)
+        {
+            cboApiVersion.SelectedIndex = 0;
         }
     }
 }

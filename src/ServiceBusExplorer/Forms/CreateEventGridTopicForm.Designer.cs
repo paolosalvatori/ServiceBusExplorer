@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreateEventGridTopicForm));
             this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
             this.lblTopicName = new System.Windows.Forms.Label();
             this.txtTopicName = new System.Windows.Forms.TextBox();
@@ -61,7 +62,7 @@
             this.grouperMessages.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessages.ShadowControl = false;
             this.grouperMessages.ShadowThickness = 1;
-            this.grouperMessages.Size = new System.Drawing.Size(205, 104);
+            this.grouperMessages.Size = new System.Drawing.Size(252, 101);
             this.grouperMessages.TabIndex = 43;
             // 
             // lblTopicName
@@ -81,7 +82,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTopicName.Location = new System.Drawing.Point(23, 61);
             this.txtTopicName.Name = "txtTopicName";
-            this.txtTopicName.Size = new System.Drawing.Size(166, 20);
+            this.txtTopicName.Size = new System.Drawing.Size(213, 20);
             this.txtTopicName.TabIndex = 42;
             // 
             // btnOk
@@ -92,7 +93,7 @@
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(67, 142);
+            this.btnOk.Location = new System.Drawing.Point(110, 128);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 25);
             this.btnOk.TabIndex = 44;
@@ -104,11 +105,12 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(151, 142);
+            this.btnCancel.Location = new System.Drawing.Point(194, 128);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 25);
             this.btnCancel.TabIndex = 45;
@@ -118,21 +120,25 @@
             // 
             // CreateEventGridTopicForm
             // 
+            this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(247, 191);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(282, 169);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.grouperMessages);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.MaximumSize = new System.Drawing.Size(263, 220);
-            this.MinimumSize = new System.Drawing.Size(263, 220);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "CreateEventGridTopicForm";
             this.Text = "Create Event Grid Topic";
             this.grouperMessages.ResumeLayout(false);
             this.grouperMessages.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

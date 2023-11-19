@@ -35,9 +35,8 @@ namespace ServiceBusExplorer.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.serviceBusNamespaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eventGridNamespaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.connectUsingSASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.connectUsingEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,6 +187,7 @@ namespace ServiceBusExplorer.Forms
             this.deleteQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.exportQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -370,7 +370,6 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
-            this.duplicateQueueMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -449,56 +448,47 @@ namespace ServiceBusExplorer.Forms
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectToolStripMenuItem,
+            this.connectUsingSASToolStripMenuItem,
+            this.connectUsingEntraToolStripMenuItem,
             this.savedConnectionsToolStripMenuItem,
             this.toolStripSeparatorMain,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
             this.fileToolStripMenuItem.Text = "&File";
             // 
-            // connectToolStripMenuItem
+            // connectUsingSASToolStripMenuItem
             // 
-            this.connectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.serviceBusNamespaceToolStripMenuItem,
-            this.eventGridNamespaceToolStripMenuItem});
-            this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-            this.connectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.connectToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.connectToolStripMenuItem.Text = "&Connect";
+            this.connectUsingSASToolStripMenuItem.Name = "connectUsingSASToolStripMenuItem";
+            this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(367, 34);
+            this.connectUsingSASToolStripMenuItem.Text = "&Connect using SAS";
+            this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
             // 
-            // serviceBusNamespaceToolStripMenuItem
+            // connectUsingEntraToolStripMenuItem
             // 
-            this.serviceBusNamespaceToolStripMenuItem.Name = "serviceBusNamespaceToolStripMenuItem";
-            this.serviceBusNamespaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.serviceBusNamespaceToolStripMenuItem.Text = "Service Bus Namespace";
-            this.serviceBusNamespaceToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripServiceBusMenuItem_Click);
-            // 
-            // eventGridNamespaceToolStripMenuItem
-            // 
-            this.eventGridNamespaceToolStripMenuItem.Name = "eventGridNamespaceToolStripMenuItem";
-            this.eventGridNamespaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.eventGridNamespaceToolStripMenuItem.Text = "Event Grid Namespace";
-            this.eventGridNamespaceToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripEventGridMenuItem_Click);
+            this.connectUsingEntraToolStripMenuItem.Name = "connectUsingEntraToolStripMenuItem";
+            this.connectUsingEntraToolStripMenuItem.Size = new System.Drawing.Size(367, 34);
+            this.connectUsingEntraToolStripMenuItem.Text = "Connect using &Entra (Event grid)";
+            this.connectUsingEntraToolStripMenuItem.Click += new System.EventHandler(this.connectUsingEntraToolStripMenuItem_Click);
             // 
             // savedConnectionsToolStripMenuItem
             // 
             this.savedConnectionsToolStripMenuItem.Enabled = false;
             this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
-            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(367, 34);
             this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
             // 
             // toolStripSeparatorMain
             // 
             this.toolStripSeparatorMain.Name = "toolStripSeparatorMain";
-            this.toolStripSeparatorMain.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparatorMain.Size = new System.Drawing.Size(364, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.exitToolStripMenuItem.Text = "&Exit";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(367, 34);
+            this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.close_Click);
             // 
             // editToolStripMenuItem
@@ -507,14 +497,14 @@ namespace ServiceBusExplorer.Forms
             this.clearLogToolStripMenuItem,
             this.saveLogToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // clearLogToolStripMenuItem
             // 
             this.clearLogToolStripMenuItem.Name = "clearLogToolStripMenuItem";
             this.clearLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.clearLogToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.clearLogToolStripMenuItem.Size = new System.Drawing.Size(284, 34);
             this.clearLogToolStripMenuItem.Text = "Clear Log";
             this.clearLogToolStripMenuItem.Click += new System.EventHandler(this.clearLog_Click);
             // 
@@ -522,7 +512,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.saveLogToolStripMenuItem.Name = "saveLogToolStripMenuItem";
             this.saveLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveLogToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveLogToolStripMenuItem.Size = new System.Drawing.Size(284, 34);
             this.saveLogToolStripMenuItem.Text = "Save Log As...";
             this.saveLogToolStripMenuItem.Click += new System.EventHandler(this.saveLogToolStripMenuItem_Click);
             // 
@@ -532,13 +522,13 @@ namespace ServiceBusExplorer.Forms
             this.createIoTHubListenerMenuItem,
             this.createEventHubListenerMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(87, 29);
             this.actionsToolStripMenuItem.Text = "&Actions";
             // 
             // createIoTHubListenerMenuItem
             // 
             this.createIoTHubListenerMenuItem.Name = "createIoTHubListenerMenuItem";
-            this.createIoTHubListenerMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.createIoTHubListenerMenuItem.Size = new System.Drawing.Size(316, 34);
             this.createIoTHubListenerMenuItem.Text = "Create IoT Hub Listener";
             this.createIoTHubListenerMenuItem.ToolTipText = "Create IoT Hub listener.";
             this.createIoTHubListenerMenuItem.Click += new System.EventHandler(this.createIoTHubListenerMenuItem_Click);
@@ -546,7 +536,7 @@ namespace ServiceBusExplorer.Forms
             // createEventHubListenerMenuItem
             // 
             this.createEventHubListenerMenuItem.Name = "createEventHubListenerMenuItem";
-            this.createEventHubListenerMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.createEventHubListenerMenuItem.Size = new System.Drawing.Size(316, 34);
             this.createEventHubListenerMenuItem.Text = "Create Event Hub Listener";
             this.createEventHubListenerMenuItem.Click += new System.EventHandler(this.createEventHubListenerMenuItem_Click);
             // 
@@ -559,14 +549,14 @@ namespace ServiceBusExplorer.Forms
             this.optionsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // setDefaultLayouToolStripMenuItem
             // 
             this.setDefaultLayouToolStripMenuItem.Name = "setDefaultLayouToolStripMenuItem";
             this.setDefaultLayouToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.setDefaultLayouToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.setDefaultLayouToolStripMenuItem.Size = new System.Drawing.Size(323, 34);
             this.setDefaultLayouToolStripMenuItem.Text = "Set Default Layout";
             this.setDefaultLayouToolStripMenuItem.Click += new System.EventHandler(this.setDefaultLayouToolStripMenuItem_Click);
             // 
@@ -577,20 +567,20 @@ namespace ServiceBusExplorer.Forms
             this.logWindowToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.logWindowToolStripMenuItem.Name = "logWindowToolStripMenuItem";
             this.logWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.logWindowToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.logWindowToolStripMenuItem.Size = new System.Drawing.Size(323, 34);
             this.logWindowToolStripMenuItem.Text = "&Log Window";
             this.logWindowToolStripMenuItem.Click += new System.EventHandler(this.logWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(320, 6);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(323, 34);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -600,13 +590,13 @@ namespace ServiceBusExplorer.Forms
             this.showCommandLineOptionsToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // showCommandLineOptionsToolStripMenuItem
             // 
             this.showCommandLineOptionsToolStripMenuItem.Name = "showCommandLineOptionsToolStripMenuItem";
-            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.showCommandLineOptionsToolStripMenuItem.Size = new System.Drawing.Size(384, 34);
             this.showCommandLineOptionsToolStripMenuItem.Text = "Show Command Line Options";
             this.showCommandLineOptionsToolStripMenuItem.Click += new System.EventHandler(this.displayHelpToolStripMenuItem_Click);
             // 
@@ -614,7 +604,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(384, 34);
             this.aboutToolStripMenuItem.Text = "&About Service Bus Explorer";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -622,14 +612,16 @@ namespace ServiceBusExplorer.Forms
             // 
             this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip.Location = new System.Drawing.Point(0, 819);
+            this.statusStrip.Location = new System.Drawing.Point(0, 1272);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1416, 22);
+            this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 21, 0);
+            this.statusStrip.Size = new System.Drawing.Size(2124, 22);
             this.statusStrip.TabIndex = 2;
             this.statusStrip.Text = "statusStrip";
             // 
             // toolStripStatusLabel
             // 
+            this.toolStripStatusLabel.Margin = new System.Windows.Forms.Padding(0, 3, 0, 2);
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
@@ -637,6 +629,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -646,8 +639,9 @@ namespace ServiceBusExplorer.Forms
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.panelMain);
-            this.splitContainer.Size = new System.Drawing.Size(1384, 568);
-            this.splitContainer.SplitterDistance = 372;
+            this.splitContainer.Size = new System.Drawing.Size(2076, 873);
+            this.splitContainer.SplitterDistance = 558;
+            this.splitContainer.SplitterWidth = 6;
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -666,10 +660,10 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
             this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
             this.panelTreeView.Location = new System.Drawing.Point(0, 0);
-            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelTreeView.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.panelTreeView.Name = "panelTreeView";
-            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelTreeView.Size = new System.Drawing.Size(372, 568);
+            this.panelTreeView.Padding = new System.Windows.Forms.Padding(8, 45, 8, 6);
+            this.panelTreeView.Size = new System.Drawing.Size(558, 873);
             this.panelTreeView.TabIndex = 0;
             // 
             // serviceBusTreeView
@@ -681,10 +675,11 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusTreeView.ImageList = this.imageList;
             this.serviceBusTreeView.Indent = 20;
             this.serviceBusTreeView.ItemHeight = 20;
-            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 29);
+            this.serviceBusTreeView.Location = new System.Drawing.Point(8, 45);
+            this.serviceBusTreeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.serviceBusTreeView.Name = "serviceBusTreeView";
             this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 535);
+            this.serviceBusTreeView.Size = new System.Drawing.Size(542, 822);
             this.serviceBusTreeView.TabIndex = 0;
             this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
@@ -704,10 +699,10 @@ namespace ServiceBusExplorer.Forms
             this.panelMain.Icon = global::ServiceBusExplorer.Properties.Resources.SmallWorld;
             this.panelMain.IconTransparentColor = System.Drawing.Color.White;
             this.panelMain.Location = new System.Drawing.Point(0, 0);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(1008, 568);
+            this.panelMain.Padding = new System.Windows.Forms.Padding(8, 45, 8, 6);
+            this.panelMain.Size = new System.Drawing.Size(1512, 873);
             this.panelMain.TabIndex = 0;
             // 
             // mainSplitContainer
@@ -715,7 +710,8 @@ namespace ServiceBusExplorer.Forms
             this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainSplitContainer.Location = new System.Drawing.Point(16, 40);
+            this.mainSplitContainer.Location = new System.Drawing.Point(24, 62);
+            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.mainSplitContainer.Name = "mainSplitContainer";
             this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -726,8 +722,9 @@ namespace ServiceBusExplorer.Forms
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.panelLog);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1384, 784);
-            this.mainSplitContainer.SplitterDistance = 568;
+            this.mainSplitContainer.Size = new System.Drawing.Size(2076, 1206);
+            this.mainSplitContainer.SplitterDistance = 873;
+            this.mainSplitContainer.SplitterWidth = 6;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
@@ -746,10 +743,10 @@ namespace ServiceBusExplorer.Forms
             this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
             this.panelLog.IconTransparentColor = System.Drawing.Color.White;
             this.panelLog.Location = new System.Drawing.Point(0, 0);
-            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelLog.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.panelLog.Name = "panelLog";
-            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1384, 212);
+            this.panelLog.Padding = new System.Windows.Forms.Padding(8, 45, 8, 6);
+            this.panelLog.Size = new System.Drawing.Size(2076, 327);
             this.panelLog.TabIndex = 0;
             // 
             // lstLog
@@ -760,11 +757,12 @@ namespace ServiceBusExplorer.Forms
             this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstLog.FormattingEnabled = true;
             this.lstLog.HorizontalScrollbar = true;
-            this.lstLog.ItemHeight = 14;
-            this.lstLog.Location = new System.Drawing.Point(5, 29);
+            this.lstLog.ItemHeight = 20;
+            this.lstLog.Location = new System.Drawing.Point(8, 45);
+            this.lstLog.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstLog.Name = "lstLog";
             this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1374, 179);
+            this.lstLog.Size = new System.Drawing.Size(2060, 276);
             this.lstLog.TabIndex = 0;
             this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
             this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
@@ -782,57 +780,57 @@ namespace ServiceBusExplorer.Forms
             this.saveAllToolStripMenuItem,
             this.saveSelectedToolStripMenuItem});
             this.logContextMenuStrip.Name = "logContextMenuStrip";
-            this.logContextMenuStrip.Size = new System.Drawing.Size(150, 148);
+            this.logContextMenuStrip.Size = new System.Drawing.Size(198, 208);
             // 
             // copyAllToolStripMenuItem
             // 
             this.copyAllToolStripMenuItem.Name = "copyAllToolStripMenuItem";
-            this.copyAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.copyAllToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.copyAllToolStripMenuItem.Text = "Copy All";
             this.copyAllToolStripMenuItem.Click += new System.EventHandler(this.copyAllToolStripMenuItem_Click);
             // 
             // copySelectedToolStripMenuItem
             // 
             this.copySelectedToolStripMenuItem.Name = "copySelectedToolStripMenuItem";
-            this.copySelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.copySelectedToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.copySelectedToolStripMenuItem.Text = "Copy Selected";
             this.copySelectedToolStripMenuItem.Click += new System.EventHandler(this.copySelectedToolStripMenuItem_Click);
             // 
             // toolStripSeparator27
             // 
             this.toolStripSeparator27.Name = "toolStripSeparator27";
-            this.toolStripSeparator27.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator27.Size = new System.Drawing.Size(194, 6);
             // 
             // clearAllToolStripMenuItem
             // 
             this.clearAllToolStripMenuItem.Name = "clearAllToolStripMenuItem";
-            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.clearAllToolStripMenuItem.Text = "Clear All";
             this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.clearAllToolStripMenuItem_Click);
             // 
             // clearSelectedToolStripMenuItem
             // 
             this.clearSelectedToolStripMenuItem.Name = "clearSelectedToolStripMenuItem";
-            this.clearSelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.clearSelectedToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.clearSelectedToolStripMenuItem.Text = "Clear Selected";
             this.clearSelectedToolStripMenuItem.Click += new System.EventHandler(this.clearSelectedToolStripMenuItem_Click);
             // 
             // toolStripSeparator29
             // 
             this.toolStripSeparator29.Name = "toolStripSeparator29";
-            this.toolStripSeparator29.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator29.Size = new System.Drawing.Size(194, 6);
             // 
             // saveAllToolStripMenuItem
             // 
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
-            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.saveAllToolStripMenuItem.Text = "Save All";
             this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // saveSelectedToolStripMenuItem
             // 
             this.saveSelectedToolStripMenuItem.Name = "saveSelectedToolStripMenuItem";
-            this.saveSelectedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.saveSelectedToolStripMenuItem.Size = new System.Drawing.Size(197, 32);
             this.saveSelectedToolStripMenuItem.Text = "Save Selected";
             this.saveSelectedToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedToolStripMenuItem_Click);
             // 
@@ -852,12 +850,12 @@ namespace ServiceBusExplorer.Forms
             this.expandSubTreeMenuItem1,
             this.collapseSubTreeMenuItem1});
             this.rootContextMenuStrip.Name = "rootContextMenuStrip";
-            this.rootContextMenuStrip.Size = new System.Drawing.Size(202, 198);
+            this.rootContextMenuStrip.Size = new System.Drawing.Size(273, 278);
             // 
             // deleteEntityMenuItem
             // 
             this.deleteEntityMenuItem.Name = "deleteEntityMenuItem";
-            this.deleteEntityMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.deleteEntityMenuItem.Size = new System.Drawing.Size(272, 32);
             this.deleteEntityMenuItem.Text = "Delete Entities";
             this.deleteEntityMenuItem.ToolTipText = "Delete the entities contained in the current namespace.";
             this.deleteEntityMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -866,7 +864,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshRootMenuItem.Name = "refreshRootMenuItem";
             this.refreshRootMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRootMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.refreshRootMenuItem.Size = new System.Drawing.Size(272, 32);
             this.refreshRootMenuItem.Text = "Refresh Entities";
             this.refreshRootMenuItem.ToolTipText = "Refresh the entities contained in the current namespace.";
             this.refreshRootMenuItem.Click += new System.EventHandler(this.refreshEntityMenuItem_Click);
@@ -874,12 +872,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(198, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(269, 6);
             // 
             // copyNamespaceUrlMenuItem
             // 
             this.copyNamespaceUrlMenuItem.Name = "copyNamespaceUrlMenuItem";
-            this.copyNamespaceUrlMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyNamespaceUrlMenuItem.Size = new System.Drawing.Size(272, 32);
             this.copyNamespaceUrlMenuItem.Text = "Copy Namespace URL";
             this.copyNamespaceUrlMenuItem.ToolTipText = "Copy Namespace URL to clipboard";
             this.copyNamespaceUrlMenuItem.Click += new System.EventHandler(this.copyNamespaceUrlMenuItem_Click);
@@ -887,7 +885,7 @@ namespace ServiceBusExplorer.Forms
             // copyConnectionStringMenuItem
             // 
             this.copyConnectionStringMenuItem.Name = "copyConnectionStringMenuItem";
-            this.copyConnectionStringMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.copyConnectionStringMenuItem.Size = new System.Drawing.Size(272, 32);
             this.copyConnectionStringMenuItem.Text = "Copy Connection String";
             this.copyConnectionStringMenuItem.ToolTipText = "Copy Namespace connection string to clipboard";
             this.copyConnectionStringMenuItem.Click += new System.EventHandler(this.copyConnectionStringMenuItem_Click);
@@ -895,12 +893,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator68
             // 
             this.toolStripSeparator68.Name = "toolStripSeparator68";
-            this.toolStripSeparator68.Size = new System.Drawing.Size(198, 6);
+            this.toolStripSeparator68.Size = new System.Drawing.Size(269, 6);
             // 
             // exportEntityMenuItem
             // 
             this.exportEntityMenuItem.Name = "exportEntityMenuItem";
-            this.exportEntityMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.exportEntityMenuItem.Size = new System.Drawing.Size(272, 32);
             this.exportEntityMenuItem.Text = "Export Entities";
             this.exportEntityMenuItem.ToolTipText = "Export entity definition to file.";
             this.exportEntityMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -908,7 +906,7 @@ namespace ServiceBusExplorer.Forms
             // importEntityMenuItem
             // 
             this.importEntityMenuItem.Name = "importEntityMenuItem";
-            this.importEntityMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.importEntityMenuItem.Size = new System.Drawing.Size(272, 32);
             this.importEntityMenuItem.Text = "Import Entities";
             this.importEntityMenuItem.ToolTipText = "Import entity definition from file.";
             this.importEntityMenuItem.Click += new System.EventHandler(this.importEntity_Click);
@@ -916,12 +914,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(198, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(269, 6);
             // 
             // expandSubTreeMenuItem1
             // 
             this.expandSubTreeMenuItem1.Name = "expandSubTreeMenuItem1";
-            this.expandSubTreeMenuItem1.Size = new System.Drawing.Size(201, 22);
+            this.expandSubTreeMenuItem1.Size = new System.Drawing.Size(272, 32);
             this.expandSubTreeMenuItem1.Text = "Expand Subtree";
             this.expandSubTreeMenuItem1.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem1.Click += new System.EventHandler(this.expandEntity_Click);
@@ -929,7 +927,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem1
             // 
             this.collapseSubTreeMenuItem1.Name = "collapseSubTreeMenuItem1";
-            this.collapseSubTreeMenuItem1.Size = new System.Drawing.Size(201, 22);
+            this.collapseSubTreeMenuItem1.Size = new System.Drawing.Size(272, 32);
             this.collapseSubTreeMenuItem1.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem1.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem1.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -952,12 +950,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator75,
             this.purgeToolStripMenuItem2});
             this.queuesContextMenuStrip.Name = "createContextMenuStrip";
-            this.queuesContextMenuStrip.Size = new System.Drawing.Size(176, 210);
+            this.queuesContextMenuStrip.Size = new System.Drawing.Size(239, 290);
             // 
             // createQueueMenuItem
             // 
             this.createQueueMenuItem.Name = "createQueueMenuItem";
-            this.createQueueMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.createQueueMenuItem.Size = new System.Drawing.Size(238, 32);
             this.createQueueMenuItem.Text = "Create Queue";
             this.createQueueMenuItem.ToolTipText = "Create a new queue.";
             this.createQueueMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -965,7 +963,7 @@ namespace ServiceBusExplorer.Forms
             // deleteQueuesMenuItem
             // 
             this.deleteQueuesMenuItem.Name = "deleteQueuesMenuItem";
-            this.deleteQueuesMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.deleteQueuesMenuItem.Size = new System.Drawing.Size(238, 32);
             this.deleteQueuesMenuItem.Text = "Delete Queues";
             this.deleteQueuesMenuItem.ToolTipText = "Deletes all the queues in the current namespace.";
             this.deleteQueuesMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -973,13 +971,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator37
             // 
             this.toolStripSeparator37.Name = "toolStripSeparator37";
-            this.toolStripSeparator37.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator37.Size = new System.Drawing.Size(235, 6);
             // 
             // refreshQueuesMenuItem
             // 
             this.refreshQueuesMenuItem.Name = "refreshQueuesMenuItem";
             this.refreshQueuesMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshQueuesMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.refreshQueuesMenuItem.Size = new System.Drawing.Size(238, 32);
             this.refreshQueuesMenuItem.Text = "Refresh Queues";
             this.refreshQueuesMenuItem.ToolTipText = "Refresh all the queues in the current namespace.";
             this.refreshQueuesMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -987,12 +985,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator36
             // 
             this.toolStripSeparator36.Name = "toolStripSeparator36";
-            this.toolStripSeparator36.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator36.Size = new System.Drawing.Size(235, 6);
             // 
             // filterQueueMenuItem
             // 
             this.filterQueueMenuItem.Name = "filterQueueMenuItem";
-            this.filterQueueMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.filterQueueMenuItem.Size = new System.Drawing.Size(238, 32);
             this.filterQueueMenuItem.Text = "Filter Queues";
             this.filterQueueMenuItem.ToolTipText = "Define a filter expression for queues.";
             this.filterQueueMenuItem.Click += new System.EventHandler(this.filterEntity_Click);
@@ -1000,12 +998,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(235, 6);
             // 
             // exportQueuesMenuItem
             // 
             this.exportQueuesMenuItem.Name = "exportQueuesMenuItem";
-            this.exportQueuesMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.exportQueuesMenuItem.Size = new System.Drawing.Size(238, 32);
             this.exportQueuesMenuItem.Text = "Export Queues";
             this.exportQueuesMenuItem.ToolTipText = "Export queues definition to file.";
             this.exportQueuesMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1013,12 +1011,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(235, 6);
             // 
             // expandSubTreeMenuItem2
             // 
             this.expandSubTreeMenuItem2.Name = "expandSubTreeMenuItem2";
-            this.expandSubTreeMenuItem2.Size = new System.Drawing.Size(175, 22);
+            this.expandSubTreeMenuItem2.Size = new System.Drawing.Size(238, 32);
             this.expandSubTreeMenuItem2.Text = "Expand Subtree";
             this.expandSubTreeMenuItem2.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem2.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1026,7 +1024,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem2
             // 
             this.collapseSubTreeMenuItem2.Name = "collapseSubTreeMenuItem2";
-            this.collapseSubTreeMenuItem2.Size = new System.Drawing.Size(175, 22);
+            this.collapseSubTreeMenuItem2.Size = new System.Drawing.Size(238, 32);
             this.collapseSubTreeMenuItem2.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem2.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem2.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1034,7 +1032,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator75
             // 
             this.toolStripSeparator75.Name = "toolStripSeparator75";
-            this.toolStripSeparator75.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator75.Size = new System.Drawing.Size(235, 6);
             // 
             // purgeToolStripMenuItem2
             // 
@@ -1044,32 +1042,32 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator76,
             this.allMessagesToolStripMenuItem1});
             this.purgeToolStripMenuItem2.Name = "purgeToolStripMenuItem2";
-            this.purgeToolStripMenuItem2.Size = new System.Drawing.Size(175, 22);
+            this.purgeToolStripMenuItem2.Size = new System.Drawing.Size(238, 32);
             this.purgeToolStripMenuItem2.Text = "Purge";
             // 
             // messagesToolStripMenuItem1
             // 
             this.messagesToolStripMenuItem1.Name = "messagesToolStripMenuItem1";
-            this.messagesToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.messagesToolStripMenuItem1.Size = new System.Drawing.Size(343, 34);
             this.messagesToolStripMenuItem1.Text = "Messages";
             this.messagesToolStripMenuItem1.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
             // 
             // deadletterQueueMessagesToolStripMenuItem1
             // 
             this.deadletterQueueMessagesToolStripMenuItem1.Name = "deadletterQueueMessagesToolStripMenuItem1";
-            this.deadletterQueueMessagesToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.deadletterQueueMessagesToolStripMenuItem1.Size = new System.Drawing.Size(343, 34);
             this.deadletterQueueMessagesToolStripMenuItem1.Text = "Dead-letter Queue Messages";
             this.deadletterQueueMessagesToolStripMenuItem1.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator76
             // 
             this.toolStripSeparator76.Name = "toolStripSeparator76";
-            this.toolStripSeparator76.Size = new System.Drawing.Size(222, 6);
+            this.toolStripSeparator76.Size = new System.Drawing.Size(340, 6);
             // 
             // allMessagesToolStripMenuItem1
             // 
             this.allMessagesToolStripMenuItem1.Name = "allMessagesToolStripMenuItem1";
-            this.allMessagesToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.allMessagesToolStripMenuItem1.Size = new System.Drawing.Size(343, 34);
             this.allMessagesToolStripMenuItem1.Text = "All Messages";
             this.allMessagesToolStripMenuItem1.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
@@ -1079,12 +1077,12 @@ namespace ServiceBusExplorer.Forms
             this.ruleContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeRuleMenuItem});
             this.ruleContextMenuStrip.Name = "ruleContextMenuStrip";
-            this.ruleContextMenuStrip.Size = new System.Drawing.Size(144, 26);
+            this.ruleContextMenuStrip.Size = new System.Drawing.Size(188, 36);
             // 
             // removeRuleMenuItem
             // 
             this.removeRuleMenuItem.Name = "removeRuleMenuItem";
-            this.removeRuleMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.removeRuleMenuItem.Size = new System.Drawing.Size(187, 32);
             this.removeRuleMenuItem.Text = "Remove Rule";
             this.removeRuleMenuItem.ToolTipText = "Remove the current rule.";
             this.removeRuleMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1098,12 +1096,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator10,
             this.refreshRulesMenuItem});
             this.rulesContextMenuStrip.Name = "rulesContextMenuStrip";
-            this.rulesContextMenuStrip.Size = new System.Drawing.Size(164, 76);
+            this.rulesContextMenuStrip.Size = new System.Drawing.Size(221, 106);
             // 
             // addRuleMenuItem2
             // 
             this.addRuleMenuItem2.Name = "addRuleMenuItem2";
-            this.addRuleMenuItem2.Size = new System.Drawing.Size(163, 22);
+            this.addRuleMenuItem2.Size = new System.Drawing.Size(220, 32);
             this.addRuleMenuItem2.Text = "Add Rule";
             this.addRuleMenuItem2.ToolTipText = "Add a new rule.";
             this.addRuleMenuItem2.Click += new System.EventHandler(this.createEntity_Click);
@@ -1111,7 +1109,7 @@ namespace ServiceBusExplorer.Forms
             // deleteRulesMenuItem
             // 
             this.deleteRulesMenuItem.Name = "deleteRulesMenuItem";
-            this.deleteRulesMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.deleteRulesMenuItem.Size = new System.Drawing.Size(220, 32);
             this.deleteRulesMenuItem.Text = "Delete Rules";
             this.deleteRulesMenuItem.ToolTipText = "Delete rules for the current subscription.";
             this.deleteRulesMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1119,13 +1117,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(160, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(217, 6);
             // 
             // refreshRulesMenuItem
             // 
             this.refreshRulesMenuItem.Name = "refreshRulesMenuItem";
             this.refreshRulesMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRulesMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.refreshRulesMenuItem.Size = new System.Drawing.Size(220, 32);
             this.refreshRulesMenuItem.Text = "Refresh Rules";
             this.refreshRulesMenuItem.ToolTipText = "Refresh rules for the current subscription.";
             this.refreshRulesMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1144,12 +1142,12 @@ namespace ServiceBusExplorer.Forms
             this.expandSubTreeMenuItem6,
             this.collapseSubTreeMenuItem6});
             this.subscriptionsContextMenuStrip.Name = "subscriptionsContextMenuStrip";
-            this.subscriptionsContextMenuStrip.Size = new System.Drawing.Size(207, 154);
+            this.subscriptionsContextMenuStrip.Size = new System.Drawing.Size(286, 214);
             // 
             // addSubscriptionMenuItem2
             // 
             this.addSubscriptionMenuItem2.Name = "addSubscriptionMenuItem2";
-            this.addSubscriptionMenuItem2.Size = new System.Drawing.Size(206, 22);
+            this.addSubscriptionMenuItem2.Size = new System.Drawing.Size(285, 32);
             this.addSubscriptionMenuItem2.Text = "Create Subscription";
             this.addSubscriptionMenuItem2.ToolTipText = "Add a new subscription.";
             this.addSubscriptionMenuItem2.Click += new System.EventHandler(this.createEntity_Click);
@@ -1157,7 +1155,7 @@ namespace ServiceBusExplorer.Forms
             // deleteSubscriptionsMenuItem
             // 
             this.deleteSubscriptionsMenuItem.Name = "deleteSubscriptionsMenuItem";
-            this.deleteSubscriptionsMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.deleteSubscriptionsMenuItem.Size = new System.Drawing.Size(285, 32);
             this.deleteSubscriptionsMenuItem.Text = "Delete Subscriptions";
             this.deleteSubscriptionsMenuItem.ToolTipText = "Delete all subscription for the current topic.";
             this.deleteSubscriptionsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1165,13 +1163,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator40
             // 
             this.toolStripSeparator40.Name = "toolStripSeparator40";
-            this.toolStripSeparator40.Size = new System.Drawing.Size(203, 6);
+            this.toolStripSeparator40.Size = new System.Drawing.Size(282, 6);
             // 
             // refreshSubscriptionsMenuItem
             // 
             this.refreshSubscriptionsMenuItem.Name = "refreshSubscriptionsMenuItem";
             this.refreshSubscriptionsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshSubscriptionsMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.refreshSubscriptionsMenuItem.Size = new System.Drawing.Size(285, 32);
             this.refreshSubscriptionsMenuItem.Text = "Refresh Subscriptions";
             this.refreshSubscriptionsMenuItem.ToolTipText = "Refresh subscriptions for the current topic.";
             this.refreshSubscriptionsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1179,12 +1177,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator41
             // 
             this.toolStripSeparator41.Name = "toolStripSeparator41";
-            this.toolStripSeparator41.Size = new System.Drawing.Size(203, 6);
+            this.toolStripSeparator41.Size = new System.Drawing.Size(282, 6);
             // 
             // filterSubscriptionsMenuItem
             // 
             this.filterSubscriptionsMenuItem.Name = "filterSubscriptionsMenuItem";
-            this.filterSubscriptionsMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.filterSubscriptionsMenuItem.Size = new System.Drawing.Size(285, 32);
             this.filterSubscriptionsMenuItem.Text = "Filter Subscriptions";
             this.filterSubscriptionsMenuItem.ToolTipText = "Define a filter expression for  the subscriptions of the current topic.";
             this.filterSubscriptionsMenuItem.Click += new System.EventHandler(this.filterEntity_Click);
@@ -1192,12 +1190,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(203, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(282, 6);
             // 
             // expandSubTreeMenuItem6
             // 
             this.expandSubTreeMenuItem6.Name = "expandSubTreeMenuItem6";
-            this.expandSubTreeMenuItem6.Size = new System.Drawing.Size(206, 22);
+            this.expandSubTreeMenuItem6.Size = new System.Drawing.Size(285, 32);
             this.expandSubTreeMenuItem6.Text = "Expand Subtree";
             this.expandSubTreeMenuItem6.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem6.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1205,7 +1203,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem6
             // 
             this.collapseSubTreeMenuItem6.Name = "collapseSubTreeMenuItem6";
-            this.collapseSubTreeMenuItem6.Size = new System.Drawing.Size(206, 22);
+            this.collapseSubTreeMenuItem6.Size = new System.Drawing.Size(285, 32);
             this.collapseSubTreeMenuItem6.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem6.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem6.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1216,12 +1214,12 @@ namespace ServiceBusExplorer.Forms
             this.eventGridSubscriptionsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createEventGridSubscriptionMenuItem});
             this.eventGridSubscriptionsContextMenuStrip.Name = "createEventGridSubscriptionsContextMenuStrip";
-            this.eventGridSubscriptionsContextMenuStrip.Size = new System.Drawing.Size(178, 26);
+            this.eventGridSubscriptionsContextMenuStrip.Size = new System.Drawing.Size(239, 36);
             // 
             // createEventGridSubscriptionMenuItem
             // 
             this.createEventGridSubscriptionMenuItem.Name = "createEventGridSubscriptionMenuItem";
-            this.createEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.createEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(238, 32);
             this.createEventGridSubscriptionMenuItem.Text = "Create Subscription";
             this.createEventGridSubscriptionMenuItem.ToolTipText = "Create a new subscription.";
             this.createEventGridSubscriptionMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -1258,12 +1256,12 @@ namespace ServiceBusExplorer.Forms
             this.getSubscriptionMessageSessionsSeparator,
             this.getSubscriptionMessageSessionsMenuItem});
             this.subscriptionContextMenuStrip.Name = "subscriptionContextMenuStrip";
-            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(313, 448);
+            this.subscriptionContextMenuStrip.Size = new System.Drawing.Size(443, 660);
             // 
             // removeSubscriptionMenuItem
             // 
             this.removeSubscriptionMenuItem.Name = "removeSubscriptionMenuItem";
-            this.removeSubscriptionMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.removeSubscriptionMenuItem.Size = new System.Drawing.Size(442, 32);
             this.removeSubscriptionMenuItem.Text = "Delete Subscription";
             this.removeSubscriptionMenuItem.ToolTipText = "Delete the current subscription.";
             this.removeSubscriptionMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1271,7 +1269,7 @@ namespace ServiceBusExplorer.Forms
             // duplicateSubscriptionMenuItem
             // 
             this.duplicateSubscriptionMenuItem.Name = "duplicateSubscriptionMenuItem";
-            this.duplicateSubscriptionMenuItem.Size = new System.Drawing.Size(581, 38);
+            this.duplicateSubscriptionMenuItem.Size = new System.Drawing.Size(442, 32);
             this.duplicateSubscriptionMenuItem.Text = "Duplicate Subscription";
             this.duplicateSubscriptionMenuItem.ToolTipText = "Duplicate current subscription including rules and actions.";
             this.duplicateSubscriptionMenuItem.Click += new System.EventHandler(this.duplicateSubscriptionMenuItem_Click);
@@ -1279,7 +1277,7 @@ namespace ServiceBusExplorer.Forms
             // changeStatusSubscriptionMenuItem
             // 
             this.changeStatusSubscriptionMenuItem.Name = "changeStatusSubscriptionMenuItem";
-            this.changeStatusSubscriptionMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.changeStatusSubscriptionMenuItem.Size = new System.Drawing.Size(442, 32);
             this.changeStatusSubscriptionMenuItem.Text = "Change Status Subscription";
             this.changeStatusSubscriptionMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
             // 
@@ -1287,7 +1285,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshSubscriptionMenuItem.Name = "refreshSubscriptionMenuItem";
             this.refreshSubscriptionMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshSubscriptionMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.refreshSubscriptionMenuItem.Size = new System.Drawing.Size(442, 32);
             this.refreshSubscriptionMenuItem.Text = "Refresh Subscription";
             this.refreshSubscriptionMenuItem.ToolTipText = "Refresh the current subscription.";
             this.refreshSubscriptionMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1295,12 +1293,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(439, 6);
             // 
             // addRuleMenuItem1
             // 
             this.addRuleMenuItem1.Name = "addRuleMenuItem1";
-            this.addRuleMenuItem1.Size = new System.Drawing.Size(312, 22);
+            this.addRuleMenuItem1.Size = new System.Drawing.Size(442, 32);
             this.addRuleMenuItem1.Text = "Add Rule";
             this.addRuleMenuItem1.ToolTipText = "Add a new rule.";
             this.addRuleMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
@@ -1308,12 +1306,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(439, 6);
             // 
             // copySubscriptionUrlMenuItem
             // 
             this.copySubscriptionUrlMenuItem.Name = "copySubscriptionUrlMenuItem";
-            this.copySubscriptionUrlMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.copySubscriptionUrlMenuItem.Size = new System.Drawing.Size(442, 32);
             this.copySubscriptionUrlMenuItem.Text = "Copy Subscription URL";
             this.copySubscriptionUrlMenuItem.ToolTipText = "Copy the subscription URL to the clipboard.";
             this.copySubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1321,7 +1319,7 @@ namespace ServiceBusExplorer.Forms
             // copySubscriptionDeadletterSubscriptionUrlMenuItem
             // 
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Name = "copySubscriptionDeadletterSubscriptionUrlMenuItem";
-            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Size = new System.Drawing.Size(442, 32);
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Text = "Copy Deadletter Queue URL";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copySubscriptionDeadletterSubscriptionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1329,12 +1327,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator20
             // 
             this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator20.Size = new System.Drawing.Size(439, 6);
             // 
             // expandSubTreeMenuItem7
             // 
             this.expandSubTreeMenuItem7.Name = "expandSubTreeMenuItem7";
-            this.expandSubTreeMenuItem7.Size = new System.Drawing.Size(312, 22);
+            this.expandSubTreeMenuItem7.Size = new System.Drawing.Size(442, 32);
             this.expandSubTreeMenuItem7.Text = "Expand Subtree";
             this.expandSubTreeMenuItem7.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem7.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1342,7 +1340,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem7
             // 
             this.collapseSubTreeMenuItem7.Name = "collapseSubTreeMenuItem7";
-            this.collapseSubTreeMenuItem7.Size = new System.Drawing.Size(312, 22);
+            this.collapseSubTreeMenuItem7.Size = new System.Drawing.Size(442, 32);
             this.collapseSubTreeMenuItem7.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem7.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem7.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1350,12 +1348,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator33
             // 
             this.toolStripSeparator33.Name = "toolStripSeparator33";
-            this.toolStripSeparator33.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator33.Size = new System.Drawing.Size(439, 6);
             // 
             // testSubscriptionSDIMenuItem
             // 
             this.testSubscriptionSDIMenuItem.Name = "testSubscriptionSDIMenuItem";
-            this.testSubscriptionSDIMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.testSubscriptionSDIMenuItem.Size = new System.Drawing.Size(442, 32);
             this.testSubscriptionSDIMenuItem.Text = "Test Subscription In SDI Mode";
             this.testSubscriptionSDIMenuItem.ToolTipText = "Test the current subscription in SDI mode.";
             this.testSubscriptionSDIMenuItem.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -1363,7 +1361,7 @@ namespace ServiceBusExplorer.Forms
             // testSubscriptionMDIMenuItem
             // 
             this.testSubscriptionMDIMenuItem.Name = "testSubscriptionMDIMenuItem";
-            this.testSubscriptionMDIMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.testSubscriptionMDIMenuItem.Size = new System.Drawing.Size(442, 32);
             this.testSubscriptionMDIMenuItem.Text = "Test Subscription In MDI Mode";
             this.testSubscriptionMDIMenuItem.ToolTipText = "Test the current subscription in MDI mode.";
             this.testSubscriptionMDIMenuItem.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
@@ -1371,12 +1369,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator28
             // 
             this.toolStripSeparator28.Name = "toolStripSeparator28";
-            this.toolStripSeparator28.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator28.Size = new System.Drawing.Size(439, 6);
             // 
             // createSubscriptionListenerMenuItem
             // 
             this.createSubscriptionListenerMenuItem.Name = "createSubscriptionListenerMenuItem";
-            this.createSubscriptionListenerMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.createSubscriptionListenerMenuItem.Size = new System.Drawing.Size(442, 32);
             this.createSubscriptionListenerMenuItem.Text = "Create Subscription Listener";
             this.createSubscriptionListenerMenuItem.ToolTipText = "Create a subscription listener.";
             this.createSubscriptionListenerMenuItem.Click += new System.EventHandler(this.createEntityListenerMenuItem_Click);
@@ -1384,12 +1382,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator46
             // 
             this.toolStripSeparator46.Name = "toolStripSeparator46";
-            this.toolStripSeparator46.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator46.Size = new System.Drawing.Size(439, 6);
             // 
             // subReceiveMessagesMenuItem
             // 
             this.subReceiveMessagesMenuItem.Name = "subReceiveMessagesMenuItem";
-            this.subReceiveMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subReceiveMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subReceiveMessagesMenuItem.Text = "Receive Messages";
             this.subReceiveMessagesMenuItem.ToolTipText = "Receive messages from the current queue.";
             this.subReceiveMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
@@ -1397,7 +1395,7 @@ namespace ServiceBusExplorer.Forms
             // subscriptionReceiveDeadletterQueueMessagesMenuItem
             // 
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Name = "subscriptionReceiveDeadletterQueueMessagesMenuItem";
-            this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Text = "Receive Dead-letter Queue Messages";
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.ToolTipText = "Receive messages from the deadletter queue.";
             this.subscriptionReceiveDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
@@ -1405,44 +1403,44 @@ namespace ServiceBusExplorer.Forms
             // subscriptionReceiveTransferDeadletterQueueMessagesMenuItem
             // 
             this.subscriptionReceiveTransferDeadletterQueueMessagesMenuItem.Name = "subscriptionReceiveTransferDeadletterQueueMessagesMenuItem";
-            this.subscriptionReceiveTransferDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionReceiveTransferDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subscriptionReceiveTransferDeadletterQueueMessagesMenuItem.Text = "Receive Transfer Dead-letter Queue Messages";
             // 
             // subReceiveToolStripSeparator
             // 
             this.subReceiveToolStripSeparator.Name = "subReceiveToolStripSeparator";
-            this.subReceiveToolStripSeparator.Size = new System.Drawing.Size(309, 6);
+            this.subReceiveToolStripSeparator.Size = new System.Drawing.Size(439, 6);
             // 
             // subscriptionPurgeMessagesMenuItem
             // 
             this.subscriptionPurgeMessagesMenuItem.Name = "subscriptionPurgeMessagesMenuItem";
-            this.subscriptionPurgeMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionPurgeMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subscriptionPurgeMessagesMenuItem.Text = "Purge Messages";
             this.subscriptionPurgeMessagesMenuItem.Click += new System.EventHandler(this.purgeMessages_Click);
             // 
             // subscriptionPurgeDeadletterQueueMessagesMenuItem
             // 
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Name = "subscriptionPurgeDeadletterQueueMessagesMenuItem";
-            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Text = "Purge Dead-letter Queue Messages";
             this.subscriptionPurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
             // 
             // subscriptionPurgeAllMenuItem
             // 
             this.subscriptionPurgeAllMenuItem.Name = "subscriptionPurgeAllMenuItem";
-            this.subscriptionPurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.subscriptionPurgeAllMenuItem.Size = new System.Drawing.Size(442, 32);
             this.subscriptionPurgeAllMenuItem.Text = "Purge All Messages";
             this.subscriptionPurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // getSubscriptionMessageSessionsSeparator
             // 
             this.getSubscriptionMessageSessionsSeparator.Name = "getSubscriptionMessageSessionsSeparator";
-            this.getSubscriptionMessageSessionsSeparator.Size = new System.Drawing.Size(309, 6);
+            this.getSubscriptionMessageSessionsSeparator.Size = new System.Drawing.Size(439, 6);
             // 
             // getSubscriptionMessageSessionsMenuItem
             // 
             this.getSubscriptionMessageSessionsMenuItem.Name = "getSubscriptionMessageSessionsMenuItem";
-            this.getSubscriptionMessageSessionsMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.getSubscriptionMessageSessionsMenuItem.Size = new System.Drawing.Size(442, 32);
             this.getSubscriptionMessageSessionsMenuItem.Text = "Get Message Sessions";
             this.getSubscriptionMessageSessionsMenuItem.ToolTipText = "Retrieves all message sessions whose session state was updated since lastUpdatedT" +
     "ime.";
@@ -1474,19 +1472,19 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator70,
             this.purgeToolStripMenuItem});
             this.topicContextMenuStrip.Name = "topicContextMenuStrip";
-            this.topicContextMenuStrip.Size = new System.Drawing.Size(198, 354);
+            this.topicContextMenuStrip.Size = new System.Drawing.Size(272, 494);
             // 
             // changeStatusTopicMenuItem
             // 
             this.changeStatusTopicMenuItem.Name = "changeStatusTopicMenuItem";
-            this.changeStatusTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.changeStatusTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.changeStatusTopicMenuItem.Text = "Change Status Topic";
             this.changeStatusTopicMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
             // 
             // deleteTopicMenuItem
             // 
             this.deleteTopicMenuItem.Name = "deleteTopicMenuItem";
-            this.deleteTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.deleteTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.deleteTopicMenuItem.Text = "Delete Topic";
             this.deleteTopicMenuItem.ToolTipText = "Delete the current topic.";
             this.deleteTopicMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1495,7 +1493,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshTopicMenuItem.Name = "refreshTopicMenuItem";
             this.refreshTopicMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.refreshTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.refreshTopicMenuItem.Text = "Refresh Topic";
             this.refreshTopicMenuItem.ToolTipText = "Refresh the current topic.";
             this.refreshTopicMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1503,19 +1501,19 @@ namespace ServiceBusExplorer.Forms
             // renameTopicMenuItem
             // 
             this.renameTopicMenuItem.Name = "renameTopicMenuItem";
-            this.renameTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.renameTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.renameTopicMenuItem.Text = "Rename Topic";
             this.renameTopicMenuItem.Click += new System.EventHandler(this.renameEntity_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(268, 6);
             // 
             // exportTopicMenuItem
             // 
             this.exportTopicMenuItem.Name = "exportTopicMenuItem";
-            this.exportTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.exportTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.exportTopicMenuItem.Text = "Export Topic";
             this.exportTopicMenuItem.ToolTipText = "Export topic definition to file.";
             this.exportTopicMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1523,12 +1521,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
             // 
             // addSubscriptionMenuItem1
             // 
             this.addSubscriptionMenuItem1.Name = "addSubscriptionMenuItem1";
-            this.addSubscriptionMenuItem1.Size = new System.Drawing.Size(197, 22);
+            this.addSubscriptionMenuItem1.Size = new System.Drawing.Size(271, 32);
             this.addSubscriptionMenuItem1.Text = "Create Subscription";
             this.addSubscriptionMenuItem1.ToolTipText = "Create a new subscription to the current topic.";
             this.addSubscriptionMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
@@ -1536,7 +1534,7 @@ namespace ServiceBusExplorer.Forms
             // deleteTopicSubscriptionsMenuItem
             // 
             this.deleteTopicSubscriptionsMenuItem.Name = "deleteTopicSubscriptionsMenuItem";
-            this.deleteTopicSubscriptionsMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.deleteTopicSubscriptionsMenuItem.Size = new System.Drawing.Size(271, 32);
             this.deleteTopicSubscriptionsMenuItem.Text = "Delete Subscriptions";
             this.deleteTopicSubscriptionsMenuItem.ToolTipText = "Delete all subscription for the current topic.";
             this.deleteTopicSubscriptionsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1544,12 +1542,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(268, 6);
             // 
             // copyTopicUrlMenuItem
             // 
             this.copyTopicUrlMenuItem.Name = "copyTopicUrlMenuItem";
-            this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.copyTopicUrlMenuItem.Size = new System.Drawing.Size(271, 32);
             this.copyTopicUrlMenuItem.Text = "Copy Topic URL";
             this.copyTopicUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyTopicUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1557,12 +1555,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(268, 6);
             // 
             // expandSubTreeMenuItem5
             // 
             this.expandSubTreeMenuItem5.Name = "expandSubTreeMenuItem5";
-            this.expandSubTreeMenuItem5.Size = new System.Drawing.Size(197, 22);
+            this.expandSubTreeMenuItem5.Size = new System.Drawing.Size(271, 32);
             this.expandSubTreeMenuItem5.Text = "Expand Subtree";
             this.expandSubTreeMenuItem5.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem5.Click += new System.EventHandler(this.expandEntity_Click);
@@ -1570,7 +1568,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem5
             // 
             this.collapseSubTreeMenuItem5.Name = "collapseSubTreeMenuItem5";
-            this.collapseSubTreeMenuItem5.Size = new System.Drawing.Size(197, 22);
+            this.collapseSubTreeMenuItem5.Size = new System.Drawing.Size(271, 32);
             this.collapseSubTreeMenuItem5.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem5.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem5.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -1578,12 +1576,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator32
             // 
             this.toolStripSeparator32.Name = "toolStripSeparator32";
-            this.toolStripSeparator32.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator32.Size = new System.Drawing.Size(268, 6);
             // 
             // testTopicSDIMenuItem
             // 
             this.testTopicSDIMenuItem.Name = "testTopicSDIMenuItem";
-            this.testTopicSDIMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.testTopicSDIMenuItem.Size = new System.Drawing.Size(271, 32);
             this.testTopicSDIMenuItem.Text = "Test Topic In SDI Mode";
             this.testTopicSDIMenuItem.ToolTipText = "Test the current topic in SDI mode.";
             this.testTopicSDIMenuItem.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -1591,7 +1589,7 @@ namespace ServiceBusExplorer.Forms
             // testTopicMDIMenuItem
             // 
             this.testTopicMDIMenuItem.Name = "testTopicMDIMenuItem";
-            this.testTopicMDIMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.testTopicMDIMenuItem.Size = new System.Drawing.Size(271, 32);
             this.testTopicMDIMenuItem.Text = "Test Topic In MDI Mode";
             this.testTopicMDIMenuItem.ToolTipText = "Test the current topic in MDI mode.";
             this.testTopicMDIMenuItem.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
@@ -1599,12 +1597,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator35
             // 
             this.toolStripSeparator35.Name = "toolStripSeparator35";
-            this.toolStripSeparator35.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator35.Size = new System.Drawing.Size(268, 6);
             // 
             // sendMessagesTopicMenuItem
             // 
             this.sendMessagesTopicMenuItem.Name = "sendMessagesTopicMenuItem";
-            this.sendMessagesTopicMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.sendMessagesTopicMenuItem.Size = new System.Drawing.Size(271, 32);
             this.sendMessagesTopicMenuItem.Text = "Send Messages";
             this.sendMessagesTopicMenuItem.ToolTipText = "Send test messages to the current topic.";
             this.sendMessagesTopicMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
@@ -1612,7 +1610,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator70
             // 
             this.toolStripSeparator70.Name = "toolStripSeparator70";
-            this.toolStripSeparator70.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator70.Size = new System.Drawing.Size(268, 6);
             // 
             // purgeToolStripMenuItem
             // 
@@ -1622,32 +1620,32 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator73,
             this.topicPurgeAllMessagesToolStripMenuItem});
             this.purgeToolStripMenuItem.Name = "purgeToolStripMenuItem";
-            this.purgeToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.purgeToolStripMenuItem.Size = new System.Drawing.Size(271, 32);
             this.purgeToolStripMenuItem.Text = "Purge";
             // 
             // topicPurgeMessagesToolStripMenuItem
             // 
             this.topicPurgeMessagesToolStripMenuItem.Name = "topicPurgeMessagesToolStripMenuItem";
-            this.topicPurgeMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.topicPurgeMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.topicPurgeMessagesToolStripMenuItem.Text = "Messages";
             this.topicPurgeMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
             // 
             // topicPurgeDeadletterQueueMessagesToolStripMenuItem
             // 
             this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Name = "topicPurgeDeadletterQueueMessagesToolStripMenuItem";
-            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Text = "Dead-letter Queue Messages";
             this.topicPurgeDeadletterQueueMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator73
             // 
             this.toolStripSeparator73.Name = "toolStripSeparator73";
-            this.toolStripSeparator73.Size = new System.Drawing.Size(222, 6);
+            this.toolStripSeparator73.Size = new System.Drawing.Size(340, 6);
             // 
             // topicPurgeAllMessagesToolStripMenuItem
             // 
             this.topicPurgeAllMessagesToolStripMenuItem.Name = "topicPurgeAllMessagesToolStripMenuItem";
-            this.topicPurgeAllMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.topicPurgeAllMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.topicPurgeAllMessagesToolStripMenuItem.Text = "All Messages";
             this.topicPurgeAllMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
@@ -1658,12 +1656,12 @@ namespace ServiceBusExplorer.Forms
             this.publishEventsTopicMenuItem,
             this.deleteEventGridTopicMenuItem});
             this.eventGridTopicContextMenuStrip.Name = "eventGridTopicContextMenuStrip";
-            this.eventGridTopicContextMenuStrip.Size = new System.Drawing.Size(146, 48);
+            this.eventGridTopicContextMenuStrip.Size = new System.Drawing.Size(190, 68);
             // 
             // publishEventsTopicMenuItem
             // 
             this.publishEventsTopicMenuItem.Name = "publishEventsTopicMenuItem";
-            this.publishEventsTopicMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.publishEventsTopicMenuItem.Size = new System.Drawing.Size(189, 32);
             this.publishEventsTopicMenuItem.Text = "Publish Event";
             this.publishEventsTopicMenuItem.ToolTipText = "Publish event to the current topic.";
             this.publishEventsTopicMenuItem.Click += new System.EventHandler(this.publishEvent_Click);
@@ -1671,7 +1669,7 @@ namespace ServiceBusExplorer.Forms
             // deleteEventGridTopicMenuItem
             // 
             this.deleteEventGridTopicMenuItem.Name = "deleteEventGridTopicMenuItem";
-            this.deleteEventGridTopicMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.deleteEventGridTopicMenuItem.Size = new System.Drawing.Size(189, 32);
             this.deleteEventGridTopicMenuItem.Text = "Delete Topic";
             this.deleteEventGridTopicMenuItem.ToolTipText = "Delete current topic.";
             this.deleteEventGridTopicMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1683,12 +1681,12 @@ namespace ServiceBusExplorer.Forms
             this.receiveEventsSubscriptionMenuItem,
             this.deleteEventGridSubscriptionMenuItem});
             this.eventGridSubscriptionContextMenuStrip.Name = "eventGridSubscriptionContextMenuStrip";
-            this.eventGridSubscriptionContextMenuStrip.Size = new System.Drawing.Size(177, 48);
+            this.eventGridSubscriptionContextMenuStrip.Size = new System.Drawing.Size(239, 68);
             // 
             // receiveEventsSubscriptionMenuItem
             // 
             this.receiveEventsSubscriptionMenuItem.Name = "receiveEventsSubscriptionMenuItem";
-            this.receiveEventsSubscriptionMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.receiveEventsSubscriptionMenuItem.Size = new System.Drawing.Size(238, 32);
             this.receiveEventsSubscriptionMenuItem.Text = "Receive Events";
             this.receiveEventsSubscriptionMenuItem.ToolTipText = "Receive events from the current topic.";
             this.receiveEventsSubscriptionMenuItem.Click += new System.EventHandler(this.receiveEvent_Click);
@@ -1696,7 +1694,7 @@ namespace ServiceBusExplorer.Forms
             // deleteEventGridSubscriptionMenuItem
             // 
             this.deleteEventGridSubscriptionMenuItem.Name = "deleteEventGridSubscriptionMenuItem";
-            this.deleteEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.deleteEventGridSubscriptionMenuItem.Size = new System.Drawing.Size(238, 32);
             this.deleteEventGridSubscriptionMenuItem.Text = "Delete Subscription";
             this.deleteEventGridSubscriptionMenuItem.ToolTipText = "Delete current subscription.";
             this.deleteEventGridSubscriptionMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1732,18 +1730,18 @@ namespace ServiceBusExplorer.Forms
             this.getQueueMessageSessionsSeparator,
             this.getQueueMessageSessionsMenuItem});
             this.queueContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.queueContextMenuStrip.Size = new System.Drawing.Size(313, 442);
+            this.queueContextMenuStrip.Size = new System.Drawing.Size(443, 654);
             // 
             // changeStatusQueueMenuItem
             // 
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
-            this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(442, 32);
             this.changeStatusQueueMenuItem.Text = "Set Status";
             // 
             // deleteQueueMenuItem
             // 
             this.deleteQueueMenuItem.Name = "deleteQueueMenuItem";
-            this.deleteQueueMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.deleteQueueMenuItem.Size = new System.Drawing.Size(442, 32);
             this.deleteQueueMenuItem.Text = "Delete Queue";
             this.deleteQueueMenuItem.ToolTipText = "Delete the current queue.";
             this.deleteQueueMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1752,7 +1750,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshQueueMenuItem.Name = "refreshQueueMenuItem";
             this.refreshQueueMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshQueueMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.refreshQueueMenuItem.Size = new System.Drawing.Size(442, 32);
             this.refreshQueueMenuItem.Text = "Refresh Queue";
             this.refreshQueueMenuItem.ToolTipText = "Refresh the current queue.";
             this.refreshQueueMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1760,19 +1758,27 @@ namespace ServiceBusExplorer.Forms
             // renameQueueMenuItem
             // 
             this.renameQueueMenuItem.Name = "renameQueueMenuItem";
-            this.renameQueueMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.renameQueueMenuItem.Size = new System.Drawing.Size(442, 32);
             this.renameQueueMenuItem.Text = "Rename Queue";
             this.renameQueueMenuItem.Click += new System.EventHandler(this.renameEntity_Click);
+            // 
+            // duplicateQueueMenuItem
+            // 
+            this.duplicateQueueMenuItem.Name = "duplicateQueueMenuItem";
+            this.duplicateQueueMenuItem.Size = new System.Drawing.Size(442, 32);
+            this.duplicateQueueMenuItem.Text = "Duplicate Queue";
+            this.duplicateQueueMenuItem.ToolTipText = "Duplicate the selected Queue not including Authorization Rules.";
+            this.duplicateQueueMenuItem.Click += new System.EventHandler(this.duplicateQueueMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(439, 6);
             // 
             // exportQueueMenuItem
             // 
             this.exportQueueMenuItem.Name = "exportQueueMenuItem";
-            this.exportQueueMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.exportQueueMenuItem.Size = new System.Drawing.Size(442, 32);
             this.exportQueueMenuItem.Text = "Export Queue";
             this.exportQueueMenuItem.ToolTipText = "Export queue definition to file.";
             this.exportQueueMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1780,12 +1786,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(439, 6);
             // 
             // copyQueueUrlMenuItem
             // 
             this.copyQueueUrlMenuItem.Name = "copyQueueUrlMenuItem";
-            this.copyQueueUrlMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.copyQueueUrlMenuItem.Size = new System.Drawing.Size(442, 32);
             this.copyQueueUrlMenuItem.Text = "Copy Queue URL";
             this.copyQueueUrlMenuItem.ToolTipText = "Copy the queue URL to the clipboard.";
             this.copyQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1793,7 +1799,7 @@ namespace ServiceBusExplorer.Forms
             // copyQueueDeadletterQueueUrlMenuItem
             // 
             this.copyQueueDeadletterQueueUrlMenuItem.Name = "copyQueueDeadletterQueueUrlMenuItem";
-            this.copyQueueDeadletterQueueUrlMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.copyQueueDeadletterQueueUrlMenuItem.Size = new System.Drawing.Size(442, 32);
             this.copyQueueDeadletterQueueUrlMenuItem.Text = "Copy Deadletter Queue URL";
             this.copyQueueDeadletterQueueUrlMenuItem.ToolTipText = "Copy the deadletter queue URL to the clipboard.";
             this.copyQueueDeadletterQueueUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -1801,12 +1807,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator25
             // 
             this.toolStripSeparator25.Name = "toolStripSeparator25";
-            this.toolStripSeparator25.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator25.Size = new System.Drawing.Size(439, 6);
             // 
             // testQueueSDIMenuItem
             // 
             this.testQueueSDIMenuItem.Name = "testQueueSDIMenuItem";
-            this.testQueueSDIMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.testQueueSDIMenuItem.Size = new System.Drawing.Size(442, 32);
             this.testQueueSDIMenuItem.Text = "Test Queue In SDI Mode";
             this.testQueueSDIMenuItem.ToolTipText = "Test the current queue in SDI mode.";
             this.testQueueSDIMenuItem.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -1814,7 +1820,7 @@ namespace ServiceBusExplorer.Forms
             // testQueueMDIMenuItem
             // 
             this.testQueueMDIMenuItem.Name = "testQueueMDIMenuItem";
-            this.testQueueMDIMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.testQueueMDIMenuItem.Size = new System.Drawing.Size(442, 32);
             this.testQueueMDIMenuItem.Text = "Test Queue In MDI Mode";
             this.testQueueMDIMenuItem.ToolTipText = "Test the current queue in MDI mode.";
             this.testQueueMDIMenuItem.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
@@ -1822,12 +1828,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator34
             // 
             this.toolStripSeparator34.Name = "toolStripSeparator34";
-            this.toolStripSeparator34.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator34.Size = new System.Drawing.Size(439, 6);
             // 
             // queueSendMessageMenuItem
             // 
             this.queueSendMessageMenuItem.Name = "queueSendMessageMenuItem";
-            this.queueSendMessageMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queueSendMessageMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queueSendMessageMenuItem.Text = "Send Messages";
             this.queueSendMessageMenuItem.ToolTipText = "Send test messages to the current queue.";
             this.queueSendMessageMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
@@ -1835,7 +1841,7 @@ namespace ServiceBusExplorer.Forms
             // createQueueListenerMenuItem
             // 
             this.createQueueListenerMenuItem.Name = "createQueueListenerMenuItem";
-            this.createQueueListenerMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.createQueueListenerMenuItem.Size = new System.Drawing.Size(442, 32);
             this.createQueueListenerMenuItem.Text = "Create Queue Listener";
             this.createQueueListenerMenuItem.ToolTipText = "Create a queue listener.";
             this.createQueueListenerMenuItem.Click += new System.EventHandler(this.createEntityListenerMenuItem_Click);
@@ -1843,12 +1849,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator31
             // 
             this.toolStripSeparator31.Name = "toolStripSeparator31";
-            this.toolStripSeparator31.Size = new System.Drawing.Size(309, 6);
+            this.toolStripSeparator31.Size = new System.Drawing.Size(439, 6);
             // 
             // queueReceiveMessagesMenuItem
             // 
             this.queueReceiveMessagesMenuItem.Name = "queueReceiveMessagesMenuItem";
-            this.queueReceiveMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queueReceiveMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queueReceiveMessagesMenuItem.Text = "Receive Messages";
             this.queueReceiveMessagesMenuItem.ToolTipText = "Receive messages from the current queue.";
             this.queueReceiveMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
@@ -1856,7 +1862,7 @@ namespace ServiceBusExplorer.Forms
             // queueReceiveDeadletterQueueMessagesMenuItem
             // 
             this.queueReceiveDeadletterQueueMessagesMenuItem.Name = "queueReceiveDeadletterQueueMessagesMenuItem";
-            this.queueReceiveDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queueReceiveDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queueReceiveDeadletterQueueMessagesMenuItem.Text = "Receive Dead-letter Queue Messages";
             this.queueReceiveDeadletterQueueMessagesMenuItem.ToolTipText = "Receive messages from the deadletter queue.";
             this.queueReceiveDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
@@ -1864,45 +1870,45 @@ namespace ServiceBusExplorer.Forms
             // queueReceiveTransferDeadletterQueueMessagesMenuItem
             // 
             this.queueReceiveTransferDeadletterQueueMessagesMenuItem.Name = "queueReceiveTransferDeadletterQueueMessagesMenuItem";
-            this.queueReceiveTransferDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queueReceiveTransferDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queueReceiveTransferDeadletterQueueMessagesMenuItem.Text = "Receive Transfer Dead-letter Queue Messages";
             this.queueReceiveTransferDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.receiveMessages_Click);
             // 
             // queueReceiveToolStripSeparator
             // 
             this.queueReceiveToolStripSeparator.Name = "queueReceiveToolStripSeparator";
-            this.queueReceiveToolStripSeparator.Size = new System.Drawing.Size(309, 6);
+            this.queueReceiveToolStripSeparator.Size = new System.Drawing.Size(439, 6);
             // 
             // queuePurgeMessagesMenuItem
             // 
             this.queuePurgeMessagesMenuItem.Name = "queuePurgeMessagesMenuItem";
-            this.queuePurgeMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queuePurgeMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queuePurgeMessagesMenuItem.Text = "Purge Messages";
             this.queuePurgeMessagesMenuItem.Click += new System.EventHandler(this.purgeMessages_Click);
             // 
             // queuePurgeDeadletterQueueMessagesMenuItem
             // 
             this.queuePurgeDeadletterQueueMessagesMenuItem.Name = "queuePurgeDeadletterQueueMessagesMenuItem";
-            this.queuePurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queuePurgeDeadletterQueueMessagesMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queuePurgeDeadletterQueueMessagesMenuItem.Text = "Purge Dead-letter Queue Messages";
             this.queuePurgeDeadletterQueueMessagesMenuItem.Click += new System.EventHandler(this.purgeDeadletterQueueMessages_Click);
             // 
             // queuePurgeAllMenuItem
             // 
             this.queuePurgeAllMenuItem.Name = "queuePurgeAllMenuItem";
-            this.queuePurgeAllMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.queuePurgeAllMenuItem.Size = new System.Drawing.Size(442, 32);
             this.queuePurgeAllMenuItem.Text = "Purge All Messages";
             this.queuePurgeAllMenuItem.Click += new System.EventHandler(this.purgeAllMenuItem_Click);
             // 
             // getQueueMessageSessionsSeparator
             // 
             this.getQueueMessageSessionsSeparator.Name = "getQueueMessageSessionsSeparator";
-            this.getQueueMessageSessionsSeparator.Size = new System.Drawing.Size(309, 6);
+            this.getQueueMessageSessionsSeparator.Size = new System.Drawing.Size(439, 6);
             // 
             // getQueueMessageSessionsMenuItem
             // 
             this.getQueueMessageSessionsMenuItem.Name = "getQueueMessageSessionsMenuItem";
-            this.getQueueMessageSessionsMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.getQueueMessageSessionsMenuItem.Size = new System.Drawing.Size(442, 32);
             this.getQueueMessageSessionsMenuItem.Text = "Get Message Sessions";
             this.getQueueMessageSessionsMenuItem.ToolTipText = "Retrieves all message sessions whose session state was updated since lastUpdatedT" +
     "ime.";
@@ -1926,12 +1932,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator71,
             this.purgeToolStripMenuItem1});
             this.topicsContextMenuStrip.Name = "createContextMenuStrip";
-            this.topicsContextMenuStrip.Size = new System.Drawing.Size(169, 210);
+            this.topicsContextMenuStrip.Size = new System.Drawing.Size(228, 290);
             // 
             // createTopicMenuItem
             // 
             this.createTopicMenuItem.Name = "createTopicMenuItem";
-            this.createTopicMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.createTopicMenuItem.Size = new System.Drawing.Size(227, 32);
             this.createTopicMenuItem.Text = "Create Topic";
             this.createTopicMenuItem.ToolTipText = "Create a new topic.";
             this.createTopicMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -1939,7 +1945,7 @@ namespace ServiceBusExplorer.Forms
             // deleteTopicsMenuItem
             // 
             this.deleteTopicsMenuItem.Name = "deleteTopicsMenuItem";
-            this.deleteTopicsMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.deleteTopicsMenuItem.Size = new System.Drawing.Size(227, 32);
             this.deleteTopicsMenuItem.Text = "Delete Topics";
             this.deleteTopicsMenuItem.ToolTipText = "Delete all the topics in the current namespace.";
             this.deleteTopicsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -1947,13 +1953,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator38
             // 
             this.toolStripSeparator38.Name = "toolStripSeparator38";
-            this.toolStripSeparator38.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator38.Size = new System.Drawing.Size(224, 6);
             // 
             // refreshTopicsMenuItem
             // 
             this.refreshTopicsMenuItem.Name = "refreshTopicsMenuItem";
             this.refreshTopicsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshTopicsMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.refreshTopicsMenuItem.Size = new System.Drawing.Size(227, 32);
             this.refreshTopicsMenuItem.Text = "Refresh Topics";
             this.refreshTopicsMenuItem.ToolTipText = "Refresh all the topics in the current namespace.";
             this.refreshTopicsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -1961,12 +1967,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(224, 6);
             // 
             // filterTopicsMenuItem
             // 
             this.filterTopicsMenuItem.Name = "filterTopicsMenuItem";
-            this.filterTopicsMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.filterTopicsMenuItem.Size = new System.Drawing.Size(227, 32);
             this.filterTopicsMenuItem.Text = "Filter Topics";
             this.filterTopicsMenuItem.ToolTipText = "Define a filter expression for topics.";
             this.filterTopicsMenuItem.Click += new System.EventHandler(this.filterEntity_Click);
@@ -1974,12 +1980,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator39
             // 
             this.toolStripSeparator39.Name = "toolStripSeparator39";
-            this.toolStripSeparator39.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator39.Size = new System.Drawing.Size(224, 6);
             // 
             // exportTopicsMenuItem
             // 
             this.exportTopicsMenuItem.Name = "exportTopicsMenuItem";
-            this.exportTopicsMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.exportTopicsMenuItem.Size = new System.Drawing.Size(227, 32);
             this.exportTopicsMenuItem.Text = "Export Topics";
             this.exportTopicsMenuItem.ToolTipText = "Export topics definition to file.";
             this.exportTopicsMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -1987,12 +1993,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(224, 6);
             // 
             // expandSubTreeMenuItem3
             // 
             this.expandSubTreeMenuItem3.Name = "expandSubTreeMenuItem3";
-            this.expandSubTreeMenuItem3.Size = new System.Drawing.Size(168, 22);
+            this.expandSubTreeMenuItem3.Size = new System.Drawing.Size(227, 32);
             this.expandSubTreeMenuItem3.Text = "Expand Subtree";
             this.expandSubTreeMenuItem3.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem3.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2000,7 +2006,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem3
             // 
             this.collapseSubTreeMenuItem3.Name = "collapseSubTreeMenuItem3";
-            this.collapseSubTreeMenuItem3.Size = new System.Drawing.Size(168, 22);
+            this.collapseSubTreeMenuItem3.Size = new System.Drawing.Size(227, 32);
             this.collapseSubTreeMenuItem3.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem3.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem3.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2008,7 +2014,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator71
             // 
             this.toolStripSeparator71.Name = "toolStripSeparator71";
-            this.toolStripSeparator71.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator71.Size = new System.Drawing.Size(224, 6);
             // 
             // purgeToolStripMenuItem1
             // 
@@ -2018,32 +2024,32 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator72,
             this.allMessagesToolStripMenuItem});
             this.purgeToolStripMenuItem1.Name = "purgeToolStripMenuItem1";
-            this.purgeToolStripMenuItem1.Size = new System.Drawing.Size(168, 22);
+            this.purgeToolStripMenuItem1.Size = new System.Drawing.Size(227, 32);
             this.purgeToolStripMenuItem1.Text = "Purge";
             // 
             // messagesToolStripMenuItem
             // 
             this.messagesToolStripMenuItem.Name = "messagesToolStripMenuItem";
-            this.messagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.messagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.messagesToolStripMenuItem.Text = "Messages";
             this.messagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
             // 
             // deadletterQueueMessagesToolStripMenuItem
             // 
             this.deadletterQueueMessagesToolStripMenuItem.Name = "deadletterQueueMessagesToolStripMenuItem";
-            this.deadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.deadletterQueueMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.deadletterQueueMessagesToolStripMenuItem.Text = "Dead-letter Queue Messages";
             this.deadletterQueueMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator72
             // 
             this.toolStripSeparator72.Name = "toolStripSeparator72";
-            this.toolStripSeparator72.Size = new System.Drawing.Size(222, 6);
+            this.toolStripSeparator72.Size = new System.Drawing.Size(340, 6);
             // 
             // allMessagesToolStripMenuItem
             // 
             this.allMessagesToolStripMenuItem.Name = "allMessagesToolStripMenuItem";
-            this.allMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.allMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.allMessagesToolStripMenuItem.Text = "All Messages";
             this.allMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
@@ -2053,12 +2059,12 @@ namespace ServiceBusExplorer.Forms
             this.eventGridTopicsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createEventGridTopicMenuItem});
             this.eventGridTopicsContextMenuStrip.Name = "createEventGridTopicsContextMenuStrip";
-            this.eventGridTopicsContextMenuStrip.Size = new System.Drawing.Size(140, 26);
+            this.eventGridTopicsContextMenuStrip.Size = new System.Drawing.Size(181, 36);
             // 
             // createEventGridTopicMenuItem
             // 
             this.createEventGridTopicMenuItem.Name = "createEventGridTopicMenuItem";
-            this.createEventGridTopicMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.createEventGridTopicMenuItem.Size = new System.Drawing.Size(180, 32);
             this.createEventGridTopicMenuItem.Text = "Create Topic";
             this.createEventGridTopicMenuItem.ToolTipText = "Create a new topic.";
             this.createEventGridTopicMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2077,12 +2083,12 @@ namespace ServiceBusExplorer.Forms
             this.expandSubTreeMenuItem11,
             this.collapseSubTreeMenuItem11});
             this.relayServicesContextMenuStrip.Name = "relayServicesContextMenuStrip";
-            this.relayServicesContextMenuStrip.Size = new System.Drawing.Size(169, 154);
+            this.relayServicesContextMenuStrip.Size = new System.Drawing.Size(228, 214);
             // 
             // toolStripMenuItem15
             // 
             this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-            this.toolStripMenuItem15.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem15.Size = new System.Drawing.Size(227, 32);
             this.toolStripMenuItem15.Text = "Create Relay";
             this.toolStripMenuItem15.ToolTipText = "Create a new relay.";
             this.toolStripMenuItem15.Click += new System.EventHandler(this.createEntity_Click);
@@ -2090,7 +2096,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem16
             // 
             this.toolStripMenuItem16.Name = "toolStripMenuItem16";
-            this.toolStripMenuItem16.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem16.Size = new System.Drawing.Size(227, 32);
             this.toolStripMenuItem16.Text = "Delete Relays";
             this.toolStripMenuItem16.ToolTipText = "Deletes all the services in the current namespace.";
             this.toolStripMenuItem16.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2098,13 +2104,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator65
             // 
             this.toolStripSeparator65.Name = "toolStripSeparator65";
-            this.toolStripSeparator65.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator65.Size = new System.Drawing.Size(224, 6);
             // 
             // toolStripMenuItem19
             // 
             this.toolStripMenuItem19.Name = "toolStripMenuItem19";
             this.toolStripMenuItem19.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.toolStripMenuItem19.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem19.Size = new System.Drawing.Size(227, 32);
             this.toolStripMenuItem19.Text = "Refresh Relays";
             this.toolStripMenuItem19.ToolTipText = "Refresh all the relays in the current namespace.";
             this.toolStripMenuItem19.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2112,12 +2118,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator67
             // 
             this.toolStripSeparator67.Name = "toolStripSeparator67";
-            this.toolStripSeparator67.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator67.Size = new System.Drawing.Size(224, 6);
             // 
             // toolStripMenuItem21
             // 
             this.toolStripMenuItem21.Name = "toolStripMenuItem21";
-            this.toolStripMenuItem21.Size = new System.Drawing.Size(168, 22);
+            this.toolStripMenuItem21.Size = new System.Drawing.Size(227, 32);
             this.toolStripMenuItem21.Text = "Export Relays";
             this.toolStripMenuItem21.ToolTipText = "Export relays definition to file.";
             this.toolStripMenuItem21.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2125,12 +2131,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator24
             // 
             this.toolStripSeparator24.Name = "toolStripSeparator24";
-            this.toolStripSeparator24.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator24.Size = new System.Drawing.Size(224, 6);
             // 
             // expandSubTreeMenuItem11
             // 
             this.expandSubTreeMenuItem11.Name = "expandSubTreeMenuItem11";
-            this.expandSubTreeMenuItem11.Size = new System.Drawing.Size(168, 22);
+            this.expandSubTreeMenuItem11.Size = new System.Drawing.Size(227, 32);
             this.expandSubTreeMenuItem11.Text = "Expand Subtree";
             this.expandSubTreeMenuItem11.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem11.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2138,7 +2144,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem11
             // 
             this.collapseSubTreeMenuItem11.Name = "collapseSubTreeMenuItem11";
-            this.collapseSubTreeMenuItem11.Size = new System.Drawing.Size(168, 22);
+            this.collapseSubTreeMenuItem11.Size = new System.Drawing.Size(227, 32);
             this.collapseSubTreeMenuItem11.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem11.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem11.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2146,6 +2152,7 @@ namespace ServiceBusExplorer.Forms
             // mainMenuStrip
             // 
             this.mainMenuStrip.BackColor = System.Drawing.Color.Transparent;
+            this.mainMenuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.mainMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -2155,8 +2162,8 @@ namespace ServiceBusExplorer.Forms
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.mainMenuStrip.Size = new System.Drawing.Size(1416, 24);
+            this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(12, 3, 0, 3);
+            this.mainMenuStrip.Size = new System.Drawing.Size(2124, 35);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -2174,12 +2181,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator74,
             this.toolStripMenuItem20});
             this.queueFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.queueFolderContextMenuStrip.Size = new System.Drawing.Size(163, 154);
+            this.queueFolderContextMenuStrip.Size = new System.Drawing.Size(218, 214);
             // 
             // folderCreateQueueMenuItem
             // 
             this.folderCreateQueueMenuItem.Name = "folderCreateQueueMenuItem";
-            this.folderCreateQueueMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderCreateQueueMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderCreateQueueMenuItem.Text = "Create Queue";
             this.folderCreateQueueMenuItem.ToolTipText = "Create a new queue in the current path.";
             this.folderCreateQueueMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2187,7 +2194,7 @@ namespace ServiceBusExplorer.Forms
             // folderDeleteQueuesMenuItem
             // 
             this.folderDeleteQueuesMenuItem.Name = "folderDeleteQueuesMenuItem";
-            this.folderDeleteQueuesMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderDeleteQueuesMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderDeleteQueuesMenuItem.Text = "Delete Queues";
             this.folderDeleteQueuesMenuItem.ToolTipText = "Deletes all queues in the current path.";
             this.folderDeleteQueuesMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2195,12 +2202,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(214, 6);
             // 
             // folderExportQueuesMenuItem
             // 
             this.folderExportQueuesMenuItem.Name = "folderExportQueuesMenuItem";
-            this.folderExportQueuesMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderExportQueuesMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderExportQueuesMenuItem.Text = "Export Queues";
             this.folderExportQueuesMenuItem.ToolTipText = "Export the definition of the queues in the current path to file.";
             this.folderExportQueuesMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2208,12 +2215,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator22
             // 
             this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator22.Size = new System.Drawing.Size(214, 6);
             // 
             // expandSubTreeMenuItem9
             // 
             this.expandSubTreeMenuItem9.Name = "expandSubTreeMenuItem9";
-            this.expandSubTreeMenuItem9.Size = new System.Drawing.Size(162, 22);
+            this.expandSubTreeMenuItem9.Size = new System.Drawing.Size(217, 32);
             this.expandSubTreeMenuItem9.Text = "Expand Subtree";
             this.expandSubTreeMenuItem9.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem9.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2221,7 +2228,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem9
             // 
             this.collapseSubTreeMenuItem9.Name = "collapseSubTreeMenuItem9";
-            this.collapseSubTreeMenuItem9.Size = new System.Drawing.Size(162, 22);
+            this.collapseSubTreeMenuItem9.Size = new System.Drawing.Size(217, 32);
             this.collapseSubTreeMenuItem9.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem9.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem9.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2229,7 +2236,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator74
             // 
             this.toolStripSeparator74.Name = "toolStripSeparator74";
-            this.toolStripSeparator74.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator74.Size = new System.Drawing.Size(214, 6);
             // 
             // toolStripMenuItem20
             // 
@@ -2239,32 +2246,32 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator77,
             this.allToolStripMenuItem});
             this.toolStripMenuItem20.Name = "toolStripMenuItem20";
-            this.toolStripMenuItem20.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem20.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem20.Text = "Purge";
             // 
             // messagesToolStripMenuItem2
             // 
             this.messagesToolStripMenuItem2.Name = "messagesToolStripMenuItem2";
-            this.messagesToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.messagesToolStripMenuItem2.Size = new System.Drawing.Size(343, 34);
             this.messagesToolStripMenuItem2.Text = "Messages";
             this.messagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
             // 
             // deadletterMessagesToolStripMenuItem
             // 
             this.deadletterMessagesToolStripMenuItem.Name = "deadletterMessagesToolStripMenuItem";
-            this.deadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.deadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.deadletterMessagesToolStripMenuItem.Text = "Dead-letter Queue Messages";
             this.deadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator77
             // 
             this.toolStripSeparator77.Name = "toolStripSeparator77";
-            this.toolStripSeparator77.Size = new System.Drawing.Size(222, 6);
+            this.toolStripSeparator77.Size = new System.Drawing.Size(340, 6);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(343, 34);
             this.allToolStripMenuItem.Text = "All Messages";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
@@ -2282,12 +2289,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator78,
             this.purgeToolStripMenuItem3});
             this.topicFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.topicFolderContextMenuStrip.Size = new System.Drawing.Size(163, 154);
+            this.topicFolderContextMenuStrip.Size = new System.Drawing.Size(218, 214);
             // 
             // folderCreateTopicMenuItem
             // 
             this.folderCreateTopicMenuItem.Name = "folderCreateTopicMenuItem";
-            this.folderCreateTopicMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderCreateTopicMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderCreateTopicMenuItem.Text = "Create Topic";
             this.folderCreateTopicMenuItem.ToolTipText = "Create a new topic in the specified path.";
             this.folderCreateTopicMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2295,7 +2302,7 @@ namespace ServiceBusExplorer.Forms
             // folderDeleteTopicsMenuItem
             // 
             this.folderDeleteTopicsMenuItem.Name = "folderDeleteTopicsMenuItem";
-            this.folderDeleteTopicsMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderDeleteTopicsMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderDeleteTopicsMenuItem.Text = "Delete Topics";
             this.folderDeleteTopicsMenuItem.ToolTipText = "Delete all topics in the current path.";
             this.folderDeleteTopicsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2303,12 +2310,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(214, 6);
             // 
             // folderExportTopicsMenuItem
             // 
             this.folderExportTopicsMenuItem.Name = "folderExportTopicsMenuItem";
-            this.folderExportTopicsMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.folderExportTopicsMenuItem.Size = new System.Drawing.Size(217, 32);
             this.folderExportTopicsMenuItem.Text = "Export Topics";
             this.folderExportTopicsMenuItem.ToolTipText = "Export the definition of the topics in the current path to file.";
             this.folderExportTopicsMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2316,12 +2323,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator23
             // 
             this.toolStripSeparator23.Name = "toolStripSeparator23";
-            this.toolStripSeparator23.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator23.Size = new System.Drawing.Size(214, 6);
             // 
             // expandSubTreeMenuItem10
             // 
             this.expandSubTreeMenuItem10.Name = "expandSubTreeMenuItem10";
-            this.expandSubTreeMenuItem10.Size = new System.Drawing.Size(162, 22);
+            this.expandSubTreeMenuItem10.Size = new System.Drawing.Size(217, 32);
             this.expandSubTreeMenuItem10.Text = "Expand Subtree";
             this.expandSubTreeMenuItem10.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem10.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2329,7 +2336,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem10
             // 
             this.collapseSubTreeMenuItem10.Name = "collapseSubTreeMenuItem10";
-            this.collapseSubTreeMenuItem10.Size = new System.Drawing.Size(162, 22);
+            this.collapseSubTreeMenuItem10.Size = new System.Drawing.Size(217, 32);
             this.collapseSubTreeMenuItem10.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem10.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem10.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2337,7 +2344,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator78
             // 
             this.toolStripSeparator78.Name = "toolStripSeparator78";
-            this.toolStripSeparator78.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator78.Size = new System.Drawing.Size(214, 6);
             // 
             // purgeToolStripMenuItem3
             // 
@@ -2347,32 +2354,32 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator79,
             this.allMessagesToolStripMenuItem2});
             this.purgeToolStripMenuItem3.Name = "purgeToolStripMenuItem3";
-            this.purgeToolStripMenuItem3.Size = new System.Drawing.Size(162, 22);
+            this.purgeToolStripMenuItem3.Size = new System.Drawing.Size(217, 32);
             this.purgeToolStripMenuItem3.Text = "Purge";
             // 
             // messagesToolStripMenuItem3
             // 
             this.messagesToolStripMenuItem3.Name = "messagesToolStripMenuItem3";
-            this.messagesToolStripMenuItem3.Size = new System.Drawing.Size(225, 22);
+            this.messagesToolStripMenuItem3.Size = new System.Drawing.Size(343, 34);
             this.messagesToolStripMenuItem3.Text = "Messages";
             this.messagesToolStripMenuItem3.Click += new System.EventHandler(this.bulkPurgeMessagesToolStripMenuItem_Click);
             // 
             // deadletterQueueMessagesToolStripMenuItem2
             // 
             this.deadletterQueueMessagesToolStripMenuItem2.Name = "deadletterQueueMessagesToolStripMenuItem2";
-            this.deadletterQueueMessagesToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.deadletterQueueMessagesToolStripMenuItem2.Size = new System.Drawing.Size(343, 34);
             this.deadletterQueueMessagesToolStripMenuItem2.Text = "Dead-letter Queue Messages";
             this.deadletterQueueMessagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeDeadletterQueueMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator79
             // 
             this.toolStripSeparator79.Name = "toolStripSeparator79";
-            this.toolStripSeparator79.Size = new System.Drawing.Size(222, 6);
+            this.toolStripSeparator79.Size = new System.Drawing.Size(340, 6);
             // 
             // allMessagesToolStripMenuItem2
             // 
             this.allMessagesToolStripMenuItem2.Name = "allMessagesToolStripMenuItem2";
-            this.allMessagesToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.allMessagesToolStripMenuItem2.Size = new System.Drawing.Size(343, 34);
             this.allMessagesToolStripMenuItem2.Text = "All Messages";
             this.allMessagesToolStripMenuItem2.Click += new System.EventHandler(this.bulkPurgeAllMessagesToolStripMenuItem_Click);
             // 
@@ -2383,12 +2390,12 @@ namespace ServiceBusExplorer.Forms
             this.expandSubTreeMenuItem12,
             this.collapseSubTreeMenuItem12});
             this.relayFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.relayFolderContextMenuStrip.Size = new System.Drawing.Size(163, 48);
+            this.relayFolderContextMenuStrip.Size = new System.Drawing.Size(218, 68);
             // 
             // expandSubTreeMenuItem12
             // 
             this.expandSubTreeMenuItem12.Name = "expandSubTreeMenuItem12";
-            this.expandSubTreeMenuItem12.Size = new System.Drawing.Size(162, 22);
+            this.expandSubTreeMenuItem12.Size = new System.Drawing.Size(217, 32);
             this.expandSubTreeMenuItem12.Text = "Expand Subtree";
             this.expandSubTreeMenuItem12.ToolTipText = "Expand the subtree.";
             this.expandSubTreeMenuItem12.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2396,7 +2403,7 @@ namespace ServiceBusExplorer.Forms
             // collapseSubTreeMenuItem12
             // 
             this.collapseSubTreeMenuItem12.Name = "collapseSubTreeMenuItem12";
-            this.collapseSubTreeMenuItem12.Size = new System.Drawing.Size(162, 22);
+            this.collapseSubTreeMenuItem12.Size = new System.Drawing.Size(217, 32);
             this.collapseSubTreeMenuItem12.Text = "Collapse Subtree";
             this.collapseSubTreeMenuItem12.ToolTipText = "Collapse the subtree.";
             this.collapseSubTreeMenuItem12.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2414,12 +2421,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator26,
             this.getRegistrationsNotificationHubMenuItem});
             this.notificationHubContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.notificationHubContextMenuStrip.Size = new System.Drawing.Size(225, 132);
+            this.notificationHubContextMenuStrip.Size = new System.Drawing.Size(310, 182);
             // 
             // deleteNotificationHubMenuItem
             // 
             this.deleteNotificationHubMenuItem.Name = "deleteNotificationHubMenuItem";
-            this.deleteNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.deleteNotificationHubMenuItem.Size = new System.Drawing.Size(309, 32);
             this.deleteNotificationHubMenuItem.Text = "Delete Notification Hub";
             this.deleteNotificationHubMenuItem.ToolTipText = "Delete the current notification hub.";
             this.deleteNotificationHubMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2428,7 +2435,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshNotificationHubMenuItem.Name = "refreshNotificationHubMenuItem";
             this.refreshNotificationHubMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.refreshNotificationHubMenuItem.Size = new System.Drawing.Size(309, 32);
             this.refreshNotificationHubMenuItem.Text = "Refresh Notification Hub";
             this.refreshNotificationHubMenuItem.ToolTipText = "Refresh the current notification hub.";
             this.refreshNotificationHubMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2436,12 +2443,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator43
             // 
             this.toolStripSeparator43.Name = "toolStripSeparator43";
-            this.toolStripSeparator43.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator43.Size = new System.Drawing.Size(306, 6);
             // 
             // exportNotificationHubMenuItem
             // 
             this.exportNotificationHubMenuItem.Name = "exportNotificationHubMenuItem";
-            this.exportNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.exportNotificationHubMenuItem.Size = new System.Drawing.Size(309, 32);
             this.exportNotificationHubMenuItem.Text = "Export Notification Hub";
             this.exportNotificationHubMenuItem.ToolTipText = "Export notification hub definition to file.";
             this.exportNotificationHubMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2449,12 +2456,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator44
             // 
             this.toolStripSeparator44.Name = "toolStripSeparator44";
-            this.toolStripSeparator44.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator44.Size = new System.Drawing.Size(306, 6);
             // 
             // copyUrlNotificationHubMenuItem
             // 
             this.copyUrlNotificationHubMenuItem.Name = "copyUrlNotificationHubMenuItem";
-            this.copyUrlNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.copyUrlNotificationHubMenuItem.Size = new System.Drawing.Size(309, 32);
             this.copyUrlNotificationHubMenuItem.Text = "Copy Notification Hub URL";
             this.copyUrlNotificationHubMenuItem.ToolTipText = "Copy the notification hub URL to the clipboard.";
             this.copyUrlNotificationHubMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -2462,12 +2469,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator26
             // 
             this.toolStripSeparator26.Name = "toolStripSeparator26";
-            this.toolStripSeparator26.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator26.Size = new System.Drawing.Size(306, 6);
             // 
             // getRegistrationsNotificationHubMenuItem
             // 
             this.getRegistrationsNotificationHubMenuItem.Name = "getRegistrationsNotificationHubMenuItem";
-            this.getRegistrationsNotificationHubMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.getRegistrationsNotificationHubMenuItem.Size = new System.Drawing.Size(309, 32);
             this.getRegistrationsNotificationHubMenuItem.Text = "Get Registrations";
             this.getRegistrationsNotificationHubMenuItem.ToolTipText = "Gets the registrations of the current notification hub.";
             this.getRegistrationsNotificationHubMenuItem.Click += new System.EventHandler(this.getRegistrationsNotificationHubMenuItem_Click);
@@ -2486,12 +2493,12 @@ namespace ServiceBusExplorer.Forms
             this.expandNotificationHubMenuItem,
             this.collapseNotificationHubMenuItem});
             this.notificationHubsContextMenuStrip.Name = "relayServicesContextMenuStrip";
-            this.notificationHubsContextMenuStrip.Size = new System.Drawing.Size(230, 154);
+            this.notificationHubsContextMenuStrip.Size = new System.Drawing.Size(318, 214);
             // 
             // createNotificationHubMenuItem
             // 
             this.createNotificationHubMenuItem.Name = "createNotificationHubMenuItem";
-            this.createNotificationHubMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.createNotificationHubMenuItem.Size = new System.Drawing.Size(317, 32);
             this.createNotificationHubMenuItem.Text = "Create Notification Hub";
             this.createNotificationHubMenuItem.ToolTipText = "Create a new notification hub.";
             this.createNotificationHubMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2499,7 +2506,7 @@ namespace ServiceBusExplorer.Forms
             // deleteNotificationHubsMenuItem
             // 
             this.deleteNotificationHubsMenuItem.Name = "deleteNotificationHubsMenuItem";
-            this.deleteNotificationHubsMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.deleteNotificationHubsMenuItem.Size = new System.Drawing.Size(317, 32);
             this.deleteNotificationHubsMenuItem.Text = "Delete Notification Hubs";
             this.deleteNotificationHubsMenuItem.ToolTipText = "Deletes all notification hubs in the current namespace.";
             this.deleteNotificationHubsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2507,13 +2514,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(226, 6);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(314, 6);
             // 
             // refreshNotificationHubsMenuItem
             // 
             this.refreshNotificationHubsMenuItem.Name = "refreshNotificationHubsMenuItem";
             this.refreshNotificationHubsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshNotificationHubsMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.refreshNotificationHubsMenuItem.Size = new System.Drawing.Size(317, 32);
             this.refreshNotificationHubsMenuItem.Text = "Refresh Notification Hubs";
             this.refreshNotificationHubsMenuItem.ToolTipText = "Refresh all relays in the current namespace.";
             this.refreshNotificationHubsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2521,12 +2528,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator42
             // 
             this.toolStripSeparator42.Name = "toolStripSeparator42";
-            this.toolStripSeparator42.Size = new System.Drawing.Size(226, 6);
+            this.toolStripSeparator42.Size = new System.Drawing.Size(314, 6);
             // 
             // exportNotificationHubsMenuItem
             // 
             this.exportNotificationHubsMenuItem.Name = "exportNotificationHubsMenuItem";
-            this.exportNotificationHubsMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.exportNotificationHubsMenuItem.Size = new System.Drawing.Size(317, 32);
             this.exportNotificationHubsMenuItem.Text = "Export Notification Hubs";
             this.exportNotificationHubsMenuItem.ToolTipText = "Export notification hubs definition to file.";
             this.exportNotificationHubsMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2534,12 +2541,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator45
             // 
             this.toolStripSeparator45.Name = "toolStripSeparator45";
-            this.toolStripSeparator45.Size = new System.Drawing.Size(226, 6);
+            this.toolStripSeparator45.Size = new System.Drawing.Size(314, 6);
             // 
             // expandNotificationHubMenuItem
             // 
             this.expandNotificationHubMenuItem.Name = "expandNotificationHubMenuItem";
-            this.expandNotificationHubMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.expandNotificationHubMenuItem.Size = new System.Drawing.Size(317, 32);
             this.expandNotificationHubMenuItem.Text = "Expand Subtree";
             this.expandNotificationHubMenuItem.ToolTipText = "Expand the subtree.";
             this.expandNotificationHubMenuItem.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2547,7 +2554,7 @@ namespace ServiceBusExplorer.Forms
             // collapseNotificationHubMenuItem
             // 
             this.collapseNotificationHubMenuItem.Name = "collapseNotificationHubMenuItem";
-            this.collapseNotificationHubMenuItem.Size = new System.Drawing.Size(229, 22);
+            this.collapseNotificationHubMenuItem.Size = new System.Drawing.Size(317, 32);
             this.collapseNotificationHubMenuItem.Text = "Collapse Subtree";
             this.collapseNotificationHubMenuItem.ToolTipText = "Collapse the subtree.";
             this.collapseNotificationHubMenuItem.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2572,12 +2579,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator53,
             this.sendMessagesEventHubMenuItem});
             this.eventHubContextMenuStrip.Name = "topicContextMenuStrip";
-            this.eventHubContextMenuStrip.Size = new System.Drawing.Size(209, 254);
+            this.eventHubContextMenuStrip.Size = new System.Drawing.Size(285, 354);
             // 
             // changeStatusEventHubMenuItem
             // 
             this.changeStatusEventHubMenuItem.Name = "changeStatusEventHubMenuItem";
-            this.changeStatusEventHubMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.changeStatusEventHubMenuItem.Size = new System.Drawing.Size(284, 32);
             this.changeStatusEventHubMenuItem.Text = "Change Status Event Hub";
             this.changeStatusEventHubMenuItem.ToolTipText = "Change the status of the current event hub.";
             this.changeStatusEventHubMenuItem.Click += new System.EventHandler(this.changeStatusEntity_Click);
@@ -2585,7 +2592,7 @@ namespace ServiceBusExplorer.Forms
             // deleteEventHubMenuItem
             // 
             this.deleteEventHubMenuItem.Name = "deleteEventHubMenuItem";
-            this.deleteEventHubMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deleteEventHubMenuItem.Size = new System.Drawing.Size(284, 32);
             this.deleteEventHubMenuItem.Text = "Delete Event Hub";
             this.deleteEventHubMenuItem.ToolTipText = "Delete the current event hub.";
             this.deleteEventHubMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2594,7 +2601,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshEventHubMenuItem.Name = "refreshEventHubMenuItem";
             this.refreshEventHubMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshEventHubMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.refreshEventHubMenuItem.Size = new System.Drawing.Size(284, 32);
             this.refreshEventHubMenuItem.Text = "Refresh Event Hub";
             this.refreshEventHubMenuItem.ToolTipText = "Refresh the current event hub.";
             this.refreshEventHubMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2602,12 +2609,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator49
             // 
             this.toolStripSeparator49.Name = "toolStripSeparator49";
-            this.toolStripSeparator49.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator49.Size = new System.Drawing.Size(281, 6);
             // 
             // exportEventHubMenuItem
             // 
             this.exportEventHubMenuItem.Name = "exportEventHubMenuItem";
-            this.exportEventHubMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.exportEventHubMenuItem.Size = new System.Drawing.Size(284, 32);
             this.exportEventHubMenuItem.Text = "Export Event Hub";
             this.exportEventHubMenuItem.ToolTipText = "Export event hub definition to file.";
             this.exportEventHubMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2615,12 +2622,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator50
             // 
             this.toolStripSeparator50.Name = "toolStripSeparator50";
-            this.toolStripSeparator50.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator50.Size = new System.Drawing.Size(281, 6);
             // 
             // createConsumerGroupMenuItem
             // 
             this.createConsumerGroupMenuItem.Name = "createConsumerGroupMenuItem";
-            this.createConsumerGroupMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.createConsumerGroupMenuItem.Size = new System.Drawing.Size(284, 32);
             this.createConsumerGroupMenuItem.Text = "Create Consumer Group";
             this.createConsumerGroupMenuItem.ToolTipText = "Create a new  consumer group for the current event hub.";
             this.createConsumerGroupMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2628,7 +2635,7 @@ namespace ServiceBusExplorer.Forms
             // deleteConsumerGroupsMenuItem
             // 
             this.deleteConsumerGroupsMenuItem.Name = "deleteConsumerGroupsMenuItem";
-            this.deleteConsumerGroupsMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deleteConsumerGroupsMenuItem.Size = new System.Drawing.Size(284, 32);
             this.deleteConsumerGroupsMenuItem.Text = "Delete Consumer Groups";
             this.deleteConsumerGroupsMenuItem.ToolTipText = "Delete all consumer groups for the current event hub.";
             this.deleteConsumerGroupsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2636,12 +2643,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator51
             // 
             this.toolStripSeparator51.Name = "toolStripSeparator51";
-            this.toolStripSeparator51.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator51.Size = new System.Drawing.Size(281, 6);
             // 
             // copyEventHubUrlMenuItem
             // 
             this.copyEventHubUrlMenuItem.Name = "copyEventHubUrlMenuItem";
-            this.copyEventHubUrlMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.copyEventHubUrlMenuItem.Size = new System.Drawing.Size(284, 32);
             this.copyEventHubUrlMenuItem.Text = "Copy Event Hub URL";
             this.copyEventHubUrlMenuItem.ToolTipText = "Copy the topic URL to the clipboard.";
             this.copyEventHubUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -2649,12 +2656,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator52
             // 
             this.toolStripSeparator52.Name = "toolStripSeparator52";
-            this.toolStripSeparator52.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator52.Size = new System.Drawing.Size(281, 6);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(208, 22);
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(284, 32);
             this.toolStripMenuItem11.Text = "Expand Subtree";
             this.toolStripMenuItem11.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem11.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2662,7 +2669,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem12
             // 
             this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(208, 22);
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(284, 32);
             this.toolStripMenuItem12.Text = "Collapse Subtree";
             this.toolStripMenuItem12.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem12.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2670,12 +2677,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator53
             // 
             this.toolStripSeparator53.Name = "toolStripSeparator53";
-            this.toolStripSeparator53.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator53.Size = new System.Drawing.Size(281, 6);
             // 
             // sendMessagesEventHubMenuItem
             // 
             this.sendMessagesEventHubMenuItem.Name = "sendMessagesEventHubMenuItem";
-            this.sendMessagesEventHubMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.sendMessagesEventHubMenuItem.Size = new System.Drawing.Size(284, 32);
             this.sendMessagesEventHubMenuItem.Text = "Send Events";
             this.sendMessagesEventHubMenuItem.ToolTipText = "Send test events to the current event hub.";
             this.sendMessagesEventHubMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
@@ -2694,12 +2701,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem5,
             this.toolStripMenuItem6});
             this.eventHubsContextMenuStrip.Name = "relayServicesContextMenuStrip";
-            this.eventHubsContextMenuStrip.Size = new System.Drawing.Size(196, 154);
+            this.eventHubsContextMenuStrip.Size = new System.Drawing.Size(269, 214);
             // 
             // createEventHubMenuItem
             // 
             this.createEventHubMenuItem.Name = "createEventHubMenuItem";
-            this.createEventHubMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.createEventHubMenuItem.Size = new System.Drawing.Size(268, 32);
             this.createEventHubMenuItem.Text = "Create Event Hub";
             this.createEventHubMenuItem.ToolTipText = "Create a new event hub.";
             this.createEventHubMenuItem.Click += new System.EventHandler(this.createEntity_Click);
@@ -2707,7 +2714,7 @@ namespace ServiceBusExplorer.Forms
             // deleteEventHubsMenuItem
             // 
             this.deleteEventHubsMenuItem.Name = "deleteEventHubsMenuItem";
-            this.deleteEventHubsMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.deleteEventHubsMenuItem.Size = new System.Drawing.Size(268, 32);
             this.deleteEventHubsMenuItem.Text = "Delete Event Hubs";
             this.deleteEventHubsMenuItem.ToolTipText = "Deletes all event hubs in the current namespace.";
             this.deleteEventHubsMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2715,13 +2722,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator30
             // 
             this.toolStripSeparator30.Name = "toolStripSeparator30";
-            this.toolStripSeparator30.Size = new System.Drawing.Size(192, 6);
+            this.toolStripSeparator30.Size = new System.Drawing.Size(265, 6);
             // 
             // refreshEventHubsMenuItem
             // 
             this.refreshEventHubsMenuItem.Name = "refreshEventHubsMenuItem";
             this.refreshEventHubsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshEventHubsMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.refreshEventHubsMenuItem.Size = new System.Drawing.Size(268, 32);
             this.refreshEventHubsMenuItem.Text = "Refresh Event Hubs";
             this.refreshEventHubsMenuItem.ToolTipText = "Refresh all event hubs in the current namespace.";
             this.refreshEventHubsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2729,12 +2736,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator47
             // 
             this.toolStripSeparator47.Name = "toolStripSeparator47";
-            this.toolStripSeparator47.Size = new System.Drawing.Size(192, 6);
+            this.toolStripSeparator47.Size = new System.Drawing.Size(265, 6);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(195, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(268, 32);
             this.toolStripMenuItem4.Text = "Export Event Hubs";
             this.toolStripMenuItem4.ToolTipText = "Export event hubs definition to file.";
             this.toolStripMenuItem4.Click += new System.EventHandler(this.exportEntity_Click);
@@ -2742,12 +2749,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator48
             // 
             this.toolStripSeparator48.Name = "toolStripSeparator48";
-            this.toolStripSeparator48.Size = new System.Drawing.Size(192, 6);
+            this.toolStripSeparator48.Size = new System.Drawing.Size(265, 6);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(195, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(268, 32);
             this.toolStripMenuItem5.Text = "Expand Subtree";
             this.toolStripMenuItem5.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2755,7 +2762,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(195, 22);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(268, 32);
             this.toolStripMenuItem6.Text = "Collapse Subtree";
             this.toolStripMenuItem6.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem6.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2772,12 +2779,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem10,
             this.toolStripMenuItem13});
             this.consumerGroupsContextMenuStrip.Name = "subscriptionsContextMenuStrip";
-            this.consumerGroupsContextMenuStrip.Size = new System.Drawing.Size(232, 126);
+            this.consumerGroupsContextMenuStrip.Size = new System.Drawing.Size(323, 176);
             // 
             // createConsumerGroupMenuItem1
             // 
             this.createConsumerGroupMenuItem1.Name = "createConsumerGroupMenuItem1";
-            this.createConsumerGroupMenuItem1.Size = new System.Drawing.Size(231, 22);
+            this.createConsumerGroupMenuItem1.Size = new System.Drawing.Size(322, 32);
             this.createConsumerGroupMenuItem1.Text = "Create Consumer Group";
             this.createConsumerGroupMenuItem1.ToolTipText = "Create a new  consumer group for the current event hub.";
             this.createConsumerGroupMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
@@ -2785,7 +2792,7 @@ namespace ServiceBusExplorer.Forms
             // deleteConsumerGroupsMenuItem1
             // 
             this.deleteConsumerGroupsMenuItem1.Name = "deleteConsumerGroupsMenuItem1";
-            this.deleteConsumerGroupsMenuItem1.Size = new System.Drawing.Size(231, 22);
+            this.deleteConsumerGroupsMenuItem1.Size = new System.Drawing.Size(322, 32);
             this.deleteConsumerGroupsMenuItem1.Text = "Delete Consumer Groups";
             this.deleteConsumerGroupsMenuItem1.ToolTipText = "Delete all consumer groups for the current event hub.";
             this.deleteConsumerGroupsMenuItem1.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2793,13 +2800,13 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator55
             // 
             this.toolStripSeparator55.Name = "toolStripSeparator55";
-            this.toolStripSeparator55.Size = new System.Drawing.Size(228, 6);
+            this.toolStripSeparator55.Size = new System.Drawing.Size(319, 6);
             // 
             // refreshConsumerGroupsMenuItem
             // 
             this.refreshConsumerGroupsMenuItem.Name = "refreshConsumerGroupsMenuItem";
             this.refreshConsumerGroupsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshConsumerGroupsMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.refreshConsumerGroupsMenuItem.Size = new System.Drawing.Size(322, 32);
             this.refreshConsumerGroupsMenuItem.Text = "Refresh Consumer Groups";
             this.refreshConsumerGroupsMenuItem.ToolTipText = "Refresh consumer groups for the current event hub.";
             this.refreshConsumerGroupsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2807,12 +2814,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator56
             // 
             this.toolStripSeparator56.Name = "toolStripSeparator56";
-            this.toolStripSeparator56.Size = new System.Drawing.Size(228, 6);
+            this.toolStripSeparator56.Size = new System.Drawing.Size(319, 6);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(231, 22);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(322, 32);
             this.toolStripMenuItem10.Text = "Expand Subtree";
             this.toolStripMenuItem10.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem10.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2820,7 +2827,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem13
             // 
             this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(231, 22);
+            this.toolStripMenuItem13.Size = new System.Drawing.Size(322, 32);
             this.toolStripMenuItem13.Text = "Collapse Subtree";
             this.toolStripMenuItem13.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem13.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2837,12 +2844,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator60,
             this.sendMessagesEventHubPartitionMenuItem});
             this.partitionContextMenuStrip.Name = "ruleContextMenuStrip";
-            this.partitionContextMenuStrip.Size = new System.Drawing.Size(201, 110);
+            this.partitionContextMenuStrip.Size = new System.Drawing.Size(270, 150);
             // 
             // refreshPartitionMenuItem
             // 
             this.refreshPartitionMenuItem.Name = "refreshPartitionMenuItem";
-            this.refreshPartitionMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.refreshPartitionMenuItem.Size = new System.Drawing.Size(269, 32);
             this.refreshPartitionMenuItem.Text = "Refresh Partition";
             this.refreshPartitionMenuItem.ToolTipText = "Refresh the current partition.";
             this.refreshPartitionMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2850,12 +2857,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator58
             // 
             this.toolStripSeparator58.Name = "toolStripSeparator58";
-            this.toolStripSeparator58.Size = new System.Drawing.Size(197, 6);
+            this.toolStripSeparator58.Size = new System.Drawing.Size(266, 6);
             // 
             // copyPartitionUrlMenuItem
             // 
             this.copyPartitionUrlMenuItem.Name = "copyPartitionUrlMenuItem";
-            this.copyPartitionUrlMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.copyPartitionUrlMenuItem.Size = new System.Drawing.Size(269, 32);
             this.copyPartitionUrlMenuItem.Text = "Copy Partition URL";
             this.copyPartitionUrlMenuItem.ToolTipText = "Copy the partition URL to the clipboard.";
             this.copyPartitionUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -2863,12 +2870,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator54
             // 
             this.toolStripSeparator54.Name = "toolStripSeparator54";
-            this.toolStripSeparator54.Size = new System.Drawing.Size(197, 6);
+            this.toolStripSeparator54.Size = new System.Drawing.Size(266, 6);
             // 
             // createPartitionListenerMenuItem
             // 
             this.createPartitionListenerMenuItem.Name = "createPartitionListenerMenuItem";
-            this.createPartitionListenerMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.createPartitionListenerMenuItem.Size = new System.Drawing.Size(269, 32);
             this.createPartitionListenerMenuItem.Text = "Create Partition Listener";
             this.createPartitionListenerMenuItem.ToolTipText = "Create a partition listener.";
             this.createPartitionListenerMenuItem.Click += new System.EventHandler(this.createEntityListenerMenuItem_Click);
@@ -2876,12 +2883,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator60
             // 
             this.toolStripSeparator60.Name = "toolStripSeparator60";
-            this.toolStripSeparator60.Size = new System.Drawing.Size(197, 6);
+            this.toolStripSeparator60.Size = new System.Drawing.Size(266, 6);
             // 
             // sendMessagesEventHubPartitionMenuItem
             // 
             this.sendMessagesEventHubPartitionMenuItem.Name = "sendMessagesEventHubPartitionMenuItem";
-            this.sendMessagesEventHubPartitionMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.sendMessagesEventHubPartitionMenuItem.Size = new System.Drawing.Size(269, 32);
             this.sendMessagesEventHubPartitionMenuItem.Text = "Send Events";
             this.sendMessagesEventHubPartitionMenuItem.ToolTipText = "Send test events to the current event hub partition.";
             this.sendMessagesEventHubPartitionMenuItem.Click += new System.EventHandler(this.sendMessage_Click);
@@ -2895,13 +2902,13 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem8,
             this.toolStripMenuItem9});
             this.partitionsContextMenuStrip.Name = "subscriptionsContextMenuStrip";
-            this.partitionsContextMenuStrip.Size = new System.Drawing.Size(186, 76);
+            this.partitionsContextMenuStrip.Size = new System.Drawing.Size(252, 106);
             // 
             // refreshPartitionsMenuItem
             // 
             this.refreshPartitionsMenuItem.Name = "refreshPartitionsMenuItem";
             this.refreshPartitionsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshPartitionsMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.refreshPartitionsMenuItem.Size = new System.Drawing.Size(251, 32);
             this.refreshPartitionsMenuItem.Text = "Refresh Partitions";
             this.refreshPartitionsMenuItem.ToolTipText = "Refresh partitions for the current event hub.";
             this.refreshPartitionsMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2909,12 +2916,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator57
             // 
             this.toolStripSeparator57.Name = "toolStripSeparator57";
-            this.toolStripSeparator57.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator57.Size = new System.Drawing.Size(248, 6);
             // 
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(185, 22);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(251, 32);
             this.toolStripMenuItem8.Text = "Expand Subtree";
             this.toolStripMenuItem8.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem8.Click += new System.EventHandler(this.expandEntity_Click);
@@ -2922,7 +2929,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem9
             // 
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(185, 22);
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(251, 32);
             this.toolStripMenuItem9.Text = "Collapse Subtree";
             this.toolStripMenuItem9.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem9.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -2943,12 +2950,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripSeparator62,
             this.createConsumerGroupListenerMenuItem});
             this.consumerGroupContextMenuStrip.Name = "topicContextMenuStrip";
-            this.consumerGroupContextMenuStrip.Size = new System.Drawing.Size(247, 182);
+            this.consumerGroupContextMenuStrip.Size = new System.Drawing.Size(341, 252);
             // 
             // deleteConsumerGroupMenuItem
             // 
             this.deleteConsumerGroupMenuItem.Name = "deleteConsumerGroupMenuItem";
-            this.deleteConsumerGroupMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.deleteConsumerGroupMenuItem.Size = new System.Drawing.Size(340, 32);
             this.deleteConsumerGroupMenuItem.Text = "Delete Consumer Group";
             this.deleteConsumerGroupMenuItem.ToolTipText = "Delete the current consumer group.";
             this.deleteConsumerGroupMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -2957,7 +2964,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshConsumerGroupMenuItem.Name = "refreshConsumerGroupMenuItem";
             this.refreshConsumerGroupMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshConsumerGroupMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.refreshConsumerGroupMenuItem.Size = new System.Drawing.Size(340, 32);
             this.refreshConsumerGroupMenuItem.Text = "Refresh Consumer Group";
             this.refreshConsumerGroupMenuItem.ToolTipText = "Refresh the current consumer group.";
             this.refreshConsumerGroupMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -2965,12 +2972,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator59
             // 
             this.toolStripSeparator59.Name = "toolStripSeparator59";
-            this.toolStripSeparator59.Size = new System.Drawing.Size(243, 6);
+            this.toolStripSeparator59.Size = new System.Drawing.Size(337, 6);
             // 
             // getPartitionDataMenuItem
             // 
             this.getPartitionDataMenuItem.Name = "getPartitionDataMenuItem";
-            this.getPartitionDataMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.getPartitionDataMenuItem.Size = new System.Drawing.Size(340, 32);
             this.getPartitionDataMenuItem.Text = "Get Partition Data";
             this.getPartitionDataMenuItem.ToolTipText = "Get partition data for the current event hub .";
             this.getPartitionDataMenuItem.Click += new System.EventHandler(this.getPartitionDataMenuItem_Click);
@@ -2978,12 +2985,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator66
             // 
             this.toolStripSeparator66.Name = "toolStripSeparator66";
-            this.toolStripSeparator66.Size = new System.Drawing.Size(243, 6);
+            this.toolStripSeparator66.Size = new System.Drawing.Size(337, 6);
             // 
             // copyConsumerGroupUrlMenuItem
             // 
             this.copyConsumerGroupUrlMenuItem.Name = "copyConsumerGroupUrlMenuItem";
-            this.copyConsumerGroupUrlMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.copyConsumerGroupUrlMenuItem.Size = new System.Drawing.Size(340, 32);
             this.copyConsumerGroupUrlMenuItem.Text = "Copy Consumer Group URL";
             this.copyConsumerGroupUrlMenuItem.ToolTipText = "Copy the consumer group URL to the clipboard.";
             this.copyConsumerGroupUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -2991,12 +2998,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator61
             // 
             this.toolStripSeparator61.Name = "toolStripSeparator61";
-            this.toolStripSeparator61.Size = new System.Drawing.Size(243, 6);
+            this.toolStripSeparator61.Size = new System.Drawing.Size(337, 6);
             // 
             // toolStripMenuItem17
             // 
             this.toolStripMenuItem17.Name = "toolStripMenuItem17";
-            this.toolStripMenuItem17.Size = new System.Drawing.Size(246, 22);
+            this.toolStripMenuItem17.Size = new System.Drawing.Size(340, 32);
             this.toolStripMenuItem17.Text = "Expand Subtree";
             this.toolStripMenuItem17.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem17.Click += new System.EventHandler(this.expandEntity_Click);
@@ -3004,7 +3011,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem18
             // 
             this.toolStripMenuItem18.Name = "toolStripMenuItem18";
-            this.toolStripMenuItem18.Size = new System.Drawing.Size(246, 22);
+            this.toolStripMenuItem18.Size = new System.Drawing.Size(340, 32);
             this.toolStripMenuItem18.Text = "Collapse Subtree";
             this.toolStripMenuItem18.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem18.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -3012,12 +3019,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator62
             // 
             this.toolStripSeparator62.Name = "toolStripSeparator62";
-            this.toolStripSeparator62.Size = new System.Drawing.Size(243, 6);
+            this.toolStripSeparator62.Size = new System.Drawing.Size(337, 6);
             // 
             // createConsumerGroupListenerMenuItem
             // 
             this.createConsumerGroupListenerMenuItem.Name = "createConsumerGroupListenerMenuItem";
-            this.createConsumerGroupListenerMenuItem.Size = new System.Drawing.Size(246, 22);
+            this.createConsumerGroupListenerMenuItem.Size = new System.Drawing.Size(340, 32);
             this.createConsumerGroupListenerMenuItem.Text = "Create Consumer Group Listener";
             this.createConsumerGroupListenerMenuItem.ToolTipText = "Create a consumer group listener. This operation creates a listener on each parti" +
     "tion.";
@@ -3028,10 +3035,10 @@ namespace ServiceBusExplorer.Forms
             this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.logoPictureBox.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.logoPictureBox.Location = new System.Drawing.Point(1304, 16);
-            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4);
+            this.logoPictureBox.Location = new System.Drawing.Point(1956, 25);
+            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.logoPictureBox.Name = "logoPictureBox";
-            this.logoPictureBox.Size = new System.Drawing.Size(96, 12);
+            this.logoPictureBox.Size = new System.Drawing.Size(144, 18);
             this.logoPictureBox.TabIndex = 23;
             this.logoPictureBox.TabStop = false;
             // 
@@ -3047,12 +3054,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem7,
             this.toolStripMenuItem14});
             this.relayServiceFolderContextMenuStrip.Name = "createContextMenuStrip";
-            this.relayServiceFolderContextMenuStrip.Size = new System.Drawing.Size(163, 126);
+            this.relayServiceFolderContextMenuStrip.Size = new System.Drawing.Size(218, 176);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem1.Text = "Create Relay";
             this.toolStripMenuItem1.ToolTipText = "Create a new relay in the current path.";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.createEntity_Click);
@@ -3060,7 +3067,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem2.Text = "Delete Relays";
             this.toolStripMenuItem2.ToolTipText = "Deletes all relays in the current path.";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -3068,12 +3075,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator63
             // 
             this.toolStripSeparator63.Name = "toolStripSeparator63";
-            this.toolStripSeparator63.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator63.Size = new System.Drawing.Size(214, 6);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem3.Text = "Export Relays";
             this.toolStripMenuItem3.ToolTipText = "Export the definition of the relays in the current path to file.";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.exportEntity_Click);
@@ -3081,12 +3088,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator64
             // 
             this.toolStripSeparator64.Name = "toolStripSeparator64";
-            this.toolStripSeparator64.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator64.Size = new System.Drawing.Size(214, 6);
             // 
             // toolStripMenuItem7
             // 
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem7.Text = "Expand Subtree";
             this.toolStripMenuItem7.ToolTipText = "Expand the subtree.";
             this.toolStripMenuItem7.Click += new System.EventHandler(this.expandEntity_Click);
@@ -3094,7 +3101,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem14
             // 
             this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-            this.toolStripMenuItem14.Size = new System.Drawing.Size(162, 22);
+            this.toolStripMenuItem14.Size = new System.Drawing.Size(217, 32);
             this.toolStripMenuItem14.Text = "Collapse Subtree";
             this.toolStripMenuItem14.ToolTipText = "Collapse the subtree.";
             this.toolStripMenuItem14.Click += new System.EventHandler(this.collapseEntity_Click);
@@ -3113,12 +3120,12 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27,
             this.toolStripMenuItem28});
             this.relayContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.relayContextMenuStrip.Size = new System.Drawing.Size(198, 154);
+            this.relayContextMenuStrip.Size = new System.Drawing.Size(272, 214);
             // 
             // deleteRelayMenuItem
             // 
             this.deleteRelayMenuItem.Name = "deleteRelayMenuItem";
-            this.deleteRelayMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.deleteRelayMenuItem.Size = new System.Drawing.Size(271, 32);
             this.deleteRelayMenuItem.Text = "Delete Relay";
             this.deleteRelayMenuItem.ToolTipText = "Delete the current relay.";
             this.deleteRelayMenuItem.Click += new System.EventHandler(this.deleteEntity_Click);
@@ -3127,7 +3134,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.refreshRelayMenuItem.Name = "refreshRelayMenuItem";
             this.refreshRelayMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshRelayMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.refreshRelayMenuItem.Size = new System.Drawing.Size(271, 32);
             this.refreshRelayMenuItem.Text = "Refresh Relay";
             this.refreshRelayMenuItem.ToolTipText = "Refresh the current relay.";
             this.refreshRelayMenuItem.Click += new System.EventHandler(this.refreshEntity_Click);
@@ -3135,12 +3142,12 @@ namespace ServiceBusExplorer.Forms
             // relayToolStripSeparator1
             // 
             this.relayToolStripSeparator1.Name = "relayToolStripSeparator1";
-            this.relayToolStripSeparator1.Size = new System.Drawing.Size(194, 6);
+            this.relayToolStripSeparator1.Size = new System.Drawing.Size(268, 6);
             // 
             // exportRelayMenuItem
             // 
             this.exportRelayMenuItem.Name = "exportRelayMenuItem";
-            this.exportRelayMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.exportRelayMenuItem.Size = new System.Drawing.Size(271, 32);
             this.exportRelayMenuItem.Text = "Export Relay";
             this.exportRelayMenuItem.ToolTipText = "Export relay definition to file.";
             this.exportRelayMenuItem.Click += new System.EventHandler(this.exportEntity_Click);
@@ -3148,12 +3155,12 @@ namespace ServiceBusExplorer.Forms
             // relayToolStripSeparator2
             // 
             this.relayToolStripSeparator2.Name = "relayToolStripSeparator2";
-            this.relayToolStripSeparator2.Size = new System.Drawing.Size(194, 6);
+            this.relayToolStripSeparator2.Size = new System.Drawing.Size(268, 6);
             // 
             // copyRelayUrlMenuItem
             // 
             this.copyRelayUrlMenuItem.Name = "copyRelayUrlMenuItem";
-            this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.copyRelayUrlMenuItem.Size = new System.Drawing.Size(271, 32);
             this.copyRelayUrlMenuItem.Text = "Copy Relay URL";
             this.copyRelayUrlMenuItem.ToolTipText = "Copy the relay URL to the clipboard.";
             this.copyRelayUrlMenuItem.Click += new System.EventHandler(this.copyEntityUrl_Click);
@@ -3161,12 +3168,12 @@ namespace ServiceBusExplorer.Forms
             // toolStripSeparator69
             // 
             this.toolStripSeparator69.Name = "toolStripSeparator69";
-            this.toolStripSeparator69.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator69.Size = new System.Drawing.Size(268, 6);
             // 
             // toolStripMenuItem27
             // 
             this.toolStripMenuItem27.Name = "toolStripMenuItem27";
-            this.toolStripMenuItem27.Size = new System.Drawing.Size(197, 22);
+            this.toolStripMenuItem27.Size = new System.Drawing.Size(271, 32);
             this.toolStripMenuItem27.Text = "Test Relay In SDI Mode";
             this.toolStripMenuItem27.ToolTipText = "Test the current relay in SDI mode.";
             this.toolStripMenuItem27.Click += new System.EventHandler(this.testEntityInSDIMode_Click);
@@ -3174,7 +3181,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem28
             // 
             this.toolStripMenuItem28.Name = "toolStripMenuItem28";
-            this.toolStripMenuItem28.Size = new System.Drawing.Size(197, 22);
+            this.toolStripMenuItem28.Size = new System.Drawing.Size(271, 32);
             this.toolStripMenuItem28.Text = "Test Relay In MDI Mode";
             this.toolStripMenuItem28.ToolTipText = "Test the current relay in MDI mode.";
             this.toolStripMenuItem28.Click += new System.EventHandler(this.testEntityInMDIMode_Click);
@@ -3186,30 +3193,22 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Navy;
             this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Navy;
-            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1050, 15);
-            this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1575, 23);
+            this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.linkLabelNewVersionAvailable.Name = "linkLabelNewVersionAvailable";
-            this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(149, 15);
+            this.linkLabelNewVersionAvailable.Size = new System.Drawing.Size(211, 22);
             this.linkLabelNewVersionAvailable.TabIndex = 1;
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
             // 
-            // duplicateQueueMenuItem
-            // 
-            this.duplicateQueueMenuItem.Name = "duplicateQueueMenuItem";
-            this.duplicateQueueMenuItem.Size = new System.Drawing.Size(581, 38);
-            this.duplicateQueueMenuItem.Text = "Duplicate Queue";
-            this.duplicateQueueMenuItem.ToolTipText = "Duplicate the selected Queue not including Authorization Rules.";
-            this.duplicateQueueMenuItem.Click += new System.EventHandler(this.duplicateQueueMenuItem_Click);
-            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1416, 841);
+            this.ClientSize = new System.Drawing.Size(2124, 1294);
             this.Controls.Add(this.linkLabelNewVersionAvailable);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainSplitContainer);
@@ -3217,6 +3216,7 @@ namespace ServiceBusExplorer.Forms
             this.Controls.Add(this.mainMenuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Service Bus Explorer";
@@ -3284,7 +3284,6 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem logWindowToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
-        private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparatorMain;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.SplitContainer mainSplitContainer;
@@ -3609,8 +3608,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem allMessagesToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem duplicateSubscriptionMenuItem;
         private System.Windows.Forms.ToolStripMenuItem duplicateQueueMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem serviceBusNamespaceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem eventGridNamespaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem connectUsingSASToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem connectUsingEntraToolStripMenuItem;
     }
 }
 
