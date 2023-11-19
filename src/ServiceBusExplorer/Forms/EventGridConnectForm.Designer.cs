@@ -268,7 +268,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTimeout.Location = new System.Drawing.Point(24, 349);
             this.lblTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimeout.Name = "lblTimeout";
-            this.lblTimeout.Size = new System.Drawing.Size(218, 30);
+            this.lblTimeout.Size = new System.Drawing.Size(145, 20);
             this.lblTimeout.TabIndex = 18;
             this.lblTimeout.Text = "Retry Timeout (s):";
             // 
@@ -369,7 +369,7 @@ namespace ServiceBusExplorer.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EventGridConnectForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Connect to an Event Grid Namespace";
             this.Load += new System.EventHandler(this.EventGridConnectForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbAzure)).EndInit();

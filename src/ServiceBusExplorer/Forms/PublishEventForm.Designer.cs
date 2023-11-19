@@ -56,6 +56,8 @@ namespace ServiceBusExplorer.Forms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PublishEventForm));
             this.messageListTextPropertiesSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.btnSubmit = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.grouperPublishEvent = new ServiceBusExplorer.Controls.Grouper();
             this.txtEventInfo = new FastColoredTextBoxNS.FastColoredTextBox();
             this.txtEventType = new System.Windows.Forms.TextBox();
@@ -63,8 +65,6 @@ namespace ServiceBusExplorer.Forms
             this.txtEventSource = new System.Windows.Forms.TextBox();
             this.lblEventInfo = new System.Windows.Forms.Label();
             this.lblEventSource = new System.Windows.Forms.Label();
-            this.btnSubmit = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).BeginInit();
             this.messageListTextPropertiesSplitContainer.SuspendLayout();
             this.grouperPublishEvent.SuspendLayout();
@@ -77,6 +77,39 @@ namespace ServiceBusExplorer.Forms
             this.messageListTextPropertiesSplitContainer.Name = "messageListTextPropertiesSplitContainer";
             this.messageListTextPropertiesSplitContainer.Size = new System.Drawing.Size(150, 100);
             this.messageListTextPropertiesSplitContainer.TabIndex = 0;
+            // 
+            // btnSubmit
+            // 
+            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSubmit.Location = new System.Drawing.Point(542, 535);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(108, 37);
+            this.btnSubmit.TabIndex = 1;
+            this.btnSubmit.Text = "Publish";
+            this.btnSubmit.UseVisualStyleBackColor = true;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancel.Location = new System.Drawing.Point(666, 535);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(108, 37);
+            this.btnCancel.TabIndex = 0;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // grouperPublishEvent
             // 
@@ -99,15 +132,16 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.ForeColor = System.Drawing.Color.White;
             this.grouperPublishEvent.GroupImage = null;
             this.grouperPublishEvent.GroupTitle = "Publish Event";
-            this.grouperPublishEvent.Location = new System.Drawing.Point(15, 16);
+            this.grouperPublishEvent.Location = new System.Drawing.Point(22, 25);
+            this.grouperPublishEvent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.grouperPublishEvent.Name = "grouperPublishEvent";
-            this.grouperPublishEvent.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperPublishEvent.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
             this.grouperPublishEvent.PaintGroupBox = true;
             this.grouperPublishEvent.RoundCorners = 4;
             this.grouperPublishEvent.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperPublishEvent.ShadowControl = false;
             this.grouperPublishEvent.ShadowThickness = 1;
-            this.grouperPublishEvent.Size = new System.Drawing.Size(501, 316);
+            this.grouperPublishEvent.Size = new System.Drawing.Size(752, 486);
             this.grouperPublishEvent.TabIndex = 34;
             // 
             // txtEventInfo
@@ -126,58 +160,58 @@ namespace ServiceBusExplorer.Forms
         '\"',
         '\'',
         '\''};
-            this.txtEventInfo.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtEventInfo.AutoScrollMinSize = new System.Drawing.Size(35, 22);
             this.txtEventInfo.BackBrush = null;
             this.txtEventInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtEventInfo.CharHeight = 14;
-            this.txtEventInfo.CharWidth = 8;
+            this.txtEventInfo.CharHeight = 22;
+            this.txtEventInfo.CharWidth = 12;
             this.txtEventInfo.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtEventInfo.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.txtEventInfo.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtEventInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtEventInfo.IsReplaceMode = false;
-            this.txtEventInfo.Location = new System.Drawing.Point(16, 146);
+            this.txtEventInfo.Location = new System.Drawing.Point(24, 225);
+            this.txtEventInfo.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtEventInfo.Name = "txtEventInfo";
             this.txtEventInfo.Paddings = new System.Windows.Forms.Padding(0);
             this.txtEventInfo.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtEventInfo.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtEventInfo.ServiceColors")));
-            this.txtEventInfo.Size = new System.Drawing.Size(473, 153);
+            this.txtEventInfo.Size = new System.Drawing.Size(708, 234);
             this.txtEventInfo.TabIndex = 39;
             this.txtEventInfo.Zoom = 100;
             // 
             // txtEventType
             // 
-            this.txtEventType.Location = new System.Drawing.Point(16, 94);
-            this.txtEventType.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEventType.Location = new System.Drawing.Point(24, 145);
             this.txtEventType.Name = "txtEventType";
-            this.txtEventType.Size = new System.Drawing.Size(474, 20);
+            this.txtEventType.Size = new System.Drawing.Size(709, 26);
             this.txtEventType.TabIndex = 38;
             // 
             // lblEventType
             // 
             this.lblEventType.AutoSize = true;
             this.lblEventType.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventType.Location = new System.Drawing.Point(16, 79);
+            this.lblEventType.Location = new System.Drawing.Point(24, 122);
+            this.lblEventType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblEventType.Name = "lblEventType";
-            this.lblEventType.Size = new System.Drawing.Size(65, 13);
+            this.lblEventType.Size = new System.Drawing.Size(97, 20);
             this.lblEventType.TabIndex = 37;
             this.lblEventType.Text = "Event Type:";
             // 
             // txtEventSource
             // 
-            this.txtEventSource.Location = new System.Drawing.Point(16, 47);
-            this.txtEventSource.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEventSource.Location = new System.Drawing.Point(24, 72);
             this.txtEventSource.Name = "txtEventSource";
-            this.txtEventSource.Size = new System.Drawing.Size(474, 20);
+            this.txtEventSource.Size = new System.Drawing.Size(709, 26);
             this.txtEventSource.TabIndex = 36;
             // 
             // lblEventInfo
             // 
             this.lblEventInfo.AutoSize = true;
             this.lblEventInfo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventInfo.Location = new System.Drawing.Point(16, 126);
+            this.lblEventInfo.Location = new System.Drawing.Point(24, 194);
+            this.lblEventInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblEventInfo.Name = "lblEventInfo";
-            this.lblEventInfo.Size = new System.Drawing.Size(110, 13);
+            this.lblEventInfo.Size = new System.Drawing.Size(170, 20);
             this.lblEventInfo.TabIndex = 35;
             this.lblEventInfo.Text = "Event JSON Payload:";
             // 
@@ -185,58 +219,28 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblEventSource.AutoSize = true;
             this.lblEventSource.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblEventSource.Location = new System.Drawing.Point(16, 32);
+            this.lblEventSource.Location = new System.Drawing.Point(24, 49);
+            this.lblEventSource.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblEventSource.Name = "lblEventSource";
-            this.lblEventSource.Size = new System.Drawing.Size(75, 13);
+            this.lblEventSource.Size = new System.Drawing.Size(114, 20);
             this.lblEventSource.TabIndex = 32;
             this.lblEventSource.Text = "Event Source:";
             // 
-            // btnSubmit
-            // 
-            this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSubmit.Location = new System.Drawing.Point(361, 348);
-            this.btnSubmit.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(72, 24);
-            this.btnSubmit.TabIndex = 1;
-            this.btnSubmit.Text = "Publish";
-            this.btnSubmit.UseVisualStyleBackColor = true;
-            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(444, 348);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(72, 24);
-            this.btnCancel.TabIndex = 0;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
             // PublishEventForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AcceptButton = this.btnSubmit;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(525, 385);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(788, 592);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSubmit);
             this.Controls.Add(this.grouperPublishEvent);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "PublishEventForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Publish Event";
             ((System.ComponentModel.ISupportInitialize)(this.messageListTextPropertiesSplitContainer)).EndInit();
             this.messageListTextPropertiesSplitContainer.ResumeLayout(false);
