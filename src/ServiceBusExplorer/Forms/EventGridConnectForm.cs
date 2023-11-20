@@ -36,7 +36,7 @@ namespace ServiceBusExplorer.Forms
             SubscriptionId = txtSubscriptionId.Text.Trim();
             ApiVersion = cboApiVersion.Text.Trim(); 
 
-            var retryTimoutInSeconds = txtRetryTimeout.Text != string.Empty ? int.Parse(txtRetryTimeout.Text) : 0;
+            int.TryParse(txtRetryTimeout.Text, out var retryTimoutInSeconds);
             RetryTimeout = retryTimoutInSeconds * 1000; // Convert to milliseconds
             CloudTenant = cloudGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
             CustomId = txtCustomId.Text?.Trim();
