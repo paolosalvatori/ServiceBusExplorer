@@ -28,16 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReceiveEventForm));
             this.grouperReceiveEvents = new ServiceBusExplorer.Controls.Grouper();
             this.txtEventCount = new ServiceBusExplorer.Controls.NumericTextBox();
-            this.btnMax = new System.Windows.Forms.RadioButton();
             this.btnTop = new System.Windows.Forms.RadioButton();
+            this.btnMax = new System.Windows.Forms.RadioButton();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.grouperReceiveEvents.SuspendLayout();
             this.SuspendLayout();
             // 
-            // grouperMessages
+            // grouperReceiveEvents
             // 
             this.grouperReceiveEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
@@ -55,16 +56,15 @@
             this.grouperReceiveEvents.ForeColor = System.Drawing.Color.White;
             this.grouperReceiveEvents.GroupImage = null;
             this.grouperReceiveEvents.GroupTitle = "Event Count";
-            this.grouperReceiveEvents.Location = new System.Drawing.Point(27, 23);
-            this.grouperReceiveEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.grouperReceiveEvents.Location = new System.Drawing.Point(18, 15);
             this.grouperReceiveEvents.Name = "grouperReceiveEvents";
-            this.grouperReceiveEvents.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
+            this.grouperReceiveEvents.Padding = new System.Windows.Forms.Padding(20, 21, 20, 21);
             this.grouperReceiveEvents.PaintGroupBox = true;
             this.grouperReceiveEvents.RoundCorners = 4;
             this.grouperReceiveEvents.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperReceiveEvents.ShadowControl = false;
             this.grouperReceiveEvents.ShadowThickness = 1;
-            this.grouperReceiveEvents.Size = new System.Drawing.Size(308, 102);
+            this.grouperReceiveEvents.Size = new System.Drawing.Size(205, 68);
             this.grouperReceiveEvents.TabIndex = 43;
             // 
             // txtEventCount
@@ -75,38 +75,35 @@
             this.txtEventCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEventCount.IsZeroWhenEmpty = false;
-            this.txtEventCount.Location = new System.Drawing.Point(168, 49);
-            this.txtEventCount.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtEventCount.Location = new System.Drawing.Point(112, 33);
             this.txtEventCount.Name = "txtEventCount";
-            this.txtEventCount.Size = new System.Drawing.Size(114, 26);
+            this.txtEventCount.Size = new System.Drawing.Size(77, 20);
             this.txtEventCount.TabIndex = 42;
-            // 
-            // btnMax
-            // 
-            this.btnMax.AutoSize = true;
-            this.btnMax.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMax.Location = new System.Drawing.Point(24, 50);
-            this.btnMax.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnMax.Name = "btnMax";
-            this.btnMax.Size = new System.Drawing.Size(65, 24);
-            this.btnMax.TabIndex = 40;
-            this.btnMax.Text = "Max";
-            this.btnMax.UseVisualStyleBackColor = true;
             // 
             // btnTop
             // 
             this.btnTop.AutoSize = true;
             this.btnTop.Checked = true;
             this.btnTop.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnTop.Location = new System.Drawing.Point(96, 49);
-            this.btnTop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnTop.Location = new System.Drawing.Point(64, 33);
             this.btnTop.Name = "btnTop";
-            this.btnTop.Size = new System.Drawing.Size(62, 24);
+            this.btnTop.Size = new System.Drawing.Size(44, 17);
             this.btnTop.TabIndex = 41;
             this.btnTop.TabStop = true;
             this.btnTop.Text = "Top";
             this.btnTop.UseVisualStyleBackColor = true;
             this.btnTop.CheckedChanged += new System.EventHandler(this.receiveEvents_CheckedChanged);
+            // 
+            // btnMax
+            // 
+            this.btnMax.AutoSize = true;
+            this.btnMax.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnMax.Location = new System.Drawing.Point(16, 33);
+            this.btnMax.Name = "btnMax";
+            this.btnMax.Size = new System.Drawing.Size(45, 17);
+            this.btnMax.TabIndex = 40;
+            this.btnMax.Text = "Max";
+            this.btnMax.UseVisualStyleBackColor = true;
             // 
             // btnOk
             // 
@@ -116,10 +113,9 @@
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(100, 149);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnOk.Location = new System.Drawing.Point(67, 99);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(108, 37);
+            this.btnOk.Size = new System.Drawing.Size(72, 25);
             this.btnOk.TabIndex = 44;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
@@ -129,14 +125,14 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(227, 149);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCancel.Location = new System.Drawing.Point(151, 99);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(108, 37);
+            this.btnCancel.Size = new System.Drawing.Size(72, 25);
             this.btnCancel.TabIndex = 45;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -144,20 +140,27 @@
             // 
             // ReceiveEventForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AcceptButton = this.btnOk;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(365, 200);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(247, 145);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.grouperReceiveEvents);
-            this.MaximumSize = new System.Drawing.Size(387, 256);
-            this.MinimumSize = new System.Drawing.Size(387, 256);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(263, 184);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(263, 184);
             this.Name = "ReceiveEventForm";
             this.Text = "Receive Events";
             this.grouperReceiveEvents.ResumeLayout(false);
             this.grouperReceiveEvents.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

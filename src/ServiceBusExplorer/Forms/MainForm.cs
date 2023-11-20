@@ -385,6 +385,104 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Event Handlers
+        private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
+        {
+            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+            panelMain.HeaderText = string.Format(DuplicateSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
+            ShowSubscription(subscriptionWrapper, true);
+        }
+
+        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
+        {
+            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
+            ShowQueue(queueWrappper, queueWrappper.Path, true);
+        }
+
+        async void connectUsingSASToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
+                {
+                    if (connectForm.ShowDialog() != DialogResult.OK)
+                    {
+                        UpdateSavedConnectionsMenu();
+                        return;
+                    }
+                    UpdateSavedConnectionsMenu();
+                    SelectedEntities = connectForm.SelectedEntities;
+                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
+                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
+                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
+                        connectForm.ConnectionString, StaticWriteToLog);
+                    serviceBusHelper.Connect(serviceBusNamespace);
+
+                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
+
+                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                    {
+                        userControl.Dispose();
+                    }
+                    panelMain.Controls.Clear();
+                    panelMain.BackColor = SystemColors.Window;
+                    await ShowEntities(EntityType.All);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        async void connectUsingEntraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var connectForm = new EventGridConnectForm())
+                {
+                    if (connectForm.ShowDialog() != DialogResult.OK)
+                    {
+                        UpdateSavedConnectionsMenu();
+                        return;
+                    }
+
+                    UpdateSavedConnectionsMenu();
+
+                    SelectedEntities = connectForm.SelectedEntities;
+                    NamespaceName = connectForm.NamespaceName;
+                    ResourceGroupName = connectForm.ResourceGroup;
+
+                    eventGridLibrary = new EventGridLibrary(
+                        connectForm.SubscriptionId,
+                        connectForm.ApiVersion,
+                        connectForm.RetryTimeout,
+                        connectForm.CloudTenant,
+                        connectForm.CustomId,
+                        WriteToLog);
+
+                    SetTitle(connectForm.NamespaceName, "Event Grid");
+                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Event Grid");
+
+                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                    {
+                        userControl.Dispose();
+                    }
+
+                    panelMain.Controls.Clear();
+                    panelMain.BackColor = SystemColors.Window;
+
+                    await ShowEventGridEntities(EntityType.All);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+
         /// <summary>
         /// Opens the options dialog.
         /// </summary>
@@ -1385,89 +1483,6 @@ namespace ServiceBusExplorer.Forms
         {
             CommandLineOptions.ProcessCommandLineArguments(new[] { "--help" }, out _, out _, out var helpText);
             WriteToLog(helpText);
-        }
-
-        private async void connectToolStripServiceBusMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
-                {
-                    if (connectForm.ShowDialog() != DialogResult.OK)
-                    {
-                        UpdateSavedConnectionsMenu();
-                        return;
-                    }
-                    UpdateSavedConnectionsMenu();
-                    SelectedEntities = connectForm.SelectedEntities;
-                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
-                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
-                        connectForm.ConnectionString, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
-
-                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
-
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
-                    await ShowEntities(EntityType.All);
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private async void connectToolStripEventGridMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (var connectForm = new EventGridConnectForm())
-                {
-                    if (connectForm.ShowDialog() != DialogResult.OK)
-                    {
-                        UpdateSavedConnectionsMenu();
-                        return;
-                    }
-
-                    UpdateSavedConnectionsMenu();
-
-                    SelectedEntities = connectForm.SelectedEntities;
-                    NamespaceName = connectForm.NamespaceName;
-                    ResourceGroupName = connectForm.ResourceGroup;
-
-                    eventGridLibrary = new EventGridLibrary(
-                        connectForm.SubscriptionId,
-                        connectForm.ApiVersion, 
-                        connectForm.RetryTimeout,
-                        connectForm.CloudTenant,
-                        connectForm.CustomId,
-                        WriteToLog);
-
-                    SetTitle(connectForm.NamespaceName, "Event Grid");
-                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Event Grid");
-
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
-
-                    await ShowEventGridEntities(EntityType.All);
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
         }
 
         private void close_Click(object sender, EventArgs e)
@@ -7403,20 +7418,6 @@ namespace ServiceBusExplorer.Forms
                 else if (child.Tag is UrlSegmentWrapper)
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
-        }
-        
-        private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
-        {
-            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-            panelMain.HeaderText = string.Format(DuplicateSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
-            ShowSubscription(subscriptionWrapper, true);
-        }
-
-        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
-        {
-            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
-            ShowQueue(queueWrappper, queueWrappper.Path, true);
         }
     }
 }
