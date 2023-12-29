@@ -531,7 +531,7 @@ namespace ServiceBusExplorer.Controls
 
         #endregion
 
-#       region Privare Instance Methods
+        #region Private Instance Methods
 
         private void InitializeControls(bool initialCall)
         {
