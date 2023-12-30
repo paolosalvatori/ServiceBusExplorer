@@ -24,6 +24,7 @@
 #region Using Directives
 
 #nullable enable
+using Microsoft.Azure.Amqp;
 using Microsoft.ServiceBus.Messaging;
 
 using ServiceBusExplorer.Forms;
@@ -289,7 +290,7 @@ namespace ServiceBusExplorer.Controls
 
         #endregion
 
-        #region Public Constructors
+        #region Public Constructor
 
         public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
             QueueDescription queueDescription, string path, bool duplicateQueue)
@@ -1099,7 +1100,6 @@ namespace ServiceBusExplorer.Controls
             }
             txtPath.Focus();
         }
-
 
 
         private void bindingList_ListChanged(object sender, ListChangedEventArgs e)
@@ -3416,22 +3416,17 @@ namespace ServiceBusExplorer.Controls
             IEnumerable<BrokeredMessage> messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
 
-            QueueClient? queueClient = QueueClient.CreateFromConnectionString(
-                serviceBusHelper.ConnectionString, 
-                queueDescription.Path);
-            
             List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+
 
             try
             {
                 thisForm.UseWaitCursor = true;
 
-                // Looks like writeToLog is not thread safe, so we can't use Task.WhenAll
-                foreach (var sequenceNumber in sequenceNumbersToCancel)
-                {
-                    await queueClient.CancelScheduledMessageAsync(sequenceNumber);
-                    writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
-                }
+                var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+
+                await CancelScheduledMessagesHelper.CancelScheduledMessages(
+                    serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
             }
             finally
             {
@@ -4652,6 +4647,6 @@ namespace ServiceBusExplorer.Controls
 
             deadletterDataGridView.ClearSelection();
         }
-        #endregion
+#endregion
     }
 }

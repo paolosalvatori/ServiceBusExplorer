@@ -20,8 +20,11 @@
 #endregion
 
 using System.Threading.Tasks;
+
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
+
+using ServiceBusExplorer.Utilities.Helpers;
 
 // ReSharper disable CheckNamespace
 namespace ServiceBusExplorer.ServiceBus.Helpers
@@ -29,19 +32,42 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     public class ServiceBusHelper2
     {
+        readonly WriteToLogDelegate writeToLog;
+
+
         public string ConnectionString { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
+
+        public WriteToLogDelegate WriteToLog
+        {
+            get
+            {
+                return writeToLog;
+            }
+        }
+
+        private ServiceBusHelper2(WriteToLogDelegate writeToLog)
+        {
+            this.writeToLog = writeToLog;
+        }
 
         public bool ConnectionStringContainsEntityPath()
         {
             var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
-            
+
             if (connectionStringProperties?.EntityPath != null)
             {
                 return true;
             }
 
             return false;
+        }
+
+        public ServiceBusClient CreateServiceBusClient()
+        {
+            return new ServiceBusClient(
+                ConnectionString,
+                new ServiceBusClientOptions { TransportType = this.TransportType });
         }
 
         public async Task<bool> IsPremiumNamespace()
