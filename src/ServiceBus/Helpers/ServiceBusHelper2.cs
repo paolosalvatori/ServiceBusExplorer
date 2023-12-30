@@ -34,7 +34,6 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
     {
         readonly WriteToLogDelegate writeToLog;
 
-
         public string ConnectionString { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -46,7 +45,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
         }
 
-        private ServiceBusHelper2(WriteToLogDelegate writeToLog)
+        public ServiceBusHelper2(WriteToLogDelegate writeToLog)
         {
             this.writeToLog = writeToLog;
         }
