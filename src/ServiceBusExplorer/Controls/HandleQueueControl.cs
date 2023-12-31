@@ -3458,8 +3458,8 @@ namespace ServiceBusExplorer.Controls
         void SetCancelScheduledMessageToolStripMenuItemText(bool multipleSelectedRows)
         {
              cancelScheduledMessageToolStripMenuItem.Text = multipleSelectedRows
-              ? "Cancel Scheduled Messages"
-              : "Cancel Scheduled Message";
+              ? "Cancel Selected Scheduled Messages"
+              : "Cancel Selected Scheduled Message";
         }
 
         void deleteSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4028,6 +4028,58 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private string CreateFileName()
+        {
+            return string.Format(MessageFileFormat,
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private string CreateFileNameAutoRecognize()
+        {
+            return string.Format(MessageFileFormatAutoRecognize,
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private async void btnPurgeMessages_Click(object sender, EventArgs e)
+        {
+            await PurgeMessagesAsync();
+        }
+
+        private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
+        {
+            await PurgeDeadletterQueueMessagesAsync();
+        }
+
+        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
+        {
+            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
+
+            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
+            {
+                var message = (BrokeredMessage)row.DataBoundItem;
+
+                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
+                {
+                    rowsToRemove.Add(row);
+                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
+                    {
+                        break;
+                    }
+                }
+            }
+
+            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
+            {
+                var row = rowsToRemove[rowIndex];
+                deadletterDataGridView.Rows.Remove(row);
+            }
+
+            deadletterDataGridView.ClearSelection();
+        }
+        #endregion
+
         #region Save Messages
 
         private void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4118,7 +4170,6 @@ namespace ServiceBusExplorer.Controls
                 HandleException(ex);
             }
         }
-
 
         private void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -4597,56 +4648,21 @@ namespace ServiceBusExplorer.Controls
 
         #endregion Save Messages
 
-        private string CreateFileName()
+        #region Select All Messages
+        private void selectAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            return string.Format(MessageFileFormat,
-                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
-                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+            messagesDataGridView.SelectAll();
         }
 
-        private string CreateFileNameAutoRecognize()
+        private void selectAllDeadletterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            return string.Format(MessageFileFormatAutoRecognize,
-                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
-                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+            deadletterDataGridView.SelectAll();
         }
 
-        private async void btnPurgeMessages_Click(object sender, EventArgs e)
+        private void selectAllTransferDeadletterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await PurgeMessagesAsync();
+            transferDeadletterDataGridView.SelectAll();
         }
-
-        private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
-        {
-            await PurgeDeadletterQueueMessagesAsync();
-        }
-
-        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
-        {
-            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
-
-            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
-            {
-                var message = (BrokeredMessage)row.DataBoundItem;
-
-                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
-                {
-                    rowsToRemove.Add(row);
-                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
-            {
-                var row = rowsToRemove[rowIndex];
-                deadletterDataGridView.Rows.Remove(row);
-            }
-
-            deadletterDataGridView.ClearSelection();
-        }
-#endregion
+        #endregion
     }
 }

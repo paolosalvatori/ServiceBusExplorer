@@ -117,8 +117,9 @@
             this.messagesContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cancelScheduledMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cancelScheduledMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,6 +128,7 @@
             this.deadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllDeadletterMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,6 +146,7 @@
             this.transferDeadletterBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.transferDeadletterContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.repairAndResubmitTransferDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllTransferDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedTransferDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedTransferDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1150,7 +1153,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMessageText.CharHeight = 14;
@@ -1449,7 +1452,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDeadletterText.CharHeight = 14;
@@ -1731,7 +1734,7 @@
         '\"',
         '\'',
         '\''};
-            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtTransferDeadletterText.BackBrush = null;
             this.txtTransferDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTransferDeadletterText.CharHeight = 14;
@@ -2095,6 +2098,7 @@
             this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitMessageToolStripMenuItem,
             this.resubmitMessageToolStripMenuItem,
+            this.selectAllMessagesToolStripMenuItem,
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
             this.cancelScheduledMessageToolStripMenuItem,
             this.toolStripSeparator1,
@@ -2120,13 +2124,13 @@
             this.resubmitMessageToolStripMenuItem.ToolTipText = "Resubmits the message with unchanged body.";
             this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
             // 
-            // cancelScheduledMessageToolStripMenuItem
+            // selectAllMessagesToolStripMenuItem
             // 
-            this.cancelScheduledMessageToolStripMenuItem.Name = "cancelScheduledMessageToolStripMenuItem";
-            this.cancelScheduledMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
-            this.cancelScheduledMessageToolStripMenuItem.Text = "Cancel Selected Scheduled Message";
-            this.cancelScheduledMessageToolStripMenuItem.Visible = false;
-            this.cancelScheduledMessageToolStripMenuItem.Click += new System.EventHandler(this.cancelScheduledMessageToolStripMenuItem_Click);
+            this.selectAllMessagesToolStripMenuItem.Name = "selectAllMessagesToolStripMenuItem";
+            this.selectAllMessagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.selectAllMessagesToolStripMenuItem.Text = "Select All Messages";
+            this.selectAllMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllMessagesToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
             // 
@@ -2134,6 +2138,14 @@
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click);
+            // 
+            // cancelScheduledMessageToolStripMenuItem
+            // 
+            this.cancelScheduledMessageToolStripMenuItem.Name = "cancelScheduledMessageToolStripMenuItem";
+            this.cancelScheduledMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.cancelScheduledMessageToolStripMenuItem.Text = "Cancel Selected Scheduled Message";
+            this.cancelScheduledMessageToolStripMenuItem.Visible = false;
+            this.cancelScheduledMessageToolStripMenuItem.Click += new System.EventHandler(this.cancelScheduledMessageToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -2174,6 +2186,7 @@
             this.deadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitDeadletterToolStripMenuItem,
             this.resubmitDeadletterToolStripMenuItem,
+            this.selectAllDeadletterMessagesToolStripMenuItem,
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
             this.toolStripSeparator2,
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
@@ -2183,7 +2196,7 @@
             this.deleteSelectedMessageToolStripMenuItem,
             this.deleteSelectedMessagesToolStripMenuItem});
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 208);
+            this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 252);
             // 
             // repairAndResubmitDeadletterToolStripMenuItem
             // 
@@ -2199,6 +2212,14 @@
             this.resubmitDeadletterToolStripMenuItem.Text = "Resubmit Selected Message";
             this.resubmitDeadletterToolStripMenuItem.ToolTipText = "Resubmits the deadletter message with unchanged body.";
             this.resubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.resubmitDeadletterMessageToolStripMenuItem_Click);
+            // 
+            // selectAllDeadletterMessagesToolStripMenuItem
+            // 
+            this.selectAllDeadletterMessagesToolStripMenuItem.Name = "selectAllDeadletterMessagesToolStripMenuItem";
+            this.selectAllDeadletterMessagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllDeadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.selectAllDeadletterMessagesToolStripMenuItem.Text = "Select All Messages";
+            this.selectAllDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllDeadletterMessagesToolStripMenuItem_Click);
             // 
             // resubmitSelectedDeadletterInBatchModeToolStripMenuItem
             // 
@@ -2278,6 +2299,7 @@
             this.transferDeadletterContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.transferDeadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.repairAndResubmitTransferDeadletterToolStripMenuItem,
+            this.selectAllTransferDeadletterToolStripMenuItem,
             this.resubmitSelectedTransferDeadletterInBatchModeToolStripMenuItem,
             this.toolStripSeparator3,
             this.saveSelectedTransferDeadletteredMessageToolStripMenuItem,
@@ -2285,7 +2307,7 @@
             this.saveSelectedTransferDeadletteredMessagesToolStripMenuItem,
             this.saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem});
             this.transferDeadletterContextMenuStrip.Name = "registrationContextMenuStrip";
-            this.transferDeadletterContextMenuStrip.Size = new System.Drawing.Size(306, 142);
+            this.transferDeadletterContextMenuStrip.Size = new System.Drawing.Size(306, 164);
             this.transferDeadletterContextMenuStrip.Click += new System.EventHandler(this.resubmitSelectedTransferDeadletterMessagesInBatchModeToolStripMenuItem_Click);
             // 
             // repairAndResubmitTransferDeadletterToolStripMenuItem
@@ -2294,6 +2316,14 @@
             this.repairAndResubmitTransferDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitTransferDeadletterToolStripMenuItem.Text = "Repair and Resubmit Selected Message";
             this.repairAndResubmitTransferDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitTransferDeadletterMessageToolStripMenuItem_Click);
+            // 
+            // selectAllTransferDeadletterToolStripMenuItem
+            // 
+            this.selectAllTransferDeadletterToolStripMenuItem.Name = "selectAllTransferDeadletterToolStripMenuItem";
+            this.selectAllTransferDeadletterToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllTransferDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.selectAllTransferDeadletterToolStripMenuItem.Text = "Select All Messages";
+            this.selectAllTransferDeadletterToolStripMenuItem.Click += new System.EventHandler(this.selectAllTransferDeadletterToolStripMenuItem_Click);
             // 
             // resubmitSelectedTransferDeadletterInBatchModeToolStripMenuItem
             // 
@@ -2590,5 +2620,8 @@
         private System.Windows.Forms.ToolStripMenuItem resubmitDeadletterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelScheduledMessageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllDeadletterMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllTransferDeadletterToolStripMenuItem;
     }
 }
