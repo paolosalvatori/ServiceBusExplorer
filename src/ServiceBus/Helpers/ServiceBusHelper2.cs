@@ -62,6 +62,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             return false;
         }
 
+        // Remember to dispose of the client after use, using client.DisposeAsync()
         public ServiceBusClient CreateServiceBusClient()
         {
             return new ServiceBusClient(
