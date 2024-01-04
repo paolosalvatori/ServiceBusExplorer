@@ -32,6 +32,8 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
 {
+    using Azure.Messaging.ServiceBus.Administration;
+
     public partial class SelectEntityForm : Form
     {
         #region Private Constants

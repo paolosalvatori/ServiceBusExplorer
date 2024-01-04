@@ -41,6 +41,8 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
+    using Azure.Messaging.ServiceBus.Administration;
+
     public partial class MessageForm : Form
     {
         #region Private Constants
@@ -87,7 +89,7 @@ namespace ServiceBusExplorer.Forms
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         readonly BindingSource bindingSource = new BindingSource();
-        readonly QueueDescription queueDescription; // Might be null
+        readonly QueueProperties queueProperties; // Might be null
         readonly SubscriptionWrapper subscriptionWrapper; // Might be null
         #endregion
 
@@ -209,11 +211,11 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, BrokeredMessage brokeredMessage,
+        public MessageForm(QueueProperties queueProperties, BrokeredMessage brokeredMessage,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
-            this.queueDescription = queueDescription;
+            this.queueProperties = queueProperties;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
@@ -260,11 +262,11 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, IEnumerable<BrokeredMessage> brokeredMessages,
+        public MessageForm(QueueProperties queueProperties, IEnumerable<BrokeredMessage> brokeredMessages,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
-            this.queueDescription = queueDescription;
+            this.queueProperties = queueProperties;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
@@ -305,7 +307,7 @@ namespace ServiceBusExplorer.Forms
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
 
-            if (queueDescription != null || subscriptionWrapper != null)
+            if (queueProperties != null || subscriptionWrapper != null)
             {
                 chkRemove.Visible = true;
             }
@@ -507,11 +509,11 @@ namespace ServiceBusExplorer.Forms
                                     messageSender.Path, stopwatch.ElapsedMilliseconds));
                             }
 
-                            if (null != queueDescription)
+                            if (null != queueProperties)
                             {
-                                if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                                if (!messageSender.Path.Equals(queueProperties.Name, StringComparison.InvariantCultureIgnoreCase))
                                 {
-                                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
+                                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueProperties.Name);
                                 }
                             }
                             else if (null != subscriptionWrapper?.SubscriptionDescription?.TopicPath)
@@ -563,16 +565,16 @@ namespace ServiceBusExplorer.Forms
 
         DeadLetterMessageHandler CreateDeadLetterMessageHandler()
         {
-            if (queueDescription != null)
+            if (queueProperties != null)
             {
                 if (subscriptionWrapper != null)
                 {
                     throw new ArgumentException(
-                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                        "At least one of the arguments queueProperties and subscriptionWrapper must be null.");
                 }
 
                 return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                                MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
+                                MainForm.SingletonMainForm.ReceiveTimeout, queueProperties);
             }
 
             if (subscriptionWrapper != null)
@@ -581,21 +583,21 @@ namespace ServiceBusExplorer.Forms
                                 MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
             }
 
-            throw new ArgumentException("queueDescription or subscriptionWrapper must be set.");
+            throw new ArgumentException("queueProperties or subscriptionWrapper must be set.");
         }
 
         SelectEntityForm CreateSelectEntityForm()
         {
-            if (queueDescription != null)
+            if (queueProperties != null)
             {
                 if (subscriptionWrapper != null)
                 {
                     throw new ArgumentException(
-                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                        "At least one of the arguments queueProperties and subscriptionWrapper must be null.");
                 }
 
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                    SelectEntityLabelText, queueDescription);
+                    SelectEntityLabelText, queueProperties);
             }
 
             if (subscriptionWrapper != null)

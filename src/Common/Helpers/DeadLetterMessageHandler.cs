@@ -33,6 +33,8 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Helpers
 {
+    using Azure.Messaging.ServiceBus.Administration;
+
     public class DeletedDlqMessagesResult
     {
         #region Public constructor
@@ -52,8 +54,8 @@ namespace ServiceBusExplorer.Helpers
     public class DeadLetterMessageHandler
     {
         #region Private Fields
-        // Either queueDescription or subscriptionWrapper is used - but never both.
-        readonly QueueDescription sourceQueueDescription;
+        // Either queueProperties or subscriptionWrapper is used - but never both.
+        readonly QueueProperties sourceQueueProperties;
         readonly SubscriptionWrapper sourceSubscriptionWrapper;
         readonly int receiveTimeoutInSeconds;
         readonly ServiceBusHelper serviceBusHelper;
@@ -62,10 +64,10 @@ namespace ServiceBusExplorer.Helpers
 
         #region Public Constructors
         public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            int receiveTimeoutInSeconds, QueueDescription queueDescription)
+            int receiveTimeoutInSeconds, QueueProperties queueProperties)
             : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            sourceQueueDescription = queueDescription;
+            sourceQueueProperties = queueProperties;
         }
 
         public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
@@ -335,9 +337,9 @@ namespace ServiceBusExplorer.Helpers
         #region Private methods
         private double GetLockDurationInSeconds()
         {
-            if (sourceQueueDescription != null)
+            if (sourceQueueProperties != null)
             {
-                return sourceQueueDescription.LockDuration.TotalSeconds;
+                return sourceQueueProperties.LockDuration.TotalSeconds;
             }
 
             return sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds;
@@ -348,9 +350,9 @@ namespace ServiceBusExplorer.Helpers
             // Allocate three seconds for final operations;
             const int FinalActionsTime = 3;
 
-            if (sourceQueueDescription != null)
+            if (sourceQueueProperties != null)
             {
-                return (int)sourceQueueDescription.LockDuration.TotalSeconds - FinalActionsTime;
+                return (int)sourceQueueProperties.LockDuration.TotalSeconds - FinalActionsTime;
             }
 
             return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
@@ -359,9 +361,9 @@ namespace ServiceBusExplorer.Helpers
 
         string GetDlqEntityPath()
         {
-            if (sourceQueueDescription != null)
+            if (sourceQueueProperties != null)
             {
-                return QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path);
+                return QueueClient.FormatDeadLetterPath(sourceQueueProperties.Name);
             }
 
             return SubscriptionClient.FormatDeadLetterPath(

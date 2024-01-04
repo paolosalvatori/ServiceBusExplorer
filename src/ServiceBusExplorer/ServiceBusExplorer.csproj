@@ -40,6 +40,13 @@
     <PackageReleaseNotes>https://github.com/paolosalvatori/ServiceBusExplorer/releases</PackageReleaseNotes>
     <PackageTags>servicebusexplorer azure azureservicebus servicebus explorer eventhub queue subscription relay notificationhub</PackageTags>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+      <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+    
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+      <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>full</DebugType>
