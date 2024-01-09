@@ -37,6 +37,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -681,14 +682,14 @@ namespace ServiceBusExplorer.Controls
 
             if (queueDescription != null)
             {
-               if (duplicateQueue)
-               {
-                   ConfigureDuplicateUserInterface();
-               }
-               else
-               {
-                   ConfigureReadUserInterface();
-               }
+                if (duplicateQueue)
+                {
+                    ConfigureDuplicateUserInterface();
+                }
+                else
+                {
+                    ConfigureReadUserInterface();
+                }
             }
             else
             {
@@ -1049,7 +1050,7 @@ namespace ServiceBusExplorer.Controls
 
             // special handling for max size if partitioning is enabled
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16 
+            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16
                 : queueDescription.MaxSizeInGigabytes();
 
             ConfigureCreateUserInterface();
@@ -1467,7 +1468,7 @@ namespace ServiceBusExplorer.Controls
                 else
                 {
                     var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
-                    
+
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -3197,7 +3198,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                     {
-                        RemoveDeadletterDataGridRows(messageForm.RemovedSequenceNumbers);
+                        DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(deadletterDataGridView, messageForm.RemovedSequenceNumbers);
                     }
                 }
                 finally
@@ -3374,12 +3375,12 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        void deleteSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void deleteSelectedDeadLetterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteSelectedMessagesToolStripMenuItem_Click(sender, e);
+            deleteSelectedDeadLetterMessagesToolStripMenuItem_Click(sender, e);
         }
 
-        async void deleteSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        async void deleteSelectedDeadLetterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (deadletterDataGridView.SelectedRows.Count <= 0)
             {
@@ -3422,7 +3423,7 @@ namespace ServiceBusExplorer.Controls
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count;
                 var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete);
-                RemoveDeadletterDataGridRows(result.DeletedSequenceNumbers);
+                DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(deadletterDataGridView, result.DeletedSequenceNumbers);
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
@@ -3452,6 +3453,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
+
             deadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
 
@@ -3475,6 +3477,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
+
             transferDeadletterDataGridView.Rows[e.RowIndex].Selected = true;
             var multipleSelectedRows = transferDeadletterDataGridView.SelectedRows.Count > 1;
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
@@ -3488,37 +3491,54 @@ namespace ServiceBusExplorer.Controls
 
         private void repairAndResubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deadletterDataGridView_CellDoubleClick(deadletterDataGridView,
-                new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
+            DataGridView dataGridView = GetActiveDeadletterGridView();
+
+            int currentRowIndex;
+
+            if (dataGridView == deadletterDataGridView)
+            {
+                currentRowIndex = currentDeadletterMessageRowIndex;
+            }
+            else if (dataGridView == transferDeadletterDataGridView)
+            {
+                currentRowIndex = currentTransferDeadletterMessageRowIndex;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected DataGridView");
+            }
+
+            deadletterDataGridView_CellDoubleClick(dataGridView,
+                                   new DataGridViewCellEventArgs(0, currentRowIndex));
         }
 
         private async void resubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await ResubmitSelectedDeadletterMessages();
+            await ResubmitSelectedDeadletterMessages(GetActiveDeadletterGridView());
         }
 
         private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
             EventArgs e)
         {
-            await ResubmitSelectedDeadletterMessages();
+            await ResubmitSelectedDeadletterMessages(GetActiveDeadletterGridView());
         }
 
-        async Task ResubmitSelectedDeadletterMessages()
+        async Task ResubmitSelectedDeadletterMessages(DataGridView dataGridView)
         {
             try
             {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
+                if (dataGridView.SelectedRows.Count <= 0)
                 {
                     return;
                 }
 
-                using (var form = new MessageForm(queueDescription, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                using (var form = new MessageForm(queueDescription, dataGridView.SelectedRows.Cast<DataGridViewRow>()
                            .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
                     {
-                        RemoveDeadletterDataGridRows(form.RemovedSequenceNumbers);
+                        DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(dataGridView, form.RemovedSequenceNumbers);
                     }
                 }
             }
@@ -4140,6 +4160,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
+
                 var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
                 if (bindingList == null)
                 {
@@ -4275,6 +4296,7 @@ namespace ServiceBusExplorer.Controls
                 var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
                                                      .Select(r => r.DataBoundItem as BrokeredMessage);
                 IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+
                 if (!brokeredMessages.Any())
                 {
                     return;
@@ -4285,6 +4307,7 @@ namespace ServiceBusExplorer.Controls
                 saveFileDialog.DefaultExt = TxtExtension;
                 saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
+
                 if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
                 {
@@ -4294,6 +4317,7 @@ namespace ServiceBusExplorer.Controls
                 var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                     MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
+
                 foreach (var body in bodies)
                 {
                     count++;
@@ -4302,6 +4326,7 @@ namespace ServiceBusExplorer.Controls
                     fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
                     fileNameParts.Add($"({count}).{fileExtension}");
                     var fileName = string.Join(".", fileNameParts);
+
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -4533,31 +4558,27 @@ namespace ServiceBusExplorer.Controls
             await PurgeDeadletterQueueMessagesAsync();
         }
 
-        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
+
+        #endregion
+
+        #region DataGridView methods
+
+        // Returns either the plain deadletter grid view or the transfer deadletter grid view,
+        // depending on which tab is selected.
+        DataGridView GetActiveDeadletterGridView()
         {
-            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
-
-            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
+            if (mainTabControl.SelectedTab == mainTabControl.TabPages[DeadletterTabPage])
             {
-                var message = (BrokeredMessage)row.DataBoundItem;
-
-                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
-                {
-                    rowsToRemove.Add(row);
-                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
-                    {
-                        break;
-                    }
-                }
+                return deadletterDataGridView;
             }
-
-            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
+            else if (mainTabControl.SelectedTab == mainTabControl.TabPages[TransferDeadletterTabPage])
             {
-                var row = rowsToRemove[rowIndex];
-                deadletterDataGridView.Rows.Remove(row);
+                return transferDeadletterDataGridView;
             }
-
-            deadletterDataGridView.ClearSelection();
+            else
+            {
+                throw new InvalidOperationException("Unexpected tab selected.");
+            }
         }
         #endregion
     }

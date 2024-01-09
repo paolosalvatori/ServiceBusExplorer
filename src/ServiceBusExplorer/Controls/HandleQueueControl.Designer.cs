@@ -2232,14 +2232,14 @@
             this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedMessageToolStripMenuItem";
             this.deleteSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedMessageToolStripMenuItem.Text = "Delete Selected Message";
-            this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessageToolStripMenuItem_Click);
+            this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedDeadLetterMessageToolStripMenuItem_Click);
             // 
             // deleteSelectedMessagesToolStripMenuItem
             // 
             this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedMessagesToolStripMenuItem";
             this.deleteSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
-            this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);
+            this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedDeadLetterMessagesToolStripMenuItem_Click);
             // 
             // btnPurgeMessages
             // 
