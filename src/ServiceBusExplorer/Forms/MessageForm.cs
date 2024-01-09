@@ -412,10 +412,19 @@ namespace ServiceBusExplorer.Forms
                                     var messageText = serviceBusHelper.GetMessageText(message,
                                         MainForm.SingletonMainForm.UseAscii, out bodyType);
 
-                                    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                    outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
-                                                      message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                    if (messageText.GetType() == typeof(string))
+                                    {
+                                        // Remove any serialization text from the message body string
+                                        messageText = messageText.Replace("@\u0006string\b3http://schemas.microsoft.com/2003/10/Serialization/�G", string.Empty);
+                                        outboundMessage = message.Clone(messageText, messagesSplitContainer.Visible);
+                                    }
+                                    else
+                                    {
+                                        // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                        outboundMessage = bodyType == BodyType.ByteArray ?
+                                                          message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
+                                                          message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                    }
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
