@@ -410,24 +410,28 @@ namespace ServiceBusExplorer.Forms
                                 else
                                 {
                                     var messageText = serviceBusHelper.GetMessageText(message,
-                                        MainForm.SingletonMainForm.UseAscii, out bodyType);
+                                        MainForm.SingletonMainForm.UseAscii, out _);
 
                                     if (bodyType == BodyType.ByteArray)
                                     {
                                         // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
                                         outboundMessage = message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible);
                                     }
-                                    else
+                                    else if (bodyType == BodyType.String)
                                     {
                                         // Remove any serialization text from the message body string
-                                        messageText = messageText.Replace("@\u0006string\b3http://schemas.microsoft.com/2003/10/Serialization/�G", string.Empty);
+                                        if (messageText.StartsWith("@\u0006string\b3http://schemas.microsoft.com/2003/10/Serialization/�G"))
+                                        {
+                                            messageText = messageText.Replace("@\u0006string\b3http://schemas.microsoft.com/2003/10/Serialization/�G", string.Empty);
+                                        }
+
                                         outboundMessage = message.Clone(messageText, messagesSplitContainer.Visible);
-                                    } 
-                                    //else
-                                    //{
-                                    //    // Process as Stream
-                                    //    outboundMessage = message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
-                                    //}
+                                    }
+                                    else
+                                    {
+                                        // Process as Stream
+                                        outboundMessage = message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                    }
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
