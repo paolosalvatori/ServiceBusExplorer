@@ -1699,16 +1699,16 @@
             this.deadletterContextMenuStrip.Name = "registrationContextMenuStrip";
             this.deadletterContextMenuStrip.Size = new System.Drawing.Size(306, 186);
             // 
-            // repairAndResubmitDeadletterToolStripMenuItem
+            // repairAndResubmitSharedDeadletterToolStripMenuItem
             // 
-            this.repairAndResubmitDeadletterToolStripMenuItem.Name = "repairAndResubmitDeadletterToolStripMenuItem";
+            this.repairAndResubmitDeadletterToolStripMenuItem.Name = "repairAndResubmitSharedDeadletterToolStripMenuItem";
             this.repairAndResubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitDeadletterToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
             this.repairAndResubmitDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitDeadletterMessageToolStripMenuItem_Click);
             // 
-            // resubmitDeadletterToolStripMenuItem
+            // resubmitSharedDeadletterToolStripMenuItem
             // 
-            this.resubmitDeadletterToolStripMenuItem.Name = "resubmitDeadletterToolStripMenuItem";
+            this.resubmitDeadletterToolStripMenuItem.Name = "resubmitSharedDeadletterToolStripMenuItem";
             this.resubmitDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitDeadletterToolStripMenuItem.Text = "Resubmit Selected Message";
             this.resubmitDeadletterToolStripMenuItem.ToolTipText = "Resubmits the deadletter message with unchanged body.";
@@ -1740,16 +1740,16 @@
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesToolStripMenuItem_Click);
             // 
-            // deleteSelectedMessageToolStripMenuItem
+            // deleteSelectedSharedDeadletterMessageToolStripMenuItem
             // 
-            this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedMessageToolStripMenuItem";
+            this.deleteSelectedMessageToolStripMenuItem.Name = "deleteSelectedSharedDeadletterMessageToolStripMenuItem";
             this.deleteSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedMessageToolStripMenuItem.Text = "Delete Selected Message";
             this.deleteSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessageToolStripMenuItem_Click);
             // 
-            // deleteSelectedMessagesToolStripMenuItem
+            // deleteSelectedSharedDeadletterMessagesToolStripMenuItem
             // 
-            this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedMessagesToolStripMenuItem";
+            this.deleteSelectedMessagesToolStripMenuItem.Name = "deleteSelectedSharedDeadletterMessagesToolStripMenuItem";
             this.deleteSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedMessagesToolStripMenuItem.Text = "Delete Selected Messages";
             this.deleteSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedMessagesToolStripMenuItem_Click);

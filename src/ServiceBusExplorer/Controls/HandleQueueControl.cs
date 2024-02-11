@@ -4286,12 +4286,13 @@ namespace ServiceBusExplorer.Controls
             resubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedSharedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
-            deleteSelectedSharedDeadLetterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+
 
             resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
-            deleteSelectedSharedDeadLetterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
             sharedDeadletterContextMenuStrip.Show(Cursor.Position);
         }
