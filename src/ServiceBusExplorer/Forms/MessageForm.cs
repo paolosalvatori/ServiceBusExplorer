@@ -82,6 +82,8 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Instance Fields
+        SubqueueType subqueueType = SubqueueType.NotSet;
+
         readonly IEnumerable<BrokeredMessage> brokeredMessages;
         readonly BrokeredMessage brokeredMessage;
         readonly ServiceBusHelper serviceBusHelper;
@@ -113,6 +115,16 @@ namespace ServiceBusExplorer.Forms
             "UInt16",
             "SByte"
         };
+        #endregion
+
+        #region Public Enums
+        public enum SubqueueType
+        {
+            NotSet,
+            NotASubqueue,
+            Deadletter,
+            TransferDeadletter
+        }
         #endregion
 
         #region Public Properties
@@ -209,11 +221,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, BrokeredMessage brokeredMessage,
+        public MessageForm(QueueDescription queueDescription, SubqueueType subqueueType,  BrokeredMessage brokeredMessage,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
+            this.subqueueType = subqueueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
@@ -260,11 +273,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, IEnumerable<BrokeredMessage> brokeredMessages,
+        public MessageForm(QueueDescription queueDescription, SubqueueType subqueueType, IEnumerable<BrokeredMessage> brokeredMessages,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
+            this.subqueueType = subqueueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
@@ -482,6 +496,7 @@ namespace ServiceBusExplorer.Forms
 
                         var sent = outboundMessages.Count;
                         var stopwatch = new Stopwatch();
+
                         stopwatch.Start();
 
                         if (chkRemove.Checked)
@@ -489,8 +504,12 @@ namespace ServiceBusExplorer.Forms
                             var messageHandler = CreateDeadLetterMessageHandler();
 
                             var result = await messageHandler.MoveMessages(messageSender,
-                                sequenceNumbers, outboundMessages);
+                                sequenceNumbers, 
+                                transferDLQ: subqueueType == SubqueueType.TransferDeadletter ? true: false, 
+                                outboundMessages);
+
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;
+                            
                             stopwatch.Stop();
 
                             if (result.TimedOut)
