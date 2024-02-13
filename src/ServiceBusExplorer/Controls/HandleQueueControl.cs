@@ -24,18 +24,9 @@
 #region Using Directives
 
 #nullable enable
-using Microsoft.ServiceBus.Messaging;
-
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.ServiceBus.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -43,6 +34,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using Microsoft.ServiceBus.Messaging;
+
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
@@ -681,14 +680,14 @@ namespace ServiceBusExplorer.Controls
 
             if (queueDescription != null)
             {
-               if (duplicateQueue)
-               {
-                   ConfigureDuplicateUserInterface();
-               }
-               else
-               {
-                   ConfigureReadUserInterface();
-               }
+                if (duplicateQueue)
+                {
+                    ConfigureDuplicateUserInterface();
+                }
+                else
+                {
+                    ConfigureReadUserInterface();
+                }
             }
             else
             {
@@ -1049,7 +1048,7 @@ namespace ServiceBusExplorer.Controls
 
             // special handling for max size if partitioning is enabled
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16 
+            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16
                 : queueDescription.MaxSizeInGigabytes();
 
             ConfigureCreateUserInterface();
@@ -1089,8 +1088,6 @@ namespace ServiceBusExplorer.Controls
             }
             txtPath.Focus();
         }
-
-
 
         private void bindingList_ListChanged(object sender, ListChangedEventArgs e)
         {
@@ -1467,7 +1464,7 @@ namespace ServiceBusExplorer.Controls
                 else
                 {
                     var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
-                    
+
                     var totalRetrieved = 0;
                     int retrieved;
                     do
@@ -1755,7 +1752,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     AllowEdit = false,
                     AllowNew = false,
-                    AllowRemove = false
+                    AllowRemove = true
                 };
 
                 transferDeadletterBindingSource.DataSource = transferDeadletterBindingList;
@@ -3171,7 +3168,8 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+            using (var messageForm = new MessageForm(queueDescription, 
+                MessageForm.QueueType.PrimaryQueue, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3179,49 +3177,12 @@ namespace ServiceBusExplorer.Controls
 
         private void deadletterDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0)
-            {
-                return;
-            }
-            var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-            if (bindingList == null)
-            {
-                return;
-            }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
-            {
-                messageForm.ShowDialog();
-
-                Application.UseWaitCursor = true;
-                try
-                {
-                    if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
-                    {
-                        RemoveDeadletterDataGridRows(messageForm.RemovedSequenceNumbers);
-                    }
-                }
-                finally
-                {
-                    Application.UseWaitCursor = false;
-                }
-            }
+            RepairAndResubmitSharedDeadletterMessage(e);
         }
 
         private void transferDeadletterDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0)
-            {
-                return;
-            }
-            var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-            if (bindingList == null)
-            {
-                return;
-            }
-            using (var messageForm = new MessageForm(queueDescription, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
-            {
-                messageForm.ShowDialog();
-            }
+            RepairAndResubmitSharedDeadletterMessage(e);
         }
 
         private void messagesDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -3355,51 +3316,51 @@ namespace ServiceBusExplorer.Controls
 
         private void ResubmitSelectedMessages()
         {
-            try
-            {
-                if (messagesDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-
-                using (var form = new MessageForm(queueDescription, messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
-                {
-                    form.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        void deleteSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            deleteSelectedMessagesToolStripMenuItem_Click(sender, e);
-        }
-
-        async void deleteSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (deadletterDataGridView.SelectedRows.Count <= 0)
+            if (messagesDataGridView.SelectedRows.Count <= 0)
             {
                 return;
             }
 
-            var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+            using (var form = new MessageForm(
+                queueDescription, 
+                MessageForm.QueueType.PrimaryQueue,
+                messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                        .Select(r => (BrokeredMessage)r.DataBoundItem), 
+                serviceBusHelper, writeToLog))
+            {
+                form.ShowDialog();
+            }
+        }
+
+        void deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(sender, e);
+        }
+
+        async void deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dataGridView = GetActiveDeadletterGridView();
+
+            if (dataGridView.SelectedRows.Count <= 0)
+            {
+                return;
+            }
+
+            var messages = dataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => r.DataBoundItem as BrokeredMessage);
 
             string confirmationText;
+            var transferText = dataGridView == transferDeadletterDataGridView ? "transfer " : string.Empty;
 
             if (messages.Count() == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
-                    $"dead-letter subqueue for the {queueDescription.Path} queue?";
+                    $"{transferText}dead-letter subqueue for the {queueDescription.Path} queue?";
             }
             else
             {
                 confirmationText = $"Are you sure you want to delete {messages.Count()} messages from the " +
-                    $"dead-letter subqueue for {queueDescription.Path} queue?";
+                    $"{transferText}dead-letter subqueue for {queueDescription.Path} queue?";
             }
 
             using (var deleteForm = new DeleteForm(confirmationText))
@@ -3421,8 +3382,10 @@ namespace ServiceBusExplorer.Controls
                 stopwatch.Start();
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count;
-                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete);
-                RemoveDeadletterDataGridRows(result.DeletedSequenceNumbers);
+                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete,
+                    TransferDLQ : dataGridView == transferDeadletterDataGridView ? true : false);
+
+                DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(dataGridView, result.DeletedSequenceNumbers);
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
@@ -3447,78 +3410,59 @@ namespace ServiceBusExplorer.Controls
         }
 
         private void deadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right || e.RowIndex == -1)
-            {
-                return;
-            }
-            deadletterDataGridView.Rows[e.RowIndex].Selected = true;
-            var multipleSelectedRows = deadletterDataGridView.SelectedRows.Count > 1;
-
-            repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            resubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
-            deleteSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-
-            resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
-            deleteSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-
-            deadletterContextMenuStrip.Show(Cursor.Position);
+        {       
+            ShowAppropriateSharedDeadletterMenuItems(e);
         }
 
         private void transferDeadletterDataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Right || e.RowIndex == -1)
-            {
-                return;
-            }
-            transferDeadletterDataGridView.Rows[e.RowIndex].Selected = true;
-            var multipleSelectedRows = transferDeadletterDataGridView.SelectedRows.Count > 1;
-            repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
-            resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
-            transferDeadletterContextMenuStrip.Show(Cursor.Position);
+            ShowAppropriateSharedDeadletterMenuItems(e);
         }
 
-        private void repairAndResubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void repairAndResubmitSharedDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deadletterDataGridView_CellDoubleClick(deadletterDataGridView,
-                new DataGridViewCellEventArgs(0, currentDeadletterMessageRowIndex));
+            var dataGridView = GetActiveDeadletterGridView();
+
+            var currentRowIndex = dataGridView == deadletterDataGridView 
+                ? currentDeadletterMessageRowIndex 
+                : currentTransferDeadletterMessageRowIndex;
+
+            RepairAndResubmitSharedDeadletterMessage(new DataGridViewCellEventArgs(0, currentRowIndex));
         }
 
-        private async void resubmitDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void resubmitSharedDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await ResubmitSelectedDeadletterMessages();
+            await ResubmitSelectedDeadletterMessages(GetActiveDeadletterGridView());
         }
 
-        private async void resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
+        private async void resubmitSelectedSharedDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
             EventArgs e)
         {
-            await ResubmitSelectedDeadletterMessages();
+            await ResubmitSelectedDeadletterMessages(GetActiveDeadletterGridView());
         }
 
-        async Task ResubmitSelectedDeadletterMessages()
+        async Task ResubmitSelectedDeadletterMessages(DataGridView dataGridView)
         {
             try
             {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
+                if (dataGridView.SelectedRows.Count <= 0)
                 {
                     return;
                 }
 
-                using (var form = new MessageForm(queueDescription, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                using (var form = new MessageForm(
+                    queueDescription, 
+                    dataGridView == deadletterDataGridView 
+                        ? MessageForm.QueueType.Deadletter 
+                        : MessageForm.QueueType.TransferDeadletter, 
+                    dataGridView.SelectedRows.Cast<DataGridViewRow>()
+                           .Select(r => (BrokeredMessage)r.DataBoundItem), 
+                    serviceBusHelper, writeToLog))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())
                     {
-                        RemoveDeadletterDataGridRows(form.RemovedSequenceNumbers);
+                        DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(dataGridView, form.RemovedSequenceNumbers);
                     }
                 }
             }
@@ -3531,33 +3475,6 @@ namespace ServiceBusExplorer.Controls
             // simple.
             await MainForm.SingletonMainForm.RefreshQueues();
             await MainForm.SingletonMainForm.RefreshTopics();
-        }
-
-        private void repairAndResubmitTransferDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            transferDeadletterDataGridView_CellDoubleClick(transferDeadletterDataGridView,
-                new DataGridViewCellEventArgs(0, currentTransferDeadletterMessageRowIndex));
-        }
-
-        private void resubmitSelectedTransferDeadletterMessagesInBatchModeToolStripMenuItem_Click(object sender,
-            EventArgs e)
-        {
-            try
-            {
-                if (transferDeadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                using (var form = new MessageForm(queueDescription, transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                    .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
-                {
-                    form.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
         }
 
         private void pictFindMessages_Click(object sender, EventArgs e)
@@ -3942,7 +3859,7 @@ namespace ServiceBusExplorer.Controls
 
         #region Save Messages
 
-        private void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -4031,8 +3948,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-
-        private void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -4132,124 +4048,151 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            SaveSelectedMessage(SaveInJsonFormat: true);
+        }
+
+        void saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveSelectedMessage(SaveInJsonFormat: false);
+        }
+
+        void saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveSelectedMessages(SaveInJsonFormat: true);
+        }
+
+        void saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           SaveSelectedMessages(SaveInJsonFormat: false);
+        }
+
+
+        void SaveSelectedMessage(bool SaveInJsonFormat)
+        {
+            var activeGridView = GetActiveDeadletterGridView();
+
+            var currentRowIndex = activeGridView == deadletterDataGridView
+                ? currentDeadletterMessageRowIndex
+                : currentTransferDeadletterMessageRowIndex;
+
+            if (currentRowIndex < 0)
             {
-                if (currentDeadletterMessageRowIndex < 0)
-                {
-                    return;
-                }
-                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
-                {
-                    return;
-                }
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
+                return;
+            }
+
+            var bindingSource = activeGridView == deadletterDataGridView
+                ? deadletterBindingSource
+                : transferDeadletterBindingSource;
+
+            var bindingList = bindingSource.DataSource as BindingList<BrokeredMessage>;
+
+            if (bindingList == null)
+            {
+                return;
+            }
+
+            var text = activeGridView == deadletterDataGridView
+                ? txtDeadletterText.Text
+                : txtTransferDeadletterText.Text;
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.Title = SaveAsTitle;
+
+            if (SaveInJsonFormat)
+            {
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
                 saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentDeadletterMessageRowIndex], txtDeadletterText.Text));
-                }
             }
-            catch (Exception ex)
+            else
             {
-                HandleException(ex);
-            }
-        }
-
-        void saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (currentDeadletterMessageRowIndex < 0)
-                {
-                    return;
-                }
-
-                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
-                {
-                    return;
-                }
-
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
                 saveFileDialog.DefaultExt = TxtExtension;
                 saveFileDialog.Filter = AllFilesFilter;
                 saveFileDialog.FileName = CreateFileNameAutoRecognize();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
+            }
 
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
+            if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+            {
+                return;
+            }
 
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
+            if (File.Exists(saveFileDialog.FileName))
+            {
+                File.Delete(saveFileDialog.FileName);
+            }
+
+            using (var writer = new StreamWriter(saveFileDialog.FileName))
+            {
+                if (SaveInJsonFormat)
+                {
+                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentRowIndex], text));
+                }
+                else
                 {
                     writer.Write(txtDeadletterText.Text);
                 }
             }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
         }
 
-        private void saveSelectedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        void SaveSelectedMessages(bool SaveInJsonFormat)
         {
-            try
+            var activeGridView = GetActiveDeadletterGridView();
+
+            var currentRowIndex = activeGridView == deadletterDataGridView
+                ? currentDeadletterMessageRowIndex
+                : currentTransferDeadletterMessageRowIndex;
+
+            if (activeGridView.SelectedRows.Count <= 0)
             {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                return;
+            }
+
+            var messages = activeGridView.SelectedRows.Cast<DataGridViewRow>()
                         .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
+            IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+
+            if (!brokeredMessages.Any())
+            {
+                return;
+            }
+
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.Title = SaveAsTitle;
+
+            if (SaveInJsonFormat)
+            {
                 saveFileDialog.DefaultExt = JsonExtension;
                 saveFileDialog.Filter = JsonFilter;
                 saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+            }
+            else
+            {
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
+                saveFileDialog.FileName = CreateFileNameAutoRecognize();
+            }
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK ||
                     string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
+            {
+                return;
+            }
+
+            if (File.Exists(saveFileDialog.FileName))
+            {
+                File.Delete(saveFileDialog.FileName);
+            }
+
+            if (SaveInJsonFormat)
+            {
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
@@ -4257,43 +4200,12 @@ namespace ServiceBusExplorer.Controls
                     writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
                 }
             }
-            catch (Exception ex)
+            else
             {
-                HandleException(ex);
-            }
-        }
-
-        void saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (deadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-
-                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                                     .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = TxtExtension;
-                saveFileDialog.Filter = AllFilesFilter;
-                saveFileDialog.FileName = CreateFileNameAutoRecognize();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-
                 var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
                     MainForm.SingletonMainForm.UseAscii, out _));
                 var count = 0;
+
                 foreach (var body in bodies)
                 {
                     count++;
@@ -4313,201 +4225,7 @@ namespace ServiceBusExplorer.Controls
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
         }
-
-        private void saveSelectedTransferDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (currentTransferDeadletterMessageRowIndex < 0)
-                {
-                    return;
-                }
-                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtTransferDeadletterText.Text))
-                {
-                    return;
-                }
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writer.Write(MessageSerializationHelper.Serialize(bindingList[currentTransferDeadletterMessageRowIndex],
-                        txtTransferDeadletterText.Text));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        void saveSelectedTransferDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (currentTransferDeadletterMessageRowIndex < 0)
-                {
-                    return;
-                }
-
-                var bindingList = transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
-                if (bindingList == null)
-                {
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtTransferDeadletterText.Text))
-                {
-                    return;
-                }
-
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = TxtExtension;
-                saveFileDialog.Filter = AllFilesFilter;
-                saveFileDialog.FileName = CreateFileNameAutoRecognize();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writer.Write(txtTransferDeadletterText.Text);
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        private void saveSelectedTransferDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (transferDeadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-                var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                        .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = JsonExtension;
-                saveFileDialog.Filter = JsonFilter;
-                saveFileDialog.FileName = CreateFileName();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-                if (File.Exists(saveFileDialog.FileName))
-                {
-                    File.Delete(saveFileDialog.FileName);
-                }
-                using (var writer = new StreamWriter(saveFileDialog.FileName))
-                {
-                    var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
-                         MainForm.SingletonMainForm.UseAscii, out _));
-                    writer.Write(MessageSerializationHelper.Serialize(brokeredMessages, bodies, doNotSerializeBody: true));
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        void saveSelectedTransferDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (transferDeadletterDataGridView.SelectedRows.Count <= 0)
-                {
-                    return;
-                }
-
-                var messages = transferDeadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                                                             .Select(r => r.DataBoundItem as BrokeredMessage);
-                IEnumerable<BrokeredMessage?> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-                if (!brokeredMessages.Any())
-                {
-                    return;
-                }
-
-                saveFileDialog.RestoreDirectory = true;
-                saveFileDialog.Title = SaveAsTitle;
-                saveFileDialog.DefaultExt = TxtExtension;
-                saveFileDialog.Filter = AllFilesFilter;
-                saveFileDialog.FileName = CreateFileNameAutoRecognize();
-                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
-                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-                {
-                    return;
-                }
-
-                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
-                    MainForm.SingletonMainForm.UseAscii, out _));
-                var count = 0;
-                foreach (var body in bodies)
-                {
-                    count++;
-                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
-                    var fileExtension = fileNameParts.Last();
-                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
-                    fileNameParts.Add($"({count}).{fileExtension}");
-                    var fileName = string.Join(".", fileNameParts);
-                    if (File.Exists(fileName))
-                    {
-                        File.Delete(fileName);
-                    }
-
-                    using (var writer = new StreamWriter(fileName))
-                    {
-                        writer.Write(body);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
-        #endregion Save Messages
 
         private string CreateFileName()
         {
@@ -4522,6 +4240,7 @@ namespace ServiceBusExplorer.Controls
                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                 DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
+        #endregion Save Messages
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)
         {
@@ -4533,32 +4252,94 @@ namespace ServiceBusExplorer.Controls
             await PurgeDeadletterQueueMessagesAsync();
         }
 
-        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
+        // Returns either the plain deadletter grid view or the transfer deadletter grid view,
+        // depending on which tab is selected.
+        DataGridView GetActiveDeadletterGridView()
         {
-            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
-
-            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
+            if (mainTabControl.SelectedTab == mainTabControl.TabPages[DeadletterTabPage])
             {
-                var message = (BrokeredMessage)row.DataBoundItem;
+                return deadletterDataGridView;
+            }
+            else if (mainTabControl.SelectedTab == mainTabControl.TabPages[TransferDeadletterTabPage])
+            {
+                return transferDeadletterDataGridView;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected tab selected.");
+            }
+        }
 
-                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
+        void ShowAppropriateSharedDeadletterMenuItems(DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || e.RowIndex == -1)
+            {
+                return;
+            }
+
+            var activeGridView = GetActiveDeadletterGridView();
+
+            activeGridView.Rows[e.RowIndex].Selected = true;
+            var multipleSelectedRows = activeGridView.SelectedRows.Count > 1;
+
+            repairAndResubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            resubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+
+
+            resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+
+            sharedDeadletterContextMenuStrip.Show(Cursor.Position);
+        }
+
+        void RepairAndResubmitSharedDeadletterMessage(DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            var activeGridView = GetActiveDeadletterGridView();
+
+            var bindingList = activeGridView == deadletterDataGridView
+                ? deadletterBindingSource.DataSource as BindingList<BrokeredMessage>
+                : transferDeadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+
+            if (bindingList == null)
+            {
+                return;
+            }
+
+            using (var messageForm = new MessageForm(queueDescription,
+                activeGridView == deadletterDataGridView 
+                    ? MessageForm.QueueType.Deadletter 
+                    : MessageForm.QueueType.TransferDeadletter, 
+                bindingList[e.RowIndex], 
+                serviceBusHelper, 
+                writeToLog))
+            {
+                messageForm.ShowDialog();
+
+                Application.UseWaitCursor = true;
+
+                try
                 {
-                    rowsToRemove.Add(row);
-                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
+                    if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                     {
-                        break;
+                        DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(activeGridView, messageForm.RemovedSequenceNumbers);
                     }
                 }
+                finally
+                {
+                    Application.UseWaitCursor = false;
+                }
             }
-
-            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
-            {
-                var row = rowsToRemove[rowIndex];
-                deadletterDataGridView.Rows.Remove(row);
-            }
-
-            deadletterDataGridView.ClearSelection();
         }
-        #endregion
     }
+    #endregion
 }
