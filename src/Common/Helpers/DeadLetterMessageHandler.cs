@@ -87,7 +87,8 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Public methods
-        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long?> sequenceNumbers)
+        public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long?> sequenceNumbers,
+            bool TransferDLQ)
         {
             var sequenceNumbersToDeleteList = new List<long?>();
             foreach (var number in sequenceNumbers)
@@ -96,7 +97,7 @@ namespace ServiceBusExplorer.Helpers
             }
 
             var timedOut = false;
-            var dlqEntityPath = GetDlqEntityPath();
+            var dlqEntityPath = TransferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
 
             var messageReceiver = await serviceBusHelper.MessagingFactory.CreateMessageReceiverAsync(
                 dlqEntityPath,
@@ -185,7 +186,7 @@ namespace ServiceBusExplorer.Helpers
     
 
         public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender,
-            List<long> sequenceNumbers, List<BrokeredMessage> messagesToSend = null)
+            List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null)
         {
             if (messagesToSend != null)
             {
@@ -196,7 +197,7 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            var dlqEntityPath = GetDlqEntityPath();
+            var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
 
             var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
                 dlqEntityPath,
@@ -368,6 +369,17 @@ namespace ServiceBusExplorer.Helpers
                 sourceSubscriptionWrapper.SubscriptionDescription.TopicPath,
                 sourceSubscriptionWrapper.SubscriptionDescription.Name);
         }
+
+        string GetTransferDlqEntityPath()
+        {
+            if (sourceQueueDescription != null)
+            {
+                return QueueClient.FormatTransferDeadLetterPath(sourceQueueDescription.Path);
+            }
+
+            throw new Exception("It is currently not supported getting a Transfer Dead-letter queue for a subscription.");
+        }
+
         void WriteToLog(string message)
         {
             if (writeToLog != null && !string.IsNullOrWhiteSpace(message))

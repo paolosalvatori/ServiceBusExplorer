@@ -23,6 +23,14 @@ The default location of the executable is C:\ProgramData\chocolatey\lib\ServiceB
 
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
 
+## Using [Scoop](https://scoop.sh)
+
+```
+scoop install extras/servicebusexplorer
+```
+
+The default location of the executable is %USERPROFILE%\scoop\apps\servicebusexplorer\current\tools\ServiceBusExplorer.exe.
+
 ## Using GitHub
 ```
 curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4

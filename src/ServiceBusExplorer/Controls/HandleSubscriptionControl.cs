@@ -2383,7 +2383,7 @@ namespace ServiceBusExplorer.Controls
                 stopwatch.Start();
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count;
-                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete);
+                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete, TransferDLQ: false);
                 RemoveDeadletterDataGridRows(result.DeletedSequenceNumbers);
 
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
