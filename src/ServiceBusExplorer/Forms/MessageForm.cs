@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Instance Fields
-        SubqueueType subqueueType = SubqueueType.NotSet;
+        QueueType queueType = QueueType.NotSet;
 
         readonly IEnumerable<BrokeredMessage> brokeredMessages;
         readonly BrokeredMessage brokeredMessage;
@@ -118,10 +118,10 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Enums
-        public enum SubqueueType
+        public enum QueueType
         {
             NotSet,
-            NotASubqueue,
+            PrimaryQueue,
             Deadletter,
             TransferDeadletter
         }
@@ -221,12 +221,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, SubqueueType subqueueType,  BrokeredMessage brokeredMessage,
+        public MessageForm(QueueDescription queueDescription, QueueType queueType,  BrokeredMessage brokeredMessage,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
-            this.subqueueType = subqueueType;
+            this.queueType = queueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
@@ -273,12 +273,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, SubqueueType subqueueType, IEnumerable<BrokeredMessage> brokeredMessages,
+        public MessageForm(QueueDescription queueDescription, QueueType queueType, IEnumerable<BrokeredMessage> brokeredMessages,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
-            this.subqueueType = subqueueType;
+            this.queueType = queueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
@@ -505,7 +505,7 @@ namespace ServiceBusExplorer.Forms
 
                             var result = await messageHandler.MoveMessages(messageSender,
                                 sequenceNumbers, 
-                                transferDLQ: subqueueType == SubqueueType.TransferDeadletter ? true: false, 
+                                transferDLQ: queueType == QueueType.TransferDeadletter, 
                                 outboundMessages);
 
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;

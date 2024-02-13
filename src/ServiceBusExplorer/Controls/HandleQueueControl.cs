@@ -3169,7 +3169,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
             using (var messageForm = new MessageForm(queueDescription, 
-                MessageForm.SubqueueType.NotASubqueue, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
+                MessageForm.QueueType.PrimaryQueue, bindingList[e.RowIndex], serviceBusHelper, writeToLog))
             {
                 messageForm.ShowDialog();
             }
@@ -3323,7 +3323,7 @@ namespace ServiceBusExplorer.Controls
 
             using (var form = new MessageForm(
                 queueDescription, 
-                MessageForm.SubqueueType.NotASubqueue,
+                MessageForm.QueueType.PrimaryQueue,
                 messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                         .Select(r => (BrokeredMessage)r.DataBoundItem), 
                 serviceBusHelper, writeToLog))
@@ -3453,8 +3453,8 @@ namespace ServiceBusExplorer.Controls
                 using (var form = new MessageForm(
                     queueDescription, 
                     dataGridView == deadletterDataGridView 
-                        ? MessageForm.SubqueueType.Deadletter 
-                        : MessageForm.SubqueueType.TransferDeadletter, 
+                        ? MessageForm.QueueType.Deadletter 
+                        : MessageForm.QueueType.TransferDeadletter, 
                     dataGridView.SelectedRows.Cast<DataGridViewRow>()
                            .Select(r => (BrokeredMessage)r.DataBoundItem), 
                     serviceBusHelper, writeToLog))
@@ -4317,8 +4317,8 @@ namespace ServiceBusExplorer.Controls
 
             using (var messageForm = new MessageForm(queueDescription,
                 activeGridView == deadletterDataGridView 
-                    ? MessageForm.SubqueueType.Deadletter 
-                    : MessageForm.SubqueueType.TransferDeadletter, 
+                    ? MessageForm.QueueType.Deadletter 
+                    : MessageForm.QueueType.TransferDeadletter, 
                 bindingList[e.RowIndex], 
                 serviceBusHelper, 
                 writeToLog))
