@@ -35,7 +35,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 await Task.WhenAll(tasks);
                 stopwatch.Stop();
-                serviceBusHelper.WriteToLog($"Cancelled {sequenceNumbersToCancel.Count} scheduled message(s) in {stopwatch.ElapsedMilliseconds / 1000} seconds.");
+                Func<string> singleOrPlural = () => sequenceNumbersToCancel.Count() > 1 ? "messages": "message";
+                serviceBusHelper.WriteToLog($"Cancelled {sequenceNumbersToCancel.Count} scheduled {singleOrPlural()} in {stopwatch.Elapsed}.");
             }
             finally
             {
