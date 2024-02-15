@@ -62,9 +62,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             return false;
         }
 
-        // 
         /// <summary>
-        ///  It is the callers responsibility to dispose the returned ServiceBusClient object by calling DisposeAsync() on it.
+        ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
         /// </summary>
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
         public ServiceBusClient CreateServiceBusClient()
