@@ -30,7 +30,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 {
                     await semaphore.WaitAsync();
                     tasks.Add(CancelScheduledMessageWithLogAsync(sender, sequenceNumber, serviceBusHelper.WriteToLog)
-                        .ContinueWith((t) => semaphore.Release()));
+                        .ContinueWith((t, state) => ((SemaphoreSlim)state)?.Release()));
                 }
 
                 await Task.WhenAll(tasks);
