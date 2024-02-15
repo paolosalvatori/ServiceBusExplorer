@@ -46,8 +46,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         static async Task CancelScheduledMessageWithLogAsync(ServiceBusSender sender, 
             long sequenceNumber, WriteToLogDelegate writeToLog)
         {
-            await sender.CancelScheduledMessageAsync(sequenceNumber);
-            writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
+            var task = sender.CancelScheduledMessageAsync(sequenceNumber).ContinueWith(
+               (t, state) => writeToLog($"Cancelled scheduled message with sequence number {state}."),
+                sequenceNumber);
+            return task;
         }
     }
 }
