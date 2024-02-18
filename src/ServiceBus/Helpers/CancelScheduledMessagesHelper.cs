@@ -45,15 +45,16 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 await Task.WhenAll(tasks);
                 stopwatch.Stop();
 
-                Func<string> successesSingleOrPlural = () => successes.Count > 1 ? "messages" : "message";
+                Func<int, string> singleOrPlural = (c) => c > 1 ? "messages" : "message";
 
-                serviceBusHelper.WriteToLog($"Successfully cancelled {successes.Count} scheduled {successesSingleOrPlural()} in {stopwatch.Elapsed}.");
+
+                serviceBusHelper.WriteToLog($"Successfully cancelled {successes.Count} " +
+                    $"scheduled {singleOrPlural(successes.Count)} in {stopwatch.Elapsed}.");
 
                 if (failures.Count > 0)
                 {
-                    Func<string> failuresSingleOrPlural = () => failures.Count > 1 ? "messages" : "message";
-
-                    serviceBusHelper.WriteToLog($"Failed to cancel {failures.Count} {failuresSingleOrPlural()}.");
+                    serviceBusHelper.WriteToLog($"Failed to cancel {failures.Count} " +
+                        $"{singleOrPlural(failures.Count)}.");
                 }
             }
             finally
