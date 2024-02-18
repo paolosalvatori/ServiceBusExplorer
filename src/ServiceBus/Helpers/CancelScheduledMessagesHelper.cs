@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     public static class CancelScheduledMessagesHelper
     {
+        class PassIntToTask
+        {
+            public int Count; 
+        }
+
         public static async Task CancelScheduledMessages(ServiceBusHelper2 serviceBusHelper,
             string queueName, List<long> sequenceNumbersToCancel)
         {
@@ -22,6 +28,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 serviceBusHelper.WriteToLog($"Starting cancellation of scheduled messages on queue {queueName}.");
 
+                var successes = new PassIntToTask();
+                var failures = new PassIntToTask();
+
                 var stopwatch = Stopwatch.StartNew();
                 var semaphore = new SemaphoreSlim(40); // As recommended by https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement#settling-send-operations
                 var tasks = new List<Task>(sequenceNumbersToCancel.Count);
@@ -29,27 +38,47 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 foreach (long sequenceNumber in sequenceNumbersToCancel)
                 {
                     await semaphore.WaitAsync();
-                    tasks.Add(CancelScheduledMessageWithLogAsync(sender, sequenceNumber, serviceBusHelper.WriteToLog)
-                        .ContinueWith((t, state) => ((SemaphoreSlim)state)?.Release()));
+                    tasks.Add(CancelScheduledMessageWithLog(sender, sequenceNumber, serviceBusHelper.WriteToLog, successes, failures)
+                        .ContinueWith((t, state) => ((SemaphoreSlim)state)?.Release(), semaphore));
                 }
 
                 await Task.WhenAll(tasks);
                 stopwatch.Stop();
-                Func<string> singleOrPlural = () => sequenceNumbersToCancel.Count() > 1 ? "messages": "message";
-                serviceBusHelper.WriteToLog($"Cancelled {sequenceNumbersToCancel.Count} scheduled {singleOrPlural()} in {stopwatch.Elapsed}.");
+
+                Func<string> successesSingleOrPlural = () => successes.Count > 1 ? "messages" : "message";
+
+                serviceBusHelper.WriteToLog($"Successfully cancelled {successes.Count} scheduled {successesSingleOrPlural()} in {stopwatch.Elapsed}.");
+
+                if (failures.Count > 0)
+                {
+                    Func<string> failuresSingleOrPlural = () => failures.Count > 1 ? "messages" : "message";
+
+                    serviceBusHelper.WriteToLog($"Failed to cancel {failures.Count} {failuresSingleOrPlural()}.");
+                }
             }
             finally
             {
-               await client.DisposeAsync();
+                await client.DisposeAsync();
             }
         }
 
-        static async Task CancelScheduledMessageWithLogAsync(ServiceBusSender sender, 
-            long sequenceNumber, WriteToLogDelegate writeToLog)
+        static Task CancelScheduledMessageWithLog(ServiceBusSender sender,
+            long sequenceNumber, WriteToLogDelegate writeToLog, PassIntToTask successes, PassIntToTask failures)
         {
-            var task = sender.CancelScheduledMessageAsync(sequenceNumber).ContinueWith(
-               (t, state) => writeToLog($"Cancelled scheduled message with sequence number {state}."),
-                sequenceNumber);
+            Task task = sender.CancelScheduledMessageAsync(sequenceNumber)
+                .ContinueWith(_ =>
+                    {
+                        writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
+                        Interlocked.Increment(ref successes.Count);
+                    },
+                    TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously)
+                .ContinueWith(_ =>
+                    {
+                        writeToLog($"Failed to cancel scheduled message with sequence number {sequenceNumber}.");
+                        Interlocked.Increment(ref failures.Count);
+                    },
+                    TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
+
             return task;
         }
     }
