@@ -12,9 +12,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 {
     public static class CancelScheduledMessagesHelper
     {
-        class PassIntToTask
+        class OperationStatus
         {
-            public int Count; 
+            public int Successes;
+            public int Failures;
         }
 
         public static async Task CancelScheduledMessages(ServiceBusHelper2 serviceBusHelper,
@@ -28,8 +29,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 serviceBusHelper.WriteToLog($"Starting cancellation of scheduled messages on queue {queueName}.");
 
-                var successes = new PassIntToTask();
-                var failures = new PassIntToTask();
+                var operationStatus = new OperationStatus();
 
                 var stopwatch = Stopwatch.StartNew();
                 var semaphore = new SemaphoreSlim(40); // As recommended by https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement#settling-send-operations
@@ -38,7 +38,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 foreach (long sequenceNumber in sequenceNumbersToCancel)
                 {
                     await semaphore.WaitAsync();
-                    tasks.Add(CancelScheduledMessageWithLog(sender, sequenceNumber, serviceBusHelper.WriteToLog, successes, failures)
+                    tasks.Add(CancelScheduledMessageWithLog(sender, sequenceNumber, serviceBusHelper.WriteToLog, operationStatus)
                         .ContinueWith((t, state) => ((SemaphoreSlim)state)?.Release(), semaphore));
                 }
 
@@ -47,14 +47,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
                 Func<int, string> singleOrPlural = (c) => c > 1 ? "messages" : "message";
 
+                serviceBusHelper.WriteToLog($"Successfully cancelled {operationStatus.Successes} " +
+                    $"scheduled {singleOrPlural(operationStatus.Successes)} in {stopwatch.Elapsed}.");
 
-                serviceBusHelper.WriteToLog($"Successfully cancelled {successes.Count} " +
-                    $"scheduled {singleOrPlural(successes.Count)} in {stopwatch.Elapsed}.");
-
-                if (failures.Count > 0)
+                if (operationStatus.Failures > 0)
                 {
-                    serviceBusHelper.WriteToLog($"Failed to cancel {failures.Count} " +
-                        $"{singleOrPlural(failures.Count)}.");
+                    serviceBusHelper.WriteToLog($"Failed to cancel {operationStatus.Failures} " +
+                        $"{singleOrPlural(operationStatus.Failures)}.");
                 }
             }
             finally
@@ -64,19 +63,19 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         }
 
         static Task CancelScheduledMessageWithLog(ServiceBusSender sender,
-            long sequenceNumber, WriteToLogDelegate writeToLog, PassIntToTask successes, PassIntToTask failures)
+            long sequenceNumber, WriteToLogDelegate writeToLog, OperationStatus operationStatus)
         {
             Task task = sender.CancelScheduledMessageAsync(sequenceNumber)
                 .ContinueWith(_ =>
                     {
                         writeToLog($"Cancelled scheduled message with sequence number {sequenceNumber}.");
-                        Interlocked.Increment(ref successes.Count);
+                        Interlocked.Increment(ref operationStatus.Successes);
                     },
                     TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously)
                 .ContinueWith(_ =>
                     {
                         writeToLog($"Failed to cancel scheduled message with sequence number {sequenceNumber}.");
-                        Interlocked.Increment(ref failures.Count);
+                        Interlocked.Increment(ref operationStatus.Failures);
                     },
                     TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
 
