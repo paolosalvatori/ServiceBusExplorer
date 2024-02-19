@@ -5337,7 +5337,7 @@ namespace ServiceBusExplorer
 
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
-            var serviceBusHelper2 = new ServiceBusHelper2();
+            var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
             serviceBusHelper2.ConnectionString = ConnectionString;
             serviceBusHelper2.TransportType = UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets

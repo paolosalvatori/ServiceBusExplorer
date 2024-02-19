@@ -288,7 +288,7 @@ namespace ServiceBusExplorer.Controls
 
         #endregion
 
-        #region Public Constructors
+        #region Public Constructor
 
         public HandleQueueControl(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
             QueueDescription queueDescription, string path, bool duplicateQueue)
@@ -520,7 +520,17 @@ namespace ServiceBusExplorer.Controls
 
         #endregion
 
-        #region Private Methods
+        #region Private Static Methods
+
+        static bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
+        {
+            return selectedRows.Cast<DataGridViewRow>()
+                .All(row => (row.DataBoundItem as BrokeredMessage)?.State == MessageState.Scheduled);
+        }
+
+        #endregion
+
+        #region Private Instance Methods
 
         private void InitializeControls(bool initialCall)
         {
@@ -2875,14 +2885,17 @@ namespace ServiceBusExplorer.Controls
             {
                 var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
                 currentMessageRowIndex = e.RowIndex;
+
                 if (bindingList == null)
                 {
                     return;
                 }
+
                 if (brokeredMessage == bindingList[e.RowIndex])
                 {
                     return;
                 }
+
                 brokeredMessage = bindingList[e.RowIndex];
 
                 LanguageDetector.SetFormattedMessage(serviceBusHelper, brokeredMessage, txtMessageText);
@@ -3244,7 +3257,6 @@ namespace ServiceBusExplorer.Controls
                     deadletterPropertyGrid.Location.X);
         }
 
-
         private void grouperTransferDeadletterText_CustomPaint(PaintEventArgs obj)
         {
             txtTransferDeadletterText.Size = new Size(grouperTransferDeadletterText.Size.Width - txtTransferDeadletterText.Location.X * 2,
@@ -3286,15 +3298,30 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
+
             messagesDataGridView.Rows[e.RowIndex].Selected = true;
+
             var multipleSelectedRows = messagesDataGridView.SelectedRows.Count > 1;
+
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            
+            if(AreAllSelectedMessageScheduled(messagesDataGridView.SelectedRows))
+            {
+                SetCancelScheduledMessageToolStripMenuItemText(multipleSelectedRows);
+                cancelScheduledMessageToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                cancelScheduledMessageToolStripMenuItem.Visible = false;
+            }
+
             saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
+            
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -3314,6 +3341,58 @@ namespace ServiceBusExplorer.Controls
             ResubmitSelectedMessages();
         }
 
+        async void cancelScheduledMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (messagesDataGridView.SelectedRows.Count <= 0)
+            {
+                return;
+            }
+
+            var configuration = TwoFilesConfiguration.Create(TwoFilesConfiguration.GetCurrentConfigFileUse(), writeToLog);
+            bool disableAccidentalDeletionPrevention = configuration.GetBoolValue(
+                                    ConfigurationParameters.DisableAccidentalDeletionPrevention,
+                                    defaultValue: false);
+
+            var thisForm = FindForm();
+
+            if (!disableAccidentalDeletionPrevention)
+            {
+                if(MessageBox.Show(owner: thisForm,
+                    text: "Are you sure you want to cancel the scheduled message(s)\n\n" +
+                    "They will be permanently removed.\n\n" +
+                    "You can disable this check by changing the Disable Accidental Deletion Prevention setting.", 
+                    caption: "Cancel Scheduled Message(s)", 
+                    buttons: MessageBoxButtons.YesNo,
+                    icon: MessageBoxIcon.Warning,
+                    defaultButton: MessageBoxDefaultButton.Button2) 
+                    == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+    
+            IEnumerable<BrokeredMessage> messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
+
+            List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+
+
+            try
+            {
+                thisForm.UseWaitCursor = true;
+
+                var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+
+                await CancelScheduledMessagesHelper.CancelScheduledMessages(
+                    serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
+            }
+            finally
+            {
+                thisForm.UseWaitCursor = false;
+            }
+        }
+
         private void ResubmitSelectedMessages()
         {
             if (messagesDataGridView.SelectedRows.Count <= 0)
@@ -3330,6 +3409,13 @@ namespace ServiceBusExplorer.Controls
             {
                 form.ShowDialog();
             }
+        }
+
+        void SetCancelScheduledMessageToolStripMenuItemText(bool multipleSelectedRows)
+        {
+            cancelScheduledMessageToolStripMenuItem.Text = multipleSelectedRows
+             ? "Cancel Selected Scheduled Messages"
+             : "Cancel Selected Scheduled Message";
         }
 
         void deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3857,6 +3943,26 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private string CreateFileName()
+        {
+            return string.Format(MessageFileFormat,
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private string CreateFileNameAutoRecognize()
+        {
+            return string.Format(MessageFileFormatAutoRecognize,
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private async void btnPurgeMessages_Click(object sender, EventArgs e)
+        {
+            await PurgeMessagesAsync();
+        }
+        #endregion
+
         #region Save Messages
 
         void saveSelectedMessageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4068,7 +4174,6 @@ namespace ServiceBusExplorer.Controls
            SaveSelectedMessages(SaveInJsonFormat: false);
         }
 
-
         void SaveSelectedMessage(bool SaveInJsonFormat)
         {
             var activeGridView = GetActiveDeadletterGridView();
@@ -4227,24 +4332,25 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private string CreateFileName()
-        {
-            return string.Format(MessageFileFormat,
-                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
-                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
-        }
-
-        private string CreateFileNameAutoRecognize()
-        {
-            return string.Format(MessageFileFormatAutoRecognize,
-                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
-                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
-        }
         #endregion Save Messages
 
-        private async void btnPurgeMessages_Click(object sender, EventArgs e)
+        private void selectAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await PurgeMessagesAsync();
+            messagesDataGridView.SelectAll();
+        }
+
+        private void selectAllDeadletterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var activeGridView = GetActiveDeadletterGridView();
+
+            if (activeGridView == deadletterDataGridView)
+            {
+                deadletterDataGridView.SelectAll();
+            }
+            else if (activeGridView == transferDeadletterDataGridView)
+            {
+                transferDeadletterDataGridView.SelectAll();
+            }   
         }
 
         private async void btnPurgeDeadletterQueueMessages_Click(object sender, EventArgs e)
@@ -4341,5 +4447,4 @@ namespace ServiceBusExplorer.Controls
             }
         }
     }
-    #endregion
 }
