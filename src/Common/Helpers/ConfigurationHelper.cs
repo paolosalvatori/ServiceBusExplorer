@@ -46,7 +46,7 @@ namespace ServiceBusExplorer.Helpers
             configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
         }
 
-        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog)
+        public static void F(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
