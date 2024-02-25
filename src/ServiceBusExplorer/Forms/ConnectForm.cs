@@ -593,15 +593,19 @@ namespace ServiceBusExplorer.Forms
             {
                 var key = cboServiceBusNamespace.Text;
                 var isNewServiceBusNamespace = (key == EnterConnectionString);
+
                 ServiceBusConnectionStringBuilder serviceBusConnectionStringBuilder;
+
                 try
                 {
                     BuildCurrentConnectionString();
+
                     if (string.IsNullOrWhiteSpace(ConnectionString))
                     {
                         MainForm.StaticWriteToLog(ConnectionStringCannotBeNull);
                         return;
                     }
+
                     serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
                 }
                 catch (Exception)
@@ -621,10 +625,10 @@ namespace ServiceBusExplorer.Forms
 
                 var index = host.IndexOf(".", StringComparison.Ordinal);
 
-
                 if (isNewServiceBusNamespace)
                 {
                     key = index > 0 ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(host.Substring(0, index)) : "MyNamespace";
+
                     using (var parameterForm = new ParameterForm("Enter the key for the Service Bus namespace",
                         new List<string> { "Key" },
                         new List<string> { key },
@@ -644,6 +648,7 @@ namespace ServiceBusExplorer.Forms
                     MainForm.StaticWriteToLog("The key of the Service Bus namespace cannot be null.");
                     return;
                 }
+
                 var value = ConnectionString;
 
                 try
@@ -663,6 +668,7 @@ namespace ServiceBusExplorer.Forms
                 }
 
                 serviceBusHelper.ServiceBusNamespaces[key] = ServiceBusNamespace.GetServiceBusNamespace(key, value, MainForm.StaticWriteToLog);
+
                 cboServiceBusNamespace.Items.Clear();
                 cboServiceBusNamespace.Items.Add(SelectServiceBusNamespace);
                 cboServiceBusNamespace.Items.Add(EnterConnectionString);
