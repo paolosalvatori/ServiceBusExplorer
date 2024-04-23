@@ -97,18 +97,18 @@ namespace ServiceBusExplorer.Forms
 
         static readonly List<string> Types = new List<string>
         {
-            "Boolean", 
-            "Byte", 
-            "Int16", 
-            "Int32", 
-            "Int64", 
-            "Single", 
-            "Double", 
-            "Decimal", 
-            "Guid", 
-            "DateTime", 
-            "TimeSpan", 
-            "String", 
+            "Boolean",
+            "Byte",
+            "Int16",
+            "Int32",
+            "Int64",
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
+            "TimeSpan",
+            "String",
             "Char",
             "UInt64",
             "UInt32",
@@ -221,7 +221,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, QueueType queueType,  BrokeredMessage brokeredMessage,
+        public MessageForm(QueueDescription queueDescription, QueueType queueType, BrokeredMessage brokeredMessage,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
@@ -427,9 +427,23 @@ namespace ServiceBusExplorer.Forms
                                         MainForm.SingletonMainForm.UseAscii, out bodyType);
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                    outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
-                                                      message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                    switch (bodyType)
+                                    {
+                                        case BodyType.ByteArray:
+                                            outboundMessage = message.CloneWithByteArrayBodyType(messageText, 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+
+                                        case BodyType.String:
+                                            outboundMessage = message.Clone(message.GetBody<string>(), 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+
+                                        default:
+                                            outboundMessage = message.Clone(message.GetBody<Stream>(), 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+                                    }
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
@@ -504,12 +518,12 @@ namespace ServiceBusExplorer.Forms
                             var messageHandler = CreateDeadLetterMessageHandler();
 
                             var result = await messageHandler.MoveMessages(messageSender,
-                                sequenceNumbers, 
-                                transferDLQ: queueType == QueueType.TransferDeadletter, 
+                                sequenceNumbers,
+                                transferDLQ: queueType == QueueType.TransferDeadletter,
                                 outboundMessages);
 
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;
-                            
+
                             stopwatch.Stop();
 
                             if (result.TimedOut)
