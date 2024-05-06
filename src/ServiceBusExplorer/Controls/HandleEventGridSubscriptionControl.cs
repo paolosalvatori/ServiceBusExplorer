@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
+using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
-using Microsoft.Azure.Management.EventGrid.Models;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
@@ -43,8 +43,8 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Fields
         private WriteToLogDelegate writeToLog;
-        private Subscription subscription;
-        private NamespaceTopic topic;
+        private NamespaceTopicEventSubscriptionResource subscription;
+        private NamespaceTopicResource topic;
         private EventGridLibrary eventGridLibrary;
         private CloudEvent cloudEvent = default!;
         private IReadOnlyList<ReceiveDetails> receivedEvents;
@@ -136,11 +136,11 @@ namespace ServiceBusExplorer.Controls
 
             propertyList.AddRange(new[]
             {
-                new[] {SubName, subscription.Name},
-                new[] {SubId, subscription.Id},
-                new[] {SubType, subscription.Type},
-                new[] {ProvisioningState, subscription.ProvisioningState},
-                new[] {EventDeliverySchema, subscription.EventDeliverySchema}
+                new[] {SubName, subscription.Data.Name},
+                new[] {SubId, subscription.Id.ToString()},
+                new[] {SubType, subscription.Data.ResourceType.Type},
+                new[] {ProvisioningState, subscription.Data.ProvisioningState.Value.ToString()},
+                new[] {EventDeliverySchema, subscription.Data.EventDeliverySchema.ToString()}
             });
 
             subscriptionListView.Items.Clear();
@@ -287,7 +287,7 @@ namespace ServiceBusExplorer.Controls
             }
 
             // Execute event action (acknowledge/release/reject)
-            var eventActionResult = await eventGridLibrary.EventActionsAsync(button.Text, lockTokens, topic.Name, subscription.Name, writeToLog);
+            var eventActionResult = await eventGridLibrary.EventActionsAsync(button.Text, lockTokens, topic.Data.Name, subscription.Data.Name, writeToLog);
 
             if (eventActionResult)
             {

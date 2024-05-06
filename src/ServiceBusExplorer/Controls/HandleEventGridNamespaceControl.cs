@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Management.EventGrid.Models;
+﻿using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.UIHelpers;
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,10 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Fields
-        private NamespaceModel eventGridNamespace;
+        private EventGridNamespaceResource eventGridNamespace;
         #endregion
 
-        public HandleEventGridNamespaceControl(NamespaceModel eventGridNamespace)
+        public HandleEventGridNamespaceControl(EventGridNamespaceResource eventGridNamespace)
         {
             this.eventGridNamespace = eventGridNamespace;
             InitializeComponent();
@@ -40,11 +40,11 @@ namespace ServiceBusExplorer.Controls
             propertyList.AddRange(new[]
             {
                 new[] {Id, eventGridNamespace.Id},
-                new[] {NamespaceName, eventGridNamespace.Name},
-                new[] {NamespaceLocation, eventGridNamespace.Location},
-                new[] {ProvisioningState, eventGridNamespace.ProvisioningState},
-                new[] {PublicNetworkAccess, eventGridNamespace.PublicNetworkAccess},
-                new[] {MinimumTlsVersionAllowed, eventGridNamespace.MinimumTlsVersionAllowed}
+                new[] {NamespaceName, eventGridNamespace.Data.Name},
+                new[] {NamespaceLocation, eventGridNamespace.Data.Location.ToString()},
+                new[] {ProvisioningState, eventGridNamespace.Data.ProvisioningState.ToString()},
+                new[] {PublicNetworkAccess, eventGridNamespace.Data.PublicNetworkAccess.ToString()},
+                new[] {MinimumTlsVersionAllowed, eventGridNamespace.Data.MinimumTlsVersionAllowed.ToString()}
             });
 
             foreach (var array in propertyList)

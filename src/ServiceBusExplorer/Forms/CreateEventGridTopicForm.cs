@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Management.EventGrid.Models;
-using ServiceBusExplorer.Utilities.Helpers;
+﻿using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

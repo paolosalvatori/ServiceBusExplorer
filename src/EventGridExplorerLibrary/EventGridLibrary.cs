@@ -4,37 +4,24 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Globalization;
 using Azure;
-using Azure.Core;
-using Azure.Identity;
 using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
-using Microsoft.Azure.Management.EventGrid;
-using Microsoft.Azure.Management.EventGrid.Models;
+using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.Utilities.Helpers;
+using Microsoft.Azure.Management.EventGridV2;
 
 namespace EventGridExplorerLibrary
 {
     public class EventGridLibrary
     {
         #region Private Constants
-        private const string ArmEndpointUrl = "https://management.azure.com/";
-        private const string ScopeUrl = "https://management.core.windows.net/.default";
-        private const string AuthorityHostUri = "https://login.microsoftonline.com/";
         private const string DefaultApiVersion = "2023-06-01-preview";
-        private readonly Dictionary<string, string> tenantIds = new Dictionary<string, string>
-        {
-            { "Public", "72f988bf-86f1-41af-91ab-2d7cd011db47" },
-            { "Fairfax", "cab8a31a-1906-4287-a0d8-4eef66b95f6e" },
-            { "Mooncake", "a55a4d5b-9241-49b1-b4ff-befa8db00269" }
-        };
         private const string ExceptionFormat = "Exception: {0}";
         private const string TimeoutFormat = "Exception: Receiving events timed out after {0} ms";
         #endregion
 
         #region Private Fields
-        private EventGridManagementClient controlPlaneClient;
+        private EventGridControlPlaneClient eventGridControlPlaneClient;
         private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
         private int retryTimeout;
         private readonly WriteToLogDelegate writeToLog = default;
@@ -44,74 +31,68 @@ namespace EventGridExplorerLibrary
         {
             string tenantId = customId == string.Empty ? null : customId;
             var apiVersionToUse = string.IsNullOrEmpty(apiVersion) ? DefaultApiVersion : apiVersion;
-            controlPlaneClient = new EventGridManagementClient(new Uri(ArmEndpointUrl), GetTokenCredential(tenantId), subscriptionId, apiVersionToUse , retryTimeout);
+            eventGridControlPlaneClient = new EventGridControlPlaneClient(subscriptionId, retryTimeout, tenantId);
             this.retryTimeout = retryTimeout;
             this.writeToLog = writeToLog;
         }
 
-        public TokenCredentials GetTokenCredential(string tenantId)
+        public async Task<Response<EventGridNamespaceResource>> GetNamespacesAsync(string resourceGroupName, string namespaceName)
         {
-            string[] scope = { ScopeUrl };
-
-            var credentialOption = new InteractiveBrowserCredentialOptions()
-            {
-                TenantId = tenantId,
-                AuthorityHost = new Uri(AuthorityHostUri)
-            };
-
-            InteractiveBrowserCredential credential = new InteractiveBrowserCredential(credentialOption);
-            TokenRequestContext tokenRequestContext = new TokenRequestContext(scope);
-            var accessToken = credential.GetToken(tokenRequestContext);
-
-            return new TokenCredentials(accessToken.Token);
-        }
-
-        public async Task<NamespaceModel> GetNamespacesAsync(string resourceGroupName, string namespaceName)
-        {
-            var eventGridNamespace = await controlPlaneClient.Namespaces.GetAsync(resourceGroupName, namespaceName);
+            var eventGridNamespace = await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetAsync();
             return eventGridNamespace;
         }
 
-        public async Task<IPage<NamespaceTopic>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
-        {
-            var topics = await controlPlaneClient.NamespaceTopics.ListByNamespaceAsync(resourceGroupName, namespaceName);
 
-            foreach (var topic in topics)
+        public async Task<AsyncPageable<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
+        {
+            NamespaceTopicCollection namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
+            AsyncPageable<NamespaceTopicResource> pages = namespaceTopicCollection.GetAllAsync();
+            IAsyncEnumerator<NamespaceTopicResource> enumerator = pages.GetAsyncEnumerator();
+
+            try
             {
-                var key = await controlPlaneClient.NamespaceTopics.ListSharedAccessKeysAsync(resourceGroupName, namespaceName, topic.Name);
-                dataPlaneClients[topic.Name] = new EventGridClient(new Uri(hostname), new AzureKeyCredential(key.Key1));
+                while (await enumerator.MoveNextAsync())
+                {
+                    NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(enumerator.Current.Data.Name)).Value;
+                    var key = (await namespaceTopicResource.GetSharedAccessKeysAsync()).Value;
+                    dataPlaneClients[enumerator.Current.Data.Name] = new EventGridClient(new Uri(hostname), new AzureKeyCredential(key.Key1));
+                }
+            }
+            finally
+            {
+                await enumerator.DisposeAsync();
             }
 
-            return topics;
+           return pages;
         }
 
-        public async Task<IPage<Subscription>> GetEventSubscriptionsAsync(string resourceGroupName, string namespaceName, string topicName)
+        public async Task<AsyncPageable<NamespaceTopicEventSubscriptionResource>> GetEventSubscriptionsAsync(string resourceGroupName, string namespaceName, string topicName)
         {
-            var subscriptions = await controlPlaneClient.NamespaceTopicEventSubscriptions.ListByNamespaceTopicAsync(resourceGroupName, namespaceName, topicName);
-            return subscriptions;
+            NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
+            NamespaceTopicEventSubscriptionCollection namespaceTopicEventSubscriptionCollection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
+            AsyncPageable<NamespaceTopicEventSubscriptionResource> pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
+
+            return pages;
         }
 
         public async Task CreateTopicAsync(string resourceGroupName, string namespaceName, string newTopicName)
         {
-            NamespaceTopic namespaceTopic = new NamespaceTopic(name: newTopicName);
-            await controlPlaneClient.NamespaceTopics.CreateOrUpdateAsync(resourceGroupName, namespaceName, newTopicName, namespaceTopic);
+            await eventGridControlPlaneClient.CreateNamespaceTopicAsync(resourceGroupName, namespaceName, newTopicName);
         }
 
         public async Task DeleteTopicAsync(string resourceGroupName, string namespaceName, string topicName)
         {
-            await controlPlaneClient.NamespaceTopics.DeleteAsync(resourceGroupName, namespaceName, topicName);
+            await eventGridControlPlaneClient.DeleteNamespaceTopicAsync(resourceGroupName, namespaceName, topicName);
         }
 
         public async Task CreateSubscriptionAsync(string resourceGroupName, string namespaceName, string topicName, string subscriptionName, string deliveryMode)
         {
-            DeliveryConfiguration deliveryConfiguration = new DeliveryConfiguration(deliveryMode);
-            Subscription subscription = new Subscription(name: subscriptionName, deliveryConfiguration: deliveryConfiguration);
-            await controlPlaneClient.NamespaceTopicEventSubscriptions.CreateOrUpdateAsync(resourceGroupName, namespaceName, topicName, subscriptionName, subscription);
+            await eventGridControlPlaneClient.CreateNamespaceTopicEventSubscriptionAsync(resourceGroupName, namespaceName, topicName, subscriptionName, deliveryMode);
         }
 
         public async Task DeleteSubscriptionAsync(string resourceGroupName, string namespaceName, string topicName, string subscriptionName)
         {
-            await controlPlaneClient.NamespaceTopicEventSubscriptions.DeleteAsync(resourceGroupName, namespaceName, topicName, subscriptionName);
+            await eventGridControlPlaneClient.DeleteNamespaceTopicEventSubscriptionAsync(resourceGroupName, namespaceName, topicName, subscriptionName);
         }
 
         public async Task PublishEventAsync(string topicName, string eventSource, string eventType, string eventDataJson)

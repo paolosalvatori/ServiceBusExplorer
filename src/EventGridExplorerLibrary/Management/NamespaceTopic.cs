@@ -8,18 +8,15 @@
 // regenerated.
 // </auto-generated>
 
-namespace Microsoft.Azure.Management.EventGrid.Models
+namespace Microsoft.Azure.Management.EventGridV2
 {
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
-    using Newtonsoft.Json;
-    using System.Linq;
+    using global::Azure.ResourceManager.Models;
 
     /// <summary>
     /// Namespace topic details.
     /// </summary>
     [Rest.Serialization.JsonTransformation]
-    public partial class NamespaceTopic : Resource
+    public partial class NamespaceTopic
     {
         /// <summary>
         /// Initializes a new instance of the NamespaceTopic class.
@@ -53,13 +50,7 @@ namespace Microsoft.Azure.Management.EventGrid.Models
         /// <param name="systemData">The system metadata relating to namespace
         /// topic resource.</param>
         public NamespaceTopic(string id = default(string), string name = default(string), string type = default(string), string provisioningState = default(string), string publisherType = default(string), string inputSchema = default(string), int? eventRetentionInDays = default(int?), SystemData systemData = default(SystemData))
-            : base(id, name, type)
         {
-            ProvisioningState = provisioningState;
-            PublisherType = publisherType;
-            InputSchema = inputSchema;
-            EventRetentionInDays = eventRetentionInDays;
-            SystemData = systemData;
             CustomInit();
         }
 
@@ -67,46 +58,7 @@ namespace Microsoft.Azure.Management.EventGrid.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
-
-        /// <summary>
-        /// Gets provisioning state of the namespace topic. Possible values
-        /// include: 'Creating', 'Updating', 'Deleting', 'Succeeded',
-        /// 'Canceled', 'Failed', 'Deleted', 'DeleteFailed', 'CreateFailed',
-        /// 'UpdatedFailed'
-        /// </summary>
-        [JsonProperty(PropertyName = "properties.provisioningState")]
-        public string ProvisioningState { get; private set; }
-
-        /// <summary>
-        /// Gets or sets publisher type of the namespace topic. Possible values
-        /// include: 'Custom'
-        /// </summary>
-        [JsonProperty(PropertyName = "properties.publisherType")]
-        public string PublisherType { get; set; }
-
-        /// <summary>
-        /// Gets or sets this determines the format that is expected for
-        /// incoming events published to the topic. Possible values include:
-        /// 'CloudEventSchemaV1_0'
-        /// </summary>
-        [JsonProperty(PropertyName = "properties.inputSchema")]
-        public string InputSchema { get; set; }
-
-        /// <summary>
-        /// Gets or sets event retention for the namespace topic expressed in
-        /// days. The property default value is 1 day.
-        /// Min event retention duration value is 1 day and max event retention
-        /// duration value is 1 day.
-        /// </summary>
-        [JsonProperty(PropertyName = "properties.eventRetentionInDays")]
-        public int? EventRetentionInDays { get; set; }
-
-        /// <summary>
-        /// Gets or sets the system metadata relating to namespace topic
-        /// resource.
-        /// </summary>
-        [JsonProperty(PropertyName = "systemData")]
-        public SystemData SystemData { get; set; }
-
     }
+
+       
 }

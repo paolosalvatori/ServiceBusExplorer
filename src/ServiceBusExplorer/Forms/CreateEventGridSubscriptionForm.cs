@@ -51,5 +51,20 @@ namespace ServiceBusExplorer.Forms
 
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
         }
+
+        private void CreateEventGridSubscriptionForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void grouperMessages_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

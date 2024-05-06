@@ -30,11 +30,16 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreateEventGridSubscriptionForm));
             this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Operator = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblSubscriptionName = new System.Windows.Forms.Label();
             this.txtSubscriptionName = new System.Windows.Forms.TextBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.grouperMessages.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // grouperMessages
@@ -47,6 +52,7 @@
             this.grouperMessages.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessages.BorderThickness = 1F;
+            this.grouperMessages.Controls.Add(this.dataGridView1);
             this.grouperMessages.Controls.Add(this.lblSubscriptionName);
             this.grouperMessages.Controls.Add(this.txtSubscriptionName);
             this.grouperMessages.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -54,26 +60,54 @@
             this.grouperMessages.ForeColor = System.Drawing.Color.White;
             this.grouperMessages.GroupImage = null;
             this.grouperMessages.GroupTitle = "Create Subscription";
-            this.grouperMessages.Location = new System.Drawing.Point(27, 22);
-            this.grouperMessages.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grouperMessages.Location = new System.Drawing.Point(18, 15);
             this.grouperMessages.Name = "grouperMessages";
-            this.grouperMessages.Padding = new System.Windows.Forms.Padding(30, 32, 30, 32);
+            this.grouperMessages.Padding = new System.Windows.Forms.Padding(20, 21, 20, 21);
             this.grouperMessages.PaintGroupBox = true;
             this.grouperMessages.RoundCorners = 4;
             this.grouperMessages.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessages.ShadowControl = false;
             this.grouperMessages.ShadowThickness = 1;
-            this.grouperMessages.Size = new System.Drawing.Size(350, 156);
+            this.grouperMessages.Size = new System.Drawing.Size(691, 409);
             this.grouperMessages.TabIndex = 43;
+            this.grouperMessages.Load += new System.EventHandler(this.grouperMessages_Load);
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Key,
+            this.Operator,
+            this.Value});
+            this.dataGridView1.Location = new System.Drawing.Point(23, 99);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(500, 173);
+            this.dataGridView1.TabIndex = 46;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // Key
+            // 
+            this.Key.HeaderText = "Key";
+            this.Key.Name = "Key";
+            // 
+            // Operator
+            // 
+            this.Operator.HeaderText = "Operator";
+            this.Operator.Name = "Operator";
+            // 
+            // Value
+            // 
+            this.Value.HeaderText = "Value";
+            this.Value.Name = "Value";
             // 
             // lblSubscriptionName
             // 
             this.lblSubscriptionName.AutoSize = true;
             this.lblSubscriptionName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSubscriptionName.Location = new System.Drawing.Point(33, 62);
-            this.lblSubscriptionName.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblSubscriptionName.Location = new System.Drawing.Point(22, 41);
+            this.lblSubscriptionName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSubscriptionName.Name = "lblSubscriptionName";
-            this.lblSubscriptionName.Size = new System.Drawing.Size(156, 20);
+            this.lblSubscriptionName.Size = new System.Drawing.Size(99, 13);
             this.lblSubscriptionName.TabIndex = 43;
             this.lblSubscriptionName.Text = "Subscription Name:";
             // 
@@ -81,10 +115,9 @@
             // 
             this.txtSubscriptionName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSubscriptionName.Location = new System.Drawing.Point(34, 92);
-            this.txtSubscriptionName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtSubscriptionName.Location = new System.Drawing.Point(23, 61);
             this.txtSubscriptionName.Name = "txtSubscriptionName";
-            this.txtSubscriptionName.Size = new System.Drawing.Size(289, 26);
+            this.txtSubscriptionName.Size = new System.Drawing.Size(652, 20);
             this.txtSubscriptionName.TabIndex = 42;
             // 
             // btnOk
@@ -95,10 +128,9 @@
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(142, 213);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnOk.Location = new System.Drawing.Point(553, 447);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(108, 38);
+            this.btnOk.Size = new System.Drawing.Size(72, 25);
             this.btnOk.TabIndex = 44;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
@@ -113,10 +145,9 @@
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(268, 213);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Location = new System.Drawing.Point(637, 447);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(108, 38);
+            this.btnCancel.Size = new System.Drawing.Size(72, 25);
             this.btnCancel.TabIndex = 45;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -125,23 +156,26 @@
             // CreateEventGridSubscriptionForm
             // 
             this.AcceptButton = this.btnOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(412, 272);
+            this.ClientSize = new System.Drawing.Size(733, 486);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.grouperMessages);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CreateEventGridSubscriptionForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Create Event Grid Subscription";
+            this.Load += new System.EventHandler(this.CreateEventGridSubscriptionForm_Load);
             this.grouperMessages.ResumeLayout(false);
             this.grouperMessages.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -153,5 +187,9 @@
         private System.Windows.Forms.TextBox txtSubscriptionName;
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Key;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Operator;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Management.EventGrid.Models;
+﻿using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.UIHelpers;
 using System;
 using System.Collections.Generic;
@@ -23,10 +23,10 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Fields
-        private NamespaceTopic topic;
+        private NamespaceTopicResource topic;
         #endregion
 
-        public HandleEventGridTopicControl(NamespaceTopic topic, string hostname)
+        public HandleEventGridTopicControl(NamespaceTopicResource topic, string hostname)
         {
             this.topic = topic;
             InitializeComponent();
@@ -41,12 +41,12 @@ namespace ServiceBusExplorer.Controls
             propertyList.AddRange(new[]
             {
                 new[] {Id, topic.Id},
-                new[] {TopicName, topic.Name},
-                new[] {TopicEndpoint, hostname + "/topics/" + topic.Name},
-                new[] {InputSchema, topic.InputSchema},
-                new[] {EventRetentionInDays, topic.EventRetentionInDays.ToString()},
-                new[] {ProvisioningState, topic.ProvisioningState},
-                new[] {PublisherType, topic.PublisherType},
+                new[] {TopicName, topic.Data.Name},
+                new[] {TopicEndpoint, hostname + "/topics/" + topic.Data.Name},
+                new[] {InputSchema, topic.Data.InputSchema.ToString()},
+                new[] {EventRetentionInDays, topic.Data.EventRetentionInDays.ToString()},
+                new[] {ProvisioningState, topic.Data.ProvisioningState.ToString()},
+                new[] {PublisherType, topic.Data.PublisherType.ToString()},
             });
 
             foreach (var array in propertyList)

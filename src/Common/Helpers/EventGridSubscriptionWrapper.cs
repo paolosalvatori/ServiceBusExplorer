@@ -21,7 +21,7 @@
 
 #region Using Directives
 
-using Microsoft.Azure.Management.EventGrid.Models;
+using Azure.ResourceManager.EventGrid;
 
 #endregion
 
@@ -48,7 +48,7 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         /// <param name="subscription">A subscription.</param>
         /// <param name="topic">The topic the subscription belongs to.</param>
-        public EventGridSubscriptionWrapper(Subscription subscription, NamespaceTopic topic)
+        public EventGridSubscriptionWrapper(NamespaceTopicEventSubscriptionResource subscription, NamespaceTopicResource topic)
         {
             SubscriptionDescription = subscription;
             TopicDescription = topic;
@@ -60,7 +60,7 @@ namespace ServiceBusExplorer.Helpers
         /// <param name="subscription">A subscription.</param>
         /// <param name="topic">The topic the subscription belongs to.</param>
         /// <param name="filter">The OData filter.</param>
-        public EventGridSubscriptionWrapper(Subscription subscription, NamespaceTopic topic, string filter)
+        public EventGridSubscriptionWrapper(NamespaceTopicEventSubscriptionResource subscription, NamespaceTopicResource topic, string filter)
         {
             SubscriptionDescription = subscription;
             TopicDescription = topic;
@@ -69,8 +69,8 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Public Properties
-        public Subscription SubscriptionDescription { get; set; }
-        public NamespaceTopic TopicDescription { get; set; }
+        public NamespaceTopicEventSubscriptionResource SubscriptionDescription { get; set; }
+        public NamespaceTopicResource TopicDescription { get; set; }
         public string Filter { get; set; }
         #endregion
     }
