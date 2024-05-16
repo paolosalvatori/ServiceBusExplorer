@@ -17,22 +17,25 @@ namespace EventGridExplorerLibrary
         #region Private Constants
         private const string DefaultApiVersion = "2023-06-01-preview";
         private const string ExceptionFormat = "Exception: {0}";
-        private const string TimeoutFormat = "Exception: Receiving events timed out after {0} ms";
+        // Minimum wait time value for receive operation in Seconds
+        private const int MinWaitTimeInSeconds = 10;
+        // Maximum wait time value for receive operation in Seconds
+        private const int MaxWaitTimeInSeconds = 120;
         #endregion
 
         #region Private Fields
         private EventGridControlPlaneClient eventGridControlPlaneClient;
         private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
-        private int retryTimeout;
+        private int maxWaitTime;
         private readonly WriteToLogDelegate writeToLog = default;
         #endregion
 
-        public EventGridLibrary(string subscriptionId, string apiVersion, int retryTimeout, string cloudTenant, string customId, WriteToLogDelegate writeToLog)
+        public EventGridLibrary(string subscriptionId, string apiVersion, int maxWaitTime, string customId, WriteToLogDelegate writeToLog)
         {
             string tenantId = customId == string.Empty ? null : customId;
             var apiVersionToUse = string.IsNullOrEmpty(apiVersion) ? DefaultApiVersion : apiVersion;
-            eventGridControlPlaneClient = new EventGridControlPlaneClient(subscriptionId, retryTimeout, tenantId);
-            this.retryTimeout = retryTimeout;
+            eventGridControlPlaneClient = new EventGridControlPlaneClient(subscriptionId, tenantId);
+            this.maxWaitTime = maxWaitTime;
             this.writeToLog = writeToLog;
         }
 
@@ -119,16 +122,22 @@ namespace EventGridExplorerLibrary
         {
             try
             {
-                Task<Response<ReceiveResult>> receiveTask = dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum);
-                if (await Task.WhenAny(receiveTask, Task.Delay(retryTimeout)) == receiveTask)
+                Response<ReceiveResult> result;
+
+                if (this.maxWaitTime < MinWaitTimeInSeconds)
                 {
-                    return receiveTask.Result;
+                     result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
+                }
+                else if (this.maxWaitTime > MaxWaitTimeInSeconds)
+                {
+                    result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MaxWaitTimeInSeconds));
                 }
                 else
                 {
-                    writeToLog(string.Format(CultureInfo.CurrentCulture, TimeoutFormat, retryTimeout));
-                    return null;
+                    result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(this.maxWaitTime));
                 }
+
+                return result;
             }
             catch (Exception ex)
             {

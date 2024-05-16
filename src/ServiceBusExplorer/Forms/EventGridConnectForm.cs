@@ -37,7 +37,7 @@ namespace ServiceBusExplorer.Forms
             ApiVersion = cboApiVersion.Text.Trim(); 
 
             int.TryParse(txtRetryTimeout.Text, out var retryTimoutInSeconds);
-            RetryTimeout = retryTimoutInSeconds * 1000; // Convert to milliseconds
+            RetryTimeout = retryTimoutInSeconds;
             CloudTenant = cloudGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
             CustomId = txtCustomId.Text?.Trim();
 
@@ -53,6 +53,11 @@ namespace ServiceBusExplorer.Forms
         private void EventGridConnectForm_Load(object sender, EventArgs e)
         {
             cboApiVersion.SelectedIndex = 0;
+        }
+
+        private void lblTimeout_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

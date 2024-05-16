@@ -24,17 +24,15 @@ namespace Microsoft.Azure.Management.EventGridV2
         private const string NamespaceTopicEventSubscriptionsApiVersion = "2023-12-15-preview";
         private const string NamespaceTopicEventSubscriptionsResourceType = "Microsoft.EventGrid/namespaces/topics/eventSubscriptions";
         private readonly string subscriptionId;
-        private readonly int retryTimeout;
         private readonly string tenantId;
         public ArmClient armclient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventGridClient"/> class.
         /// </summary>
-        public EventGridControlPlaneClient(string subscriptionId, int retryTimeout, string tenantId)
+        public EventGridControlPlaneClient(string subscriptionId, string tenantId)
         {
             this.subscriptionId = subscriptionId;
-            this.retryTimeout = retryTimeout;
             this.tenantId = tenantId;
             this.armclient = new ArmClient(this.GetTokenCredential());
 

@@ -260,6 +260,7 @@ namespace ServiceBusExplorer.Forms
             this.txtRetryTimeout.Name = "txtRetryTimeout";
             this.txtRetryTimeout.Size = new System.Drawing.Size(152, 26);
             this.txtRetryTimeout.TabIndex = 19;
+            this.txtRetryTimeout.Text = "60";
             // 
             // lblTimeout
             // 

@@ -461,7 +461,6 @@ namespace ServiceBusExplorer.Forms
                         connectForm.SubscriptionId,
                         connectForm.ApiVersion,
                         connectForm.RetryTimeout,
-                        connectForm.CloudTenant,
                         connectForm.CustomId,
                         WriteToLog);
 
