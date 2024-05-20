@@ -2037,13 +2037,30 @@ namespace ServiceBusExplorer.Forms
                     {
                         return;
                     }
+                    
+                    var filters = new Dictionary<string, string>();
+                    filters["Key"] = createSubscriptionForm.Key;
+                    filters["Operator"] = createSubscriptionForm.Operator;
+                    filters["Value"] = createSubscriptionForm.Value;
+
+                    var filterList = new List<Dictionary<string, string>>
+                    {
+                        filters
+                    };
+
+                    var eventTypesList = new List<string>
+                    {
+                        createSubscriptionForm.EventType
+                    };
 
                     await eventGridLibrary.CreateSubscriptionAsync(
                         ResourceGroupName, 
                         NamespaceName, 
                         subscription.TopicDescription.Data.Name, 
                         createSubscriptionForm.SubscriptionName,
-                        EventGridSubscriptionDeliveryMode);
+                        EventGridSubscriptionDeliveryMode,
+                        filterList,
+                        eventTypesList);
 
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionCreatedFormat, createSubscriptionForm.SubscriptionName));
                     RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);
@@ -4330,6 +4347,7 @@ namespace ServiceBusExplorer.Forms
         public string ResourceGroupName { get; set; }
         public string TopicName { get; set; }
         public string NamespaceHostname { get; set; }
+        public List<Dictionary<string, List<string>>> Filters { get; set; }
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 

@@ -73,10 +73,9 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(352, 672);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnOk.Location = new System.Drawing.Point(235, 437);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(108, 37);
+            this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 46;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = false;
@@ -91,10 +90,9 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(472, 672);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCancel.Location = new System.Drawing.Point(315, 437);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(108, 37);
+            this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 47;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -106,10 +104,9 @@ namespace ServiceBusExplorer.Forms
             this.pbAzure.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.pbAzure.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pbAzure.ErrorImage = null;
-            this.pbAzure.Location = new System.Drawing.Point(422, 14);
-            this.pbAzure.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pbAzure.Location = new System.Drawing.Point(281, 9);
             this.pbAzure.Name = "pbAzure";
-            this.pbAzure.Size = new System.Drawing.Size(165, 22);
+            this.pbAzure.Size = new System.Drawing.Size(110, 14);
             this.pbAzure.TabIndex = 48;
             this.pbAzure.TabStop = false;
             // 
@@ -137,16 +134,15 @@ namespace ServiceBusExplorer.Forms
             this.grouperEventGridNamespaceSettings.ForeColor = System.Drawing.Color.White;
             this.grouperEventGridNamespaceSettings.GroupImage = null;
             this.grouperEventGridNamespaceSettings.GroupTitle = "Context Settings";
-            this.grouperEventGridNamespaceSettings.Location = new System.Drawing.Point(33, 38);
-            this.grouperEventGridNamespaceSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.grouperEventGridNamespaceSettings.Location = new System.Drawing.Point(22, 25);
             this.grouperEventGridNamespaceSettings.Name = "grouperEventGridNamespaceSettings";
-            this.grouperEventGridNamespaceSettings.Padding = new System.Windows.Forms.Padding(30, 31, 30, 31);
+            this.grouperEventGridNamespaceSettings.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
             this.grouperEventGridNamespaceSettings.PaintGroupBox = true;
             this.grouperEventGridNamespaceSettings.RoundCorners = 4;
             this.grouperEventGridNamespaceSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperEventGridNamespaceSettings.ShadowControl = false;
             this.grouperEventGridNamespaceSettings.ShadowThickness = 1;
-            this.grouperEventGridNamespaceSettings.Size = new System.Drawing.Size(552, 602);
+            this.grouperEventGridNamespaceSettings.Size = new System.Drawing.Size(368, 391);
             this.grouperEventGridNamespaceSettings.TabIndex = 37;
             // 
             // cboApiVersion
@@ -155,9 +151,10 @@ namespace ServiceBusExplorer.Forms
             this.cboApiVersion.Items.AddRange(new object[] {
             "2023-12-15-preview",
             "2023-06-01-preview"});
-            this.cboApiVersion.Location = new System.Drawing.Point(28, 307);
+            this.cboApiVersion.Location = new System.Drawing.Point(19, 200);
+            this.cboApiVersion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboApiVersion.Name = "cboApiVersion";
-            this.cboApiVersion.Size = new System.Drawing.Size(288, 28);
+            this.cboApiVersion.Size = new System.Drawing.Size(193, 28);
             this.cboApiVersion.TabIndex = 54;
             // 
             // cloudGroupBox
@@ -170,9 +167,11 @@ namespace ServiceBusExplorer.Forms
             this.cloudGroupBox.Controls.Add(this.btnMooncakeCloud);
             this.cloudGroupBox.Controls.Add(this.btnCustomCloud);
             this.cloudGroupBox.Controls.Add(this.txtCustomId);
-            this.cloudGroupBox.Location = new System.Drawing.Point(24, 445);
+            this.cloudGroupBox.Location = new System.Drawing.Point(16, 289);
+            this.cloudGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cloudGroupBox.Name = "cloudGroupBox";
-            this.cloudGroupBox.Size = new System.Drawing.Size(502, 129);
+            this.cloudGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cloudGroupBox.Size = new System.Drawing.Size(335, 84);
             this.cloudGroupBox.TabIndex = 53;
             this.cloudGroupBox.TabStop = false;
             // 
@@ -181,8 +180,7 @@ namespace ServiceBusExplorer.Forms
             this.btnPublicCloud.AutoSize = true;
             this.btnPublicCloud.Checked = true;
             this.btnPublicCloud.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPublicCloud.Location = new System.Drawing.Point(6, 11);
-            this.btnPublicCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnPublicCloud.Location = new System.Drawing.Point(4, 7);
             this.btnPublicCloud.Name = "btnPublicCloud";
             this.btnPublicCloud.Size = new System.Drawing.Size(80, 24);
             this.btnPublicCloud.TabIndex = 40;
@@ -194,8 +192,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.btnFairfaxCloud.AutoSize = true;
             this.btnFairfaxCloud.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnFairfaxCloud.Location = new System.Drawing.Point(6, 40);
-            this.btnFairfaxCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnFairfaxCloud.Location = new System.Drawing.Point(4, 26);
             this.btnFairfaxCloud.Name = "btnFairfaxCloud";
             this.btnFairfaxCloud.Size = new System.Drawing.Size(85, 24);
             this.btnFairfaxCloud.TabIndex = 40;
@@ -206,8 +203,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.btnMooncakeCloud.AutoSize = true;
             this.btnMooncakeCloud.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMooncakeCloud.Location = new System.Drawing.Point(6, 68);
-            this.btnMooncakeCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnMooncakeCloud.Location = new System.Drawing.Point(4, 44);
             this.btnMooncakeCloud.Name = "btnMooncakeCloud";
             this.btnMooncakeCloud.Size = new System.Drawing.Size(110, 24);
             this.btnMooncakeCloud.TabIndex = 40;
@@ -218,8 +214,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.btnCustomCloud.AutoSize = true;
             this.btnCustomCloud.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnCustomCloud.Location = new System.Drawing.Point(6, 95);
-            this.btnCustomCloud.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCustomCloud.Location = new System.Drawing.Point(4, 62);
             this.btnCustomCloud.Name = "btnCustomCloud";
             this.btnCustomCloud.Size = new System.Drawing.Size(170, 24);
             this.btnCustomCloud.TabIndex = 40;
@@ -233,18 +228,16 @@ namespace ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCustomId.Enabled = false;
             this.txtCustomId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtCustomId.Location = new System.Drawing.Point(178, 92);
-            this.txtCustomId.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtCustomId.Location = new System.Drawing.Point(119, 60);
             this.txtCustomId.Name = "txtCustomId";
-            this.txtCustomId.Size = new System.Drawing.Size(307, 26);
+            this.txtCustomId.Size = new System.Drawing.Size(206, 26);
             this.txtCustomId.TabIndex = 41;
             // 
             // lblCloud
             // 
             this.lblCloud.AutoSize = true;
             this.lblCloud.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblCloud.Location = new System.Drawing.Point(24, 425);
-            this.lblCloud.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCloud.Location = new System.Drawing.Point(16, 276);
             this.lblCloud.Name = "lblCloud";
             this.lblCloud.Size = new System.Drawing.Size(113, 20);
             this.lblCloud.TabIndex = 51;
@@ -255,10 +248,9 @@ namespace ServiceBusExplorer.Forms
             this.txtRetryTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtRetryTimeout.Location = new System.Drawing.Point(24, 372);
-            this.txtRetryTimeout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtRetryTimeout.Location = new System.Drawing.Point(16, 242);
             this.txtRetryTimeout.Name = "txtRetryTimeout";
-            this.txtRetryTimeout.Size = new System.Drawing.Size(152, 26);
+            this.txtRetryTimeout.Size = new System.Drawing.Size(103, 26);
             this.txtRetryTimeout.TabIndex = 19;
             this.txtRetryTimeout.Text = "60";
             // 
@@ -266,8 +258,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblTimeout.AutoSize = true;
             this.lblTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTimeout.Location = new System.Drawing.Point(24, 349);
-            this.lblTimeout.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTimeout.Location = new System.Drawing.Point(16, 227);
             this.lblTimeout.Name = "lblTimeout";
             this.lblTimeout.Size = new System.Drawing.Size(145, 20);
             this.lblTimeout.TabIndex = 18;
@@ -278,18 +269,17 @@ namespace ServiceBusExplorer.Forms
             this.txtSubscriptionId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtSubscriptionId.Location = new System.Drawing.Point(24, 75);
-            this.txtSubscriptionId.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtSubscriptionId.Location = new System.Drawing.Point(16, 49);
             this.txtSubscriptionId.Name = "txtSubscriptionId";
-            this.txtSubscriptionId.Size = new System.Drawing.Size(502, 26);
+            this.txtSubscriptionId.Size = new System.Drawing.Size(336, 26);
             this.txtSubscriptionId.TabIndex = 16;
+            this.txtSubscriptionId.Text = "d33c5f7a-02ea-40f4-bf52-07f17e84d6a8";
             // 
             // lblApiVersion
             // 
             this.lblApiVersion.AutoSize = true;
             this.lblApiVersion.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblApiVersion.Location = new System.Drawing.Point(24, 271);
-            this.lblApiVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblApiVersion.Location = new System.Drawing.Point(16, 176);
             this.lblApiVersion.Name = "lblApiVersion";
             this.lblApiVersion.Size = new System.Drawing.Size(102, 20);
             this.lblApiVersion.TabIndex = 10;
@@ -300,19 +290,18 @@ namespace ServiceBusExplorer.Forms
             this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtResourceGroupName.Location = new System.Drawing.Point(24, 149);
-            this.txtResourceGroupName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtResourceGroupName.Location = new System.Drawing.Point(16, 97);
             this.txtResourceGroupName.Multiline = true;
             this.txtResourceGroupName.Name = "txtResourceGroupName";
-            this.txtResourceGroupName.Size = new System.Drawing.Size(502, 29);
+            this.txtResourceGroupName.Size = new System.Drawing.Size(336, 20);
             this.txtResourceGroupName.TabIndex = 1;
+            this.txtResourceGroupName.Text = "HarriePlayGround";
             // 
             // lblResourceGroupName
             // 
             this.lblResourceGroupName.AutoSize = true;
             this.lblResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblResourceGroupName.Location = new System.Drawing.Point(24, 128);
-            this.lblResourceGroupName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblResourceGroupName.Location = new System.Drawing.Point(16, 83);
             this.lblResourceGroupName.Name = "lblResourceGroupName";
             this.lblResourceGroupName.Size = new System.Drawing.Size(186, 20);
             this.lblResourceGroupName.TabIndex = 0;
@@ -322,8 +311,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblSubscriptionId.AutoSize = true;
             this.lblSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSubscriptionId.Location = new System.Drawing.Point(24, 52);
-            this.lblSubscriptionId.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblSubscriptionId.Location = new System.Drawing.Point(16, 34);
             this.lblSubscriptionId.Name = "lblSubscriptionId";
             this.lblSubscriptionId.Size = new System.Drawing.Size(129, 20);
             this.lblSubscriptionId.TabIndex = 6;
@@ -334,18 +322,17 @@ namespace ServiceBusExplorer.Forms
             this.txtNamespaceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtNamespaceName.Location = new System.Drawing.Point(24, 223);
-            this.txtNamespaceName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtNamespaceName.Location = new System.Drawing.Point(16, 145);
             this.txtNamespaceName.Name = "txtNamespaceName";
-            this.txtNamespaceName.Size = new System.Drawing.Size(502, 26);
+            this.txtNamespaceName.Size = new System.Drawing.Size(336, 26);
             this.txtNamespaceName.TabIndex = 3;
+            this.txtNamespaceName.Text = "ServiceBusExplorerNamespace";
             // 
             // lblNamespaceName
             // 
             this.lblNamespaceName.AutoSize = true;
             this.lblNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblNamespaceName.Location = new System.Drawing.Point(24, 205);
-            this.lblNamespaceName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblNamespaceName.Location = new System.Drawing.Point(16, 133);
             this.lblNamespaceName.Name = "lblNamespaceName";
             this.lblNamespaceName.Size = new System.Drawing.Size(152, 20);
             this.lblNamespaceName.TabIndex = 2;
@@ -354,11 +341,11 @@ namespace ServiceBusExplorer.Forms
             // EventGridConnectForm
             // 
             this.AcceptButton = this.btnOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(621, 732);
+            this.ClientSize = new System.Drawing.Size(414, 476);
             this.Controls.Add(this.pbAzure);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
@@ -366,7 +353,6 @@ namespace ServiceBusExplorer.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EventGridConnectForm";

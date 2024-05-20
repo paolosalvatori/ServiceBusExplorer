@@ -5,6 +5,7 @@
 namespace Microsoft.Azure.Management.EventGridV2
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::Azure;
     using global::Azure.Core;
@@ -26,6 +27,28 @@ namespace Microsoft.Azure.Management.EventGridV2
         private readonly string subscriptionId;
         private readonly string tenantId;
         public ArmClient armclient;
+
+        private Dictionary<string, EventGridFilter> filterOperatorMap = new Dictionary<string, EventGridFilter> {
+            {"Boolean equals", new BoolEqualsFilter()},
+            {"String is in", new StringInFilter()},
+            {"String is not in", new StringNotInFilter()},
+            {"String contains", new StringContainsFilter()},
+            {"String does not contain", new StringNotContainsFilter()},
+            {"String begins with", new StringBeginsWithFilter()},
+            {"String does not begin with", new StringNotBeginsWithFilter()},
+            {"String ends with", new StringEndsWithFilter()},
+            {"String does not end with", new StringNotEndsWithFilter()},
+            {"Number is less than", new NumberLessThanFilter()},
+            {"Number is greater than", new NumberGreaterThanFilter()},
+            {"Number is less than or equal to", new NumberLessThanOrEqualsFilter()},
+            {"Number is greater than or equal to", new NumberGreaterThanOrEqualsFilter()},
+            {"Number is in", new NumberInFilter()},
+            {"Number is not in", new NumberNotInFilter()},
+            {"Number is in range", new NumberInRangeFilter()},
+            {"Number is not in range", new NumberNotInRangeFilter()},
+            {"Is null or undefined", new IsNullOrUndefinedFilter()},
+            {"Is not null", new IsNotNullFilter()},
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventGridClient"/> class.
@@ -101,7 +124,7 @@ namespace Microsoft.Azure.Management.EventGridV2
         }
 
         /// <inheritdoc/>
-        public async Task<string> CreateNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName, string deliveryMode)
+        public async Task<string> CreateNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName, string deliveryMode, List<Dictionary<string,string>> filters, List<string> eventTypes)
         {
             EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
             NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
@@ -112,7 +135,9 @@ namespace Microsoft.Azure.Management.EventGridV2
                 {
                     DeliveryMode = deliveryMode
                 },
-                EventDeliverySchema = new DeliverySchema("CloudEventSchemaV1_0")
+                EventDeliverySchema = new DeliverySchema("CloudEventSchemaV1_0"),
+                FiltersConfiguration = GetFiltersConfiguration(filters, eventTypes)
+
             };
 
             // check if exists
@@ -163,6 +188,34 @@ namespace Microsoft.Azure.Management.EventGridV2
         private string CreateArmId(string subscriptionId, string resourceGroupName)
         {
             return $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/namespaces/";
+        }
+
+        private FiltersConfiguration GetFiltersConfiguration(List<Dictionary<string, string>> filters, List<string> eventTypes)
+        {
+            FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
+
+            foreach (Dictionary<string, string> i in filters)
+            {
+                EventGridFilter filter = filterOperatorMap[i["Operator"].ToString()];
+                filter.Key = i["Key"].ToString();
+
+                filtersConfiguration.Filters.Add(filter);
+            }
+
+            if (eventTypes.Count > 0)
+            {
+                foreach (string eventType in eventTypes)
+                {
+                    filtersConfiguration.IncludedEventTypes.Add(eventType);
+                }
+            }
+
+            else
+            {
+                filtersConfiguration.IncludedEventTypes.Add("");
+            }
+    
+            return filtersConfiguration;
         }
     }
 }

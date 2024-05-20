@@ -4,6 +4,7 @@
 
 namespace Microsoft.Azure.Management.EventGridV2
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -19,12 +20,16 @@ namespace Microsoft.Azure.Management.EventGridV2
         /// <param name="namespaceTopicName">name of the namespace topic</param>
         /// <param name="subscriptionName">name of subscription </param>
         /// <param name="deliveryMode">delivery mode</param>
+        /// <param name="filters">a map of all selected filters</param>
+        /// <param name="eventTypes">a list of event types used in filtering</param>
         Task<string> CreateNamespaceTopicEventSubscriptionAsync(
            string resourceGroupName,
            string namespaceName,
            string namespaceTopicName,
            string subscriptionName,
-           string deliveryMode);
+           string deliveryMode,
+           List<Dictionary<string, string>> filters,
+           List<string> eventTypes);
 
         /// <summary>
         /// Create a namespace topic in a tenant's namespace.
