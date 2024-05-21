@@ -2037,21 +2037,6 @@ namespace ServiceBusExplorer.Forms
                     {
                         return;
                     }
-                    
-                    var filters = new Dictionary<string, string>();
-                    filters["Key"] = createSubscriptionForm.Key;
-                    filters["Operator"] = createSubscriptionForm.Operator;
-                    filters["Value"] = createSubscriptionForm.Value;
-
-                    var filterList = new List<Dictionary<string, string>>
-                    {
-                        filters
-                    };
-
-                    var eventTypesList = new List<string>
-                    {
-                        createSubscriptionForm.EventType
-                    };
 
                     await eventGridLibrary.CreateSubscriptionAsync(
                         ResourceGroupName, 
@@ -2059,8 +2044,8 @@ namespace ServiceBusExplorer.Forms
                         subscription.TopicDescription.Data.Name, 
                         createSubscriptionForm.SubscriptionName,
                         EventGridSubscriptionDeliveryMode,
-                        filterList,
-                        eventTypesList);
+                        createSubscriptionForm.filterList,
+                        createSubscriptionForm.eventTypesList);
 
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionCreatedFormat, createSubscriptionForm.SubscriptionName));
                     RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);

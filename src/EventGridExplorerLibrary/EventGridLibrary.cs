@@ -78,9 +78,9 @@ namespace EventGridExplorerLibrary
             return pages;
         }
 
-        public async Task CreateTopicAsync(string resourceGroupName, string namespaceName, string newTopicName)
+        public async Task CreateTopicAsync(string resourceGroupName, string namespaceName, string topicName)
         {
-            await eventGridControlPlaneClient.CreateNamespaceTopicAsync(resourceGroupName, namespaceName, newTopicName);
+            await eventGridControlPlaneClient.CreateNamespaceTopicAsync(resourceGroupName, namespaceName, topicName);
         }
 
         public async Task DeleteTopicAsync(string resourceGroupName, string namespaceName, string topicName)

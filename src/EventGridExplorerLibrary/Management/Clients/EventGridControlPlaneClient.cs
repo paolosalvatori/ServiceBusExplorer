@@ -129,16 +129,26 @@ namespace Microsoft.Azure.Management.EventGridV2
             EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
             NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
             NamespaceTopicEventSubscriptionCollection collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
-            NamespaceTopicEventSubscriptionData namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData
+            NamespaceTopicEventSubscriptionData namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData();
+
+            FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
+            if (filtersConfiguration.IncludedEventTypes.Count > 0)
             {
-                DeliveryConfiguration = new DeliveryConfiguration
+                namespaceTopicEventSubscriptionData.DeliveryConfiguration = new DeliveryConfiguration
                 {
                     DeliveryMode = deliveryMode
-                },
-                EventDeliverySchema = new DeliverySchema("CloudEventSchemaV1_0"),
-                FiltersConfiguration = GetFiltersConfiguration(filters, eventTypes)
-
-            };
+                };
+                namespaceTopicEventSubscriptionData.FiltersConfiguration = filtersConfiguration;
+                namespaceTopicEventSubscriptionData.EventDeliverySchema = new DeliverySchema("CloudEventSchemaV1_0");
+            }
+            else
+            {
+                namespaceTopicEventSubscriptionData.DeliveryConfiguration = new DeliveryConfiguration
+                {
+                    DeliveryMode = deliveryMode
+                };
+                namespaceTopicEventSubscriptionData.EventDeliverySchema = new DeliverySchema("CloudEventSchemaV1_0");
+            }
 
             // check if exists
             if ((await collection.ExistsAsync(subscriptionName)).Value)
@@ -173,7 +183,7 @@ namespace Microsoft.Azure.Management.EventGridV2
 
         private InteractiveBrowserCredential GetTokenCredential()
         {
-            string[] scope = {  AadScope + "/.default" };
+            string[] scope = { AadScope + "/.default" };
 
             var credentialOption = new InteractiveBrowserCredentialOptions()
             {
@@ -208,11 +218,6 @@ namespace Microsoft.Azure.Management.EventGridV2
                 {
                     filtersConfiguration.IncludedEventTypes.Add(eventType);
                 }
-            }
-
-            else
-            {
-                filtersConfiguration.IncludedEventTypes.Add("");
             }
     
             return filtersConfiguration;

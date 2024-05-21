@@ -32,6 +32,9 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.grouperMessages = new ServiceBusExplorer.Controls.Grouper();
+            this.btnAddNewFilter = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBoxFilterEventType = new System.Windows.Forms.TextBox();
             this.textBoxFilterValue = new System.Windows.Forms.TextBox();
             this.comboBoxFilterValue = new System.Windows.Forms.ComboBox();
             this.labelFilterValue = new System.Windows.Forms.Label();
@@ -42,8 +45,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lblSubscriptionName = new System.Windows.Forms.Label();
             this.txtSubscriptionName = new System.Windows.Forms.TextBox();
-            this.textBoxFilterEventType = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.grouperMessages.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,7 +56,7 @@
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(745, 572);
+            this.btnOk.Location = new System.Drawing.Point(815, 645);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(108, 38);
@@ -73,7 +74,7 @@
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(871, 572);
+            this.btnCancel.Location = new System.Drawing.Point(941, 645);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(108, 38);
@@ -92,6 +93,7 @@
             this.grouperMessages.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperMessages.BorderThickness = 1F;
+            this.grouperMessages.Controls.Add(this.btnAddNewFilter);
             this.grouperMessages.Controls.Add(this.label2);
             this.grouperMessages.Controls.Add(this.textBoxFilterEventType);
             this.grouperMessages.Controls.Add(this.textBoxFilterValue);
@@ -109,7 +111,7 @@
             this.grouperMessages.ForeColor = System.Drawing.Color.White;
             this.grouperMessages.GroupImage = null;
             this.grouperMessages.GroupTitle = "Create Subscription";
-            this.grouperMessages.Location = new System.Drawing.Point(27, 22);
+            this.grouperMessages.Location = new System.Drawing.Point(13, 22);
             this.grouperMessages.Margin = new System.Windows.Forms.Padding(4);
             this.grouperMessages.Name = "grouperMessages";
             this.grouperMessages.Padding = new System.Windows.Forms.Padding(30, 32, 30, 32);
@@ -118,9 +120,47 @@
             this.grouperMessages.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperMessages.ShadowControl = false;
             this.grouperMessages.ShadowThickness = 1;
-            this.grouperMessages.Size = new System.Drawing.Size(951, 516);
+            this.grouperMessages.Size = new System.Drawing.Size(1035, 589);
             this.grouperMessages.TabIndex = 43;
-            this.grouperMessages.Load += new System.EventHandler(this.grouperMessages_Load);
+            // 
+            // btnAddNewFilter
+            // 
+            this.btnAddNewFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddNewFilter.BackColor = System.Drawing.Color.White;
+            this.btnAddNewFilter.Enabled = false;
+            this.btnAddNewFilter.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddNewFilter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddNewFilter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddNewFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddNewFilter.ForeColor = System.Drawing.Color.Black;
+            this.btnAddNewFilter.Location = new System.Drawing.Point(33, 490);
+            this.btnAddNewFilter.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAddNewFilter.Name = "btnAddNewFilter";
+            this.btnAddNewFilter.Size = new System.Drawing.Size(976, 41);
+            this.btnAddNewFilter.TabIndex = 57;
+            this.btnAddNewFilter.Text = "Add New Filter";
+            this.btnAddNewFilter.UseVisualStyleBackColor = false;
+            this.btnAddNewFilter.Click += new System.EventHandler(this.addFilter_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label2.Location = new System.Drawing.Point(549, 185);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(97, 20);
+            this.label2.TabIndex = 56;
+            this.label2.Text = "Event Type:";
+            // 
+            // textBoxFilterEventType
+            // 
+            this.textBoxFilterEventType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxFilterEventType.Location = new System.Drawing.Point(553, 208);
+            this.textBoxFilterEventType.Name = "textBoxFilterEventType";
+            this.textBoxFilterEventType.Size = new System.Drawing.Size(456, 26);
+            this.textBoxFilterEventType.TabIndex = 55;
             // 
             // textBoxFilterValue
             // 
@@ -128,9 +168,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilterValue.Location = new System.Drawing.Point(33, 345);
             this.textBoxFilterValue.Name = "textBoxFilterValue";
-            this.textBoxFilterValue.Size = new System.Drawing.Size(388, 26);
+            this.textBoxFilterValue.Size = new System.Drawing.Size(472, 26);
             this.textBoxFilterValue.TabIndex = 54;
             this.textBoxFilterValue.Visible = false;
+            this.textBoxFilterValue.TextChanged += new System.EventHandler(this.textBoxFilterValue_TextChanged);
             // 
             // comboBoxFilterValue
             // 
@@ -139,7 +180,7 @@
             this.comboBoxFilterValue.FormattingEnabled = true;
             this.comboBoxFilterValue.Location = new System.Drawing.Point(33, 343);
             this.comboBoxFilterValue.Name = "comboBoxFilterValue";
-            this.comboBoxFilterValue.Size = new System.Drawing.Size(388, 28);
+            this.comboBoxFilterValue.Size = new System.Drawing.Size(472, 28);
             this.comboBoxFilterValue.TabIndex = 53;
             this.comboBoxFilterValue.Visible = false;
             this.comboBoxFilterValue.SelectedIndexChanged += new System.EventHandler(this.comboBoxFilterValue_SelectedIndexChanged);
@@ -182,7 +223,7 @@
             "Is not null"});
             this.comboBoxFilterOperator.Location = new System.Drawing.Point(33, 273);
             this.comboBoxFilterOperator.Name = "comboBoxFilterOperator";
-            this.comboBoxFilterOperator.Size = new System.Drawing.Size(388, 28);
+            this.comboBoxFilterOperator.Size = new System.Drawing.Size(472, 28);
             this.comboBoxFilterOperator.TabIndex = 51;
             this.comboBoxFilterOperator.SelectedIndexChanged += new System.EventHandler(this.comboBoxFilterOperator_SelectedIndexChanged);
             // 
@@ -207,7 +248,6 @@
             this.labelFilterKey.Size = new System.Drawing.Size(42, 20);
             this.labelFilterKey.TabIndex = 49;
             this.labelFilterKey.Text = "Key:";
-            this.labelFilterKey.Click += new System.EventHandler(this.label2_Click);
             // 
             // textBoxFilterKey
             // 
@@ -215,8 +255,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilterKey.Location = new System.Drawing.Point(33, 208);
             this.textBoxFilterKey.Name = "textBoxFilterKey";
-            this.textBoxFilterKey.Size = new System.Drawing.Size(388, 26);
+            this.textBoxFilterKey.Size = new System.Drawing.Size(472, 26);
             this.textBoxFilterKey.TabIndex = 48;
+            this.textBoxFilterKey.TextChanged += new System.EventHandler(this.textBoxFilterKey_TextChanged);
             // 
             // label1
             // 
@@ -228,7 +269,6 @@
             this.label1.Size = new System.Drawing.Size(56, 20);
             this.label1.TabIndex = 47;
             this.label1.Text = "Filters";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // lblSubscriptionName
             // 
@@ -248,29 +288,8 @@
             this.txtSubscriptionName.Location = new System.Drawing.Point(34, 92);
             this.txtSubscriptionName.Margin = new System.Windows.Forms.Padding(4);
             this.txtSubscriptionName.Name = "txtSubscriptionName";
-            this.txtSubscriptionName.Size = new System.Drawing.Size(891, 26);
+            this.txtSubscriptionName.Size = new System.Drawing.Size(975, 26);
             this.txtSubscriptionName.TabIndex = 42;
-            // 
-            // textBoxFilterEventType
-            // 
-            this.textBoxFilterEventType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxFilterEventType.Location = new System.Drawing.Point(553, 208);
-            this.textBoxFilterEventType.Name = "textBoxFilterEventType";
-            this.textBoxFilterEventType.Size = new System.Drawing.Size(372, 26);
-            this.textBoxFilterEventType.TabIndex = 55;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label2.Location = new System.Drawing.Point(549, 185);
-            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(97, 20);
-            this.label2.TabIndex = 56;
-            this.label2.Text = "Event Type:";
-            this.label2.Click += new System.EventHandler(this.label2_Click_1);
             // 
             // CreateEventGridSubscriptionForm
             // 
@@ -279,7 +298,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(1015, 631);
+            this.ClientSize = new System.Drawing.Size(1085, 704);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.grouperMessages);
@@ -290,7 +309,6 @@
             this.Name = "CreateEventGridSubscriptionForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Create Event Grid Subscription";
-            this.Load += new System.EventHandler(this.CreateEventGridSubscriptionForm_Load);
             this.grouperMessages.ResumeLayout(false);
             this.grouperMessages.PerformLayout();
             this.ResumeLayout(false);
@@ -314,5 +332,6 @@
         private System.Windows.Forms.TextBox textBoxFilterValue;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxFilterEventType;
+        private System.Windows.Forms.Button btnAddNewFilter;
     }
 }
