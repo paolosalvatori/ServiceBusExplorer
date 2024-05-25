@@ -54,10 +54,5 @@ namespace ServiceBusExplorer.Forms
         {
             cboApiVersion.SelectedIndex = 0;
         }
-
-        private void lblTimeout_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

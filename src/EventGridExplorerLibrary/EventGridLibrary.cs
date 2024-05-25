@@ -41,8 +41,7 @@ namespace EventGridExplorerLibrary
 
         public async Task<Response<EventGridNamespaceResource>> GetNamespacesAsync(string resourceGroupName, string namespaceName)
         {
-            var eventGridNamespace = await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetAsync();
-            return eventGridNamespace;
+            return await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetAsync();
         }
 
 
@@ -122,22 +121,18 @@ namespace EventGridExplorerLibrary
         {
             try
             {
-                Response<ReceiveResult> result;
-
                 if (this.maxWaitTime < MinWaitTimeInSeconds)
                 {
-                     result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
+                     return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
                 }
                 else if (this.maxWaitTime > MaxWaitTimeInSeconds)
                 {
-                    result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MaxWaitTimeInSeconds));
+                    return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MaxWaitTimeInSeconds));
                 }
                 else
                 {
-                    result = await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(this.maxWaitTime));
+                    return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(this.maxWaitTime));
                 }
-
-                return result;
             }
             catch (Exception ex)
             {

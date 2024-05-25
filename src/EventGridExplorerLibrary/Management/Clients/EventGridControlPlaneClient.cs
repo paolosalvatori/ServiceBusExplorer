@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
-namespace Microsoft.Azure.Management.EventGridV2
+namespace EventGridExplorerLibrary
 {
     using System;
     using System.Collections.Generic;
@@ -27,28 +27,6 @@ namespace Microsoft.Azure.Management.EventGridV2
         private readonly string subscriptionId;
         private readonly string tenantId;
         public ArmClient armclient;
-
-        private Dictionary<string, EventGridFilter> filterOperatorMap = new Dictionary<string, EventGridFilter> {
-            {"Boolean equals", new BoolEqualsFilter()},
-            {"String is in", new StringInFilter()},
-            {"String is not in", new StringNotInFilter()},
-            {"String contains", new StringContainsFilter()},
-            {"String does not contain", new StringNotContainsFilter()},
-            {"String begins with", new StringBeginsWithFilter()},
-            {"String does not begin with", new StringNotBeginsWithFilter()},
-            {"String ends with", new StringEndsWithFilter()},
-            {"String does not end with", new StringNotEndsWithFilter()},
-            {"Number is less than", new NumberLessThanFilter()},
-            {"Number is greater than", new NumberGreaterThanFilter()},
-            {"Number is less than or equal to", new NumberLessThanOrEqualsFilter()},
-            {"Number is greater than or equal to", new NumberGreaterThanOrEqualsFilter()},
-            {"Number is in", new NumberInFilter()},
-            {"Number is not in", new NumberNotInFilter()},
-            {"Number is in range", new NumberInRangeFilter()},
-            {"Number is not in range", new NumberNotInRangeFilter()},
-            {"Is null or undefined", new IsNullOrUndefinedFilter()},
-            {"Is not null", new IsNotNullFilter()},
-        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventGridClient"/> class.
@@ -131,8 +109,8 @@ namespace Microsoft.Azure.Management.EventGridV2
             NamespaceTopicEventSubscriptionCollection collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
             NamespaceTopicEventSubscriptionData namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData();
 
-            FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
-            if (filtersConfiguration.IncludedEventTypes.Count > 0)
+             FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
+            if (filtersConfiguration.IncludedEventTypes.Count > 0 || filtersConfiguration.Filters.Count > 0)
             {
                 namespaceTopicEventSubscriptionData.DeliveryConfiguration = new DeliveryConfiguration
                 {
@@ -203,13 +181,32 @@ namespace Microsoft.Azure.Management.EventGridV2
         private FiltersConfiguration GetFiltersConfiguration(List<Dictionary<string, string>> filters, List<string> eventTypes)
         {
             FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
+            EventGridFilterValues eventGridFilterValues = new EventGridFilterValues();
 
             foreach (Dictionary<string, string> i in filters)
             {
-                EventGridFilter filter = filterOperatorMap[i["Operator"].ToString()];
-                filter.Key = i["Key"].ToString();
-
-                filtersConfiguration.Filters.Add(filter);
+                var operatorType = i["Operator"].ToString();
+                var value = i["Value"].ToString();
+                var key = i["Key"].ToString();
+                if (operatorType.Equals("Boolean equals")) { var filter = new BoolEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForBoolEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String is in")) { var filter = new StringInFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String is not in")) { var filter = new StringNotInFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String contains")) { var filter = new StringContainsFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringContainsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String does not contain")) { var filter = new StringNotContainsFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotContainsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String begins with")) { var filter = new StringBeginsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringBeginsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String does not begin with")) { var filter = new StringNotBeginsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotBeginsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String ends with")) { var filter = new StringEndsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringEndsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("String does not end with")) { var filter = new StringNotEndsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotEndsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is less than")) { var filter = new NumberLessThanFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberLessThanFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is greater than")) { var filter = new NumberGreaterThanFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberGreaterThanFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is less than or equal to")) { var filter = new NumberLessThanOrEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberLessThanOrEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is greater than or equal to")) { var filter = new NumberGreaterThanOrEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberGreaterThanOrEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is in")) { var filter = new NumberInFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is not in")) { var filter = new NumberNotInFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberNotInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is in range")) { var filter = new NumberInRangeFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberInRangeFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Number is not in range")) { var filter = new NumberNotInRangeFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberNotInRangeFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Is null or undefined")) { var filter = new IsNullOrUndefinedFilter(); filter.Key = key; filtersConfiguration.Filters.Add(filter); };
+                if (operatorType.Equals("Is not null")) { var filter = new IsNotNullFilter(); filter.Key = key; filtersConfiguration.Filters.Add(filter);};
             }
 
             if (eventTypes.Count > 0)

@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
-namespace Microsoft.Azure.Management.EventGridV2
+namespace EventGridExplorerLibrary
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
