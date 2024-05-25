@@ -4257,7 +4257,14 @@ namespace ServiceBusExplorer.Forms
         #region Public Static Methods
         public static void StaticWriteToLog(string message, bool async = true)
         {
-            mainSingletonMainForm.WriteToLog(message);
+            if(mainSingletonMainForm != null)
+            {
+                mainSingletonMainForm.WriteToLog(message);
+            }
+            else
+            {
+                MessageBox.Show(message);
+            }
         }
         #endregion
 

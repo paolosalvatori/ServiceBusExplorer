@@ -82,6 +82,8 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Instance Fields
+        QueueType queueType = QueueType.NotSet;
+
         readonly IEnumerable<BrokeredMessage> brokeredMessages;
         readonly BrokeredMessage brokeredMessage;
         readonly ServiceBusHelper serviceBusHelper;
@@ -95,24 +97,34 @@ namespace ServiceBusExplorer.Forms
 
         static readonly List<string> Types = new List<string>
         {
-            "Boolean", 
-            "Byte", 
-            "Int16", 
-            "Int32", 
-            "Int64", 
-            "Single", 
-            "Double", 
-            "Decimal", 
-            "Guid", 
-            "DateTime", 
-            "TimeSpan", 
-            "String", 
+            "Boolean",
+            "Byte",
+            "Int16",
+            "Int32",
+            "Int64",
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
+            "TimeSpan",
+            "String",
             "Char",
             "UInt64",
             "UInt32",
             "UInt16",
             "SByte"
         };
+        #endregion
+
+        #region Public Enums
+        public enum QueueType
+        {
+            NotSet,
+            PrimaryQueue,
+            Deadletter,
+            TransferDeadletter
+        }
         #endregion
 
         #region Public Properties
@@ -209,11 +221,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, BrokeredMessage brokeredMessage,
+        public MessageForm(QueueDescription queueDescription, QueueType queueType, BrokeredMessage brokeredMessage,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
+            this.queueType = queueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
@@ -260,11 +273,12 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, IEnumerable<BrokeredMessage> brokeredMessages,
+        public MessageForm(QueueDescription queueDescription, QueueType queueType, IEnumerable<BrokeredMessage> brokeredMessages,
             ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
+            this.queueType = queueType;
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
@@ -413,9 +427,23 @@ namespace ServiceBusExplorer.Forms
                                         MainForm.SingletonMainForm.UseAscii, out bodyType);
 
                                     // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                    outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      message.CloneWithByteArrayBodyType(messageText, messagesSplitContainer.Visible) :
-                                                      message.Clone(message.GetBody<Stream>(), messagesSplitContainer.Visible);
+                                    switch (bodyType)
+                                    {
+                                        case BodyType.ByteArray:
+                                            outboundMessage = message.CloneWithByteArrayBodyType(messageText, 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+
+                                        case BodyType.String:
+                                            outboundMessage = message.Clone(message.GetBody<string>(), 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+
+                                        default:
+                                            outboundMessage = message.Clone(message.GetBody<Stream>(), 
+                                                                            messagesSplitContainer.Visible);
+                                            break;
+                                    }
                                 }
 
                                 outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
@@ -482,6 +510,7 @@ namespace ServiceBusExplorer.Forms
 
                         var sent = outboundMessages.Count;
                         var stopwatch = new Stopwatch();
+
                         stopwatch.Start();
 
                         if (chkRemove.Checked)
@@ -489,8 +518,12 @@ namespace ServiceBusExplorer.Forms
                             var messageHandler = CreateDeadLetterMessageHandler();
 
                             var result = await messageHandler.MoveMessages(messageSender,
-                                sequenceNumbers, outboundMessages);
+                                sequenceNumbers,
+                                transferDLQ: queueType == QueueType.TransferDeadletter,
+                                outboundMessages);
+
                             RemovedSequenceNumbers = result.DeletedSequenceNumbers;
+
                             stopwatch.Stop();
 
                             if (result.TimedOut)

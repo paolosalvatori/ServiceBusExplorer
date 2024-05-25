@@ -97,7 +97,16 @@ namespace ServiceBusExplorer
         {
             if (ex != null && !string.IsNullOrWhiteSpace(ex.Message))
             {
-                MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
+                var message = ex.Message;
+
+                if (ex.GetType() == typeof(TypeInitializationException))
+                {
+                    message += Environment.NewLine + Environment.NewLine + 
+                        "This may be due to an invalid configuration file.";
+                }
+
+                MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, message));
+
                 if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
                 {
                     MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));

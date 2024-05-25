@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -45,6 +45,8 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Controls
 {
+    using Abstractions;
+
     public partial class PartitionListenerControl : UserControl
     {
         #region Private Constants
@@ -115,14 +117,13 @@ namespace ServiceBusExplorer.Controls
         private readonly WriteToLogDelegate writeToLog;
         private readonly Func<Task> stopLog;
         private readonly Action startLog;
-        private EventData currentEventData;
-        private int grouperEventDataCustomPropertiesWidth;
+        private EventDataMessage currentEventData;
         private int currentMessageRowIndex;
         private readonly int partitionCount;
         private bool sorting;
-        private readonly SortableBindingList<EventData> eventDataBindingList = new SortableBindingList<EventData> { AllowNew = false, AllowEdit = false, AllowRemove = false };
+        private readonly SortableBindingList<EventDataMessage> eventDataBindingList = new SortableBindingList<EventDataMessage> { AllowNew = false, AllowEdit = false, AllowRemove = false };
         private readonly IList<PartitionRuntimeInformation> partitionRuntumeInformationList = new List<PartitionRuntimeInformation>();
-        private BlockingCollection<EventData> eventDataCollection = new BlockingCollection<EventData>();
+        private BlockingCollection<EventDataMessage> eventDataCollection = new BlockingCollection<EventDataMessage>();
         private System.Timers.Timer timer;
         private long receiverMessageNumber;
         private long receiverMessageSizeTotal;
@@ -151,6 +152,7 @@ namespace ServiceBusExplorer.Controls
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
+        int grouperEventDataCustomPropertiesWidth;
         public Task AsyncTrackEventDataTask { get; private set; }
 
         #endregion
@@ -315,12 +317,12 @@ namespace ServiceBusExplorer.Controls
             eventDataDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
             eventDataDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
             eventDataDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-            // Set the background color for all rows and for alternating rows.  
-            // The value for alternating rows overrides the value for all rows. 
+            // Set the background color for all rows and for alternating rows.
+            // The value for alternating rows overrides the value for all rows.
             eventDataDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
             eventDataDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
             //eventDataDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
@@ -631,7 +633,7 @@ namespace ServiceBusExplorer.Controls
 
         private void eventDataDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+            var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
             currentMessageRowIndex = e.RowIndex;
             if (bindingList == null)
             {
@@ -644,11 +646,26 @@ namespace ServiceBusExplorer.Controls
             currentEventData = bindingList[e.RowIndex];
             eventDataPropertyGrid.SelectedObject = currentEventData;
 
-            LanguageDetector.SetFormattedMessage(serviceBusHelper, currentEventData.Clone(), txtMessageText);
+            try
+            {
+                //var eventData = currentEventData.Clone();
+                LanguageDetector.SetFormattedMessage(serviceBusHelper, currentEventData, txtMessageText);
+            }
+            catch (Exception exception)
+            {
+                HandleException(exception);
+            }
 
-            var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
-            eventDataPropertyListView.Items.Clear();
-            eventDataPropertyListView.Items.AddRange(listViewItems);
+            try
+            {
+                var listViewItems = currentEventData.Properties.Select(p => new ListViewItem(new[] { p.Key, (p.Value ?? string.Empty).ToString() })).ToArray();
+                eventDataPropertyListView.Items.Clear();
+                eventDataPropertyListView.Items.AddRange(listViewItems);
+            }
+            catch (Exception exception)
+            {
+                HandleException(exception);
+            }
         }
 
         private void tabPageMessages_Resize(object sender, EventArgs e)
@@ -691,7 +708,7 @@ namespace ServiceBusExplorer.Controls
             {
                 return;
             }
-            var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+            var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
             if (bindingList == null)
             {
                 return;
@@ -831,7 +848,7 @@ namespace ServiceBusExplorer.Controls
                                                                                                     checkBoxCheckpoint,
                                                                                                     cancellationTokenSource.Token)
                     {
-                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(m)), ev),
+                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(new EventDataMessage(m))), ev),
                         GetElapsedTime = GetElapsedTime,
                         UpdateStatistics = UpdateStatistics,
                         WriteToLog = writeToLog,
@@ -953,7 +970,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 clearing = true;
                 cleared = true;
                 eventDataCollection.Dispose();
-                eventDataCollection = new BlockingCollection<EventData>();
+                eventDataCollection = new BlockingCollection<EventDataMessage>();
                 ClearTrackedMessages();
                 ClearStatistics();
                 ClearCharts();
@@ -1166,8 +1183,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                         if (InvokeRequired)
                         {
                             Invoke(new Action<long, long, long, bool>(InternalUpdateStatistics),
-                                   new object[] { receiveTuple.Item1, 
-                                                  receiveTuple.Item2, 
+                                   new object[] { receiveTuple.Item1,
+                                                  receiveTuple.Item2,
                                                   receiveTuple.Item3,
                                                   graph});
                         }
@@ -1338,7 +1355,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                                    cboReceiverInspector.Size.Height + 1);
         }
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -1501,7 +1518,7 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     return;
                 }
-                var bindingList = eventDataBindingSource.DataSource as BindingList<EventData>;
+                var bindingList = eventDataBindingSource.DataSource as BindingList<EventDataMessage>;
                 if (bindingList == null)
                 {
                     return;
@@ -1543,8 +1560,8 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 {
                     return;
                 }
-                var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventData);
-                IEnumerable<EventData> events = messages as EventData[] ?? messages.ToArray();
+                var messages = eventDataDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as EventDataMessage);
+                IEnumerable<EventDataMessage> events = messages as EventDataMessage[] ?? messages.ToArray();
                 if (!events.Any())
                 {
                     return;
