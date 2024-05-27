@@ -32,10 +32,10 @@ jobs:
     - name: Git configuration
       run: git config --global core.autocrlf false
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Add MSBuild for VS 2022 to PATH 
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
         vs-version: '[17.2,18.0)'
 
