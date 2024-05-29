@@ -6,8 +6,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.24.0" />
-		<PackageReference Include="Azure.Identity" Version="1.10.3" />
+		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.22.0-beta.1" />
+		<PackageReference Include="Azure.Identity" Version="1.11.3" />
 		<PackageReference Include="Azure.ResourceManager.EventGrid" Version="1.1.0-beta.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />

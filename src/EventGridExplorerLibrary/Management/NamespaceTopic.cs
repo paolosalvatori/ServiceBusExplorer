@@ -8,14 +8,13 @@
 // regenerated.
 // </auto-generated>
 
-namespace Microsoft.Azure.Management.EventGridV2
+namespace EventGridExplorerLibrary
 {
     using global::Azure.ResourceManager.Models;
 
     /// <summary>
     /// Namespace topic details.
     /// </summary>
-    [Rest.Serialization.JsonTransformation]
     public partial class NamespaceTopic
     {
         /// <summary>

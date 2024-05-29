@@ -8,7 +8,6 @@ using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.Azure.Management.EventGridV2;
 
 namespace EventGridExplorerLibrary
 {
@@ -151,17 +150,17 @@ namespace EventGridExplorerLibrary
                 switch (action)
                 {
                     case "Acknowledge":
-                        AcknowledgeResult acknowledgeResult = await dataPlaneClients[topicName].AcknowledgeCloudEventsAsync(topicName, subscriptionName, lockTokens);
+                        AcknowledgeResult acknowledgeResult = await dataPlaneClients[topicName].AcknowledgeCloudEventsAsync(topicName, subscriptionName, new AcknowledgeOptions(lockTokens));
                         succeededLockTokens = acknowledgeResult.SucceededLockTokens;
                         failedLockTokens = acknowledgeResult.FailedLockTokens;
                         break;
                     case "Release":
-                        ReleaseResult releaseResult = await dataPlaneClients[topicName].ReleaseCloudEventsAsync(topicName, subscriptionName, lockTokens);
+                        ReleaseResult releaseResult = await dataPlaneClients[topicName].ReleaseCloudEventsAsync(topicName, subscriptionName, new ReleaseOptions(lockTokens));
                         succeededLockTokens = releaseResult.SucceededLockTokens;
                         failedLockTokens = releaseResult.FailedLockTokens;
                         break;
                     case "Reject":
-                        RejectResult rejectResult = await dataPlaneClients[topicName].RejectCloudEventsAsync(topicName, subscriptionName, lockTokens);
+                        RejectResult rejectResult = await dataPlaneClients[topicName].RejectCloudEventsAsync(topicName, subscriptionName, new RejectOptions(lockTokens));
                         succeededLockTokens = rejectResult.SucceededLockTokens;
                         failedLockTokens = rejectResult.FailedLockTokens;
                         break;
@@ -184,8 +183,8 @@ namespace EventGridExplorerLibrary
                     foreach (FailedLockToken lockToken in failedLockTokens)
                     {
                         writeToLog($"Lock Token: {lockToken.LockToken}");
-                        writeToLog($"Error Code: {lockToken.ErrorCode}");
-                        writeToLog($"Error Description: {lockToken.ErrorDescription}");
+                        writeToLog($"Error Code: {lockToken.Error.Code}");
+                        writeToLog($"Error Description: {lockToken.Error.Message}");
                     }
                 }
 

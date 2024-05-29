@@ -21,12 +21,9 @@
 
 #region Using Directives
 using Azure;
-using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
-using Microsoft.Azure.Management.EventGridV2;
 using Microsoft.Azure.NotificationHubs;
-using Microsoft.Rest.Azure;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
