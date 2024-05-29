@@ -181,32 +181,33 @@ namespace EventGridExplorerLibrary
         private FiltersConfiguration GetFiltersConfiguration(List<Dictionary<string, string>> filters, List<string> eventTypes)
         {
             FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
-            EventGridFilterValues eventGridFilterValues = new EventGridFilterValues();
+            EventGridFilterFactory eventGridFilterFactory = new EventGridFilterFactory(filtersConfiguration);
 
             foreach (Dictionary<string, string> i in filters)
             {
                 var operatorType = i["Operator"].ToString();
                 var value = i["Value"].ToString();
                 var key = i["Key"].ToString();
-                if (operatorType.Equals("Boolean equals")) { var filter = new BoolEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForBoolEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String is in")) { var filter = new StringInFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String is not in")) { var filter = new StringNotInFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String contains")) { var filter = new StringContainsFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringContainsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String does not contain")) { var filter = new StringNotContainsFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotContainsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String begins with")) { var filter = new StringBeginsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringBeginsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String does not begin with")) { var filter = new StringNotBeginsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotBeginsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String ends with")) { var filter = new StringEndsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringEndsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("String does not end with")) { var filter = new StringNotEndsWithFilter(); filter.Key = key; eventGridFilterValues.GetValueForStringNotEndsWithFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is less than")) { var filter = new NumberLessThanFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberLessThanFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is greater than")) { var filter = new NumberGreaterThanFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberGreaterThanFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is less than or equal to")) { var filter = new NumberLessThanOrEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberLessThanOrEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is greater than or equal to")) { var filter = new NumberGreaterThanOrEqualsFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberGreaterThanOrEqualsFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is in")) { var filter = new NumberInFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is not in")) { var filter = new NumberNotInFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberNotInFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is in range")) { var filter = new NumberInRangeFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberInRangeFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Number is not in range")) { var filter = new NumberNotInRangeFilter(); filter.Key = key; eventGridFilterValues.GetValueForNumberNotInRangeFilter(filter, value); filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Is null or undefined")) { var filter = new IsNullOrUndefinedFilter(); filter.Key = key; filtersConfiguration.Filters.Add(filter); };
-                if (operatorType.Equals("Is not null")) { var filter = new IsNotNullFilter(); filter.Key = key; filtersConfiguration.Filters.Add(filter);};
+
+                if (operatorType.Equals("Boolean equals")) { eventGridFilterFactory.AddFilterForBoolEquals(key, value); };
+                if (operatorType.Equals("String is in")) { eventGridFilterFactory.AddFilterForStringIn(key, value); };
+                if (operatorType.Equals("String is not in")) { eventGridFilterFactory.AddFilterForStringNotIn(key, value); };
+                if (operatorType.Equals("String contains")) { eventGridFilterFactory.AddFilterForStringContains(key, value); };
+                if (operatorType.Equals("String does not contain")) { eventGridFilterFactory.AddFilterForStringNotContains(key, value); };
+                if (operatorType.Equals("String begins with")) { eventGridFilterFactory.AddFilterForStringBeginsWith(key, value); };
+                if (operatorType.Equals("String does not begin with")) { eventGridFilterFactory.AddFilterForStringNotBeginsWith(key, value); };
+                if (operatorType.Equals("String ends with")) { eventGridFilterFactory.AddFilterForStringEndsWith(key, value); };
+                if (operatorType.Equals("String does not end with")) { eventGridFilterFactory.AddFilterForStringNotEndsWith(key, value); };
+                if (operatorType.Equals("Number is less than")) { eventGridFilterFactory.AddFilterForNumberLessThan(key, value); };
+                if (operatorType.Equals("Number is greater than")) { eventGridFilterFactory.AddFilterForNumberGreaterThan(key, value); };
+                if (operatorType.Equals("Number is less than or equal to")) { eventGridFilterFactory.AddFilterForNumberLessThanOrEquals(key, value); };
+                if (operatorType.Equals("Number is greater than or equal to")) { eventGridFilterFactory.AddFilterForNumberGreaterThanOrEquals(key, value); };
+                if (operatorType.Equals("Number is in")) { eventGridFilterFactory.AddFilterForNumberIn(key, value); };
+                if (operatorType.Equals("Number is not in")) { eventGridFilterFactory.AddFilterForNumberNotIn(key, value); };
+                if (operatorType.Equals("Number is in range")) { eventGridFilterFactory.AddFilterForNumberInRange(key, value); };
+                if (operatorType.Equals("Number is not in range")) { eventGridFilterFactory.AddFilterForNumberNotInRange(key, value); };
+                if (operatorType.Equals("Is null or undefined")) { eventGridFilterFactory.AddFilterForIsNullOrUndefined( key); };
+                if (operatorType.Equals("Is not null")) { eventGridFilterFactory.AddFilterForIsNotNull(key); };
             }
 
             if (eventTypes.Count > 0)
