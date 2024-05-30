@@ -91,12 +91,12 @@ namespace ServiceBusExplorer.Forms
                 {
                     if (string.IsNullOrEmpty(Key) && !string.IsNullOrEmpty(Operator))
                     {
-                        throw new EventGridException("Key cannot be empty");
+                        throw new Exception("Key cannot be empty");
                     }
 
                     if (!string.IsNullOrEmpty(Operator) && (textBoxFilterValue.Visible || comboBoxFilterValue.Visible) && string.IsNullOrEmpty(Value))
                     {
-                        throw new EventGridException("Specify a value for the operator");
+                        throw new Exception("Specify a value for the operator");
                     }
 
                     if (IsValueFieldInputValid())
@@ -123,13 +123,13 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
                 }
+
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
-
-            DialogResult = DialogResult.OK;
         }
 
         private void addFilter_Click(object sender, EventArgs e)
@@ -156,12 +156,12 @@ namespace ServiceBusExplorer.Forms
 
                     if (string.IsNullOrEmpty(Key) && !string.IsNullOrEmpty(Operator))
                     {
-                        throw new EventGridException("Key cannot be empty");
+                        throw new Exception("Key cannot be empty");
                     }
 
                     if (!string.IsNullOrEmpty(Operator) && (textBoxFilterValue.Visible || comboBoxFilterValue.Visible) && string.IsNullOrEmpty(Value))
                     {
-                        throw new EventGridException("Specify a value for the operator");
+                        throw new Exception("Specify a value for the operator");
                     }
 
                     if (IsValueFieldInputValid())
@@ -219,10 +219,7 @@ namespace ServiceBusExplorer.Forms
             {
                 return;
             }
-            if (ex.GetType() == typeof(EventGridException))
-            {
-                throw ex;
-            }
+
             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
         }
 

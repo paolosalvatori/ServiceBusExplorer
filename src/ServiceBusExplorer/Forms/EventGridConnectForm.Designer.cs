@@ -152,7 +152,7 @@ namespace ServiceBusExplorer.Forms
             this.cboApiVersion.Location = new System.Drawing.Point(19, 200);
             this.cboApiVersion.Margin = new System.Windows.Forms.Padding(2);
             this.cboApiVersion.Name = "cboApiVersion";
-            this.cboApiVersion.Size = new System.Drawing.Size(193, 28);
+            this.cboApiVersion.Size = new System.Drawing.Size(193, 21);
             this.cboApiVersion.TabIndex = 54;
             // 
             // cloudGroupBox
@@ -178,7 +178,7 @@ namespace ServiceBusExplorer.Forms
             this.btnPublicCloud.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnPublicCloud.Location = new System.Drawing.Point(4, 7);
             this.btnPublicCloud.Name = "btnPublicCloud";
-            this.btnPublicCloud.Size = new System.Drawing.Size(80, 24);
+            this.btnPublicCloud.Size = new System.Drawing.Size(54, 17);
             this.btnPublicCloud.TabIndex = 40;
             this.btnPublicCloud.TabStop = true;
             this.btnPublicCloud.Text = "Public";
@@ -190,7 +190,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCustomCloud.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCustomCloud.Location = new System.Drawing.Point(4, 24);
             this.btnCustomCloud.Name = "btnCustomCloud";
-            this.btnCustomCloud.Size = new System.Drawing.Size(170, 24);
+            this.btnCustomCloud.Size = new System.Drawing.Size(111, 17);
             this.btnCustomCloud.TabIndex = 40;
             this.btnCustomCloud.Text = "Custom Tenant ID";
             this.btnCustomCloud.UseVisualStyleBackColor = true;
@@ -204,7 +204,7 @@ namespace ServiceBusExplorer.Forms
             this.txtCustomId.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtCustomId.Location = new System.Drawing.Point(121, 19);
             this.txtCustomId.Name = "txtCustomId";
-            this.txtCustomId.Size = new System.Drawing.Size(188, 26);
+            this.txtCustomId.Size = new System.Drawing.Size(188, 20);
             this.txtCustomId.TabIndex = 41;
             // 
             // lblCloud
@@ -213,7 +213,7 @@ namespace ServiceBusExplorer.Forms
             this.lblCloud.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblCloud.Location = new System.Drawing.Point(16, 276);
             this.lblCloud.Name = "lblCloud";
-            this.lblCloud.Size = new System.Drawing.Size(113, 20);
+            this.lblCloud.Size = new System.Drawing.Size(74, 13);
             this.lblCloud.TabIndex = 51;
             this.lblCloud.Text = "Cloud Tenant:";
             // 
@@ -224,7 +224,7 @@ namespace ServiceBusExplorer.Forms
             this.txtRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtRetryTimeout.Location = new System.Drawing.Point(16, 242);
             this.txtRetryTimeout.Name = "txtRetryTimeout";
-            this.txtRetryTimeout.Size = new System.Drawing.Size(103, 26);
+            this.txtRetryTimeout.Size = new System.Drawing.Size(103, 20);
             this.txtRetryTimeout.TabIndex = 19;
             this.txtRetryTimeout.Text = "60";
             // 
@@ -234,7 +234,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblTimeout.Location = new System.Drawing.Point(16, 227);
             this.lblTimeout.Name = "lblTimeout";
-            this.lblTimeout.Size = new System.Drawing.Size(145, 20);
+            this.lblTimeout.Size = new System.Drawing.Size(90, 13);
             this.lblTimeout.TabIndex = 18;
             this.lblTimeout.Text = "Retry Timeout (s):";
             // 
@@ -245,9 +245,8 @@ namespace ServiceBusExplorer.Forms
             this.txtSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtSubscriptionId.Location = new System.Drawing.Point(16, 49);
             this.txtSubscriptionId.Name = "txtSubscriptionId";
-            this.txtSubscriptionId.Size = new System.Drawing.Size(336, 26);
+            this.txtSubscriptionId.Size = new System.Drawing.Size(336, 20);
             this.txtSubscriptionId.TabIndex = 16;
-            this.txtSubscriptionId.Text = "d33c5f7a-02ea-40f4-bf52-07f17e84d6a8";
             // 
             // lblApiVersion
             // 
@@ -255,7 +254,7 @@ namespace ServiceBusExplorer.Forms
             this.lblApiVersion.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblApiVersion.Location = new System.Drawing.Point(16, 176);
             this.lblApiVersion.Name = "lblApiVersion";
-            this.lblApiVersion.Size = new System.Drawing.Size(102, 20);
+            this.lblApiVersion.Size = new System.Drawing.Size(65, 13);
             this.lblApiVersion.TabIndex = 10;
             this.lblApiVersion.Text = "API Version:";
             // 
@@ -269,7 +268,6 @@ namespace ServiceBusExplorer.Forms
             this.txtResourceGroupName.Name = "txtResourceGroupName";
             this.txtResourceGroupName.Size = new System.Drawing.Size(336, 20);
             this.txtResourceGroupName.TabIndex = 1;
-            this.txtResourceGroupName.Text = "HarriePlayGround";
             // 
             // lblResourceGroupName
             // 
@@ -277,7 +275,7 @@ namespace ServiceBusExplorer.Forms
             this.lblResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblResourceGroupName.Location = new System.Drawing.Point(16, 83);
             this.lblResourceGroupName.Name = "lblResourceGroupName";
-            this.lblResourceGroupName.Size = new System.Drawing.Size(186, 20);
+            this.lblResourceGroupName.Size = new System.Drawing.Size(119, 13);
             this.lblResourceGroupName.TabIndex = 0;
             this.lblResourceGroupName.Text = "Resource Group Name:";
             // 
@@ -287,7 +285,7 @@ namespace ServiceBusExplorer.Forms
             this.lblSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblSubscriptionId.Location = new System.Drawing.Point(16, 34);
             this.lblSubscriptionId.Name = "lblSubscriptionId";
-            this.lblSubscriptionId.Size = new System.Drawing.Size(129, 20);
+            this.lblSubscriptionId.Size = new System.Drawing.Size(82, 13);
             this.lblSubscriptionId.TabIndex = 6;
             this.lblSubscriptionId.Text = "Subscription ID:";
             // 
@@ -298,9 +296,8 @@ namespace ServiceBusExplorer.Forms
             this.txtNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtNamespaceName.Location = new System.Drawing.Point(16, 145);
             this.txtNamespaceName.Name = "txtNamespaceName";
-            this.txtNamespaceName.Size = new System.Drawing.Size(336, 26);
+            this.txtNamespaceName.Size = new System.Drawing.Size(336, 20);
             this.txtNamespaceName.TabIndex = 3;
-            this.txtNamespaceName.Text = "ServiceBusExplorerNamespace";
             // 
             // lblNamespaceName
             // 
@@ -308,7 +305,7 @@ namespace ServiceBusExplorer.Forms
             this.lblNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblNamespaceName.Location = new System.Drawing.Point(16, 133);
             this.lblNamespaceName.Name = "lblNamespaceName";
-            this.lblNamespaceName.Size = new System.Drawing.Size(152, 20);
+            this.lblNamespaceName.Size = new System.Drawing.Size(98, 13);
             this.lblNamespaceName.TabIndex = 2;
             this.lblNamespaceName.Text = "Namespace Name:";
             // 

@@ -14,7 +14,7 @@ namespace EventGridExplorerLibrary
     public class EventGridFilterFactory
     {
         private FiltersConfiguration filtersConfiguration;
-
+       
         /// <summary>
         /// Initializes a new instance of the <see cref="EventGridFilterFactory"/> class.
         /// </summary>
@@ -23,22 +23,45 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration = filtersConfiguration;
         }
 
+        public void FilterSelection() 
+        {
+            if (OperatorType.Equals("Boolean equals")) { AddFilterForBoolEquals(); };
+            if (OperatorType.Equals("String is in")) { AddFilterForStringIn(); };
+            if (OperatorType.Equals("String is not in")) { AddFilterForStringNotIn(); };
+            if (OperatorType.Equals("String contains")) { AddFilterForStringContains(); };
+            if (OperatorType.Equals("String does not contain")) { AddFilterForStringNotContains(); };
+            if (OperatorType.Equals("String begins with")) { AddFilterForStringBeginsWith(); };
+            if (OperatorType.Equals("String does not begin with")) { AddFilterForStringNotBeginsWith(); };
+            if (OperatorType.Equals("String ends with")) { AddFilterForStringEndsWith(); };
+            if (OperatorType.Equals("String does not end with")) { AddFilterForStringNotEndsWith(); };
+            if (OperatorType.Equals("Number is less than")) { AddFilterForNumberLessThan(); };
+            if (OperatorType.Equals("Number is greater than")) { AddFilterForNumberGreaterThan(); };
+            if (OperatorType.Equals("Number is less than or equal to")) { AddFilterForNumberLessThanOrEquals(); };
+            if (OperatorType.Equals("Number is greater than or equal to")) { AddFilterForNumberGreaterThanOrEquals(); };
+            if (OperatorType.Equals("Number is in")) { AddFilterForNumberIn(); };
+            if (OperatorType.Equals("Number is not in")) { AddFilterForNumberNotIn(); };
+            if (OperatorType.Equals("Number is in range")) { AddFilterForNumberInRange(); };
+            if (OperatorType.Equals("Number is not in range")) { AddFilterForNumberNotInRange(); };
+            if (OperatorType.Equals("Is null or undefined")) { AddFilterForIsNullOrUndefined(); };
+            if (OperatorType.Equals("Is not null")) { AddFilterForIsNotNull(); };
+        }
+
         /// <inheritdoc/>
-        public void AddFilterForBoolEquals(string key, string value)
+        public void AddFilterForBoolEquals()
         {
             var filter = new BoolEqualsFilter 
             { 
-                Key = key, 
-                Value = bool.Parse(value) 
+                Key = Key, 
+                Value = bool.Parse(Value) 
             };
 
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForStringIn(string key, string value)
+        public void AddFilterForStringIn()
         {
-            var filter = new StringInFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringInFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -47,10 +70,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForStringNotIn(string key, string value)
+        public void AddFilterForStringNotIn()
         {
-            var filter = new StringNotInFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringNotInFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -59,10 +82,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForStringContains(string key, string value)
+        public void AddFilterForStringContains()
         {
-            var filter = new StringContainsFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringContainsFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -71,10 +94,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
          }
 
-        public void AddFilterForStringNotContains(string key, string value)
+        public void AddFilterForStringNotContains()
         {
-            var filter = new StringNotContainsFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringNotContainsFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -83,10 +106,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
           }
 
-        public void AddFilterForStringBeginsWith(string key, string value)
+        public void AddFilterForStringBeginsWith()
         {
-            var filter = new StringBeginsWithFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringBeginsWithFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -95,10 +118,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
          }
 
-        public void AddFilterForStringNotBeginsWith(string key, string value)
+        public void AddFilterForStringNotBeginsWith()
         {
-            var filter = new StringNotBeginsWithFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringNotBeginsWithFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -107,10 +130,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }  
 
-        public void AddFilterForStringEndsWith(string key, string value)
+        public void AddFilterForStringEndsWith()
         {
-            var filter = new StringEndsWithFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringEndsWithFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -119,10 +142,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForStringNotEndsWith(string key, string value)
+        public void AddFilterForStringNotEndsWith()
         {
-            var filter = new StringNotEndsWithFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new StringNotEndsWithFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(filterValue);
@@ -131,54 +154,54 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberLessThan(string key, string value)
+        public void AddFilterForNumberLessThan()
         {
             var filter = new NumberLessThanFilter 
             {
-                Key = key,
-                Value = double.Parse(value)
+                Key = Key,
+                Value = double.Parse(Value)
             };
 
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberGreaterThan(string key, string value)
+        public void AddFilterForNumberGreaterThan()
         {
             var filter = new NumberGreaterThanFilter 
             {
-                Key = key,
-                Value = double.Parse(value)
+                Key = Key,
+                Value = double.Parse(Value)
             };
 
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberLessThanOrEquals(string key, string value)
+        public void AddFilterForNumberLessThanOrEquals()
         {
             var filter = new NumberLessThanOrEqualsFilter
             {
-                Key = key,
-                Value = double.Parse(value)
+                Key = Key,
+                Value = double.Parse(Value)
             };
 
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberGreaterThanOrEquals(string key, string value)
+        public void AddFilterForNumberGreaterThanOrEquals()
         {
             var filter = new NumberGreaterThanOrEqualsFilter 
             {
-                Key = key,
-                Value = double.Parse(value)
+                Key = Key,
+                Value = double.Parse(Value)
             };
 
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberIn(string key, string value)
+        public void AddFilterForNumberIn()
         {
-            var filter = new NumberInFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new NumberInFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(double.Parse(filterValue));
@@ -187,10 +210,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberNotIn(string key, string value)
+        public void AddFilterForNumberNotIn()
         {
-            var filter = new NumberNotInFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new NumberNotInFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 filter.Values.Add(double.Parse(filterValue));
@@ -199,10 +222,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberNotInRange(string key, string value)
+        public void AddFilterForNumberNotInRange()
         {
-            var filter = new NumberNotInRangeFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new NumberNotInRangeFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 List<double> doubleRangeValues = new List<double>();
@@ -217,10 +240,10 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForNumberInRange(string key, string value)
+        public void AddFilterForNumberInRange()
         {
-            var filter = new NumberInRangeFilter { Key = key };
-            string[] filterValuesList = value.Split(',');
+            var filter = new NumberInRangeFilter { Key = Key };
+            string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
                 List<double> doubleRangeValues = new List<double>();
@@ -235,17 +258,22 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForIsNullOrUndefined(string key)
+        public void AddFilterForIsNullOrUndefined()
         {
-            var filter = new IsNullOrUndefinedFilter { Key = key };
+            var filter = new IsNullOrUndefinedFilter { Key = Key };
             this.filtersConfiguration.Filters.Add(filter);
         }
 
-        public void AddFilterForIsNotNull(string key)
+        public void AddFilterForIsNotNull()
         {
-            var filter = new IsNotNullFilter { Key = key };
+            var filter = new IsNotNullFilter { Key = Key };
             this.filtersConfiguration.Filters.Add(filter);
         }
 
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+
+        public string OperatorType { get; set; }
     }
 }
