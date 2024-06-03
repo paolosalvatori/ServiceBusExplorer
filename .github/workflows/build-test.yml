@@ -35,7 +35,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Add MSBuild for VS 2022 to PATH 
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
         vs-version: '[17.2,18.0)'
 
@@ -73,7 +73,7 @@ jobs:
 
     - name: Build
       run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
+        msbuild /WarnAsError /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
       run: |
