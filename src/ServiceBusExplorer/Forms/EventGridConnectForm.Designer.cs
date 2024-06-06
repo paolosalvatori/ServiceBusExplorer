@@ -23,13 +23,6 @@ namespace ServiceBusExplorer.Forms
 {
     partial class EventGridConnectForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        #region Private Fields
-        private System.ComponentModel.IContainer components = null;
-        #endregion
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -246,7 +239,7 @@ namespace ServiceBusExplorer.Forms
             this.txtSubscriptionId.Location = new System.Drawing.Point(16, 49);
             this.txtSubscriptionId.Name = "txtSubscriptionId";
             this.txtSubscriptionId.Size = new System.Drawing.Size(336, 20);
-            this.txtSubscriptionId.TabIndex = 16;
+            this.txtSubscriptionId.TabIndex = 0;
             // 
             // lblApiVersion
             // 
@@ -262,6 +255,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtResourceGroupName.BackColor = System.Drawing.SystemColors.Window;
             this.txtResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtResourceGroupName.Location = new System.Drawing.Point(16, 97);
             this.txtResourceGroupName.Multiline = true;

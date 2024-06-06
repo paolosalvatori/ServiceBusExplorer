@@ -4,8 +4,8 @@
 
 namespace EventGridExplorerLibrary
 {
-    using System.Collections.Generic;
     using global::Azure.ResourceManager.EventGrid.Models;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Implementation of the EventGridFilterFactory class
@@ -14,7 +14,7 @@ namespace EventGridExplorerLibrary
     public class EventGridFilterFactory
     {
         private FiltersConfiguration filtersConfiguration;
-       
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EventGridFilterFactory"/> class.
         /// </summary>
@@ -23,7 +23,7 @@ namespace EventGridExplorerLibrary
             this.filtersConfiguration = filtersConfiguration;
         }
 
-        public void FilterSelection() 
+        public void FilterSelection()
         {
             if (OperatorType.Equals("Boolean equals")) { AddFilterForBoolEquals(); };
             if (OperatorType.Equals("String is in")) { AddFilterForStringIn(); };
@@ -49,10 +49,10 @@ namespace EventGridExplorerLibrary
         /// <inheritdoc/>
         public void AddFilterForBoolEquals()
         {
-            var filter = new BoolEqualsFilter 
-            { 
-                Key = Key, 
-                Value = bool.Parse(Value) 
+            var filter = new BoolEqualsFilter
+            {
+                Key = Key,
+                Value = bool.Parse(Value)
             };
 
             this.filtersConfiguration.Filters.Add(filter);
@@ -92,7 +92,7 @@ namespace EventGridExplorerLibrary
             }
 
             this.filtersConfiguration.Filters.Add(filter);
-         }
+        }
 
         public void AddFilterForStringNotContains()
         {
@@ -104,7 +104,7 @@ namespace EventGridExplorerLibrary
             }
 
             this.filtersConfiguration.Filters.Add(filter);
-          }
+        }
 
         public void AddFilterForStringBeginsWith()
         {
@@ -116,7 +116,7 @@ namespace EventGridExplorerLibrary
             }
 
             this.filtersConfiguration.Filters.Add(filter);
-         }
+        }
 
         public void AddFilterForStringNotBeginsWith()
         {
@@ -128,7 +128,7 @@ namespace EventGridExplorerLibrary
             }
 
             this.filtersConfiguration.Filters.Add(filter);
-        }  
+        }
 
         public void AddFilterForStringEndsWith()
         {
@@ -156,7 +156,7 @@ namespace EventGridExplorerLibrary
 
         public void AddFilterForNumberLessThan()
         {
-            var filter = new NumberLessThanFilter 
+            var filter = new NumberLessThanFilter
             {
                 Key = Key,
                 Value = double.Parse(Value)
@@ -167,7 +167,7 @@ namespace EventGridExplorerLibrary
 
         public void AddFilterForNumberGreaterThan()
         {
-            var filter = new NumberGreaterThanFilter 
+            var filter = new NumberGreaterThanFilter
             {
                 Key = Key,
                 Value = double.Parse(Value)
@@ -189,7 +189,7 @@ namespace EventGridExplorerLibrary
 
         public void AddFilterForNumberGreaterThanOrEquals()
         {
-            var filter = new NumberGreaterThanOrEqualsFilter 
+            var filter = new NumberGreaterThanOrEqualsFilter
             {
                 Key = Key,
                 Value = double.Parse(Value)
