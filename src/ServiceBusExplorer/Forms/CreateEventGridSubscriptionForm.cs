@@ -213,9 +213,7 @@ namespace ServiceBusExplorer.Forms
             Close();
         }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-        private void HandleException(Exception? ex)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+        private void HandleException(Exception ex)
         {
             if (string.IsNullOrWhiteSpace(ex?.Message))
             {
