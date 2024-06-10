@@ -20,6 +20,9 @@
 #endregion
 
 #region Using Directives
+using Azure;
+using Azure.ResourceManager.EventGrid;
+using EventGridExplorerLibrary;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
@@ -65,6 +68,7 @@ namespace ServiceBusExplorer.Forms
         private const string EntitiesFileNameFormat = "{0} {1}.xml";
         private const string UrlSegmentFormat = "{0}/{1}";
         private const string PartitionFormat = "{0,2:00}";
+        private const string NamespaceTypeFormat = "{0} Namespace";
 
         //***************************
         // Messages
@@ -93,6 +97,7 @@ namespace ServiceBusExplorer.Forms
         private const string AddRule = "Add Rule";
         private const string DuplicateSubscriptionFormat = "Duplicate Subscription: {0}";
         private const string DuplicateQueueFormat = "Duplicate Queue: {0}";
+        private const string ViewNamespaceFormat = "View Namespace: {0}";
         private const string ViewQueueFormat = "View Queue: {0}";
         private const string ViewTopicFormat = "View Topic: {0}";
         private const string ViewSubscriptionFormat = "View Subscription: {0}";
@@ -124,6 +129,13 @@ namespace ServiceBusExplorer.Forms
         private const string EnableEventHub = "Enable Event Hub";
         private const string DisableEventHub = "Disable Event Hub";
         private const string NoNamespaceWithKeyMessageFormat = "No namespace with key equal to [{0}] exists in the serviceBusNamespaces section of the configuration file.";
+        private const string TopicCreatedFormat = "The topic {0} was successfully created.";
+        private const string SubscriptionCreatedFormat = "The subscription {0} was successfully created.";
+        private const string TopicDeletedFormat = "The topic {0} was successfully deleted.";
+        private const string SubscriptionDeletedFormat = "The subscription {0} was successfully deleted.";
+        private const string EventPublishedFormat = "The event was successfully published to topic {0}.";
+        private const string EventsReceivedFormatPlural = "[{0}] events for the subscription {1} were received.";
+        private const string EventsReceivedFormatSingular = "[{0}] event for the subscription {1} was received.";
 
         //***************************
         // Constants
@@ -166,6 +178,8 @@ namespace ServiceBusExplorer.Forms
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
         private const string DefaultConsumerGroupName = "$Default";
+        private const string EventGridSubscriptionDeliveryMode = "Queue";
+        private const int MaxEventsReceive = 100;
 
         //***************************
         // Icons
@@ -194,6 +208,10 @@ namespace ServiceBusExplorer.Forms
         private const int PartitionIconIndex = 20;
         private const int ConsumerGroupListIconIndex = 4;
         private const int ConsumerGroupIconIndex = 21;
+        private const int EventGridNamespaceIconIndex = 24;
+        private const int EventGridTopicIconIndex = 25; 
+        private const int EventGridSubscriptionIconIndex = 26;
+        private const int EventGridEntityIconIndex = 27;
 
         //***************************
         // Sizes
@@ -227,6 +245,7 @@ namespace ServiceBusExplorer.Forms
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
+        private EventGridLibrary eventGridLibrary;
         #endregion
 
         #region Private Static Fields
@@ -241,7 +260,6 @@ namespace ServiceBusExplorer.Forms
             { Constants.TransferMessages, mcd => mcd.TransferMessageCount },
             { Constants.TransferDeadLetterMessages, mcd => mcd.TransferDeadLetterMessageCount },
         };
-
         #endregion
 
         #region Public Constructor
@@ -342,7 +360,7 @@ namespace ServiceBusExplorer.Forms
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
-            SetTitle(serviceBusNamespace.Namespace);
+            SetTitle(serviceBusNamespace.Namespace, "Service Bus");
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
             {
@@ -367,6 +385,103 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Event Handlers
+        private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
+        {
+            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
+            panelMain.HeaderText = string.Format(DuplicateSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
+            ShowSubscription(subscriptionWrapper, true);
+        }
+
+        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
+        {
+            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
+            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
+            ShowQueue(queueWrappper, queueWrappper.Path, true);
+        }
+
+        async void connectUsingSASToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
+                {
+                    if (connectForm.ShowDialog() != DialogResult.OK)
+                    {
+                        UpdateSavedConnectionsMenu();
+                        return;
+                    }
+                    UpdateSavedConnectionsMenu();
+                    SelectedEntities = connectForm.SelectedEntities;
+                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
+                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
+                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
+                        connectForm.ConnectionString, StaticWriteToLog);
+                    serviceBusHelper.Connect(serviceBusNamespace);
+
+                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
+
+                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                    {
+                        userControl.Dispose();
+                    }
+                    panelMain.Controls.Clear();
+                    panelMain.BackColor = SystemColors.Window;
+                    await ShowEntities(EntityType.All);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        async void connectUsingEntraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var connectForm = new EventGridConnectForm())
+                {
+                    if (connectForm.ShowDialog() != DialogResult.OK)
+                    {
+                        UpdateSavedConnectionsMenu();
+                        return;
+                    }
+
+                    UpdateSavedConnectionsMenu();
+
+                    SelectedEntities = connectForm.SelectedEntities;
+                    NamespaceName = connectForm.NamespaceName;
+                    ResourceGroupName = connectForm.ResourceGroup;
+
+                    eventGridLibrary = new EventGridLibrary(
+                        connectForm.SubscriptionId,
+                        connectForm.ApiVersion,
+                        connectForm.RetryTimeout,
+                        connectForm.CustomId,
+                        WriteToLog);
+
+                    SetTitle(connectForm.NamespaceName, "Event Grid");
+                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Event Grid");
+
+                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                    {
+                        userControl.Dispose();
+                    }
+
+                    panelMain.Controls.Clear();
+                    panelMain.BackColor = SystemColors.Window;
+
+                    await ShowEventGridEntities(EntityType.All);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+
         /// <summary>
         /// Opens the options dialog.
         /// </summary>
@@ -1369,41 +1484,6 @@ namespace ServiceBusExplorer.Forms
             WriteToLog(helpText);
         }
 
-        private async void connectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
-                {
-                    if (connectForm.ShowDialog() != DialogResult.OK)
-                    {
-                        UpdateSavedConnectionsMenu();
-                        return;
-                    }
-                    UpdateSavedConnectionsMenu();
-                    SelectedEntities = connectForm.SelectedEntities;
-                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
-                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
-                        connectForm.ConnectionString, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
-                    SetTitle(serviceBusNamespace.Namespace);
-
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
-                    await ShowEntities(EntityType.All);
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
-
         private void close_Click(object sender, EventArgs e)
         {
             Close();
@@ -1791,7 +1871,16 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Text == Constants.TopicEntities)
                     {
                         panelMain.HeaderText = CreateTopic;
-                        ShowTopic(null, null);
+
+                        // Event Grid Topics Node
+                        if (serviceBusTreeView.SelectedNode.Tag is NamespaceTopic)
+                        {
+                            CreateEventGridTopic();
+                        }
+                        else
+                        {
+                            ShowTopic(null, null);
+                        }
                         return;
                     }
                     // Relays Node (Create New RelayDescription)
@@ -1871,10 +1960,17 @@ namespace ServiceBusExplorer.Forms
                             serviceBusTreeView.SelectedNode.Text == FilteredSubscriptionEntities)
                         {
                             panelMain.HeaderText = CreateSubscription;
+
                             if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper subscriptionNewWrapper)
                             {
                                 ShowSubscription(new SubscriptionWrapper(null, subscriptionNewWrapper.TopicDescription));
                             }
+                            else if (serviceBusTreeView.SelectedNode.Tag is EventGridSubscriptionWrapper subscriptionWrapper)
+                            {
+                                // Event Grid Subscriptions Node
+                                CreateEventGridSubscription(subscriptionWrapper);
+                            }
+
                             return;
                         }
 
@@ -1896,6 +1992,60 @@ namespace ServiceBusExplorer.Forms
                             }
                         }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async void CreateEventGridTopic()
+        {
+            try
+            {
+                using (var createTopicForm = new CreateEventGridTopicForm(WriteToLog))
+                {
+                    if (createTopicForm.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    await eventGridLibrary.CreateTopicAsync(ResourceGroupName, NamespaceName, createTopicForm.TopicName);
+                    
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicCreatedFormat, createTopicForm.TopicName));
+
+                    await ShowEventGridEntities(EntityType.All);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async void CreateEventGridSubscription(EventGridSubscriptionWrapper subscription)
+        {
+            try
+            {
+                using (var createSubscriptionForm = new CreateEventGridSubscriptionForm(WriteToLog))
+                {
+                    if (createSubscriptionForm.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    await eventGridLibrary.CreateSubscriptionAsync(
+                        ResourceGroupName, 
+                        NamespaceName, 
+                        subscription.TopicDescription.Data.Name, 
+                        createSubscriptionForm.SubscriptionName,
+                        EventGridSubscriptionDeliveryMode,
+                        createSubscriptionForm.filterList,
+                        createSubscriptionForm.eventTypesList);
+
+                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionCreatedFormat, createSubscriptionForm.SubscriptionName));
+                    RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);
                 }
             }
             catch (Exception ex)
@@ -2205,6 +2355,16 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
+                    // Event Grid Topic Node
+                    if (serviceBusTreeView.SelectedNode.Tag is NamespaceTopicResource topic)
+                    {
+                        await eventGridLibrary.DeleteTopicAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
+                        
+                        WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicDeletedFormat, topic.Data.Name));
+
+                        await ShowEventGridEntities(EntityType.All);
+                    }
+
                     // Relay Node
                     if (serviceBusTreeView.SelectedNode.Tag is RelayDescription relayDescription)
                     {
@@ -2334,6 +2494,20 @@ namespace ServiceBusExplorer.Forms
                             }
                         }
                         return;
+                    }
+
+                    // Event Grid Subscription Node
+                    if (serviceBusTreeView.SelectedNode.Tag is EventGridSubscriptionWrapper subscription)
+                    {
+                        await eventGridLibrary.DeleteSubscriptionAsync(
+                            ResourceGroupName, 
+                            NamespaceName, 
+                            subscription.TopicDescription.Data.Name, 
+                            subscription.SubscriptionDescription.Data.Name);
+
+                        WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionDeletedFormat, subscription.SubscriptionDescription.Data.Name));
+
+                        RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);
                     }
 
                     // Rules Node
@@ -3315,6 +3489,13 @@ namespace ServiceBusExplorer.Forms
                 {
                     var list = CloneItems(rootContextMenuStrip.Items);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
+
+                    if (node.Tag != null && node.Tag is EventGridNamespaceResource eventGridNamespace)
+                    {
+                        panelMain.HeaderText = string.Format(ViewNamespaceFormat, eventGridNamespace.Data.Name);
+                        ShowEventGridNamespace(eventGridNamespace);
+                    }
+
                     return;
                 }
                 // Queues Node
@@ -3328,7 +3509,17 @@ namespace ServiceBusExplorer.Forms
                 // Topics Node
                 if (node == topicListNode)
                 {
-                    var list = CloneItems(topicsContextMenuStrip.Items);
+                    var list = new List<ToolStripItem>(); 
+
+                    if (topicListNode.Tag != null && topicListNode.Tag is NamespaceTopic)
+                    {
+                        list = CloneItems(eventGridTopicsContextMenuStrip.Items);
+                    }
+                    else
+                    {
+                        list = CloneItems(topicsContextMenuStrip.Items);
+                    }
+
                     AddImportAndSeparatorMenuItems(list);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
                     return;
@@ -3441,6 +3632,17 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
+                // Event Grid Topic Node
+                if (node.Tag is NamespaceTopicResource topic)
+                {
+                    var list = CloneItems(eventGridTopicContextMenuStrip.Items);
+                    AddImportAndSeparatorMenuItems(list);
+                    actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
+                    panelMain.HeaderText = string.Format(ViewTopicFormat, topic.Data.Name);
+                    ShowEventGridTopic(topic, null);
+                    return;
+                }
+
                 // Relay Node
                 if (node.Tag is RelayDescription relayDescription)
                 {
@@ -3519,6 +3721,17 @@ namespace ServiceBusExplorer.Forms
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
                     panelMain.HeaderText = string.Format(ViewSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
                     ShowSubscription(subscriptionWrapper);
+                    return;
+                }
+
+                // Event Grid Subscription Node
+                if (node.Tag is EventGridSubscriptionWrapper subscription)
+                {
+                    var list = CloneItems(subscriptionContextMenuStrip.Items);
+                    AddImportAndSeparatorMenuItems(list);
+                    actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
+                    panelMain.HeaderText = string.Format(ViewSubscriptionFormat, subscription.SubscriptionDescription.Data.Name);
+                    ShowEventGridSubscription(subscription);
                     return;
                 }
 
@@ -4031,9 +4244,9 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void SetTitle(string prefix)
+        private void SetTitle(string prefix, string explorer)
         {
-            this.Text = $"{prefix} - Service Bus Explorer";
+            this.Text = $"{prefix} - {explorer} Explorer";
         }
 
         #endregion
@@ -4111,7 +4324,6 @@ namespace ServiceBusExplorer.Forms
 
         public List<string> SelectedEntities { get; private set; } = new List<string>();
         public List<string> SelectedMessageCounts { get; private set; } = new List<string>();
-
         public bool ProxyOverrideDefault { get; set; }
         public string ProxyAddress { get; set; }
         public string ProxyBypassList { get; set; }
@@ -4119,6 +4331,12 @@ namespace ServiceBusExplorer.Forms
         public bool ProxyUseDefaultCredentials { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
+
+        public string NamespaceName { get; set; }
+        public string ResourceGroupName { get; set; }
+        public string TopicName { get; set; }
+        public string NamespaceHostname { get; set; }
+        public List<Dictionary<string, List<string>>> Filters { get; set; }
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
@@ -4512,6 +4730,207 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private async Task ShowEventGridEntities(EntityType entityType)
+        {
+            var updating = false;
+
+            try
+            {
+                if (serviceBusHelper != null)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    serviceBusTreeView.SuspendDrawing();
+                    serviceBusTreeView.SuspendLayout();
+                    serviceBusTreeView.BeginUpdate();
+                    treeNodesToLazyLoad = new List<TreeNode>();
+                    AsyncPageable<NamespaceTopicResource> topics = null;
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+
+                    if (entityType == EntityType.All)
+                    {
+                        serviceBusTreeView.Nodes.Clear();
+
+                        EventGridNamespaceResource eventGridNamespace = (await eventGridLibrary.GetNamespacesAsync(ResourceGroupName, NamespaceName)).Value;
+                        NamespaceHostname = "https://" + eventGridNamespace.Data.TopicsHostname;
+
+                        rootNode = serviceBusTreeView.Nodes.Add(
+                            NamespaceHostname,
+                            NamespaceHostname,
+                            EventGridNamespaceIconIndex,
+                            EventGridNamespaceIconIndex);
+                        rootNode.Tag = eventGridNamespace;
+
+                        HandleNodeMouseClick(rootNode);
+
+                        if (SelectedEntities.Contains(Constants.TopicEntities))
+                        {
+                            topicListNode = rootNode.Nodes.Add(Constants.TopicEntities, Constants.TopicEntities, EventGridEntityIconIndex, EventGridEntityIconIndex);
+                            topicListNode.ContextMenuStrip = eventGridTopicsContextMenuStrip;
+                            topicListNode.Tag = new NamespaceTopic();
+                        }
+                    }
+
+                    updating = true;
+
+                    if (SelectedEntities.Contains(Constants.TopicEntities) &&
+                        (entityType == EntityType.All ||
+                         entityType == EntityType.Topic))
+                    {
+                        try
+                        {
+                            topics = await eventGridLibrary.GetTopicsAsync(ResourceGroupName, NamespaceName, NamespaceHostname);
+
+                            IAsyncEnumerator<NamespaceTopicResource> enumerator = topics.GetAsyncEnumerator();
+
+                            topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
+                                ? Constants.TopicEntities
+                                : FilteredTopicEntities;
+                            topicListNode.Nodes.Clear();
+
+                            if (topics != null)
+                            {
+                                try
+                                {
+                                    while (await enumerator.MoveNextAsync())
+                                    {
+                                        var topic = enumerator.Current;
+                                        if (string.IsNullOrWhiteSpace(topic.Data.Name))
+                                        {
+                                            continue;
+                                        }
+                                        var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
+                                        LazyLoadEventGridNode(entityNode);
+                                    }
+                                }
+                                finally
+                                {
+                                    await enumerator.DisposeAsync();
+                                }
+                            }
+
+                            if (entityType == EntityType.Topic)
+                            {
+                                serviceBusTreeView.SelectedNode = topicListNode;
+                                serviceBusTreeView.SelectedNode.EnsureVisible();
+                                HandleNodeMouseClick(topicListNode);
+                            }
+                        }
+                        catch (Exception ex) when (FilterOutException(ex))
+                        {
+                            if (ex is AggregateException)
+                            {
+                                ex = ((AggregateException)ex).InnerExceptions.First();
+                            }
+                            WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex}");
+                            serviceBusTreeView.Nodes.Remove(topicListNode);
+                        }
+                    }
+
+                    topicListNode?.Expand();
+
+                    rootNode.Expand();
+                    if (entityType != EntityType.All)
+                        return;
+
+                    serviceBusTreeView.SelectedNode = rootNode;
+                    serviceBusTreeView.SelectedNode.EnsureVisible();
+                    HandleNodeMouseClick(rootNode);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                if (updating)
+                {
+                    serviceBusTreeView.ResumeDrawing();
+                    serviceBusTreeView.ResumeLayout();
+                    serviceBusTreeView.EndUpdate();
+                    serviceBusTreeView.Refresh();
+                }
+                Cursor.Current = Cursors.Default;
+            }
+
+            bool FilterOutException(Exception ex)
+            {
+                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
+                {
+                    ex = ((AggregateException)ex).InnerExceptions.First();
+                }
+                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
+            }
+        }
+
+
+        private void RefreshEventGridEventSubscriptions(string topicName)
+        {
+            var updating = false;
+
+            try
+            {
+                if (serviceBusHelper != null)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    serviceBusTreeView.SuspendDrawing();
+                    serviceBusTreeView.SuspendLayout();
+                    serviceBusTreeView.BeginUpdate();
+                    treeNodesToLazyLoad = new List<TreeNode>();
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+
+                    updating = true;
+
+
+                    try
+                    {
+                        var topicsNode = serviceBusTreeView.Nodes.Find("Topics", true).FirstOrDefault();
+                        serviceBusTreeView.SelectedNode.EnsureVisible();
+                        var myTopicNode = topicsNode.Nodes.Find(topicName, false).FirstOrDefault();
+                        LazyLoadEventGridNode(myTopicNode);
+                        var subscriptionNode = myTopicNode.Nodes.Find("Subscriptions", false).FirstOrDefault();
+                        HandleNodeMouseClick(myTopicNode);
+                        serviceBusTreeView.SelectedNode.EnsureVisible();
+                        subscriptionNode.ExpandAll();
+
+                    }
+                    catch (Exception ex) when (FilterOutException(ex))
+                    {
+                        if (ex is AggregateException)
+                        {
+                            ex = ((AggregateException)ex).InnerExceptions.First();
+                        }
+                        WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex}");
+                        serviceBusTreeView.Nodes.Remove(topicListNode);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                if (updating)
+                {
+                    serviceBusTreeView.ResumeDrawing();
+                    serviceBusTreeView.ResumeLayout();
+                    serviceBusTreeView.EndUpdate();
+                    serviceBusTreeView.Refresh();
+                }
+                Cursor.Current = Cursors.Default;
+            }
+
+            bool FilterOutException(Exception ex)
+            {
+                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
+                {
+                    ex = ((AggregateException)ex).InnerExceptions.First();
+                }
+                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
+            }
+        }
+
         /// <summary>
         /// If the node is in the list of nodes that still require LazyLoading then remove the node from the list and lazy load it.
         /// </summary>
@@ -4623,6 +5042,69 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private async void LazyLoadEventGridNode(TreeNode entityNode)
+        {
+            try
+            {
+                if (entityNode.Tag is NamespaceTopicResource)
+                {
+                    var topic = (NamespaceTopicResource)entityNode.Tag;
+                    var subscriptions = await eventGridLibrary.GetEventSubscriptionsAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
+
+                    if (subscriptions != null ||
+                        !string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression))
+                    {
+                        entityNode.Nodes.Clear();
+
+                        var subscriptionsNode = entityNode.Nodes.Add(
+                            SubscriptionEntities,
+                            SubscriptionEntities, 
+                            EventGridEntityIconIndex,
+                            EventGridEntityIconIndex);
+                        subscriptionsNode.Text =
+                            string.IsNullOrWhiteSpace(
+                                FilterExpressionHelper.SubscriptionFilterExpression)
+                                ? SubscriptionEntities
+                                : FilteredSubscriptionEntities;
+                        subscriptionsNode.ContextMenuStrip = eventGridSubscriptionsContextMenuStrip;
+                        subscriptionsNode.Tag = new EventGridSubscriptionWrapper(null, topic, FilterExpressionHelper.SubscriptionFilterExpression);
+
+                        IAsyncEnumerator<NamespaceTopicEventSubscriptionResource> enumerator = subscriptions.GetAsyncEnumerator();
+
+                        try
+                        {
+                            while (await enumerator.MoveNextAsync())
+                            {
+                                var subscription = enumerator.Current;
+                                var subscriptionNode = subscriptionsNode.Nodes.Add(
+                                subscription.Data.Name,
+                                subscription.Data.Name,
+                                EventGridSubscriptionIconIndex,
+                                EventGridSubscriptionIconIndex);
+                                subscriptionNode.ContextMenuStrip = eventGridSubscriptionContextMenuStrip;
+                                subscriptionNode.Tag = new EventGridSubscriptionWrapper(subscription, topic);
+                                subscriptionNode.Nodes.Clear();
+
+                                WriteToLog(
+                                    string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscription.Data.Name, topic.Data.Name),
+                                    false);
+                                treeNodesToLazyLoad.Add(subscriptionNode);
+                                ApplyColor(subscriptionNode, true);
+                            }
+                        }
+                        finally
+                        {
+                            await enumerator.DisposeAsync();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
         private void CreateEventHubSubTree(EventHubDescription eventHub, TreeNode entityNode)
         {
             try
@@ -4726,6 +5208,39 @@ namespace ServiceBusExplorer.Forms
             return consumerGroupNode;
         }
 
+        private void ShowEventGridNamespace(EventGridNamespaceResource eventGridNamespace)
+        {
+            HandleEventGridNamespaceControl eventGridNamespaceControl = null;
+
+            try
+            {
+                panelMain.SuspendDrawing();
+                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                {
+                    userControl.Dispose();
+                }
+                panelMain.Controls.Clear();
+                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                eventGridNamespaceControl = new HandleEventGridNamespaceControl(eventGridNamespace);
+                eventGridNamespaceControl.SuspendDrawing();
+                eventGridNamespaceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                panelMain.Controls.Add(eventGridNamespaceControl);
+                SetControlSize(eventGridNamespaceControl);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                panelMain.ResumeDrawing();
+                if (eventGridNamespaceControl != null)
+                {
+                    eventGridNamespaceControl.ResumeDrawing();
+                }
+            }
+        }
+
         private void ShowQueue(QueueDescription queue, string path, bool duplicateQueue = false)
         {
             HandleQueueControl queueControl = null;
@@ -4795,7 +5310,34 @@ namespace ServiceBusExplorer.Forms
                 if (topicControl != null)
                 {
                     topicControl.ResumeDrawing();
+                } 
+            }
+        }
+
+        private void ShowEventGridTopic(NamespaceTopicResource topic, string path)
+        {
+            HandleEventGridTopicControl topicControl = null;
+
+            try
+            {
+                panelMain.SuspendDrawing();
+                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                {
+                    userControl.Dispose();
                 }
+                panelMain.Controls.Clear();
+                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                topicControl = new HandleEventGridTopicControl(topic, NamespaceHostname);
+                topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                panelMain.Controls.Add(topicControl);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                panelMain.ResumeDrawing();
             }
         }
 
@@ -4826,6 +5368,39 @@ namespace ServiceBusExplorer.Forms
                 subscriptionControl.OnCancel += MainForm_OnCancel;
                 subscriptionControl.OnRefresh += MainForm_OnRefresh;
                 subscriptionControl.OnChangeStatus += MainForm_OnChangeStatus;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                panelMain.ResumeDrawing();
+                if (subscriptionControl != null)
+                {
+                    subscriptionControl.ResumeDrawing();
+                }
+            }
+        }
+
+        private void ShowEventGridSubscription(EventGridSubscriptionWrapper subscription)
+        {
+            HandleEventGridSubscriptionControl subscriptionControl = null;
+
+            try
+            {
+                panelMain.SuspendDrawing();
+                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                {
+                    userControl.Dispose();
+                }
+                panelMain.Controls.Clear();
+                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                subscriptionControl = new HandleEventGridSubscriptionControl(WriteToLog, subscription, eventGridLibrary);
+                subscriptionControl.SuspendDrawing();
+                subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
+                panelMain.Controls.Add(subscriptionControl);
+                SetControlSize(subscriptionControl);
             }
             catch (Exception ex)
             {
@@ -5610,7 +6185,7 @@ namespace ServiceBusExplorer.Forms
             }
             var segments = path.Split('/');
             var entityNode = node;
-            var currentUrl = serviceBusHelper.NamespaceUri.AbsoluteUri;
+            var currentUrl = serviceBusHelper.NamespaceUri?.AbsoluteUri;
             for (var i = 0; i < segments.Length; i++)
             {
                 if (i < segments.Length - 1)
@@ -5735,6 +6310,24 @@ namespace ServiceBusExplorer.Forms
                             {
                                 WriteToLog(string.Format(CultureInfo.CurrentCulture, NotificationHubRetrievedFormat, notificationHubDescription.Path), false);
                             }
+                            return entityNode;
+                        }
+                        if (tag is NamespaceTopicResource)
+                        {
+                            var topicDescription = tag as NamespaceTopicResource;
+                            entityNode = entityNode.Nodes.Add(segments[i],
+                                                              segments[i],
+                                                              EventGridTopicIconIndex,
+                                                              EventGridTopicIconIndex);
+                            entityNode.ContextMenuStrip = eventGridTopicContextMenuStrip;
+                            entityNode.Tag = tag;
+                            ApplyColor(entityNode, true);
+
+                            if (log)
+                            {
+                                WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicRetrievedFormat, topicDescription.Data.Name), false);
+                            }
+
                             return entityNode;
                         }
                     }
@@ -6212,6 +6805,89 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private async void publishEvent_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode != null)
+                {
+                    if (serviceBusTreeView.SelectedNode.Tag == null)
+                    {
+                        return;
+                    }
+
+                    // Event Grid Topic Node
+                    var topic = serviceBusTreeView.SelectedNode.Tag as NamespaceTopicResource;
+
+                    using (var eventForm = new PublishEventForm(WriteToLog))
+                    {
+                        if (eventForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+
+                        await eventGridLibrary.PublishEventAsync(
+                            topic.Data.Name,
+                            eventForm.EventSource,
+                            eventForm.EventType,
+                            eventForm.EventInfo);
+
+                        WriteToLog(string.Format(CultureInfo.CurrentCulture, EventPublishedFormat, topic.Data.Name));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private async void receiveEvent_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serviceBusTreeView.SelectedNode != null)
+                {
+                    if (serviceBusTreeView.SelectedNode.Tag == null)
+                    {
+                        return;
+                    }
+
+                    var subscription = serviceBusTreeView.SelectedNode.Tag as EventGridSubscriptionWrapper;
+
+                    using (var eventForm = new ReceiveEventForm(WriteToLog))
+                    {
+                        if (eventForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+
+                        var receivedEvents = await eventGridLibrary.ReceiveEventsAsync(
+                                subscription.TopicDescription.Data.Name,
+                                subscription.SubscriptionDescription.Data.Name,
+                                eventForm.GetMax ? MaxEventsReceive : eventForm.EventCount);
+
+                        WriteToLog(string.Format(
+                            CultureInfo.CurrentCulture,
+                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural, 
+                            receivedEvents != null ? receivedEvents.Value.Count : 0, 
+                            subscription.SubscriptionDescription.Data.Name));
+                        
+                        var control = panelMain.Controls[0] as HandleEventGridSubscriptionControl;
+
+                        if (control != null)
+                        {
+                            control.DisplayEventsReceived(receivedEvents);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             cancellationTokenSource.Cancel(false);
@@ -6494,7 +7170,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
                         serviceBusHelper.Connect(serviceBusNamespace);
-                        SetTitle(serviceBusNamespace.Namespace);
+                        SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     }
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
@@ -6502,7 +7178,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
                     serviceBusHelper.Connect(serviceBusNamespace);
-                    SetTitle(serviceBusNamespace.Namespace);
+                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                 }
                 panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.Window;
@@ -6838,20 +7514,6 @@ namespace ServiceBusExplorer.Forms
                 else if (child.Tag is UrlSegmentWrapper)
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
-        }
-        
-        private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
-        {
-            var subscriptionWrapper = serviceBusTreeView.SelectedNode.Tag as SubscriptionWrapper;
-            panelMain.HeaderText = string.Format(DuplicateSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
-            ShowSubscription(subscriptionWrapper, true);
-        }
-
-        private void duplicateQueueMenuItem_Click(object sender, EventArgs e)
-        {
-            var queueWrappper = serviceBusTreeView.SelectedNode.Tag as QueueDescription;
-            panelMain.HeaderText = string.Format(DuplicateQueueFormat, queueWrappper.Path);
-            ShowQueue(queueWrappper, queueWrappper.Path, true);
         }
     }
 }
