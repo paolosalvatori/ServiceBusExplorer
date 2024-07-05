@@ -29,7 +29,7 @@ It is strongly recommended to set `Configuration File for Settings and Connectio
 
 ## Using [Chocolatey](https://chocolatey.org/install)
 
-### Installing first time
+### Installing for the first time
 
 ```
 choco install ServiceBusExplorer
@@ -41,19 +41,19 @@ choco install ServiceBusExplorer
 choco upgrade ServiceBusExplorer
 ```
 
-The default location of the executable is C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe.
+The default location of the executable is `C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe`.
 
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
 
 ## Using [Scoop](https://scoop.sh)
 
-> **__Warning_** The `scoop` package is not maintained by ServiceBusExplorer project so carefully check the package and the URLs it uses before using it. Also, the current package keeps the old version of `ServiceBusExplorer.exe.config`. That may cause assembly loading issues so do not use it for upgrading.
+> **__Warning_** The `scoop` package is not maintained by the ServiceBusExplorer project so carefully check the package and the URLs it uses before using it. Also, the current package keeps the old version of `ServiceBusExplorer.exe.config`. That may cause assembly loading issues so do not use it for upgrading.
 
 ```
 scoop install extras/servicebusexplorer
 ```
 
-The default location of the executable is %USERPROFILE%\scoop\apps\servicebusexplorer\current\tools\ServiceBusExplorer.exe.
+The default location of the executable is `%USERPROFILE%\scoop\apps\servicebusexplorer\current\tools\ServiceBusExplorer.exe`.
 
 ## Using GitHub
 ```
