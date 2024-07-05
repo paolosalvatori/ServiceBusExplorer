@@ -15,7 +15,7 @@ The following software is required to run ServiceBusExplorer. It may run on othe
 
 # Installation
 
-It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to lessen problems when upgrading. 
+It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to reduce problems when upgrading. 
 ![UserConfiguration](./media/UserConfigFile.png)
 
 > **_Note:_** There are four files that will get overwritten during the upgrade.
