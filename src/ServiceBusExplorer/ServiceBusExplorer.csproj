@@ -7,6 +7,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net462</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
 
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
