@@ -14,22 +14,46 @@ The following software is required to run ServiceBusExplorer. It may run on othe
 - .NET Framework 4.6.2
 
 # Installation
+
+It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to lessen problems when upgrading. 
+![UserConfiguration](./media/UserConfigFile.png)
+
+> **_Note:_** There are four files that will get overwritten during the upgrade.
+>
+> - `ServiceBusExplorer.exe.config`
+> - `properties.xml`
+> - `message.xml`
+> - `RelayMessage.xml`
+>
+> If you have made changes to these files, you should back them up before upgrading.
+
 ## Using [Chocolatey](https://chocolatey.org/install)
+
+### Installing for the first time
+
 ```
 choco install ServiceBusExplorer
 ```
 
-The default location of the executable is C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe.
+### Upgrading
+
+```
+choco upgrade ServiceBusExplorer
+```
+
+The default location of the executable is `C:\ProgramData\chocolatey\lib\ServiceBusExplorer\tools\ServiceBusExplorer.exe`.
 
 More information on our [Chocolatey page](https://chocolatey.org/packages/ServiceBusExplorer).
 
 ## Using [Scoop](https://scoop.sh)
 
+> **__Warning_** The `scoop` package is not maintained by the ServiceBusExplorer project so carefully check the package and the URLs it uses before using it. Also, the current package keeps the old version of `ServiceBusExplorer.exe.config`. That may cause assembly loading issues so do not use it for upgrading.
+
 ```
 scoop install extras/servicebusexplorer
 ```
 
-The default location of the executable is %USERPROFILE%\scoop\apps\servicebusexplorer\current\tools\ServiceBusExplorer.exe.
+The default location of the executable is `%USERPROFILE%\scoop\apps\servicebusexplorer\current\tools\ServiceBusExplorer.exe`.
 
 ## Using GitHub
 ```
@@ -47,9 +71,9 @@ Here are some guidelines concerning contributions:
 - We have started to migrate from the old SDK to the latest SDKs for Service Bus, Event Hubs, Relay and Notification Hubs. Therefore, new classes should not depend on the old SDK unless absolutely necessary.  
 
 
-# Development Environment
+## Development Environment
 
-Visual Studio 2022 17.2.4 or later is required to build the solution. 
+Visual Studio 2022 17.8.0 or later is required to build the solution. 
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
 
