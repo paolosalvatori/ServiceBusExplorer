@@ -18,14 +18,11 @@ The following software is required to run ServiceBusExplorer. It may run on othe
 It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to reduce problems when upgrading. 
 ![UserConfiguration](./media/UserConfigFile.png)
 
-> **_Note:_** There are four files that will get overwritten during the upgrade.
+> **_Note:_** The `ServiceBusExplorer.exe.config` in the application directory will get overwritten during the upgrade.
 >
-> - `ServiceBusExplorer.exe.config`
-> - `properties.xml`
-> - `message.xml`
-> - `RelayMessage.xml`
+> If you have made changes to it, you should back it up before upgrading. If you follow the recommendation above then only advanced changes such as WCF configuration modifications cause this. 
 >
-> If you have made changes to these files, you should back them up before upgrading.
+> Do not overwite the new configuration file with the old file since the `runtime` section in the new must file not be modified. 
 
 ## Using [Chocolatey](https://chocolatey.org/install)
 
