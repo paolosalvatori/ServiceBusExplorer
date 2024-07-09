@@ -73,7 +73,7 @@ jobs:
 
     - name: Build
       run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
+        msbuild /WarnAsError /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Run tests
       run: |
