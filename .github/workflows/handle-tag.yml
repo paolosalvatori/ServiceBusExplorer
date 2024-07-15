@@ -19,7 +19,7 @@ jobs:
         echo $hash
 
     - name: Checkout main
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: main
 
