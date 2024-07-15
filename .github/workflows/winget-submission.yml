@@ -6,7 +6,7 @@ on:
     types: [published]
 
 env:
-  REGEX: 'ServiceBusExplorer-([\d.]+)(?:-preview)?\.zip$'
+  VERSION_REGEX: 'ServiceBusExplorer-([\d.]+)(?:-preview)?\.zip$'
    
 jobs:
   winget:
