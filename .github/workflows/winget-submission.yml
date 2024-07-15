@@ -1,0 +1,33 @@
+name: WinGet submission on release
+# based off of https://github.com/microsoft/PowerToys/blob/main/.github/workflows/package-submissions.yml and https://github.com/microsoft/terminal/blob/main/.github/workflows/winget.yml
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+env:
+  REGEX: 'ServiceBusExplorer-([\d.]+)(?:-preview)?\.zip$'
+   
+jobs:
+  winget:
+    name: Publish winget package
+    runs-on: windows-2022
+    steps:
+      - name: Submit PaoloSalvatori.ServiceBusExplorer ${{ github.event.release.prerelease && 'Preview' || 'Stable' }}
+        run: |
+
+          $assets = '${{ toJSON(github.event.release.assets) }}' | ConvertFrom-Json
+          $wingetRelevantAsset = $assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1
+          $regex = [Regex]::New($env:REGEX)
+          $version = $regex.Match($wingetRelevantAsset.name).Groups[1].Value
+
+          $wingetPackage = "PaoloSalvatori.ServiceBusExplorer${{ github.event.release.prerelease && '.Preview' || '' }}"
+
+          # Get the latest wingetcreate file
+          Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+
+          # Submit a PR for the package
+          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls $wingetRelevantAsset.browser_download_url --token "${{ secrets.GITHUB_TOKEN }}"
+
+          
