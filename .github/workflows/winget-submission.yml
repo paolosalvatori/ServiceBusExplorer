@@ -18,7 +18,7 @@ jobs:
 
           $assets = '${{ toJSON(github.event.release.assets) }}' | ConvertFrom-Json
           $wingetRelevantAsset = $assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1
-          $regex = [Regex]::New($env:REGEX)
+          $regex = [Regex]::New($env:VERSION_REGEX)
           $version = $regex.Match($wingetRelevantAsset.name).Groups[1].Value
 
           $wingetPackage = "PaoloSalvatori.ServiceBusExplorer${{ github.event.release.prerelease && '.Preview' || '' }}"
