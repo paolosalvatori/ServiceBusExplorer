@@ -21,36 +21,34 @@
 
 #region Using Directives
 
-using System;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 #endregion
 
 namespace ServiceBusExplorer.UIHelpers
 {
-    public static class ControlHelper 
-    {     
+    public static class ControlHelper
+    {
         #region Redraw Suspend/Resume
-        private const int WmSetredraw = 0xB;      
-        public static void SuspendDrawing(this Control target)     
+        private const int WmSetredraw = 0xB;
+        public static void SuspendDrawing(this Control target)
         {
-            NativeMethods.SendMessage(target.Handle, WmSetredraw, 0, 0);     
-        }      
-        
-        public static void ResumeDrawing(this Control target) 
-        { 
-            ResumeDrawing(target, true); 
-        }     
+            NativeMethods.SendMessage(target.Handle, WmSetredraw, 0, 0);
+        }
 
-        public static void ResumeDrawing(this Control target, bool redraw)     
-        {         
-            NativeMethods.SendMessage(target.Handle, WmSetredraw, 1, 0);          
-            if (redraw)         
-            {             
-                target.Refresh();         
-            }     
-        }     
-        #endregion 
-    } 
+        public static void ResumeDrawing(this Control target)
+        {
+            ResumeDrawing(target, true);
+        }
+
+        public static void ResumeDrawing(this Control target, bool redraw)
+        {
+            NativeMethods.SendMessage(target.Handle, WmSetredraw, 1, 0);
+            if (redraw)
+            {
+                target.Refresh();
+            }
+        }
+        #endregion
+    }
 }

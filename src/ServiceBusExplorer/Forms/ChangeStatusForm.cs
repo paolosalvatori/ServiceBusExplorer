@@ -40,6 +40,7 @@ namespace ServiceBusExplorer.Forms
         private const string DisableFormat = "This operation will disable the {0} {1}. Do you want to continue?";
         private const string SetStatusFormat = "This operation will set the status of the {0} {1} to {2}. Do you want to continue?";
         private const string Unknown = "Unknown";
+        private const int widthPadding = 88;
         #endregion
 
         #region Public Constructor
@@ -60,7 +61,7 @@ namespace ServiceBusExplorer.Forms
                 lblMessage.Text = string.Format(SetStatusFormat, entityType ?? Unknown, entityName ?? Unknown, desiredStatus.ToString());
             }
             
-            Width = lblMessage.Width + 72;
+            Width = lblMessage.Width + LogicalToDeviceUnits(widthPadding);
         }
         #endregion
 

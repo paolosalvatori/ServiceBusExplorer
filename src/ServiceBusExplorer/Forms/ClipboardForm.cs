@@ -31,12 +31,14 @@ namespace ServiceBusExplorer.Forms
 {
     public partial class ClipboardForm : Form
     {
+        private const int widthPadding = 88;
+
         #region Public Constructor
         public ClipboardForm(string url)
         {
             InitializeComponent();
             lblUrl.Text = string.Format(url);
-            Width = lblUrl.Width + 80;
+            Width = lblUrl.Width + LogicalToDeviceUnits(widthPadding);
         }
         #endregion
 

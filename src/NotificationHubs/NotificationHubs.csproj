@@ -3,7 +3,7 @@
     <ProjectGuid>{E836C914-9BFE-4C1C-96E5-6A414CDEF485}</ProjectGuid>
     <RootNamespace>ServiceBusExplorer.NotificationHubs</RootNamespace>
     <AssemblyName>ServiceBusExplorer.NotificationHubs</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyTitle>NotificationHubs</AssemblyTitle>
     <Product>NotificationHubs</Product>
     <Copyright>Copyright ©  2019</Copyright>
