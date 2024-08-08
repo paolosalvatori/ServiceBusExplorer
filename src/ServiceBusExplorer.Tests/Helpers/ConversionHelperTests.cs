@@ -18,7 +18,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var guid = new Guid("2E9DB8C4-8803-4BD7-B860-8932CF13835E");
             var convertedGuid = ConversionHelper.MapStringTypeToCLRType("Guid", guid);
-            Assert.AreEqual(guid, convertedGuid);
+            Assert.That(guid, Is.EqualTo(convertedGuid));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var guidStr = "2E9DB8C4-8803-4BD7-B860-8932CF13835E";
             var convertedGuid = ConversionHelper.MapStringTypeToCLRType("Guid", guidStr);
-            Assert.AreEqual(guidStr.ToLower(), convertedGuid.ToString());
+            Assert.That(guidStr.ToLower(), Is.EqualTo(convertedGuid.ToString()));
         }
 
         [Theory]
@@ -37,14 +37,14 @@ namespace ServiceBusExplorer.Tests.Helpers
         public void MapStringTypeToCLRType_ValueIsTimeSpanString_ReturnsEqualTimespanObject(string timespanStr)
         {
             var convertedTimespan = ConversionHelper.MapStringTypeToCLRType("TimeSpan", timespanStr);
-            Assert.AreEqual(convertedTimespan, TimeSpan.Parse(timespanStr, CultureInfo.InvariantCulture));
+            Assert.That(convertedTimespan, Is.EqualTo(TimeSpan.Parse(timespanStr, CultureInfo.InvariantCulture)));
         }
 
         [Test]
         public void MapStringTypeToCLRType_ValueIsTimeSpan_ReturnsEqualTimespanObject()
         {
             var convertedTimespan = ConversionHelper.MapStringTypeToCLRType("TimeSpan", TimeSpan.Zero);
-            Assert.AreEqual(convertedTimespan, TimeSpan.Zero);
+            Assert.That(convertedTimespan, Is.EqualTo(TimeSpan.Zero));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var result = JsonSerializerHelper.IsJson(null);
 
-            Assert.AreEqual(result, false);
+            Assert.That(result, Is.EqualTo(false));
         }
 
         [Test]
@@ -21,7 +21,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var myOriginalString = "This is a full text string that is not a JSON";
             var indented = JsonSerializerHelper.Indent(myOriginalString);
 
-            Assert.AreEqual(indented, myOriginalString);
+            Assert.That(indented, Is.EqualTo(myOriginalString));
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var myOriginalString = "<sample><title>XML tile</title><alternate language=\"en\">A tile made from some classical XML content.</language></sample>";
             var indented = JsonSerializerHelper.Indent(myOriginalString);
 
-            Assert.AreEqual(indented, myOriginalString);
+            Assert.That(indented, Is.EqualTo(myOriginalString));
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 }";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(indented, expectedResult);
+            Assert.That(indented, Is.EqualTo(expectedResult));
         }
         
         [Test]
@@ -70,7 +70,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 }";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(expectedResult, indented);
+            Assert.That(expectedResult, Is.EqualTo(indented));
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var expectedResult = @"{""Field1"":""Value1"",""Field1"":""Value2""}";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(expectedResult, indented);
+            Assert.That(expectedResult, Is.EqualTo(indented));
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 }";
             var indented = JsonSerializerHelper.Indent(json);
 
-            Assert.AreEqual(indented, expectedResult);
+            Assert.That(indented, Is.EqualTo(expectedResult));
         }
     }
 }

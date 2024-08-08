@@ -152,9 +152,9 @@ namespace ServiceBusExplorer.Tests.Helpers
             var brokeredMessage = new BrokeredMessage(message);
             var actualMessageText = helper.GetMessageText(brokeredMessage, false, out var actualBodyType);
 
-            Assert.AreEqual(expectedBodyType, actualBodyType);
-            Assert.NotNull(actualMessageText);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(actualMessageText));
+            Assert.That(expectedBodyType, Is.EqualTo(actualBodyType));
+            Assert.That(actualMessageText is not null);
+            Assert.That(!string.IsNullOrWhiteSpace(actualMessageText));
         }
 
         [Test]
@@ -168,9 +168,9 @@ namespace ServiceBusExplorer.Tests.Helpers
             var brokeredMessage = new BrokeredMessage(message);
             var actualMessageText = helper.GetMessageText(brokeredMessage, false, out var actualBodyType);
 
-            Assert.AreEqual(expectedBodyType, actualBodyType);
-            Assert.NotNull(actualMessageText);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(actualMessageText));
+            Assert.That(expectedBodyType, Is.EqualTo(actualBodyType));
+            Assert.That(actualMessageText is not null);
+            Assert.That(!string.IsNullOrWhiteSpace(actualMessageText));
         }
 
         /// <summary>
@@ -197,16 +197,16 @@ namespace ServiceBusExplorer.Tests.Helpers
             var brokeredMessage = new BrokeredMessage(new MemoryStream(message));
             var actualMessageText = helper.GetMessageText(brokeredMessage, false, out var actualBodyType);
 
-            Assert.AreEqual(expectedBodyType, actualBodyType);
-            Assert.NotNull(actualMessageText);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(actualMessageText));
+            Assert.That(expectedBodyType, Is.EqualTo(actualBodyType));
+            Assert.That(actualMessageText is not null);
+            Assert.That(!string.IsNullOrWhiteSpace(actualMessageText));
         }
 
         static byte[] CreateProtobufTestMessage()
         {
             // Due to incompatibility with .net 462 it is not possible to generate a protobuf message inside the code.
-            return new byte[]
-            {
+            return
+            [
                 10,
                 12,
                 8,
@@ -293,7 +293,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 230,
                 40,
                 64
-            };
+            ];
         }
     }
 }
