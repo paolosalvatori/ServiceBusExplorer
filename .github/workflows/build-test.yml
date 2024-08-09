@@ -20,28 +20,16 @@ env:
 jobs:
   build_test_publish:
     name: Build and run unit tests
-    runs-on: windows-2022
-    env:
-      NUnitVersion: '3.16.3'
+    runs-on: windows-latest
     steps:        
-    - name: Install NUnit Console Runner and VS project extension
-      run: | 
-        Install-Package NUnit.ConsoleRunner -Force -RequiredVersion $env:NUnitVersion
-        Install-Package NUnit.Extension.VSProjectLoader -Force -RequiredVersion '3.9.0'
-
     - name: Git configuration
       run: git config --global core.autocrlf false
 
     - uses: actions/checkout@v4
 
-    - name: Add MSBuild for VS 2022 to PATH 
-      uses: microsoft/setup-msbuild@v2
-      with:
-        vs-version: '[17.2,18.0)'
-
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore $env:SOLUTION_FILE_PATH
+      run: dotnet restore
 
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
@@ -72,15 +60,12 @@ jobs:
         .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyInformationalVersion' -VersionString ${{env.ReleaseVersion}}   
 
     - name: Build
-      run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
+      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} /p:FileVersion=${{env.NUMBER_VERSION}} /p:InformationalVersion=${{inputs.release-version}}
 
     - name: Run tests
-      run: |
-        $process = Start-Process -FilePath "C:\Program Files\PackageManagement\NuGet\Packages\NUnit.ConsoleRunner.$env:NUnitVersion\tools\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
-        Wait-Process -InputObject $process
-        Get-Content -Path .\TestResult.xml
-        if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
+      run: dotnet test
 
     - name: Cache build
       uses: actions/cache@v3.0.11
