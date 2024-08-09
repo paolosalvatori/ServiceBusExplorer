@@ -147,8 +147,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         #endregion
 
         #region Public methods   
-        //TODO: Refactor Setup
-        public void Setup()
+        private void Setup()
         {
             // Reset application config file. It does not work well just making a copy
             // of the application config file since it may have been modified by a previous 
