@@ -28,7 +28,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
       run: dotnet restore
 
     - name: Show version
