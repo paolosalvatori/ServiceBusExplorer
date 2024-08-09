@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       release-version:
-        required: true
+        required: false
         type: string
         default: '0.0.0'
       cache-build:
