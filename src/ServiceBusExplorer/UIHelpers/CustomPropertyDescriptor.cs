@@ -236,9 +236,21 @@ namespace ServiceBusExplorer.UIHelpers
 
         public object DefaultValue
         {
-            get => attributes.OfType<DefaultValueAttribute>().FirstOrDefault()?.Value;
-            
-            set => value = (DefaultValueAttribute)attributes.FirstOrDefault(a => a is DefaultValueAttribute);
+            get
+            {
+                var attr = (DefaultValueAttribute)attributes.FirstOrDefault(a => a is DefaultValueAttribute);
+                return attr != null ? attr.Value : null;
+            }
+            set
+            {
+                var attr = (DefaultValueAttribute)attributes.FirstOrDefault(a => a is DefaultValueAttribute);
+                if (attr == null)
+                {
+                    attributes.RemoveAll(a => a is DefaultValueAttribute);
+                }
+                // ReSharper disable once RedundantAssignment
+                attr = new DefaultValueAttribute(value); // TODO: what's this doing?
+            }
         }
 
         public int PropertyId

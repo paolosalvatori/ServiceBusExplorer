@@ -627,6 +627,9 @@ namespace ServiceBusExplorer.Controls
 
 				if (minimum > maximum)
 					maximum = minimum;
+				if (minimum > value)
+				    // ReSharper disable once RedundantAssignment
+					value = minimum; // TODO: this is off...
 
 				if(autoSize)
 					Size = FitSize;
@@ -648,6 +651,9 @@ namespace ServiceBusExplorer.Controls
 			{
 				maximum = value;
 
+				if (maximum < value)
+				    // ReSharper disable once RedundantAssignment
+					value = maximum; // TODO: this is off..
                 if (maximum < minimum)
 					minimum = maximum;
 
