@@ -23,7 +23,7 @@ env:
 jobs:
   build_test_publish:
     name: Build and run unit tests
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:        
     - name: Git configuration
       run: git config --global core.autocrlf false
