@@ -14,6 +14,7 @@ on:
     inputs:
       release-version:
         required: false
+        description: A version number to test manual builds. e.g. 2.1.1
         type: string
         default: '0.0.0'
 env:
