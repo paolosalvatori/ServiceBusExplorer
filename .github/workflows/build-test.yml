@@ -49,7 +49,7 @@ jobs:
 
     - name: Build
       working-directory: ${{env.SOLUTION_FILE_PATH}}
-      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} /p:AssemblyVersion=${{env.NUMBER_VERSION}} /p:InformationalVersion=${{inputs.release-version}}
+      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} -p:GenerateAssemblyInfo=true,AssemblyVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}}
 
     - name: Run tests
       working-directory: ${{env.SOLUTION_FILE_PATH}}
