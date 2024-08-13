@@ -13,12 +13,9 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Service Bus Explorer")]
 [assembly: AssemblyDescription("The Service Bus Explorer allows users to connect to a Service Bus namespace and easily administer and test the entities of an Azure Service Bus namespace. The tool provides advanced features like import/export functionality and the ability to test entities.")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Paolo Salvatori")]
 [assembly: AssemblyProduct("Service Bus Explorer")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
