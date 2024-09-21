@@ -14,9 +14,9 @@ on:
     inputs:
       release-version:
         required: false
-        description: A version number to test manual builds. e.g. 2.1.1
+        description: A version number to test manual builds. e.g. 1.2.3
         type: string
-        default: '0.0.0'
+        default: '1.2.3'
 env:
   SOLUTION_FILE_PATH: .\src
   BUILD_CONFIGURATION: Release

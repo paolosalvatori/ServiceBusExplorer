@@ -14,7 +14,7 @@ namespace ServiceBusExplorer.Tests
         public AssemblyVersionTests()
         {
 #if DEBUG
-            expectedVersion = Environment.GetEnvironmentVariable("NUMBER_VERSION") ?? "0.0.0.0";
+            expectedVersion = Environment.GetEnvironmentVariable("NUMBER_VERSION") ?? "0.0.0";
             expectedFileVersion = Environment.GetEnvironmentVariable("FILE_VERSION") ?? "0.0.0.0";
 #else
             expectedVersion = Environment.GetEnvironmentVariable("NUMBER_VERSION") ??  throw new InvalidOperationException("Build number not set by environment");
@@ -25,6 +25,9 @@ namespace ServiceBusExplorer.Tests
         [Fact]
         public void AssemblyShouldHaveSameVersionAsProvidedByBuild()
         {
+            var version=Version.Parse(expectedVersion);
+            if (version.Revision == -1) expectedVersion += ".0";
+
             typeof(Program).Assembly.GetName().Version.ToString().Should().Be(expectedVersion);
         }
 
