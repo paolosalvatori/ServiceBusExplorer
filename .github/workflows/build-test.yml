@@ -60,7 +60,7 @@ jobs:
       env:
         FILE_VERSION: ${{inputs.release-version}}
       working-directory: ${{env.SOLUTION_FILE_PATH}}
-      run: dotnet test -c ${{env.BUILD_CONFIGURATION}}
+      run: dotnet test -c ${{env.BUILD_CONFIGURATION}} --no-build --no-restore
 
     - name: Cache build
       uses: actions/cache@v3.0.11
