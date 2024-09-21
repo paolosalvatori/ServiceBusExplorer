@@ -49,9 +49,16 @@ jobs:
 
     - name: Build
       working-directory: ${{env.SOLUTION_FILE_PATH}}
-      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} -p:GenerateAssemblyInfo=true,AssemblyVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}}
+      run: >-
+        dotnet build -c ${{env.BUILD_CONFIGURATION}} 
+        -p:GenerateAssemblyInfo=true
+        -p:AssemblyVersion=${{env.NUMBER_VERSION}}
+        -p:InformationalVersion=${{inputs.release-version}}
+        -p:FileVersion=${{inputs.release-version}}
 
     - name: Run tests
+      env:
+        FILE_VERSION: ${{inputs.release-version}}
       working-directory: ${{env.SOLUTION_FILE_PATH}}
       run: dotnet test -c ${{env.BUILD_CONFIGURATION}}
 

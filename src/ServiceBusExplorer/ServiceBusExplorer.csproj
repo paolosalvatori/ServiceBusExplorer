@@ -526,7 +526,7 @@
       <PackagePath></PackagePath>
     </None>
     <None Include="Properties\Settings.settings">
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Compile Update="Properties\Resources.Designer.cs">
