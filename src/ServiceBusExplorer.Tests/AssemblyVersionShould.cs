@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,27 +10,47 @@ namespace ServiceBusExplorer.Tests
 {
     public class AssemblyVersionShould
     {
+        private const string CSharpProjectExtension = ".csproj";
+
         [Fact]
         public void BeSameAsSetInProject()
         {
             var assemblyNames = Directory.GetFiles(".", "ServiceBus*.*")
                     .Where(x=>x.EndsWith(".dll") || x.EndsWith(".exe"));
 
-            var projectFiles = Directory.GetFiles("../../../../", "*.csproj", SearchOption.AllDirectories);
+            var projectFiles = Directory.GetFiles("../../../../", $"*{CSharpProjectExtension}", SearchOption.AllDirectories);
             
             var xmlDocument = new XmlDocument();
 
             var expectedVersions = projectFiles.Select(x =>
             {
                 xmlDocument.Load(x);
-                var nodes = xmlDocument.SelectSingleNode("//AssemblyVersion");
-                return nodes.InnerText;
+                var assemblyVersionNode = xmlDocument.SelectSingleNode("//AssemblyVersion");
+                var assemblyNameNode = xmlDocument.SelectSingleNode("//AssemblyName");
+
+                return new
+                {
+                    assemblyName = assemblyNameNode?.InnerText ?? ExtractProjectName(x),
+                    assemblyVersion= assemblyVersionNode.InnerText
+                };
             }).ToArray() ;
 
-            var assemblyVersions = assemblyNames.Select(x=> 
-                Assembly.LoadFrom(x).GetName().Version.ToString());
+            var actualAssemblyVersions = assemblyNames.Select(x=>
+            {
+                var assembly = Assembly.LoadFrom(x);
+                return new
+                {
+                    assemblyName = assembly.GetName().Name,
+                    assemblyVersion = assembly.GetName().Version.ToString()
+                };
+            }).ToArray();
 
-            assemblyVersions.Should().HaveCount(9).And.BeEquivalentTo(expectedVersions);
+            actualAssemblyVersions.Should().HaveCount(9).And.BeEquivalentTo(expectedVersions);
+        }
+
+        private string ExtractProjectName(string x)
+        {
+            return new FileInfo(x).Name.Replace(CSharpProjectExtension, string.Empty);
         }
     }
 }
