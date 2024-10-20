@@ -4,6 +4,8 @@
 		<OutputType>Library</OutputType>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+		<RootNamespace>EventGridExplorerLibrary</RootNamespace>
+		<AssemblyName>ServiceBusExplorer.EventGridExplorerLibrary</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 	</ItemGroup>
 
 </Project>

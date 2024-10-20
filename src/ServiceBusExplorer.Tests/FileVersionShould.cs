@@ -29,7 +29,7 @@ namespace ServiceBusExplorer.Tests
 
             var fileVersions = assemblyNames.Select(x => FileVersionInfo.GetVersionInfo(x).FileVersion);
 
-            fileVersions.Should().HaveCount(8).And.AllBeEquivalentTo(expectedVersion);
+            fileVersions.Should().HaveCount(9).And.AllBeEquivalentTo(expectedVersion);
         }
     }
 }
