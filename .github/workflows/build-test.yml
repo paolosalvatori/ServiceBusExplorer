@@ -38,21 +38,10 @@ jobs:
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
 
-    - name: Get number version
-      env:
-        ReleaseVersion: ${{ inputs.release-version }}
-      run: |
-        Write-Host "Using release version: $env:ReleaseVersion"
-        $numberVersion = .\GetNumberVersion -Version $env:ReleaseVersion
-        echo "Setting numberVersion to $numberVersion"
-        echo "NUMBER_VERSION=$numberVersion" >> $env:GITHUB_ENV
-
     - name: Build
       working-directory: ${{env.SOLUTION_FILE_PATH}}
       run: >-
         dotnet build -c ${{env.BUILD_CONFIGURATION}} 
-        -p:GenerateAssemblyInfo=true
-        -p:AssemblyVersion=${{env.NUMBER_VERSION}}
         -p:InformationalVersion=${{inputs.release-version}}
         -p:FileVersion=${{inputs.release-version}}
 

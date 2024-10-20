@@ -1,30 +1,25 @@
 ﻿using FluentAssertions;
-using System;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 
 namespace ServiceBusExplorer.Tests
 {
     public class AssemblyVersionShould
     {
-        private string expectedVersion;
-
-        public AssemblyVersionShould()
-        {
-#if DEBUG
-            expectedVersion = Environment.GetEnvironmentVariable("NUMBER_VERSION") ?? "0.0.0";
-#else
-            expectedVersion = Environment.GetEnvironmentVariable("NUMBER_VERSION") ??  throw new InvalidOperationException("Build number not set by environment");
-#endif
-            var version = Version.Parse(expectedVersion);
-            if (version.Revision == -1) expectedVersion += ".0";
-        }
-
         [Fact]
-        public void BeSameAsProvidedByBuild()
-        { 
-            typeof(Program).Assembly.GetName().Version.ToString().Should().Be(expectedVersion);
+        public void BeSameAsSetInProject()
+        {
+            var expectedVersion = "1.0.0.1";
+
+            var assemblyNames = Directory.GetFiles(".", "ServiceBus*.*")
+                    .Where(x=>x.EndsWith(".dll") || x.EndsWith(".exe"));
+
+            var assemblyVersions = assemblyNames.Select(x=> 
+                Assembly.LoadFrom(x).GetName().Version.ToString());
+
+            assemblyVersions.Should().HaveCount(8).And.AllBeEquivalentTo(expectedVersion);
         }
     }
 }
