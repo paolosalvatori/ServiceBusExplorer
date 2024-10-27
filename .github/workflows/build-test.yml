@@ -6,13 +6,17 @@ on:
       release-version:
         required: true
         type: string
-        default: '0.0.0'
       cache-build:
         required: false
         type: boolean
         default: false
   workflow_dispatch:
-
+    inputs:
+      release-version:
+        required: false
+        description: A version number to test manual builds. e.g. 1.2.3
+        type: string
+        default: '1.2.3'
 env:
   SOLUTION_FILE_PATH: .\src
   BUILD_CONFIGURATION: Release
@@ -21,66 +25,31 @@ jobs:
   build_test_publish:
     name: Build and run unit tests
     runs-on: windows-2022
-    env:
-      NUnitVersion: '3.16.3'
     steps:        
-    - name: Install NUnit Console Runner and VS project extension
-      run: | 
-        Install-Package NUnit.ConsoleRunner -Force -RequiredVersion $env:NUnitVersion
-        Install-Package NUnit.Extension.VSProjectLoader -Force -RequiredVersion '3.9.0'
-
     - name: Git configuration
       run: git config --global core.autocrlf false
 
     - uses: actions/checkout@v4
 
-    - name: Add MSBuild for VS 2022 to PATH 
-      uses: microsoft/setup-msbuild@v2
-      with:
-        vs-version: '[17.2,18.0)'
-
     - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore $env:SOLUTION_FILE_PATH
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
+      run: dotnet restore
 
     - name: Show version
       run: echo "Building version ${{ inputs.release-version }}"
 
-    - name: Get number version
-      env:
-        ReleaseVersion: ${{ inputs.release-version }}
-      run: |
-        $numberVersion = .\GetNumberVersion -Version ${{env.ReleaseVersion}}
-        echo "Setting numberVersion to $numberVersion"
-        echo "NUMBER_VERSION=$numberVersion" >> $env:GITHUB_ENV
-
-    - name: Set fileversion on all .NET Framework assemblies and assembly version on the exe
-      env:
-        ReleaseVersion: ${{ inputs.release-version }}
-      run: |
-        $sbeFileName = "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\Properties\AssemblyInfo.cs"
-        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyVersion' -Version ${{env.NUMBER_VERSION}}
-        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}   
-        .\SetVersion -FileName $sbeFileName -PropertyName 'AssemblyInformationalVersion' -VersionString ${{env.ReleaseVersion}}   
-
-        $commonInfoFile = "$env:GITHUB_WORKSPACE\src\Common\Properties\AssemblyInfo.cs"
-        .\SetVersion -FileName $commonInfoFile -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}
-        .\SetVersion -FileName $commonInfoFile -PropertyName 'AssemblyInformationalVersion' -VersionString ${{env.ReleaseVersion}}   
-
-        $notificationHubsInfoFile = "$env:GITHUB_WORKSPACE\src\NotificationHubs\Properties\AssemblyInfo.cs"
-        .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyFileVersion' -Version ${{env.NUMBER_VERSION}}      
-        .\SetVersion -FileName $notificationHubsInfoFile -PropertyName 'AssemblyInformationalVersion' -VersionString ${{env.ReleaseVersion}}   
-
     - name: Build
-      run: |
-        msbuild /m /property:Configuration=${{env.BUILD_CONFIGURATION}},FileVersion=${{env.NUMBER_VERSION}},InformationalVersion=${{inputs.release-version}} ${{env.SOLUTION_FILE_PATH}}
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
+      run: >-
+        dotnet build -c ${{env.BUILD_CONFIGURATION}} 
+        -p:InformationalVersion=${{inputs.release-version}}
+        -p:FileVersion=${{inputs.release-version}}
 
     - name: Run tests
-      run: |
-        $process = Start-Process -FilePath "C:\Program Files\PackageManagement\NuGet\Packages\NUnit.ConsoleRunner.$env:NUnitVersion\tools\nunit3-console.exe"  -ArgumentList "$env:GITHUB_WORKSPACE\src\ServiceBusExplorer.Tests\ServiceBusExplorer.Tests.csproj", "--config=${{env.BUILD_CONFIGURATION}}" -PassThru
-        Wait-Process -InputObject $process
-        Get-Content -Path .\TestResult.xml
-        if ($process.ExitCode -ne 0) {throw "Unit tests failed (exit code = $($process.ExitCode))" }
+      env:
+        FILE_VERSION: ${{inputs.release-version}}
+      working-directory: ${{env.SOLUTION_FILE_PATH}}
+      run: dotnet test -c ${{env.BUILD_CONFIGURATION}} --no-build --no-restore
 
     - name: Cache build
       uses: actions/cache@v3.0.11

@@ -3,11 +3,14 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+		<RootNamespace>EventGridExplorerLibrary</RootNamespace>
+		<AssemblyName>ServiceBusExplorer.EventGridExplorerLibrary</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.22.0-beta.1" />
-		<PackageReference Include="Azure.Identity" Version="1.11.4" />
+		<PackageReference Include="Azure.Identity" Version="1.12.0" />
 		<PackageReference Include="Azure.ResourceManager.EventGrid" Version="1.1.0-beta.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
@@ -15,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 	</ItemGroup>
 
 </Project>

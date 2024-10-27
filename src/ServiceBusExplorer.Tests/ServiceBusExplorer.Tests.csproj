@@ -1,34 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <AssemblyTitle>ServiceBusExplorer.Tests</AssemblyTitle>
-    <Company>Microsoft</Company>
-    <Product>ServiceBusExplorer.Tests</Product>
-    <Copyright>Copyright © Microsoft 2016</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\EventGridExplorerLibrary\EventGridExplorerLibrary.csproj" />
-    <ProjectReference Include="..\EventHubs\EventHubs.csproj" />
-    <ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
-    <ProjectReference Include="..\Relay\Relay.csproj" />
-    <ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj" />
-    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
-    <ProjectReference Include="..\Utilities\Utilities.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.14.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
-  </ItemGroup>
+	<PropertyGroup>
+		<ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
+		<TargetFramework>net472</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<AssemblyTitle>ServiceBusExplorer.Tests</AssemblyTitle>
+		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+		<Company>Microsoft</Company>
+		<Product>ServiceBusExplorer.Tests</Product>
+		<Copyright>Copyright © Microsoft 2016</Copyright>
+		<OutputPath>bin\$(Configuration)\</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.ServiceModel" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="Microsoft.CSharp" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Common\Common.csproj" />
+		<ProjectReference Include="..\EventGridExplorerLibrary\EventGridExplorerLibrary.csproj" />
+		<ProjectReference Include="..\EventHubs\EventHubs.csproj" />
+		<ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
+		<ProjectReference Include="..\Relay\Relay.csproj" />
+		<ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj" />
+		<ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
+		<PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
+		<PackageReference Include="xunit" Version="2.9.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+	</ItemGroup>
 </Project>

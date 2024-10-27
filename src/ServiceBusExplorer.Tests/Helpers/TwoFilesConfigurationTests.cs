@@ -8,7 +8,8 @@ using System.Xml.Linq;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus;
-using NUnit.Framework;
+using FluentAssertions;
+using Xunit;
 
 
 namespace ServiceBusExplorer.Tests.Helpers
@@ -27,7 +28,6 @@ namespace ServiceBusExplorer.Tests.Helpers
         Lobster
     }
 
-    [TestFixture]
     public class TwoFilesConfigurationTests
     {
         #region Constants
@@ -146,8 +146,8 @@ namespace ServiceBusExplorer.Tests.Helpers
         #endregion
 
         #region Public methods   
-        [SetUp]
-        public void Setup()
+        //TODO: Refactor Setup
+        private void Setup()
         {
             // Reset application config file. It does not work well just making a copy
             // of the application config file since it may have been modified by a previous 
@@ -163,7 +163,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
 
-        [Test]
+        [Fact]
         public void TestBoolValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -200,7 +200,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestEnumValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -239,7 +239,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestDecimalValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -277,7 +277,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestIntValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -319,7 +319,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestStringValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -356,7 +356,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestHashtableSectionReadAndWrite()
         {
             const string NonExistingSpecies = "NonexistingSpecies";
@@ -438,7 +438,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        [Test]
+        [Fact]
         public void TestMessagingNamespacesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)
@@ -452,24 +452,25 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 // Test reading config values - both application config and user config are missing
                 var namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
-                Assert.AreEqual(0, namespaces.Count);
-                Assert.IsTrue(logInMemory.Contains("Service bus accounts have not been properly configured"));
+                namespaces.Should().BeEmpty();
+                
+                logInMemory.Should().Contain("Service bus accounts have not been properly configured");
                 logInMemory = string.Empty;
 
                 // Create two connection strings in the user file or the application file depending upon
                 // configFileUse.
                 SaveConnectionString(configuration, IndexNamespaceAdded1);
                 SaveConnectionString(configuration, IndexNamespaceAdded2);
-                Assert.IsEmpty(logInMemory);
+                logInMemory.Should().BeEmpty();
 
-                namespaces = ServiceBusNamespace.GetMessagingNamespaces
-                    (configuration, writeToLog);
-                Assert.IsEmpty(logInMemory);
-                Assert.AreEqual(2, namespaces.Count);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded1].Value,
-                    namespaces[KeyNamespaceAdded1].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded2].Value,
-                    namespaces[KeyNamespaceAdded2].ConnectionString);
+                namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
+                namespaces.Should().HaveCount(2);
+                
+                logInMemory.Should().BeEmpty();
+                
+
+                fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
 
 
                 // Add a connection to the application config file, but let the two connection 
@@ -481,19 +482,16 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 if (UseApplicationConfig(configFileUse))
                 {
-                    Assert.AreEqual(3, namespaces.Count);
-                    Assert.AreEqual(fakeConnectionStrings[IndexSecondNamespaceInBothFiles].Value,
-                        namespaces[KeyNamespaceInBothFiles].ConnectionString);
+                    namespaces.Should().HaveCount(3);
+                    fakeConnectionStrings[IndexSecondNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
                 }
                 else
                 {
-                    Assert.AreEqual(2, namespaces.Count);
+                    namespaces.Should().HaveCount(2);
                 }
 
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded1].Value,
-                    namespaces[KeyNamespaceAdded1].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded2].Value,
-                    namespaces[KeyNamespaceAdded2].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
 
 
                 // Add a connection string to the user file with the same index as an existing entry 
@@ -505,13 +503,11 @@ namespace ServiceBusExplorer.Tests.Helpers
                 configuration= TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
 
-                Assert.AreEqual(3, namespaces.Count);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded1].Value,
-                    namespaces[KeyNamespaceAdded1].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded2].Value,
-                    namespaces[KeyNamespaceAdded2].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value,
-                    namespaces[KeyNamespaceInBothFiles].ConnectionString);
+                namespaces.Should().HaveCount(3);
+                fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
+
+                fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
 
                 // Add a connection string to the application file
                 SaveConnectionStringInApplicationFile(IndexNamespaceInAppFile1);
@@ -523,21 +519,18 @@ namespace ServiceBusExplorer.Tests.Helpers
                 // two having the same key.
                 if (UseApplicationConfig(configFileUse))
                 {
-                    Assert.AreEqual(4, namespaces.Count);
-                    Assert.AreEqual(fakeConnectionStrings[IndexNamespaceInAppFile1].Value,
-                        namespaces[KeyNamespaceInAppFile1].ConnectionString);
+                    namespaces.Should().HaveCount(4);
+                    fakeConnectionStrings[IndexNamespaceInAppFile1].Value.Should().Be(namespaces[KeyNamespaceInAppFile1].ConnectionString);
                 }
                 else
                 {
-                    Assert.AreEqual(3, namespaces.Count);
+                    namespaces.Should().HaveCount(3);
                 }
 
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded1].Value,
-                    namespaces[KeyNamespaceAdded1].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded2].Value,
-                    namespaces[KeyNamespaceAdded2].ConnectionString);
-                Assert.AreEqual(fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value,
-                    namespaces[KeyNamespaceInBothFiles].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
+                fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
+
+                fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
 
 
                 // Delete the user file so reading will only be from the application file
@@ -547,38 +540,33 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 if (UseApplicationConfig(configFileUse))
                 {
-                    Assert.IsEmpty(logInMemory);
+                    logInMemory.Should().BeEmpty();
                 }
                 else
                 {
-                    Assert.IsTrue(logInMemory.Contains("not been properly configured"));
+                    logInMemory.Should().Contain("not been properly configured");
                 }
 
                 if (UseApplicationConfig(configFileUse))
                 {
-                    Assert.AreEqual(configFileUse == ConfigFileUse.ApplicationConfig ? 4 : 2, namespaces.Count);
+                    (configFileUse == ConfigFileUse.ApplicationConfig ? 4 : 2).Should().Be(namespaces.Count);
 
                     if (configFileUse == ConfigFileUse.ApplicationConfig)
                     {
-                        Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded1].Value,
-                        namespaces[KeyNamespaceAdded1].ConnectionString);
-                        Assert.AreEqual(fakeConnectionStrings[IndexNamespaceAdded2].Value,
-                            namespaces[KeyNamespaceAdded2].ConnectionString);
-                        Assert.AreEqual(fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value,
-                            namespaces[KeyNamespaceInBothFiles].ConnectionString);
+                        fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
+                        fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
+                        fakeConnectionStrings[IndexFirstNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
                     }
                     else
                     {
-                        Assert.AreEqual(fakeConnectionStrings[IndexSecondNamespaceInBothFiles].Value,
-                            namespaces[KeyNamespaceInBothFiles].ConnectionString);
+                        fakeConnectionStrings[IndexSecondNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
                     }
-
-                    Assert.AreEqual(fakeConnectionStrings[IndexNamespaceInAppFile1].Value,
-                        namespaces[KeyNamespaceInAppFile1].ConnectionString);
+                    
+                    fakeConnectionStrings[IndexNamespaceInAppFile1].Value.Should().Be(namespaces[KeyNamespaceInAppFile1].ConnectionString);
                 }
                 else
                 {
-                    Assert.AreEqual(0, namespaces.Count);
+                    namespaces.Should().BeEmpty();
                 }
             }
         }
@@ -654,10 +642,9 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         void SaveConnectionString(TwoFilesConfiguration configuration, int index)
         {
-            Assert.IsEmpty(logInMemory);
-            ServiceBusNamespace.SaveConnectionString(configuration, fakeConnectionStrings[index].Key,
-                fakeConnectionStrings[index].Value, writeToLog);
-            Assert.IsEmpty(logInMemory);
+            logInMemory.Should().BeEmpty();
+            ServiceBusNamespace.SaveConnectionString(configuration, fakeConnectionStrings[index].Key, fakeConnectionStrings[index].Value, writeToLog);
+            logInMemory.Should().BeEmpty();
         }
 
         void DeleteUserConfigFile()
@@ -671,16 +658,17 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             // Get a value that do not exist in the application config file defaulting to true
             var nonExistingValueAsTrue = configuration.GetBoolValue(KeyDoesNotExistAnywhere, true, writeToLog);
-            Assert.AreEqual(true, nonExistingValueAsTrue);
+            true.Should().Be(nonExistingValueAsTrue);
 
             // Get a value that do not exist in the application config file defaulting to false
             var nonExistingValueAsFalse = configuration.GetBoolValue(KeyDoesNotExistAnywhere, false, writeToLog);
-            Assert.AreEqual(false, nonExistingValueAsFalse);
+            false.Should().Be(nonExistingValueAsFalse);
 
             // Get the value from the user file defaulting to true. If userFileShouldHaveUseAsciiKeyAsFalse
             // is false then we should read from the application config and that value should be true
             var useAsciiDefTrue = configuration.GetBoolValue(KeyIsInitiallyTrueInAppConfig, true, writeToLog);
-            Assert.AreEqual(!configHasBeenModified, useAsciiDefTrue);
+            
+            configHasBeenModified.Should().NotBe(useAsciiDefTrue);
 
             // Get a value from that initially only exist in the application file defaulting to false
             var useAsciiDefFalse = configuration.GetBoolValue(KeyIsInitiallyTrueInAppConfig, false, writeToLog);
@@ -695,23 +683,23 @@ namespace ServiceBusExplorer.Tests.Helpers
                 expectedUseAsciiDef = false;
             }
 
-            Assert.AreEqual(expectedUseAsciiDef, useAsciiDefFalse);
+            expectedUseAsciiDef.Should().Be(useAsciiDefFalse);
 
             // Get a value that does not exist in the user file
             var savePropertiesToFile = configuration.GetBoolValue(keyOnlyInAppConfig, false, writeToLog);
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(savePropertiesToFile, true);
+                savePropertiesToFile.Should().BeTrue();
             }
             else
             {
-                Assert.AreEqual(savePropertiesToFile, false);
+                savePropertiesToFile.Should().BeFalse();
             }
 
             // Get a value that will only exist in the user file
             var onlyInUserFile = configuration.GetBoolValue(KeyIsAddedAndSetToTrueBeforeSecondTest, false, writeToLog);
-            Assert.AreEqual(onlyInUserFile, configHasBeenModified);
+            onlyInUserFile.Should().Be(configHasBeenModified);
         }
 
         void TestReadingEnumValues(TwoFilesConfiguration configuration, bool configHasBeenModified)
@@ -719,30 +707,27 @@ namespace ServiceBusExplorer.Tests.Helpers
             const string keyOnlyInAppConfig = "monster";
 
             // Get a value that do not exist in any of the config files using default
-            var nonExistingValueAsDefault = configuration.GetEnumValue(KeyDoesNotExistAnywhere,
-                default(RelayType), writeToLog);
-            Assert.AreEqual(RelayType.None, nonExistingValueAsDefault);
+            var nonExistingValueAsDefault = configuration.GetEnumValue(KeyDoesNotExistAnywhere, default(RelayType), writeToLog);
+
+            RelayType.None.Should().Be(nonExistingValueAsDefault);
 
             // Get a value that do not exist in any of the config files defaulting to false
-            var nonExistingValueAsNetEvent = configuration.GetEnumValue(KeyDoesNotExistAnywhere,
-                RelayType.NetEvent, writeToLog);
-            Assert.AreEqual(RelayType.NetEvent, nonExistingValueAsNetEvent);
+            var nonExistingValueAsNetEvent = configuration.GetEnumValue(KeyDoesNotExistAnywhere, RelayType.NetEvent, writeToLog);
+
+            RelayType.NetEvent.Should().Be(nonExistingValueAsNetEvent);
 
             // If configHasBeenModified is false then we should read get the original value which should be
             // AutoDetect. Otherwise the value is Https.
-            var connectivityMode = configuration.GetEnumValue<ConnectivityMode>
-                (KeyConnectivityModeWhichWillBeOverriddenOrOverwritten, default, writeToLog);
+            var connectivityMode = configuration.GetEnumValue<ConnectivityMode>(KeyConnectivityModeWhichWillBeOverriddenOrOverwritten, default, writeToLog);
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(configHasBeenModified ?
-                    ConnectivityMode.Https : ConnectivityMode.AutoDetect, connectivityMode);
+                (configHasBeenModified ? ConnectivityMode.Https : ConnectivityMode.AutoDetect).Should().Be(connectivityMode);
             }
             else  // Just user config file
             {
                 // ConnectivityMode.Http is the default
-                Assert.AreEqual(configHasBeenModified ?
-                     ConnectivityMode.Https : ConnectivityMode.Http, connectivityMode);
+                (configHasBeenModified ? ConnectivityMode.Https : ConnectivityMode.Http).Should().Be(connectivityMode);
             }
 
             // Get a value that do exist initially
@@ -751,17 +736,17 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(Monster.KingKong, monster);
+                monster.Should().Be(Monster.KingKong);
             }
             else
             {
-                Assert.AreEqual(Monster.Godzilla, monster);
+                monster.Should().Be(Monster.Godzilla);
             }
 
             // Get a value that will be added after the first test
-            var crustacean = configuration.GetEnumValue(
-                KeyCrustaceanIsAddedAndSetToCrabBeforeSecondTest, Crustacean.Shrimp, writeToLog);
-            Assert.AreEqual(configHasBeenModified ? Crustacean.Crab : Crustacean.Shrimp, crustacean);
+            var crustacean = configuration.GetEnumValue(KeyCrustaceanIsAddedAndSetToCrabBeforeSecondTest, Crustacean.Shrimp, writeToLog);
+
+            (configHasBeenModified ? Crustacean.Crab : Crustacean.Shrimp).Should().Be(crustacean);
         }
 
         void TestReadingIntValues(TwoFilesConfiguration configuration, bool configHasBeenModified)
@@ -772,23 +757,26 @@ namespace ServiceBusExplorer.Tests.Helpers
             // If the user file exists it should have an invalid value 
             if (configHasBeenModified)
             {
-                Assert.IsTrue(configuration.SettingExists(KeyWithInvalidValue));
+                configuration.SettingExists(KeyWithInvalidValue).Should().BeTrue();
+
                 var shouldBeDefault = configuration.GetIntValue(KeyWithInvalidValue, mediumNumber, writeToLog);
-                Assert.AreEqual(mediumNumber, shouldBeDefault);
-                Assert.IsTrue(logInMemory.Contains("which cannot be parsed to a(n) System.Int32"));
+
+                mediumNumber.Should().Be(shouldBeDefault);
+
+                logInMemory.Should().Contain("which cannot be parsed to a(n) System.Int32");
                 logInMemory = string.Empty;
             }
 
             // Get a value that do not exist in any config config file defaulting to empty
-            Assert.IsFalse(configuration.SettingExists(KeyDoesNotExistAnywhere));
-            var nonExistingValueAsDefault = configuration.GetIntValue(KeyDoesNotExistAnywhere,
-                default, writeToLog);
-            Assert.AreEqual(0, nonExistingValueAsDefault);
+            configuration.SettingExists(KeyDoesNotExistAnywhere).Should().BeFalse();
+            var nonExistingValueAsDefault = configuration.GetIntValue(KeyDoesNotExistAnywhere, default, writeToLog);
+            
+            nonExistingValueAsDefault.Should().Be(0);
 
             // Get a value that does not exist in the any config file defaulting to mediumNumber
-            var nonExistingValueAsMediumNumber = configuration.GetIntValue(KeyDoesNotExistAnywhere,
-                mediumNumber, writeToLog);
-            Assert.AreEqual(mediumNumber, nonExistingValueAsMediumNumber);
+            var nonExistingValueAsMediumNumber = configuration.GetIntValue(KeyDoesNotExistAnywhere, mediumNumber, writeToLog);
+            
+            mediumNumber.Should().Be(nonExistingValueAsMediumNumber);
 
             // Get the value from the user file defaulting to empty. If configHasBeenModified
             // is false then we should read from the application config and that value should be
@@ -799,15 +787,14 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                expectedLength = configHasBeenModified ?
-                    (int)ValueSharkLengthSet172 : (int)ValueSharkLengthInitial158;
+                expectedLength = configHasBeenModified ? (int)ValueSharkLengthSet172 : (int)ValueSharkLengthInitial158;
             }
             else // Just user config
             {
                 expectedLength = configHasBeenModified ? (int)ValueSharkLengthSet172 : default;
             }
 
-            Assert.AreEqual(expectedLength, sharkLength);
+            expectedLength.Should().Be(sharkLength);
 
             const int largeNumber = 3450242;
             // Get the value from the user file defaulting to a large number
@@ -825,7 +812,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 }
             }
 
-            Assert.AreEqual(expectedLength, sharkLength);
+            expectedLength.Should().Be(sharkLength);
 
             // Get a value that only exists in the application config file
             const int valueMorayEelLength = 214;
@@ -833,11 +820,11 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(valueMorayEelLength, morayEelLength);
+                valueMorayEelLength.Should().Be(morayEelLength);
             }
             else
             {
-                Assert.AreEqual(default(int), morayEelLength);
+                morayEelLength.Should().Be(default);
             }
 
             // Get a value that will only exist in the user file or overridden in the application file
@@ -846,7 +833,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             expectedLength = configHasBeenModified ? (int)ValueWhaleLengthSet634 : mediumNumber;
 
-            Assert.AreEqual(expectedLength, whaleLengthValue);
+            expectedLength.Should().Be(whaleLengthValue);
         }
 
         void TestReadingDecimalValues(TwoFilesConfiguration configuration, bool configHasBeenModified)
@@ -855,35 +842,32 @@ namespace ServiceBusExplorer.Tests.Helpers
             const decimal mediumNumber = 52.88M;
 
             // Get a value that do not exist in the application config file defaulting to empty
-            var nonExistingValueAsDefault = configuration.GetDecimalValue(KeyDoesNotExistAnywhere, default,
-                writeToLog);
-            Assert.AreEqual(nonExistingValueAsDefault, 0);
+            var nonExistingValueAsDefault = configuration.GetDecimalValue(KeyDoesNotExistAnywhere, default, writeToLog);
+
+            nonExistingValueAsDefault.Should().Be(0);
 
             // Get a value that do not exist in the application config file defaulting to mediumNumber
-            var nonExistingValueAsMediumNumber = configuration.GetDecimalValue
-                (KeyDoesNotExistAnywhere, mediumNumber, writeToLog);
-            Assert.AreEqual(nonExistingValueAsMediumNumber, mediumNumber);
+            var nonExistingValueAsMediumNumber = configuration.GetDecimalValue(KeyDoesNotExistAnywhere, mediumNumber, writeToLog);
+
+            nonExistingValueAsMediumNumber.Should().Be(mediumNumber);
 
             // If configHasBeenModified is false then we should read from the application config 
             // and that value should be ValueSharkWeightInAppConfig.  Get the value from the user 
             // file defaulting to empty. 
-            var sharkWeight = configuration.GetDecimalValue(KeySharkWeightWhichWillBeOverridden,
-                default, writeToLog);
+            var sharkWeight = configuration.GetDecimalValue(KeySharkWeightWhichWillBeOverridden, default, writeToLog);
 
             decimal expectedWeight;
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                expectedWeight = configHasBeenModified ?
-                    ValueSharkWeightInUserConfig : ValueSharkWeightInAppConfig;
+                expectedWeight = configHasBeenModified ? ValueSharkWeightInUserConfig : ValueSharkWeightInAppConfig;
             }
             else
             {
-                expectedWeight = configHasBeenModified ?
-                    ValueSharkWeightInUserConfig : default;
+                expectedWeight = configHasBeenModified ? ValueSharkWeightInUserConfig : default;
             }
 
-            Assert.AreEqual(expectedWeight, sharkWeight);
+            expectedWeight.Should().Be(sharkWeight);
 
 
             // Get the value from the user file defaulting to a large number
@@ -896,7 +880,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 expectedWeight = largeNumber;
             }
 
-            Assert.AreEqual(expectedWeight, sharkWeight);
+            expectedWeight.Should().Be(sharkWeight);
 
             // Get a value that do not exist in the user file
             const decimal morayEelWeightInAppConfig = 588M;
@@ -913,13 +897,13 @@ namespace ServiceBusExplorer.Tests.Helpers
                 expectedMorayEelWeight = default;
             }
 
-            Assert.AreEqual(expectedMorayEelWeight, morayEelWeight);
+            expectedMorayEelWeight.Should().Be(morayEelWeight);
 
             // Get a value that does not exist in the application config initially
             var onlyInUserFile = configuration.GetDecimalValue(KeyWhaleWeightWillBeAddedBeforeSecondRun,
                 mediumNumber, writeToLog);
             expectedWeight = configHasBeenModified ? ValueWhaleWeight8039And30 : mediumNumber;
-            Assert.AreEqual(expectedWeight, onlyInUserFile);
+            expectedWeight.Should().Be(onlyInUserFile);
         }
 
 
@@ -930,11 +914,11 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             // Get a value that do not exist in the application config file defaulting to empty
             var nonExistingValueAsTrue = configuration.GetStringValue(KeyDoesNotExistAnywhere, string.Empty);
-            Assert.AreEqual(nonExistingValueAsTrue, string.Empty);
+            nonExistingValueAsTrue.Should().BeEmpty();
 
             // Get a value that do not exist in any config file defaulting to false
             var nonExistingValueAsFalse = configuration.GetStringValue(KeyDoesNotExistAnywhere, ExtinctShark);
-            Assert.AreEqual(nonExistingValueAsFalse, ExtinctShark);
+            nonExistingValueAsFalse.Should().Be(ExtinctShark);
 
             // Get the value from the user file defaulting to empty. If configHasBeenModified
             // is false then we should read from the application config and that value should be
@@ -943,13 +927,11 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(configHasBeenModified ?
-                    ValueForOverridingShark : SharkValueInAppConfig, sharkSpecies);
+                (configHasBeenModified ? ValueForOverridingShark : SharkValueInAppConfig).Should().Be(sharkSpecies);
             }
             else // Just user config
             {
-                Assert.AreEqual(configHasBeenModified ?
-                    ValueForOverridingShark : string.Empty, sharkSpecies);
+                (configHasBeenModified ? ValueForOverridingShark : string.Empty).Should().Be(sharkSpecies);
             }
 
             // Get the value from the user file defaulting to false
@@ -959,13 +941,11 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(configHasBeenModified ?
-                     ValueForOverridingShark : SharkValueInAppConfig, sharkSpecies);
+                (configHasBeenModified ? ValueForOverridingShark : SharkValueInAppConfig).Should().Be(sharkSpecies);
             }
             else
             {
-                Assert.AreEqual(configHasBeenModified ?
-                    ValueForOverridingShark : valueWhiteTipReefShark, sharkSpecies);
+                (configHasBeenModified ? ValueForOverridingShark : valueWhiteTipReefShark).Should().Be(sharkSpecies);
             }
 
             // Get a value that do not exist in the user file
@@ -974,17 +954,17 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             if (UseApplicationConfig(configuration.ConfigFileUse))
             {
-                Assert.AreEqual(valueGrayWhale, whale);
+                valueGrayWhale.Should().Be(whale);
             }
             else
             {
-                Assert.AreEqual(string.Empty, whale);
+                whale.Should().BeEmpty();
             }
 
             // Get a value that will only exist in the user file
-            var onlyInUserFile = configuration.GetStringValue(KeyIsAddedAndSetToTrueBeforeSecondTest,
-                ExtinctShark);
-            Assert.AreEqual(onlyInUserFile, configHasBeenModified ? AnotherShark : ExtinctShark);
+            var onlyInUserFile = configuration.GetStringValue(KeyIsAddedAndSetToTrueBeforeSecondTest, ExtinctShark);
+
+            onlyInUserFile.Should().Be(configHasBeenModified ? AnotherShark : ExtinctShark);
         }
 
         void TestReadingHashtableSection(TwoFilesConfiguration configuration,
@@ -992,7 +972,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             // Get a value that do not exist in the application config file defaulting to empty
             var nonExistingSection = configuration.GetHashtableFromSection(KeyDoesNotExistAnywhere);
-            Assert.AreEqual(nonExistingSection, null);
+            nonExistingSection.Should().BeNull();
 
             var saltWaterFishes = configuration.GetHashtableFromSection(SectionSaltWaterFishesWhichWillBeMerged);
 
@@ -1002,29 +982,29 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 if (!configHasBeenModified)
                 {
-                    Assert.AreEqual(2, saltWaterFishes.Count);
-                    Assert.AreEqual(ValueAlaskaPollockOldScientificName, saltWaterFishes["Alaska pollock"]);
+                    saltWaterFishes.Count.Should().Be(2);
+                    saltWaterFishes["Alaska pollock"].Should().Be(ValueAlaskaPollockOldScientificName);
                 }
                 else
                 {
-                    Assert.AreEqual(3, saltWaterFishes.Count);
-                    Assert.AreEqual(ValueAlaskaPollockNewScientificName, saltWaterFishes["Alaska pollock"]);
-                    Assert.AreEqual("Scomber scombrus", saltWaterFishes["Atlantic mackerel"]);
+                    saltWaterFishes.Count.Should().Be(3);
+                    saltWaterFishes["Alaska pollock"].Should().Be(ValueAlaskaPollockNewScientificName);
+                    saltWaterFishes["Atlantic mackerel"].Should().Be("Scomber scombrus");
                 }
 
-                Assert.AreEqual("Scomber colias", saltWaterFishes["Atlantic chub mackerel"]);
+                saltWaterFishes["Atlantic chub mackerel"].Should().Be("Scomber colias");
             }
             else
             {
                 if (!configHasBeenModified)
                 {
-                    Assert.IsNull(saltWaterFishes);
+                    saltWaterFishes.Should().BeNull();
                 }
                 else
                 {
-                    Assert.AreEqual(2, saltWaterFishes.Count);
-                    Assert.AreEqual("Scomber scombrus", saltWaterFishes["Atlantic mackerel"]);
-                    Assert.AreEqual(ValueAlaskaPollockNewScientificName, saltWaterFishes["Alaska Pollock"]);
+                    saltWaterFishes.Count.Should().Be(2);
+                    saltWaterFishes["Atlantic mackerel"].Should().Be("Scomber scombrus");
+                    saltWaterFishes["Alaska Pollock"].Should().Be(ValueAlaskaPollockNewScientificName);
                 }
             }
 
@@ -1036,20 +1016,19 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 if (ConfigFileUse.ApplicationConfig == configuration.ConfigFileUse)
                 {
-                    Assert.AreEqual(null, freshWaterFishes);
-                    //Assert.AreEqual(0, freshWaterFishes.Count);
+                    freshWaterFishes.Should().BeNull();
                 }
                 else
                 {
-                    Assert.AreEqual(null, freshWaterFishes);
+                    freshWaterFishes.Should().BeNull();
                 }
             }
             else
             {
-                Assert.AreEqual(3, freshWaterFishes.Count);
-                Assert.AreEqual("Perca flavescens", freshWaterFishes["Perch"]);
-                Assert.AreEqual("Sander lucioperca", freshWaterFishes["Zander"]);
-                Assert.AreEqual("Esox lucius", freshWaterFishes["Pike"]);
+                freshWaterFishes.Count.Should().Be(3);
+                freshWaterFishes["Perch"].Should().Be("Perca flavescens");
+                freshWaterFishes["Zander"].Should().Be("Sander lucioperca");
+                freshWaterFishes["Pike"].Should().Be("Esox lucius");
             }
         }
 

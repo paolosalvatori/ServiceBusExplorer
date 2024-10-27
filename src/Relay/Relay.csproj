@@ -1,20 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
-    <AssemblyName>ServiceBusExplorer.Relay</AssemblyName>
-  </PropertyGroup>
-
-
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Relay" Version="3.0.1" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Utilities\Utilities.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>7.3</LangVersion>
+		<AssemblyName>ServiceBusExplorer.Relay</AssemblyName>
+		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.Relay" Version="3.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+	</ItemGroup>
 </Project>
