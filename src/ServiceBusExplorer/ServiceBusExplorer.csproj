@@ -70,7 +70,6 @@
 		<PackageIcon>NewServiceBusExplorerLogo.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/paolosalvatori/ServiceBusExplorer</RepositoryUrl>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="FastColoredTextBox">
