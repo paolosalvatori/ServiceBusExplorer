@@ -70,7 +70,7 @@ namespace ServiceBusExplorer
             }
             catch (Exception e)
             {
-                MessageBox.Show(text: $"A fatal exception occurred. ServiceBusExplorer will now shutdown. \n\n{e.Message}.", 
+                MessageBox.Show(text: $"A fatal exception occurred. ServiceBusExplorer will now shut down. \n\n{e.Message}.", 
                     caption: "ServiceBusExplorer", 
                     buttons: MessageBoxButtons.OK,
                     icon: MessageBoxIcon.Stop);
