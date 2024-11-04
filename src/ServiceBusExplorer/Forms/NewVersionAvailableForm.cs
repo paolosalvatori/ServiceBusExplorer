@@ -21,11 +21,15 @@
 
 #region Using Directives
 
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.UIHelpers;
 using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Properties;
 
 #endregion
 
@@ -45,17 +49,36 @@ namespace ServiceBusExplorer.Forms
                 ControlStyles.ResizeRedraw |
                 ControlStyles.UserPaint,
                 true);
+
         }
         #endregion
 
         #region Event Handlers
+       
+        private void siteLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/paolosalvatori/ServiceBusExplorer");
+        }
+
+        private void mailLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("mailto:paolos@microsoft.com?subject=Service%20Bus%20Explorer%20Feedback");
+        }
+
+        private void blogLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("http://blogs.msdn.com/paolos");
+        }
+
+        private void twitterLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://twitter.com/babosbird");
+        }
+
         private void NewVersionAvailableForm_Load(object sender, EventArgs e)
         {
-            this.SuspendDrawing();
-            this.SuspendLayout();
-
             lblExeVersion.Text = VersionProvider.GetExeVersion();
-
+            
             if (!VersionProvider.IsLatestVersion(out var releaseInfo))
             {
                 labelLatestVersion.Text = $"New Release {releaseInfo.Version} Available";
@@ -71,9 +94,6 @@ namespace ServiceBusExplorer.Forms
                 linkLabelnewVersion.Visible = false;
                 labelReleaseInfo.Visible = false;
             }
-
-            this.ResumeDrawing();
-            this.ResumeLayout();
         }
         #endregion
 
