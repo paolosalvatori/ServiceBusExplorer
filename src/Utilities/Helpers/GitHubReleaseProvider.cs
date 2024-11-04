@@ -21,12 +21,12 @@
 
 namespace ServiceBusExplorer.Utilities.Helpers
 {
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
 
     public class ReleaseInfo
     {
@@ -47,8 +47,6 @@ namespace ServiceBusExplorer.Utilities.Helpers
 
     public static class GitHubReleaseProvider
     {
-        private static readonly HttpClient client = new HttpClient();
-
         public class Release
         {
             [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
@@ -91,40 +89,16 @@ namespace ServiceBusExplorer.Utilities.Helpers
         public static async Task<ReleaseInfo> GetServiceBusClientLatestVersion(WriteToLogDelegate writeToLog = null)
         {
             var nextReleaseInfo = ReleaseInfo.Null;
-            var responseBody = string.Empty;
-            try
+            using (var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("User-Agent", "ASBE");
-                responseBody = await client.GetStringAsync("https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest")
-                    .ConfigureAwait(false);
-            }
-            catch (HttpRequestException e)
-            {
-                if (writeToLog != null)
-                {
-                    writeToLog($"GitHubReleaseProvider::{e.Message} " + e?.InnerException);
-                }
-                else
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(responseBody))
-            {
+                var responseBody = string.Empty;
                 try
                 {
-                    var latestReleaseInfo = JsonConvert.DeserializeObject<Release>(responseBody);
-                    if (latestReleaseInfo != null && !string.IsNullOrWhiteSpace(latestReleaseInfo.Name))
-                    {
-                        var version = new Version(latestReleaseInfo.Name);
-                        var uri = latestReleaseInfo.HtmlUrl;
-                        var zipUrl = latestReleaseInfo.Assets.FirstOrDefault(x => x.Name.EndsWith(".zip"))?.BrowserDownloadUrl;
-                        nextReleaseInfo = new ReleaseInfo(uri, version,
-                            latestReleaseInfo.Body, zipUrl);
-                    }
+                    client.DefaultRequestHeaders.Add("User-Agent", "ASBE");
+                    responseBody = await client.GetStringAsync("https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest")
+                        .ConfigureAwait(false);
                 }
-                catch (Exception e)
+                catch (HttpRequestException e)
                 {
                     if (writeToLog != null)
                     {
@@ -135,7 +109,33 @@ namespace ServiceBusExplorer.Utilities.Helpers
                         Console.WriteLine(e.Message);
                     }
                 }
+
+                if (!string.IsNullOrWhiteSpace(responseBody))
+                    try
+                    {
+                        var latestReleaseInfo = JsonConvert.DeserializeObject<Release>(responseBody);
+                        if (latestReleaseInfo != null && !string.IsNullOrWhiteSpace(latestReleaseInfo.Name))
+                        {
+                            var version = new Version(latestReleaseInfo.Name);
+                            var uri = latestReleaseInfo.HtmlUrl;
+                            var zipUrl = latestReleaseInfo.Assets.FirstOrDefault(x => x.Name.EndsWith(".zip"))?.BrowserDownloadUrl;
+                            nextReleaseInfo = new ReleaseInfo(uri, version,
+                                latestReleaseInfo.Body, zipUrl);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        if (writeToLog != null)
+                        {
+                            writeToLog($"GitHubReleaseProvider::{e.Message} " + e?.InnerException);
+                        }
+                        else
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                    }
             }
+
             return nextReleaseInfo;
         }
     }

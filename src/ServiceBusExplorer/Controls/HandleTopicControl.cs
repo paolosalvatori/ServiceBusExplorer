@@ -979,7 +979,7 @@ namespace ServiceBusExplorer.Controls
                     // If we have images, process them.
                     if (images != null)
                     {
-                        // Get size and image.
+                        // Get sice and image.
                         var size = images.ImageSize;
                         Image icon = null;
                         if (page.ImageIndex > -1)

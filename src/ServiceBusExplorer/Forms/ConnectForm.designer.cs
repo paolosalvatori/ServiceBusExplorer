@@ -59,6 +59,19 @@ namespace ServiceBusExplorer.Forms
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btnClearSubscriptionFilterExpression = new System.Windows.Forms.Button();
+            this.btnClearTopicFilterExpression = new System.Windows.Forms.Button();
+            this.btnClearQueueFilterExpression = new System.Windows.Forms.Button();
+            this.btnOpenSubscriptionFilterForm = new System.Windows.Forms.Button();
+            this.txtSubscriptionFilterExpression = new System.Windows.Forms.TextBox();
+            this.btnOpenTopicFilterForm = new System.Windows.Forms.Button();
+            this.btnOpenQueueFilterForm = new System.Windows.Forms.Button();
+            this.txtQueueFilterExpression = new System.Windows.Forms.TextBox();
+            this.txtTopicFilterExpression = new System.Windows.Forms.TextBox();
+            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
+            this.txtIssuerName = new System.Windows.Forms.TextBox();
+            this.txtNamespace = new System.Windows.Forms.TextBox();
+            this.txtEntityPath = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnRename = new System.Windows.Forms.Button();
@@ -68,33 +81,21 @@ namespace ServiceBusExplorer.Forms
             this.grouperFilters = new ServiceBusExplorer.Controls.Grouper();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
-            this.btnClearSubscriptionFilterExpression = new System.Windows.Forms.Button();
-            this.btnClearTopicFilterExpression = new System.Windows.Forms.Button();
-            this.btnClearQueueFilterExpression = new System.Windows.Forms.Button();
-            this.btnOpenSubscriptionFilterForm = new System.Windows.Forms.Button();
-            this.txtSubscriptionFilterExpression = new System.Windows.Forms.TextBox();
             this.lblSubscriptionFilterExpression = new System.Windows.Forms.Label();
-            this.btnOpenTopicFilterForm = new System.Windows.Forms.Button();
-            this.btnOpenQueueFilterForm = new System.Windows.Forms.Button();
-            this.txtQueueFilterExpression = new System.Windows.Forms.TextBox();
             this.lblQueueFilterExpression = new System.Windows.Forms.Label();
-            this.txtTopicFilterExpression = new System.Windows.Forms.TextBox();
             this.lblTopicFilterExpression = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaceSettings = new ServiceBusExplorer.Controls.Grouper();
             this.useAmqpWebSocketsCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblNewSdkTransportType = new System.Windows.Forms.Label();
             this.cboTransportType = new System.Windows.Forms.ComboBox();
             this.lblTransportType = new System.Windows.Forms.Label();
             this.cboConnectivityMode = new System.Windows.Forms.ComboBox();
             this.lblConnectivityMode = new System.Windows.Forms.Label();
             this.txtUri = new System.Windows.Forms.TextBox();
             this.lblUri = new System.Windows.Forms.Label();
-            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.lblIssuerSecret = new System.Windows.Forms.Label();
-            this.txtIssuerName = new System.Windows.Forms.TextBox();
             this.lblIssuerName = new System.Windows.Forms.Label();
-            this.txtNamespace = new System.Windows.Forms.TextBox();
             this.lblNamespace = new System.Windows.Forms.Label();
-            this.txtEntityPath = new System.Windows.Forms.TextBox();
             this.lblEntityPath = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
@@ -113,7 +114,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(676, 443);
+            this.btnOk.Location = new System.Drawing.Point(616, 443);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 7;
@@ -131,7 +132,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(756, 443);
+            this.btnCancel.Location = new System.Drawing.Point(696, 443);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 8;
@@ -141,13 +142,227 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnCancel.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
+            // btnClearSubscriptionFilterExpression
+            // 
+            this.btnClearSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearSubscriptionFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearSubscriptionFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearSubscriptionFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearSubscriptionFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.btnClearSubscriptionFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
+            this.btnClearSubscriptionFilterExpression.Location = new System.Drawing.Point(328, 190);
+            this.btnClearSubscriptionFilterExpression.Name = "btnClearSubscriptionFilterExpression";
+            this.btnClearSubscriptionFilterExpression.Size = new System.Drawing.Size(24, 21);
+            this.btnClearSubscriptionFilterExpression.TabIndex = 13;
+            this.btnClearSubscriptionFilterExpression.Text = "X";
+            this.btnClearSubscriptionFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnClearSubscriptionFilterExpression, "Click to cancel the filter expression for subscriptions.");
+            this.btnClearSubscriptionFilterExpression.UseVisualStyleBackColor = false;
+            this.btnClearSubscriptionFilterExpression.Click += new System.EventHandler(this.btnClearSubscriptionFilterExpression_Click);
+            this.btnClearSubscriptionFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnClearSubscriptionFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
+            // 
+            // btnClearTopicFilterExpression
+            // 
+            this.btnClearTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearTopicFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearTopicFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnClearTopicFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearTopicFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearTopicFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearTopicFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearTopicFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.btnClearTopicFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
+            this.btnClearTopicFilterExpression.Location = new System.Drawing.Point(328, 142);
+            this.btnClearTopicFilterExpression.Name = "btnClearTopicFilterExpression";
+            this.btnClearTopicFilterExpression.Size = new System.Drawing.Size(24, 21);
+            this.btnClearTopicFilterExpression.TabIndex = 9;
+            this.btnClearTopicFilterExpression.Text = "X";
+            this.btnClearTopicFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnClearTopicFilterExpression, "Click to cancel the filter expression for topics.");
+            this.btnClearTopicFilterExpression.UseVisualStyleBackColor = false;
+            this.btnClearTopicFilterExpression.Click += new System.EventHandler(this.btnClearTopicFilterExpression_Click);
+            this.btnClearTopicFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnClearTopicFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
+            // 
+            // btnClearQueueFilterExpression
+            // 
+            this.btnClearQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearQueueFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearQueueFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnClearQueueFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearQueueFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearQueueFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearQueueFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearQueueFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.btnClearQueueFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
+            this.btnClearQueueFilterExpression.Location = new System.Drawing.Point(328, 94);
+            this.btnClearQueueFilterExpression.Name = "btnClearQueueFilterExpression";
+            this.btnClearQueueFilterExpression.Size = new System.Drawing.Size(24, 21);
+            this.btnClearQueueFilterExpression.TabIndex = 5;
+            this.btnClearQueueFilterExpression.Text = "X";
+            this.btnClearQueueFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnClearQueueFilterExpression, "Click to cancel the filter expression for queues.");
+            this.btnClearQueueFilterExpression.UseVisualStyleBackColor = false;
+            this.btnClearQueueFilterExpression.Click += new System.EventHandler(this.btnClearQueueFilterExpression_Click);
+            this.btnClearQueueFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnClearQueueFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
+            // 
+            // btnOpenSubscriptionFilterForm
+            // 
+            this.btnOpenSubscriptionFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenSubscriptionFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenSubscriptionFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenSubscriptionFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnOpenSubscriptionFilterForm.Location = new System.Drawing.Point(296, 190);
+            this.btnOpenSubscriptionFilterForm.Name = "btnOpenSubscriptionFilterForm";
+            this.btnOpenSubscriptionFilterForm.Size = new System.Drawing.Size(24, 21);
+            this.btnOpenSubscriptionFilterForm.TabIndex = 12;
+            this.btnOpenSubscriptionFilterForm.Text = "...";
+            this.btnOpenSubscriptionFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnOpenSubscriptionFilterForm, "Click to open the filter expression dialog for subscriptions.");
+            this.btnOpenSubscriptionFilterForm.UseVisualStyleBackColor = false;
+            this.btnOpenSubscriptionFilterForm.Click += new System.EventHandler(this.btnOpenSubscriptionFilterForm_Click);
+            this.btnOpenSubscriptionFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnOpenSubscriptionFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // txtSubscriptionFilterExpression
+            // 
+            this.txtSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 190);
+            this.txtSubscriptionFilterExpression.Name = "txtSubscriptionFilterExpression";
+            this.txtSubscriptionFilterExpression.Size = new System.Drawing.Size(272, 20);
+            this.txtSubscriptionFilterExpression.TabIndex = 11;
+            this.toolTip.SetToolTip(this.txtSubscriptionFilterExpression, "Gets or sets the OData filter for topics.");
+            // 
+            // btnOpenTopicFilterForm
+            // 
+            this.btnOpenTopicFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenTopicFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnOpenTopicFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenTopicFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenTopicFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenTopicFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenTopicFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnOpenTopicFilterForm.Location = new System.Drawing.Point(296, 142);
+            this.btnOpenTopicFilterForm.Name = "btnOpenTopicFilterForm";
+            this.btnOpenTopicFilterForm.Size = new System.Drawing.Size(24, 21);
+            this.btnOpenTopicFilterForm.TabIndex = 8;
+            this.btnOpenTopicFilterForm.Text = "...";
+            this.btnOpenTopicFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnOpenTopicFilterForm, "Click to open the filter expression dialog for topics.");
+            this.btnOpenTopicFilterForm.UseVisualStyleBackColor = false;
+            this.btnOpenTopicFilterForm.Click += new System.EventHandler(this.btnOpenTopicFilterForm_Click);
+            this.btnOpenTopicFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnOpenTopicFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // btnOpenQueueFilterForm
+            // 
+            this.btnOpenQueueFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenQueueFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnOpenQueueFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenQueueFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenQueueFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenQueueFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenQueueFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnOpenQueueFilterForm.Location = new System.Drawing.Point(296, 94);
+            this.btnOpenQueueFilterForm.Name = "btnOpenQueueFilterForm";
+            this.btnOpenQueueFilterForm.Size = new System.Drawing.Size(24, 21);
+            this.btnOpenQueueFilterForm.TabIndex = 4;
+            this.btnOpenQueueFilterForm.Text = "...";
+            this.btnOpenQueueFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip.SetToolTip(this.btnOpenQueueFilterForm, "Click to open the filter expression dialog for queues.");
+            this.btnOpenQueueFilterForm.UseVisualStyleBackColor = false;
+            this.btnOpenQueueFilterForm.Click += new System.EventHandler(this.btnOpenQueueFilterForm_Click);
+            this.btnOpenQueueFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnOpenQueueFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            // 
+            // txtQueueFilterExpression
+            // 
+            this.txtQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtQueueFilterExpression.Location = new System.Drawing.Point(16, 94);
+            this.txtQueueFilterExpression.Multiline = true;
+            this.txtQueueFilterExpression.Name = "txtQueueFilterExpression";
+            this.txtQueueFilterExpression.Size = new System.Drawing.Size(272, 20);
+            this.txtQueueFilterExpression.TabIndex = 3;
+            this.toolTip.SetToolTip(this.txtQueueFilterExpression, "Gets or sets the OData filter for queues.");
+            // 
+            // txtTopicFilterExpression
+            // 
+            this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTopicFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtTopicFilterExpression.Location = new System.Drawing.Point(16, 142);
+            this.txtTopicFilterExpression.Name = "txtTopicFilterExpression";
+            this.txtTopicFilterExpression.Size = new System.Drawing.Size(272, 20);
+            this.txtTopicFilterExpression.TabIndex = 7;
+            this.toolTip.SetToolTip(this.txtTopicFilterExpression, "Gets or sets the OData filter for topics.");
+            // 
+            // txtIssuerSecret
+            // 
+            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
+            this.txtIssuerSecret.Name = "txtIssuerSecret";
+            this.txtIssuerSecret.PasswordChar = '*';
+            this.txtIssuerSecret.Size = new System.Drawing.Size(336, 20);
+            this.txtIssuerSecret.TabIndex = 9;
+            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
+            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtIssuerName
+            // 
+            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtIssuerName.Location = new System.Drawing.Point(16, 192);
+            this.txtIssuerName.Name = "txtIssuerName";
+            this.txtIssuerName.Size = new System.Drawing.Size(336, 20);
+            this.txtIssuerName.TabIndex = 7;
+            this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
+            this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtNamespace
+            // 
+            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
+            this.txtNamespace.Name = "txtNamespace";
+            this.txtNamespace.Size = new System.Drawing.Size(336, 20);
+            this.txtNamespace.TabIndex = 3;
+            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
+            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            // 
+            // txtEntityPath
+            // 
+            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
+            this.txtEntityPath.Name = "txtEntityPath";
+            this.txtEntityPath.Size = new System.Drawing.Size(336, 20);
+            this.txtEntityPath.TabIndex = 5;
+            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the name of the Service Bus namespace.");
+            // 
             // logoPictureBox
             // 
             this.logoPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.logoPictureBox.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.logoPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.logoPictureBox.ErrorImage = null;
-            this.logoPictureBox.Location = new System.Drawing.Point(717, 8);
+            this.logoPictureBox.Location = new System.Drawing.Point(657, 8);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(110, 14);
             this.logoPictureBox.TabIndex = 34;
@@ -161,7 +376,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(596, 443);
+            this.btnSave.Location = new System.Drawing.Point(536, 443);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 6;
@@ -174,7 +389,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // btnRename
             // 
-            this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRename.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.btnRename.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnRename.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -191,7 +406,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // btnDelete
             // 
-            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.btnDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -227,7 +442,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperConfigFileUse.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperConfigFileUse.ShadowControl = false;
             this.grouperConfigFileUse.ShadowThickness = 1;
-            this.grouperConfigFileUse.Size = new System.Drawing.Size(384, 88);
+            this.grouperConfigFileUse.Size = new System.Drawing.Size(368, 88);
             this.grouperConfigFileUse.TabIndex = 2;
             // 
             // lblConfigFileUse
@@ -275,7 +490,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperFilters.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperFilters.ShadowControl = false;
             this.grouperFilters.ShadowThickness = 1;
-            this.grouperFilters.Size = new System.Drawing.Size(384, 228);
+            this.grouperFilters.Size = new System.Drawing.Size(368, 228);
             this.grouperFilters.TabIndex = 1;
             this.grouperFilters.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperFilters_CustomPaint);
             // 
@@ -291,8 +506,6 @@ namespace ServiceBusExplorer.Forms
             // 
             // cboSelectedEntities
             // 
-            this.cboSelectedEntities.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.cboSelectedEntities.CheckBoxProperties = checkBoxProperties1;
             this.cboSelectedEntities.DisplayMemberSingleItem = "";
@@ -301,109 +514,8 @@ namespace ServiceBusExplorer.Forms
             this.cboSelectedEntities.FormattingEnabled = true;
             this.cboSelectedEntities.Location = new System.Drawing.Point(16, 46);
             this.cboSelectedEntities.Name = "cboSelectedEntities";
-            this.cboSelectedEntities.Size = new System.Drawing.Size(352, 21);
+            this.cboSelectedEntities.Size = new System.Drawing.Size(336, 21);
             this.cboSelectedEntities.TabIndex = 1;
-            // 
-            // btnClearSubscriptionFilterExpression
-            // 
-            this.btnClearSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearSubscriptionFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearSubscriptionFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearSubscriptionFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearSubscriptionFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearSubscriptionFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.btnClearSubscriptionFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearSubscriptionFilterExpression.Location = new System.Drawing.Point(344, 190);
-            this.btnClearSubscriptionFilterExpression.Name = "btnClearSubscriptionFilterExpression";
-            this.btnClearSubscriptionFilterExpression.Size = new System.Drawing.Size(24, 21);
-            this.btnClearSubscriptionFilterExpression.TabIndex = 13;
-            this.btnClearSubscriptionFilterExpression.Text = "X";
-            this.btnClearSubscriptionFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnClearSubscriptionFilterExpression, "Click to cancel the filter expression for subscriptions.");
-            this.btnClearSubscriptionFilterExpression.UseVisualStyleBackColor = false;
-            this.btnClearSubscriptionFilterExpression.Click += new System.EventHandler(this.btnClearSubscriptionFilterExpression_Click);
-            this.btnClearSubscriptionFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnClearSubscriptionFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
-            // 
-            // btnClearTopicFilterExpression
-            // 
-            this.btnClearTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearTopicFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearTopicFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearTopicFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearTopicFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearTopicFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearTopicFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearTopicFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.btnClearTopicFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearTopicFilterExpression.Location = new System.Drawing.Point(344, 142);
-            this.btnClearTopicFilterExpression.Name = "btnClearTopicFilterExpression";
-            this.btnClearTopicFilterExpression.Size = new System.Drawing.Size(24, 21);
-            this.btnClearTopicFilterExpression.TabIndex = 9;
-            this.btnClearTopicFilterExpression.Text = "X";
-            this.btnClearTopicFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnClearTopicFilterExpression, "Click to cancel the filter expression for topics.");
-            this.btnClearTopicFilterExpression.UseVisualStyleBackColor = false;
-            this.btnClearTopicFilterExpression.Click += new System.EventHandler(this.btnClearTopicFilterExpression_Click);
-            this.btnClearTopicFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnClearTopicFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
-            // 
-            // btnClearQueueFilterExpression
-            // 
-            this.btnClearQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearQueueFilterExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearQueueFilterExpression.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClearQueueFilterExpression.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearQueueFilterExpression.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearQueueFilterExpression.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearQueueFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearQueueFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.btnClearQueueFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearQueueFilterExpression.Location = new System.Drawing.Point(344, 94);
-            this.btnClearQueueFilterExpression.Name = "btnClearQueueFilterExpression";
-            this.btnClearQueueFilterExpression.Size = new System.Drawing.Size(24, 21);
-            this.btnClearQueueFilterExpression.TabIndex = 5;
-            this.btnClearQueueFilterExpression.Text = "X";
-            this.btnClearQueueFilterExpression.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnClearQueueFilterExpression, "Click to cancel the filter expression for queues.");
-            this.btnClearQueueFilterExpression.UseVisualStyleBackColor = false;
-            this.btnClearQueueFilterExpression.Click += new System.EventHandler(this.btnClearQueueFilterExpression_Click);
-            this.btnClearQueueFilterExpression.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnClearQueueFilterExpression.MouseLeave += new System.EventHandler(this.clearButton_MouseLeave);
-            // 
-            // btnOpenSubscriptionFilterForm
-            // 
-            this.btnOpenSubscriptionFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenSubscriptionFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenSubscriptionFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpenSubscriptionFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenSubscriptionFilterForm.Location = new System.Drawing.Point(312, 190);
-            this.btnOpenSubscriptionFilterForm.Name = "btnOpenSubscriptionFilterForm";
-            this.btnOpenSubscriptionFilterForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenSubscriptionFilterForm.TabIndex = 12;
-            this.btnOpenSubscriptionFilterForm.Text = "...";
-            this.btnOpenSubscriptionFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnOpenSubscriptionFilterForm, "Click to open the filter expression dialog for subscriptions.");
-            this.btnOpenSubscriptionFilterForm.UseVisualStyleBackColor = false;
-            this.btnOpenSubscriptionFilterForm.Click += new System.EventHandler(this.btnOpenSubscriptionFilterForm_Click);
-            this.btnOpenSubscriptionFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnOpenSubscriptionFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // txtSubscriptionFilterExpression
-            // 
-            this.txtSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 190);
-            this.txtSubscriptionFilterExpression.Name = "txtSubscriptionFilterExpression";
-            this.txtSubscriptionFilterExpression.Size = new System.Drawing.Size(288, 20);
-            this.txtSubscriptionFilterExpression.TabIndex = 11;
-            this.toolTip.SetToolTip(this.txtSubscriptionFilterExpression, "Gets or sets the OData filter for topics.");
             // 
             // lblSubscriptionFilterExpression
             // 
@@ -415,60 +527,6 @@ namespace ServiceBusExplorer.Forms
             this.lblSubscriptionFilterExpression.TabIndex = 10;
             this.lblSubscriptionFilterExpression.Text = "Subscription Filter Expression:";
             // 
-            // btnOpenTopicFilterForm
-            // 
-            this.btnOpenTopicFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenTopicFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenTopicFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenTopicFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpenTopicFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenTopicFilterForm.Location = new System.Drawing.Point(312, 142);
-            this.btnOpenTopicFilterForm.Name = "btnOpenTopicFilterForm";
-            this.btnOpenTopicFilterForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenTopicFilterForm.TabIndex = 8;
-            this.btnOpenTopicFilterForm.Text = "...";
-            this.btnOpenTopicFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnOpenTopicFilterForm, "Click to open the filter expression dialog for topics.");
-            this.btnOpenTopicFilterForm.UseVisualStyleBackColor = false;
-            this.btnOpenTopicFilterForm.Click += new System.EventHandler(this.btnOpenTopicFilterForm_Click);
-            this.btnOpenTopicFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnOpenTopicFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // btnOpenQueueFilterForm
-            // 
-            this.btnOpenQueueFilterForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenQueueFilterForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenQueueFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenQueueFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpenQueueFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenQueueFilterForm.Location = new System.Drawing.Point(312, 94);
-            this.btnOpenQueueFilterForm.Name = "btnOpenQueueFilterForm";
-            this.btnOpenQueueFilterForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenQueueFilterForm.TabIndex = 4;
-            this.btnOpenQueueFilterForm.Text = "...";
-            this.btnOpenQueueFilterForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.toolTip.SetToolTip(this.btnOpenQueueFilterForm, "Click to open the filter expression dialog for queues.");
-            this.btnOpenQueueFilterForm.UseVisualStyleBackColor = false;
-            this.btnOpenQueueFilterForm.Click += new System.EventHandler(this.btnOpenQueueFilterForm_Click);
-            this.btnOpenQueueFilterForm.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            this.btnOpenQueueFilterForm.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
-            // txtQueueFilterExpression
-            // 
-            this.txtQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtQueueFilterExpression.Location = new System.Drawing.Point(16, 94);
-            this.txtQueueFilterExpression.Multiline = true;
-            this.txtQueueFilterExpression.Name = "txtQueueFilterExpression";
-            this.txtQueueFilterExpression.Size = new System.Drawing.Size(288, 20);
-            this.txtQueueFilterExpression.TabIndex = 3;
-            this.toolTip.SetToolTip(this.txtQueueFilterExpression, "Gets or sets the OData filter for queues.");
-            // 
             // lblQueueFilterExpression
             // 
             this.lblQueueFilterExpression.AutoSize = true;
@@ -478,17 +536,6 @@ namespace ServiceBusExplorer.Forms
             this.lblQueueFilterExpression.Size = new System.Drawing.Size(121, 13);
             this.lblQueueFilterExpression.TabIndex = 2;
             this.lblQueueFilterExpression.Text = "Queue Filter Expression:";
-            // 
-            // txtTopicFilterExpression
-            // 
-            this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTopicFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtTopicFilterExpression.Location = new System.Drawing.Point(16, 142);
-            this.txtTopicFilterExpression.Name = "txtTopicFilterExpression";
-            this.txtTopicFilterExpression.Size = new System.Drawing.Size(288, 20);
-            this.txtTopicFilterExpression.TabIndex = 7;
-            this.toolTip.SetToolTip(this.txtTopicFilterExpression, "Gets or sets the OData filter for topics.");
             // 
             // lblTopicFilterExpression
             // 
@@ -508,6 +555,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperServiceBusNamespaceSettings.BorderThickness = 1F;
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.useAmqpWebSocketsCheckBox);
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNewSdkTransportType);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboTransportType);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblTransportType);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboConnectivityMode);
@@ -527,7 +575,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.ForeColor = System.Drawing.Color.White;
             this.grouperServiceBusNamespaceSettings.GroupImage = null;
             this.grouperServiceBusNamespaceSettings.GroupTitle = "Connection Settings";
-            this.grouperServiceBusNamespaceSettings.Location = new System.Drawing.Point(418, 24);
+            this.grouperServiceBusNamespaceSettings.Location = new System.Drawing.Point(400, 24);
             this.grouperServiceBusNamespaceSettings.Name = "grouperServiceBusNamespaceSettings";
             this.grouperServiceBusNamespaceSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperServiceBusNamespaceSettings.PaintGroupBox = true;
@@ -535,7 +583,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperServiceBusNamespaceSettings.ShadowControl = false;
             this.grouperServiceBusNamespaceSettings.ShadowThickness = 1;
-            this.grouperServiceBusNamespaceSettings.Size = new System.Drawing.Size(410, 408);
+            this.grouperServiceBusNamespaceSettings.Size = new System.Drawing.Size(368, 408);
             this.grouperServiceBusNamespaceSettings.TabIndex = 3;
             this.grouperServiceBusNamespaceSettings.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperServiceBusNamespaceSettings_CustomPaint);
             // 
@@ -543,23 +591,30 @@ namespace ServiceBusExplorer.Forms
             // 
             this.useAmqpWebSocketsCheckBox.AutoSize = true;
             this.useAmqpWebSocketsCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(16, 371);
+            this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(337, 384);
             this.useAmqpWebSocketsCheckBox.Name = "useAmqpWebSocketsCheckBox";
-            this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(365, 17);
+            this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(15, 14);
             this.useAmqpWebSocketsCheckBox.TabIndex = 15;
-            this.useAmqpWebSocketsCheckBox.Text = "Use AMQP Web Sockets for Microsoft.Azure.ServiceBus.dll (new client)";
             this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // lblNewSdkTransportType
+            // 
+            this.lblNewSdkTransportType.AutoSize = true;
+            this.lblNewSdkTransportType.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblNewSdkTransportType.Location = new System.Drawing.Point(16, 368);
+            this.lblNewSdkTransportType.Name = "lblNewSdkTransportType";
+            this.lblNewSdkTransportType.Size = new System.Drawing.Size(346, 13);
+            this.lblNewSdkTransportType.TabIndex = 14;
+            this.lblNewSdkTransportType.Text = "Use AMQP Web Sockets for Microsoft.Azure.ServiceBus.dll (new client)";
             // 
             // cboTransportType
             // 
-            this.cboTransportType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTransportType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTransportType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboTransportType.FormattingEnabled = true;
             this.cboTransportType.Location = new System.Drawing.Point(16, 336);
             this.cboTransportType.Name = "cboTransportType";
-            this.cboTransportType.Size = new System.Drawing.Size(372, 21);
+            this.cboTransportType.Size = new System.Drawing.Size(336, 21);
             this.cboTransportType.TabIndex = 13;
             this.cboTransportType.SelectedIndexChanged += new System.EventHandler(this.cboTransportType_SelectedIndexChanged);
             // 
@@ -575,14 +630,12 @@ namespace ServiceBusExplorer.Forms
             // 
             // cboConnectivityMode
             // 
-            this.cboConnectivityMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboConnectivityMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboConnectivityMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboConnectivityMode.FormattingEnabled = true;
             this.cboConnectivityMode.Location = new System.Drawing.Point(16, 288);
             this.cboConnectivityMode.Name = "cboConnectivityMode";
-            this.cboConnectivityMode.Size = new System.Drawing.Size(372, 21);
+            this.cboConnectivityMode.Size = new System.Drawing.Size(336, 21);
             this.cboConnectivityMode.TabIndex = 11;
             // 
             // lblConnectivityMode
@@ -603,7 +656,7 @@ namespace ServiceBusExplorer.Forms
             this.txtUri.Location = new System.Drawing.Point(16, 48);
             this.txtUri.Multiline = true;
             this.txtUri.Name = "txtUri";
-            this.txtUri.Size = new System.Drawing.Size(372, 20);
+            this.txtUri.Size = new System.Drawing.Size(336, 20);
             this.txtUri.TabIndex = 1;
             this.txtUri.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
@@ -617,19 +670,6 @@ namespace ServiceBusExplorer.Forms
             this.lblUri.TabIndex = 0;
             this.lblUri.Text = "Endpoint URI:";
             // 
-            // txtIssuerSecret
-            // 
-            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
-            this.txtIssuerSecret.Name = "txtIssuerSecret";
-            this.txtIssuerSecret.PasswordChar = '*';
-            this.txtIssuerSecret.Size = new System.Drawing.Size(372, 20);
-            this.txtIssuerSecret.TabIndex = 9;
-            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
-            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
             // lblIssuerSecret
             // 
             this.lblIssuerSecret.AutoSize = true;
@@ -639,18 +679,6 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerSecret.Size = new System.Drawing.Size(103, 13);
             this.lblIssuerSecret.TabIndex = 8;
             this.lblIssuerSecret.Text = "Shared Access Key:";
-            // 
-            // txtIssuerName
-            // 
-            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtIssuerName.Location = new System.Drawing.Point(16, 192);
-            this.txtIssuerName.Name = "txtIssuerName";
-            this.txtIssuerName.Size = new System.Drawing.Size(372, 20);
-            this.txtIssuerName.TabIndex = 7;
-            this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
-            this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
             // lblIssuerName
             // 
@@ -662,18 +690,6 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerName.TabIndex = 6;
             this.lblIssuerName.Text = "Shared Access Key Name:";
             // 
-            // txtNamespace
-            // 
-            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
-            this.txtNamespace.Name = "txtNamespace";
-            this.txtNamespace.Size = new System.Drawing.Size(372, 20);
-            this.txtNamespace.TabIndex = 3;
-            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
-            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
             // lblNamespace
             // 
             this.lblNamespace.AutoSize = true;
@@ -683,17 +699,6 @@ namespace ServiceBusExplorer.Forms
             this.lblNamespace.Size = new System.Drawing.Size(67, 13);
             this.lblNamespace.TabIndex = 2;
             this.lblNamespace.Text = "Namespace:";
-            // 
-            // txtEntityPath
-            // 
-            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
-            this.txtEntityPath.Name = "txtEntityPath";
-            this.txtEntityPath.Size = new System.Drawing.Size(372, 20);
-            this.txtEntityPath.TabIndex = 5;
-            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the name of the Service Bus namespace.");
             // 
             // lblEntityPath
             // 
@@ -726,7 +731,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaces.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperServiceBusNamespaces.ShadowControl = false;
             this.grouperServiceBusNamespaces.ShadowThickness = 1;
-            this.grouperServiceBusNamespaces.Size = new System.Drawing.Size(384, 72);
+            this.grouperServiceBusNamespaces.Size = new System.Drawing.Size(368, 72);
             this.grouperServiceBusNamespaces.TabIndex = 0;
             this.grouperServiceBusNamespaces.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperServiceBusNamespaces_CustomPaint);
             // 
@@ -738,9 +743,9 @@ namespace ServiceBusExplorer.Forms
             this.cboServiceBusNamespace.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboServiceBusNamespace.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboServiceBusNamespace.FormattingEnabled = true;
-            this.cboServiceBusNamespace.Location = new System.Drawing.Point(19, 32);
+            this.cboServiceBusNamespace.Location = new System.Drawing.Point(16, 32);
             this.cboServiceBusNamespace.Name = "cboServiceBusNamespace";
-            this.cboServiceBusNamespace.Size = new System.Drawing.Size(352, 21);
+            this.cboServiceBusNamespace.Size = new System.Drawing.Size(336, 21);
             this.cboServiceBusNamespace.TabIndex = 0;
             this.cboServiceBusNamespace.SelectedIndexChanged += new System.EventHandler(this.cboServiceBusNamespace_SelectedIndexChanged);
             // 
@@ -749,7 +754,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.ClientSize = new System.Drawing.Size(844, 477);
+            this.ClientSize = new System.Drawing.Size(784, 477);
             this.Controls.Add(this.grouperConfigFileUse);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnRename);
@@ -824,6 +829,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Button btnDelete;
         private Grouper grouperConfigFileUse;
         private System.Windows.Forms.Label lblConfigFileUse;
+        private System.Windows.Forms.Label lblNewSdkTransportType;
         private System.Windows.Forms.CheckBox useAmqpWebSocketsCheckBox;
     }
 }
