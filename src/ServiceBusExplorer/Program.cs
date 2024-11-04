@@ -68,10 +68,12 @@ namespace ServiceBusExplorer
                     Application.Run(new MainForm(helpText));
                 }
             }
-            // ReSharper disable EmptyGeneralCatchClause
-            catch (Exception)
-            // ReSharper restore EmptyGeneralCatchClause
+            catch (Exception e)
             {
+                MessageBox.Show(text: $"A fatal exception occurred. ServiceBusExplorer will now shut down. \n\n{e.Message}.", 
+                    caption: "ServiceBusExplorer", 
+                    buttons: MessageBoxButtons.OK,
+                    icon: MessageBoxIcon.Stop);
             }
         }
         
