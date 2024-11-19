@@ -339,9 +339,8 @@ namespace ServiceBusExplorer.Helpers
             {
                 return;
             }
-            //
+
             // We must add the Properties of the CorrelationFilter. As the Properties are not CanWrite, we must specifically add it by not testing the canWrite parameter
-            //
             var propertyDictionary = propertyArray.
                 Where(p => p.Name == RelayType || 
                         (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime)) || 
