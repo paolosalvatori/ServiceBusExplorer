@@ -1392,10 +1392,9 @@ namespace ServiceBusExplorer.Helpers
             if (filter.Name == string.Format(NodeNameFormat, Namespace, CorrelationFilterEntity))
             {
                 ruleFilter = new CorrelationFilter(propertyValue[CorrelationId] as string);
-                //
+
                 // We check if there is a Key with Properties
                 // If Yes, we must create the properties of the CorrelationFilter
-                //
                 if (propertyValue.ContainsKey(CorrelationFilterProperties))
                 {
                     var _rule = ruleFilter as CorrelationFilter;
