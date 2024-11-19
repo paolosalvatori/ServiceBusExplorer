@@ -1408,9 +1408,8 @@ namespace ServiceBusExplorer.Helpers
             }
             if (ruleFilter != null)
             {
-                //
+
                 // As we already created the Properties, we must remove it here before calling SetPropertyValue, as Properties Property is ReadOnly
-                //
                 var _propVal = propertyValue.Where(p => p.Key != CorrelationFilterProperties);
                 var _propVal2 = _propVal.ToDictionary(p => p.Key, p => p.Value);
                 SetPropertyValue(propertyDictionary,
