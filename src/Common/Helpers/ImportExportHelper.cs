@@ -432,9 +432,8 @@ namespace ServiceBusExplorer.Helpers
                 propertyValue[name] = xmlReader.ReadElementContentAsString();
                 return;
             }
-            //
+
             // Here we fill in the Property of the Filter CorrelationId Properties by looping through the Property Sibling
-            //
             if (property.MemberType == MemberTypes.Property && property.PropertyType.Name == "IDictionary`2")
             {
                 bool bOk = xmlReader.ReadToDescendant("Property");
