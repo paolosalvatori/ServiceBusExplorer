@@ -1397,11 +1397,11 @@ namespace ServiceBusExplorer.Helpers
                 // If Yes, we must create the properties of the CorrelationFilter
                 if (propertyValue.ContainsKey(CorrelationFilterProperties))
                 {
-                    var _rule = ruleFilter as CorrelationFilter;
-                    var _props = propertyValue[CorrelationFilterProperties] as List<Property>;
-                    foreach (var _prop in _props)
+                    var tRule = ruleFilter as CorrelationFilter;
+                    var tProps = propertyValue[CorrelationFilterProperties] as List<Property>;
+                    foreach (var tProp in tProps)
                     {
-                        _rule.Properties.Add(_prop.Name, _prop.Value);
+                        tRule.Properties.Add(tProp.Name, tProp.Value);
                     }
 
                 }
@@ -1410,10 +1410,10 @@ namespace ServiceBusExplorer.Helpers
             {
 
                 // As we already created the Properties, we must remove it here before calling SetPropertyValue, as Properties Property is ReadOnly
-                var _propVal = propertyValue.Where(p => p.Key != CorrelationFilterProperties);
-                var _propVal2 = _propVal.ToDictionary(p => p.Key, p => p.Value);
+                var tPropVal = propertyValue.Where(p => p.Key != CorrelationFilterProperties);
+                var tPropVal2 = tPropVal.ToDictionary(p => p.Key, p => p.Value);
                 SetPropertyValue(propertyDictionary,
-                                 _propVal2,
+                                 tPropVal2,
                                  ruleFilter);
             }
             return ruleFilter;
