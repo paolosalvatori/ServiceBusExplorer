@@ -339,9 +339,8 @@ namespace ServiceBusExplorer.Helpers
             {
                 return;
             }
-            //
+
             // We must add the Properties of the CorrelationFilter. As the Properties are not CanWrite, we must specifically add it by not testing the canWrite parameter
-            //
             var propertyDictionary = propertyArray.
                 Where(p => p.Name == RelayType || 
                         (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime)) || 
@@ -433,22 +432,21 @@ namespace ServiceBusExplorer.Helpers
                 propertyValue[name] = xmlReader.ReadElementContentAsString();
                 return;
             }
-            //
+
             // Here we fill in the Property of the Filter CorrelationId Properties by looping through the Property Sibling
-            //
             if (property.MemberType == MemberTypes.Property && property.PropertyType.Name == "IDictionary`2")
             {
                 bool bOk = xmlReader.ReadToDescendant("Property");
                 while (bOk)
                 {
-                    var _read = xmlReader.ReadElementContentAsString();
-                    var _prop = new Property();
-                    _prop.Name = _read.Split(':')[0];
-                    _prop.Value = _read.Split(':')[1];
+                    var tRead = xmlReader.ReadElementContentAsString().Split(':');
+                    var tProp = new Property();
+                    tProp.Name = tRead[0];
+                    tProp.Value = tRead[1];
                     if (!propertyValue.ContainsKey(name))
                         propertyValue[name] = new List<Property>();
-                    var _props = propertyValue[name] as List<Property>;
-                    _props.Add(_prop);
+                    var tProps = propertyValue[name] as List<Property>;
+                    tProps.Add(tProp);
                     bOk = xmlReader.ReadToNextSibling("Property");
                 }
             }
@@ -561,10 +559,9 @@ namespace ServiceBusExplorer.Helpers
                     xmlWriter.WriteEndElement();
                     continue;
                 }
-                //
+
                 // We check if the CorrelationFilter has Properties.
                 // If yes we write the xml <Properties><Property>A</Property></Properties>
-                //
                 if (string.Compare(keyValuePair.Key,
                                    CorrelationFilterProperties,
                                    StringComparison.InvariantCultureIgnoreCase) == 0 &&
@@ -1395,10 +1392,9 @@ namespace ServiceBusExplorer.Helpers
             if (filter.Name == string.Format(NodeNameFormat, Namespace, CorrelationFilterEntity))
             {
                 ruleFilter = new CorrelationFilter(propertyValue[CorrelationId] as string);
-                //
+
                 // We check if there is a Key with Properties
                 // If Yes, we must create the properties of the CorrelationFilter
-                //
                 if (propertyValue.ContainsKey(CorrelationFilterProperties))
                 {
                     var _rule = ruleFilter as CorrelationFilter;
@@ -1412,9 +1408,8 @@ namespace ServiceBusExplorer.Helpers
             }
             if (ruleFilter != null)
             {
-                //
+
                 // As we already created the Properties, we must remove it here before calling SetPropertyValue, as Properties Property is ReadOnly
-                //
                 var _propVal = propertyValue.Where(p => p.Key != CorrelationFilterProperties);
                 var _propVal2 = _propVal.ToDictionary(p => p.Key, p => p.Value);
                 SetPropertyValue(propertyDictionary,
