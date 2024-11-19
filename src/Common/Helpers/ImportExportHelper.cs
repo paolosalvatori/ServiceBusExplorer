@@ -559,10 +559,9 @@ namespace ServiceBusExplorer.Helpers
                     xmlWriter.WriteEndElement();
                     continue;
                 }
-                //
+
                 // We check if the CorrelationFilter has Properties.
                 // If yes we write the xml <Properties><Property>A</Property></Properties>
-                //
                 if (string.Compare(keyValuePair.Key,
                                    CorrelationFilterProperties,
                                    StringComparison.InvariantCultureIgnoreCase) == 0 &&
