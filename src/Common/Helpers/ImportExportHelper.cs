@@ -21,6 +21,11 @@
 
 #region References
 
+using Microsoft.Azure.NotificationHubs;
+using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Management;
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,10 +38,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.Azure.NotificationHubs;
-using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -90,6 +91,8 @@ namespace ServiceBusExplorer.Helpers
         private const string NamespaceAttribute = "serviceBusNamespace";
         private const string Unknown = "Unknown";
         private const string ExtensionData = "ExtensionData";
+        private const string CorrelationFilterProperties = "Properties";
+        private const string CorrelationFilterProperty = "Property";
         private const string EntityFormat = "{0}";
         private const string LambdaExpressionFilterFqdn = "Microsoft.ServiceBus.Messaging.Filters.LambdaExpressionFilter";
         private const string LambdaExpressionRuleActionFqdn = "Microsoft.ServiceBus.Messaging.Filters.LambdaExpressionRuleAction";
@@ -336,8 +339,12 @@ namespace ServiceBusExplorer.Helpers
             {
                 return;
             }
+
+            // We must add the Properties of the CorrelationFilter. As the Properties are not CanWrite, we must specifically add it by not testing the canWrite parameter
             var propertyDictionary = propertyArray.
-                Where(p => p.Name == RelayType || (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime))).
+                Where(p => p.Name == RelayType || 
+                        (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime)) || 
+                        (p.CanRead == canRead && p.CanWrite == false && p.Name == CorrelationFilterProperties)).
                 ToDictionary(p => p.Name);
             propertyCache[fullName] = propertyDictionary;
         }
@@ -423,6 +430,25 @@ namespace ServiceBusExplorer.Helpers
             if (property.PropertyType == typeof(string))
             {
                 propertyValue[name] = xmlReader.ReadElementContentAsString();
+                return;
+            }
+
+            // Here we fill in the Property of the Filter CorrelationId Properties by looping through the Property Sibling
+            if (property.MemberType == MemberTypes.Property && property.PropertyType.Name == "IDictionary`2")
+            {
+                bool bOk = xmlReader.ReadToDescendant("Property");
+                while (bOk)
+                {
+                    var tRead = xmlReader.ReadElementContentAsString().Split(':');
+                    var tProp = new Property();
+                    tProp.Name = tRead[0];
+                    tProp.Value = tRead[1];
+                    if (!propertyValue.ContainsKey(name))
+                        propertyValue[name] = new List<Property>();
+                    var tProps = propertyValue[name] as List<Property>;
+                    tProps.Add(tProp);
+                    bOk = xmlReader.ReadToNextSibling("Property");
+                }
             }
         }
 
@@ -529,6 +555,23 @@ namespace ServiceBusExplorer.Helpers
                     foreach (var right in rule.Rights)
                     {
                         xmlWriter.WriteElementString(Right, string.Format("{0}", right));
+                    }
+                    xmlWriter.WriteEndElement();
+                    continue;
+                }
+
+                // We check if the CorrelationFilter has Properties.
+                // If yes we write the xml <Properties><Property>A</Property></Properties>
+                if (string.Compare(keyValuePair.Key,
+                                   CorrelationFilterProperties,
+                                   StringComparison.InvariantCultureIgnoreCase) == 0 &&
+                    (entity is CorrelationFilter))
+                {
+                    var filt = entity as CorrelationFilter;
+                    xmlWriter.WriteStartElement(CorrelationFilterProperties);
+                    foreach (var prop in filt.Properties)
+                    {
+                        xmlWriter.WriteElementString(CorrelationFilterProperty, string.Format("{0}: {1}", prop.Key, prop.Value));
                     }
                     xmlWriter.WriteEndElement();
                     continue;
@@ -1349,11 +1392,28 @@ namespace ServiceBusExplorer.Helpers
             if (filter.Name == string.Format(NodeNameFormat, Namespace, CorrelationFilterEntity))
             {
                 ruleFilter = new CorrelationFilter(propertyValue[CorrelationId] as string);
+
+                // We check if there is a Key with Properties
+                // If Yes, we must create the properties of the CorrelationFilter
+                if (propertyValue.ContainsKey(CorrelationFilterProperties))
+                {
+                    var tRule = ruleFilter as CorrelationFilter;
+                    var tProps = propertyValue[CorrelationFilterProperties] as List<Property>;
+                    foreach (var tProp in tProps)
+                    {
+                        tRule.Properties.Add(tProp.Name, tProp.Value);
+                    }
+
+                }
             }
             if (ruleFilter != null)
             {
+
+                // As we already created the Properties, we must remove it here before calling SetPropertyValue, as Properties Property is ReadOnly
+                var tPropVal = propertyValue.Where(p => p.Key != CorrelationFilterProperties);
+                var tPropVal2 = tPropVal.ToDictionary(p => p.Key, p => p.Value);
                 SetPropertyValue(propertyDictionary,
-                                 propertyValue,
+                                 tPropVal2,
                                  ruleFilter);
             }
             return ruleFilter;
