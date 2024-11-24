@@ -231,7 +231,8 @@ namespace ServiceBusExplorer.Helpers
 
             var isUserCreated = !(key == "CustomConnectionString" || key == "SASConnectionString");
             var toLower = connectionString.ToLower();
-            var parameters = connectionString.Split(';').ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
+            var parameters = connectionString.Split([';'], StringSplitOptions.RemoveEmptyEntries)
+                .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(), s => s.Substring(s.IndexOf('=') + 1));
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
                 toLower.Contains(ConnectionStringSharedAccessKeyName) &&
