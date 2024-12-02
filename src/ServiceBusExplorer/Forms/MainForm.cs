@@ -1817,6 +1817,7 @@ namespace ServiceBusExplorer.Forms
         private void RefreshIndividualTopic(TreeNode selectedNode)
         {
             var wasTopicNodeExpanded = selectedNode.IsExpanded;
+            var wasSubscriptionsNodeExpaned = false;
 
             var topicDescription = selectedNode.Tag as TopicDescription;
 
@@ -1827,6 +1828,13 @@ namespace ServiceBusExplorer.Forms
             {
                 selectedNode.Nodes.Clear();
                 return;
+            }
+
+            //record the original subscriptions node is expanded
+            var originalSubscriptionsNode = selectedNode.Nodes.Find(SubscriptionEntities, false).First();
+            if (originalSubscriptionsNode != null)
+            {
+                wasSubscriptionsNodeExpaned = originalSubscriptionsNode.IsExpanded;
             }
 
             selectedNode.Nodes.Clear();
@@ -1852,6 +1860,10 @@ namespace ServiceBusExplorer.Forms
 
             if (wasTopicNodeExpanded)
                 selectedNode.Expand();
+            if (wasSubscriptionsNodeExpaned == true)
+            {
+                subscriptionsNode.Expand();
+            }
         }
 
         private void createEntity_Click(object sender, EventArgs e)
