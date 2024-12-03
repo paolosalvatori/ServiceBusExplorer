@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace ServiceBusExplorer.WindowsAzure
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public interface IServiceBusQueue
     {
