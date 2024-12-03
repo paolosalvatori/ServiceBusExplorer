@@ -1831,7 +1831,7 @@ namespace ServiceBusExplorer.Forms
             }
 
             //record the original subscriptions node is expanded
-            var originalSubscriptionsNode = selectedNode.Nodes.Find(SubscriptionEntities, false).First();
+            var originalSubscriptionsNode = selectedNode.Nodes.Find(SubscriptionEntities, false).FirstOrDefault();
             if (originalSubscriptionsNode != null)
             {
                 wasSubscriptionsNodeExpaned = originalSubscriptionsNode.IsExpanded;
