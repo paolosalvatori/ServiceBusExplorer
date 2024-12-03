@@ -1817,7 +1817,7 @@ namespace ServiceBusExplorer.Forms
         private void RefreshIndividualTopic(TreeNode selectedNode)
         {
             var wasTopicNodeExpanded = selectedNode.IsExpanded;
-            var wasSubscriptionsNodeExpaned = false;
+            var wasSubscriptionsNodeExpanded = false;
 
             var topicDescription = selectedNode.Tag as TopicDescription;
 
@@ -1834,7 +1834,7 @@ namespace ServiceBusExplorer.Forms
             var originalSubscriptionsNode = selectedNode.Nodes.Find(SubscriptionEntities, false).FirstOrDefault();
             if (originalSubscriptionsNode != null)
             {
-                wasSubscriptionsNodeExpaned = originalSubscriptionsNode.IsExpanded;
+                wasSubscriptionsNodeExpanded = originalSubscriptionsNode.IsExpanded;
             }
 
             selectedNode.Nodes.Clear();
@@ -1860,7 +1860,7 @@ namespace ServiceBusExplorer.Forms
 
             if (wasTopicNodeExpanded)
                 selectedNode.Expand();
-            if (wasSubscriptionsNodeExpaned == true)
+            if (wasSubscriptionsNodeExpanded == true)
             {
                 subscriptionsNode.Expand();
             }
