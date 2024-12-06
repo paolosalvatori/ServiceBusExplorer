@@ -9,7 +9,6 @@ namespace ServiceBusExplorer.WindowsAzure
 {
     public interface IServiceBusQueue
     {
-        #region Management functions
         QueueDescription CreateQueue(QueueDescription description);
         
         QueueDescription CreateQueue(string path);
@@ -31,20 +30,15 @@ namespace ServiceBusExplorer.WindowsAzure
         QueueDescription RenameQueue(string path, string newPath);
         
         QueueDescription UpdateQueue(QueueDescription description);
-        #endregion
 
-        #region Event handlers
         delegate void EventHandler(ServiceBusHelperEventArgs args);
 
         event EventHandler OnDelete;
         
         event EventHandler OnCreate;
-        #endregion
 
-        #region Properties
         WriteToLogDelegate WriteToLog { get; set; }
         
         string Scheme { get; set; }
-        #endregion
     }
 }

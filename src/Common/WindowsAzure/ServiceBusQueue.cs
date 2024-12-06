@@ -1,37 +1,22 @@
-﻿#region Using Directives
+﻿using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Enums;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.ServiceBus.Messaging;
-
-using ServiceBusExplorer.Enums;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.Utilities.Helpers;
-
-#endregion
-
-// ReSharper disable CheckNamespace
 namespace ServiceBusExplorer.WindowsAzure
-// ReSharper restore CheckNamespace
 {
     internal sealed class ServiceBusQueue : IServiceBusQueue
     {
-        #region Private Constants
-        //***************************
-        // Constants
-        //***************************
         private const string DefaultScheme = "sb";
         private const string CloudServiceBusPostfix = ".servicebus.windows.net";
         private const string GermanyServiceBusPostfix = ".servicebus.cloudapi.de";
         private const string ChinaServiceBusPostfix = ".servicebus.chinacloudapi.cn";
         private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
-
-        //***************************
-        // Messages
-        //***************************
         private const string QueueDescriptionCannotBeNull = "The queue description argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
@@ -41,28 +26,20 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string QueueDeleted = "The queue {0} has been successfully deleted.";
         private const string QueueRenamed = "The queue {0} has been successfully renamed to {1}.";
         private const string QueueUpdated = "The queue {0} has been successfully updated.";
-        #endregion
-
-        #region Private Fields
+     
         private readonly Microsoft.ServiceBus.NamespaceManager namespaceManager;
         private readonly Uri namespaceUri;
         private readonly string ns;
-        private readonly string servicePath = string.Empty;
-        
+        private readonly string servicePath = string.Empty;        
         private readonly ServiceBusNamespace serviceBusNamespace;
         private string scheme = DefaultScheme;
-        #endregion
 
-        #region Public Constructors
         public ServiceBusQueue(ServiceBusNamespace serviceBusNamespace, Microsoft.ServiceBus.NamespaceManager namespaceManager)
         {
             this.serviceBusNamespace = serviceBusNamespace;
             this.namespaceManager = namespaceManager;
             ns = GetNamespace();
         }
-        #endregion
-
-        #region Public Instance Properties
 
         public string Scheme
         {
@@ -77,20 +54,17 @@ namespace ServiceBusExplorer.WindowsAzure
         }
 
         public WriteToLogDelegate WriteToLog { get; set; } = (message, async) => { };
-        #endregion
 
-        #region Public Events
         public event IServiceBusQueue.EventHandler OnDelete;
+        
         public event IServiceBusQueue.EventHandler OnCreate;
-        #endregion
 
-        #region Public Methods
         /// <summary>
         /// Retrieves an enumerable collection of all queues in the service bus namespace.
         /// </summary>
         /// <param name="filter">OData filter.</param>
-        /// <returns>Returns an IEnumerable<QueueDescription/> collection of all queues in the service namespace.
-        ///          Returns an empty collection if no queue exists in this service namespace.</returns>
+        /// <returns>Returns an IEnumerable<QueueDescription/> collection of all queues in the service namespace, or
+        /// an empty collection if no queue exists in this service namespace.</returns>
         public IEnumerable<QueueDescription> GetQueues(string filter, int timeoutInSeconds)
         {
             if (namespaceManager != null)
@@ -352,9 +326,7 @@ namespace ServiceBusExplorer.WindowsAzure
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
-        #endregion
 
-        #region Private Methods
         private QueueDescription GetQueueUsingEntityPath(int timeoutInSeconds)
         {
             var taskList = new List<Task>();
@@ -395,6 +367,5 @@ namespace ServiceBusExplorer.WindowsAzure
                     uri.Contains(GermanyServiceBusPostfix) ||
                     uri.Contains(ChinaServiceBusPostfix)));
         }
-        #endregion
     }
 }
