@@ -246,7 +246,7 @@ namespace ServiceBusExplorer.Helpers
                                 await message.AbandonAsync().ConfigureAwait(false);
                                 throw;
                             }
-
+                            WriteToLog($"Moving a message with sequence number {message.SequenceNumber}.");
                             movedSequenceNumbers.Add(message.SequenceNumber);
                             if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
                             {
@@ -265,7 +265,7 @@ namespace ServiceBusExplorer.Helpers
                         done = true;
                     }
 
-                    if (stopwatch.ElapsedMilliseconds >= maxTimeInSeconds * 1000)
+                    if (stopwatch.ElapsedMilliseconds >= maxTimeInSeconds * 100000)// changed from 1000 to 100000
                     {
                         timedOut = true;
                         done = true;
