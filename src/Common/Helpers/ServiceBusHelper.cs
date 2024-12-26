@@ -104,15 +104,10 @@ namespace ServiceBusExplorer
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
         private const string RuleCannotBeNull = "The rule argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
-        private const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
-        private const string TopicCreated = "The topic {0} has been successfully created.";
-        private const string TopicDeleted = "The topic {0} has been successfully deleted.";
-        private const string TopicRenamed = "The topic {0} has been successfully renamed to {1}.";
-        private const string TopicUpdated = "The topic {0} has been successfully updated.";
         private const string SubscriptionCreated = "The {0} subscription for the {1} topic has been successfully created.";
         private const string SubscriptionDeleted = "The {0} subscription for the {1} topic has been successfully deleted.";
         private const string SubscriptionUpdated = "The {0} subscription for the {1} topic has been successfully updated.";
@@ -198,6 +193,7 @@ namespace ServiceBusExplorer
         private TransportType currentTransportType;
         private ServiceBusNamespace serviceBusNamespaceInstance;
         private IServiceBusQueue serviceBusQueue;
+        private IServiceBusTopic serviceBusTopic;
         #endregion
 
         #region Private Static Fields
@@ -258,6 +254,7 @@ namespace ServiceBusExplorer
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
             TransportType = serviceBusHelper.TransportType;
             serviceBusQueue = serviceBusHelper.serviceBusQueue;
+            serviceBusTopic = serviceBusHelper.serviceBusTopic;
         }
         #endregion
 
@@ -347,6 +344,11 @@ namespace ServiceBusExplorer
                     {
                         serviceBusQueue.Scheme = scheme;
                     }
+
+                    if (serviceBusTopic != null)
+                    {
+                        serviceBusTopic.Scheme = scheme;
+                    }
                 }
             }
         }
@@ -363,7 +365,7 @@ namespace ServiceBusExplorer
                     return ns;
                 }
             }
-            set
+            private set
             {
                 lock (this)
                 {
@@ -412,7 +414,7 @@ namespace ServiceBusExplorer
                     return servicePath ?? string.Empty;
                 }
             }
-            set
+            private set
             {
                 lock (this)
                 {
@@ -785,6 +787,14 @@ namespace ServiceBusExplorer
                 serviceBusQueue.OnCreate += args => OnCreate?.Invoke(args);
                 serviceBusQueue.OnDelete += args => OnDelete?.Invoke(args);
                 serviceBusQueue.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+
+                serviceBusTopic = new ServiceBusTopic(serviceBusNamespace, namespaceManager)
+                {
+                    Scheme = scheme,
+                };
+                serviceBusTopic.OnCreate += args => OnCreate?.Invoke(args);
+                serviceBusTopic.OnDelete += args => OnDelete?.Invoke(args);
+                serviceBusTopic.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -1634,15 +1644,7 @@ namespace ServiceBusExplorer
         /// <returns>A TopicDescription handle to the topic, or null if the topic does not exist in the service namespace. </returns>
         public TopicDescription GetTopic(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetTopic(path), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusTopic.GetTopic(path);
         }
 
         /// <summary>
@@ -1653,73 +1655,7 @@ namespace ServiceBusExplorer
         ///          Returns an empty collection if no topic exists in this service namespace.</returns>
         public IEnumerable<TopicDescription> GetTopics(string filter, int timeoutInSeconds)
         {
-            if (namespaceManager != null)
-            {
-                //Documentation states AND is the only logical clause allowed in the filter
-                //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.gettopicsasync?view=azure-dotnet
-                //Split on ' OR ' and combine queues returned
-                var taskList = new List<Task>();
-                if (string.IsNullOrEmpty(serviceBusNamespaceInstance.EntityPath))
-                {
-                    IEnumerable<TopicDescription> topics = new List<TopicDescription>();
-                    var filters = new List<string>();
-                    if (string.IsNullOrWhiteSpace(filter))
-                    {
-                        filters.Add(filter);
-                    }
-                    else
-                    {
-                        filters = filter.ToLowerInvariant().Split(new[] { " or " }, StringSplitOptions.None).ToList();
-                    }
-
-                    foreach (var splitFilter in filters)
-                    {
-                        var task = string.IsNullOrWhiteSpace(filter) ? namespaceManager.GetTopicsAsync() : namespaceManager.GetTopicsAsync(splitFilter);
-                        taskList.Add(task);
-                        taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                        Task.WaitAny(taskList.ToArray());
-                        if (task.IsCompleted)
-                        {
-                            topics = topics.Union(task.Result);
-                            taskList.Clear();
-                        }
-                        else
-                        {
-                            throw new TimeoutException();
-                        }
-                    }
-                    return topics;
-                }
-
-                return new List<TopicDescription> {
-                    GetTopicUsingEntityPath(timeoutInSeconds)
-                };
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Retrieves a topic in the service bus namespace that matches the entity path.
-        /// </summary>
-        private TopicDescription GetTopicUsingEntityPath(int timeoutInSeconds)
-        {
-            var taskList = new List<Task>();
-            var getTopicTask = namespaceManager.GetTopicAsync(serviceBusNamespaceInstance.EntityPath);
-            taskList.Add(getTopicTask);
-            taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-            Task.WaitAny(taskList.ToArray());
-            if (getTopicTask.IsCompleted)
-            {
-                try
-                {
-                    return getTopicTask.Result;
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.InnerExceptions.First();
-                }
-            }
-            throw new TimeoutException();
+            return serviceBusTopic.GetTopics(filter, timeoutInSeconds);
         }
 
         /// <summary>
@@ -1916,22 +1852,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the topic.</returns>
         public Uri GetTopicUri(string topicPath)
         {
-            if (IsCloudNamespace)
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, topicPath));
-            }
-            // ReSharper disable RedundantIfElseBlock
-            else
-            // ReSharper restore RedundantIfElseBlock
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = namespaceUri.Host,
-                    Path = $"{namespaceUri.AbsolutePath}/{topicPath}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return serviceBusTopic.GetTopicUri(topicPath);
         }
 
         /// <summary>
@@ -2061,18 +1982,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created TopicDescription object.</returns>
         public TopicDescription CreateTopic(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
-                return topic;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusTopic.CreateTopic(path);
         }
 
         /// <summary>
@@ -2082,18 +1992,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created TopicDescription object.</returns>
         public TopicDescription CreateTopic(TopicDescription topicDescription)
         {
-            if (topicDescription == null)
-            {
-                throw new ArgumentException(TopicDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var topic = RetryHelper.RetryFunc(() => namespaceManager.CreateTopic(topicDescription), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
-                return topic;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusTopic.CreateTopic(topicDescription);
         }
 
         /// <summary>
@@ -2103,76 +2002,34 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated TopicDescription object.</returns>
         public TopicDescription UpdateTopic(TopicDescription topicDescription)
         {
-            if (topicDescription == null)
-            {
-                throw new ArgumentException(TopicDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var topic = RetryHelper.RetryFunc(() => namespaceManager.UpdateTopic(topicDescription), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
-                return topic;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusTopic.UpdateTopic(topicDescription);
         }
 
         /// <summary>
         /// Deletes all the topics in the list.
         /// <param name="topics">A list of topics to delete.</param>
         /// </summary>
-        public async Task DeleteTopics(IEnumerable<string> topics)
+        public Task DeleteTopics(IEnumerable<string> topics)
         {
-            if (topics == null)
-            {
-                return;
-            }
-
-            await Task.WhenAll(topics.Select(DeleteTopic));
+            return serviceBusTopic.DeleteTopics(topics);
         }
 
         /// <summary>
         /// Deletes the topic described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public async Task DeleteTopic(string path)
+        public Task DeleteTopic(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Topic));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            return serviceBusTopic.DeleteTopic(path);
         }
 
         /// <summary>
         /// Deletes the topic passed as a argument.
         /// </summary>
         /// <param name="topic">The topic to delete.</param>
-        public async Task DeleteTopic(TopicDescription topic)
+        public Task DeleteTopic(TopicDescription topic)
         {
-            if (topic == null)
-            {
-                throw new ArgumentException(TopicDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteTopicAsync(topic.Path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            return serviceBusTopic.DeleteTopic(topic);
         }
 
         /// <summary>
@@ -2183,23 +2040,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a TopicDescription with the new name.</returns>
         public TopicDescription RenameTopic(string path, string newPath)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(newPath))
-            {
-                throw new ArgumentException(NewPathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var topicDescription = RetryHelper.RetryFunc(() => namespaceManager.RenameTopic(path, newPath), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, TopicRenamed, path, newPath));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new TopicDescription(path), EntityType.Topic));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(topicDescription, EntityType.Topic));
-                return topicDescription;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusTopic.RenameTopic(path, newPath);
         }
 
         /// <summary>
