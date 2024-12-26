@@ -17,7 +17,6 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string TopicRenamed = "The topic {0} has been successfully renamed to {1}.";
         private const string TopicUpdated = "The topic {0} has been successfully updated.";
 
-        private readonly string ns;
         private readonly string servicePath = string.Empty;
 
         public ServiceBusTopic(ServiceBusNamespace serviceBusNamespace, Microsoft.ServiceBus.NamespaceManager namespaceManager)
@@ -91,7 +90,7 @@ namespace ServiceBusExplorer.WindowsAzure
         {
             if (IsCloudNamespace())
             {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, ns, string.Concat(servicePath, topicPath));
+                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, topicPath));
             }
             // ReSharper disable RedundantIfElseBlock
             else
