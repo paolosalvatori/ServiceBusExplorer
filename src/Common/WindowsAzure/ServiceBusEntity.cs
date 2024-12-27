@@ -1,4 +1,6 @@
 ﻿using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
@@ -20,7 +22,7 @@ namespace ServiceBusExplorer.WindowsAzure
         private readonly string ns;
         private string scheme = DefaultScheme;
 
-        public ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
+        protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
         {
             this.ServiceBusNamespace = serviceBusNamespace;
             this.NamespaceManager = namespaceManager;
@@ -51,14 +53,21 @@ namespace ServiceBusExplorer.WindowsAzure
 
         protected string Namespace { get { return ns; } }
 
-        protected void OnCreated(ServiceBusHelperEventArgs args)
+        protected abstract EntityType EntityType { get; }
+
+        protected void OnCreated<T>(T entityInstance) where T : EntityDescription
         {
-            OnCreate?.Invoke(args);
+            OnCreate?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
         }
 
-        protected void OnDeleted(ServiceBusHelperEventArgs args)
+        protected void OnDeleted<T>(T entityInstance) where T : EntityDescription
         {
-            OnDelete?.Invoke(args);
+            OnDelete?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
+        }
+
+        protected void Log(string message)
+        {
+            WriteToLog?.Invoke(message);
         }
 
         protected bool IsCloudNamespace()

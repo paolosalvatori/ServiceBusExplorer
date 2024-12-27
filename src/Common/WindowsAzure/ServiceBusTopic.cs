@@ -24,6 +24,13 @@ namespace ServiceBusExplorer.WindowsAzure
         {
         }
 
+        protected override EntityType EntityType => EntityType.Topic;
+
+        /// <summary>
+        /// Retrieves the topic from the service namespace.
+        /// </summary>
+        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
+        /// <returns>A TopicDescription handle to the topic, or null if the topic does not exist in the service namespace.</returns>
         public TopicDescription GetTopic(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -39,6 +46,12 @@ namespace ServiceBusExplorer.WindowsAzure
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
+        /// <summary>
+        /// Retrieves an enumerable collection of all topics in the service bus namespace.
+        /// </summary>
+        /// <param name="filter">OData filter.</param>
+        /// <returns>Returns an IEnumerable<TopicDescription/> collection of all topics in the service namespace.
+        ///          Returns an empty collection if no topic exists in this service namespace.</returns>
         public IEnumerable<TopicDescription> GetTopics(string filter, int timeoutInSeconds)
         {
             if (NamespaceManager != null)
@@ -86,15 +99,18 @@ namespace ServiceBusExplorer.WindowsAzure
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
+        /// <summary>
+        /// Gets the uri of a topic.
+        /// </summary>
+        /// <param name="topicPath">The name of a topic.</param>
+        /// <returns>The absolute uri of the topic.</returns>
         public Uri GetTopicUri(string topicPath)
         {
             if (IsCloudNamespace())
             {
                 return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, topicPath));
             }
-            // ReSharper disable RedundantIfElseBlock
             else
-            // ReSharper restore RedundantIfElseBlock
             {
                 var uriBuilder = new UriBuilder
                 {
@@ -106,6 +122,11 @@ namespace ServiceBusExplorer.WindowsAzure
             }
         }
 
+        /// <summary>
+        /// Creates a new topic in the service namespace with the given name.
+        /// </summary>
+        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
+        /// <returns>Returns a newly-created TopicDescription object.</returns>    
         public TopicDescription CreateTopic(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -115,13 +136,18 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 var topic = RetryHelper.RetryFunc(() => NamespaceManager.CreateTopic(path), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
-                OnCreated(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
+                OnCreated(topic);
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
+        /// <summary>
+        /// Creates a new topic in the service namespace with the given name.
+        /// </summary>
+        /// <param name="topicDescription">A TopicDescription object describing the attributes with which the new topic will be created.</param>
+        /// <returns>Returns a newly-created TopicDescription object.</returns>
         public TopicDescription CreateTopic(TopicDescription topicDescription)
         {
             if (topicDescription == null)
@@ -131,13 +157,18 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 var topic = RetryHelper.RetryFunc(() => NamespaceManager.CreateTopic(topicDescription), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
-                OnCreated(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
+                OnCreated(topic);
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
+        /// <summary>
+        /// Updates a topic in the service namespace with the given name.
+        /// </summary>
+        /// <param name="topicDescription">A TopicDescription object describing the attributes with which the new topic will be updated.</param>
+        /// <returns>Returns an updated TopicDescription object.</returns>
         public TopicDescription UpdateTopic(TopicDescription topicDescription)
         {
             if (topicDescription == null)
@@ -147,13 +178,17 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 var topic = RetryHelper.RetryFunc(() => NamespaceManager.UpdateTopic(topicDescription), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
-                OnCreated(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
+                OnCreated(topic);
                 return topic;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
+        /// <summary>
+        /// Deletes all the topics in the list.
+        /// <param name="topics">A list of topics to delete.</param>
+        /// </summary>
         public async Task DeleteTopics(IEnumerable<string> topics)
         {
             if (topics == null)
@@ -164,6 +199,10 @@ namespace ServiceBusExplorer.WindowsAzure
             await Task.WhenAll(topics.Select(DeleteTopic));
         }
 
+        /// <summary>
+        /// Deletes the topic described by the relative name of the service namespace base address.
+        /// </summary>
+        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
         public async Task DeleteTopic(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -173,8 +212,8 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(path), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
-                OnDeleted(new ServiceBusHelperEventArgs(path, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
+                OnDeleted(new TopicDescription(path));
             }
             else
             {
@@ -182,6 +221,10 @@ namespace ServiceBusExplorer.WindowsAzure
             }
         }
 
+        /// <summary>
+        /// Deletes the topic passed as a argument.
+        /// </summary>
+        /// <param name="topic">The topic to delete.</param>
         public async Task DeleteTopic(TopicDescription topic)
         {
             if (topic == null)
@@ -191,8 +234,8 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(topic.Path), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
-                OnDeleted(new ServiceBusHelperEventArgs(topic, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
+                OnDeleted(topic);
             }
             else
             {
@@ -200,6 +243,12 @@ namespace ServiceBusExplorer.WindowsAzure
             }
         }
 
+        /// <summary>
+        /// Renames a topic inside a namespace.
+        /// </summary>
+        /// <param name="path">The path to an existing topic.</param>
+        /// <param name="newPath">The new path to the renamed topic.</param>
+        /// <returns>Returns a TopicDescription with the new name.</returns>
         public TopicDescription RenameTopic(string path, string newPath)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -213,9 +262,9 @@ namespace ServiceBusExplorer.WindowsAzure
             if (NamespaceManager != null)
             {
                 var topicDescription = RetryHelper.RetryFunc(() => NamespaceManager.RenameTopic(path, newPath), WriteToLog);
-                WriteToLog?.Invoke(string.Format(CultureInfo.CurrentCulture, TopicRenamed, path, newPath));
-                OnDeleted(new ServiceBusHelperEventArgs(new TopicDescription(path), EntityType.Topic));
-                OnCreated(new ServiceBusHelperEventArgs(topicDescription, EntityType.Topic));
+                Log(string.Format(CultureInfo.CurrentCulture, TopicRenamed, path, newPath));
+                OnDeleted(new TopicDescription(path));
+                OnCreated(topicDescription);
                 return topicDescription;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
