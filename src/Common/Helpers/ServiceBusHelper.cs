@@ -1941,27 +1941,27 @@ namespace ServiceBusExplorer
         /// Deletes all the queues in the list.
         /// <param name="queues">A list of queues to delete.</param>
         /// </summary>
-        public Task DeleteQueues(IEnumerable<string> queues)
+        public async Task DeleteQueues(IEnumerable<string> queues)
         {
-            return serviceBusQueue.DeleteQueues(queues);
+            await serviceBusQueue.DeleteQueues(queues);
         }
 
         /// <summary>
         /// Deletes the queue described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        public Task DeleteQueue(string path)
+        public async Task DeleteQueue(string path)
         {
-            return serviceBusQueue.DeleteQueue(path);
+            await serviceBusQueue.DeleteQueue(path);
         }
 
         /// <summary>
         /// Deletes the queue passed as a argument.
         /// </summary>
         /// <param name="queueDescription">The queue to delete.</param>
-        public Task DeleteQueue(QueueDescription queueDescription)
+        public async Task DeleteQueue(QueueDescription queueDescription)
         {
-            return serviceBusQueue.DeleteQueue(queueDescription);
+            await serviceBusQueue.DeleteQueue(queueDescription);
         }
 
         /// <summary>
@@ -2009,27 +2009,27 @@ namespace ServiceBusExplorer
         /// Deletes all the topics in the list.
         /// <param name="topics">A list of topics to delete.</param>
         /// </summary>
-        public Task DeleteTopics(IEnumerable<string> topics)
+        public async Task DeleteTopics(IEnumerable<string> topics)
         {
-            return serviceBusTopic.DeleteTopics(topics);
+            await serviceBusTopic.DeleteTopics(topics);
         }
 
         /// <summary>
         /// Deletes the topic described by the relative name of the service namespace base address.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public Task DeleteTopic(string path)
+        public async Task DeleteTopic(string path)
         {
-            return serviceBusTopic.DeleteTopic(path);
+            await serviceBusTopic.DeleteTopic(path);
         }
 
         /// <summary>
         /// Deletes the topic passed as a argument.
         /// </summary>
         /// <param name="topic">The topic to delete.</param>
-        public Task DeleteTopic(TopicDescription topic)
+        public async Task DeleteTopic(TopicDescription topic)
         {
-            return serviceBusTopic.DeleteTopic(topic);
+            await serviceBusTopic.DeleteTopic(topic);
         }
 
         /// <summary>
