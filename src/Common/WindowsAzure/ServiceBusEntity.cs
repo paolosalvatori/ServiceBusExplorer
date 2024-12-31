@@ -20,7 +20,6 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
 
         private readonly string ns;
-        private string scheme = DefaultScheme;
 
         protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
         {
@@ -29,17 +28,7 @@ namespace ServiceBusExplorer.WindowsAzure
             ns = GetNamespace();
         }
 
-        public string Scheme
-        {
-            get
-            {
-                return scheme;
-            }
-            set
-            {
-                scheme = value;
-            }
-        }
+        public string Scheme { get; set; } = DefaultScheme;
 
         public WriteToLogDelegate WriteToLog { get; set; } = (message, async) => { };
 
