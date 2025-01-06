@@ -10,7 +10,9 @@ namespace ServiceBusExplorer.WindowsAzure
     {
         protected const string PathCannotBeNull = "The path argument cannot be null or empty.";
         protected const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
+        protected const string NameCannotBeNull = "The name argument cannot be null or empty.";
         protected const string DescriptionCannotBeNull = "The description argument cannot be null.";
+        protected const string NamespaceManagerCannotBeNull = "The namespace manager argument cannot be null.";
         protected const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
 
         private const string DefaultScheme = "sb";
@@ -43,6 +45,12 @@ namespace ServiceBusExplorer.WindowsAzure
         protected string Namespace { get { return ns; } }
 
         protected abstract EntityType EntityType { get; }
+
+        protected void OnCreated(ServiceBusHelperEventArgs args)
+        {
+            args.EntityType = EntityType;
+            OnCreate?.Invoke(args);
+        }
 
         protected void OnCreated<T>(T entityInstance) where T : EntityDescription
         {
