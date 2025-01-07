@@ -742,7 +742,7 @@ namespace ServiceBusExplorer
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                throw new Exception($"Could not contact host in connection string: { serviceBusNamespace.ConnectionString }.");
+                throw new Exception($"Could not contact host in connection string: {serviceBusNamespace.ConnectionString}.");
             }
 
             var func = (() =>
@@ -785,37 +785,10 @@ namespace ServiceBusExplorer
                     // ignored
                 }
 
-                serviceBusQueue = new ServiceBusQueue(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusQueue.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusQueue.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusQueue.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
-
-                serviceBusTopic = new ServiceBusTopic(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusTopic.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusTopic.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusTopic.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
-
-                serviceBusSubscription = new ServiceBusSubscription(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusSubscription.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusSubscription.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusSubscription.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
-
-                serviceBusRule = new ServiceBusRule(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusRule.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusRule.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusRule.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+                serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
+                serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
+                serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
+                serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -825,7 +798,7 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);                
+                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
 
                 return true;
@@ -1782,7 +1755,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the queue.</returns>
         public Uri GetQueueUri(string queuePath)
         {
-           return serviceBusQueue.GetQueueUri(queuePath);
+            return serviceBusQueue.GetQueueUri(queuePath);
         }
 
         /// <summary>
@@ -4415,7 +4388,7 @@ namespace ServiceBusExplorer
         {
             var body = brokeredMessage.GetBody<byte[]>();
             if (compress)
-               return DecompressAsString(body);
+                return DecompressAsString(body);
             return Encoding.UTF8.GetString(body);
         }
 
@@ -5154,6 +5127,16 @@ namespace ServiceBusExplorer
             {
                 writeToLog(message, async);
             }
+        }
+
+        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization) where T : IServiceBusEntity
+        {
+            T entity = initialization(serviceBusNamespaceInstance, namespaceManager);
+            entity.Scheme = scheme;
+            entity.OnCreate += args => OnCreate?.Invoke(args);
+            entity.OnDelete += args => OnDelete?.Invoke(args);
+            entity.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+            return entity;
         }
 
         private static Encoding GetEncoding()
