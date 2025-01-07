@@ -17,16 +17,11 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string RuleCreated = "The {0} rule for the {1} subscription has been successfully created.";
         private const string RuleDeleted = "The {0} rule for the {1} subscription has been successfully deleted.";
 
-        private readonly MessagingFactory messagingFactory;
+        private MessagingFactory messagingFactory;
 
         public ServiceBusRule(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
             : base(serviceBusNamespace, namespaceManager)
         {
-            var builder = new ServiceBusConnectionStringBuilder(serviceBusNamespace.ConnectionString)
-            {
-                EntityPath = string.Empty
-            };
-            messagingFactory = MessagingFactory.CreateFromConnectionString(builder.ToString());
         }
 
         protected override EntityType EntityType => EntityType.Rule;
@@ -88,9 +83,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(RuleDescriptionCannotBeNull);
             }
-            var subscriptionClient = RetryHelper.RetryFunc(() => messagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                                                           subscriptionDescription.Name),
-                                                                                                           WriteToLog);
+            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
+                                                                               subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.AddRule(ruleDescription), WriteToLog);
             var func = (() => NamespaceManager.GetRules(subscriptionDescription.TopicPath, subscriptionDescription.Name));
             var rules = RetryHelper.RetryFunc(func, WriteToLog);
@@ -131,7 +125,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(NameCannotBeNull);
             }
-            var subscriptionClient = messagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
+            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(name), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, RuleDeleted, name, subscriptionClient.Name));
@@ -153,11 +147,25 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(RuleCannotBeNull);
             }
-            var subscriptionClient = messagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
+            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
                                                                                subscriptionDescription.Name);
             RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(rule.Name), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionClient.Name));
             OnDeleted(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+        }
+
+        private MessagingFactory GetMessagingFactory()
+        {
+            if (messagingFactory == null || messagingFactory.IsClosed)
+            {
+                var builder = new ServiceBusConnectionStringBuilder(ServiceBusNamespace.ConnectionString)
+                {
+                    EntityPath = string.Empty
+                };
+                messagingFactory = MessagingFactory.CreateFromConnectionString(builder.ToString());
+            }
+
+            return messagingFactory;
         }
     }
 }
