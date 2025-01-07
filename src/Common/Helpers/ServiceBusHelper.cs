@@ -742,7 +742,7 @@ namespace ServiceBusExplorer
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                throw new Exception($"Could not contact host in connection string: {serviceBusNamespace.ConnectionString}.");
+                throw new Exception($"Could not contact host in connection string: { serviceBusNamespace.ConnectionString }.");
             }
 
             var func = (() =>
@@ -800,7 +800,6 @@ namespace ServiceBusExplorer
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
                 MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
-
                 return true;
             });
             return RetryHelper.RetryFunc(func, writeToLog);
@@ -1755,7 +1754,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the queue.</returns>
         public Uri GetQueueUri(string queuePath)
         {
-            return serviceBusQueue.GetQueueUri(queuePath);
+           return serviceBusQueue.GetQueueUri(queuePath);
         }
 
         /// <summary>
@@ -4388,7 +4387,7 @@ namespace ServiceBusExplorer
         {
             var body = brokeredMessage.GetBody<byte[]>();
             if (compress)
-                return DecompressAsString(body);
+               return DecompressAsString(body);
             return Encoding.UTF8.GetString(body);
         }
 
