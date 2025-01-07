@@ -57,6 +57,12 @@ namespace ServiceBusExplorer.WindowsAzure
             OnCreate?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
         }
 
+        protected void OnDeleted(ServiceBusHelperEventArgs args)
+        {
+            args.EntityType = EntityType;
+            OnDelete?.Invoke(args);
+        }
+
         protected void OnDeleted<T>(T entityInstance) where T : EntityDescription
         {
             OnDelete?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
