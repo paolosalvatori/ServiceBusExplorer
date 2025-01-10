@@ -94,20 +94,16 @@ namespace ServiceBusExplorer
         private const string ServiceBusIssuerSecretArgumentCannotBeNull = "The issuerSecret argument cannot be null.";
         private const string QueueDescriptionCannotBeNull = "The queue description argument cannot be null.";
         private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
-        private const string RuleDescriptionCannotBeNull = "The rule description argument cannot be null.";
         private const string EventHubDescriptionCannotBeNull = "The event hub description argument cannot be null.";
         private const string ConsumerGroupCannotBeNull = "The consumerGroup argument cannot be null or empty.";
         private const string PartitionDescriptionCannotBeNull = "The partition description argument cannot be null.";
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
-        private const string RuleCannotBeNull = "The rule argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
-        private const string RuleCreated = "The {0} rule for the {1} subscription has been successfully created.";
-        private const string RuleDeleted = "The {0} rule for the {1} subscription has been successfully deleted.";
         private const string RelayCreated = "The relay {0} has been successfully created.";
         private const string RelayDeleted = "The relay {0} has been successfully deleted.";
         private const string RelayUpdated = "The relay {0} has been successfully updated.";
@@ -190,6 +186,7 @@ namespace ServiceBusExplorer
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
+        private IServiceBusRule serviceBusRule;
         #endregion
 
         #region Private Static Fields
@@ -252,6 +249,7 @@ namespace ServiceBusExplorer
             serviceBusQueue = serviceBusHelper.serviceBusQueue;
             serviceBusTopic = serviceBusHelper.serviceBusTopic;
             serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
+            serviceBusRule = serviceBusHelper.serviceBusRule;
         }
         #endregion
 
@@ -351,6 +349,11 @@ namespace ServiceBusExplorer
                     {
                         serviceBusSubscription.Scheme = scheme;
                     }
+
+                    if (serviceBusRule != null)
+                    {
+                        serviceBusRule.Scheme = scheme;
+                    }
                 }
             }
         }
@@ -430,7 +433,7 @@ namespace ServiceBusExplorer
             }
         }
 
-        public string ConnectionStringWithoutEntityPath
+        private string ConnectionStringWithoutEntityPath
         {
             get
             {
@@ -455,7 +458,7 @@ namespace ServiceBusExplorer
                     return connectionString;
                 }
             }
-            set
+            private set
             {
                 lock (this)
                 {
@@ -782,29 +785,10 @@ namespace ServiceBusExplorer
                     // ignored
                 }
 
-                serviceBusQueue = new ServiceBusQueue(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusQueue.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusQueue.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusQueue.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
-
-                serviceBusTopic = new ServiceBusTopic(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusTopic.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusTopic.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusTopic.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
-
-                serviceBusSubscription = new ServiceBusSubscription(serviceBusNamespace, namespaceManager)
-                {
-                    Scheme = scheme,
-                };
-                serviceBusSubscription.OnCreate += args => OnCreate?.Invoke(args);
-                serviceBusSubscription.OnDelete += args => OnDelete?.Invoke(args);
-                serviceBusSubscription.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+                serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
+                serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
+                serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
+                serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -814,7 +798,7 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);                
+                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
                 return true;
             });
@@ -1749,15 +1733,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of rules attached to the subscription passed as a parameter.</returns>
         public IEnumerable<RuleDescription> GetRules(SubscriptionDescription subscription)
         {
-            if (subscription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetRules(subscription.TopicPath, subscription.Name), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRule.GetRules(subscription);
         }
 
         /// <summary>
@@ -1768,19 +1744,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of rules attached to the subscription passed as a parameter.</returns>
         public IEnumerable<RuleDescription> GetRules(string topicPath, string name)
         {
-            if (string.IsNullOrWhiteSpace(topicPath))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(NameCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetRules(topicPath, name), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRule.GetRules(topicPath, name);
         }
 
         /// <summary>
@@ -2043,24 +2007,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created RuleDescription object.</returns>
         public RuleDescription AddRule(SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription)
         {
-            if (subscriptionDescription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (ruleDescription == null)
-            {
-                throw new ArgumentException(RuleDescriptionCannotBeNull);
-            }
-            var subscriptionClient = RetryHelper.RetryFunc(() => MessagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                                                           subscriptionDescription.Name),
-                                                                                                           writeToLog);
-            RetryHelper.RetryAction(() => subscriptionClient.AddRule(ruleDescription), writeToLog);
-            var func = (() => namespaceManager.GetRules(subscriptionDescription.TopicPath, subscriptionDescription.Name));
-            var rules = RetryHelper.RetryFunc(func, writeToLog);
-            var rule = rules.FirstOrDefault(r => r.Name == ruleDescription.Name);
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleCreated, ruleDescription.Name, subscriptionDescription.Name));
-            OnCreate?.Invoke(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
-            return rule;
+            return serviceBusRule.AddRule(subscriptionDescription, ruleDescription);
         }
 
         /// <summary>
@@ -2069,14 +2016,7 @@ namespace ServiceBusExplorer
         /// <param name="wrappers">The list containing the ruleWrappers of the rules to remove.</param>
         public void RemoveRules(IEnumerable<RuleWrapper> wrappers)
         {
-            if (wrappers == null)
-            {
-                throw new ArgumentException(RuleDescriptionCannotBeNull);
-            }
-            foreach (var wrapper in wrappers)
-            {
-                RemoveRule(wrapper.SubscriptionDescription, wrapper.RuleDescription);
-            }
+            serviceBusRule.RemoveRules(wrappers);
         }
 
         /// <summary>
@@ -2086,19 +2026,7 @@ namespace ServiceBusExplorer
         /// <param name="name">Name of the rule.</param>
         public void RemoveRule(SubscriptionDescription subscriptionDescription, string name)
         {
-            if (subscriptionDescription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(NameCannotBeNull);
-            }
-            var subscriptionClient = MessagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                               subscriptionDescription.Name);
-            RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(name), writeToLog);
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, name, subscriptionClient.Name));
-            OnDelete?.Invoke(new ServiceBusHelperEventArgs(name, EntityType.Rule));
+            serviceBusRule.RemoveRule(subscriptionDescription, name);
         }
 
         /// <summary>
@@ -2108,19 +2036,7 @@ namespace ServiceBusExplorer
         /// <param name="rule">The rule to remove.</param>
         public void RemoveRule(SubscriptionDescription subscriptionDescription, RuleDescription rule)
         {
-            if (subscriptionDescription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (rule == null)
-            {
-                throw new ArgumentException(RuleCannotBeNull);
-            }
-            var subscriptionClient = MessagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                               subscriptionDescription.Name);
-            RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(rule.Name), writeToLog);
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionClient.Name));
-            OnDelete?.Invoke(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
+            serviceBusRule.RemoveRule(subscriptionDescription, rule);
         }
 
         /// <summary>
@@ -5210,6 +5126,16 @@ namespace ServiceBusExplorer
             {
                 writeToLog(message, async);
             }
+        }
+
+        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization) where T : IServiceBusEntity
+        {
+            T entity = initialization(serviceBusNamespaceInstance, namespaceManager);
+            entity.Scheme = scheme;
+            entity.OnCreate += args => OnCreate?.Invoke(args);
+            entity.OnDelete += args => OnDelete?.Invoke(args);
+            entity.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+            return entity;
         }
 
         private static Encoding GetEncoding()
