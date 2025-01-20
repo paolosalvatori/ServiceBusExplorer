@@ -104,9 +104,6 @@ namespace ServiceBusExplorer
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
-        private const string RelayCreated = "The relay {0} has been successfully created.";
-        private const string RelayDeleted = "The relay {0} has been successfully deleted.";
-        private const string RelayUpdated = "The relay {0} has been successfully updated.";
         private const string EventHubCreated = "The event hub {0} has been successfully created.";
         private const string EventHubDeleted = "The event hub {0} has been successfully deleted.";
         private const string EventHubUpdated = "The event hub {0} has been successfully updated.";
@@ -187,6 +184,7 @@ namespace ServiceBusExplorer
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
         private IServiceBusRule serviceBusRule;
+        private IServiceBusRelay serviceBusRelay;
         #endregion
 
         #region Private Static Fields
@@ -250,6 +248,7 @@ namespace ServiceBusExplorer
             serviceBusTopic = serviceBusHelper.serviceBusTopic;
             serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
             serviceBusRule = serviceBusHelper.serviceBusRule;
+            serviceBusRelay = serviceBusHelper.serviceBusRelay;
         }
         #endregion
 
@@ -789,6 +788,7 @@ namespace ServiceBusExplorer
                 serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
                 serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
                 serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
+                serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -812,15 +812,7 @@ namespace ServiceBusExplorer
         /// <returns>A RelayDescription handle to the relay, or null if the relay does not exist in the service namespace. </returns>
         public RelayDescription GetRelay(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetRelayAsync(path).Result, writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRelay.GetRelay(path);
         }
 
         /// <summary>
@@ -830,27 +822,7 @@ namespace ServiceBusExplorer
         ///          Returns an empty collection if no relay exists in this service namespace.</returns>
         public IEnumerable<RelayDescription> GetRelays(int timeoutInSeconds)
         {
-            if (namespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = namespaceManager.GetRelaysAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    try
-                    {
-                        return task.Result;
-                    }
-                    catch (AggregateException ex)
-                    {
-                        throw ex.InnerExceptions.First();
-                    }
-                }
-                throw new TimeoutException();
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRelay.GetRelays(timeoutInSeconds);
         }
 
         /// <summary>
@@ -860,18 +832,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created RelayDescription object.</returns>
         public RelayDescription CreateRelay(RelayDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var relayService = RetryHelper.RetryFunc(() => namespaceManager.CreateRelayAsync(description).Result, writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayCreated, description.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
-                return relayService;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRelay.CreateRelay(description);
         }
 
         /// <summary>
@@ -880,20 +841,7 @@ namespace ServiceBusExplorer
         /// <param name="path">Path of the relay relative to the service namespace base address.</param>
         public async Task DeleteRelay(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => namespaceManager.DeleteRelayAsync(path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayDeleted, path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.Relay));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            await serviceBusRelay.DeleteRelay(path);
         }
 
         /// <summary>
@@ -902,11 +850,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public async Task DeleteRelays(IEnumerable<string> relayServices)
         {
-            if (relayServices == null)
-            {
-                return;
-            }
-            await Task.WhenAll(relayServices.Select(DeleteRelay));
+            await serviceBusRelay.DeleteRelays(relayServices);
         }
 
         /// <summary>
@@ -916,18 +860,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated RelayDescription object.</returns>
         public RelayDescription UpdateRelay(RelayDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var relayService = RetryHelper.RetryFunc(() => namespaceManager.UpdateRelayAsync(description).Result, writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, RelayUpdated, description.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(relayService, EntityType.Relay));
-                return relayService;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusRelay.UpdateRelay(description);
         }
 
         /// <summary>
@@ -937,18 +870,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the relay.</returns>
         public Uri GetRelayUri(RelayDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager == null)
-            {
-                return null;
-            }
-            var currentScheme = description.RelayType != RelayType.Http
-                ? scheme
-                : description.RequiresTransportSecurity ? "https" : "http";
-            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(currentScheme, Namespace, string.Concat(ServicePath, description.Path));
+            return serviceBusRelay.GetRelayUri(description);
         }
 
         /// <summary>
