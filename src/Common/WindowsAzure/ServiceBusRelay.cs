@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
-    internal sealed class ServiceBusRelay : ServiceBusEntity, IServiceBusRelay
+    internal class ServiceBusRelay : ServiceBusEntity, IServiceBusRelay
     {
         private const string RelayCreated = "The relay {0} has been successfully created.";
         private const string RelayDeleted = "The relay {0} has been successfully deleted.";
