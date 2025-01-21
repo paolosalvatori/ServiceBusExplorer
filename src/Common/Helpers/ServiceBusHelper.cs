@@ -98,7 +98,6 @@ namespace ServiceBusExplorer
         private const string ConsumerGroupCannotBeNull = "The consumerGroup argument cannot be null or empty.";
         private const string PartitionDescriptionCannotBeNull = "The partition description argument cannot be null.";
         private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
-        private const string NotificationHubDescriptionCannotBeNull = "The notification hub description argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
@@ -110,9 +109,6 @@ namespace ServiceBusExplorer
         private const string ConsumerGroupCreated = "The consumer group {0} has been successfully created.";
         private const string ConsumerGroupDeleted = "The consumer group {0} has been successfully deleted.";
         private const string ConsumerGroupUpdated = "The consumer group {0} has been successfully updated.";
-        private const string NotificationHubCreated = "The notification hub {0} has been successfully created.";
-        private const string NotificationHubDeleted = "The notification hub {0} has been successfully deleted.";
-        private const string NotificationHubUpdated = "The notification hub {0} has been successfully updated.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
         private const string PropertyConversionError = "{0} property conversion error: {1}";
@@ -185,6 +181,7 @@ namespace ServiceBusExplorer
         private IServiceBusSubscription serviceBusSubscription;
         private IServiceBusRule serviceBusRule;
         private IServiceBusRelay serviceBusRelay;
+        private IServiceBusNotificationHub serviceBusNotificationHub;
         #endregion
 
         #region Private Static Fields
@@ -249,6 +246,7 @@ namespace ServiceBusExplorer
             serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
             serviceBusRule = serviceBusHelper.serviceBusRule;
             serviceBusRelay = serviceBusHelper.serviceBusRelay;
+            serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
         }
         #endregion
 
@@ -789,6 +787,7 @@ namespace ServiceBusExplorer
                 serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
                 serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
                 serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
+                serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -1344,15 +1343,7 @@ namespace ServiceBusExplorer
         /// <returns>A NotificationHubDescription handle to the notification hub, or null if the notification hub does not exist in the service namespace. </returns>
         public AzureNotificationHubs.NotificationHubDescription GetNotificationHub(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => notificationHubNamespaceManager.GetNotificationHub(path), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusNotificationHub.GetNotificationHub(path);
         }
 
         /// <summary>
@@ -1362,23 +1353,7 @@ namespace ServiceBusExplorer
         ///          Returns an empty collection if no notification hub exists in this service namespace.</returns>
         public IEnumerable<AzureNotificationHubs.NotificationHubDescription> GetNotificationHubs(int timeoutInSeconds)
         {
-            if (namespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = notificationHubNamespaceManager.GetNotificationHubsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusNotificationHub.GetNotificationHubs(timeoutInSeconds);
         }
 
         /// <summary>
@@ -1387,20 +1362,7 @@ namespace ServiceBusExplorer
         /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
         public async Task DeleteNotificationHub(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.NotificationHub));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            await serviceBusNotificationHub.DeleteNotificationHub(path);
         }
 
         /// <summary>
@@ -1410,18 +1372,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created NotificationHubDescription object.</returns>
         public AzureNotificationHubs.NotificationHubDescription CreateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
-            var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.CreateNotificationHub(description), writeToLog);
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubCreated, description.Path));
-            OnCreate?.Invoke(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
-            return notificationHub;
+            return serviceBusNotificationHub.CreateNotificationHub(description);
         }
 
         /// <summary>
@@ -1430,20 +1381,7 @@ namespace ServiceBusExplorer
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
         public async Task DeleteNotificationHub(AzureNotificationHubs.NotificationHubDescription notificationHubDescription)
         {
-            if (string.IsNullOrWhiteSpace(notificationHubDescription?.Path))
-            {
-                throw new ArgumentException(NotificationHubDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(notificationHubDescription.Path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, notificationHubDescription.Path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(notificationHubDescription, EntityType.NotificationHub));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            await serviceBusNotificationHub.DeleteNotificationHub(notificationHubDescription);
         }
 
         /// <summary>
@@ -1452,11 +1390,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public async Task DeleteNotificationHubs(IEnumerable<string> notificationHubs)
         {
-            if (notificationHubs == null)
-            {
-                return;
-            }
-            await Task.WhenAll(notificationHubs.Select(DeleteNotificationHub).ToArray());
+            await serviceBusNotificationHub.DeleteNotificationHubs(notificationHubs);
         }
 
         /// <summary>
@@ -1466,18 +1400,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated NotificationHubDescription object.</returns>
         public AzureNotificationHubs.NotificationHubDescription UpdateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var notificationHub = RetryHelper.RetryFunc(() => notificationHubNamespaceManager.UpdateNotificationHub(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, NotificationHubUpdated, description.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(notificationHub, EntityType.NotificationHub));
-                return notificationHub;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusNotificationHub.UpdateNotificationHub(description);
         }
 
         /// <summary>
@@ -1487,7 +1410,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the notification hub.</returns>
         public Uri GetNotificationHubUri(string notificationHubPath)
         {
-            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, notificationHubPath));
+            return serviceBusNotificationHub.GetNotificationHubUri(notificationHubPath);
         }
 
         /// <summary>
