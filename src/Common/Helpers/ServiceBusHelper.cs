@@ -103,9 +103,6 @@ namespace ServiceBusExplorer
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
-        private const string EventHubCreated = "The event hub {0} has been successfully created.";
-        private const string EventHubDeleted = "The event hub {0} has been successfully deleted.";
-        private const string EventHubUpdated = "The event hub {0} has been successfully updated.";
         private const string ConsumerGroupCreated = "The consumer group {0} has been successfully created.";
         private const string ConsumerGroupDeleted = "The consumer group {0} has been successfully deleted.";
         private const string ConsumerGroupUpdated = "The consumer group {0} has been successfully updated.";
@@ -182,6 +179,7 @@ namespace ServiceBusExplorer
         private IServiceBusRule serviceBusRule;
         private IServiceBusRelay serviceBusRelay;
         private IServiceBusNotificationHub serviceBusNotificationHub;
+        private IServiceBusEventHub serviceBusEventHub;
         #endregion
 
         #region Private Static Fields
@@ -247,6 +245,7 @@ namespace ServiceBusExplorer
             serviceBusRule = serviceBusHelper.serviceBusRule;
             serviceBusRelay = serviceBusHelper.serviceBusRelay;
             serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
+            serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
         }
         #endregion
 
@@ -350,6 +349,21 @@ namespace ServiceBusExplorer
                     if (serviceBusRule != null)
                     {
                         serviceBusRule.Scheme = scheme;
+                    }
+
+                    if (serviceBusRelay != null)
+                    {
+                        serviceBusRelay.Scheme = scheme;
+                    }
+
+                    if (serviceBusNotificationHub != null)
+                    {
+                        serviceBusNotificationHub.Scheme = scheme;
+                    }
+
+                    if (serviceBusEventHub != null)
+                    {
+                        serviceBusEventHub.Scheme = scheme;
                     }
                 }
             }
@@ -788,6 +802,7 @@ namespace ServiceBusExplorer
                 serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
                 serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
                 serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
+                serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -879,15 +894,7 @@ namespace ServiceBusExplorer
         /// <returns>A EventHubDescription handle to the event hub, or null if the event hub does not exist in the service namespace. </returns>
         public EventHubDescription GetEventHub(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHub(path), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusEventHub.GetEventHub(path);
         }
 
         /// <summary>
@@ -897,23 +904,7 @@ namespace ServiceBusExplorer
         ///          Returns an empty collection if no event hub exists in this service namespace.</returns>
         public Task<IEnumerable<EventHubDescription>> GetEventHubs(int timeoutInSeconds)
         {
-            if (namespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = namespaceManager.GetEventHubsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusEventHub.GetEventHubs(timeoutInSeconds);
         }
 
         /// <summary>
@@ -923,18 +914,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created EventHubDescription object.</returns>
         public EventHubDescription CreateEventHub(EventHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var eventHub = RetryHelper.RetryFunc(() => namespaceManager.CreateEventHub(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubCreated, description.Path));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
-                return eventHub;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusEventHub.CreateEventHub(description);
         }
 
         /// <summary>
@@ -943,20 +923,7 @@ namespace ServiceBusExplorer
         /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
         public void DeleteEventHub(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteEventHub(path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            serviceBusEventHub.DeleteEventHub(path);
         }
 
         /// <summary>
@@ -965,20 +932,7 @@ namespace ServiceBusExplorer
         /// <param name="eventHubDescription">The event hub to delete.</param>
         public void DeleteEventHub(EventHubDescription eventHubDescription)
         {
-            if (string.IsNullOrWhiteSpace(eventHubDescription?.Path))
-            {
-                throw new ArgumentException(EventHubDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteEventHubAsync(eventHubDescription.Path), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubDeleted, eventHubDescription.Path));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(eventHubDescription, EntityType.EventHub));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            serviceBusEventHub.DeleteEventHub(eventHubDescription);
         }
 
         /// <summary>
@@ -987,14 +941,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public void DeleteEventHubs(IEnumerable<string> eventHubs)
         {
-            if (eventHubs == null)
-            {
-                return;
-            }
-            foreach (var eventHub in eventHubs)
-            {
-                DeleteEventHub(eventHub);
-            }
+            serviceBusEventHub.DeleteEventHubs(eventHubs);
         }
 
         /// <summary>
@@ -1004,18 +951,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated EventHubDescription object.</returns>
         public EventHubDescription UpdateEventHub(EventHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
-            var eventHub = RetryHelper.RetryFunc(() => namespaceManager.UpdateEventHub(description), writeToLog);
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, EventHubUpdated, description.Path));
-            OnCreate?.Invoke(new ServiceBusHelperEventArgs(eventHub, EntityType.EventHub));
-            return eventHub;
+            return serviceBusEventHub.UpdateEventHub(description);
         }
 
         /// <summary>
@@ -1025,7 +961,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the event hub.</returns>
         public Uri GetEventHubUri(string eventHubPath)
         {
-            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubPath));
+            return serviceBusEventHub.GetEventHubUri(eventHubPath);
         }
 
         /// <summary>
