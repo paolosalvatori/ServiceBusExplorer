@@ -10,6 +10,12 @@
 		<Copyright>Copyright © Microsoft 2016</Copyright>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="System.Configuration" />
 		<Reference Include="System.ServiceModel" />

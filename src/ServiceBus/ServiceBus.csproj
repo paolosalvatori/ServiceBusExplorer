@@ -4,6 +4,12 @@
 		<AssemblyName>ServiceBusExplorer.ServiceBus</AssemblyName>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.0" />
 	</ItemGroup>
