@@ -5,6 +5,12 @@
 		<AssemblyName>ServiceBusExplorer.Relay</AssemblyName>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.Relay" Version="3.0.1" />
 	</ItemGroup>
