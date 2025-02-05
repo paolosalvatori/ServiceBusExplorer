@@ -97,15 +97,11 @@ namespace ServiceBusExplorer
         private const string EventHubDescriptionCannotBeNull = "The event hub description argument cannot be null.";
         private const string ConsumerGroupCannotBeNull = "The consumerGroup argument cannot be null or empty.";
         private const string PartitionDescriptionCannotBeNull = "The partition description argument cannot be null.";
-        private const string ConsumerGroupDescriptionCannotBeNull = "The consumer group description argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
         private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
-        private const string ConsumerGroupCreated = "The consumer group {0} has been successfully created.";
-        private const string ConsumerGroupDeleted = "The consumer group {0} has been successfully deleted.";
-        private const string ConsumerGroupUpdated = "The consumer group {0} has been successfully updated.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
         private const string PropertyConversionError = "{0} property conversion error: {1}";
@@ -180,6 +176,7 @@ namespace ServiceBusExplorer
         private IServiceBusRelay serviceBusRelay;
         private IServiceBusNotificationHub serviceBusNotificationHub;
         private IServiceBusEventHub serviceBusEventHub;
+        private IServiceBusConsumerGroup serviceBusConsumerGroup;
         #endregion
 
         #region Private Static Fields
@@ -246,6 +243,7 @@ namespace ServiceBusExplorer
             serviceBusRelay = serviceBusHelper.serviceBusRelay;
             serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
             serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
+            serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
         }
         #endregion
 
@@ -364,6 +362,11 @@ namespace ServiceBusExplorer
                     if (serviceBusEventHub != null)
                     {
                         serviceBusEventHub.Scheme = scheme;
+                    }
+
+                    if (serviceBusConsumerGroup != null)
+                    {
+                        serviceBusConsumerGroup.Scheme = scheme;
                     }
                 }
             }
@@ -803,6 +806,7 @@ namespace ServiceBusExplorer
                 serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
                 serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
                 serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
+                serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -1106,19 +1110,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
         public ConsumerGroupDescription GetConsumerGroup(string eventHubPath, string name)
         {
-            if (string.IsNullOrWhiteSpace(eventHubPath))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(NameCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetConsumerGroup(eventHubPath, name), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusConsumerGroup.GetConsumerGroup(eventHubPath, name);
         }
 
         /// <summary>
@@ -1128,15 +1120,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
         public IEnumerable<ConsumerGroupDescription> GetConsumerGroups(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetConsumerGroups(path), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusConsumerGroup.GetConsumerGroups(path);
         }
 
         /// <summary>
@@ -1146,15 +1130,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
         public IEnumerable<ConsumerGroupDescription> GetConsumerGroups(EventHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(EventHubDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetConsumerGroups(description.Path), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusConsumerGroup.GetConsumerGroups(description);
         }
 
         /// <summary>
@@ -1164,18 +1140,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created ConsumerGroupDescription object.</returns>
         public ConsumerGroupDescription CreateConsumerGroup(ConsumerGroupDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.CreateConsumerGroup(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupCreated, description.Name));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
-                return consumerGroup;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusConsumerGroup.CreateConsumerGroup(description);
         }
 
         /// <summary>
@@ -1185,20 +1150,7 @@ namespace ServiceBusExplorer
         /// <param name="name">Name of the consumer group.</param>
         public void DeleteConsumerGroup(string eventHubName, string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(eventHubName, name), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, name));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(new ConsumerGroupDescription(eventHubName, name), EntityType.ConsumerGroup));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            serviceBusConsumerGroup.DeleteConsumerGroup(eventHubName, name);
         }
 
         /// <summary>
@@ -1207,20 +1159,7 @@ namespace ServiceBusExplorer
         /// <param name="consumerGroupDescription">The consumer group to delete.</param>
         public void DeleteConsumerGroup(ConsumerGroupDescription consumerGroupDescription)
         {
-            if (string.IsNullOrWhiteSpace(consumerGroupDescription?.Name))
-            {
-                throw new ArgumentException(ConsumerGroupDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                RetryHelper.RetryAction(() => namespaceManager.DeleteConsumerGroup(consumerGroupDescription.EventHubPath, consumerGroupDescription.Name), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupDeleted, consumerGroupDescription.Name));
-                OnDelete?.Invoke(new ServiceBusHelperEventArgs(consumerGroupDescription, EntityType.ConsumerGroup));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
+            serviceBusConsumerGroup.DeleteConsumerGroup(consumerGroupDescription);
         }
 
         /// <summary>
@@ -1230,14 +1169,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public void DeleteConsumerGroups(string eventHubName, IEnumerable<string> consumerGroups)
         {
-            if (consumerGroups == null)
-            {
-                return;
-            }
-            foreach (var consumerGroup in consumerGroups)
-            {
-                DeleteConsumerGroup(eventHubName, consumerGroup);
-            }
+            serviceBusConsumerGroup.DeleteConsumerGroups(eventHubName, consumerGroups);
         }
 
         /// <summary>
@@ -1247,18 +1179,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated ConsumerGroupDescription object.</returns>
         public ConsumerGroupDescription UpdateConsumerGroup(ConsumerGroupDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(DescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var consumerGroup = RetryHelper.RetryFunc(() => namespaceManager.UpdateConsumerGroup(description), writeToLog);
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ConsumerGroupUpdated, description.Name));
-                OnCreate?.Invoke(new ServiceBusHelperEventArgs(consumerGroup, EntityType.ConsumerGroup));
-                return consumerGroup;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusConsumerGroup.UpdateConsumerGroup(description);
         }
 
         /// <summary>
@@ -1269,7 +1190,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the consumer group.</returns>
         public Uri GetConsumerGroupUri(string eventHubName, string consumerGroupPath)
         {
-            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupPath));
+            return serviceBusConsumerGroup.GetConsumerGroupUri(eventHubName, consumerGroupPath);
         }
 
         /// <summary>
