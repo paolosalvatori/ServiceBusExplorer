@@ -94,9 +94,6 @@ namespace ServiceBusExplorer
         private const string ServiceBusIssuerSecretArgumentCannotBeNull = "The issuerSecret argument cannot be null.";
         private const string QueueDescriptionCannotBeNull = "The queue description argument cannot be null.";
         private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
-        private const string EventHubDescriptionCannotBeNull = "The event hub description argument cannot be null.";
-        private const string ConsumerGroupCannotBeNull = "The consumerGroup argument cannot be null or empty.";
-        private const string PartitionDescriptionCannotBeNull = "The partition description argument cannot be null.";
         private const string PathCannotBeNull = "The path argument cannot be null or empty.";
         private const string NameCannotBeNull = "The name argument cannot be null or empty.";
         private const string DescriptionCannotBeNull = "The description argument cannot be null.";
@@ -177,6 +174,7 @@ namespace ServiceBusExplorer
         private IServiceBusNotificationHub serviceBusNotificationHub;
         private IServiceBusEventHub serviceBusEventHub;
         private IServiceBusConsumerGroup serviceBusConsumerGroup;
+        private IServiceBusPartition serviceBusPartition;
         #endregion
 
         #region Private Static Fields
@@ -244,6 +242,7 @@ namespace ServiceBusExplorer
             serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
             serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
             serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
+            serviceBusPartition = serviceBusHelper.serviceBusPartition;
         }
         #endregion
 
@@ -367,6 +366,11 @@ namespace ServiceBusExplorer
                     if (serviceBusConsumerGroup != null)
                     {
                         serviceBusConsumerGroup.Scheme = scheme;
+                    }
+
+                    if (serviceBusPartition != null)
+                    {
+                        serviceBusPartition.Scheme = scheme;
                     }
                 }
             }
@@ -807,6 +811,7 @@ namespace ServiceBusExplorer
                 serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
                 serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
                 serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
+                serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
 
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
                 namespaceUri = namespaceManager.Address;
@@ -975,15 +980,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public PartitionDescription GetPartition(PartitionDescription partitionDescription)
         {
-            if (partitionDescription == null)
-            {
-                throw new ArgumentException(PartitionDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(partitionDescription.EventHubPath, partitionDescription.ConsumerGroupName, partitionDescription.PartitionId), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusPartition.GetPartition(partitionDescription);
         }
 
         /// <summary>
@@ -995,15 +992,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public PartitionDescription GetPartition(string path, string consumerGroupName, string name)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(path, consumerGroupName, name), writeToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusPartition.GetPartition(path, consumerGroupName, name);
         }
 
         /// <summary>
@@ -1013,16 +1002,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public IEnumerable<PartitionDescription> GetPartitions(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (namespaceManager == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
-            var description = namespaceManager.GetEventHub(path);
-            return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, description.PartitionIds[index]), writeToLog)).ToList();
+            return serviceBusPartition.GetPartitions(path);
         }
 
         /// <summary>
@@ -1032,15 +1012,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public IEnumerable<PartitionDescription> GetPartitions(EventHubDescription description)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(EventHubDescriptionCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, description.PartitionIds[index]), writeToLog)).ToList();
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusPartition.GetPartitions(description);
         }
 
         /// <summary>
@@ -1051,19 +1023,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public IEnumerable<PartitionDescription> GetPartitions(EventHubDescription description, string consumerGroupName)
         {
-            if (description == null)
-            {
-                throw new ArgumentException(EventHubDescriptionCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(consumerGroupName))
-            {
-                throw new ArgumentException(ConsumerGroupCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, consumerGroupName, description.PartitionIds[index]), writeToLog)).ToList();
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusPartition.GetPartitions(description, consumerGroupName);
         }
 
         /// <summary>
@@ -1074,20 +1034,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public IEnumerable<PartitionDescription> GetPartitions(string path, string consumerGroupName)
         {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(consumerGroupName))
-            {
-                throw new ArgumentException(ConsumerGroupCannotBeNull);
-            }
-            if (namespaceManager != null)
-            {
-                var description = namespaceManager.GetEventHub(path);
-                return description.PartitionIds.Select((t, i) => i).Select(index => RetryHelper.RetryFunc(() => namespaceManager.GetEventHubPartition(description.Path, consumerGroupName, description.PartitionIds[index]), writeToLog)).ToList();
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
+            return serviceBusPartition.GetPartitions(path, consumerGroupName);
         }
 
         /// <summary>
@@ -1099,7 +1046,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the partition.</returns>
         public Uri GetPartitionUri(string eventHubName, string consumerGroupName, string partitionId)
         {
-            return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(scheme, Namespace, string.Concat(ServicePath, eventHubName, "/", consumerGroupName, "/", partitionId));
+            return serviceBusPartition.GetPartitionUri(eventHubName, consumerGroupName, partitionId);
         }
 
         /// <summary>
