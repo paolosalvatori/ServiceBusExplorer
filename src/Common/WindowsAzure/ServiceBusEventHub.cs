@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Enums;
@@ -44,32 +43,6 @@ namespace ServiceBusExplorer.WindowsAzure
         }
 
         /// <summary>
-        /// Retrieves an enumerable collection of all event hubs in the service bus namespace.
-        /// </summary>
-        /// <returns>Returns an IEnumerable<EventHubDescription/> collection of all event hubs in the service namespace.
-        ///          Returns an empty collection if no event hub exists in this service namespace.</returns>
-        public Task<IEnumerable<EventHubDescription>> GetEventHubs(int timeoutInSeconds)
-        {
-            if (NamespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = NamespaceManager.GetEventHubsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
         /// Creates a new event hub in the service namespace with the given name.
         /// </summary>
         /// <param name="description">A EventHubDescription object describing the attributes with which the new event hub will be created.</param>
@@ -88,28 +61,6 @@ namespace ServiceBusExplorer.WindowsAzure
                 return eventHub;
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Deletes the event hub described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
-        public void DeleteEventHub(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                RetryHelper.RetryAction(() => NamespaceManager.DeleteEventHub(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, EventHubDeleted, path));
-                OnDeleted(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
         }
 
         /// <summary>
@@ -180,5 +131,24 @@ namespace ServiceBusExplorer.WindowsAzure
         {
             return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, eventHubPath));
         }
+
+        private void DeleteEventHub(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (NamespaceManager != null)
+            {
+                RetryHelper.RetryAction(() => NamespaceManager.DeleteEventHub(path), WriteToLog);
+                Log(string.Format(CultureInfo.CurrentCulture, EventHubDeleted, path));
+                OnDeleted(new ServiceBusHelperEventArgs(path, EntityType.EventHub));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
+        }
+
     }
 }

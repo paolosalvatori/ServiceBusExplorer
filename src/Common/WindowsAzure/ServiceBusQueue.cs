@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
-    internal sealed class ServiceBusQueue : ServiceBusEntity, IServiceBusQueue
+    internal class ServiceBusQueue : ServiceBusEntity, IServiceBusQueue
     {
         private const string QueueDescriptionCannotBeNull = "The queue description argument cannot be null.";
         private const string QueueCreated = "The queue {0} has been successfully created.";
@@ -142,27 +142,6 @@ namespace ServiceBusExplorer.WindowsAzure
             }
         }
 
-        /// <summary>.
-        /// Creates a new queue in the service namespace with the given name.
-        /// </summary>
-        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        /// <returns>Returns a newly-created QueueDescription object.</returns>
-        public QueueDescription CreateQueue(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                var queue = RetryHelper.RetryFunc(() => NamespaceManager.CreateQueue(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, QueueCreated, path));
-                OnCreated(queue);
-                return queue;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
         /// <summary>
         /// Creates a new queue in the service namespace with the given name.
         /// </summary>
@@ -217,28 +196,6 @@ namespace ServiceBusExplorer.WindowsAzure
             }
 
             await Task.WhenAll(queues.Select(DeleteQueue));
-        }
-
-        /// <summary>
-        /// Deletes the queue described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        public async Task DeleteQueue(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteQueueAsync(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
-                OnDeleted(new QueueDescription(path));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
         }
 
         /// <summary>
@@ -309,6 +266,24 @@ namespace ServiceBusExplorer.WindowsAzure
                 }
             }
             throw new TimeoutException();
+        }
+
+        private async Task DeleteQueue(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (NamespaceManager != null)
+            {
+                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteQueueAsync(path), WriteToLog);
+                Log(string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
+                OnDeleted(new QueueDescription(path));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
         }
     }
 }

@@ -49,9 +49,7 @@ using ServiceBusExplorer.WindowsAzure;
 using AzureNotificationHubs = Microsoft.Azure.NotificationHubs;
 #endregion
 
-// ReSharper disable CheckNamespace
 namespace ServiceBusExplorer
-// ReSharper restore CheckNamespace
 {
     using System.IO.Compression;
     using System.Web.UI.WebControls;
@@ -88,16 +86,6 @@ namespace ServiceBusExplorer
         // Messages
         //***************************
         private const string ServiceBusConnectionStringCannotBeNull = "The connection string argument cannot be null.";
-        private const string ServiceBusUriArgumentCannotBeNull = "The uri argument cannot be null.";
-        private const string ServiceBusNamespaceArgumentCannotBeNull = "The nameSpace argument cannot be null.";
-        private const string ServiceBusIssuerNameArgumentCannotBeNull = "The issuerName argument cannot be null.";
-        private const string ServiceBusIssuerSecretArgumentCannotBeNull = "The issuerSecret argument cannot be null.";
-        private const string QueueDescriptionCannotBeNull = "The queue description argument cannot be null.";
-        private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
-        private const string PathCannotBeNull = "The path argument cannot be null or empty.";
-        private const string NameCannotBeNull = "The name argument cannot be null or empty.";
-        private const string DescriptionCannotBeNull = "The description argument cannot be null.";
-        private const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
@@ -152,19 +140,15 @@ namespace ServiceBusExplorer
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private Microsoft.ServiceBus.TokenProvider tokenProvider;
         private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
-        private Uri atomFeedUri;
         private string ns;
-        private string servicePath;
         private string connectionString;
         private List<BrokeredMessage> brokeredMessageList;
         private readonly WriteToLogDelegate writeToLog;
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
-        private TransportType currentTransportType;
         private ServiceBusNamespace serviceBusNamespaceInstance;
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
@@ -197,22 +181,10 @@ namespace ServiceBusExplorer
         /// Initializes a new instance of the ServiceBusHelper class.
         /// </summary>
         /// <param name="writeToLog">WriteToLog method.</param>
-        /// <param name="traceEnabled">A boolean value indicating whether tracing is enabled.</param>
-        public ServiceBusHelper(WriteToLogDelegate writeToLog, bool traceEnabled)
-        {
-            this.writeToLog = writeToLog;
-            this.traceEnabled = traceEnabled;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the ServiceBusHelper class.
-        /// </summary>
-        /// <param name="writeToLog">WriteToLog method.</param>
         /// <param name="serviceBusHelper">Base ServiceBusHelper.</param>
         public ServiceBusHelper(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper)
         {
             this.writeToLog = writeToLog;
-            AtomFeedUri = serviceBusHelper.AtomFeedUri;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
             namespaceManager = serviceBusHelper.NamespaceManager;
@@ -227,13 +199,10 @@ namespace ServiceBusExplorer
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            ServicePath = serviceBusHelper.ServicePath;
-            TokenProvider = serviceBusHelper.TokenProvider;
             notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
-            TransportType = serviceBusHelper.TransportType;
             serviceBusQueue = serviceBusHelper.serviceBusQueue;
             serviceBusTopic = serviceBusHelper.serviceBusTopic;
             serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
@@ -425,32 +394,6 @@ namespace ServiceBusExplorer
             }
         }
 
-        /// <summary>
-        /// Gets or sets the current service name.
-        /// </summary>
-        public string ServicePath
-        {
-            get
-            {
-                lock (this)
-                {
-                    return servicePath ?? string.Empty;
-                }
-            }
-            private set
-            {
-                lock (this)
-                {
-                    servicePath = value;
-                    if (!string.IsNullOrWhiteSpace(servicePath) &&
-                        servicePath[servicePath.Length - 1] != '/')
-                    {
-                        servicePath = servicePath + '/';
-                    }
-                }
-            }
-        }
-
         private string ConnectionStringWithoutEntityPath
         {
             get
@@ -529,27 +472,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Gets or sets the transport type.
-        /// </summary>
-        public TransportType TransportType
-        {
-            get
-            {
-                lock (this)
-                {
-                    return currentTransportType;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    currentTransportType = value;
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the URI of the current service bus namespace.
         /// </summary>
         public Uri NamespaceUri
@@ -566,48 +488,6 @@ namespace ServiceBusExplorer
                 lock (this)
                 {
                     namespaceUri = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the URI of the atom feed for the current namespace.
-        /// </summary>
-        public Uri AtomFeedUri
-        {
-            get
-            {
-                lock (this)
-                {
-                    return atomFeedUri;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    atomFeedUri = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the credentials of the current service bus account.
-        /// </summary>
-        public Microsoft.ServiceBus.TokenProvider TokenProvider
-        {
-            get
-            {
-                lock (this)
-                {
-                    return tokenProvider;
-                }
-            }
-            set
-            {
-                lock (this)
-                {
-                    tokenProvider = value;
                 }
             }
         }
@@ -726,7 +606,6 @@ namespace ServiceBusExplorer
                 // The MessagingFactorySettings specifies the service bus messaging factory settings.
                 var messagingFactorySettings = new MessagingFactorySettings
                 {
-                    TokenProvider = tokenProvider,
                     OperationTimeout = TimeSpan.FromMinutes(5)
                 };
                 // In the first release of the service bus, the only available transport protocol is sb
@@ -768,7 +647,6 @@ namespace ServiceBusExplorer
                 connectionString = serviceBusNamespace.ConnectionString;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
-                currentTransportType = serviceBusNamespace.TransportType;
 
                 // The NamespaceManager class can be used for managing entities,
                 // such as queues, topics, subscriptions, and rules, in your service namespace.
@@ -817,7 +695,6 @@ namespace ServiceBusExplorer
                 namespaceUri = namespaceManager.Address;
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
-                atomFeedUri = new Uri($"{Uri.UriSchemeHttp}://{namespaceUri.Host}");
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
@@ -907,16 +784,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Retrieves an enumerable collection of all event hubs in the service bus namespace.
-        /// </summary>
-        /// <returns>Returns an IEnumerable<EventHubDescription/> collection of all event hubs in the service namespace.
-        ///          Returns an empty collection if no event hub exists in this service namespace.</returns>
-        public Task<IEnumerable<EventHubDescription>> GetEventHubs(int timeoutInSeconds)
-        {
-            return serviceBusEventHub.GetEventHubs(timeoutInSeconds);
-        }
-
-        /// <summary>
         /// Creates a new event hub in the service namespace with the given name.
         /// </summary>
         /// <param name="description">A EventHubDescription object describing the attributes with which the new event hub will be created.</param>
@@ -924,15 +791,6 @@ namespace ServiceBusExplorer
         public EventHubDescription CreateEventHub(EventHubDescription description)
         {
             return serviceBusEventHub.CreateEventHub(description);
-        }
-
-        /// <summary>
-        /// Deletes the event hub described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
-        public void DeleteEventHub(string path)
-        {
-            serviceBusEventHub.DeleteEventHub(path);
         }
 
         /// <summary>
@@ -976,16 +834,6 @@ namespace ServiceBusExplorer
         /// <summary>
         /// Retrieves a partition.
         /// </summary>
-        /// <param name="partitionDescription">A PartitionDescription object.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
-        public PartitionDescription GetPartition(PartitionDescription partitionDescription)
-        {
-            return serviceBusPartition.GetPartition(partitionDescription);
-        }
-
-        /// <summary>
-        /// Retrieves a partition.
-        /// </summary>
         /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
         /// <param name="consumerGroupName">The consumer group name.</param>
         /// <param name="name">Partition name.</param>
@@ -993,37 +841,6 @@ namespace ServiceBusExplorer
         public PartitionDescription GetPartition(string path, string consumerGroupName, string name)
         {
             return serviceBusPartition.GetPartition(path, consumerGroupName, name);
-        }
-
-        /// <summary>
-        /// Retrieves the collection of partitions of the event hub passed as a parameter.
-        /// </summary>
-        /// <param name="path">Path of the event hub relative to the service namespace base address.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
-        public IEnumerable<PartitionDescription> GetPartitions(string path)
-        {
-            return serviceBusPartition.GetPartitions(path);
-        }
-
-        /// <summary>
-        /// Retrieves the collection of partitions of the event hub passed as a parameter.
-        /// </summary>
-        /// <param name="description">A event hub belonging to the current service namespace base.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
-        public IEnumerable<PartitionDescription> GetPartitions(EventHubDescription description)
-        {
-            return serviceBusPartition.GetPartitions(description);
-        }
-
-        /// <summary>
-        /// Retrieves the collection of partitions of the event hub passed as a parameter.
-        /// </summary>
-        /// <param name="description">A event hub belonging to the current service namespace base.</param>
-        /// <param name="consumerGroupName">The consumer group name.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
-        public IEnumerable<PartitionDescription> GetPartitions(EventHubDescription description, string consumerGroupName)
-        {
-            return serviceBusPartition.GetPartitions(description, consumerGroupName);
         }
 
         /// <summary>
@@ -1071,16 +888,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Retrieves the collection of consumer groups of the event hub passed as a parameter.
-        /// </summary>
-        /// <param name="description">A event hub belonging to the current service namespace base.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
-        public IEnumerable<ConsumerGroupDescription> GetConsumerGroups(EventHubDescription description)
-        {
-            return serviceBusConsumerGroup.GetConsumerGroups(description);
-        }
-
-        /// <summary>
         /// Creates a new consumer group in the service namespace with the given name.
         /// </summary>
         /// <param name="description">A ConsumerGroupDescription object describing the attributes with which the new consumer group will be created.</param>
@@ -1088,16 +895,6 @@ namespace ServiceBusExplorer
         public ConsumerGroupDescription CreateConsumerGroup(ConsumerGroupDescription description)
         {
             return serviceBusConsumerGroup.CreateConsumerGroup(description);
-        }
-
-        /// <summary>
-        /// Deletes the consumer group described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="eventHubName">Name of the event hub.</param>
-        /// <param name="name">Name of the consumer group.</param>
-        public void DeleteConsumerGroup(string eventHubName, string name)
-        {
-            serviceBusConsumerGroup.DeleteConsumerGroup(eventHubName, name);
         }
 
         /// <summary>
@@ -1148,25 +945,6 @@ namespace ServiceBusExplorer
         public AzureNotificationHubs.NotificationHubDescription GetNotificationHub(string path)
         {
             return serviceBusNotificationHub.GetNotificationHub(path);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerable collection of all notification hubs in the service bus namespace.
-        /// </summary>
-        /// <returns>Returns an IEnumerable<NotificationHubDescription/> collection of all notification hubs in the service namespace.
-        ///          Returns an empty collection if no notification hub exists in this service namespace.</returns>
-        public IEnumerable<AzureNotificationHubs.NotificationHubDescription> GetNotificationHubs(int timeoutInSeconds)
-        {
-            return serviceBusNotificationHub.GetNotificationHubs(timeoutInSeconds);
-        }
-
-        /// <summary>
-        /// Deletes the notification hub described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
-        public async Task DeleteNotificationHub(string path)
-        {
-            await serviceBusNotificationHub.DeleteNotificationHub(path);
         }
 
         /// <summary>
@@ -1239,48 +1017,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Retrieves an enumerable collection of all message sessions for the queue passed as argument.
-        /// </summary>
-        /// <param name="path">The queue for which to search message sessions.</param>
-        /// <param name="dateTime">The time the session was last updated.</param>
-        /// <returns>Returns an IEnumerable<QueueDescription/> collection of message sessions.</returns>
-        public IEnumerable<MessageSession> GetMessageSessions(string path, DateTime? dateTime)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (messagingFactory == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-
-            }
-            var queueClient = messagingFactory.CreateQueueClient(path);
-            return RetryHelper.RetryFunc(() => dateTime != null ? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerable collection of all message sessions for the queue passed as argument.
-        /// </summary>
-        /// <param name="queue">The queue for which to search message sessions.</param>
-        /// <param name="dateTime">The time the session was last updated.</param>
-        /// <returns>Returns an IEnumerable<QueueDescription/> collection of message sessions.</returns>
-        public IEnumerable<MessageSession> GetMessageSessions(QueueDescription queue, DateTime? dateTime)
-        {
-            if (queue == null)
-            {
-                throw new ArgumentException(QueueDescriptionCannotBeNull);
-            }
-            if (messagingFactory == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-
-            }
-            var queueClient = messagingFactory.CreateQueueClient(queue.Path);
-            return RetryHelper.RetryFunc(() => dateTime != null ? queueClient.GetMessageSessions(dateTime.Value) : queueClient.GetMessageSessions(), writeToLog);
-        }
-
-        /// <summary>
         /// Retrieves the topic from the service namespace.
         /// </summary>
         /// <param name="path">Path of the topic relative to the service namespace base address.</param>
@@ -1313,16 +1049,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Retrieves an enumerated collection of subscriptions attached to the topic passed as a parameter.
-        /// </summary>
-        /// <param name="topic">A topic belonging to the current service namespace base.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of subscriptions attached to the topic passed as a parameter.</returns>
-        public IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic)
-        {
-            return serviceBusSubscription.GetSubscriptions(topic);
-        }
-
-        /// <summary>
         /// Retrieves an enumerated collection of subscriptions attached to the topic whose name is passed as a parameter.
         /// </summary>
         /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
@@ -1330,27 +1056,6 @@ namespace ServiceBusExplorer
         public IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath)
         {
             return serviceBusSubscription.GetSubscriptions(topicPath);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerable collection of all message sessions for the subscription passed as argument.
-        /// </summary>
-        /// <param name="subscription">The subscription for which to search message sessions.</param>
-        /// <param name="dateTime">The time the session was last updated.</param>
-        /// <returns>Returns an IEnumerable<QueueDescription/> collection of message sessions.</returns>
-        public IEnumerable<MessageSession> GetMessageSessions(SubscriptionDescription subscription, DateTime? dateTime)
-        {
-            if (subscription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (messagingFactory == null)
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-
-            }
-            var subscriptionClient = messagingFactory.CreateSubscriptionClient(subscription.TopicPath, subscription.Name);
-            return RetryHelper.RetryFunc(() => dateTime != null ? subscriptionClient.GetMessageSessions(dateTime.Value) : subscriptionClient.GetMessageSessions(), writeToLog);
         }
 
         /// <summary>
@@ -1362,17 +1067,6 @@ namespace ServiceBusExplorer
         public IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic, string filter)
         {
             return serviceBusSubscription.GetSubscriptions(topic, filter);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerated collection of subscriptions attached to the topic whose name is passed as a parameter.
-        /// </summary>
-        /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
-        /// <param name="filter">OData filter.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of subscriptions attached to the topic passed as a parameter.</returns>
-        public IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath, string filter)
-        {
-            return serviceBusSubscription.GetSubscriptions(topicPath, filter);
         }
 
         /// <summary>
@@ -1448,16 +1142,6 @@ namespace ServiceBusExplorer
             return serviceBusSubscription.GetSubscriptionDeadLetterQueueUri(topicPath, name);
         }
 
-        /// <summary>.
-        /// Creates a new queue in the service namespace with the given name.
-        /// </summary>
-        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        /// <returns>Returns a newly-created QueueDescription object.</returns>
-        public QueueDescription CreateQueue(string path)
-        {
-            return serviceBusQueue.CreateQueue(path);
-        }
-
         /// <summary>
         /// Creates a new queue in the service namespace with the given name.
         /// </summary>
@@ -1488,15 +1172,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Deletes the queue described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the queue relative to the service namespace base address.</param>
-        public async Task DeleteQueue(string path)
-        {
-            await serviceBusQueue.DeleteQueue(path);
-        }
-
-        /// <summary>
         /// Deletes the queue passed as a argument.
         /// </summary>
         /// <param name="queueDescription">The queue to delete.</param>
@@ -1514,16 +1189,6 @@ namespace ServiceBusExplorer
         public QueueDescription RenameQueue(string path, string newPath)
         {
             return serviceBusQueue.RenameQueue(path, newPath);
-        }
-
-        /// <summary>
-        /// Creates a new topic in the service namespace with the given name.
-        /// </summary>
-        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        /// <returns>Returns a newly-created TopicDescription object.</returns>
-        public TopicDescription CreateTopic(string path)
-        {
-            return serviceBusTopic.CreateTopic(path);
         }
 
         /// <summary>
@@ -1553,15 +1218,6 @@ namespace ServiceBusExplorer
         public async Task DeleteTopics(IEnumerable<string> topics)
         {
             await serviceBusTopic.DeleteTopics(topics);
-        }
-
-        /// <summary>
-        /// Deletes the topic described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public async Task DeleteTopic(string path)
-        {
-            await serviceBusTopic.DeleteTopic(path);
         }
 
         /// <summary>
@@ -1630,16 +1286,6 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Removes the subscription described by name.
-        /// </summary>
-        /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
-        /// <param name="name">Name of the subscription.</param>
-        public void DeleteSubscription(string topicPath, string name)
-        {
-            serviceBusSubscription.DeleteSubscription(topicPath, name);
-        }
-
-        /// <summary>
         /// Removes the subscription passed as a argument.
         /// </summary>
         /// <param name="subscriptionDescription">The subscription to remove.</param>
@@ -1666,16 +1312,6 @@ namespace ServiceBusExplorer
         public void RemoveRules(IEnumerable<RuleWrapper> wrappers)
         {
             serviceBusRule.RemoveRules(wrappers);
-        }
-
-        /// <summary>
-        /// Removes the rule described by name.
-        /// </summary>
-        /// <param name="subscriptionDescription">The subscription to add the rule to.</param>
-        /// <param name="name">Name of the rule.</param>
-        public void RemoveRule(SubscriptionDescription subscriptionDescription, string name)
-        {
-            serviceBusRule.RemoveRule(subscriptionDescription, name);
         }
 
         /// <summary>
@@ -2263,7 +1899,7 @@ namespace ServiceBusExplorer
         ///// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
         ///// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         ///// <returns>Elapsed milliseconds.</returns>
-        public async Task<long> SendEventDataBatch(EventHubClient eventHubClient,
+        private async Task<long> SendEventDataBatch(EventHubClient eventHubClient,
                                                    List<EventData> eventDataList,
                                                    List<long> messageNumberList,
                                                    int taskId,
@@ -2344,7 +1980,7 @@ namespace ServiceBusExplorer
         ///// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
         ///// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         ///// <returns>Elapsed milliseconds.</returns>
-        public async Task<long> SendEventDataBatch(EventHubSender eventHubSender,
+        private async Task<long> SendEventDataBatch(EventHubSender eventHubSender,
                                                    List<EventData> eventDataList,
                                                    List<long> messageNumberList,
                                                    int taskId,
@@ -2425,7 +2061,7 @@ namespace ServiceBusExplorer
         /// <param name="logging">Indicates whether logging of event data content and properties is enabled.</param>
         /// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         /// <returns>Elapsed milliseconds.</returns>
-        public async Task<long> SendEventData(EventHubClient eventHubClient,
+        private async Task<long> SendEventData(EventHubClient eventHubClient,
                                               EventData eventData,
                                               long messageNumber,
                                               int taskId,
@@ -2505,7 +2141,7 @@ namespace ServiceBusExplorer
         /// <param name="logging">Indicates whether logging of event data content and properties is enabled.</param>
         /// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         /// <returns>Elapsed milliseconds.</returns>
-        public async Task<long> SendEventData(EventHubSender eventHubSender,
+        private async Task<long> SendEventData(EventHubSender eventHubSender,
                                               EventData eventData,
                                               long messageNumber,
                                               int taskId,
@@ -3062,7 +2698,7 @@ namespace ServiceBusExplorer
         /// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
         /// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         /// <param name="elapsedMilliseconds">The time spent to send the message.</param>
-        public void SendBatch(MessageSender messageSender,
+        private void SendBatch(MessageSender messageSender,
                               List<BrokeredMessage> messageList,
                               int taskId,
                               bool isBinary,
@@ -3160,7 +2796,7 @@ namespace ServiceBusExplorer
             var traceMessage = builder.ToString();
             WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
         }
-
+        
         /// <summary>
         /// This method can be used to send a message to a queue or a topic.
         /// </summary>
@@ -3172,7 +2808,7 @@ namespace ServiceBusExplorer
         /// <param name="logging">Indicates whether logging of message content and properties is enabled.</param>
         /// <param name="verbose">Indicates whether verbose logging is enabled.</param>
         /// <param name="elapsedMilliseconds">The time spent to send the message.</param>
-        public void SendMessage(MessageSender messageSender,
+        private void SendMessage(MessageSender messageSender,
                                 BrokeredMessage message,
                                 int taskId,
                                 bool isBinary,
@@ -4300,120 +3936,6 @@ namespace ServiceBusExplorer
                 }
             }
             return eventDataText;
-        }
-
-        /// <summary>
-        /// This method is used to receive message from a queue or a subscription.
-        /// </summary>
-        /// <param name="entityDescription">The description of the entity from which to read messages.</param>
-        /// <param name="messageCount">The number of messages to read.</param>
-        /// <param name="complete">This parameter indicates whether to complete the receive operation.</param>
-        /// <param name="deadletterQueue">This parameter indicates whether to read messages from the deadletter queue.</param>
-        /// <param name="receiveTimeout">Receive receiveTimeout.</param>
-        /// <param name="sessionTimeout">Session timeout</param>
-        public void ReceiveMessages(EntityDescription entityDescription, int? messageCount, bool complete, bool deadletterQueue, TimeSpan receiveTimeout, TimeSpan sessionTimeout)
-        {
-            // ReSharper disable once CollectionNeverQueried.Local
-            var receiverList = new List<MessageReceiver>();
-            if (brokeredMessageList != null &&
-                brokeredMessageList.Count > 0)
-            {
-                brokeredMessageList.ForEach(b => b.Dispose());
-            }
-            brokeredMessageList = new List<BrokeredMessage>();
-            MessageEncodingBindingElement element;
-            if (scheme == DefaultScheme)
-            {
-                element = new BinaryMessageEncodingBindingElement
-                {
-                    ReaderQuotas = new XmlDictionaryReaderQuotas
-                    {
-                        MaxArrayLength = int.MaxValue,
-                        MaxBytesPerRead = int.MaxValue,
-                        MaxDepth = int.MaxValue,
-                        MaxNameTableCharCount = int.MaxValue,
-                        MaxStringContentLength = int.MaxValue
-                    }
-                };
-            }
-            else
-            {
-                element = new TextMessageEncodingBindingElement
-                {
-                    ReaderQuotas = new XmlDictionaryReaderQuotas
-                    {
-                        MaxArrayLength = int.MaxValue,
-                        MaxBytesPerRead = int.MaxValue,
-                        MaxDepth = int.MaxValue,
-                        MaxNameTableCharCount = int.MaxValue,
-                        MaxStringContentLength = int.MaxValue
-                    }
-                };
-            }
-            var encoderFactory = element.CreateMessageEncoderFactory();
-            var encoder = encoderFactory.Encoder;
-
-            MessageReceiver messageReceiver = null;
-            var description = entityDescription as QueueDescription;
-            if (description != null)
-            {
-                var queueDescription = description;
-                if (deadletterQueue)
-                {
-                    messageReceiver = messagingFactory.CreateMessageReceiver(QueueClient.FormatDeadLetterPath(queueDescription.Path),
-                                                                             ReceiveMode.PeekLock);
-                }
-                else
-                {
-                    if (queueDescription.RequiresSession)
-                    {
-                        var queueClient = messagingFactory.CreateQueueClient(queueDescription.Path,
-                                                                             ReceiveMode.PeekLock);
-                        messageReceiver = queueClient.AcceptMessageSession(sessionTimeout);
-                    }
-                    else
-                    {
-                        messageReceiver = messagingFactory.CreateMessageReceiver(queueDescription.Path,
-                                                                                 ReceiveMode.PeekLock);
-                    }
-                }
-            }
-            else
-            {
-                var description1 = entityDescription as SubscriptionDescription;
-                if (description1 != null)
-                {
-                    var subscriptionDescription = description1;
-                    if (deadletterQueue)
-                    {
-                        messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionDescription.TopicPath,
-                                                                                                                            subscriptionDescription.Name),
-                                                                                    ReceiveMode.PeekLock);
-                    }
-                    else
-                    {
-                        if (subscriptionDescription.RequiresSession)
-                        {
-                            var subscriptionClient = messagingFactory.CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                                                subscriptionDescription.Name,
-                                                                                                ReceiveMode.PeekLock);
-                            messageReceiver = subscriptionClient.AcceptMessageSession(sessionTimeout);
-                        }
-                        else
-                        {
-                            messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(subscriptionDescription.TopicPath,
-                                                                                                                                subscriptionDescription.Name),
-                                                                                        ReceiveMode.PeekLock);
-                        }
-                    }
-                }
-            }
-            if (messageReceiver != null)
-            {
-                messageReceiver.PrefetchCount = 0;
-                receiverList.Add(messageReceiver);
-                ReceiveNextMessage(messageCount, 0, messageReceiver, encoder, complete, receiveTimeout);
-            }
         }
 
         public string GetAddressRelativeToNamespace(string address)

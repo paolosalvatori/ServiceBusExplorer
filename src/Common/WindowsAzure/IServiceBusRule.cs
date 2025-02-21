@@ -13,9 +13,7 @@ namespace ServiceBusExplorer.WindowsAzure
         IEnumerable<RuleDescription> GetRules(SubscriptionDescription subscription);
         
         void RemoveRule(SubscriptionDescription subscriptionDescription, RuleDescription rule);
-        
-        void RemoveRule(SubscriptionDescription subscriptionDescription, string name);
-        
+                
         void RemoveRules(IEnumerable<RuleWrapper> wrappers);
     }
 }

@@ -9,7 +9,7 @@ using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
-    internal sealed class ServiceBusRule : ServiceBusEntity, IServiceBusRule
+    internal class ServiceBusRule : ServiceBusEntity, IServiceBusRule
     {
         private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
         private const string RuleDescriptionCannotBeNull = "The rule description argument cannot be null.";
@@ -108,28 +108,6 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 RemoveRule(wrapper.SubscriptionDescription, wrapper.RuleDescription);
             }
-        }
-
-        /// <summary>
-        /// Removes the rule described by name.
-        /// </summary>
-        /// <param name="subscriptionDescription">The subscription to add the rule to.</param>
-        /// <param name="name">Name of the rule.</param>
-        public void RemoveRule(SubscriptionDescription subscriptionDescription, string name)
-        {
-            if (subscriptionDescription == null)
-            {
-                throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(NameCannotBeNull);
-            }
-            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                               subscriptionDescription.Name);
-            RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(name), WriteToLog);
-            Log(string.Format(CultureInfo.CurrentCulture, RuleDeleted, name, subscriptionClient.Name));
-            OnDeleted(new ServiceBusHelperEventArgs(name, EntityType.Rule));
         }
 
         /// <summary>
