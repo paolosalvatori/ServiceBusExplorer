@@ -9,7 +9,7 @@ using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
-    internal sealed class ServiceBusTopic : ServiceBusEntity, IServiceBusTopic
+    internal class ServiceBusTopic : ServiceBusEntity, IServiceBusTopic
     {
         private const string TopicDescriptionCannotBeNull = "The topic decsription argument cannot be null.";
         private const string TopicCreated = "The topic {0} has been successfully created.";
@@ -125,27 +125,6 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <summary>
         /// Creates a new topic in the service namespace with the given name.
         /// </summary>
-        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        /// <returns>Returns a newly-created TopicDescription object.</returns>    
-        public TopicDescription CreateTopic(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                var topic = RetryHelper.RetryFunc(() => NamespaceManager.CreateTopic(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, TopicCreated, path));
-                OnCreated(topic);
-                return topic;
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Creates a new topic in the service namespace with the given name.
-        /// </summary>
         /// <param name="topicDescription">A TopicDescription object describing the attributes with which the new topic will be created.</param>
         /// <returns>Returns a newly-created TopicDescription object.</returns>
         public TopicDescription CreateTopic(TopicDescription topicDescription)
@@ -197,28 +176,6 @@ namespace ServiceBusExplorer.WindowsAzure
             }
 
             await Task.WhenAll(topics.Select(DeleteTopic));
-        }
-
-        /// <summary>
-        /// Deletes the topic described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the topic relative to the service namespace base address.</param>
-        public async Task DeleteTopic(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
-                OnDeleted(new TopicDescription(path));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
         }
 
         /// <summary>
@@ -289,6 +246,24 @@ namespace ServiceBusExplorer.WindowsAzure
                 }
             }
             throw new TimeoutException();
+        }
+
+        private async Task DeleteTopic(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (NamespaceManager != null)
+            {
+                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(path), WriteToLog);
+                Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
+                OnDeleted(new TopicDescription(path));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
         }
     }
 }

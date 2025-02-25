@@ -10,7 +10,7 @@ using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
-    internal sealed class ServiceBusSubscription : ServiceBusEntity, IServiceBusSubscription
+    internal class ServiceBusSubscription : ServiceBusEntity, IServiceBusSubscription
     {
         private const string SubscriptionDescriptionCannotBeNull = "The subscription description argument cannot be null.";
         private const string SubscriptionCreated = "The {0} subscription for the {1} topic has been successfully created.";
@@ -54,25 +54,7 @@ namespace ServiceBusExplorer.WindowsAzure
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
-        /// <summary>
-        /// Retrieves an enumerated collection of subscriptions attached to the topic passed as a parameter.
-        /// </summary>
-        /// <param name="topic">A topic belonging to the current service namespace base.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of subscriptions attached to the topic passed as a parameter.</returns>
-        public IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic)
-        {
-            if (topic == null)
-            {
-                throw new ArgumentException(TopicDescriptionCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetSubscriptions(topic.Path), WriteToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
+       /// <summary>
         /// Retrieves an enumerated collection of subscriptions attached to the topic whose name is passed as a parameter.
         /// </summary>
         /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
@@ -107,27 +89,6 @@ namespace ServiceBusExplorer.WindowsAzure
                 return RetryHelper.RetryFunc(() => string.IsNullOrWhiteSpace(filter) ?
                                                    NamespaceManager.GetSubscriptions(topic.Path) :
                                                    NamespaceManager.GetSubscriptions(topic.Path, filter), WriteToLog);
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Retrieves an enumerated collection of subscriptions attached to the topic whose name is passed as a parameter.
-        /// </summary>
-        /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
-        /// <param name="filter">OData filter.</param>
-        /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of subscriptions attached to the topic passed as a parameter.</returns>
-        public IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath, string filter)
-        {
-            if (string.IsNullOrWhiteSpace(topicPath))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                return RetryHelper.RetryFunc(() => string.IsNullOrWhiteSpace(filter) ?
-                                                   NamespaceManager.GetSubscriptions(topicPath) :
-                                                   NamespaceManager.GetSubscriptions(topicPath, filter), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -265,27 +226,6 @@ namespace ServiceBusExplorer.WindowsAzure
             }
 
             return Task.WhenAll(subscriptionDescriptions.Select(DeleteSubscription));
-        }
-
-        /// <summary>
-        /// Removes the subscription described by name.
-        /// </summary>
-        /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>
-        /// <param name="name">Name of the subscription.</param>
-        public void DeleteSubscription(string topicPath, string name)
-        {
-            // TODO: remove, not used
-            if (string.IsNullOrWhiteSpace(topicPath))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(NameCannotBeNull);
-            }
-            RetryHelper.RetryAction(() => NamespaceManager.DeleteSubscription(topicPath, name), WriteToLog);
-            Log(string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, name, topicPath));
-            OnDeleted(new SubscriptionDescription(topicPath, name));
         }
 
         /// <summary>

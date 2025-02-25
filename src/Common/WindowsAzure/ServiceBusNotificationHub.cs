@@ -47,54 +47,6 @@ namespace ServiceBusExplorer.WindowsAzure
         }
 
         /// <summary>
-        /// Retrieves an enumerable collection of all notification hubs in the service bus namespace.
-        /// </summary>
-        /// <returns>Returns an IEnumerable<NotificationHubDescription/> collection of all notification hubs in the service namespace.
-        ///          Returns an empty collection if no notification hub exists in this service namespace.</returns>
-        public IEnumerable<AzureNotificationHubs.NotificationHubDescription> GetNotificationHubs(int timeoutInSeconds)
-        {
-            if (NamespaceManager != null)
-            {
-                var taskList = new List<Task>();
-                var task = notificationHubNamespaceManager.GetNotificationHubsAsync();
-                taskList.Add(task);
-                taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                Task.WaitAny(taskList.ToArray());
-                if (task.IsCompleted)
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    throw new TimeoutException();
-                }
-            }
-            throw new ApplicationException(ServiceBusIsDisconnected);
-        }
-
-        /// <summary>
-        /// Deletes the notification hub described by the relative name of the service namespace base address.
-        /// </summary>
-        /// <param name="path">Path of the notification hub relative to the service namespace base address.</param>
-        public async Task DeleteNotificationHub(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(PathCannotBeNull);
-            }
-            if (NamespaceManager != null)
-            {
-                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(path), WriteToLog);
-                Log(string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
-                OnDeleted(new ServiceBusHelperEventArgs(path, EntityType));
-            }
-            else
-            {
-                throw new ApplicationException(ServiceBusIsDisconnected);
-            }
-        }
-
-        /// <summary>
         /// Creates a new notification hub in the service namespace with the given name.
         /// </summary>
         /// <param name="description">A NotificationHubDescription object describing the attributes with which the new notification hub will be created.</param>
@@ -179,6 +131,24 @@ namespace ServiceBusExplorer.WindowsAzure
         public Uri GetNotificationHubUri(string notificationHubPath)
         {
             return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, notificationHubPath));
+        }
+
+        private async Task DeleteNotificationHub(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(PathCannotBeNull);
+            }
+            if (NamespaceManager != null)
+            {
+                await RetryHelper.RetryActionAsync(() => notificationHubNamespaceManager.DeleteNotificationHubAsync(path), WriteToLog);
+                Log(string.Format(CultureInfo.CurrentCulture, NotificationHubDeleted, path));
+                OnDeleted(new ServiceBusHelperEventArgs(path, EntityType));
+            }
+            else
+            {
+                throw new ApplicationException(ServiceBusIsDisconnected);
+            }
         }
     }
 }

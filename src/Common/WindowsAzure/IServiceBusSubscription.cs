@@ -11,8 +11,6 @@ namespace ServiceBusExplorer.WindowsAzure
 
         SubscriptionDescription CreateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
 
-        void DeleteSubscription(string topicPath, string name);
-
         Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
 
         Task DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions);
@@ -22,10 +20,6 @@ namespace ServiceBusExplorer.WindowsAzure
         Uri GetSubscriptionDeadLetterQueueUri(string topicPath, string name);
 
         IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath);
-
-        IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath, string filter);
-
-        IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic);
 
         IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic, string filter);
 

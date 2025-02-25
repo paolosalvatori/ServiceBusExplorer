@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.WindowsAzure
 {
@@ -10,11 +9,7 @@ namespace ServiceBusExplorer.WindowsAzure
     {
         QueueDescription CreateQueue(QueueDescription description);
 
-        QueueDescription CreateQueue(string path);
-
         Task DeleteQueue(QueueDescription queueDescription);
-
-        Task DeleteQueue(string path);
 
         Task DeleteQueues(IEnumerable<string> queues);
 
