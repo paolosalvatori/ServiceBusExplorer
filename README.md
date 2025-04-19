@@ -57,6 +57,12 @@ The default location of the executable is `%USERPROFILE%\scoop\apps\servicebusex
 curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/latest | grep browser_download_url | cut -d '"' -f 4
 ```
 
+## Using [Winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
+
+````
+winget install --id paolosalvatori.ServiceBusExplorer --source winget
+````
+
 # Contributions
 There are no dedicated developers so development is entirely based on voluntary effort.
 
