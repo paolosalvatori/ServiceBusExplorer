@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 		..\.github\workflows\handle-pull-request.yml = ..\.github\workflows\handle-pull-request.yml
 		..\.github\workflows\handle-tag.yml = ..\.github\workflows\handle-tag.yml
 		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
+		..\.github\workflows\winget-submission.yml = ..\.github\workflows\winget-submission.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventGridExplorerLibrary", "EventGridExplorerLibrary\EventGridExplorerLibrary.csproj", "{11FD2BB5-A590-4844-852F-3DBF2A64F840}"
