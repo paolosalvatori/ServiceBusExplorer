@@ -11,7 +11,7 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.0" />
+		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
