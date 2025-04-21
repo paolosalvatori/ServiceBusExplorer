@@ -38,6 +38,6 @@ jobs:
           Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
 
           # Submit a PR for the package
-          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls $zipUrl --token "${{ secrets.GITHUB_TOKEN }}" 
+          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls "$zipUrl|x64" --token "${{ secrets.GITHUB_TOKEN }}" 
 
           
