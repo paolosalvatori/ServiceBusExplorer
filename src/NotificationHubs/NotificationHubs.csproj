@@ -9,7 +9,8 @@
 		<Product>NotificationHubs</Product>
 		<Copyright>Copyright ©  2019</Copyright>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
-	</PropertyGroup>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugType>full</DebugType>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>

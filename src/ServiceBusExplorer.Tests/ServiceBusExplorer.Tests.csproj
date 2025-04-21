@@ -9,7 +9,8 @@
 		<Product>ServiceBusExplorer.Tests</Product>
 		<Copyright>Copyright © Microsoft 2016</Copyright>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
-	</PropertyGroup>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
