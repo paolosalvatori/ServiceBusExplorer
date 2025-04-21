@@ -6,7 +6,8 @@
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 		<RootNamespace>EventGridExplorerLibrary</RootNamespace>
 		<AssemblyName>ServiceBusExplorer.EventGridExplorerLibrary</AssemblyName>
-	</PropertyGroup>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

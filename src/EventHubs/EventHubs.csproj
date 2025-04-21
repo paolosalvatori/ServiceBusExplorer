@@ -5,7 +5,8 @@
 		<AssemblyName>ServiceBusExplorer.EventHubs</AssemblyName>
 		<RootNamespace>ServiceBusExplorer.EventHubs</RootNamespace>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
-	</PropertyGroup>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>

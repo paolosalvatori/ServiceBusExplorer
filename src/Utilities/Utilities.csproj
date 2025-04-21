@@ -6,6 +6,7 @@
 		<AssemblyName>ServiceBusExplorer.Utilities</AssemblyName>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 		<RootNamespace>ServiceBusExplorer.Utilities</RootNamespace>
+    <NoWarn>7035</NoWarn>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

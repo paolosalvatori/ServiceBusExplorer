@@ -40,7 +40,8 @@
 		<PackageProjectUrl>https://github.com/paolosalvatori/ServiceBusExplorer</PackageProjectUrl>
 		<PackageReleaseNotes>https://github.com/paolosalvatori/ServiceBusExplorer/releases</PackageReleaseNotes>
 		<PackageTags>servicebusexplorer azure azureservicebus servicebus explorer eventhub queue subscription relay notificationhub</PackageTags>
-	</PropertyGroup>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<DebugType>full</DebugType>
