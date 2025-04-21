@@ -21,12 +21,23 @@ jobs:
           $regex = [Regex]::New($env:VERSION_REGEX)
           $version = $regex.Match($wingetRelevantAsset.name).Groups[1].Value
 
+          if ($version -eq '') {
+            Write-Error "Version not found in asset name: $($wingetRelevantAsset.name)"
+            exit 1
+          } else {
+            Write-Host "Version found: $version"
+          }       
+
           $wingetPackage = "PaoloSalvatori.ServiceBusExplorer${{ github.event.release.prerelease && '.Preview' || '' }}"
+
+          # URL
+          $zipUrl = $wingetRelevantAsset.browser_download_url
+          write-host "URL: $zipUrl"
 
           # Get the latest wingetcreate file
           Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
 
           # Submit a PR for the package
-          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls $wingetRelevantAsset.browser_download_url --token "${{ secrets.GITHUB_TOKEN }}"
+          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls $zipUrl --token "${{ secrets.GITHUB_TOKEN }}" 
 
           
