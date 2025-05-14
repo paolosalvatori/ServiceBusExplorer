@@ -4626,9 +4626,9 @@ namespace ServiceBusExplorer.Forms
                         {
                             var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
-                            queueListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
+                            queueListNode.Text = string.Format("{0} {1}", queues.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
-                                : FilteredQueueEntities;
+                                : FilteredQueueEntities);
 
                             queueListNode.Nodes.Clear();
                             if (queues != null)
@@ -4667,9 +4667,9 @@ namespace ServiceBusExplorer.Forms
                         {
                             var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
-                            topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
+                            topicListNode.Text = string.Format("{0} {1}", topics.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
-                                : FilteredTopicEntities;
+                                : FilteredTopicEntities);
                             topicListNode.Nodes.Clear();
                             if (topics != null)
                             {
