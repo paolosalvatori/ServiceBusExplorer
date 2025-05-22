@@ -94,7 +94,7 @@
             this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperPath.ShadowControl = false;
             this.grouperPath.ShadowThickness = 1;
-            this.grouperPath.Size = new System.Drawing.Size(608, 80);
+            this.grouperPath.Size = new System.Drawing.Size(628, 80);
             this.grouperPath.TabIndex = 0;
             // 
             // lblRelativeURI
@@ -115,7 +115,7 @@
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPath.Location = new System.Drawing.Point(16, 44);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(576, 20);
+            this.txtPath.Size = new System.Drawing.Size(596, 20);
             this.txtPath.TabIndex = 1;
             this.txtPath.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
@@ -149,7 +149,7 @@
             this.grouperEventHubProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperEventHubProperties.ShadowControl = false;
             this.grouperEventHubProperties.ShadowThickness = 1;
-            this.grouperEventHubProperties.Size = new System.Drawing.Size(608, 344);
+            this.grouperEventHubProperties.Size = new System.Drawing.Size(628, 344);
             this.grouperEventHubProperties.TabIndex = 1;
             // 
             // lblMessageRetentionInDaysValue
@@ -205,7 +205,7 @@
             this.lblPartitionCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblPartitionCount.AutoSize = true;
             this.lblPartitionCount.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblPartitionCount.Location = new System.Drawing.Point(312, 296);
+            this.lblPartitionCount.Location = new System.Drawing.Point(332, 296);
             this.lblPartitionCount.Name = "lblPartitionCount";
             this.lblPartitionCount.Size = new System.Drawing.Size(79, 13);
             this.lblPartitionCount.TabIndex = 5;
@@ -220,7 +220,7 @@
             this.trackBarPartitionCount.ForeColor = System.Drawing.Color.Black;
             this.trackBarPartitionCount.IndentHeight = 6;
             this.trackBarPartitionCount.LargeChange = 1;
-            this.trackBarPartitionCount.Location = new System.Drawing.Point(312, 308);
+            this.trackBarPartitionCount.Location = new System.Drawing.Point(332, 308);
             this.trackBarPartitionCount.Maximum = 32;
             this.trackBarPartitionCount.Minimum = 2;
             this.trackBarPartitionCount.Name = "trackBarPartitionCount";
@@ -243,7 +243,7 @@
             this.lblPartitionCountValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblPartitionCountValue.AutoSize = true;
             this.lblPartitionCountValue.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblPartitionCountValue.Location = new System.Drawing.Point(568, 316);
+            this.lblPartitionCountValue.Location = new System.Drawing.Point(588, 316);
             this.lblPartitionCountValue.Name = "lblPartitionCountValue";
             this.lblPartitionCountValue.Size = new System.Drawing.Size(19, 13);
             this.lblPartitionCountValue.TabIndex = 7;
@@ -259,7 +259,7 @@
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
-            this.txtUserMetadata.Size = new System.Drawing.Size(576, 240);
+            this.txtUserMetadata.Size = new System.Drawing.Size(596, 240);
             this.txtUserMetadata.TabIndex = 1;
             // 
             // lblUserMetadata
@@ -288,7 +288,7 @@
             this.grouperEventHubInformation.ForeColor = System.Drawing.Color.White;
             this.grouperEventHubInformation.GroupImage = null;
             this.grouperEventHubInformation.GroupTitle = "Event Hub Information";
-            this.grouperEventHubInformation.Location = new System.Drawing.Point(640, 8);
+            this.grouperEventHubInformation.Location = new System.Drawing.Point(652, 8);
             this.grouperEventHubInformation.Name = "grouperEventHubInformation";
             this.grouperEventHubInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperEventHubInformation.PaintGroupBox = true;
@@ -296,7 +296,7 @@
             this.grouperEventHubInformation.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperEventHubInformation.ShadowControl = false;
             this.grouperEventHubInformation.ShadowThickness = 1;
-            this.grouperEventHubInformation.Size = new System.Drawing.Size(312, 432);
+            this.grouperEventHubInformation.Size = new System.Drawing.Size(300, 432);
             this.grouperEventHubInformation.TabIndex = 2;
             // 
             // propertyListView
@@ -308,7 +308,7 @@
             this.nameColumnHeader,
             this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
-            this.propertyListView.Location = new System.Drawing.Point(16, 32);
+            this.propertyListView.Location = new System.Drawing.Point(11, 34);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
             this.propertyListView.Size = new System.Drawing.Size(279, 384);
