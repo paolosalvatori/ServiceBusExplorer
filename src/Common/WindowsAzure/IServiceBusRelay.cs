@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal interface IServiceBusRelay : IServiceBusEntity
-    {
-        RelayDescription CreateRelay(RelayDescription description);
+// using System;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
+// using Microsoft.ServiceBus.Messaging;
 
-        Task DeleteRelay(string path);
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal interface IServiceBusRelay : IServiceBusEntity
+//     {
+//         RelayDescription CreateRelay(RelayDescription description);
 
-        Task DeleteRelays(IEnumerable<string> relayServices);
+//         Task DeleteRelay(string path);
 
-        RelayDescription GetRelay(string path);
+//         Task DeleteRelays(IEnumerable<string> relayServices);
 
-        IEnumerable<RelayDescription> GetRelays(int timeoutInSeconds);
+//         RelayDescription GetRelay(string path);
 
-        Uri GetRelayUri(RelayDescription description);
+//         IEnumerable<RelayDescription> GetRelays(int timeoutInSeconds);
 
-        RelayDescription UpdateRelay(RelayDescription description);
-    }
-}
+//         Uri GetRelayUri(RelayDescription description);
+
+//         RelayDescription UpdateRelay(RelayDescription description);
+//     }
+// }

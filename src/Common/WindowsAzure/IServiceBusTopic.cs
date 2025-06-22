@@ -1,26 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal interface IServiceBusTopic : IServiceBusEntity
-    {
-        TopicDescription CreateTopic(TopicDescription topicDescription);
+// using System;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
+// using Microsoft.ServiceBus.Messaging;
 
-        Task DeleteTopic(TopicDescription topic);
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal interface IServiceBusTopic : IServiceBusEntity
+//     {
+//         TopicDescription CreateTopic(TopicDescription topicDescription);
 
-        Task DeleteTopics(IEnumerable<string> topics);
+//         Task DeleteTopic(TopicDescription topic);
 
-        TopicDescription GetTopic(string path);
+//         Task DeleteTopics(IEnumerable<string> topics);
 
-        IEnumerable<TopicDescription> GetTopics(string filter, int timeoutInSeconds);
+//         TopicDescription GetTopic(string path);
 
-        Uri GetTopicUri(string topicPath);
+//         IEnumerable<TopicDescription> GetTopics(string filter, int timeoutInSeconds);
 
-        TopicDescription RenameTopic(string path, string newPath);
+//         Uri GetTopicUri(string topicPath);
 
-        TopicDescription UpdateTopic(TopicDescription topicDescription);
-    }
-}
+//         TopicDescription RenameTopic(string path, string newPath);
+
+//         TopicDescription UpdateTopic(TopicDescription topicDescription);
+//     }
+// }

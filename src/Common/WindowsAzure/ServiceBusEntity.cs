@@ -1,97 +1,99 @@
-﻿using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Enums;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.Utilities.Helpers;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal abstract class ServiceBusEntity : IServiceBusEntity
-    {
-        protected const string PathCannotBeNull = "The path argument cannot be null or empty.";
-        protected const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
-        protected const string NameCannotBeNull = "The name argument cannot be null or empty.";
-        protected const string DescriptionCannotBeNull = "The description argument cannot be null.";
-        protected const string NamespaceManagerCannotBeNull = "The namespace manager argument cannot be null.";
-        protected const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
+// using Microsoft.ServiceBus;
+// using Microsoft.ServiceBus.Messaging;
+// using ServiceBusExplorer.Enums;
+// using ServiceBusExplorer.Helpers;
+// using ServiceBusExplorer.Utilities.Helpers;
 
-        private const string DefaultScheme = "sb";
-        private const string CloudServiceBusPostfix = ".servicebus.windows.net";
-        private const string GermanyServiceBusPostfix = ".servicebus.cloudapi.de";
-        private const string ChinaServiceBusPostfix = ".servicebus.chinacloudapi.cn";
-        private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal abstract class ServiceBusEntity : IServiceBusEntity
+//     {
+//         protected const string PathCannotBeNull = "The path argument cannot be null or empty.";
+//         protected const string NewPathCannotBeNull = "The new path argument cannot be null or empty.";
+//         protected const string NameCannotBeNull = "The name argument cannot be null or empty.";
+//         protected const string DescriptionCannotBeNull = "The description argument cannot be null.";
+//         protected const string NamespaceManagerCannotBeNull = "The namespace manager argument cannot be null.";
+//         protected const string ServiceBusIsDisconnected = "The application is now disconnected from any service bus namespace.";
 
-        private readonly string ns;
+//         private const string DefaultScheme = "sb";
+//         private const string CloudServiceBusPostfix = ".servicebus.windows.net";
+//         private const string GermanyServiceBusPostfix = ".servicebus.cloudapi.de";
+//         private const string ChinaServiceBusPostfix = ".servicebus.chinacloudapi.cn";
+//         private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
 
-        protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
-        {
-            this.ServiceBusNamespace = serviceBusNamespace;
-            this.NamespaceManager = namespaceManager;
-            ns = GetNamespace();
-        }
+//         private readonly string ns;
 
-        public string Scheme { get; set; } = DefaultScheme;
+//         protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
+//         {
+//             this.ServiceBusNamespace = serviceBusNamespace;
+//             this.NamespaceManager = namespaceManager;
+//             ns = GetNamespace();
+//         }
 
-        public WriteToLogDelegate WriteToLog { get; set; } = (message, async) => { };
+//         public string Scheme { get; set; } = DefaultScheme;
 
-        public event IServiceBusEntity.EventHandler OnDelete;
+//         public WriteToLogDelegate WriteToLog { get; set; } = (message, async) => { };
 
-        public event IServiceBusEntity.EventHandler OnCreate;
+//         public event IServiceBusEntity.EventHandler OnDelete;
 
-        protected ServiceBusNamespace ServiceBusNamespace { get; }
+//         public event IServiceBusEntity.EventHandler OnCreate;
 
-        protected NamespaceManager NamespaceManager { get; }
+//         protected ServiceBusNamespace ServiceBusNamespace { get; }
 
-        protected string Namespace { get { return ns; } }
+//         protected NamespaceManager NamespaceManager { get; }
 
-        protected abstract EntityType EntityType { get; }
+//         protected string Namespace { get { return ns; } }
 
-        protected void OnCreated(ServiceBusHelperEventArgs args)
-        {
-            args.EntityType = EntityType;
-            OnCreate?.Invoke(args);
-        }
+//         protected abstract EntityType EntityType { get; }
 
-        protected void OnCreated<T>(T entityInstance) where T : EntityDescription
-        {
-            OnCreate?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
-        }
+//         protected void OnCreated(ServiceBusHelperEventArgs args)
+//         {
+//             args.EntityType = EntityType;
+//             OnCreate?.Invoke(args);
+//         }
 
-        protected void OnDeleted(ServiceBusHelperEventArgs args)
-        {
-            args.EntityType = EntityType;
-            OnDelete?.Invoke(args);
-        }
+//         protected void OnCreated<T>(T entityInstance) where T : EntityDescription
+//         {
+//             OnCreate?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
+//         }
 
-        protected void OnDeleted<T>(T entityInstance) where T : EntityDescription
-        {
-            OnDelete?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
-        }
+//         protected void OnDeleted(ServiceBusHelperEventArgs args)
+//         {
+//             args.EntityType = EntityType;
+//             OnDelete?.Invoke(args);
+//         }
 
-        protected void Log(string message)
-        {
-            WriteToLog?.Invoke(message);
-        }
+//         protected void OnDeleted<T>(T entityInstance) where T : EntityDescription
+//         {
+//             OnDelete?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
+//         }
 
-        protected bool IsCloudNamespace()
-        {
-            string uri;
-            var connectionStringType = ServiceBusNamespace.ConnectionStringType;
-            var namespaceUri = NamespaceManager.Address;
-            return connectionStringType == ServiceBusNamespaceType.Cloud ||
-                  (namespaceUri != null &&
-                   !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
-                   (uri.Contains(CloudServiceBusPostfix) ||
-                    uri.Contains(TestServiceBusPostFix) ||
-                    uri.Contains(GermanyServiceBusPostfix) ||
-                    uri.Contains(ChinaServiceBusPostfix)));
-        }
+//         protected void Log(string message)
+//         {
+//             WriteToLog?.Invoke(message);
+//         }
 
-        private string GetNamespace()
-        {
-            var namespaceUri = NamespaceManager.Address;
-            return IsCloudNamespace() ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
-        }
+//         protected bool IsCloudNamespace()
+//         {
+//             string uri;
+//             var connectionStringType = ServiceBusNamespace.ConnectionStringType;
+//             var namespaceUri = NamespaceManager.Address;
+//             return connectionStringType == ServiceBusNamespaceType.Cloud ||
+//                   (namespaceUri != null &&
+//                    !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
+//                    (uri.Contains(CloudServiceBusPostfix) ||
+//                     uri.Contains(TestServiceBusPostFix) ||
+//                     uri.Contains(GermanyServiceBusPostfix) ||
+//                     uri.Contains(ChinaServiceBusPostfix)));
+//         }
 
-    }
-}
+//         private string GetNamespace()
+//         {
+//             var namespaceUri = NamespaceManager.Address;
+//             return IsCloudNamespace() ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
+//         }
+
+//     }
+// }

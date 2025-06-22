@@ -1,62 +1,64 @@
-﻿using ServiceBusExplorer.Utilities.Helpers;
-using System;
-using System.Globalization;
-using System.Windows.Forms;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.Forms
-{
-    public partial class ReceiveEventForm : Form
-    {
-        #region Private Constants
-        private const string ExceptionFormat = "Exception: {0}";
-        private readonly WriteToLogDelegate writeToLog = default!;
-        #endregion
+// using ServiceBusExplorer.Utilities.Helpers;
+// using System;
+// using System.Globalization;
+// using System.Windows.Forms;
 
-        #region Public Fields
-        public int EventCount;
-        public bool GetMax = false;
-        #endregion
+// namespace ServiceBusExplorer.Forms
+// {
+//     public partial class ReceiveEventForm : Form
+//     {
+//         #region Private Constants
+//         private const string ExceptionFormat = "Exception: {0}";
+//         private readonly WriteToLogDelegate writeToLog = default!;
+//         #endregion
 
-        public ReceiveEventForm(WriteToLogDelegate writeToLog)
-        {
-            this.writeToLog = writeToLog;
-            InitializeComponent();
-        }
+//         #region Public Fields
+//         public int EventCount;
+//         public bool GetMax = false;
+//         #endregion
 
-        private void receiveEvents_CheckedChanged(object sender, EventArgs e)
-        {
-            txtEventCount.Enabled = btnTop.Checked;
-        }
+//         public ReceiveEventForm(WriteToLogDelegate writeToLog)
+//         {
+//             this.writeToLog = writeToLog;
+//             InitializeComponent();
+//         }
 
-        private void btnOk_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                GetMax = btnMax.Checked;
-                EventCount = txtEventCount.Text != string.Empty ? int.Parse(txtEventCount.Text) : 0;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+//         private void receiveEvents_CheckedChanged(object sender, EventArgs e)
+//         {
+//             txtEventCount.Enabled = btnTop.Checked;
+//         }
 
-            DialogResult = DialogResult.OK;
-        }
+//         private void btnOk_Click(object sender, EventArgs e)
+//         {
+//             try
+//             {
+//                 GetMax = btnMax.Checked;
+//                 EventCount = txtEventCount.Text != string.Empty ? int.Parse(txtEventCount.Text) : 0;
+//             }
+//             catch (Exception ex)
+//             {
+//                 HandleException(ex);
+//             }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-        }
+//             DialogResult = DialogResult.OK;
+//         }
 
-        private void HandleException(Exception ex)
-        {
-            if (string.IsNullOrWhiteSpace(ex?.Message))
-            {
-                return;
-            }
+//         private void btnCancel_Click(object sender, EventArgs e)
+//         {
+//             DialogResult = DialogResult.Cancel;
+//             Close();
+//         }
 
-            writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
-        }
-    }
-}
+//         private void HandleException(Exception ex)
+//         {
+//             if (string.IsNullOrWhiteSpace(ex?.Message))
+//             {
+//                 return;
+//             }
+
+//             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
+//         }
+//     }
+// }

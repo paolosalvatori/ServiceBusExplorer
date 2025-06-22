@@ -1,30 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal interface IServiceBusSubscription : IServiceBusEntity
-    {
-        SubscriptionDescription CreateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription);
+// using System;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
+// using Microsoft.ServiceBus.Messaging;
 
-        SubscriptionDescription CreateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal interface IServiceBusSubscription : IServiceBusEntity
+//     {
+//         SubscriptionDescription CreateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription);
 
-        Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
+//         SubscriptionDescription CreateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription, RuleDescription ruleDescription);
 
-        Task DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions);
+//         Task DeleteSubscription(SubscriptionDescription subscriptionDescription);
 
-        SubscriptionDescription GetSubscription(string topicPath, string name);
+//         Task DeleteSubscriptions(IEnumerable<SubscriptionDescription> subscriptionDescriptions);
 
-        Uri GetSubscriptionDeadLetterQueueUri(string topicPath, string name);
+//         SubscriptionDescription GetSubscription(string topicPath, string name);
 
-        IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath);
+//         Uri GetSubscriptionDeadLetterQueueUri(string topicPath, string name);
 
-        IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic, string filter);
+//         IEnumerable<SubscriptionDescription> GetSubscriptions(string topicPath);
 
-        Uri GetSubscriptionUri(string topicPath, string name);
+//         IEnumerable<SubscriptionDescription> GetSubscriptions(TopicDescription topic, string filter);
 
-        SubscriptionDescription UpdateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription);
-    }
-}
+//         Uri GetSubscriptionUri(string topicPath, string name);
+
+//         SubscriptionDescription UpdateSubscription(TopicDescription topicDescription, SubscriptionDescription subscriptionDescription);
+//     }
+// }

@@ -1,57 +1,59 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.Controls
-{
-    public partial class AccidentalDeletionPreventionCheckControl : UserControl
-    {
-        #region Private Constants
-        private const string DeletionBlockedTitle = "Deletion Blocked";
-        private const string DeletionBlockedMessage = "The deletion will not proceed unless you indicate your intention by typing the name of the item shown.";
-        #endregion
+// using System;
+// using System.Drawing;
+// using System.Windows.Forms;
 
-        #region Public Constructors
-        public AccidentalDeletionPreventionCheckControl()
-        {
-            InitializeComponent();
-        }
-        #endregion
+// namespace ServiceBusExplorer.Controls
+// {
+//     public partial class AccidentalDeletionPreventionCheckControl : UserControl
+//     {
+//         #region Private Constants
+//         private const string DeletionBlockedTitle = "Deletion Blocked";
+//         private const string DeletionBlockedMessage = "The deletion will not proceed unless you indicate your intention by typing the name of the item shown.";
+//         #endregion
 
-        #region Public Properties
-        public string DeletionScopePromptText
-        {
-            get => lblDeletionScopePromptText.Text;
-            set => lblDeletionScopePromptText.Text = value;
-        }
+//         #region Public Constructors
+//         public AccidentalDeletionPreventionCheckControl()
+//         {
+//             InitializeComponent();
+//         }
+//         #endregion
 
-        public bool DisableFurtherChecks
-        {
-            get => chkDisableAccidentalDeletionPrevention.Checked;
-            set => chkDisableAccidentalDeletionPrevention.Checked = value;
-        }
-        #endregion
+//         #region Public Properties
+//         public string DeletionScopePromptText
+//         {
+//             get => lblDeletionScopePromptText.Text;
+//             set => lblDeletionScopePromptText.Text = value;
+//         }
 
-        #region Public Methods
-        public bool CheckAcceptanceAndNotifyUser()
-        {
-            bool isAccepted = string.Equals(
-                txtDeletionScopePromptCheck.Text.Trim(),
-                lblDeletionScopePromptText.Text,
-                StringComparison.InvariantCultureIgnoreCase);
+//         public bool DisableFurtherChecks
+//         {
+//             get => chkDisableAccidentalDeletionPrevention.Checked;
+//             set => chkDisableAccidentalDeletionPrevention.Checked = value;
+//         }
+//         #endregion
 
-            if (!isAccepted)
-            {
-                MessageBox.Show(
-                    FindForm(),
-                    DeletionBlockedMessage,
-                    DeletionBlockedTitle,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
+//         #region Public Methods
+//         public bool CheckAcceptanceAndNotifyUser()
+//         {
+//             bool isAccepted = string.Equals(
+//                 txtDeletionScopePromptCheck.Text.Trim(),
+//                 lblDeletionScopePromptText.Text,
+//                 StringComparison.InvariantCultureIgnoreCase);
 
-            return isAccepted;
-        }
-        #endregion
-    }
-}
+//             if (!isAccepted)
+//             {
+//                 MessageBox.Show(
+//                     FindForm(),
+//                     DeletionBlockedMessage,
+//                     DeletionBlockedTitle,
+//                     MessageBoxButtons.OK,
+//                     MessageBoxIcon.Warning);
+//             }
+
+//             return isAccepted;
+//         }
+//         #endregion
+//     }
+// }

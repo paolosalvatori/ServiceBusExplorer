@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Azure.NotificationHubs;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal interface IServiceBusNotificationHub : IServiceBusEntity
-    {
-        NotificationHubDescription CreateNotificationHub(NotificationHubDescription description);
+// using System;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
+// using Microsoft.Azure.NotificationHubs;
+
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal interface IServiceBusNotificationHub : IServiceBusEntity
+//     {
+//         NotificationHubDescription CreateNotificationHub(NotificationHubDescription description);
         
-        Task DeleteNotificationHub(NotificationHubDescription notificationHubDescription);
+//         Task DeleteNotificationHub(NotificationHubDescription notificationHubDescription);
                 
-        Task DeleteNotificationHubs(IEnumerable<string> notificationHubs);
+//         Task DeleteNotificationHubs(IEnumerable<string> notificationHubs);
         
-        NotificationHubDescription GetNotificationHub(string path);
+//         NotificationHubDescription GetNotificationHub(string path);
                 
-        Uri GetNotificationHubUri(string notificationHubPath);
+//         Uri GetNotificationHubUri(string notificationHubPath);
         
-        NotificationHubDescription UpdateNotificationHub(NotificationHubDescription description);
-    }
-}
+//         NotificationHubDescription UpdateNotificationHub(NotificationHubDescription description);
+//     }
+// }

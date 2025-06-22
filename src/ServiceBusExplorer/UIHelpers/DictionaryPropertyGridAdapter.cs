@@ -1,87 +1,89 @@
-namespace ServiceBusExplorer.UIHelpers
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel;
+﻿// // Auto-added comment
 
-    public class DictionaryPropertyGridAdapter<TKey, TValue> : ICustomTypeDescriptor where TValue : class
-    {
-        private readonly IDictionary<TKey, TValue> _dictionary;
-        private readonly bool _isReadOnly;
+// namespace ServiceBusExplorer.UIHelpers
+// {
+//     using System;
+//     using System.Collections;
+//     using System.Collections.Generic;
+//     using System.ComponentModel;
 
-        public DictionaryPropertyGridAdapter(IDictionary<TKey, TValue> dictionary, bool isReadOnly = false)
-        {
-            _dictionary = dictionary;
-            _isReadOnly = isReadOnly;
-        }
+//     public class DictionaryPropertyGridAdapter<TKey, TValue> : ICustomTypeDescriptor where TValue : class
+//     {
+//         private readonly IDictionary<TKey, TValue> _dictionary;
+//         private readonly bool _isReadOnly;
 
-        public string GetComponentName()
-        {
-            return TypeDescriptor.GetComponentName(this, true);
-        }
+//         public DictionaryPropertyGridAdapter(IDictionary<TKey, TValue> dictionary, bool isReadOnly = false)
+//         {
+//             _dictionary = dictionary;
+//             _isReadOnly = isReadOnly;
+//         }
 
-        public EventDescriptor GetDefaultEvent()
-        {
-            return TypeDescriptor.GetDefaultEvent(this, true);
-        }
+//         public string GetComponentName()
+//         {
+//             return TypeDescriptor.GetComponentName(this, true);
+//         }
 
-        public string GetClassName()
-        {
-            return TypeDescriptor.GetClassName(this, true);
-        }
+//         public EventDescriptor GetDefaultEvent()
+//         {
+//             return TypeDescriptor.GetDefaultEvent(this, true);
+//         }
 
-        public EventDescriptorCollection GetEvents(Attribute[] attributes)
-        {
-            return TypeDescriptor.GetEvents(this, attributes, true);
-        }
+//         public string GetClassName()
+//         {
+//             return TypeDescriptor.GetClassName(this, true);
+//         }
 
-        EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
-        {
-            return TypeDescriptor.GetEvents(this, true);
-        }
+//         public EventDescriptorCollection GetEvents(Attribute[] attributes)
+//         {
+//             return TypeDescriptor.GetEvents(this, attributes, true);
+//         }
 
-        public TypeConverter GetConverter()
-        {
-            return TypeDescriptor.GetConverter(this, true);
-        }
+//         EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
+//         {
+//             return TypeDescriptor.GetEvents(this, true);
+//         }
 
-        public object GetPropertyOwner(PropertyDescriptor pd)
-        {
-            return _dictionary;
-        }
+//         public TypeConverter GetConverter()
+//         {
+//             return TypeDescriptor.GetConverter(this, true);
+//         }
 
-        public AttributeCollection GetAttributes()
-        {
-            return TypeDescriptor.GetAttributes(this, true);
-        }
+//         public object GetPropertyOwner(PropertyDescriptor pd)
+//         {
+//             return _dictionary;
+//         }
 
-        public object GetEditor(Type editorBaseType)
-        {
-            return TypeDescriptor.GetEditor(this, editorBaseType, true);
-        }
+//         public AttributeCollection GetAttributes()
+//         {
+//             return TypeDescriptor.GetAttributes(this, true);
+//         }
 
-        public PropertyDescriptor GetDefaultProperty()
-        {
-            return null;
-        }
+//         public object GetEditor(Type editorBaseType)
+//         {
+//             return TypeDescriptor.GetEditor(this, editorBaseType, true);
+//         }
 
-        PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
-        {
-            return ((ICustomTypeDescriptor)this).GetProperties(new Attribute[0]);
-        }
+//         public PropertyDescriptor GetDefaultProperty()
+//         {
+//             return null;
+//         }
 
-        public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-        {
-            var properties = new ArrayList();
-            foreach (var e in _dictionary)
-            {
-                properties.Add(new DictionaryPropertyDescriptor<TKey, TValue>(_dictionary, e.Key, _isReadOnly));
-            }
+//         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
+//         {
+//             return ((ICustomTypeDescriptor)this).GetProperties(new Attribute[0]);
+//         }
 
-            var props = (PropertyDescriptor[])properties.ToArray(typeof(PropertyDescriptor));
+//         public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
+//         {
+//             var properties = new ArrayList();
+//             foreach (var e in _dictionary)
+//             {
+//                 properties.Add(new DictionaryPropertyDescriptor<TKey, TValue>(_dictionary, e.Key, _isReadOnly));
+//             }
 
-            return new PropertyDescriptorCollection(props);
-        }
-    }
-}
+//             var props = (PropertyDescriptor[])properties.ToArray(typeof(PropertyDescriptor));
+
+//             return new PropertyDescriptorCollection(props);
+//         }
+//     }
+// }

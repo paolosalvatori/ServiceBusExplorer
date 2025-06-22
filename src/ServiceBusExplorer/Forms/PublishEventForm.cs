@@ -1,59 +1,61 @@
-﻿using ServiceBusExplorer.Utilities.Helpers;
-using System;
-using System.Globalization;
-using System.Windows.Forms;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.Forms
-{
-    public partial class PublishEventForm : Form
-    {
-        #region Private Constants
-        private const string ExceptionFormat = "Exception: {0}";
-        private readonly WriteToLogDelegate writeToLog = default!;
-        #endregion
+// using ServiceBusExplorer.Utilities.Helpers;
+// using System;
+// using System.Globalization;
+// using System.Windows.Forms;
 
-        #region Public Fields
-        public string EventSource = string.Empty;
-        public string EventType = string.Empty;
-        public string EventInfo = string.Empty;
-        #endregion
+// namespace ServiceBusExplorer.Forms
+// {
+//     public partial class PublishEventForm : Form
+//     {
+//         #region Private Constants
+//         private const string ExceptionFormat = "Exception: {0}";
+//         private readonly WriteToLogDelegate writeToLog = default!;
+//         #endregion
 
-        public PublishEventForm(WriteToLogDelegate writeToLog)
-        {
-            InitializeComponent();
-            this.writeToLog = writeToLog;
-        }
+//         #region Public Fields
+//         public string EventSource = string.Empty;
+//         public string EventType = string.Empty;
+//         public string EventInfo = string.Empty;
+//         #endregion
 
-        private void btnSubmit_Click(object sender, EventArgs e)
-        {
-            try 
-            {
-                EventSource = txtEventSource.Text.Trim();
-                EventType = txtEventType.Text.Trim();
-                EventInfo = txtEventInfo.Text.Trim();
+//         public PublishEventForm(WriteToLogDelegate writeToLog)
+//         {
+//             InitializeComponent();
+//             this.writeToLog = writeToLog;
+//         }
 
-                DialogResult = DialogResult.OK;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-        }
+//         private void btnSubmit_Click(object sender, EventArgs e)
+//         {
+//             try 
+//             {
+//                 EventSource = txtEventSource.Text.Trim();
+//                 EventType = txtEventType.Text.Trim();
+//                 EventInfo = txtEventInfo.Text.Trim();
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-        }
+//                 DialogResult = DialogResult.OK;
+//             }
+//             catch (Exception ex)
+//             {
+//                 HandleException(ex);
+//             }
+//         }
 
-        private void HandleException(Exception ex)
-        {
-            if (string.IsNullOrWhiteSpace(ex?.Message))
-            {
-                return;
-            }
+//         private void btnCancel_Click(object sender, EventArgs e)
+//         {
+//             DialogResult = DialogResult.Cancel;
+//             Close();
+//         }
 
-            writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
-        }
-    }
-}
+//         private void HandleException(Exception ex)
+//         {
+//             if (string.IsNullOrWhiteSpace(ex?.Message))
+//             {
+//                 return;
+//             }
+
+//             writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex?.Message));
+//         }
+//     }
+// }

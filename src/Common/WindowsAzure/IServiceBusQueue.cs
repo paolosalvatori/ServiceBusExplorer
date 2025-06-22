@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging;
+﻿// // Auto-added comment
 
-namespace ServiceBusExplorer.WindowsAzure
-{
-    internal interface IServiceBusQueue : IServiceBusEntity
-    {
-        QueueDescription CreateQueue(QueueDescription description);
+// using System;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
+// using Microsoft.ServiceBus.Messaging;
 
-        Task DeleteQueue(QueueDescription queueDescription);
+// namespace ServiceBusExplorer.WindowsAzure
+// {
+//     internal interface IServiceBusQueue : IServiceBusEntity
+//     {
+//         QueueDescription CreateQueue(QueueDescription description);
 
-        Task DeleteQueues(IEnumerable<string> queues);
+//         Task DeleteQueue(QueueDescription queueDescription);
 
-        QueueDescription GetQueue(string path);
+//         Task DeleteQueues(IEnumerable<string> queues);
 
-        Uri GetQueueDeadLetterQueueUri(string queuePath);
+//         QueueDescription GetQueue(string path);
 
-        IEnumerable<QueueDescription> GetQueues(string filter, int timeoutInSeconds);
+//         Uri GetQueueDeadLetterQueueUri(string queuePath);
 
-        Uri GetQueueUri(string queuePath);
+//         IEnumerable<QueueDescription> GetQueues(string filter, int timeoutInSeconds);
 
-        QueueDescription RenameQueue(string path, string newPath);
+//         Uri GetQueueUri(string queuePath);
 
-        QueueDescription UpdateQueue(QueueDescription description);
-    }
-}
+//         QueueDescription RenameQueue(string path, string newPath);
+
+//         QueueDescription UpdateQueue(QueueDescription description);
+//     }
+// }

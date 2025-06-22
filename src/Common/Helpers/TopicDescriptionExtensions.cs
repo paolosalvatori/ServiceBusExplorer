@@ -1,12 +1,14 @@
-﻿namespace ServiceBusExplorer.Helpers
-{
-    using Microsoft.ServiceBus.Messaging;
+﻿// // Auto-added comment
 
-    public static class TopicDescriptionExtensions
-    {
-        public static int MaxSizeInGigabytes(this TopicDescription topicDescription)
-        {
-            return (int) (topicDescription.MaxSizeInMegabytes / 1024);
-        }
-    }
-}
+// namespace ServiceBusExplorer.Helpers
+// {
+//     using Microsoft.ServiceBus.Messaging;
+
+//     public static class TopicDescriptionExtensions
+//     {
+//         public static int MaxSizeInGigabytes(this TopicDescription topicDescription)
+//         {
+//             return (int) (topicDescription.MaxSizeInMegabytes / 1024);
+//         }
+//     }
+// }

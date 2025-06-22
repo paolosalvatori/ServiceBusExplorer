@@ -1,9 +1,11 @@
-﻿
-namespace ServiceBusExplorer.Enums
-{
-    public enum DirectionType
-    {
-        Send,
-        Receive
-    }
-}
+﻿// // Auto-added comment
+
+
+// namespace ServiceBusExplorer.Enums
+// {
+//     public enum DirectionType
+//     {
+//         Send,
+//         Receive
+//     }
+// }

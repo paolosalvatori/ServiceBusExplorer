@@ -1,60 +1,62 @@
-﻿#region Copyright
-//=======================================================================================
-// Microsoft Azure Customer Advisory Team 
-//
-// This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
-// Author: Paolo Salvatori
-//=======================================================================================
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
-// http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
-// PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
-//=======================================================================================
-#endregion
+﻿// // Auto-added comment
 
-#region Using Directives
-using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-#endregion
+// #region Copyright
+// //=======================================================================================
+// // Microsoft Azure Customer Advisory Team 
+// //
+// // This sample is supplemental to the technical guidance published on my personal
+// // blog at http://blogs.msdn.com/b/paolos/. 
+// // 
+// // Author: Paolo Salvatori
+// //=======================================================================================
+// // Copyright (c) Microsoft Corporation. All rights reserved.
+// // 
+// // LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
+// // FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+// // http://www.apache.org/licenses/LICENSE-2.0
+// // UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
+// // LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+// // KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
+// //=======================================================================================
+// #endregion
 
-namespace ServiceBusExplorer.Controls
-{
-    public class ReadOnlyPropertyGrid : PropertyGrid
-    {
-        private bool readOnly;
+// #region Using Directives
+// using System;
+// using System.ComponentModel;
+// using System.Windows.Forms;
+// #endregion
 
-        public bool ReadOnly
-        {
-            get { return readOnly; }
-            set
-            {
-                readOnly = value;
-                SetObjectAsReadOnly();
-            }
-        }
+// namespace ServiceBusExplorer.Controls
+// {
+//     public class ReadOnlyPropertyGrid : PropertyGrid
+//     {
+//         private bool readOnly;
 
-        protected override void OnSelectedObjectsChanged(EventArgs e)
-        {
-            SetObjectAsReadOnly();
-            base.OnSelectedObjectsChanged(e);
-        }
+//         public bool ReadOnly
+//         {
+//             get { return readOnly; }
+//             set
+//             {
+//                 readOnly = value;
+//                 SetObjectAsReadOnly();
+//             }
+//         }
 
-        private void SetObjectAsReadOnly()
-        {
-            if (SelectedObject == null)
-            {
-                return;
-            }
-            TypeDescriptor.AddAttributes(SelectedObject, new Attribute[] { new ReadOnlyAttribute(readOnly) });
-            Refresh();
-        }
-    }
-}
+//         protected override void OnSelectedObjectsChanged(EventArgs e)
+//         {
+//             SetObjectAsReadOnly();
+//             base.OnSelectedObjectsChanged(e);
+//         }
+
+//         private void SetObjectAsReadOnly()
+//         {
+//             if (SelectedObject == null)
+//             {
+//                 return;
+//             }
+//             TypeDescriptor.AddAttributes(SelectedObject, new Attribute[] { new ReadOnlyAttribute(readOnly) });
+//             Refresh();
+//         }
+//     }
+// }
