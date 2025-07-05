@@ -368,9 +368,7 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>ServiceBusExplorerResources.resx</DependentUpon>
 		</Compile>
-		<Compile Update="Forms\MainForm.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Update="Forms\MainForm.cs" />
 		<Compile Update="Forms\MainForm.Designer.cs">
 			<DependentUpon>MainForm.cs</DependentUpon>
 		</Compile>
