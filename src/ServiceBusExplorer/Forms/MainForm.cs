@@ -24,6 +24,7 @@ using Azure;
 using Azure.Messaging.ServiceBus.Administration;
 using Azure.ResourceManager.EventGrid;
 using Common;
+using Common.Contracts;
 using EventGridExplorerLibrary;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -229,7 +230,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Instance Fields
-        private readonly ServiceBusService serviceBusHelper;
+        private readonly IServiceBusService _serviceBusHelper;
         //private TreeNode rootNode;
         //private TreeNode currentNode;
         private readonly FieldInfo eventClickFieldInfo;
@@ -246,8 +247,8 @@ namespace ServiceBusExplorer.Forms
         //private bool savePropertiesToFile = true;
         //private bool saveCheckpointsToFile = true;
         //private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
-        private readonly string argumentName;
-        private readonly string argumentValue;
+        //private readonly string argumentName;
+        //private readonly string argumentValue;
         ////private string messageBodyType = BodyType.Stream.ToString();
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -274,7 +275,10 @@ namespace ServiceBusExplorer.Forms
         /// <summary>
         /// Initializes a new instance of the MainForm class.
         /// </summary>
-        public MainForm(string logMessage)
+        public MainForm(
+            IServiceBusService serviceBusHelper,
+            AppSettings appSettings, 
+            CommandLineOptions cliSettings)
         {
             InitializeComponent();
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
@@ -290,7 +294,7 @@ namespace ServiceBusExplorer.Forms
             logFontSize = (decimal)lstLog.Font.Size;
             //Trace.Listeners.Add(new LogTraceListener(MainForm.StaticWriteToLog));
             mainSingletonMainForm = this;
-            serviceBusHelper = new ServiceBusService();
+            _serviceBusHelper = serviceBusHelper;
             //serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             //serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
@@ -309,7 +313,7 @@ namespace ServiceBusExplorer.Forms
             //UpdateSavedConnectionsMenu();
             //DisplayNewVersionInformation();
 
-            //WriteToLog(logMessage);
+            //if (cliSettings.Log) WriteToLog(logMessage);
         }
         #endregion
 
@@ -343,9 +347,9 @@ namespace ServiceBusExplorer.Forms
                          Keys.Control | Keys.D5
                      };
 
-            foreach (var namespaceKey in serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(k => k))
+            foreach (var namespaceKey in _serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(k => k))
             {
-                if (serviceBusHelper.ServiceBusNamespaces[namespaceKey].UserCreated)
+                if (_serviceBusHelper.ServiceBusNamespaces[namespaceKey].UserCreated)
                 {
                     var shortcutKey = allowedShortCutKeys.Count > 0 ? allowedShortCutKeys.First() : Keys.None;
                     if (allowedShortCutKeys.Count > 0) allowedShortCutKeys.RemoveAt(0);
@@ -388,12 +392,12 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="argument">Argument type (n or c).</param>
         /// <param name="value">Argument value</param>
-        public MainForm(string argument, string value, string logMessage)
-            : this(logMessage)
-        {
-            argumentName = argument;
-            argumentValue = value;
-        }
+        //public MainForm(string argument, string value, string logMessage)
+        //    : this(logMessage)
+        //{
+        //    argumentName = argument;
+        //    argumentValue = value;
+        //}
         //         #endregion
 
         //         #region Event Handlers
@@ -416,7 +420,7 @@ namespace ServiceBusExplorer.Forms
             await Task.CompletedTask; 
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
+                using (var connectForm = new ConnectForm(_serviceBusHelper, configFileUse))
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
@@ -429,7 +433,7 @@ namespace ServiceBusExplorer.Forms
                     //ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
+                    _serviceBusHelper.Connect(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");

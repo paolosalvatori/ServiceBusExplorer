@@ -2,15 +2,15 @@
 
 namespace ServiceBusExplorer
 {
-    using System.Collections.Generic;
-    using System.Windows.Forms.Design;
     using CommandLine;
     using CommandLine.Text;
     using Helpers;
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Forms.Design;
 
     public class CommandLineOptions
     {
-        [Option('n', "namespace", SetName = "Connection", Required = false, HelpText = "Load namespace key in the configuration file.")]
         public string Namespace { get; set; }
 
         [Option('c', "connectionString", SetName = "Connection", Required = false, HelpText = "Use a connection string.")]
@@ -44,6 +44,23 @@ namespace ServiceBusExplorer
                      })
             };
 
+        public static CommandLineOptions Parse(string[] args)
+        {
+            CommandLineOptions parsedOptions = null;
+
+            var parser = new Parser(config =>
+            {
+                config.CaseInsensitiveEnumValues = true;
+                config.HelpWriter = Console.Out;
+            });
+
+            var result = parser.ParseArguments<CommandLineOptions>(args);
+
+            result
+                .WithParsed(opts => parsedOptions = opts);
+
+            return parsedOptions;
+        }
 
         public static void ProcessCommandLineArguments(string[] args, out string argument, out string value, out string helpText)
         {

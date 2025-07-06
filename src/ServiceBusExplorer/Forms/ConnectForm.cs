@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
 using Azure.Messaging.ServiceBus;
 using Common;
+using Common.Contracts;
 
 #endregion
 
@@ -88,7 +89,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Instance Fields
 
-        private readonly ServiceBusService serviceBusHelper;
+        private readonly IServiceBusService serviceBusHelper;
         private readonly ConfigFileUse configFileUse;
         private bool ignoreSelectedIndexChange;
 
@@ -103,7 +104,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Public Constructor
 
-        public ConnectForm(ServiceBusService serviceBusHelper, ConfigFileUse configFileUse)
+        public ConnectForm(IServiceBusService serviceBusHelper, ConfigFileUse configFileUse)
         {
             InitializeComponent();
 

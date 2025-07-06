@@ -20,13 +20,19 @@
 #endregion
 
 #region Using Directives
-using System;
-using System.Threading;
-using System.Globalization;
-using System.Windows.Forms;
-using System.Net;
+using Common;
+using Common.Contracts;
+using Microsoft.Azure.Amqp;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using ServiceBusExplorer.Forms;
-
+using System;
+using System.Globalization;
+using System.Net;
+using System.Threading;
+using System.Windows.Forms;
 
 #endregion
 
@@ -54,19 +60,29 @@ namespace ServiceBusExplorer
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             ServicePointManager.DefaultConnectionLimit = 200;
+
+            var builder = Host.CreateApplicationBuilder(args);
+
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+
+            var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
+            var cliSettings = CommandLineOptions.Parse(args);
+
+            builder.Services.AddSingleton(appSettings);
+            builder.Services.AddSingleton(cliSettings);
+            builder.Services.AddSingleton<MainForm>();
+            builder.Services.AddSingleton<Application>();
+            builder.Services.AddSingleton<IServiceBusService, ServiceBusService>();
+
+            using IHost host = builder.Build();
+
             try
             {
-                CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
-
-                if (!string.IsNullOrWhiteSpace(argument) &&
-                    !string.IsNullOrWhiteSpace(value))
-                {
-                    Application.Run(new MainForm(argument, value, helpText));
-                }
-                else
-                {
-                    Application.Run(new MainForm(""));
-                }
+                var mainForm = host.Services.GetRequiredService<MainForm>();
+                Application.Run(mainForm);
             }
             catch (Exception e)
             {
@@ -107,11 +123,11 @@ namespace ServiceBusExplorer
                         "This may be due to an invalid configuration file.";
                 }
 
-                //MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, message));
+                MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, message));
 
                 if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
                 {
-                    //MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
+                    MainForm.StaticWriteToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
                 }
             }
         }

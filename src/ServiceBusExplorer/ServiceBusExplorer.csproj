@@ -549,6 +549,11 @@
 		<PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
 		<PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.6" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
 	</ItemGroup>
@@ -664,5 +669,10 @@
 		<Compile Remove="obj\x86\Release\AssemblyInfo.g.cs" />
 		<Compile Remove="obj\x86\Release\GitVersionInformation.g.cs" />
 		<Compile Remove="obj\x86\Release\GitVersionTaskAssemblyInfo.g.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
