@@ -207,7 +207,7 @@ namespace ServiceBusExplorer.Controls
         {
             if (disposing) { if (components != null) { components.Dispose(); } }
             base.Dispose(disposing);
-            V_GroupImage.Dispose();
+            V_GroupImage?.Dispose();
         }
 
 

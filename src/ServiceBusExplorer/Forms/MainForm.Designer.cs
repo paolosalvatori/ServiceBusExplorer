@@ -468,7 +468,7 @@ namespace ServiceBusExplorer.Forms
             this.connectUsingSASToolStripMenuItem.Name = "connectUsingSASToolStripMenuItem";
             this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.connectUsingSASToolStripMenuItem.Text = "&Connect using SAS";
-            //this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
+            this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
             // 
             // connectUsingEntraToolStripMenuItem
             // 

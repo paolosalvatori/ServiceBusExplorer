@@ -25,6 +25,7 @@ using Azure.Messaging.ServiceBus.Administration;
 using Azure.ResourceManager.EventGrid;
 using Common;
 using Common.Contracts;
+using Common.Models;
 using EventGridExplorerLibrary;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -433,7 +434,7 @@ namespace ServiceBusExplorer.Forms
                     //ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
-                    _serviceBusHelper.Connect(serviceBusNamespace);
+                    await _serviceBusHelper.ConnectAsync(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");

@@ -28,6 +28,7 @@ using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
 namespace Common;
@@ -45,11 +46,12 @@ public class ServiceBusService : IServiceBusService
         ByteArray
     }
 
+    public ServiceBusAdministrationClient Client { get; set; }
     public Uri NamespaceUri { get; set; }
     public string ConnectionString { get; set; }
     public ServiceBusTransportType TransportType { get; set; }
 
-    public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
+    public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
 
 
     //public WriteToLogDelegate WriteToLog
@@ -97,41 +99,46 @@ public class ServiceBusService : IServiceBusService
     /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
     /// </summary>
-    /// <param name="serviceBusNamespace">The Service Bus namespace.</param>
+    /// <param name="busNamespace">The Service Bus namespace.</param>
     /// <returns>True if the operation succeeds, false otherwise.</returns>
-    public bool Connect(ServiceBusNamespace serviceBusNamespace)
+    public async Task<bool> ConnectAsync(ServiceBusNamespace busNamespace)
     {
-        //this.serviceBusNamespaceInstance = serviceBusNamespace;
-
-        if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
+        if (string.IsNullOrWhiteSpace(busNamespace?.ConnectionString))
         {
             throw new ArgumentException("The connection string argument cannot be null.");
         }
 
-        if (!TestNamespaceHostIsContactable())
+        if (!TestNamespaceHostIsContactable(busNamespace))
         {
-            throw new Exception($"Could not contact host in connection string: {serviceBusNamespace.ConnectionString}.");
+            throw new Exception($"Could not contact host in connection string: {busNamespace.ConnectionString}.");
         }
 
-        _serviceBusNamespace = serviceBusNamespace;
-        var func = ConnectInternal;
+        _serviceBusNamespace = busNamespace;
 
-        return RetryHelper.RetryFunc(func, null);
+        return await ConnectInternal();
     }
 
-    private bool ConnectInternal()
+    private async Task<bool> ConnectInternal()
     {
         var connectionString = _serviceBusNamespace.ConnectionString;
 
-        ServiceBusClient client = new(connectionString);
+        Client = new ServiceBusAdministrationClient(connectionString);
+
+        await foreach (var queue in Client.GetQueuesAsync())
+        {
+            //Console.WriteLine(queueProperties.Name);
+            int x = 10;
+            if (x < 0) { }
+           
+        }
 
         return true;
     }
 
 
-    private bool TestNamespaceHostIsContactable()
+    private bool TestNamespaceHostIsContactable(ServiceBusNamespace busNamespace)
     {
-        if (!Uri.TryCreate(_serviceBusNamespace.Uri, UriKind.Absolute, out var namespaceUri))
+        if (!Uri.TryCreate(busNamespace.Uri, UriKind.Absolute, out var namespaceUri))
         {
             return false;
         }

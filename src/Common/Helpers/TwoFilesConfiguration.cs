@@ -601,10 +601,12 @@
                  }
              }
 
-             // We get here if the user file did not have a valid value 
-             string resultStringApp = ConfigurationManager.AppSettings[ConfigurationParameters.ConfigurationConfigFileParameter];
+            // We get here if the user file did not have a valid value 
+            //string resultStringApp = ConfigurationManager.AppSettings[ConfigurationParameters.ConfigurationConfigFileParameter];
 
-             if (!string.IsNullOrWhiteSpace(resultStringApp))
+            string resultStringApp = null;
+
+            if (!string.IsNullOrWhiteSpace(resultStringApp))
              {
                  if (Enum.TryParse<ConfigFileUse>(resultStringApp, out var resultApp))
                  {

@@ -22,6 +22,7 @@
 #region Using Directives
 using Common;
 using Common.Contracts;
+using Common.Models;
 using Microsoft.Azure.Amqp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
