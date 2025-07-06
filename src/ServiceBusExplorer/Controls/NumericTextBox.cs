@@ -82,13 +82,13 @@ namespace ServiceBusExplorer.Controls
 
         public bool IsFilled => !string.IsNullOrWhiteSpace(Text);
 
-        public bool IsValidIntegerValue => TryParseInt(out _);
+        public bool IsValidIntegerValue => int.TryParse(Text, out _);
 
-        public int IntegerValue => TryParseInt(out var value) ? value : throw new FormatException($"Unable to parse value {Text} to integer value");
+        public int IntegerValue => ParseIntInternal();
 
-        public bool IsValidDecimalValue => TryParseDecimal(out _);
+        public bool IsValidDecimalValue => decimal.TryParse(Text, out _);
 
-        public decimal DecimalValue => TryParseDecimal(out var value) ? value : throw new FormatException($"Unable to parse value {Text} to decimal value");
+        public decimal DecimalValue => ParseDecimalInternal();
 
         public bool AllowSpace { set; get; }
 
@@ -102,26 +102,32 @@ namespace ServiceBusExplorer.Controls
 
         #region Private methods
 
-        private bool TryParseInt(out int value)
+        private int ParseIntInternal()
         {
             if (!IsFilled && IsZeroWhenEmpty)
             {
-                value = 0;
-                return true;
+                return 0;
             }
 
-            return int.TryParse(Text, out value);
+            var b = int.TryParse(Text, out var value);
+            if (!b && !IsZeroWhenEmpty)
+                throw new FormatException($"Unable to parse value {Text} to integer value");
+
+            return value; 
         }
 
-        private bool TryParseDecimal(out decimal value)
+        private decimal ParseDecimalInternal()
         {
             if (!IsFilled && IsZeroWhenEmpty)
             {
-                value = 0;
-                return true;
+                return 0m;
             }
 
-            return decimal.TryParse(Text, out value);
+            var b = decimal.TryParse(Text, out var value);
+            if (!b && !IsZeroWhenEmpty)
+                throw new FormatException($"Unable to parse value {Text} to decimal value");
+
+            return value;
         }
 
         #endregion

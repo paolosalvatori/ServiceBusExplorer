@@ -35,7 +35,7 @@ namespace Common;
 
 public class ServiceBusService : IServiceBusService
 {
-    readonly WriteToLogDelegate writeToLog;
+    //readonly WriteToLogDelegate writeToLog;
 
     public enum BodyType
     {
@@ -52,13 +52,13 @@ public class ServiceBusService : IServiceBusService
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
 
 
-    public WriteToLogDelegate WriteToLog
-    {
-        get
-        {
-            return writeToLog;
-        }
-    }
+    //public WriteToLogDelegate WriteToLog
+    //{
+    //    get
+    //    {
+    //        return writeToLog;
+    //    }
+    //}
 
     //public ServiceBusService(WriteToLogDelegate writeToLog)
     //{
@@ -92,6 +92,8 @@ public class ServiceBusService : IServiceBusService
             new ServiceBusClientOptions { TransportType = this.TransportType });
     }
 
+    private ServiceBusNamespace _serviceBusNamespace { get; set; }
+
     /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
     /// </summary>
@@ -106,78 +108,30 @@ public class ServiceBusService : IServiceBusService
             throw new ArgumentException("The connection string argument cannot be null.");
         }
 
-        if (!TestNamespaceHostIsContactable(serviceBusNamespace))
+        if (!TestNamespaceHostIsContactable())
         {
             throw new Exception($"Could not contact host in connection string: {serviceBusNamespace.ConnectionString}.");
         }
 
-        var func = (() =>
-        {
-            connectionString = serviceBusNamespace.ConnectionString;
-            currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
-            currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
+        _serviceBusNamespace = serviceBusNamespace;
+        var func = ConnectInternal;
 
-            // The NamespaceManager class can be used for managing entities,
-            // such as queues, topics, subscriptions, and rules, in your service namespace.
-            // You must provide service namespace address and access credentials in order
-            // to manage your service namespace.
-            namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+        return RetryHelper.RetryFunc(func, null);
+    }
 
-            // Set retry count
-            if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
-            {
-                namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
-                                                                                        defaultServiceBusRetryExponential.MaximumBackoff,
-                                                                                        RetryHelper.RetryCount);
-            }
+    private bool ConnectInternal()
+    {
+        var connectionString = _serviceBusNamespace.ConnectionString;
 
-            try
-            {
-                notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
+        ServiceBusClient client = new(connectionString);
 
-                // Set retry count
-                if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
-                {
-                    notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
-                                                                                                                    defaultNotificationHubsRetryExponential.MaximumBackoff,
-                                                                                                                    defaultNotificationHubsRetryExponential.DeltaBackoff,
-                                                                                                                    defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
-                                                                                                                    RetryHelper.RetryCount);
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
-            serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
-            serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
-            serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
-            serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
-            serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
-            serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
-            serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
-            serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
-
-            WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
-            namespaceUri = namespaceManager.Address;
-            connectionStringType = serviceBusNamespace.ConnectionStringType;
-            ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
-
-            // As the name suggests, the MessagingFactory class is a Factory class that allows to create
-            // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-            MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
-            WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
-            return true;
-        });
-        return RetryHelper.RetryFunc(func, writeToLog);
+        return true;
     }
 
 
-    private static bool TestNamespaceHostIsContactable(ServiceBusNamespace serviceBusNamespace)
+    private bool TestNamespaceHostIsContactable()
     {
-        if (!Uri.TryCreate(serviceBusNamespace.Uri, UriKind.Absolute, out var namespaceUri))
+        if (!Uri.TryCreate(_serviceBusNamespace.Uri, UriKind.Absolute, out var namespaceUri))
         {
             return false;
         }

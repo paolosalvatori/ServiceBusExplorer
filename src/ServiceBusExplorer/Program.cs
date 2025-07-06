@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-#region Copyright
+﻿#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -58,17 +56,17 @@ namespace ServiceBusExplorer
             ServicePointManager.DefaultConnectionLimit = 200;
             try
             {
-                //CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
+                CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
 
-                //if (!string.IsNullOrWhiteSpace(argument) &&
-                //    !string.IsNullOrWhiteSpace(value))
-                //{
-                    //Application.Run(new MainForm(argument, value, helpText));
-                //}
-                //else
-                //{
+                if (!string.IsNullOrWhiteSpace(argument) &&
+                    !string.IsNullOrWhiteSpace(value))
+                {
+                    Application.Run(new MainForm(argument, value, helpText));
+                }
+                else
+                {
                     Application.Run(new MainForm(""));
-                //}
+                }
             }
             catch (Exception e)
             {

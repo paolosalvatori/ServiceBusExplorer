@@ -18,6 +18,8 @@ namespace ServiceBusExplorer.Controls
             if (disposing && (components != null))
             {
                 components.Dispose();
+                headerFont.Dispose();
+                icon?.Dispose();
             }
             base.Dispose(disposing);
         }

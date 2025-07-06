@@ -41,6 +41,7 @@ namespace ServiceBusExplorer.Forms
             if (disposing && (components != null))
             {
                 components.Dispose();
+                bindingSource.Dispose();
             }
             base.Dispose(disposing);
         }

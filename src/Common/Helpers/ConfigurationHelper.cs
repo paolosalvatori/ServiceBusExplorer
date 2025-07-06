@@ -23,6 +23,7 @@ using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Common.ServiceBusService;
 
 namespace ServiceBusExplorer.Helpers
 {
@@ -211,8 +212,8 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
                 BodyType.Stream.ToString());
 
-            resultProperties.ConnectivityMode = configuration.GetEnumValue
-                (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
+            //resultProperties.ConnectivityMode = configuration.GetEnumValue
+            //    (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
             resultProperties.UseAmqpWebSockets = configuration.GetBoolValue
                 (ConfigurationParameters.UseAmqpWebSockets, currentSettings.UseAmqpWebSockets, writeToLog);
             resultProperties.EncodingType = configuration.GetEnumValue

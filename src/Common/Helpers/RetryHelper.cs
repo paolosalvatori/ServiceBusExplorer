@@ -25,7 +25,6 @@
 
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.NotificationHubs.Messaging;
-using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.ServiceModel;

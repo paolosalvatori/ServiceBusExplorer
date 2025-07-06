@@ -721,8 +721,9 @@
          {
              // Environment.SpecialFolder.ApplicationData = The directory that serves as a common repository 
              // for application - specific data for the current roaming user.
-             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+             var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                  "Service Bus Explorer", "UserSettings.config");
+            return path;    
          }
 
          static void CreateSectionUsingRawXml(XDocument document, string sectionName)

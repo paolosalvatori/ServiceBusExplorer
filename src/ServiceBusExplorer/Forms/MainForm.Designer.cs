@@ -23,6 +23,8 @@ namespace ServiceBusExplorer.Forms
             if (disposing && (components != null))
             {
                 components.Dispose();
+                logCollection.Dispose();
+                cancellationTokenSource.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -61,11 +63,11 @@ namespace ServiceBusExplorer.Forms
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            //this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
             this.serviceBusTreeView = new System.Windows.Forms.TreeView();
-            //this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
-            //this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
             this.lstLog = new System.Windows.Forms.ListBox();
             this.logContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
