@@ -412,6 +412,8 @@ namespace ServiceBusExplorer.Helpers
         /// Gets or sets the EntityPath
         /// </summary>
         public string EntityPath { get; set; }
+
+        public bool IsCloudNamespace { get; set; }
         #endregion
 
         #region Private Methods

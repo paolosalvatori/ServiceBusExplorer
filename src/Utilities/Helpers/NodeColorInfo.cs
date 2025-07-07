@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-namespace ServiceBusExplorer.Utilities.Helpers
+﻿namespace ServiceBusExplorer.Utilities.Helpers
 {
     using System;
     using System.Collections.Generic;

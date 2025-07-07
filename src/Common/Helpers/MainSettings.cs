@@ -29,7 +29,7 @@ using System.Linq;
 namespace ServiceBusExplorer.Helpers
 {
     using Utilities.Helpers;
-    using static Common.ServiceBusService;
+    using static global::Common.ServiceBusService;
 
     public class MainSettings
     {

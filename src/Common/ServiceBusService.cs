@@ -23,6 +23,7 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Common.Contracts;
 using Microsoft.Azure.NotificationHubs;
+using ServiceBusExplorer.Common.Abstractions;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
@@ -52,7 +53,7 @@ public class ServiceBusService : IServiceBusService
     public ServiceBusTransportType TransportType { get; set; }
 
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
-
+    public ServiceBusNamespace CurrentNamespace { get; private set; }
 
     //public WriteToLogDelegate WriteToLog
     //{
@@ -113,24 +114,18 @@ public class ServiceBusService : IServiceBusService
             throw new Exception($"Could not contact host in connection string: {busNamespace.ConnectionString}.");
         }
 
-        _serviceBusNamespace = busNamespace;
+        await Task.CompletedTask;
 
-        return await ConnectInternal();
+        return ConnectInternal(busNamespace);
     }
 
-    private async Task<bool> ConnectInternal()
+    private bool ConnectInternal(ServiceBusNamespace busNamespace)
     {
-        var connectionString = _serviceBusNamespace.ConnectionString;
+        var connectionString = busNamespace.ConnectionString;
 
         Client = new ServiceBusAdministrationClient(connectionString);
 
-        await foreach (var queue in Client.GetQueuesAsync())
-        {
-            //Console.WriteLine(queueProperties.Name);
-            int x = 10;
-            if (x < 0) { }
-           
-        }
+        CurrentNamespace = busNamespace;
 
         return true;
     }
@@ -153,5 +148,24 @@ public class ServiceBusService : IServiceBusService
         }
 
         return true;
+    }
+
+    public async Task<IEnumerable<QueueMetadata>> GetQueuesAsync(string filter, int timeoutInSeconds)
+    {
+        var queues = new List<QueueMetadata>();
+        try
+        {
+            await foreach (var properties in Client.GetQueuesAsync())
+            {
+                var runtime = await Client.GetQueueRuntimePropertiesAsync(properties.Name);
+                queues.Add(QueueMetadata.Create(properties, runtime)); 
+            }
+            return queues; 
+        }
+        catch
+        {
+            //TODO: 
+            return []; 
+        }
     }
 }
