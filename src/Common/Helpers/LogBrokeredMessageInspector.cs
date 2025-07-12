@@ -41,7 +41,7 @@ namespace ServiceBusExplorer.Helpers
     using System.Collections.ObjectModel;
     using System.Text.Json;
 
-    public class LogServiceBusMessageInspector : IBrokeredMessageInspector, IDisposable
+    public class LogBrokeredMessageInspector : IBrokeredMessageInspector, IDisposable
     {
         #region Private Constants
         //***************************
