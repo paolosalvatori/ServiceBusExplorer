@@ -82,6 +82,7 @@ namespace ServiceBusExplorer.Helpers
             outputStream.Position = 0;
             return outputStream;
         }
+
         private static Stream Decompress(Stream inputStream)
         {
             var outputStream = new MemoryStream();
