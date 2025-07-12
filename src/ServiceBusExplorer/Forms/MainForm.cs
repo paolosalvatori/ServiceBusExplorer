@@ -312,7 +312,7 @@ namespace ServiceBusExplorer.Forms
 
             //GetServiceBusNamespacesFromConfiguration();
             //GetServiceBusNamespaceFromEnvironmentVariable();
-            //GetBrokeredMessageInspectorsFromConfiguration();
+            GetBrokeredMessageInspectorsFromConfiguration();
             //GetEventDataInspectorsFromConfiguration();
             //GetBrokeredMessageGeneratorsFromConfiguration();
             //GetEventDataGeneratorsFromConfiguration();
@@ -3823,56 +3823,57 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void GetBrokeredMessageInspectorsFromConfiguration()
-        //         {
-        //             try
-        //             {
-        //                 if (serviceBusHelper == null)
-        //                 {
-        //                     return;
-        //                 }
-        //                 var hashtable = ConfigurationManager.GetSection(BrokeredMessageInspectors) as Hashtable;
+        private void GetBrokeredMessageInspectorsFromConfiguration()
+        {
+            if (_serviceBusHelper == null)
+                return;
+            
 
-        //                 if (hashtable == null || hashtable.Count == 0)
-        //                 {
-        //                     return;
-        //                 }
-        //                 serviceBusHelper.BrokeredMessageInspectors = new Dictionary<string, Type>();
-        //                 var e = hashtable.GetEnumerator();
+            try
+            {
+                var hashtable = ConfigurationManager.GetSection(BrokeredMessageInspectors) as Hashtable;
 
-        //                 while (e.MoveNext())
-        //                 {
-        //                     if (!(e.Key is string) || !(e.Value is string))
-        //                     {
-        //                         continue;
-        //                     }
-        //                     try
-        //                     {
-        //                         var type = Type.GetType((string)e.Value);
-        //                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageInspector)))
-        //                         {
-        //                             if (type.GetConstructor(BindingFlags.Instance |
-        //                                                     BindingFlags.Public |
-        //                                                     BindingFlags.NonPublic,
-        //                                                     null,
-        //                                                     Type.EmptyTypes,
-        //                                                     null) != null)
-        //                             {
-        //                                 serviceBusHelper.BrokeredMessageInspectors.Add(e.Key as string, type);
-        //                             }
-        //                         }
-        //                     }
-        //                     // ReSharper disable once EmptyGeneralCatchClause
-        //                     catch
-        //                     {
-        //                     }
-        //                 }
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //         }
+                if (hashtable == null || hashtable.Count == 0)
+                {
+                    return;
+                }
+
+                var brokeredMessageInspectors = new Dictionary<string, Type>();
+                var e = hashtable.GetEnumerator();
+
+                while (e.MoveNext())
+                {
+                    if (!(e.Key is string) || !(e.Value is string))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        var type = Type.GetType((string)e.Value);
+                        if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageInspector)))
+                        {
+                            if (type.GetConstructor(BindingFlags.Instance |
+                                                    BindingFlags.Public |
+                                                    BindingFlags.NonPublic,
+                                                    null,
+                                                    Type.EmptyTypes,
+                                                    null) != null)
+                            {
+                                _serviceBusHelper.BrokeredMessageInspectors.Add(e.Key as string, type);
+                            }
+                        }
+                    }
+                    // ReSharper disable once EmptyGeneralCatchClause
+                    catch
+                    {
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
 
         //         private void GetEventDataInspectorsFromConfiguration()
         //         {

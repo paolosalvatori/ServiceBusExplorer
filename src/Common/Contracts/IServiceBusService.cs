@@ -1,6 +1,7 @@
 ﻿using ServiceBusExplorer.Common.Abstractions;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ public interface IServiceBusService
     ServiceBusConnection Connection { get; }
 
     Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
+    Dictionary<string, Type> BrokeredMessageInspectors { get; set; }
 
     bool IsPremiumNamespace();
     bool ConnectionStringContainsEntityPath();
