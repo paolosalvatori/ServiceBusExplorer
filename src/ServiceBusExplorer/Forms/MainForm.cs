@@ -318,8 +318,8 @@ namespace ServiceBusExplorer.Forms
             //GetEventDataGeneratorsFromConfiguration();
             GetServiceBusNamespaceSettingsFromConfiguration();
             //ReadEventHubPartitionCheckpointFile();
-            //UpdateSavedConnectionsMenu();
-            //DisplayNewVersionInformation();
+            UpdateSavedConnectionsMenu();
+            DisplayNewVersionInformation();
 
             //if (cliSettings.Log) WriteToLog(logMessage);
         }
@@ -328,18 +328,18 @@ namespace ServiceBusExplorer.Forms
 
 
 
-        //         void DisplayNewVersionInformation()
-        //         {
-        //             if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
-        //             {
-        //                 linkLabelNewVersionAvailable.Visible = true;
-        //                 linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
-        //             }
-        //             else
-        //             {
-        //                 linkLabelNewVersionAvailable.Visible = false;
-        //             }
-        //         }
+        void DisplayNewVersionInformation()
+        {
+            if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
+            {
+                linkLabelNewVersionAvailable.Visible = true;
+                linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
+            }
+            else
+            {
+                linkLabelNewVersionAvailable.Visible = false;
+            }
+        }
 
         private void UpdateSavedConnectionsMenu()
         {
