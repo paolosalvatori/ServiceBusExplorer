@@ -16,16 +16,17 @@ public class QueueMetadata
     public TimeSpan DuplicateDetectionHistoryTimeWindow { get; set; }
     public bool RequiresSession { get; set; }
     public bool DeadLetteringOnMessageExpiration { get; set; }
-    public string DefaultMessageTimeToLive { get; set; }
+    public TimeSpan DefaultMessageTimeToLive { get; set; }
     public string ForwardTo { get; set; }
     public string ForwardDeadLetteredMessagesTo { get; set; }
     public string UserMetadata { get; set; }
     public int MaxDeliveryCount { get; set; }
     public bool EnableBatchedOperations { get; set; }
     public bool EnablePartitioning { get; set; }
-    public string AutoDeleteOnIdle { get; set; }
+    public TimeSpan AutoDeleteOnIdle { get; set; }
     public string Status { get; set; }
     public AuthorizationRules AuthorizationRules { get; set; } 
+    public long MaxSizeInMegaBytes { get; set; }
 
     // From QueueruntimePropertiesProperties
     public long ActiveMessageCount { get; set; }
@@ -34,9 +35,10 @@ public class QueueMetadata
     public long TransferMessageCount { get; set; }
     public long TransferDeadLetterMessageCount { get; set; }
     public long TotalMessageCount { get; set; }
-    public DateTimeOffset? CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
-    public DateTimeOffset? AccessedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset AccessedAt { get; set; }
+    public long SizeInMegaBytes { get; set; }
 
     public static QueueMetadata Create(QueueProperties properties, QueueRuntimeProperties runtimeProperties)
     {
@@ -49,16 +51,17 @@ public class QueueMetadata
             DuplicateDetectionHistoryTimeWindow = properties.DuplicateDetectionHistoryTimeWindow,
             RequiresSession = properties.RequiresSession,
             DeadLetteringOnMessageExpiration = properties.DeadLetteringOnMessageExpiration,
-            DefaultMessageTimeToLive = properties.DefaultMessageTimeToLive.ToString(),
+            DefaultMessageTimeToLive = properties.DefaultMessageTimeToLive,
             ForwardTo = properties.ForwardTo,
             ForwardDeadLetteredMessagesTo = properties.ForwardDeadLetteredMessagesTo,
             UserMetadata = properties.UserMetadata,
             MaxDeliveryCount = properties.MaxDeliveryCount,
             EnableBatchedOperations = properties.EnableBatchedOperations,
             EnablePartitioning = properties.EnablePartitioning,
-            AutoDeleteOnIdle = properties.AutoDeleteOnIdle.ToString(),
+            AutoDeleteOnIdle = properties.AutoDeleteOnIdle,
             Status = properties.Status.ToString(),
             AuthorizationRules = properties.AuthorizationRules,
+            MaxSizeInMegaBytes = properties.MaxSizeInMegabytes,
 
             ActiveMessageCount = runtimeProperties.ActiveMessageCount,
             DeadLetterMessageCount = runtimeProperties.DeadLetterMessageCount,
@@ -69,6 +72,7 @@ public class QueueMetadata
             CreatedAt = runtimeProperties.CreatedAt,
             AccessedAt = runtimeProperties.AccessedAt,
             UpdatedAt = runtimeProperties.UpdatedAt,
+            SizeInMegaBytes = runtimeProperties.SizeInBytes
         };
     }
 }

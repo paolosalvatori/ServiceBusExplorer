@@ -234,27 +234,27 @@ namespace ServiceBusExplorer.Controls
         private readonly IServiceBusService _serviceBusHelper;
         private QueueMetadata queueDescription = default!;
         //private readonly WriteToLogDelegate writeToLog = default!;
-        //private readonly string path = default!;
+        private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
         private readonly bool premiumNamespace = false;
         //private BrokeredMessage brokeredMessage = default!;
         //private BrokeredMessage deadletterMessage = default!;
         //private BrokeredMessage transferDeadletterMessage = default!;
-        //private int currentMessageRowIndex = default!;
-        //private int currentDeadletterMessageRowIndex = default!;
-        //private int currentTransferDeadletterMessageRowIndex = default!;
-        //private bool sorting = default!;
-        //private string messagesFilterExpression = default!;
-        //private string deadletterFilterExpression = default!;
-        //private DateTime? messagesFilterFromDate = default!;
-        //private DateTime? messagesFilterToDate = default!;
-        //private DateTime? deadletterFilterFromDate = default!;
-        //private DateTime? deadletterFilterToDate = default!;
+        private int currentMessageRowIndex = default!;
+        private int currentDeadletterMessageRowIndex = default!;
+        private int currentTransferDeadletterMessageRowIndex = default!;
+        private bool sorting = default!;
+        private string messagesFilterExpression = default!;
+        private string deadletterFilterExpression = default!;
+        private DateTime? messagesFilterFromDate = default!;
+        private DateTime? messagesFilterToDate = default!;
+        private DateTime? deadletterFilterFromDate = default!;
+        private DateTime? deadletterFilterToDate = default!;
         //private SortableBindingList<BrokeredMessage> messageBindingList = default!;
         //private SortableBindingList<BrokeredMessage> deadletterBindingList = default!;
         //private SortableBindingList<BrokeredMessage> transferDeadletterBindingList = default!;
         //private SortableBindingList<MessageSession> sessionBindingList = default!;
-        //private bool buttonsMoved;
+        private bool buttonsMoved;
         private readonly bool duplicateQueue;
 
         #endregion
@@ -536,7 +536,7 @@ namespace ServiceBusExplorer.Controls
 
         private void InitializeControls(bool initialCall)
         {
-            //trackBarMaxQueueSize.Maximum = _serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            trackBarMaxQueueSize.Maximum = _serviceBusHelper.IsCloudNamespace() ? 5 : 11;
 
             if (this.premiumNamespace)
             {
@@ -556,8 +556,8 @@ namespace ServiceBusExplorer.Controls
                         // Don't add some settings for premium and Service Bus Server namespaces
                         case EnablePartitioningItemText when this.premiumNamespace:
                         case EnableExpressItemText when this.premiumNamespace:
-                        //case IsAnonymousAccessibleItemText when _serviceBusHelper.IsCloudNamespace:
-                        //    break;
+                        case IsAnonymousAccessibleItemText when _serviceBusHelper.IsCloudNamespace():
+                            break;
 
                         default:
                             checkedListBox.Items.Add(item);
@@ -603,8 +603,8 @@ namespace ServiceBusExplorer.Controls
             // The value for alternating rows overrides the value for all rows. 
             authorizationRulesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
             authorizationRulesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-            //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
             authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
@@ -694,7 +694,7 @@ namespace ServiceBusExplorer.Controls
             {
                 if (duplicateQueue)
                 {
-                    //ConfigureDuplicateUserInterface();
+                    ConfigureDuplicateUserInterface();
                 }
                 else
                 {
@@ -1051,20 +1051,20 @@ namespace ServiceBusExplorer.Controls
         ///// Configures the user interface for the duplicate view.
         ///// This view pre-populates the view with the data of an existing queue description.
         ///// </summary>
-        //private void ConfigureDuplicateUserInterface()
-        //{
-        //    InitializeData();
+        private void ConfigureDuplicateUserInterface()
+        {
+            InitializeData();
 
-        //    // clear property list view for old queue
-        //    propertyListView.Items.Clear();
+            // clear property list view for old queue
+            propertyListView.Items.Clear();
 
-        //    // special handling for max size if partitioning is enabled
-        //    trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-        //    trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16
-        //        : queueDescription.MaxSizeInGigabytes();
+            // special handling for max size if partitioning is enabled
+            //trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
+            //trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16
+            //    : queueDescription.MaxSizeInGigabytes();
 
-        //    ConfigureCreateUserInterface();
-        //}
+            //ConfigureCreateUserInterface();
+        }
 
         ///// <summary>
         ///// Configures the users interface for the create view.
@@ -1118,187 +1118,192 @@ namespace ServiceBusExplorer.Controls
         //    }
         //}
 
-        //private void InitializeData()
-        //{
-        //    // Initialize buttons
-        //    btnCreateDelete.Text = DeleteText;
-        //    btnCancelUpdate.Text = UpdateText;
-        //    btnChangeStatus.Text = StatusText;
-        //    btnRefresh.Visible = true;
-        //    btnChangeStatus.Visible = true;
-        //    btnMessages.Visible = true;
-        //    btnSessions.Visible = queueDescription.RequiresSession;
+        private void InitializeData()
+        {
+            // Initialize buttons
+            btnCreateDelete.Text = DeleteText;
+            btnCancelUpdate.Text = UpdateText;
+            btnChangeStatus.Text = StatusText;
+            btnRefresh.Visible = true;
+            btnChangeStatus.Visible = true;
+            btnMessages.Visible = true;
+            btnSessions.Visible = queueDescription.RequiresSession;
 
-        //    if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
-        //    {
-        //        btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
-        //        btnPurgeDeadletterQueueMessages.Location = btnSessions.Location;
-        //        buttonsMoved = true;
-        //    }
-        //    btnDeadletter.Visible = true;
+            if (btnMessages.Visible && !btnSessions.Visible && !buttonsMoved)
+            {
+                btnPurgeMessages.Location = btnPurgeDeadletterQueueMessages.Location;
+                btnPurgeDeadletterQueueMessages.Location = btnSessions.Location;
+                buttonsMoved = true;
+            }
+            btnDeadletter.Visible = true;
 
-        //    // Authorization Rules
-        //    BindingList<AuthorizationRuleWrapper> bindingList;
-        //    if (queueDescription.Authorization.Count > 0)
-        //    {
-        //        var enumerable = queueDescription.Authorization.Select(r => new AuthorizationRuleWrapper(r));
-        //        bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
-        //        {
-        //            AllowEdit = true,
-        //            AllowNew = true,
-        //            AllowRemove = true
-        //        };
+            // Authorization Rules
+            //BindingList<AuthorizationRuleWrapper> bindingList;
+            //if (queueDescription.Authorization.Count > 0)
+            //{
+            //    var enumerable = queueDescription.Authorization.Select(r => new AuthorizationRuleWrapper(r));
+            //    bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
+            //    {
+            //        AllowEdit = true,
+            //        AllowNew = true,
+            //        AllowRemove = true
+            //    };
 
-        //    }
-        //    else
-        //    {
-        //        bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-        //        {
-        //            AllowEdit = true,
-        //            AllowNew = true,
-        //            AllowRemove = true
-        //        };
-        //    }
-        //    bindingList.ListChanged += bindingList_ListChanged;
-        //    authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper>(bindingList);
-        //    authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
+            //}
+            //else
+            //{
+            //    bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
+            //    {
+            //        AllowEdit = true,
+            //        AllowNew = true,
+            //        AllowRemove = true
+            //    };
+            //}
+            //bindingList.ListChanged += bindingList_ListChanged;
+            //authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper>(bindingList);
+            //authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
 
-        //    // Initialize property grid
-        //    var propertyList = new List<string[]>();
+            // Initialize property grid
+            var propertyList = new List<string[]>();
 
-        //    propertyList.AddRange(new[]
-        //    {
-        //         new[] {Status, queueDescription.Status.ToString()},
-        //         new[] {IsReadOnly, queueDescription.IsReadOnly.ToString()},
-        //         new[] {SizeInBytes, queueDescription.SizeInBytes.ToString("N0")},
-        //         new[] {CreatedAt, queueDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-        //         new[] {AccessedAt, queueDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
-        //         new[] {UpdatedAt, queueDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
-        //         new[]
-        //         {
-        //             ActiveMessageCount,
-        //             queueDescription.MessageCountDetails.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-        //         },
-        //         new[]
-        //         {
-        //             DeadLetterCount,
-        //             queueDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0",
-        //                 CultureInfo.CurrentCulture)
-        //         },
-        //         new[]
-        //         {
-        //             ScheduledMessageCount,
-        //             queueDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-        //         },
-        //         new[]
-        //         {
-        //             TransferMessageCount,
-        //             queueDescription.MessageCountDetails.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
-        //         },
-        //         new[]
-        //         {
-        //             TransferDeadLetterMessageCount,
-        //             queueDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0",
-        //                 CultureInfo.CurrentCulture)
-        //         },
-        //         new[] {MessageCount, queueDescription.MessageCount.ToString("N0", CultureInfo.CurrentCulture)}
-        //     });
+            var dto = queueDescription.CreatedAt; 
 
-        //    propertyListView.Items.Clear();
-        //    foreach (var array in propertyList)
-        //    {
-        //        propertyListView.Items.Add(new ListViewItem(array));
-        //    }
+            propertyList.AddRange(new[]
+            {
+                 new[] {Status, queueDescription.Status.ToString()},
+                 //new[] {IsReadOnly, queueDescription.IsReadOnly.ToString()}, //TODO: Obsolete 
+                 new[] {SizeInBytes, queueDescription.SizeInMegaBytes.ToString("N0")},
+                 new[] {CreatedAt, queueDescription.CreatedAt.ToLocalTime().ToString(CultureInfo.CurrentCulture)},
+                 new[] {AccessedAt, queueDescription.AccessedAt.ToLocalTime().ToString(CultureInfo.CurrentCulture)},
+                 new[] {UpdatedAt, queueDescription.UpdatedAt.ToLocalTime().ToString(CultureInfo.CurrentCulture)},
+                 new[]
+                 {
+                     ActiveMessageCount,
+                     queueDescription.ActiveMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                 },
+                 new[]
+                 {
+                     DeadLetterCount,
+                     queueDescription.DeadLetterMessageCount.ToString("N0",
+                         CultureInfo.CurrentCulture)
+                 },
+                 new[]
+                 {
+                     ScheduledMessageCount,
+                     queueDescription.ScheduledMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                 },
+                 new[]
+                 {
+                     TransferMessageCount,
+                     queueDescription.TransferMessageCount.ToString("N0", CultureInfo.CurrentCulture)
+                 },
+                 new[]
+                 {
+                     TransferDeadLetterMessageCount,
+                     queueDescription.TransferDeadLetterMessageCount.ToString("N0",
+                         CultureInfo.CurrentCulture)
+                 },
+                 new[] {MessageCount, queueDescription.TotalMessageCount.ToString("N0", CultureInfo.CurrentCulture)}
+             });
 
-        //    // Path
-        //    if (!string.IsNullOrWhiteSpace(queueDescription.Path))
-        //    {
-        //        txtPath.Text = queueDescription.Path;
-        //    }
+            propertyListView.Items.Clear();
+            foreach (var array in propertyList)
+            {
+                propertyListView.Items.Add(new ListViewItem(array));
+            }
 
-        //    // UserMetadata
-        //    if (!string.IsNullOrWhiteSpace(queueDescription.UserMetadata))
-        //    {
-        //        txtUserMetadata.Text = queueDescription.UserMetadata;
-        //    }
+            // Path
+            if (!string.IsNullOrWhiteSpace(queueDescription.Name))
+            {
+                txtPath.Text = queueDescription.Name;
+            }
 
-        //    // ForwardTo
-        //    if (!string.IsNullOrWhiteSpace(queueDescription.ForwardTo))
-        //    {
-        //        txtForwardTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardTo);
-        //    }
+            // UserMetadata
+            if (!string.IsNullOrWhiteSpace(queueDescription.UserMetadata))
+            {
+                txtUserMetadata.Text = queueDescription.UserMetadata;
+            }
 
-        //    // ForwardDeadLetteredMessagesTo
-        //    if (!string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo))
-        //    {
-        //        txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardDeadLetteredMessagesTo);
-        //    }
+            // ForwardTo
+            if (!string.IsNullOrWhiteSpace(queueDescription.ForwardTo))
+            {
+                //txtForwardTo.Text = _serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardTo); //TODO: 
+            }
 
-        //    // MaxQueueSizeInBytes
-        //    trackBarMaxQueueSize.Value = serviceBusHelper.IsCloudNamespace
-        //        ? queueDescription.MaxSizeInGigabytes()
-        //        : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
-        //        ? 11 : queueDescription.MaxSizeInGigabytes();
+            // ForwardDeadLetteredMessagesTo
+            if (!string.IsNullOrWhiteSpace(queueDescription.ForwardDeadLetteredMessagesTo))
+            {
+                //txtForwardDeadLetteredMessagesTo.Text = serviceBusHelper.GetAddressRelativeToNamespace(queueDescription.ForwardDeadLetteredMessagesTo); //TODO: 
+            }
 
-        //    // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
-        //    if (queueDescription.MaxSizeInGigabytes() > 5)
-        //    {
-        //        trackBarMaxQueueSize.Maximum = queueDescription.MaxSizeInGigabytes();
-        //        trackBarMaxQueueSize.Value = queueDescription.MaxSizeInGigabytes();
-        //    }
+            var maxSizeInGb = (int)queueDescription.MaxSizeInMegabytes * 1024; 
 
-        //    // MaxDeliveryCount
-        //    txtMaxDeliveryCount.Text = queueDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
+            // MaxQueueSizeInBytes
+            trackBarMaxQueueSize.Value = _serviceBusHelper.IsCloudNamespace()
+                ? maxSizeInGb
+                : queueDescription.MaxSizeInMegabytes == SeviceBusForWindowsServerMaxQueueSize
+                    ? 11 
+                    : maxSizeInGb;
 
-        //    // DefaultMessageTimeToLive
-        //    tsDefaultMessageTimeToLive.TimeSpanValue = queueDescription.DefaultMessageTimeToLive;
+            // Update maximum and value if Maximum size is more than 5 Gigs (either premium or partitioned)
+            if (maxSizeInGb > 5)
+            {
+                trackBarMaxQueueSize.Maximum = maxSizeInGb;
+                trackBarMaxQueueSize.Value = maxSizeInGb;
+            }
 
-        //    // DuplicateDetectionHistoryTimeWindow
-        //    tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = queueDescription.DuplicateDetectionHistoryTimeWindow;
+            // MaxDeliveryCount
+            txtMaxDeliveryCount.Text = queueDescription.MaxDeliveryCount.ToString(CultureInfo.InvariantCulture);
 
-        //    // LockDuration
-        //    tsLockDuration.TimeSpanValue = queueDescription.LockDuration;
+            // DefaultMessageTimeToLive
+            tsDefaultMessageTimeToLive.TimeSpanValue = queueDescription.DefaultMessageTimeToLive;
 
-        //    // AutoDeleteOnIdle
-        //    tsAutoDeleteOnIdle.TimeSpanValue = queueDescription.AutoDeleteOnIdle;
+            // DuplicateDetectionHistoryTimeWindow
+            tsDuplicateDetectionHistoryTimeWindow.TimeSpanValue = queueDescription.DuplicateDetectionHistoryTimeWindow;
 
-        //    // EnableBatchedOperations
-        //    checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
-        //        queueDescription.EnableBatchedOperations);
+            // LockDuration
+            tsLockDuration.TimeSpanValue = queueDescription.LockDuration;
 
-        //    // EnableDeadLetteringOnMessageExpiration
-        //    checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationItemText,
-        //        queueDescription.EnableDeadLetteringOnMessageExpiration);
+            // AutoDeleteOnIdle
+            tsAutoDeleteOnIdle.TimeSpanValue = queueDescription.AutoDeleteOnIdle;
+
+            // EnableBatchedOperations
+            checkedListBox.SetItemChecked(EnableBatchedOperationsItemText,
+                queueDescription.EnableBatchedOperations);
+
+            // EnableDeadLetteringOnMessageExpiration
+            //checkedListBox.SetItemChecked(EnableDeadLetteringOnMessageExpirationItemText,
+            //    queueDescription.EnableDeadLetteringOnMessageExpiration); //TODO: Queues automatically expire messages
 
 
-        //    if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
-        //    {
-        //        // EnablePartitioning
-        //        checkedListBox.SetItemChecked(EnablePartitioningItemText, queueDescription.EnablePartitioning);
+            if (_serviceBusHelper.IsCloudNamespace() && !this.premiumNamespace)
+            {
+                // EnablePartitioning
+                checkedListBox.SetItemChecked(EnablePartitioningItemText, queueDescription.EnablePartitioning);
 
-        //        // EnableExpress
-        //        checkedListBox.SetItemChecked(EnableExpressItemText, queueDescription.EnableExpress);
-        //    }
+                // EnableExpress
+                //checkedListBox.SetItemChecked(EnableExpressItemText, queueDescription.EnableExpress); //TODO: Express Obsolete 
+            }
 
-        //    // RequiresDuplicateDetection
-        //    checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
-        //        queueDescription.RequiresDuplicateDetection);
+            // RequiresDuplicateDetection
+            checkedListBox.SetItemChecked(RequiresDuplicateDetectionItemText,
+                queueDescription.RequiresDuplicateDetection);
 
-        //    // RequiresSession
-        //    checkedListBox.SetItemChecked(RequiresSessionItemText,
-        //        queueDescription.RequiresSession);
+            // RequiresSession
+            checkedListBox.SetItemChecked(RequiresSessionItemText,
+                queueDescription.RequiresSession);
 
-        //    // SupportOrdering
-        //    checkedListBox.SetItemChecked(SupportOrderingItemText,
-        //        queueDescription.SupportOrdering);
+            // SupportOrdering
+            //checkedListBox.SetItemChecked(SupportOrderingItemText,
+            //    queueDescription.SupportOrdering); //TODO: Always enabled 
 
-        //    // IsAnonymousAccessible
-        //    if (!serviceBusHelper.IsCloudNamespace)
-        //    {
-        //        checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
-        //            queueDescription.IsAnonymousAccessible);
-        //    }
-        //}
+            // IsAnonymousAccessible
+            //if (!_serviceBusHelper.IsCloudNamespace())
+            //{
+            //    checkedListBox.SetItemChecked(IsAnonymousAccessibleItemText,
+            //        queueDescription.IsAnonymousAccessible); //TODO: Obsolete
+            //}
+        }
 
         //private MessageReceiver BuildMessageReceiver(ReceiveMode receiveMode, string? fromSession = null)
         //{
