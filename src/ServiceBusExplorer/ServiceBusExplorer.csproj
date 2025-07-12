@@ -249,9 +249,7 @@
 		<Compile Update="Forms\ClipboardForm.Designer.cs">
 			<DependentUpon>ClipboardForm.cs</DependentUpon>
 		</Compile>
-		<Compile Update="Forms\ContainerForm.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Update="Forms\ContainerForm.cs" />
 		<Compile Update="Forms\ContainerForm.Designer.cs">
 			<DependentUpon>ContainerForm.cs</DependentUpon>
 		</Compile>

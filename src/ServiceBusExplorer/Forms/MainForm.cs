@@ -66,6 +66,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Common.ServiceBusService;
 #endregion
 
 namespace ServiceBusExplorer.Forms
@@ -242,7 +243,7 @@ namespace ServiceBusExplorer.Forms
         private TreeNode currentNode;
         private readonly FieldInfo eventClickFieldInfo;
         private readonly PropertyInfo eventsPropertyInfo;
-        //private string messageFile;
+        private string messageFile;
         //private bool importing;
         private readonly int mainSplitterDistance;
         private readonly int splitterContainerDistance;
@@ -250,13 +251,13 @@ namespace ServiceBusExplorer.Forms
         private decimal treeViewFontSize;
         private decimal logFontSize;
         private bool showMessageCount = true;
-        //private bool saveMessageToFile = true;
-        //private bool savePropertiesToFile = true;
-        //private bool saveCheckpointsToFile = true;
+        private bool saveMessageToFile = true;
+        private bool savePropertiesToFile = true;
+        private bool saveCheckpointsToFile = true;
         //private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         //private readonly string argumentName;
         //private readonly string argumentValue;
-        ////private string messageBodyType = BodyType.Stream.ToString();
+        private string messageBodyType = BodyType.Stream.ToString();
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
@@ -266,7 +267,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Static Fields
         private static MainForm mainSingletonMainForm;
-        //private static IWebProxy initialDefaultWebProxy;
+        private static IWebProxy initialDefaultWebProxy;
 
         //private static IDictionary<string, Func<MessageCountDetails, long>> messageCountRetriever = new Dictionary<string, Func<MessageCountDetails, long>>
         // {
@@ -315,7 +316,7 @@ namespace ServiceBusExplorer.Forms
             //GetEventDataInspectorsFromConfiguration();
             //GetBrokeredMessageGeneratorsFromConfiguration();
             //GetEventDataGeneratorsFromConfiguration();
-            //GetServiceBusNamespaceSettingsFromConfiguration();
+            GetServiceBusNamespaceSettingsFromConfiguration();
             //ReadEventHubPartitionCheckpointFile();
             //UpdateSavedConnectionsMenu();
             //DisplayNewVersionInformation();
@@ -640,14 +641,14 @@ namespace ServiceBusExplorer.Forms
         //         /// </summary>
         //         /// <param name="sender">MainForm object</param>
         //         /// <param name="e">System.EventArgs parameter</param>
-        //         private void saveLogToolStripMenuItem_Click(object sender, EventArgs e)
-        //         {
-        //             if (lstLog == null || lstLog.Items.Count <= 0)
-        //             {
-        //                 return;
-        //             }
-        //             SaveLog(true);
-        //         }
+        private void saveLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstLog == null || lstLog.Items.Count <= 0)
+            {
+                return;
+            }
+            SaveLog(true);
+        }
 
         //         /// <summary>
         //         /// Handles cancel events raised by user defined controls.
@@ -1425,63 +1426,63 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void MainForm_ResizeBegin(object sender, EventArgs e)
-        //         {
-        //             this.SuspendDrawing();
-        //         }
+        private void MainForm_ResizeBegin(object sender, EventArgs e)
+        {
+            this.SuspendDrawing();
+        }
 
-        //         private void MainForm_ResizeEnd(object sender, EventArgs e)
-        //         {
-        //             this.ResumeDrawing();
-        //         }
+        private void MainForm_ResizeEnd(object sender, EventArgs e)
+        {
+            this.ResumeDrawing();
+        }
 
-        //         private void MainForm_SizeChanged(object sender, EventArgs e)
-        //         {
-        //             var changingUi = false;
-        //             try
-        //             {
-        //                 changingUi = true;
-        //                 panelMain.SuspendLayout();
-        //                 panelMain.SuspendDrawing();
-        //                 SetControlSize(null);
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //             finally
-        //             {
-        //                 if (changingUi)
-        //                 {
-        //                     panelMain.ResumeDrawing();
-        //                     panelMain.ResumeLayout();
-        //                 }
-        //             }
-        //         }
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            var changingUi = false;
+            try
+            {
+                changingUi = true;
+                panelMain.SuspendLayout();
+                panelMain.SuspendDrawing();
+                SetControlSize(null);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                if (changingUi)
+                {
+                    panelMain.ResumeDrawing();
+                    panelMain.ResumeLayout();
+                }
+            }
+        }
 
-        //         private void mainSplitContainer_SplitterMoved(object sender, SplitterEventArgs e)
-        //         {
-        //             var changingUi = false;
-        //             try
-        //             {
-        //                 changingUi = true;
-        //                 panelMain.SuspendLayout();
-        //                 panelMain.SuspendDrawing();
-        //                 SetControlSize(null);
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //             finally
-        //             {
-        //                 if (changingUi)
-        //                 {
-        //                     panelMain.ResumeDrawing();
-        //                     panelMain.ResumeLayout();
-        //                 }
-        //             }
-        //         }
+        private void mainSplitContainer_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            var changingUi = false;
+            try
+            {
+                changingUi = true;
+                panelMain.SuspendLayout();
+                panelMain.SuspendDrawing();
+                SetControlSize(null);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                if (changingUi)
+                {
+                    panelMain.ResumeDrawing();
+                    panelMain.ResumeLayout();
+                }
+            }
+        }
 
         //         private void logWindowToolStripMenuItem_Click(object sender, EventArgs e)
         //         {
@@ -1512,10 +1513,10 @@ namespace ServiceBusExplorer.Forms
         //             Close();
         //         }
 
-        //         private void clearLog_Click(object sender, EventArgs e)
-        //         {
-        //             lstLog.Items.Clear();
-        //         }
+        private void clearLog_Click(object sender, EventArgs e)
+        {
+            lstLog.Items.Clear();
+        }
 
         //         private void lstLog_Leave(object sender, EventArgs e)
         //         {
@@ -4026,194 +4027,194 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         void GetServiceBusNamespaceSettingsFromConfiguration()
-        //         {
-        //             if (serviceBusHelper == null)
-        //             {
-        //                 return;
-        //             }
+        void GetServiceBusNamespaceSettingsFromConfiguration()
+        {
+            if (_serviceBusHelper == null)
+            {
+                return;
+            }
 
-        //             var currentSettings = new MainSettings
-        //             {
-        //                 LogFontSize = logFontSize,
-        //                 TreeViewFontSize = treeViewFontSize,
-        //                 RetryCount = RetryHelper.RetryCount,
-        //                 RetryTimeout = RetryHelper.RetryTimeout,
-        //                 ReceiveTimeout = ReceiveTimeout,
-        //                 ServerTimeout = ServerTimeout,
-        //                 PrefetchCount = PrefetchCount,
-        //                 TopCount = TopCount,
-        //                 SenderThinkTime = SenderThinkTime,
-        //                 ReceiverThinkTime = ReceiverThinkTime,
-        //                 MonitorRefreshInterval = MonitorRefreshInterval,
-        //                 ShowMessageCount = showMessageCount,
-        //                 UseAscii = UseAscii,
-        //                 SaveMessageToFile = saveMessageToFile,
-        //                 SavePropertiesToFile = savePropertiesToFile,
-        //                 SaveCheckpointsToFile = saveCheckpointsToFile,
-        //                 Label = Label,
-        //                 MessageFile = messageFile,
-        //                 MessageText = MessageText,
-        //                 MessageContentType = MessageContentType,
-        //                 SelectedEntities = SelectedEntities,
-        //                 SelectedMessageCounts = SelectedMessageCounts,
-        //                 MessageBodyType = messageBodyType,
-        //                 ConnectivityMode = ServiceBusHelper.ConnectivityMode,
-        //                 UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
-        //                 ProxyOverrideDefault = ProxyOverrideDefault,
-        //                 ProxyAddress = ProxyAddress,
-        //                 ProxyBypassList = ProxyBypassList,
-        //                 ProxyBypassOnLocal = ProxyBypassOnLocal,
-        //                 ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
-        //                 ProxyUserName = ProxyUserName,
-        //                 ProxyPassword = ProxyPassword,
-        //                 NodesColors = NodesColors
-        //             };
+            var currentSettings = new MainSettings
+            {
+                LogFontSize = logFontSize,
+                TreeViewFontSize = treeViewFontSize,
+                RetryCount = RetryHelper.RetryCount,
+                RetryTimeout = RetryHelper.RetryTimeout,
+                ReceiveTimeout = ReceiveTimeout,
+                ServerTimeout = ServerTimeout,
+                PrefetchCount = PrefetchCount,
+                TopCount = TopCount,
+                SenderThinkTime = SenderThinkTime,
+                ReceiverThinkTime = ReceiverThinkTime,
+                MonitorRefreshInterval = MonitorRefreshInterval,
+                ShowMessageCount = showMessageCount,
+                UseAscii = UseAscii,
+                SaveMessageToFile = saveMessageToFile,
+                SavePropertiesToFile = savePropertiesToFile,
+                SaveCheckpointsToFile = saveCheckpointsToFile,
+                Label = Label,
+                MessageFile = messageFile,
+                MessageText = MessageText,
+                MessageContentType = MessageContentType,
+                SelectedEntities = SelectedEntities,
+                SelectedMessageCounts = SelectedMessageCounts,
+                MessageBodyType = messageBodyType,
+                //ConnectivityMode = ServiceBusHelper.ConnectivityMode,
+                //UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets,
+                ProxyOverrideDefault = ProxyOverrideDefault,
+                ProxyAddress = ProxyAddress,
+                ProxyBypassList = ProxyBypassList,
+                ProxyBypassOnLocal = ProxyBypassOnLocal,
+                ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
+                ProxyUserName = ProxyUserName,
+                ProxyPassword = ProxyPassword,
+                NodesColors = NodesColors
+            };
 
-        //             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
+            var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
 
-        //             var tempLogFontSize = readSettings.LogFontSize;
-        //             if (tempLogFontSize != logFontSize)
-        //             {
-        //                 logFontSize = tempLogFontSize;
-        //                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
-        //             }
+            var tempLogFontSize = readSettings.LogFontSize;
+            if (tempLogFontSize != logFontSize)
+            {
+                logFontSize = tempLogFontSize;
+                lstLog.Font = new Font(lstLog.Font.FontFamily, (float)logFontSize);
+            }
 
-        //             var tempTreeViewFontSize = readSettings.TreeViewFontSize;
-        //             if (tempTreeViewFontSize != treeViewFontSize)
-        //             {
-        //                 treeViewFontSize = tempTreeViewFontSize;
-        //                 serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
-        //             }
+            var tempTreeViewFontSize = readSettings.TreeViewFontSize;
+            if (tempTreeViewFontSize != treeViewFontSize)
+            {
+                treeViewFontSize = tempTreeViewFontSize;
+                serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
+            }
 
-        //             RetryHelper.RetryCount = readSettings.RetryCount;
-        //             RetryHelper.RetryTimeout = readSettings.RetryTimeout;
+            RetryHelper.RetryCount = readSettings.RetryCount;
+            RetryHelper.RetryTimeout = readSettings.RetryTimeout;
 
-        //             var tempReceiveTimeout = readSettings.ReceiveTimeout;
-        //             if (tempReceiveTimeout >= 0)
-        //             {
-        //                 ReceiveTimeout = tempReceiveTimeout;
-        //             }
+            var tempReceiveTimeout = readSettings.ReceiveTimeout;
+            if (tempReceiveTimeout >= 0)
+            {
+                ReceiveTimeout = tempReceiveTimeout;
+            }
 
-        //             var tempServerTimeout = readSettings.ServerTimeout;
-        //             if (tempServerTimeout >= 0)
-        //             {
-        //                 ServerTimeout = tempServerTimeout;
-        //             }
+            var tempServerTimeout = readSettings.ServerTimeout;
+            if (tempServerTimeout >= 0)
+            {
+                ServerTimeout = tempServerTimeout;
+            }
 
-        //             var tempPrefetchCount = readSettings.PrefetchCount;
-        //             if (tempPrefetchCount >= 0)
-        //             {
-        //                 PrefetchCount = tempPrefetchCount;
-        //             }
+            var tempPrefetchCount = readSettings.PrefetchCount;
+            if (tempPrefetchCount >= 0)
+            {
+                PrefetchCount = tempPrefetchCount;
+            }
 
-        //             var tempTopValue = readSettings.TopCount;
-        //             if (tempTopValue > 0)
-        //             {
-        //                 TopCount = tempTopValue;
-        //             }
+            var tempTopValue = readSettings.TopCount;
+            if (tempTopValue > 0)
+            {
+                TopCount = tempTopValue;
+            }
 
-        //             var tempSenderThinkTime = readSettings.SenderThinkTime;
-        //             if (tempSenderThinkTime >= 0)
-        //             {
-        //                 SenderThinkTime = tempSenderThinkTime;
-        //             }
+            var tempSenderThinkTime = readSettings.SenderThinkTime;
+            if (tempSenderThinkTime >= 0)
+            {
+                SenderThinkTime = tempSenderThinkTime;
+            }
 
-        //             var tempReceiverThinkTime = readSettings.ReceiverThinkTime;
-        //             if (tempReceiverThinkTime >= 0)
-        //             {
-        //                 ReceiverThinkTime = tempReceiverThinkTime;
-        //             }
+            var tempReceiverThinkTime = readSettings.ReceiverThinkTime;
+            if (tempReceiverThinkTime >= 0)
+            {
+                ReceiverThinkTime = tempReceiverThinkTime;
+            }
 
-        //             var tempMonitorRefreshIntervalValue = readSettings.MonitorRefreshInterval;
-        //             if (tempMonitorRefreshIntervalValue >= 0)
-        //             {
-        //                 MonitorRefreshInterval = tempMonitorRefreshIntervalValue;
-        //             }
+            var tempMonitorRefreshIntervalValue = readSettings.MonitorRefreshInterval;
+            if (tempMonitorRefreshIntervalValue >= 0)
+            {
+                MonitorRefreshInterval = tempMonitorRefreshIntervalValue;
+            }
 
-        //             showMessageCount = readSettings.ShowMessageCount;
-        //             UseAscii = readSettings.UseAscii;
-        //             saveMessageToFile = readSettings.SaveMessageToFile;
-        //             savePropertiesToFile = readSettings.SavePropertiesToFile;
-        //             saveCheckpointsToFile = readSettings.SaveCheckpointsToFile;
+            showMessageCount = readSettings.ShowMessageCount;
+            UseAscii = readSettings.UseAscii;
+            saveMessageToFile = readSettings.SaveMessageToFile;
+            savePropertiesToFile = readSettings.SavePropertiesToFile;
+            saveCheckpointsToFile = readSettings.SaveCheckpointsToFile;
 
-        //             Label = readSettings.Label;
+            Label = readSettings.Label;
 
-        //             MessageText = readSettings.MessageText;
-        //             MessageContentType = readSettings.MessageContentType;
-        //             messageFile = readSettings.MessageFile;
+            MessageText = readSettings.MessageText;
+            MessageContentType = readSettings.MessageContentType;
+            messageFile = readSettings.MessageFile;
 
-        //             SelectedEntities = readSettings.SelectedEntities;
-        //             SelectedMessageCounts = readSettings.SelectedMessageCounts;
-        //             messageBodyType = readSettings.MessageBodyType;
-        //             ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
-        //             ServiceBusHelper.UseAmqpWebSockets = readSettings.UseAmqpWebSockets;
-        //             ServiceBusHelper.EncodingType = readSettings.EncodingType;
+            SelectedEntities = readSettings.SelectedEntities;
+            SelectedMessageCounts = readSettings.SelectedMessageCounts;
+            messageBodyType = readSettings.MessageBodyType;
+            //ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
+            //ServiceBusHelper.UseAmqpWebSockets = readSettings.UseAmqpWebSockets;
+            _serviceBusHelper.EncodingType = readSettings.EncodingType;
 
-        //             // Get values for settings that are not part of MainSettings
-        //             // configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
+            // Get values for settings that are not part of MainSettings
+            // configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-        //             var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+            var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
 
-        //             serviceBusHelper.TraceEnabled =
-        //                 configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,
-        //                     serviceBusHelper.TraceEnabled);
+            //_serviceBusHelper.TraceEnabled =
+            //    configuration.GetBoolValue(ConfigurationParameters.DebugFlagParameter,
+            //        serviceBusHelper.TraceEnabled);
 
-        //             serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
-        //                 serviceBusHelper.Scheme);
+            //serviceBusHelper.Scheme = configuration.GetStringValue(ConfigurationParameters.SchemeParameter,
+            //    serviceBusHelper.Scheme);
 
-        //             var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
+            //var messageDeferProvider = configuration.GetStringValue(ConfigurationParameters.MessageDeferProviderParameter);
 
-        //             if (!string.IsNullOrWhiteSpace(messageDeferProvider))
-        //             {
-        //                 try
-        //                 {
-        //                     var type = Type.GetType(messageDeferProvider);
-        //                     if (type != null &&
-        //                         type.GetInterfaces().Contains(typeof(IMessageDeferProvider)))
-        //                     {
-        //                         serviceBusHelper.MessageDeferProviderType = type;
-        //                     }
-        //                 }
-        //                 catch (Exception)
-        //                 {
-        //                     // Comment to avoid ReSharper warning
-        //                 }
-        //             }
+            //if (!string.IsNullOrWhiteSpace(messageDeferProvider))
+            //{
+            //    try
+            //    {
+            //        var type = Type.GetType(messageDeferProvider);
+            //        if (type != null &&
+            //            type.GetInterfaces().Contains(typeof(IMessageDeferProvider)))
+            //        {
+            //            serviceBusHelper.MessageDeferProviderType = type;
+            //        }
+            //    }
+            //    catch (Exception)
+            //    {
+            //        // Comment to avoid ReSharper warning
+            //    }
+            //}
 
-        //             SetProxy(readSettings);
+            SetProxy(readSettings);
 
-        //             NodesColors = readSettings.NodesColors;
-        //         }
+            NodesColors = readSettings.NodesColors;
+        }
 
-        //         private void SetProxy(MainSettings settings)
-        //         {
-        //             if (initialDefaultWebProxy == null)
-        //             {
-        //                 initialDefaultWebProxy = WebRequest.DefaultWebProxy;
-        //             }
+        private void SetProxy(MainSettings settings)
+        {
+            if (initialDefaultWebProxy == null)
+            {
+                initialDefaultWebProxy = WebRequest.DefaultWebProxy;
+            }
 
-        //             ProxyOverrideDefault = settings.ProxyOverrideDefault;
-        //             ProxyAddress = settings.ProxyAddress;
-        //             ProxyBypassList = settings.ProxyBypassList;
-        //             ProxyBypassOnLocal = settings.ProxyBypassOnLocal;
-        //             ProxyUseDefaultCredentials = settings.ProxyUseDefaultCredentials;
-        //             ProxyUserName = settings.ProxyUserName;
-        //             ProxyPassword = settings.ProxyPassword;
+            ProxyOverrideDefault = settings.ProxyOverrideDefault;
+            ProxyAddress = settings.ProxyAddress;
+            ProxyBypassList = settings.ProxyBypassList;
+            ProxyBypassOnLocal = settings.ProxyBypassOnLocal;
+            ProxyUseDefaultCredentials = settings.ProxyUseDefaultCredentials;
+            ProxyUserName = settings.ProxyUserName;
+            ProxyPassword = settings.ProxyPassword;
 
-        //             if (settings.ProxyOverrideDefault && !string.IsNullOrWhiteSpace(settings.ProxyAddress))
-        //             {
-        //                 var credentials = settings.ProxyUseDefaultCredentials
-        //                     ? CredentialCache.DefaultNetworkCredentials
-        //                     : new NetworkCredential(settings.ProxyUserName, settings.ProxyPassword);
-        //                 var proxy = new WebProxy(settings.ProxyAddress, settings.ProxyBypassOnLocal, settings.ProxyBypassList.Split(';'), credentials);
-        //                 WebRequest.DefaultWebProxy = proxy;
-        //             }
-        //             else
-        //             {
-        //                 WebRequest.DefaultWebProxy = initialDefaultWebProxy;
-        //             }
-        //         }
+            if (settings.ProxyOverrideDefault && !string.IsNullOrWhiteSpace(settings.ProxyAddress))
+            {
+                var credentials = settings.ProxyUseDefaultCredentials
+                    ? CredentialCache.DefaultNetworkCredentials
+                    : new NetworkCredential(settings.ProxyUserName, settings.ProxyPassword);
+                var proxy = new WebProxy(settings.ProxyAddress, settings.ProxyBypassOnLocal, settings.ProxyBypassList.Split(';'), credentials);
+                WebRequest.DefaultWebProxy = proxy;
+            }
+            else
+            {
+                WebRequest.DefaultWebProxy = initialDefaultWebProxy;
+            }
+        }
 
         //         private void ReadEventHubPartitionCheckpointFile()
         //         {
@@ -4341,27 +4342,17 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         public string MessageText { get; set; }
-
-        //         public string MessageContentType { get; set; }
-
-        //         public string Label { get; set; }
-
-        //         public int ReceiveTimeout { get; set; } = 1;
-
-                 public int ServerTimeout { get; set; } = 5;
-
-        //         public int PrefetchCount { get; set; }
-
-        //         public int TopCount { get; set; } = 10;
-
-        //         public int SenderThinkTime { get; set; } = 100;
-
-        //         public int ReceiverThinkTime { get; set; } = 100;
-
-        //         public int MonitorRefreshInterval { get; set; } = 30;
-
-        //         public bool UseAscii { get; set; } = true;
+        public string MessageText { get; set; }
+        public string MessageContentType { get; set; }
+        public string Label { get; set; }
+        public int ReceiveTimeout { get; set; } = 1;
+        public int ServerTimeout { get; set; } = 5;
+        public int PrefetchCount { get; set; }
+        public int TopCount { get; set; } = 10;
+        public int SenderThinkTime { get; set; } = 100;
+        public int ReceiverThinkTime { get; set; } = 100;
+        public int MonitorRefreshInterval { get; set; } = 30;
+        public bool UseAscii { get; set; } = true;
 
         public List<string> SelectedEntities { get; private set; } = new List<string>();
         public List<string> SelectedMessageCounts { get; private set; } = new List<string>();
@@ -6948,22 +6939,22 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        //         {
-        //             cancellationTokenSource.Cancel(false);
-        //             if (saveMessageToFile)
-        //             {
-        //                 MessageAndPropertiesHelper.WriteMessage(MessageText);
-        //             }
-        //             if (savePropertiesToFile)
-        //             {
-        //                 MessageAndPropertiesHelper.WriteProperties();
-        //             }
-        //             if (saveCheckpointsToFile)
-        //             {
-        //                 EventProcessorCheckpointHelper.WriteCheckpoints();
-        //             }
-        //         }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            cancellationTokenSource.Cancel(false);
+            if (saveMessageToFile)
+            {
+                MessageAndPropertiesHelper.WriteMessage(MessageText);
+            }
+            if (savePropertiesToFile)
+            {
+                //MessageAndPropertiesHelper.WriteProperties();
+            }
+            if (saveCheckpointsToFile)
+            {
+                //EventProcessorCheckpointHelper.WriteCheckpoints();
+            }
+        }
 
         //         private async void filterEntity_Click(object sender, EventArgs e)
         //         {
@@ -7171,84 +7162,85 @@ namespace ServiceBusExplorer.Forms
         //             SaveLog(false);
         //         }
 
-        //         private void SaveLog(bool all)
-        //         {
-        //             try
-        //             {
-        //                 saveFileDialog.Title = SaveAsTitle;
-        //                 saveFileDialog.DefaultExt = SaveAsExtension;
-        //                 saveFileDialog.Filter = SaveAsFilter;
-        //                 saveFileDialog.FileName = string.Format(LogFileNameFormat, DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
-        //                 if (saveFileDialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName))
-        //                 {
-        //                     return;
-        //                 }
-        //                 using (var writer = new StreamWriter(saveFileDialog.FileName))
-        //                 {
-        //                     if (all)
-        //                     {
-        //                         foreach (var t in lstLog.Items)
-        //                         {
-        //                             writer.WriteLine(t as string);
-        //                         }
-        //                     }
-        //                     else
-        //                     {
-        //                         foreach (var t in lstLog.SelectedItems)
-        //                         {
-        //                             writer.WriteLine(t.ToString());
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //         }
+        private void SaveLog(bool all)
+        {
+            try
+            {
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = SaveAsExtension;
+                saveFileDialog.Filter = SaveAsFilter;
+                saveFileDialog.FileName = string.Format(LogFileNameFormat, DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+                if (saveFileDialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    if (all)
+                    {
+                        foreach (var t in lstLog.Items)
+                        {
+                            writer.WriteLine(t as string);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var t in lstLog.SelectedItems)
+                        {
+                            writer.WriteLine(t.ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
 
-        //         private async void MainForm_Shown(object sender, EventArgs e)
-        //         {
-        //             try
-        //             {
-        //                 Refresh();
-        //                 if (string.IsNullOrWhiteSpace(argumentName) || string.IsNullOrWhiteSpace(argumentValue))
-        //                 {
-        //                     return;
-        //                 }
-        //                 if (string.Compare(argumentName, "/n", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-        //                     string.Compare(argumentName, "-n", StringComparison.InvariantCultureIgnoreCase) == 0)
-        //                 {
-        //                     var item = serviceBusHelper.ServiceBusNamespaces.FirstOrDefault(s => string.Compare(s.Key, argumentValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-        //                     if (item.Key == null && item.Value == null)
-        //                     {
-        //                         WriteToLog(string.Format(NoNamespaceWithKeyMessageFormat, argumentValue));
-        //                         return;
-        //                     }
-        //                     var ns = item.Value;
-        //                     if (ns != null)
-        //                     {
-        //                         var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
-        //                         serviceBusHelper.Connect(serviceBusNamespace);
-        //                         SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-        //                     }
-        //                 }
-        //                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-        //                     string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
-        //                 {
-        //                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
-        //                     serviceBusHelper.Connect(serviceBusNamespace);
-        //                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-        //                 }
-        //                 panelMain.Controls.Clear();
-        //                 panelMain.BackColor = SystemColors.Window;
-        //                 await ShowEntities(EntityType.All);
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //         }
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+
+            //try
+            //{
+            //    Refresh();
+            //    if (string.IsNullOrWhiteSpace(argumentName) || string.IsNullOrWhiteSpace(argumentValue))
+            //    {
+            //        return;
+            //    }
+            //    if (string.Compare(argumentName, "/n", StringComparison.InvariantCultureIgnoreCase) == 0 ||
+            //        string.Compare(argumentName, "-n", StringComparison.InvariantCultureIgnoreCase) == 0)
+            //    {
+            //        var item = serviceBusHelper.ServiceBusNamespaces.FirstOrDefault(s => string.Compare(s.Key, argumentValue, StringComparison.InvariantCultureIgnoreCase) == 0);
+            //        if (item.Key == null && item.Value == null)
+            //        {
+            //            WriteToLog(string.Format(NoNamespaceWithKeyMessageFormat, argumentValue));
+            //            return;
+            //        }
+            //        var ns = item.Value;
+            //        if (ns != null)
+            //        {
+            //            var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(item.Key, ns.ConnectionString, StaticWriteToLog);
+            //            serviceBusHelper.Connect(serviceBusNamespace);
+            //            SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+            //        }
+            //    }
+            //    if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
+            //        string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
+            //    {
+            //        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
+            //        serviceBusHelper.Connect(serviceBusNamespace);
+            //        SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+            //    }
+            //    panelMain.Controls.Clear();
+            //    panelMain.BackColor = SystemColors.Window;
+            //    await ShowEntities(EntityType.All);
+            //}
+            //catch (Exception ex)
+            //{
+            //    HandleException(ex);
+            //}
+        }
 
         //         private void getPartitionDataMenuItem_Click(object sender, EventArgs e)
         //         {
@@ -7458,13 +7450,13 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void linkLabelNewVersionAvailable_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        //         {
-        //             using (var form = new NewVersionAvailableForm())
-        //             {
-        //                 form.ShowDialog();
-        //             }
-        //         }
+        private void linkLabelNewVersionAvailable_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (var form = new NewVersionAvailableForm())
+            {
+                form.ShowDialog();
+            }
+        }
         //         #endregion
 
         //         private async void bulkPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)

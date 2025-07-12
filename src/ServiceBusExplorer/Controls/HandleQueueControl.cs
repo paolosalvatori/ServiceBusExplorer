@@ -236,7 +236,7 @@ namespace ServiceBusExplorer.Controls
         //private readonly WriteToLogDelegate writeToLog = default!;
         //private readonly string path = default!;
         private readonly List<TabPage> hiddenPages = new List<TabPage>();
-        private readonly bool premiumNamespace = false; //TODO: 
+        private readonly bool premiumNamespace = false;
         //private BrokeredMessage brokeredMessage = default!;
         //private BrokeredMessage deadletterMessage = default!;
         //private BrokeredMessage transferDeadletterMessage = default!;
@@ -301,10 +301,10 @@ namespace ServiceBusExplorer.Controls
             //this.path = path;
             this.queueDescription = queueDescription;
 
-            //if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
-            //{
-            //    this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
-            //}
+            if (!_serviceBusHelper.ConnectionStringContainsEntityPath())
+            {
+                this.premiumNamespace = _serviceBusHelper.IsPremiumNamespace();
+            }
 
             this.duplicateQueue = duplicateQueue;
 
@@ -390,7 +390,7 @@ namespace ServiceBusExplorer.Controls
 
         //    Application.UseWaitCursor = true;
 
-        //    QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
+        //    QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.Get_serviceBusHelper());
         //    purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
         //    purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
         //    await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription));
@@ -3384,10 +3384,10 @@ namespace ServiceBusExplorer.Controls
         //    {
         //        thisForm.UseWaitCursor = true;
 
-        //        var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+        //        var _serviceBusHelper = serviceBusHelper.Get_serviceBusHelper();
 
         //        await CancelScheduledMessagesHelper.CancelScheduledMessages(
-        //            serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
+        //            _serviceBusHelper, this.queueDescription.Path, sequenceNumbersToCancel);
         //    }
         //    finally
         //    {

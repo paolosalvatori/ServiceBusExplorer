@@ -24,6 +24,7 @@ using Azure.Messaging.ServiceBus.Administration;
 using Common.Contracts;
 using Microsoft.Azure.NotificationHubs;
 using ServiceBusExplorer.Common.Abstractions;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
@@ -47,13 +48,18 @@ public class ServiceBusService : IServiceBusService
         ByteArray
     }
 
+
     public ServiceBusAdministrationClient Client { get; set; }
-    public Uri NamespaceUri { get; set; }
     public string ConnectionString { get; set; }
     public ServiceBusTransportType TransportType { get; set; }
+    public EncodingType EncodingType { get; set; }
+
 
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
     public ServiceBusNamespace CurrentNamespace { get; private set; }
+
+    private bool _isCurrentNamespacePremium { get; set; }
+
 
     //public WriteToLogDelegate WriteToLog
     //{
@@ -72,18 +78,6 @@ public class ServiceBusService : IServiceBusService
     {
     }
 
-    public bool ConnectionStringContainsEntityPath()
-    {
-        var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
-
-        if (connectionStringProperties?.EntityPath != null)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     /// <summary>
     ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
     /// </summary>
@@ -94,8 +88,6 @@ public class ServiceBusService : IServiceBusService
             ConnectionString,
             new ServiceBusClientOptions { TransportType = this.TransportType });
     }
-
-    private ServiceBusNamespace _serviceBusNamespace { get; set; }
 
     /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
@@ -116,10 +108,10 @@ public class ServiceBusService : IServiceBusService
 
         await Task.CompletedTask;
 
-        return ConnectInternal(busNamespace);
+        return await ConnectAsyncInternal(busNamespace);
     }
 
-    private bool ConnectInternal(ServiceBusNamespace busNamespace)
+    private async Task<bool> ConnectAsyncInternal(ServiceBusNamespace busNamespace)
     {
         var connectionString = busNamespace.ConnectionString;
 
@@ -127,9 +119,12 @@ public class ServiceBusService : IServiceBusService
 
         CurrentNamespace = busNamespace;
 
+        NamespaceProperties namespaceProperties = await Client.GetNamespacePropertiesAsync().ConfigureAwait(false);
+
+        _isCurrentNamespacePremium = namespaceProperties.MessagingSku == MessagingSku.Premium;
+
         return true;
     }
-
 
     private bool TestNamespaceHostIsContactable(ServiceBusNamespace busNamespace)
     {
@@ -167,5 +162,16 @@ public class ServiceBusService : IServiceBusService
             //TODO: 
             return []; 
         }
+    }
+
+    public bool IsPremiumNamespace()
+    {
+        return _isCurrentNamespacePremium; 
+    }
+
+    public bool ConnectionStringContainsEntityPath()
+    {
+        var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
+        return connectionStringProperties?.EntityPath != null;
     }
 }
