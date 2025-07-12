@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Forms
             //useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
 
             cboTransportType.DataSource = Enum.GetValues(typeof(ServiceBusTransportType));
-            cboTransportType.SelectedItem = serviceBusHelper.TransportType;
+            cboTransportType.SelectedItem = serviceBusHelper.Connection.Namespace.TransportType;
 
             cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 ? connectionStringIndex : 0;
             if (cboServiceBusNamespace.Text == EnterConnectionString)

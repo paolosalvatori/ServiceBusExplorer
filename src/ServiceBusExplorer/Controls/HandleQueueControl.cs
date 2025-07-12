@@ -632,7 +632,7 @@ namespace ServiceBusExplorer.Controls
                     Name = "ClaimValue",
                     DataPropertyName = "ClaimValue"
                 });
-                if (_serviceBusHelper.CurrentNamespace.IsCloudNamespace)
+                if (_serviceBusHelper.Connection.Namespace.IsCloudNamespace)
                 {
                     authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
                     {

@@ -441,7 +441,7 @@ namespace ServiceBusExplorer.Forms
                     //ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                         connectForm.ConnectionString, StaticWriteToLog);
-                    await _serviceBusHelper.ConnectAsync(serviceBusNamespace);
+                    await _serviceBusHelper.ConnectAsync(serviceBusNamespace, _encodingType);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
@@ -4027,6 +4027,9 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
+        // TODO: Replace ref to Helper encoding type 
+        private EncodingType _encodingType { get; set; }
+
         void GetServiceBusNamespaceSettingsFromConfiguration()
         {
             if (_serviceBusHelper == null)
@@ -4149,7 +4152,7 @@ namespace ServiceBusExplorer.Forms
             messageBodyType = readSettings.MessageBodyType;
             //ServiceBusHelper.ConnectivityMode = readSettings.ConnectivityMode;
             //ServiceBusHelper.UseAmqpWebSockets = readSettings.UseAmqpWebSockets;
-            _serviceBusHelper.EncodingType = readSettings.EncodingType;
+            _encodingType = readSettings.EncodingType;
 
             // Get values for settings that are not part of MainSettings
             // configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
@@ -4460,7 +4463,7 @@ namespace ServiceBusExplorer.Forms
             SelectedEntities.Add(Constants.QueueEntities);
             try
             {
-                if (_serviceBusHelper != null && _serviceBusHelper.CurrentNamespace.Uri != null)
+                if (_serviceBusHelper != null && _serviceBusHelper.Connection.Namespace.Uri != null)
                 {
                     Cursor.Current = Cursors.WaitCursor;
                     serviceBusTreeView.SuspendDrawing();
@@ -4475,7 +4478,7 @@ namespace ServiceBusExplorer.Forms
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();
-                        rootNode = serviceBusTreeView.Nodes.Add(_serviceBusHelper.CurrentNamespace.Uri, _serviceBusHelper.CurrentNamespace.Uri, AzureIconIndex, AzureIconIndex);
+                        rootNode = serviceBusTreeView.Nodes.Add(_serviceBusHelper.Connection.Namespace.Uri, _serviceBusHelper.Connection.Namespace.Uri, AzureIconIndex, AzureIconIndex);
                         rootNode.ContextMenuStrip = rootContextMenuStrip;
                         if (SelectedEntities.Contains(Constants.QueueEntities))
                         {
@@ -4489,7 +4492,7 @@ namespace ServiceBusExplorer.Forms
                         }
 
                         // NOTE: Relays are not actually supported by Service Bus for Windows Server
-                        if (_serviceBusHelper.CurrentNamespace.IsCloudNamespace)
+                        if (_serviceBusHelper.Connection.Namespace.IsCloudNamespace)
                         {
                             if (SelectedEntities.Contains(Constants.EventHubEntities))
                             {
@@ -4509,7 +4512,7 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
                     updating = true;
-                    if (_serviceBusHelper.CurrentNamespace.IsCloudNamespace)
+                    if (_serviceBusHelper.Connection.Namespace.IsCloudNamespace)
                     {
                         if (SelectedEntities.Contains(Constants.EventHubEntities) &&
                             (entityType == EntityType.All ||
@@ -6228,7 +6231,7 @@ namespace ServiceBusExplorer.Forms
             }
             var segments = path.Split('/');
             var entityNode = node;
-            var currentUrl = _serviceBusHelper.CurrentNamespace?.Uri;
+            var currentUrl = _serviceBusHelper.Connection.Namespace?.Uri;
             for (var i = 0; i < segments.Length; i++)
             {
                 if (i < segments.Length - 1)

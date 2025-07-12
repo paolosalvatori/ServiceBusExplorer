@@ -38,6 +38,15 @@ namespace Common;
 
 public class ServiceBusService : IServiceBusService
 {
+    #region Private Constants 
+
+    private const string CloudServiceBusPostfix = ".servicebus.windows.net";
+    private const string GermanyServiceBusPostfix = ".servicebus.cloudapi.de";
+    private const string ChinaServiceBusPostfix = ".servicebus.chinacloudapi.cn";
+    private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
+
+    #endregion
+
     //readonly WriteToLogDelegate writeToLog;
 
     public enum BodyType
@@ -48,17 +57,16 @@ public class ServiceBusService : IServiceBusService
         ByteArray
     }
 
-
     public ServiceBusAdministrationClient Client { get; set; }
-    public string ConnectionString { get; set; }
+
+    public ServiceBusConnection Connection { get; private set; }
+
+    //public string ConnectionString { get; set; }
     public ServiceBusTransportType TransportType { get; set; }
     public EncodingType EncodingType { get; set; }
 
-
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
-    public ServiceBusNamespace CurrentNamespace { get; private set; }
 
-    private bool _isCurrentNamespacePremium { get; set; }
 
 
     //public WriteToLogDelegate WriteToLog
@@ -79,23 +87,13 @@ public class ServiceBusService : IServiceBusService
     }
 
     /// <summary>
-    ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
-    /// </summary>
-    /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
-    public ServiceBusClient CreateServiceBusClient()
-    {
-        return new ServiceBusClient(
-            ConnectionString,
-            new ServiceBusClientOptions { TransportType = this.TransportType });
-    }
-
-    /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
     /// </summary>
     /// <param name="busNamespace">The Service Bus namespace.</param>
     /// <returns>True if the operation succeeds, false otherwise.</returns>
-    public async Task<bool> ConnectAsync(ServiceBusNamespace busNamespace)
+    public async Task<bool> ConnectAsync(ServiceBusNamespace busNamespace, EncodingType encodingType)
     {
+        //TODO: What if we can't connect? 
         if (string.IsNullOrWhiteSpace(busNamespace?.ConnectionString))
         {
             throw new ArgumentException("The connection string argument cannot be null.");
@@ -108,20 +106,19 @@ public class ServiceBusService : IServiceBusService
 
         await Task.CompletedTask;
 
-        return await ConnectAsyncInternal(busNamespace);
+        return await ConnectAsyncInternal(busNamespace, encodingType);
     }
 
-    private async Task<bool> ConnectAsyncInternal(ServiceBusNamespace busNamespace)
+    private async Task<bool> ConnectAsyncInternal(ServiceBusNamespace busNamespace, EncodingType encodingType)
     {
         var connectionString = busNamespace.ConnectionString;
 
+        var namespaceProperties = await Client.GetNamespacePropertiesAsync().ConfigureAwait(false);
+        var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(connectionString);
+
+        Connection = new(busNamespace, connectionStringProperties, namespaceProperties, encodingType);
+
         Client = new ServiceBusAdministrationClient(connectionString);
-
-        CurrentNamespace = busNamespace;
-
-        NamespaceProperties namespaceProperties = await Client.GetNamespacePropertiesAsync().ConfigureAwait(false);
-
-        _isCurrentNamespacePremium = namespaceProperties.MessagingSku == MessagingSku.Premium;
 
         return true;
     }
@@ -166,12 +163,24 @@ public class ServiceBusService : IServiceBusService
 
     public bool IsPremiumNamespace()
     {
-        return _isCurrentNamespacePremium; 
+        return Connection.NamespaceProperties.MessagingSku == MessagingSku.Premium; 
     }
 
     public bool ConnectionStringContainsEntityPath()
     {
-        var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
-        return connectionStringProperties?.EntityPath != null;
+        return Connection.ConnectionStringProperties.EntityPath != null;
+    }
+
+    public bool IsCloudNamespace()
+    {
+        var connNamespace = Connection.Namespace;
+
+        return connNamespace.ConnectionStringType == ServiceBusNamespaceType.Cloud ||
+              (connNamespace != null &&
+               !string.IsNullOrWhiteSpace(connNamespace.Uri) &&
+               (connNamespace.Uri.Contains(CloudServiceBusPostfix) ||
+                connNamespace.Uri.Contains(TestServiceBusPostFix) ||
+                connNamespace.Uri.Contains(GermanyServiceBusPostfix) ||
+                connNamespace.Uri.Contains(ChinaServiceBusPostfix)));
     }
 }
