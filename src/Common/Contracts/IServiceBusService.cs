@@ -14,6 +14,8 @@ public interface IServiceBusService
 
     Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
     Dictionary<string, Type> BrokeredMessageInspectors { get; set; }
+    Dictionary<string, Type> BrokeredMessageGenerators { get; set; }
+
 
     bool IsPremiumNamespace();
     bool ConnectionStringContainsEntityPath();

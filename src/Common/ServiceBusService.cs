@@ -66,7 +66,9 @@ public class ServiceBusService : IServiceBusService
     public EncodingType EncodingType { get; set; }
 
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
-    public Dictionary<string, Type> BrokeredMessageInspectors { get; set; } = []; 
+    public Dictionary<string, Type> BrokeredMessageInspectors { get; set; } = [];
+    public Dictionary<string, Type> BrokeredMessageGenerators { get; set; } = [];
+
 
 
 

@@ -310,11 +310,11 @@ namespace ServiceBusExplorer.Forms
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-            //GetServiceBusNamespacesFromConfiguration();
-            //GetServiceBusNamespaceFromEnvironmentVariable();
+            GetServiceBusNamespacesFromConfiguration();
+            GetServiceBusNamespaceFromEnvironmentVariable();
             GetBrokeredMessageInspectorsFromConfiguration();
             //GetEventDataInspectorsFromConfiguration();
-            //GetBrokeredMessageGeneratorsFromConfiguration();
+            GetBrokeredMessageGeneratorsFromConfiguration();
             //GetEventDataGeneratorsFromConfiguration();
             GetServiceBusNamespaceSettingsFromConfiguration();
             //ReadEventHubPartitionCheckpointFile();
@@ -3796,32 +3796,29 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        //private void GetServiceBusNamespacesFromConfiguration()
-        //{
-        //try
-        //{
-        //var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
-        //ServiceBusService.ServiceBusNamespaces =
-        //    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
-        //}
-        //catch (Exception ex)
-        //{
-        //    HandleException(ex);
-        //}
-        //}
+        private void GetServiceBusNamespacesFromConfiguration()
+        {
+            try
+            {
+                var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+                _serviceBusHelper.ServiceBusNamespaces =
+                    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
 
-        //}
-        //}
-
-        //         private void GetServiceBusNamespaceFromEnvironmentVariable()
-        //         {
-        //             var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
-        //             if (!string.IsNullOrWhiteSpace(connectionString))
-        //             {
-        //                 const string key = @"HKEY_CURRENT_USER\Environment connection string";
-        //                 serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, connectionString, StaticWriteToLog));
-        //             }
-        //         }
+        private void GetServiceBusNamespaceFromEnvironmentVariable()
+        {
+            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                const string key = @"HKEY_CURRENT_USER\Environment connection string";
+                _serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, connectionString, StaticWriteToLog));
+            }
+        }
 
         private void GetBrokeredMessageInspectorsFromConfiguration()
         {
@@ -3838,7 +3835,6 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                var brokeredMessageInspectors = new Dictionary<string, Type>();
                 var e = hashtable.GetEnumerator();
 
                 while (e.MoveNext())
@@ -3926,56 +3922,56 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void GetBrokeredMessageGeneratorsFromConfiguration()
-        //         {
-        //             try
-        //             {
-        //                 if (serviceBusHelper == null)
-        //                 {
-        //                     return;
-        //                 }
-        //                 var hashtable = ConfigurationManager.GetSection(BrokeredMessageGenerators) as Hashtable;
+        private void GetBrokeredMessageGeneratorsFromConfiguration()
+        {
+            if (_serviceBusHelper == null)
+                return;
+            
 
-        //                 if (hashtable == null || hashtable.Count == 0)
-        //                 {
-        //                     return;
-        //                 }
-        //                 serviceBusHelper.BrokeredMessageGenerators = new Dictionary<string, Type>();
-        //                 var e = hashtable.GetEnumerator();
+            try
+            {
+                var hashtable = ConfigurationManager.GetSection(BrokeredMessageGenerators) as Hashtable;
 
-        //                 while (e.MoveNext())
-        //                 {
-        //                     if (!(e.Key is string) || !(e.Value is string))
-        //                     {
-        //                         continue;
-        //                     }
-        //                     try
-        //                     {
-        //                         var type = Type.GetType((string)e.Value);
-        //                         if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageGenerator)))
-        //                         {
-        //                             if (type.GetConstructor(BindingFlags.Instance |
-        //                                                     BindingFlags.Public |
-        //                                                     BindingFlags.NonPublic,
-        //                                                     null,
-        //                                                     Type.EmptyTypes,
-        //                                                     null) != null)
-        //                             {
-        //                                 serviceBusHelper.BrokeredMessageGenerators.Add(e.Key as string, type);
-        //                             }
-        //                         }
-        //                     }
-        //                     // ReSharper disable once EmptyGeneralCatchClause
-        //                     catch
-        //                     {
-        //                     }
-        //                 }
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 HandleException(ex);
-        //             }
-        //         }
+                if (hashtable == null || hashtable.Count == 0)
+                {
+                    return;
+                }
+
+                var e = hashtable.GetEnumerator();
+
+                while (e.MoveNext())
+                {
+                    if (!(e.Key is string) || !(e.Value is string))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        var type = Type.GetType((string)e.Value);
+                        if (type != null && type.GetInterfaces().Contains(typeof(IBrokeredMessageGenerator)))
+                        {
+                            if (type.GetConstructor(BindingFlags.Instance |
+                                                    BindingFlags.Public |
+                                                    BindingFlags.NonPublic,
+                                                    null,
+                                                    Type.EmptyTypes,
+                                                    null) != null)
+                            {
+                                _serviceBusHelper.BrokeredMessageGenerators.Add(e.Key as string, type);
+                            }
+                        }
+                    }
+                    // ReSharper disable once EmptyGeneralCatchClause
+                    catch
+                    {
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
 
         //         private void GetEventDataGeneratorsFromConfiguration()
         //         {
