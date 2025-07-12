@@ -7,6 +7,10 @@ on:
 
 env:
   VERSION_REGEX: 'ServiceBusExplorer-([\d.]+)(?:-preview)?\.zip$'
+
+  # winget-create will read the following environment variable to access the GitHub token needed for submitting a PR
+  # See https://aka.ms/winget-create-token
+  WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN }}
    
 jobs:
   winget:
@@ -29,6 +33,7 @@ jobs:
           }       
 
           $wingetPackage = "PaoloSalvatori.ServiceBusExplorer${{ github.event.release.prerelease && '.Preview' || '' }}"
+          Write-Host "Winget package: $wingetPackage"
 
           # URL
           $zipUrl = $wingetRelevantAsset.browser_download_url
@@ -38,6 +43,6 @@ jobs:
           Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
 
           # Submit a PR for the package
-          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls "$zipUrl|x64" --token "${{ secrets.GITHUB_TOKEN }}" 
+          .\wingetcreate.exe update $wingetPackage --submit --version $version --urls "$zipUrl|x64" 
 
           
