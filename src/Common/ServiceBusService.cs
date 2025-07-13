@@ -57,20 +57,13 @@ public class ServiceBusService : IServiceBusService
         ByteArray
     }
 
-    public ServiceBusAdministrationClient Client { get; set; }
-
     public ServiceBusConnection Connection { get; private set; }
-
-    //public string ConnectionString { get; set; }
-    public ServiceBusTransportType TransportType { get; set; }
-    public EncodingType EncodingType { get; set; }
+    public ServiceBusClient Client { get; private set; }
+    public ServiceBusAdministrationClient AdminClient { get; private set; }
 
     public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = [];
     public Dictionary<string, Type> BrokeredMessageInspectors { get; set; } = [];
     public Dictionary<string, Type> BrokeredMessageGenerators { get; set; } = [];
-
-
-
 
     //public WriteToLogDelegate WriteToLog
     //{
@@ -85,9 +78,7 @@ public class ServiceBusService : IServiceBusService
     //    this.writeToLog = writeToLog;
     //}
 
-    public ServiceBusService()
-    {
-    }
+    public ServiceBusService() { }
 
     /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
@@ -116,12 +107,13 @@ public class ServiceBusService : IServiceBusService
     {
         var connectionString = busNamespace.ConnectionString;
 
-        var namespaceProperties = await Client.GetNamespacePropertiesAsync().ConfigureAwait(false);
+        var namespaceProperties = await AdminClient.GetNamespacePropertiesAsync().ConfigureAwait(false);
         var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(connectionString);
 
         Connection = new(busNamespace, connectionStringProperties, namespaceProperties, encodingType);
 
-        Client = new ServiceBusAdministrationClient(connectionString);
+        AdminClient = new ServiceBusAdministrationClient(connectionString);
+        Client = new ServiceBusClient(connectionString);
 
         return true;
     }
@@ -150,9 +142,9 @@ public class ServiceBusService : IServiceBusService
         var queues = new List<QueueMetadata>();
         try
         {
-            await foreach (var properties in Client.GetQueuesAsync())
+            await foreach (var properties in AdminClient.GetQueuesAsync())
             {
-                var runtime = await Client.GetQueueRuntimePropertiesAsync(properties.Name);
+                var runtime = await AdminClient.GetQueueRuntimePropertiesAsync(properties.Name);
                 queues.Add(QueueMetadata.Create(properties, runtime)); 
             }
             return queues; 

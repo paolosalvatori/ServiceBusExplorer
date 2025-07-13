@@ -41,6 +41,7 @@ using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Common.Helpers;
 
 #endregion
 
@@ -217,6 +218,7 @@ namespace ServiceBusExplorer.Controls
         private const string AllFilesFilter = "Text Documents|*.txt|JSON Files|*.json|XML Files|*.xml|All Files (*.*)|*.*";
         private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
         private const string MessageFileFormatAutoRecognize = "BrokeredMessage_{0}_{1}.txt";
+        private const int MaxMessageCount = 20000;
 
         //***************************
         // Pages
@@ -698,7 +700,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    //ConfigureReadUserInterface();
+                    ConfigureReadUserInterface();
                 }
             }
             else
@@ -710,342 +712,342 @@ namespace ServiceBusExplorer.Controls
         ///// <summary>
         ///// Configures the user interface for the ReadOnly view.
         ///// </summary>
-        //private void ConfigureReadUserInterface()
-        //{
-        //    // Initialize textboxes
-        //    txtPath.ReadOnly = true;
-        //    txtPath.BackColor = SystemColors.Window;
-        //    txtPath.GotFocus += textBox_GotFocus;
+        private void ConfigureReadUserInterface()
+        {
+            // Initialize textboxes
+            txtPath.ReadOnly = true;
+            txtPath.BackColor = SystemColors.Window;
+            txtPath.GotFocus += textBox_GotFocus;
 
-        //    txtMessageText.ReadOnly = true;
-        //    txtMessageText.BackColor = SystemColors.Window;
-        //    txtMessageText.GotFocus += textBox_GotFocus;
+            txtMessageText.ReadOnly = true;
+            txtMessageText.BackColor = SystemColors.Window;
+            txtMessageText.GotFocus += textBox_GotFocus;
 
-        //    txtDeadletterText.ReadOnly = true;
-        //    txtDeadletterText.BackColor = SystemColors.Window;
-        //    txtDeadletterText.GotFocus += textBox_GotFocus;
+            txtDeadletterText.ReadOnly = true;
+            txtDeadletterText.BackColor = SystemColors.Window;
+            txtDeadletterText.GotFocus += textBox_GotFocus;
 
-        //    txtSessionState.ReadOnly = true;
-        //    txtSessionState.BackColor = SystemColors.Window;
-        //    txtSessionState.GotFocus += textBox_GotFocus;
+            txtSessionState.ReadOnly = true;
+            txtSessionState.BackColor = SystemColors.Window;
+            txtSessionState.GotFocus += textBox_GotFocus;
 
-        //    trackBarMaxQueueSize.Enabled = false;
+            trackBarMaxQueueSize.Enabled = false;
 
-        //    // Initialize Controls with Data
-        //    InitializeData();
+            // Initialize Controls with Data
+            InitializeData();
 
-        //    // Set Grid style
-        //    messagesDataGridView.EnableHeadersVisualStyles = false;
-        //    messagesDataGridView.AutoGenerateColumns = false;
-        //    messagesDataGridView.AutoSize = true;
+            // Set Grid style
+            messagesDataGridView.EnableHeadersVisualStyles = false;
+            messagesDataGridView.AutoGenerateColumns = false;
+            messagesDataGridView.AutoSize = true;
 
-        //    // Create the MessageId column
-        //    var textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageId,
-        //        Name = MessageId,
-        //        Width = 120
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the MessageId column
+            var textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the SequenceNumber column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = SequenceNumberValue,
-        //        Name = SequenceNumberName,
-        //        Width = 52
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Size column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageSize,
-        //        Name = MessageSize,
-        //        Width = 52
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Label column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = Label,
-        //        Name = Label,
-        //        Width = 120
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the EnqueuedTimeUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = EnqueuedTimeUtc,
-        //        Name = EnqueuedTimeUtc,
-        //        Width = 120
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the ExpiresAtUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = ExpiresAtUtc,
-        //        Name = ExpiresAtUtc,
-        //        Width = 120
-        //    };
-        //    messagesDataGridView.Columns.Add(textBoxColumn);
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            messagesDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Set the selection background color for all the cells.
-        //    messagesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-        //    messagesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+            // Set the selection background color for all the cells.
+            messagesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            messagesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-        //    // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-        //    // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-        //    messagesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            messagesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-        //    // Set the background color for all rows and for alternating rows.  
-        //    // The value for alternating rows overrides the value for all rows. 
-        //    messagesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-        //    messagesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    //messagesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-        //    //messagesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            messagesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            messagesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            //messagesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            //messagesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set the row and column header styles.
-        //    messagesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    messagesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    messagesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    messagesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the row and column header styles.
+            messagesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            messagesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            messagesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            messagesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set Grid style
-        //    sessionsDataGridView.EnableHeadersVisualStyles = false;
-        //    sessionsDataGridView.AutoGenerateColumns = false;
-        //    sessionsDataGridView.AutoSize = true;
+            // Set Grid style
+            sessionsDataGridView.EnableHeadersVisualStyles = false;
+            sessionsDataGridView.AutoGenerateColumns = false;
+            sessionsDataGridView.AutoSize = true;
 
-        //    // Create the SessionId column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = SessionId,
-        //        Name = SessionId,
-        //        Width = 120
-        //    };
-        //    sessionsDataGridView.Columns.Add(textBoxColumn);
+            // Create the SessionId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SessionId,
+                Name = SessionId,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Path column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = Path,
-        //        Name = Path,
-        //        Width = 120
-        //    };
-        //    sessionsDataGridView.Columns.Add(textBoxColumn);
+            // Create the Path column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Path,
+                Name = Path,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Mode column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = Mode,
-        //        Name = Mode,
-        //        Width = 120
-        //    };
-        //    sessionsDataGridView.Columns.Add(textBoxColumn);
+            // Create the Mode column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Mode,
+                Name = Mode,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the BatchFlushInterval column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = BatchFlushInterval,
-        //        Name = BatchFlushInterval,
-        //        Width = 120
-        //    };
-        //    sessionsDataGridView.Columns.Add(textBoxColumn);
+            // Create the BatchFlushInterval column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = BatchFlushInterval,
+                Name = BatchFlushInterval,
+                Width = 120
+            };
+            sessionsDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Set the selection background color for all the cells.
-        //    sessionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-        //    sessionsDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+            // Set the selection background color for all the cells.
+            sessionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            sessionsDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-        //    // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-        //    // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-        //    sessionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            sessionsDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-        //    // Set the background color for all rows and for alternating rows.  
-        //    // The value for alternating rows overrides the value for all rows. 
-        //    sessionsDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-        //    sessionsDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    //sessionsDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-        //    //sessionsDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            sessionsDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            sessionsDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            sessionsDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            sessionsDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set the row and column header styles.
-        //    sessionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    sessionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    sessionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    sessionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the row and column header styles.
+            sessionsDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            sessionsDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            sessionsDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set Grid style
-        //    deadletterDataGridView.EnableHeadersVisualStyles = false;
-        //    deadletterDataGridView.AutoGenerateColumns = false;
-        //    deadletterDataGridView.AutoSize = true;
+            // Set Grid style
+            deadletterDataGridView.EnableHeadersVisualStyles = false;
+            deadletterDataGridView.AutoGenerateColumns = false;
+            deadletterDataGridView.AutoSize = true;
 
-        //    // Create the MessageId column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageId,
-        //        Name = MessageId,
-        //        Width = 120
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the MessageId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the SequenceNumber column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = SequenceNumberValue,
-        //        Name = SequenceNumberName,
-        //        Width = 52
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Size column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageSize,
-        //        Name = MessageSize,
-        //        Width = 52
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Label column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = Label,
-        //        Name = Label,
-        //        Width = 120
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the EnqueuedTimeUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = EnqueuedTimeUtc,
-        //        Name = EnqueuedTimeUtc,
-        //        Width = 120
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the ExpiresAtUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = ExpiresAtUtc,
-        //        Name = ExpiresAtUtc,
-        //        Width = 120
-        //    };
-        //    deadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            deadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Set the selection background color for all the cells.
-        //    deadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-        //    deadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+            // Set the selection background color for all the cells.
+            deadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            deadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-        //    // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-        //    // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-        //    deadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
+            deadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-        //    // Set the background color for all rows and for alternating rows.  
-        //    // The value for alternating rows overrides the value for all rows. 
-        //    deadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-        //    deadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    //deadletterDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
-        //    //deadletterDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            deadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            deadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            deadletterDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            deadletterDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set the row and column header styles.
-        //    deadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    deadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the row and column header styles.
+            deadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            deadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            deadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            deadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set Grid style
-        //    transferDeadletterDataGridView.EnableHeadersVisualStyles = false;
-        //    transferDeadletterDataGridView.AutoGenerateColumns = false;
-        //    transferDeadletterDataGridView.AutoSize = true;
+            // Set Grid style
+            transferDeadletterDataGridView.EnableHeadersVisualStyles = false;
+            transferDeadletterDataGridView.AutoGenerateColumns = false;
+            transferDeadletterDataGridView.AutoSize = true;
 
-        //    // Create the MessageId column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageId,
-        //        Name = MessageId,
-        //        Width = 120
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the MessageId column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageId,
+                Name = MessageId,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the SequenceNumber column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = SequenceNumberValue,
-        //        Name = SequenceNumberName,
-        //        Width = 52
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the SequenceNumber column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = SequenceNumberValue,
+                Name = SequenceNumberName,
+                Width = 52
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Size column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = MessageSize,
-        //        Name = MessageSize,
-        //        Width = 52
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the Size column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = MessageSize,
+                Name = MessageSize,
+                Width = 52
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the Label column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = Label,
-        //        Name = Label,
-        //        Width = 120
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the Label column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = Label,
+                Name = Label,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the EnqueuedTimeUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = EnqueuedTimeUtc,
-        //        Name = EnqueuedTimeUtc,
-        //        Width = 120
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the EnqueuedTimeUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = EnqueuedTimeUtc,
+                Name = EnqueuedTimeUtc,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Create the ExpiresAtUtc column
-        //    textBoxColumn = new DataGridViewTextBoxColumn
-        //    {
-        //        DataPropertyName = ExpiresAtUtc,
-        //        Name = ExpiresAtUtc,
-        //        Width = 120
-        //    };
-        //    transferDeadletterDataGridView.Columns.Add(textBoxColumn);
+            // Create the ExpiresAtUtc column
+            textBoxColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = ExpiresAtUtc,
+                Name = ExpiresAtUtc,
+                Width = 120
+            };
+            transferDeadletterDataGridView.Columns.Add(textBoxColumn);
 
-        //    // Set the selection background color for all the cells.
-        //    transferDeadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-        //    transferDeadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+            // Set the selection background color for all the cells.
+            transferDeadletterDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
+            transferDeadletterDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
 
-        //    // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
-        //    transferDeadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
 
-        //    // Set the background color for all rows and for alternating rows.  
-        //    // The value for alternating rows overrides the value for all rows. 
-        //    transferDeadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-        //    transferDeadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the background color for all rows and for alternating rows.  
+            // The value for alternating rows overrides the value for all rows. 
+            transferDeadletterDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            transferDeadletterDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    // Set the row and column header styles.
-        //    transferDeadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    transferDeadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-        //    transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-        //    transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            // Set the row and column header styles.
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            transferDeadletterDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
+            transferDeadletterDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
-        //    checkedListBox.ItemCheck += checkedListBox_ItemCheck;
+            //checkedListBox.ItemCheck += checkedListBox_ItemCheck;
 
-        //    toolTip.SetToolTip(txtPath, PathTooltip);
-        //    toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
-        //    toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
-        //    toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
-        //    toolTip.SetToolTip(trackBarMaxQueueSize, MaxQueueSizeTooltip);
-        //    toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
-        //    toolTip.SetToolTip(tsDuplicateDetectionHistoryTimeWindow, DuplicateDetectionHistoryTimeWindowTooltip);
-        //    toolTip.SetToolTip(tsLockDuration, LockDurationTooltip);
-        //    toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
-        //    toolTip.SetToolTip(txtMaxDeliveryCount, MaxDeliveryCountTooltip);
-        //}
+            toolTip.SetToolTip(txtPath, PathTooltip);
+            toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
+            toolTip.SetToolTip(txtForwardTo, ForwardToTooltip);
+            toolTip.SetToolTip(txtForwardDeadLetteredMessagesTo, ForwardDeadLetteredMessagesToTooltip);
+            toolTip.SetToolTip(trackBarMaxQueueSize, MaxQueueSizeTooltip);
+            toolTip.SetToolTip(tsDefaultMessageTimeToLive, DefaultMessageTimeToLiveTooltip);
+            toolTip.SetToolTip(tsDuplicateDetectionHistoryTimeWindow, DuplicateDetectionHistoryTimeWindowTooltip);
+            toolTip.SetToolTip(tsLockDuration, LockDurationTooltip);
+            toolTip.SetToolTip(tsAutoDeleteOnIdle, AutoDeleteOnIdleTooltip);
+            toolTip.SetToolTip(txtMaxDeliveryCount, MaxDeliveryCountTooltip);
+        }
 
         ///// <summary>
         ///// Configures the user interface for the duplicate view.
@@ -1058,65 +1060,67 @@ namespace ServiceBusExplorer.Controls
             // clear property list view for old queue
             propertyListView.Items.Clear();
 
+            var sizeInGb = (int)queueDescription.MaxSizeInMegaBytes * 1024; 
             // special handling for max size if partitioning is enabled
-            //trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
-            //trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning ? queueDescription.MaxSizeInGigabytes() / 16
-            //    : queueDescription.MaxSizeInGigabytes();
+            trackBarMaxQueueSize.Maximum = _serviceBusHelper.IsCloudNamespace() ? 5 : 11;
+            trackBarMaxQueueSize.Value = queueDescription.EnablePartitioning 
+                ? sizeInGb / 16
+                : sizeInGb;
 
-            //ConfigureCreateUserInterface();
+            ConfigureCreateUserInterface();
         }
 
         ///// <summary>
         ///// Configures the users interface for the create view.
         ///// </summary>
-        //private void ConfigureCreateUserInterface()
-        //{
-        //    // Initialize buttons
-        //    btnCreateDelete.Text = CreateText;
-        //    btnCancelUpdate.Text = CancelText;
-        //    btnRefresh.Visible = false;
-        //    btnChangeStatus.Visible = false;
-        //    btnMessages.Visible = false;
-        //    btnSessions.Visible = false;
-        //    btnDeadletter.Visible = false;
-        //    btnPurgeMessages.Visible = false;
-        //    btnPurgeDeadletterQueueMessages.Visible = false;
-        //    btnTransferDeadletterQueue.Visible = false;
+        private void ConfigureCreateUserInterface()
+        {
+            // Initialize buttons
+            btnCreateDelete.Text = CreateText;
+            btnCancelUpdate.Text = CancelText;
+            btnRefresh.Visible = false;
+            btnChangeStatus.Visible = false;
+            btnMessages.Visible = false;
+            btnSessions.Visible = false;
+            btnDeadletter.Visible = false;
+            btnPurgeMessages.Visible = false;
+            btnPurgeDeadletterQueueMessages.Visible = false;
+            btnTransferDeadletterQueue.Visible = false;
 
-        //    // Create BindingList for Authorization Rules
-        //    var bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-        //    {
-        //        AllowEdit = true,
-        //        AllowNew = true,
-        //        AllowRemove = true
-        //    };
-        //    bindingList.ListChanged += bindingList_ListChanged;
-        //    authorizationRulesBindingSource.DataSource = bindingList;
-        //    authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
+            // Create BindingList for Authorization Rules
+            var bindingList = new BindingList<AuthorizationRuleWrapper2>(new List<AuthorizationRuleWrapper2>())
+            {
+                AllowEdit = true,
+                AllowNew = true,
+                AllowRemove = true
+            };
+            bindingList.ListChanged += bindingList_ListChanged;
+            authorizationRulesBindingSource.DataSource = bindingList;
+            authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
 
-        //    if (!string.IsNullOrWhiteSpace(path))
-        //    {
-        //        txtPath.Text = path;
-        //    }
-        //    txtPath.Focus();
-        //}
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                txtPath.Text = path;
+            }
+            txtPath.Focus();
+        }
 
-        //private void bindingList_ListChanged(object sender, ListChangedEventArgs e)
-        //{
-        //    if (e.ListChangedType == ListChangedType.ItemDeleted)
-        //    {
-        //        if (queueDescription != null &&
-        //            queueDescription.Authorization.Count > 0 &&
-        //            queueDescription.Authorization.Count > e.NewIndex)
-        //        {
-        //            var rule = queueDescription.Authorization.ElementAt(e.NewIndex);
-        //            if (rule != null)
-        //            {
-        //                queueDescription.Authorization.Remove(rule);
-        //            }
-        //        }
-        //    }
-        //}
+        private void bindingList_ListChanged(object? sender, ListChangedEventArgs e)
+        {
+            if (e.ListChangedType == ListChangedType.ItemDeleted)
+            {
+                if (queueDescription != null &&
+                    queueDescription.AuthorizationRules.Count > 0 &&
+                    queueDescription.AuthorizationRules.Count > e.NewIndex)
+                {
+                    var rule = queueDescription.AuthorizationRules.ElementAt(e.NewIndex);
+                    if (rule != null)
+                    {
+                        queueDescription.AuthorizationRules.Remove(rule);
+                    }
+                }
+            }
+        }
 
         private void InitializeData()
         {
@@ -1138,30 +1142,30 @@ namespace ServiceBusExplorer.Controls
             btnDeadletter.Visible = true;
 
             // Authorization Rules
-            //BindingList<AuthorizationRuleWrapper> bindingList;
-            //if (queueDescription.Authorization.Count > 0)
-            //{
-            //    var enumerable = queueDescription.Authorization.Select(r => new AuthorizationRuleWrapper(r));
-            //    bindingList = new BindingList<AuthorizationRuleWrapper>(enumerable.ToList())
-            //    {
-            //        AllowEdit = true,
-            //        AllowNew = true,
-            //        AllowRemove = true
-            //    };
+            BindingList<AuthorizationRuleWrapper2> bindingList;
+            if (queueDescription.AuthorizationRules.Count > 0)
+            {
+                var enumerable = queueDescription.AuthorizationRules.Select(r => new AuthorizationRuleWrapper2(r));
+                bindingList = new BindingList<AuthorizationRuleWrapper2>(enumerable.ToList())
+                {
+                    AllowEdit = true,
+                    AllowNew = true,
+                    AllowRemove = true
+                };
 
-            //}
-            //else
-            //{
-            //    bindingList = new BindingList<AuthorizationRuleWrapper>(new List<AuthorizationRuleWrapper>())
-            //    {
-            //        AllowEdit = true,
-            //        AllowNew = true,
-            //        AllowRemove = true
-            //    };
-            //}
-            //bindingList.ListChanged += bindingList_ListChanged;
-            //authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper>(bindingList);
-            //authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
+            }
+            else
+            {
+                bindingList = new BindingList<AuthorizationRuleWrapper2>(new List<AuthorizationRuleWrapper2>())
+                {
+                    AllowEdit = true,
+                    AllowNew = true,
+                    AllowRemove = true
+                };
+            }
+            bindingList.ListChanged += bindingList_ListChanged;
+            authorizationRulesBindingSource.DataSource = new BindingList<AuthorizationRuleWrapper2>(bindingList);
+            authorizationRulesDataGridView.DataSource = authorizationRulesBindingSource;
 
             // Initialize property grid
             var propertyList = new List<string[]>();
@@ -1305,145 +1309,143 @@ namespace ServiceBusExplorer.Controls
             //}
         }
 
-        //private MessageReceiver BuildMessageReceiver(ReceiveMode receiveMode, string? fromSession = null)
-        //{
-        //    if (fromSession == null && !queueDescription.RequiresSession)
-        //    {
-        //        return serviceBusHelper.MessagingFactory.CreateMessageReceiver(queueDescription.Path, receiveMode);
-        //    }
+        private async Task<ServiceBusReceiver> BuildMessageReceiverAsync(ServiceBusReceiveMode receiveMode, string? fromSession = null)
+        {
+            if (!queueDescription.RequiresSession)
+            {
+                return _serviceBusHelper.Client.CreateReceiver(queueDescription.Name, new ServiceBusReceiverOptions { ReceiveMode = receiveMode });
+            }
 
-        //    var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queueDescription.Path, receiveMode);
-        //    var sessionAcceptTimeout = TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout);
-        //    if (fromSession != null)
-        //    {
-        //        return queueClient.AcceptMessageSession(fromSession, sessionAcceptTimeout);
-        //    }
-        //    return queueClient.AcceptMessageSession(sessionAcceptTimeout);
-        //}
+            return await _serviceBusHelper.Client.AcceptSessionAsync(
+                queueDescription.Name, 
+                fromSession, 
+                new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode }); 
+        }
 
-        //private void GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
-        //{
-        //    try
-        //    {
-        //        mainTabControl.SuspendDrawing();
-        //        mainTabControl.SuspendLayout();
-        //        tabPageMessages.SuspendDrawing();
-        //        tabPageMessages.SuspendLayout();
+        private async Task GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
+        {
+            try
+            {
+                mainTabControl.SuspendDrawing();
+                mainTabControl.SuspendLayout();
+                tabPageMessages.SuspendDrawing();
+                tabPageMessages.SuspendLayout();
 
-        //        Cursor.Current = Cursors.WaitCursor;
-        //        var brokeredMessages = new List<BrokeredMessage>();
-        //        if (peek)
-        //        {
-        //            var totalRetrieved = 0;
+                Cursor.Current = Cursors.WaitCursor;
+                var brokeredMessages = new List<ServiceBusReceivedMessage>();
+                if (peek)
+                {
+                    var totalRetrieved = 0;
 
-        //            var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
-        //            while (totalRetrieved < count)
-        //            {
-        //                IEnumerable<BrokeredMessage> messageEnumerable;
+                    var receiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, fromSession);
+                    while (totalRetrieved < count)
+                    {
+                        IReadOnlyList<ServiceBusReceivedMessage> messageEnumerable;
 
-        //                if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
-        //                {
-        //                    messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, count);
-        //                }
-        //                else
-        //                {
-        //                    messageEnumerable = receiver.PeekBatch(count);
-        //                }
+                        if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
+                        {
+                            //messageEnumerable = await receiver.PeekMessagesAsync(count, fromSequenceNumber.Value); //TODO: What is count here? 
+                            messageEnumerable = await receiver.PeekMessagesAsync(MaxMessageCount, fromSequenceNumber.Value);
+                        }
+                        else
+                        {
+                            messageEnumerable = await receiver.PeekMessagesAsync(count);
+                        }
 
-        //                if (messageEnumerable == null)
-        //                {
-        //                    break;
-        //                }
-        //                var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-        //                var partialList = messageInspector != null
-        //                    ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
-        //                    : new List<BrokeredMessage>(messageArray);
-        //                brokeredMessages.AddRange(partialList);
-        //                totalRetrieved += partialList.Count;
-        //                if (partialList.Count == 0)
-        //                {
-        //                    break;
-        //                }
-        //            }
-        //            writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
-        //        }
-        //        else
-        //        {
-        //            var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+                        if (messageEnumerable == null)
+                        {
+                            break;
+                        }
+                        var messageArray = messageEnumerable as ServiceBusReceivedMessage[] ?? messageEnumerable.ToArray();
+                        var partialList = messageInspector != null
+                            ? messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList()
+                            : new List<ServiceBusReceivedMessage>(messageArray);
+                        brokeredMessages.AddRange(partialList);
+                        totalRetrieved += partialList.Count;
+                        if (partialList.Count == 0)
+                        {
+                            break;
+                        }
+                    }
+                    writeToLog(string.Format(MessagesPeekedFromTheQueue, brokeredMessages.Count, queueDescription.Name));
+                }
+                else
+                {
+                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, fromSession);
 
-        //            var totalRetrieved = 0;
-        //            int retrieved;
-        //            do
-        //            {
-        //                var messages = messageReceiver.ReceiveBatch(all
-        //                        ? MainForm.SingletonMainForm.TopCount
-        //                        : count - totalRetrieved,
-        //                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-        //                var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-        //                retrieved = enumerable.Length;
-        //                if (retrieved == 0)
-        //                {
-        //                    continue;
-        //                }
-        //                totalRetrieved += retrieved;
-        //                brokeredMessages.AddRange(messageInspector != null
-        //                    ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
-        //                    : enumerable);
-        //            } while (retrieved > 0 && (all || count > totalRetrieved));
-        //            writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
-        //        }
-        //        messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-        //        {
-        //            AllowEdit = false,
-        //            AllowNew = false,
-        //            AllowRemove = false
-        //        };
-        //        messagesBindingSource.DataSource = messageBindingList;
-        //        messagesDataGridView.DataSource = messagesBindingSource;
+                    var totalRetrieved = 0;
+                    int retrieved;
+                    do
+                    {
+                        var messages = messageReceiver.ReceiveBatch(all
+                                ? MainForm.SingletonMainForm.TopCount
+                                : count - totalRetrieved,
+                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
+                        retrieved = enumerable.Length;
+                        if (retrieved == 0)
+                        {
+                            continue;
+                        }
+                        totalRetrieved += retrieved;
+                        brokeredMessages.AddRange(messageInspector != null
+                            ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b))
+                            : enumerable);
+                    } while (retrieved > 0 && (all || count > totalRetrieved));
+                    writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
+                }
+                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
+                {
+                    AllowEdit = false,
+                    AllowNew = false,
+                    AllowRemove = false
+                };
+                messagesBindingSource.DataSource = messageBindingList;
+                messagesDataGridView.DataSource = messagesBindingSource;
 
-        //        messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
-        //                                                  GrouperMessagePropertiesWith -
-        //                                                  messagesSplitContainer.SplitterWidth;
-        //        messageMainSplitContainer.SplitterDistance = messageMainSplitContainer.Size.Height / 2 - 8;
+                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
+                                                          GrouperMessagePropertiesWith -
+                                                          messagesSplitContainer.SplitterWidth;
+                messageMainSplitContainer.SplitterDistance = messageMainSplitContainer.Size.Height / 2 - 8;
 
-        //        messagePropertiesSplitContainer.SplitterDistance = messageMainSplitContainer.SplitterDistance;
+                messagePropertiesSplitContainer.SplitterDistance = messageMainSplitContainer.SplitterDistance;
 
-        //        if (!peek)
-        //        {
-        //            OnRefresh?.Invoke();
-        //        }
-        //        if (mainTabControl.TabPages[MessagesTabPage] == null)
-        //        {
-        //            EnablePage(MessagesTabPage);
-        //        }
-        //        if (mainTabControl.TabPages[MessagesTabPage] != null)
-        //        {
-        //            mainTabControl.SelectTab(MessagesTabPage);
-        //        }
-        //    }
-        //    catch (TimeoutException)
-        //    {
-        //        writeToLog(string.Format(NoMessageReceivedFromTheQueue,
-        //            MainForm.SingletonMainForm.ReceiveTimeout,
-        //            queueDescription.Path));
-        //    }
-        //    catch (NotSupportedException)
-        //    {
-        //        ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        HandleException(ex);
-        //    }
-        //    finally
-        //    {
-        //        mainTabControl.ResumeLayout();
-        //        mainTabControl.ResumeDrawing();
-        //        tabPageMessages.ResumeLayout();
-        //        tabPageMessages.ResumeDrawing();
-        //        Cursor.Current = Cursors.Default;
-        //    }
-        //}
+                if (!peek)
+                {
+                    OnRefresh?.Invoke();
+                }
+                if (mainTabControl.TabPages[MessagesTabPage] == null)
+                {
+                    EnablePage(MessagesTabPage);
+                }
+                if (mainTabControl.TabPages[MessagesTabPage] != null)
+                {
+                    mainTabControl.SelectTab(MessagesTabPage);
+                }
+            }
+            catch (TimeoutException)
+            {
+                writeToLog(string.Format(NoMessageReceivedFromTheQueue,
+                    MainForm.SingletonMainForm.ReceiveTimeout,
+                    queueDescription.Path));
+            }
+            catch (NotSupportedException)
+            {
+                ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                mainTabControl.ResumeLayout();
+                mainTabControl.ResumeDrawing();
+                tabPageMessages.ResumeLayout();
+                tabPageMessages.ResumeDrawing();
+                Cursor.Current = Cursors.Default;
+            }
+        }
 
         //private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
         //{
@@ -1452,7 +1454,7 @@ namespace ServiceBusExplorer.Controls
         //        var brokeredMessages = new List<BrokeredMessage>();
         //        if (peek)
         //        {
-        //            var messageReceiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
+        //            var messageReceiver = BuildMessageReceiverAsync(ReceiveMode.PeekLock, fromSession);
 
         //            for (var i = 0; i < count; i++)
         //            {
@@ -1480,7 +1482,7 @@ namespace ServiceBusExplorer.Controls
         //        }
         //        else
         //        {
-        //            var messageReceiver = BuildMessageReceiver(ReceiveMode.ReceiveAndDelete, fromSession);
+        //            var messageReceiver = BuildMessageReceiverAsync(ReceiveMode.ReceiveAndDelete, fromSession);
 
         //            var totalRetrieved = 0;
         //            int retrieved;
@@ -2234,29 +2236,29 @@ namespace ServiceBusExplorer.Controls
         //    }
         //}
 
-        //private void checkedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        //{
-        //    if (queueDescription == null)
-        //    {
-        //        return;
-        //    }
-        //    if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
-        //    {
-        //        e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
-        //    }
-        //    if (e.Index == checkedListBox.Items.IndexOf(RequiresSessionItemText))
-        //    {
-        //        e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
-        //    }
-        //    if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
-        //    {
-        //        e.NewValue = queueDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
-        //    }
-        //    if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
-        //    {
-        //        e.NewValue = queueDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked;
-        //    }
-        //}
+        private void checkedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (queueDescription == null)
+            {
+                return;
+            }
+            if (e.Index == checkedListBox.Items.IndexOf(EnablePartitioningItemText))
+            {
+                e.NewValue = queueDescription.EnablePartitioning ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresSessionItemText))
+            {
+                e.NewValue = queueDescription.RequiresSession ? CheckState.Checked : CheckState.Unchecked;
+            }
+            if (e.Index == checkedListBox.Items.IndexOf(RequiresDuplicateDetectionItemText))
+            {
+                e.NewValue = queueDescription.RequiresDuplicateDetection ? CheckState.Checked : CheckState.Unchecked;
+            }
+            //if (e.Index == checkedListBox.Items.IndexOf(IsAnonymousAccessibleItemText))
+            //{
+            //    e.NewValue = queueDescription.IsAnonymousAccessible ? CheckState.Checked : CheckState.Unchecked; //TODO: Anon is obsolete
+            //}
+        }
 
         //private void btnCancelUpdate_Click(object sender, EventArgs e)
         //{
@@ -2448,14 +2450,14 @@ namespace ServiceBusExplorer.Controls
         //    }
         //}
 
-        //private static void textBox_GotFocus(object sender, EventArgs e)
-        //{
-        //    var textBox = sender as TextBox;
-        //    if (textBox != null)
-        //    {
-        //        NativeMethods.HideCaret(textBox.Handle);
-        //    }
-        //}
+        private static void textBox_GotFocus(object? sender, EventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                NativeMethods.HideCaret(textBox.Handle);
+            }
+        }
 
         //private void btnRefresh_Click(object sender, EventArgs e)
         //{

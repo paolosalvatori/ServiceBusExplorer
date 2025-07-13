@@ -1,4 +1,6 @@
-﻿using ServiceBusExplorer.Common.Abstractions;
+﻿using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using ServiceBusExplorer.Common.Abstractions;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using System;
@@ -9,8 +11,9 @@ namespace Common.Contracts;
 
 public interface IServiceBusService
 {
-    //ServiceBusNamespace CurrentNamespace { get; }
     ServiceBusConnection Connection { get; }
+    ServiceBusClient Client { get; }
+    ServiceBusAdministrationClient AdminClient { get; }
 
     Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
     Dictionary<string, Type> BrokeredMessageInspectors { get; set; }
