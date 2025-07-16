@@ -21,6 +21,12 @@
 
 #region Using Directives
 
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,12 +34,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using ServiceBusExplorer.ServiceBus.Helpers;
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -52,13 +52,13 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // CheckListBox item texts
         //***************************
-        private const string  EnableBatchedOperationsItemText                        = "Enable Batched Operations";
-        private const string  EnableFilteringMessagesBeforePublishingItemText       = "Enable Filtering Messages Before Publishing";
-        private const string  EnablePartitioningItemText                            = "Enable Partitioning";
-        private const string  EnableExpressItemText                                 = "Enable Express";
-        private const string  RequiresDuplicateDetectionItemText                    = "Requires Duplicate Detection";
-        private const string  SupportOrderingItemText                               = "Enforce Message Ordering";
-        private const string  IsAnonymousAccessibleItemText                         = "Is Anonymous Accessible";
+        private const string EnableBatchedOperationsItemText = "Enable Batched Operations";
+        private const string EnableFilteringMessagesBeforePublishingItemText = "Enable Filtering Messages Before Publishing";
+        private const string EnablePartitioningItemText = "Enable Partitioning";
+        private const string EnableExpressItemText = "Enable Express";
+        private const string RequiresDuplicateDetectionItemText = "Requires Duplicate Detection";
+        private const string SupportOrderingItemText = "Enforce Message Ordering";
+        private const string IsAnonymousAccessibleItemText = "Is Anonymous Accessible";
 
         //***************************
         // Texts
@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Controls
         // Messages
         //***************************
         private const string PathCannotBeNull = "The Path field cannot be null.";
-        
+
         private const string DefaultMessageTimeToLive = "DefaultMessageTimeToLive";
         private const string DuplicateDetectionHistoryTimeWindow = "DuplicateDetectionHistoryTimeWindow";
         private const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
@@ -153,18 +153,18 @@ namespace ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
-            
+
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
             {
                 this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
             }
-            
+
             this.topicDescription = topicDescription;
             this.path = path;
 
             InitializeComponent();
             InitializeControls(initialCall: true);
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -323,8 +323,8 @@ namespace ServiceBusExplorer.Controls
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (topicDescription != null && 
-                    topicDescription.Authorization.Count > 0 && 
+                if (topicDescription != null &&
+                    topicDescription.Authorization.Count > 0 &&
                     topicDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = topicDescription.Authorization.ElementAt(e.NewIndex);
@@ -425,7 +425,7 @@ namespace ServiceBusExplorer.Controls
             // EnableFilteringMessagesBeforePublishing
             checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingItemText,
                                           topicDescription.EnableFilteringMessagesBeforePublishing);
-            
+
             if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
@@ -509,14 +509,14 @@ namespace ServiceBusExplorer.Controls
                         return;
                     }
                     var description = new TopicDescription(txtPath.Text)
-                        {
-                            MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
-                                                 ? trackBarMaxTopicSize.Value*1024
+                    {
+                        MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
+                                                 ? trackBarMaxTopicSize.Value * 1024
                                                  : trackBarMaxTopicSize.Value == trackBarMaxTopicSize.Maximum
                                                        ? ServiceBusForWindowsServerMaxTopicSize
-                                                       : trackBarMaxTopicSize.Value*1024,
-                            UserMetadata = txtUserMetadata.Text
-                        };
+                                                       : trackBarMaxTopicSize.Value * 1024,
+                        UserMetadata = txtUserMetadata.Text
+                    };
 
                     if (tsDefaultMessageTimeToLive.IsFilled)
                     {
@@ -556,7 +556,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
 
@@ -703,11 +703,11 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-                    
+
                     topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
                     topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
-                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);                    
+                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
                     topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;
@@ -816,8 +816,7 @@ namespace ServiceBusExplorer.Controls
 
         private void button_MouseEnter(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = Color.White;
             }
@@ -825,8 +824,7 @@ namespace ServiceBusExplorer.Controls
 
         private void button_MouseLeave(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = SystemColors.ControlText;
             }
@@ -850,16 +848,15 @@ namespace ServiceBusExplorer.Controls
             // Background
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, endX, -1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, endX, -1);
             // Bottom horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
+            e.Graphics.DrawLine(SystemPens.ControlDark, startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
             // Right vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width, roundedFontSize + 6);
-            e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
+            e.Graphics.DrawLine(SystemPens.ControlDark, endX, -1, endX, e.Bounds.Height + 1);
+
+            e.DrawText();
         }
 
         private void propertyListView_DrawItem(object sender, DrawListViewItemEventArgs e)
