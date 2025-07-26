@@ -2,9 +2,8 @@
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using ServiceBusExplorer.Enums;
-using ServiceBusExplorer.Helpers;
 
-namespace ServiceBusExplorer.Common.Abstractions;
+namespace Common.Models;
 
 public class ServiceBusConnection
 {

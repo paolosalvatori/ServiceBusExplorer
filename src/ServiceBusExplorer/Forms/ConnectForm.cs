@@ -31,8 +31,8 @@ using System.Linq;
 using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
 using Azure.Messaging.ServiceBus;
-using Common;
 using Common.Contracts;
+using Common.Models;
 
 #endregion
 
@@ -121,14 +121,15 @@ namespace ServiceBusExplorer.Forms
                 // ReSharper restore CoVariantArrayConversion
             }
 
-            //ConnectivityMode = ServiceBusService.ConnectivityMode;
+            //ConnectivityMode = ServiceBusService.ConnectivityMode; TODO: 
             //cboConnectivityMode.DataSource = Enum.GetValues(typeof(ServiceBusTransportType));
             //cboConnectivityMode.SelectedItem = serviceBusHelper.TransportType;
             //UseAmqpWebSockets = ServiceBusService.UseAmqpWebSockets;
             //useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
 
             cboTransportType.DataSource = Enum.GetValues(typeof(ServiceBusTransportType));
-            cboTransportType.SelectedItem = serviceBusHelper.Connection.Namespace.TransportType;
+            //cboTransportType.SelectedItem = serviceBusHelper.Connection.Namespace.TransportType; TODO: 
+            cboTransportType.SelectedItem = ServiceBusTransportType.AmqpWebSockets;
 
             cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 ? connectionStringIndex : 0;
             if (cboServiceBusNamespace.Text == EnterConnectionString)

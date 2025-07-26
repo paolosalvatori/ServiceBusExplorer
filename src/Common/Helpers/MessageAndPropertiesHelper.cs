@@ -166,81 +166,81 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Write a message to an XML file in the current directory.
         /// </summary>
-        //public static void WriteProperties()
-        //{
-        //    try
-        //    {
-        //        if (MessagePropertyInfo.Properties == null || MessagePropertyInfo.Properties.Count == 0)
-        //        {
-        //            return;
-        //        }
-        //        using (var memoryStream = new MemoryStream())
-        //        {
-        //            using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
-        //            {
-        //                var settings = new XmlWriterSettings { Indent = true };
-        //                using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
-        //                {
-        //                    xmlWriter.WriteStartElement(Properties, Namespace);
-        //                    foreach (var property in MessagePropertyInfo.Properties)
-        //                    {
-        //                        xmlWriter.WriteStartElement(Property, Namespace);
-        //                        xmlWriter.WriteAttributeString(Key, property.Key);
-        //                        xmlWriter.WriteAttributeString(Type, property.Type);
-        //                        xmlWriter.WriteAttributeString(Value, property.Value.ToString());
-        //                        xmlWriter.WriteEndElement();
-        //                    }
-        //                    xmlWriter.WriteEndElement();
-        //                }
-        //            }
-        //            var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
-        //            WriteFile(propertiesFilePath, xml);
-        //        }
-        //    }
-        //    // ReSharper disable once EmptyGeneralCatchClause
-        //    catch (Exception)
-        //    {
-        //    }
-        //}
+        public static void WriteProperties()
+        {
+            try
+            {
+                if (MessagePropertyInfo.Properties == null || MessagePropertyInfo.Properties.Count == 0)
+                {
+                    return;
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
+                    {
+                        var settings = new XmlWriterSettings { Indent = true };
+                        using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+                        {
+                            xmlWriter.WriteStartElement(Properties, Namespace);
+                            foreach (var property in MessagePropertyInfo.Properties)
+                            {
+                                xmlWriter.WriteStartElement(Property, Namespace);
+                                xmlWriter.WriteAttributeString(Key, property.Key);
+                                xmlWriter.WriteAttributeString(Type, property.Type);
+                                xmlWriter.WriteAttributeString(Value, property.Value.ToString());
+                                xmlWriter.WriteEndElement();
+                            }
+                            xmlWriter.WriteEndElement();
+                        }
+                    }
+                    var xml = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    WriteFile(propertiesFilePath, xml);
+                }
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
+            }
+        }
 
         /// <summary>
         /// Reads a message from an XML file in the current directory.
         /// </summary>
         /// <returns>The message read from the XML file.</returns>
-        //public static List<MessagePropertyInfo> ReadProperties()
-        //{
-        //    try
-        //    {
-        //        if (!File.Exists(propertiesFilePath))
-        //        {
-        //            return null;
-        //        }
+        public static List<MessagePropertyInfo> ReadProperties()
+        {
+            try
+            {
+                if (!File.Exists(propertiesFilePath))
+                {
+                    return null;
+                }
 
-        //        using (var reader = new StreamReader(propertiesFilePath))
-        //        {
-        //            using (var xmlReader = XmlReader.Create(reader))
-        //            {
-        //                XNamespace ns = Namespace;
-        //                var root = XElement.Load(xmlReader);
-        //                var elements = root.Elements(ns + Property);
-        //                return elements.Where(element => !string.IsNullOrWhiteSpace(element.Attribute(Key).Value.Trim()) &&
-        //                                          !string.IsNullOrWhiteSpace(element.Attribute(Type).Value.Trim()) &&
-        //                                          !string.IsNullOrWhiteSpace(element.Attribute(Value).Value.Trim())).
-        //                Select(element => new MessagePropertyInfo
-        //                {
-        //                    Key = element.Attribute(Key).Value.Trim(),
-        //                    Type = element.Attribute(Type).Value.Trim(),
-        //                    Value = ConversionHelper.MapStringTypeToCLRType(element.Attribute(Type).Value.Trim(), element.Attribute(Value).Value.Trim())
-        //                }).ToList();
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Trace.WriteLine(ex.Message);
-        //    }
-        //    return null;
-        //}
+                using (var reader = new StreamReader(propertiesFilePath))
+                {
+                    using (var xmlReader = XmlReader.Create(reader))
+                    {
+                        XNamespace ns = Namespace;
+                        var root = XElement.Load(xmlReader);
+                        var elements = root.Elements(ns + Property);
+                        return elements.Where(element => !string.IsNullOrWhiteSpace(element.Attribute(Key).Value.Trim()) &&
+                                                  !string.IsNullOrWhiteSpace(element.Attribute(Type).Value.Trim()) &&
+                                                  !string.IsNullOrWhiteSpace(element.Attribute(Value).Value.Trim())).
+                        Select(element => new MessagePropertyInfo
+                        {
+                            Key = element.Attribute(Key).Value.Trim(),
+                            Type = element.Attribute(Type).Value.Trim(),
+                            Value = ConversionHelper.MapStringTypeToCLRType(element.Attribute(Type).Value.Trim(), element.Attribute(Value).Value.Trim())
+                        }).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine(ex.Message);
+            }
+            return null;
+        }
         #endregion
 
         #region Private Static Methods

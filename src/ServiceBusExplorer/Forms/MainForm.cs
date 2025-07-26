@@ -29,14 +29,11 @@ using Common.Contracts;
 using Common.Models;
 using EventGridExplorerLibrary;
 using Microsoft.Azure.NotificationHubs.Messaging;
-using ServiceBusExplorer.Common.Abstractions;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
-
-
 
 //using EventGridExplorerLibrary;
 //using Microsoft.Azure.NotificationHubs;
@@ -284,7 +281,6 @@ namespace ServiceBusExplorer.Forms
         /// Initializes a new instance of the MainForm class.
         /// </summary>
         public MainForm(
-            IServiceBusService serviceBusHelper,
             AppSettings appSettings, 
             CommandLineOptions cliSettings)
         {
@@ -302,7 +298,7 @@ namespace ServiceBusExplorer.Forms
             logFontSize = (decimal)lstLog.Font.Size;
             //Trace.Listeners.Add(new LogTraceListener(MainForm.StaticWriteToLog));
             mainSingletonMainForm = this;
-            _serviceBusHelper = serviceBusHelper;
+            _serviceBusHelper = new ServiceBusService(WriteToLog);
             //serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             //serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
@@ -324,9 +320,6 @@ namespace ServiceBusExplorer.Forms
             //if (cliSettings.Log) WriteToLog(logMessage);
         }
         #endregion
-
-
-
 
         void DisplayNewVersionInformation()
         {
@@ -3345,43 +3338,42 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        //         public async Task RefreshQueues()
-        //         {
-        //             await ShowEntities(EntityType.Queue);
-        //         }
+        public async Task RefreshQueues()
+        {
+            await ShowEntities(EntityType.Queue);
+        }
 
-        //         public async Task RefreshTopics()
-        //         {
-        //             await ShowEntities(EntityType.Topic);
-        //         }
+        public async Task RefreshTopics()
+        {
+            await ShowEntities(EntityType.Topic);
+        }
 
-        //         public async Task RefreshServiceBusEntityNode(string path)
-        //         {
-        //             var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+        public async Task RefreshServiceBusEntityNode(string path)
+        {
+            //if (await _.IsQueue(path)) TODO: 
+            //{
+            await Task.CompletedTask; 
+            var queueDescription = await _serviceBusHelper.GetQueueAsync(path);
+            var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+            var queueNode = FindNode(path, queueListNode);
 
-        //             if (await serviceBusHelper2.IsQueue(path))
-        //             {
-        //                 var queueDescription = serviceBusHelper.GetQueue(path);
-        //                 var queueListNode = FindNode(Constants.QueueEntities, rootNode);
-        //                 var queueNode = FindNode(path, queueListNode);
+            RefreshQueueNode(queueNode, queueDescription);
+                //return;
+            //}
 
-        //                 RefreshQueueNode(queueNode, queueDescription);
-        //                 return;
-        //             }
+            //if (await serviceBusHelper2.IsTopic(path)) TODO: 
+            //{
+            //    var topicDescription = serviceBusHelper.GetTopic(path);
+            //    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+            //    var topicNode = FindNode(path, topicListNode);
 
-        //             if (await serviceBusHelper2.IsTopic(path))
-        //             {
-        //                 var topicDescription = serviceBusHelper.GetTopic(path);
-        //                 var topicListNode = FindNode(Constants.TopicEntities, rootNode);
-        //                 var topicNode = FindNode(path, topicListNode);
+            //    RefreshTopicNode(topicNode, topicDescription);
+            //    return;
+            //}
 
-        //                 RefreshTopicNode(topicNode, topicDescription);
-        //                 return;
-        //             }
+            //WriteToLog($"{path} is neither a queue nor a topic so there was no update in the tree view.");
+        }
 
-        //             WriteToLog($"{path} is neither a queue nor a topic so there was no update in the tree view.");
-        //         }
-        //         #endregion
 
         //         #region Private Methods
         //         private Task StopLog()
@@ -4224,22 +4216,22 @@ namespace ServiceBusExplorer.Forms
         //             }
         //         }
 
-        //         private void RefreshQueueNode(TreeNode node, QueueDescription queueDescription)
-        //         {
-        //             if (queueDescription.Status == EntityStatus.Active)
-        //             {
-        //                 node.ImageIndex = QueueIconIndex;
-        //                 node.SelectedImageIndex = QueueIconIndex;
-        //             }
-        //             else
-        //             {
-        //                 node.ImageIndex = GreyQueueIconIndex;
-        //                 node.SelectedImageIndex = GreyQueueIconIndex;
-        //             }
+        private void RefreshQueueNode(TreeNode node, QueueMetadata queueDescription)
+        {
+            if (queueDescription.Status == EntityStatus.Active)
+            {
+                node.ImageIndex = QueueIconIndex;
+                node.SelectedImageIndex = QueueIconIndex;
+            }
+            else
+            {
+                node.ImageIndex = GreyQueueIconIndex;
+                node.SelectedImageIndex = GreyQueueIconIndex;
+            }
 
-        //             node.Tag = queueDescription;
-        //             node.Text = GetNameAndMessageCountText(node.Name, queueDescription.MessageCountDetails);
-        //         }
+            node.Tag = queueDescription;
+            node.Text = GetNameAndMessageCountText(node.Name, queueDescription);
+        }
 
         //         private void RefreshTopicNode(TreeNode node, TopicDescription topicDescription)
         //         {
@@ -4329,18 +4321,18 @@ namespace ServiceBusExplorer.Forms
         //         #endregion
 
         //         #region Public Properties
-        //         public List<Tuple<string, string>> FileNames
-        //         {
-        //             get { return fileNames; }
-        //         }
+        //public List<Tuple<string, string>> FileNames
+        //{
+        //    get { return fileNames; }
+        //}
 
-        //         public TreeView ServiceBusTreeView
-        //         {
-        //             get
-        //             {
-        //                 return serviceBusTreeView;
-        //             }
-        //         }
+        public TreeView ServiceBusTreeView
+        {
+            get
+            {
+                return serviceBusTreeView;
+            }
+        }
 
         public string MessageText { get; set; }
         public string MessageContentType { get; set; }
@@ -4372,23 +4364,23 @@ namespace ServiceBusExplorer.Forms
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
-        //         public BodyType MessageBodyType
-        //         {
-        //             get
-        //             {
-        //                 if (!Enum.TryParse<BodyType>(messageBodyType, out var bodyType))
-        //                 {
-        //                     bodyType = BodyType.Stream;
-        //                 }
-        //                 return bodyType;
-        //             }
-        //         }
+        public BodyType MessageBodyType
+        {
+            get
+            {
+                if (!Enum.TryParse<BodyType>(messageBodyType, out var bodyType))
+                {
+                    bodyType = BodyType.Stream;
+                }
+                return bodyType;
+            }
+        }
 
         //         #endregion
 
         //         #region Public Static Properties
         public static MainForm SingletonMainForm => mainSingletonMainForm;
-
+        
         //         #endregion
 
         //         #region Private Methods

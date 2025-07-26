@@ -30,7 +30,6 @@
 		<ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
 		<ProjectReference Include="..\Relay\Relay.csproj" />
 		<ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj" />
-		<ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 	</ItemGroup>
 	<ItemGroup>

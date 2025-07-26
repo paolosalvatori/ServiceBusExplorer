@@ -22,14 +22,13 @@
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Common.Contracts;
-using Microsoft.Azure.NotificationHubs;
-using ServiceBusExplorer.Common.Abstractions;
+using Common.Models;
 using ServiceBusExplorer.Enums;
-using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
@@ -47,8 +46,6 @@ public class ServiceBusService : IServiceBusService
 
     #endregion
 
-    //readonly WriteToLogDelegate writeToLog;
-
     public enum BodyType
     {
         Stream,
@@ -65,20 +62,17 @@ public class ServiceBusService : IServiceBusService
     public Dictionary<string, Type> BrokeredMessageInspectors { get; set; } = [];
     public Dictionary<string, Type> BrokeredMessageGenerators { get; set; } = [];
 
-    //public WriteToLogDelegate WriteToLog
-    //{
-    //    get
-    //    {
-    //        return writeToLog;
-    //    }
-    //}
+    public WriteToLogDelegate WriteToLog { get; private set; }
 
-    //public ServiceBusService(WriteToLogDelegate writeToLog)
-    //{
-    //    this.writeToLog = writeToLog;
-    //}
+    public ServiceBusService(WriteToLogDelegate writeToLog)
+    {
+        WriteToLog = writeToLog;
+    }
 
-    public ServiceBusService() { }
+    public void AddLogging(WriteToLogDelegate deletgate)
+    {
+        WriteToLog = deletgate;
+    }
 
     /// <summary>
     /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
@@ -107,13 +101,13 @@ public class ServiceBusService : IServiceBusService
     {
         var connectionString = busNamespace.ConnectionString;
 
+        AdminClient = new ServiceBusAdministrationClient(connectionString);
+        Client = new ServiceBusClient(connectionString);
+
         var namespaceProperties = await AdminClient.GetNamespacePropertiesAsync().ConfigureAwait(false);
         var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(connectionString);
 
         Connection = new(busNamespace, connectionStringProperties, namespaceProperties, encodingType);
-
-        AdminClient = new ServiceBusAdministrationClient(connectionString);
-        Client = new ServiceBusClient(connectionString);
 
         return true;
     }
@@ -156,6 +150,91 @@ public class ServiceBusService : IServiceBusService
         }
     }
 
+    public async Task<QueueMetadata> GetQueueAsync(string name)
+    {
+        try
+        {
+            var queues = await GetQueuesAsync("", 1000); 
+            return queues.FirstOrDefault(q => q.Name == name);
+        }
+        catch
+        {
+            //TODO: 
+            return null;
+        }
+    }
+
+    public async Task<QueueMetadata> CreateQueueAsync(QueueMetadata metadata)
+    {
+        try
+        {
+            await AdminClient.CreateQueueAsync(metadata.AsCreateQueueOptions());
+            return await GetQueueAsync(metadata.Name);
+        }
+        catch
+        {
+            //TODO: 
+            return null; 
+        }
+    }
+
+    public async Task<QueueMetadata> UpdateQueueAsync(QueueMetadata metadata)
+    {
+        try
+        {
+            await AdminClient.UpdateQueueAsync(metadata.AsQueueProperties);
+            return await GetQueueAsync(metadata.Name);
+        }
+        catch
+        {
+            //TODO: 
+            return null;
+        }
+    }
+
+    public ServiceBusSender CreateSender(string name)
+    {
+        try
+        {
+            return Client.CreateSender(name); 
+        }
+        catch
+        {
+            //TODO:
+            return null;
+        }
+    }
+
+    public ServiceBusReceiver CreateReceiver(string name, ServiceBusReceiveMode mode)
+    {
+        var opts = new ServiceBusReceiverOptions
+        {
+            ReceiveMode = mode
+        };
+
+        try
+        {
+            return Client.CreateReceiver(name, opts);
+        }
+        catch
+        {
+            //TODO:
+            return null;
+        }
+    }
+
+    public async Task DeleteQueueAsync(string name)
+    {
+        try
+        {
+            await AdminClient.DeleteQueueAsync(name);
+        }
+        catch
+        {
+            //TODO: 
+        }
+    }
+
     public bool IsPremiumNamespace()
     {
         return Connection.NamespaceProperties.MessagingSku == MessagingSku.Premium; 
@@ -177,5 +256,43 @@ public class ServiceBusService : IServiceBusService
                 connNamespace.Uri.Contains(TestServiceBusPostFix) ||
                 connNamespace.Uri.Contains(GermanyServiceBusPostfix) ||
                 connNamespace.Uri.Contains(ChinaServiceBusPostfix)));
+    }
+
+    public ServiceBusMessage ReceivedToMessage(ServiceBusReceivedMessage receivedMessage)
+    {
+        var message = new ServiceBusMessage(receivedMessage.Body);
+
+        foreach (var prop in receivedMessage.ApplicationProperties)
+        {
+            message.ApplicationProperties[prop.Key] = prop.Value;
+        }
+
+        message.ContentType = receivedMessage.ContentType;
+        message.CorrelationId = receivedMessage.CorrelationId;
+        message.Subject = receivedMessage.Subject;
+        message.MessageId = receivedMessage.MessageId;
+        message.PartitionKey = receivedMessage.PartitionKey;
+        message.SessionId = receivedMessage.SessionId;
+        message.TimeToLive = receivedMessage.TimeToLive;
+
+        return message;
+    }
+
+    public string GetMessageText(BinaryData data)
+    {
+        return Encoding.UTF8.GetString(data.ToArray());
+    }
+
+    public IServiceBusService Clone()
+    {
+        return new ServiceBusService(WriteToLog)
+        {
+            AdminClient = AdminClient,
+            BrokeredMessageGenerators = BrokeredMessageGenerators,
+            BrokeredMessageInspectors = BrokeredMessageInspectors,
+            Client = Client,
+            Connection = Connection,
+            ServiceBusNamespaces = ServiceBusNamespaces,
+        };
     }
 }

@@ -265,9 +265,7 @@
 		<Compile Update="Forms\CollectionEditorForm.Designer.cs">
 			<DependentUpon>CollectionEditorForm.cs</DependentUpon>
 		</Compile>
-		<Compile Update="Forms\DateTimeRangeForm.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Update="Forms\DateTimeRangeForm.cs" />
 		<Compile Update="Forms\DateTimeRangeForm.Designer.cs">
 			<DependentUpon>DateTimeRangeForm.cs</DependentUpon>
 		</Compile>
@@ -652,7 +650,6 @@
 		<ProjectReference Include="..\EventHubs\EventHubs.csproj" />
 		<ProjectReference Include="..\NotificationHubs\NotificationHubs.csproj" />
 		<ProjectReference Include="..\Relay\Relay.csproj" />
-		<ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 	</ItemGroup>
 	<ItemGroup>

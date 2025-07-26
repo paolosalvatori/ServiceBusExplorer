@@ -19,26 +19,23 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
-
 using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
 
-#endregion
-
-namespace ServiceBusExplorer.UIHelpers
+namespace Common.ServiceBusHelpers
 {
-    internal static class NativeMethods
+    public class PurgeOperationCompletedEventArgs : EventArgs
     {
-        #region DllImports
+        public bool IsDeadLetterQueue { get; set; }
+        public string EntityPath { get; set; }
+        public long ElapsedMilliseconds { get; set; }
+        public long TotalMessagesPurged { get; set; }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
-        internal static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-
-        #endregion
+        public PurgeOperationCompletedEventArgs(string entityPath, long elapsedMilliseconds, long totalMessagesPurged, bool isDeadLetterQueue)
+        {
+            this.EntityPath = entityPath;
+            this.ElapsedMilliseconds = elapsedMilliseconds;
+            this.TotalMessagesPurged = totalMessagesPurged;
+            this.IsDeadLetterQueue = isDeadLetterQueue;
+        }
     }
 }

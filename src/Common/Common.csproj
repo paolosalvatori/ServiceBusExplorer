@@ -51,7 +51,6 @@
     <ProjectReference Include="..\EventGridExplorerLibrary\EventGridExplorerLibrary.csproj" />
     <ProjectReference Include="..\EventHubs\EventHubs.csproj" />
     <ProjectReference Include="..\Relay\Relay.csproj" />
-    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 </Project>

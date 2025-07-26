@@ -27,14 +27,15 @@
 
 // namespace ServiceBusExplorer.ServiceBus.Helpers
 // {
-//     public class QueueServiceBusPurger : ServiceBusPurger<QueueProperties>
+//     public class TopicSubscriptionServiceBusPurger : ServiceBusPurger<SubscriptionProperties>
 //     {
-//         public QueueServiceBusPurger(ServiceBusHelper2 serviceBusHelper) : base(serviceBusHelper) { }
+//         public TopicSubscriptionServiceBusPurger(ServiceBusHelper2 serviceBusHelper) : base(serviceBusHelper) { }
 
-//         protected override ServiceBusReceiver CreateServiceBusReceiver(QueueProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
+//         protected override ServiceBusReceiver CreateServiceBusReceiver(SubscriptionProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
 //         {
 //             return client.CreateReceiver(
-//                 entity.Name,
+//                 entity.TopicName,
+//                 entity.SubscriptionName,
 //                 new ServiceBusReceiverOptions
 //                 {
 //                     PrefetchCount = 50,
@@ -43,10 +44,12 @@
 //                 });
 //         }
 
-//         protected async override Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(QueueProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
+//         protected async override Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(SubscriptionProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
 //         {
+
 //             return await client.AcceptNextSessionAsync(
-//                 entity.Name,
+//                 entity.TopicName,
+//                 entity.SubscriptionName,
 //                 new ServiceBusSessionReceiverOptions
 //                 {
 //                     PrefetchCount = 10,
@@ -55,30 +58,35 @@
 //                 .ConfigureAwait(false);
 //         }
 
-//         protected override bool EntityRequiresSession(QueueProperties entity)
+//         protected override bool EntityRequiresSession(SubscriptionProperties entity)
 //         {
 //             return entity.RequiresSession;
 //         }
 
-//         protected override string GetEntityPath(QueueProperties entity)
+//         protected override string GetEntityPath(SubscriptionProperties entity)
 //         {
-//             return entity.Name;
+//             return $"{entity.TopicName}/subscriptions/{entity.SubscriptionName}";
 //         }
 
-//         protected async override Task<long> GetMessageCount(QueueProperties entity, bool deadLetterQueueData)
+//         protected async override Task<long> GetMessageCount(SubscriptionProperties entity, bool deadLetterQueueData)
 //         {
 //             var client = new ServiceBusAdministrationClient(serviceBusHelper.ConnectionString);
 
 //             if (deadLetterQueueData)
 //             {
-//                 var runtimeInfoResponse = await client.GetQueueRuntimePropertiesAsync(entity.Name)
+
+//                 var runtimeInfoResponse = await client.GetSubscriptionRuntimePropertiesAsync(
+//                     entity.TopicName,
+//                     entity.SubscriptionName)
 //                     .ConfigureAwait(false);
 
 //                 return runtimeInfoResponse.Value.DeadLetterMessageCount;
 //             }
 //             else
 //             {
-//                 var runtimeInfo = await client.GetQueueRuntimePropertiesAsync(entity.Name)
+//                 var runtimeInfo = await client.GetSubscriptionRuntimePropertiesAsync(
+//                     entity.TopicName,
+//                     entity.SubscriptionName)
 //                     .ConfigureAwait(false);
 
 //                 return runtimeInfo.Value.ActiveMessageCount;

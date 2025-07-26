@@ -19,26 +19,17 @@
 //=======================================================================================
 #endregion
 
-#region Using Directives
-
 using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
 
-#endregion
-
-namespace ServiceBusExplorer.UIHelpers
+namespace Common.ServiceBusHelpers
 {
-    internal static class NativeMethods
+    public class PurgeOperationFailedEventArgs : EventArgs
     {
-        #region DllImports
+        public Exception Exception { get; set; }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
-        internal static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-
-        #endregion
+        public PurgeOperationFailedEventArgs(Exception exception)
+        {
+            this.Exception = exception;
+        }
     }
 }

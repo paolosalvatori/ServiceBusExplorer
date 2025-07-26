@@ -82,8 +82,8 @@ namespace ServiceBusExplorer
 
             try
             {
-                var mainForm = host.Services.GetRequiredService<MainForm>();
-                Application.Run(mainForm);
+                CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
+                Application.Run(new MainForm(appSettings, cliSettings));
             }
             catch (Exception e)
             {
