@@ -2046,7 +2046,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private async Task btnCreateDelete_Click(object sender, EventArgs e)
+        private void btnCreateDelete_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2071,7 +2071,7 @@ namespace ServiceBusExplorer.Controls
 
                         if (deleteForm.ShowDialog() == DialogResult.OK)
                         {
-                            await _serviceBusHelper.DeleteQueueAsync(queueDescription.Name);
+                            _serviceBusHelper.DeleteQueueAsync(queueDescription.Name).GetAwaiter().GetResult();
                         }
                     }
                 }
@@ -2252,7 +2252,7 @@ namespace ServiceBusExplorer.Controls
                     }
 
 
-                    queueDescription = await _serviceBusHelper.CreateQueueAsync(description);
+                    queueDescription = _serviceBusHelper.CreateQueueAsync(description).GetAwaiter().GetResult();
                     InitializeControls(initialCall: false);
                 }
             }
@@ -2306,7 +2306,7 @@ namespace ServiceBusExplorer.Controls
             //}
         }
 
-        private async Task btnCancelUpdate_Click(object sender, EventArgs e)
+        private void btnCancelUpdate_Click(object sender, EventArgs e)
         {
             if (btnCancelUpdate.Text == CancelText)
             {
@@ -2480,17 +2480,17 @@ namespace ServiceBusExplorer.Controls
                     }
 
                     queueDescription.Status = EntityStatus.Disabled;
-                    await _serviceBusHelper.UpdateQueueAsync(queueDescription);
+                    _serviceBusHelper.UpdateQueueAsync(queueDescription).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                    queueDescription = await _serviceBusHelper.GetQueueAsync(queueDescription.Name);
+                    queueDescription = _serviceBusHelper.GetQueueAsync(queueDescription.Name).GetAwaiter().GetResult();
                 }
                 finally
                 {
                     queueDescription.Status = EntityStatus.Active;
-                    queueDescription = await _serviceBusHelper.UpdateQueueAsync(queueDescription);
+                    queueDescription = _serviceBusHelper.UpdateQueueAsync(queueDescription).GetAwaiter().GetResult();
                     InitializeData();
                 }
             }
@@ -2544,9 +2544,9 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private async Task btnOpenForwardToForm_Click(object sender, EventArgs e)
+        private void btnOpenForwardToForm_Click(object sender, EventArgs e)
         {
-            using (var form = await creteSelectEntityFormForPath(txtForwardTo.Text))
+            using (var form = creteSelectEntityFormForPath(txtForwardTo.Text).GetAwaiter().GetResult())
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -2555,9 +2555,9 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private async Task btnOpenForwardDeadLetteredMessagesToForm_Click(object sender, EventArgs e)
+        private void btnOpenForwardDeadLetteredMessagesToForm_Click(object sender, EventArgs e)
         {
-            using (var form = await creteSelectEntityFormForPath(txtForwardDeadLetteredMessagesTo.Text))
+            using (var form = creteSelectEntityFormForPath(txtForwardDeadLetteredMessagesTo.Text).GetAwaiter().GetResult())
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -2939,17 +2939,17 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private async Task btnMessages_Click(object sender, EventArgs e)
+        private void btnMessages_Click(object sender, EventArgs e)
         {
-            await GetMessages();
+            GetMessages().GetAwaiter().GetResult();
         }
 
-        private async Task btnSessions_Click(object sender, EventArgs e)
+        private void btnSessions_Click(object sender, EventArgs e)
         {
-            await GetMessageSessions();
+            GetMessageSessions().GetAwaiter().GetResult();
         }
 
-        private async Task messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -2962,7 +2962,7 @@ namespace ServiceBusExplorer.Controls
                 var sessionReceiver = bindingList[e.RowIndex];
                 sessionPropertyGrid.SelectedObject = sessionReceiver;
 
-                var state = await sessionReceiver.GetSessionStateAsync();
+                var state = sessionReceiver.GetSessionStateAsync().GetAwaiter().GetResult();
                 if (state == null)
                 {
                     txtSessionState.Text = string.Empty;
@@ -2985,7 +2985,7 @@ namespace ServiceBusExplorer.Controls
         {
         }
 
-        private async Task sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             var bindingList = sessionsBindingSource.DataSource as BindingList<ServiceBusSessionReceiver>;
             if (bindingList == null)
@@ -2994,7 +2994,7 @@ namespace ServiceBusExplorer.Controls
             }
             var sessionReceiver = bindingList[e.RowIndex];
             sessionPropertyGrid.SelectedObject = sessionReceiver;
-            var state = await sessionReceiver.GetSessionStateAsync();
+            var state = sessionReceiver.GetSessionStateAsync().GetAwaiter().GetResult();
             if (state == null)
             {
                 txtSessionState.Text = string.Empty;
@@ -3080,14 +3080,14 @@ namespace ServiceBusExplorer.Controls
 
         }
 
-        private async Task btnDeadletter_Click(object sender, EventArgs e)
+        private void btnDeadletter_Click(object sender, EventArgs e)
         {
-            await GetDeadletterMessages();
+            GetDeadletterMessages().GetAwaiter().GetResult();
         }
 
-        private async Task btnTransferDlq_Click(object sender, EventArgs e)
+        private void btnTransferDlq_Click(object sender, EventArgs e)
         {
-            await GetTransferDeadletterMessages();
+            GetTransferDeadletterMessages().GetAwaiter().GetResult();
         }
 
         private void deadletterDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -3716,7 +3716,7 @@ namespace ServiceBusExplorer.Controls
             return true;
         }
 
-        private async Task FilterMessages()
+        private void FilterMessages()
         {
             var bindingList = new SortableBindingList<ServiceBusReceivedMessage>();
             try
@@ -3779,7 +3779,7 @@ namespace ServiceBusExplorer.Controls
                     if (messagesDataGridView.Rows.Count > 0)
                     {
                         brokeredMessage = default!;
-                        await messagesDataGridView_RowEnter(this, new DataGridViewCellEventArgs(0, 0));
+                        messagesDataGridView_RowEnter(this, new DataGridViewCellEventArgs(0, 0));
                     }
                 }
             }

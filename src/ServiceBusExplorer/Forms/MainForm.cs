@@ -281,7 +281,7 @@ namespace ServiceBusExplorer.Forms
         /// Initializes a new instance of the MainForm class.
         /// </summary>
         public MainForm(
-            AppSettings appSettings, 
+            AppSettings appSettings,
             CommandLineOptions cliSettings)
         {
             InitializeComponent();
@@ -418,7 +418,7 @@ namespace ServiceBusExplorer.Forms
 
         async void connectUsingSASToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await Task.CompletedTask; 
+            await Task.CompletedTask;
             try
             {
                 using (var connectForm = new ConnectForm(_serviceBusHelper, configFileUse))
@@ -2656,7 +2656,7 @@ namespace ServiceBusExplorer.Forms
         private void changeStatusEntity_Click(object sender, EventArgs e)
         {
             if (_serviceBusHelper == null || serviceBusTreeView.SelectedNode == null)
-                return; 
+                return;
 
             try
             {
@@ -3352,13 +3352,13 @@ namespace ServiceBusExplorer.Forms
         {
             //if (await _.IsQueue(path)) TODO: 
             //{
-            await Task.CompletedTask; 
+            await Task.CompletedTask;
             var queueDescription = await _serviceBusHelper.GetQueueAsync(path);
             var queueListNode = FindNode(Constants.QueueEntities, rootNode);
             var queueNode = FindNode(path, queueListNode);
 
             RefreshQueueNode(queueNode, queueDescription);
-                //return;
+            //return;
             //}
 
             //if (await serviceBusHelper2.IsTopic(path)) TODO: 
@@ -3816,7 +3816,7 @@ namespace ServiceBusExplorer.Forms
         {
             if (_serviceBusHelper == null)
                 return;
-            
+
 
             try
             {
@@ -3918,7 +3918,7 @@ namespace ServiceBusExplorer.Forms
         {
             if (_serviceBusHelper == null)
                 return;
-            
+
 
             try
             {
@@ -4380,7 +4380,7 @@ namespace ServiceBusExplorer.Forms
 
         //         #region Public Static Properties
         public static MainForm SingletonMainForm => mainSingletonMainForm;
-        
+
         //         #endregion
 
         //         #region Private Methods
@@ -4548,42 +4548,42 @@ namespace ServiceBusExplorer.Forms
                         {
                             //if (serviceBusHelper.NotificationHubNamespaceManager != null)
                             //{
-                                //try
-                                //{
-                                //    var notificationHubs = await serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubsAsync();
-                                //    notificationHubListNode.Nodes.Clear();
-                                //    if (notificationHubs != null)
-                                //    {
-                                //        foreach (var notificationHub in notificationHubs)
-                                //        {
-                                //            if (string.IsNullOrWhiteSpace(notificationHub.Path))
-                                //            {
-                                //                continue;
-                                //            }
-                                //            CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
-                                //        }
-                                //    }
-                                //    if (entityType == EntityType.NotificationHub)
-                                //    {
-                                //        serviceBusTreeView.SelectedNode = notificationHubListNode;
-                                //        serviceBusTreeView.SelectedNode.EnsureVisible();
-                                //        HandleNodeMouseClick(notificationHubListNode);
-                                //    }
-                                //}
-                                //catch (ArgumentException)
-                                //{
-                                //    // This is where we end up if there are no Notification Hubs in the namespace
-                                //    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                //}
-                                //catch (Exception ex) when (FilterOutException(ex))
-                                //{
-                                //    if (ex is AggregateException)
-                                //    {
-                                //        ex = ((AggregateException)ex).InnerExceptions.First();
-                                //    }
-                                //    WriteToLog($"Failed to retrieve Notification Hub entities. Exception: {ex}");
-                                //    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
-                                //}
+                            //try
+                            //{
+                            //    var notificationHubs = await serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubsAsync();
+                            //    notificationHubListNode.Nodes.Clear();
+                            //    if (notificationHubs != null)
+                            //    {
+                            //        foreach (var notificationHub in notificationHubs)
+                            //        {
+                            //            if (string.IsNullOrWhiteSpace(notificationHub.Path))
+                            //            {
+                            //                continue;
+                            //            }
+                            //            CreateNode(notificationHub.Path, notificationHub, notificationHubListNode, true);
+                            //        }
+                            //    }
+                            //    if (entityType == EntityType.NotificationHub)
+                            //    {
+                            //        serviceBusTreeView.SelectedNode = notificationHubListNode;
+                            //        serviceBusTreeView.SelectedNode.EnsureVisible();
+                            //        HandleNodeMouseClick(notificationHubListNode);
+                            //    }
+                            //}
+                            //catch (ArgumentException)
+                            //{
+                            //    // This is where we end up if there are no Notification Hubs in the namespace
+                            //    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                            //}
+                            //catch (Exception ex) when (FilterOutException(ex))
+                            //{
+                            //    if (ex is AggregateException)
+                            //    {
+                            //        ex = ((AggregateException)ex).InnerExceptions.First();
+                            //    }
+                            //    WriteToLog($"Failed to retrieve Notification Hub entities. Exception: {ex}");
+                            //    serviceBusTreeView.Nodes.Remove(notificationHubListNode);
+                            //}
                             //}
                             //else
                             //{
@@ -5285,19 +5285,19 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
                 queueControl = new HandleQueueControl(
-                    WriteToLog, 
-                    _serviceBusHelper, 
-                    queue, 
-                    path, 
+                    WriteToLog,
+                    _serviceBusHelper,
+                    queue,
+                    path,
                     duplicateQueue);
 
                 queueControl.SuspendDrawing();
                 queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(queueControl);
                 SetControlSize(queueControl);
-                //queueControl.OnCancel += MainForm_OnCancel;
-                //queueControl.OnRefresh += MainForm_OnRefresh;
-                //queueControl.OnChangeStatus += MainForm_OnChangeStatus;
+                queueControl.OnCancel += MainForm_OnCancel;
+                queueControl.OnRefresh += MainForm_OnRefresh;
+                queueControl.OnChangeStatus += MainForm_OnChangeStatus;
             }
             catch (Exception ex)
             {
@@ -6378,7 +6378,7 @@ namespace ServiceBusExplorer.Forms
             if (showMessageCount && SelectedMessageCounts.Any())
             {
                 sb.Append(" (");
-                List<long> counts = new List<long>() 
+                List<long> counts = new List<long>()
                 {
                     details.ActiveMessageCount,
                     details.DeadLetterMessageCount,
@@ -7449,6 +7449,11 @@ namespace ServiceBusExplorer.Forms
                 form.ShowDialog();
             }
         }
+
+        private void serviceBusTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
         //         #endregion
 
         //         private async void bulkPurgeAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -7561,4 +7566,4 @@ namespace ServiceBusExplorer.Forms
         //         }
         //     }
     }
- } 
+} 

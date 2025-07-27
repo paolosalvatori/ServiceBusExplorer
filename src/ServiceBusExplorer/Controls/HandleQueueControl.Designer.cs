@@ -257,9 +257,9 @@
             this.btnPurgeDeadletterQueueMessages.Text = "Purge DLQ";
             this.toolTip.SetToolTip(this.btnPurgeDeadletterQueueMessages, "Purge Dead-letter Queue");
             this.btnPurgeDeadletterQueueMessages.UseVisualStyleBackColor = false;
-            //this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
-            //this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnPurgeDeadletterQueueMessages.Click += new System.EventHandler(this.btnPurgeDeadletterQueueMessages_Click);
+            this.btnPurgeDeadletterQueueMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeDeadletterQueueMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // btnTransferDeadletterQueue
             // 
@@ -277,7 +277,7 @@
             this.btnTransferDeadletterQueue.Text = "Transf DLQ";
             this.toolTip.SetToolTip(this.btnTransferDeadletterQueue, "Transfer Dead-letter Queue");
             this.btnTransferDeadletterQueue.UseVisualStyleBackColor = false;
-            //this.btnTransferDeadletterQueue.Click += new System.EventHandler(this.btnTransferDlq_Click);
+            this.btnTransferDeadletterQueue.Click += new System.EventHandler(this.btnTransferDlq_Click);
             // 
             // btnChangeStatus
             // 
@@ -294,10 +294,10 @@
             this.btnChangeStatus.TabIndex = 8;
             this.btnChangeStatus.Text = "Disable";
             this.btnChangeStatus.UseVisualStyleBackColor = false;
-            //this.btnChangeStatus.Click += new System.EventHandler(this.btnChangeStatus_Click);
-            //this.btnChangeStatus.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnChangeStatus.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            //// 
+            this.btnChangeStatus.Click += new System.EventHandler(this.btnChangeStatus_Click);
+            this.btnChangeStatus.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnChangeStatus.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            //
             // btnCancelUpdate
             // 
             this.btnCancelUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -313,9 +313,9 @@
             this.btnCancelUpdate.TabIndex = 10;
             this.btnCancelUpdate.Text = "Update";
             this.btnCancelUpdate.UseVisualStyleBackColor = false;
-            //this.btnCancelUpdate.Click += new System.EventHandler(this.btnCancelUpdate_Click);
-            //this.btnCancelUpdate.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnCancelUpdate.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnCancelUpdate.Click += new System.EventHandler(this.btnCancelUpdate_Click);
+            this.btnCancelUpdate.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnCancelUpdate.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // btnCreateDelete
             // 
@@ -332,9 +332,9 @@
             this.btnCreateDelete.TabIndex = 9;
             this.btnCreateDelete.Text = "Create";
             this.btnCreateDelete.UseVisualStyleBackColor = false;
-            //this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
-            //this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnCreateDelete.Click += new System.EventHandler(this.btnCreateDelete_Click);
+            this.btnCreateDelete.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnCreateDelete.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // btnRefresh
             // 
@@ -351,9 +351,9 @@
             this.btnRefresh.TabIndex = 7;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
-            //this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            //this.btnRefresh.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnRefresh.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnRefresh.MouseLeave += new System.EventHandler(this.button_MouseLeave);
             // 
             // mainTabControl
             // 
@@ -374,7 +374,7 @@
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(976, 480);
             this.mainTabControl.TabIndex = 0;
-            //this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
+            this.mainTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.mainTabControl_DrawItem);
             // 
             // tabPageDescription
             // 
@@ -470,10 +470,10 @@
             this.propertyListView.TabIndex = 0;
             this.propertyListView.UseCompatibleStateImageBehavior = false;
             this.propertyListView.View = System.Windows.Forms.View.Details;
-            //this.propertyListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
-            //this.propertyListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
-            //this.propertyListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
-            //this.propertyListView.Resize += new System.EventHandler(this.listView_Resize);
+            this.propertyListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
+            this.propertyListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
+            this.propertyListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
+            this.propertyListView.Resize += new System.EventHandler(this.listView_Resize);
             // 
             // nameColumnHeader
             // 
@@ -558,7 +558,7 @@
             this.checkedListBox.Size = new System.Drawing.Size(264, 109);
             this.checkedListBox.TabIndex = 0;
             this.checkedListBox.ThreeDCheckBoxes = true;
-            //this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
+            this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
             // 
             // grouperQueueProperties
             // 
@@ -615,7 +615,7 @@
             this.btnOpenForwardDeadLetteredMessagesToForm.Text = "...";
             this.btnOpenForwardDeadLetteredMessagesToForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenForwardDeadLetteredMessagesToForm.UseVisualStyleBackColor = false;
-            //this.btnOpenForwardDeadLetteredMessagesToForm.Click += new System.EventHandler(this.btnOpenForwardDeadLetteredMessagesToForm_Click);
+            this.btnOpenForwardDeadLetteredMessagesToForm.Click += new System.EventHandler(this.btnOpenForwardDeadLetteredMessagesToForm_Click);
             // 
             // lblForwardDeadLetteredMessagesTo
             // 
@@ -670,7 +670,7 @@
             this.trackBarMaxQueueSize.TrackLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
             this.trackBarMaxQueueSize.TrackLineHeight = 1;
             this.trackBarMaxQueueSize.Value = 1;
-            //this.trackBarMaxQueueSize.ValueChanged += new ServiceBusExplorer.Controls.ValueChangedHandler(this.trackBarMaxQueueSize_ValueChanged);
+            this.trackBarMaxQueueSize.ValueChanged += new ServiceBusExplorer.Controls.ValueChangedHandler(this.trackBarMaxQueueSize_ValueChanged);
             // 
             // txtUserMetadata
             // 
@@ -718,7 +718,7 @@
             this.btnOpenDescriptionForm.Text = "...";
             this.btnOpenDescriptionForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenDescriptionForm.UseVisualStyleBackColor = false;
-            //this.btnOpenDescriptionForm.Click += new System.EventHandler(this.btnOpenUserMetadataForm_Click);
+            this.btnOpenDescriptionForm.Click += new System.EventHandler(this.btnOpenUserMetadataForm_Click);
             // 
             // btnOpenForwardToForm
             // 
@@ -736,7 +736,7 @@
             this.btnOpenForwardToForm.Text = "...";
             this.btnOpenForwardToForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenForwardToForm.UseVisualStyleBackColor = false;
-            //this.btnOpenForwardToForm.Click += new System.EventHandler(this.btnOpenForwardToForm_Click);
+            this.btnOpenForwardToForm.Click += new System.EventHandler(this.btnOpenForwardToForm_Click);
             // 
             // lblForwardTo
             // 
@@ -931,7 +931,7 @@
             this.grouperAuthorizationRuleList.ShadowThickness = 1;
             this.grouperAuthorizationRuleList.Size = new System.Drawing.Size(936, 432);
             this.grouperAuthorizationRuleList.TabIndex = 20;
-            //this.grouperAuthorizationRuleList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperAuthorizationRuleList_CustomPaint);
+            this.grouperAuthorizationRuleList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperAuthorizationRuleList_CustomPaint);
             // 
             // authorizationRulesDataGridView
             // 
@@ -953,15 +953,15 @@
             this.authorizationRulesDataGridView.ShowRowErrors = false;
             this.authorizationRulesDataGridView.Size = new System.Drawing.Size(904, 385);
             this.authorizationRulesDataGridView.TabIndex = 0;
-            //this.authorizationRulesDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.authorizationRulesDataGridView_CellContentClick);
-            //this.authorizationRulesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.authorizationRulesDataGridView_DataError);
-            //this.authorizationRulesDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            //this.authorizationRulesDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.authorizationRulesDataGridView_RowEnter);
-            //this.authorizationRulesDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
-            //this.authorizationRulesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.authorizationRulesDataGridView_RowsAdded);
-            //this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
-            //this.authorizationRulesDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.authorizationRulesDataGridView_UserDeletingRow);
-            //this.authorizationRulesDataGridView.Resize += new System.EventHandler(this.authorizationRulesDataGridView_Resize);
+            this.authorizationRulesDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.authorizationRulesDataGridView_CellContentClick);
+            this.authorizationRulesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.authorizationRulesDataGridView_DataError);
+            this.authorizationRulesDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
+            this.authorizationRulesDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.authorizationRulesDataGridView_RowEnter);
+            this.authorizationRulesDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
+            this.authorizationRulesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.authorizationRulesDataGridView_RowsAdded);
+            this.authorizationRulesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.authorizationRulesDataGridView_RowsRemoved);
+            this.authorizationRulesDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.authorizationRulesDataGridView_UserDeletingRow);
+            this.authorizationRulesDataGridView.Resize += new System.EventHandler(this.authorizationRulesDataGridView_Resize);
             // 
             // tabPageMessages
             // 
@@ -974,7 +974,7 @@
             this.tabPageMessages.Size = new System.Drawing.Size(968, 454);
             this.tabPageMessages.TabIndex = 5;
             this.tabPageMessages.Text = "Messages";
-            //this.tabPageMessages.Resize += new System.EventHandler(this.tabPageMessages_Resize);
+            this.tabPageMessages.Resize += new System.EventHandler(this.tabPageMessages_Resize);
             // 
             // messagesSplitContainer
             // 
@@ -1041,7 +1041,7 @@
             this.grouperMessageList.ShadowThickness = 1;
             this.grouperMessageList.Size = new System.Drawing.Size(606, 211);
             this.grouperMessageList.TabIndex = 17;
-            //this.grouperMessageList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageList_CustomPaint);
+            this.grouperMessageList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageList_CustomPaint);
             // 
             // pictFindMessages
             // 
@@ -1051,9 +1051,9 @@
             this.pictFindMessages.Size = new System.Drawing.Size(24, 24);
             this.pictFindMessages.TabIndex = 1;
             this.pictFindMessages.TabStop = false;
-            //this.pictFindMessages.Click += new System.EventHandler(this.pictFindMessages_Click);
-            //this.pictFindMessages.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
-            //this.pictFindMessages.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            this.pictFindMessages.Click += new System.EventHandler(this.pictFindMessages_Click);
+            this.pictFindMessages.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
+            this.pictFindMessages.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
             // 
             // pictFindMessagesByDate
             // 
@@ -1063,9 +1063,9 @@
             this.pictFindMessagesByDate.Size = new System.Drawing.Size(24, 24);
             this.pictFindMessagesByDate.TabIndex = 1;
             this.pictFindMessagesByDate.TabStop = false;
-            //this.pictFindMessagesByDate.Click += new System.EventHandler(this.pictFindMessagesByDate_Click);
-            //this.pictFindMessagesByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
-            //this.pictFindMessagesByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
+            this.pictFindMessagesByDate.Click += new System.EventHandler(this.pictFindMessagesByDate_Click);
+            this.pictFindMessagesByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
+            this.pictFindMessagesByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
             // 
             // messagesDataGridView
             // 
@@ -1088,18 +1088,18 @@
             this.messagesDataGridView.ShowRowErrors = false;
             this.messagesDataGridView.Size = new System.Drawing.Size(574, 161);
             this.messagesDataGridView.TabIndex = 0;
-            //this.messagesDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
-            //this.messagesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_CellDoubleClick);
-            //this.messagesDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.messagesDataGridView_CellFormatting);
-            //this.messagesDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.messagesDataGridView_CellMouseDown);
-            //this.messagesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.messagesDataGridView_DataError);
-            //this.messagesDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            //this.messagesDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_RowEnter);
-            //this.messagesDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
-            //this.messagesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
-            //this.messagesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
-            //this.messagesDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
-            //this.messagesDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
+            this.messagesDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
+            this.messagesDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_CellDoubleClick);
+            this.messagesDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.messagesDataGridView_CellFormatting);
+            this.messagesDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.messagesDataGridView_CellMouseDown);
+            this.messagesDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.messagesDataGridView_DataError);
+            this.messagesDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
+            this.messagesDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.messagesDataGridView_RowEnter);
+            this.messagesDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
+            this.messagesDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
+            this.messagesDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
+            this.messagesDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
+            this.messagesDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
             // grouperMessageText
             // 
@@ -1125,7 +1125,7 @@
             this.grouperMessageText.ShadowThickness = 1;
             this.grouperMessageText.Size = new System.Drawing.Size(606, 213);
             this.grouperMessageText.TabIndex = 26;
-            //this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
+            this.grouperMessageText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageText_CustomPaint);
             // 
             // txtMessageText
             // 
@@ -1205,7 +1205,7 @@
             this.grouperMessageSystemProperties.ShadowThickness = 1;
             this.grouperMessageSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperMessageSystemProperties.TabIndex = 20;
-            //this.grouperMessageSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageSystemProperties_CustomPaint);
+            this.grouperMessageSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageSystemProperties_CustomPaint);
             // 
             // messagePropertyGrid
             // 
@@ -1245,7 +1245,7 @@
             this.grouperMessageCustomProperties.ShadowThickness = 1;
             this.grouperMessageCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperMessageCustomProperties.TabIndex = 27;
-            //this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
+            this.grouperMessageCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperMessageCustomProperties_CustomPaint);
             // 
             // messageCustomPropertyGrid
             // 
@@ -1273,7 +1273,7 @@
             this.tabPageDeadletter.Size = new System.Drawing.Size(968, 454);
             this.tabPageDeadletter.TabIndex = 7;
             this.tabPageDeadletter.Text = "Deadletter";
-            //this.tabPageDeadletter.Resize += new System.EventHandler(this.deadletterTabPage_Resize);
+            this.tabPageDeadletter.Resize += new System.EventHandler(this.deadletterTabPage_Resize);
             // 
             // deadletterSplitContainer
             // 
@@ -1340,7 +1340,7 @@
             this.grouperDeadletterList.ShadowThickness = 1;
             this.grouperDeadletterList.Size = new System.Drawing.Size(606, 211);
             this.grouperDeadletterList.TabIndex = 17;
-            //this.grouperDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterList_CustomPaint);
+            this.grouperDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterList_CustomPaint);
             // 
             // pictFindDeadletter
             // 
@@ -1350,9 +1350,9 @@
             this.pictFindDeadletter.Size = new System.Drawing.Size(24, 24);
             this.pictFindDeadletter.TabIndex = 2;
             this.pictFindDeadletter.TabStop = false;
-            //this.pictFindDeadletter.Click += new System.EventHandler(this.pictFindDeadletter_Click);
-            //this.pictFindDeadletter.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
-            //this.pictFindDeadletter.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
+            this.pictFindDeadletter.Click += new System.EventHandler(this.pictFindDeadletter_Click);
+            this.pictFindDeadletter.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
+            this.pictFindDeadletter.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
             // 
             // pictFindDeadletterByDate
             // 
@@ -1362,9 +1362,9 @@
             this.pictFindDeadletterByDate.Size = new System.Drawing.Size(24, 24);
             this.pictFindDeadletterByDate.TabIndex = 2;
             this.pictFindDeadletterByDate.TabStop = false;
-            //this.pictFindDeadletterByDate.Click += new System.EventHandler(this.pictFindDeadletterByDate_Click);
-            //this.pictFindDeadletterByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
-            //this.pictFindDeadletterByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
+            this.pictFindDeadletterByDate.Click += new System.EventHandler(this.pictFindDeadletterByDate_Click);
+            this.pictFindDeadletterByDate.MouseEnter += new System.EventHandler(this.pictureBoxByDate_MouseEnter);
+            this.pictFindDeadletterByDate.MouseLeave += new System.EventHandler(this.pictureBoxByDate_MouseLeave);
             // 
             // deadletterDataGridView
             // 
@@ -1387,18 +1387,18 @@
             this.deadletterDataGridView.ShowRowErrors = false;
             this.deadletterDataGridView.Size = new System.Drawing.Size(574, 161);
             this.deadletterDataGridView.TabIndex = 0;
-            //this.deadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
-            //this.deadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.deadletterDataGridView_CellDoubleClick);
-            //this.deadletterDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.deadletterDataGridView_CellFormatting);
-            //this.deadletterDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.deadletterDataGridView_CellMouseDown);
-            //this.deadletterDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.deadletterDataGridView_DataError);
-            //this.deadletterDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            //this.deadletterDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.deadletterDataGridView_RowEnter);
-            //this.deadletterDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
-            //this.deadletterDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
-            //this.deadletterDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
-            //this.deadletterDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
-            //this.deadletterDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
+            this.deadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
+            this.deadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.deadletterDataGridView_CellDoubleClick);
+            this.deadletterDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.deadletterDataGridView_CellFormatting);
+            this.deadletterDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.deadletterDataGridView_CellMouseDown);
+            this.deadletterDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.deadletterDataGridView_DataError);
+            this.deadletterDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
+            this.deadletterDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.deadletterDataGridView_RowEnter);
+            this.deadletterDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
+            this.deadletterDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
+            this.deadletterDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
+            this.deadletterDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
+            this.deadletterDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
             // grouperDeadletterText
             // 
@@ -1424,7 +1424,7 @@
             this.grouperDeadletterText.ShadowThickness = 1;
             this.grouperDeadletterText.Size = new System.Drawing.Size(606, 213);
             this.grouperDeadletterText.TabIndex = 26;
-            //this.grouperDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterText_CustomPaint);
+            this.grouperDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterText_CustomPaint);
             // 
             // txtDeadletterText
             // 
@@ -1504,7 +1504,7 @@
             this.grouperDeadletterSystemProperties.ShadowThickness = 1;
             this.grouperDeadletterSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperDeadletterSystemProperties.TabIndex = 20;
-            //this.grouperDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterSystemProperties_CustomPaint);
+            this.grouperDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterSystemProperties_CustomPaint);
             // 
             // deadletterPropertyGrid
             // 
@@ -1544,7 +1544,7 @@
             this.grouperDeadletterCustomProperties.ShadowThickness = 1;
             this.grouperDeadletterCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperDeadletterCustomProperties.TabIndex = 27;
-            //this.grouperDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
+            this.grouperDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
             // 
             // deadletterCustomPropertyGrid
             // 
@@ -1637,7 +1637,7 @@
             this.grouperTransferDeadletterList.ShadowThickness = 1;
             this.grouperTransferDeadletterList.Size = new System.Drawing.Size(606, 211);
             this.grouperTransferDeadletterList.TabIndex = 17;
-            //this.grouperTransferDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterList_CustomPaint);
+            this.grouperTransferDeadletterList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterList_CustomPaint);
             // 
             // pictureBox1
             // 
@@ -1669,18 +1669,18 @@
             this.transferDeadletterDataGridView.ShowRowErrors = false;
             this.transferDeadletterDataGridView.Size = new System.Drawing.Size(574, 161);
             this.transferDeadletterDataGridView.TabIndex = 0;
-            //this.transferDeadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
-            //this.transferDeadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.transferDeadletterDataGridView_CellDoubleClick);
-            //this.transferDeadletterDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.transferDeadletterDataGridView_CellFormatting);
-            //this.transferDeadletterDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.transferDeadletterDataGridView_CellMouseDown);
-            //this.transferDeadletterDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.transferDeadletterDataGridView_DataError);
-            //this.transferDeadletterDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            //this.transferDeadletterDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.transferDeadletterDataGridView_RowEnter);
-            //this.transferDeadletterDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
-            //this.transferDeadletterDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
-            //this.transferDeadletterDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
-            //this.transferDeadletterDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
-            //this.transferDeadletterDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
+            this.transferDeadletterDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
+            this.transferDeadletterDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.transferDeadletterDataGridView_CellDoubleClick);
+            this.transferDeadletterDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.transferDeadletterDataGridView_CellFormatting);
+            this.transferDeadletterDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.transferDeadletterDataGridView_CellMouseDown);
+            this.transferDeadletterDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.transferDeadletterDataGridView_DataError);
+            this.transferDeadletterDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
+            this.transferDeadletterDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.transferDeadletterDataGridView_RowEnter);
+            this.transferDeadletterDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
+            this.transferDeadletterDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
+            this.transferDeadletterDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
+            this.transferDeadletterDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
+            this.transferDeadletterDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
             // grouperTransferDeadletterText
             // 
@@ -1706,7 +1706,7 @@
             this.grouperTransferDeadletterText.ShadowThickness = 1;
             this.grouperTransferDeadletterText.Size = new System.Drawing.Size(606, 213);
             this.grouperTransferDeadletterText.TabIndex = 26;
-            //this.grouperTransferDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterText_CustomPaint);
+            this.grouperTransferDeadletterText.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterText_CustomPaint);
             // 
             // txtTransferDeadletterText
             // 
@@ -1786,7 +1786,7 @@
             this.grouperTransferDeadletterSystemProperties.ShadowThickness = 1;
             this.grouperTransferDeadletterSystemProperties.Size = new System.Drawing.Size(314, 211);
             this.grouperTransferDeadletterSystemProperties.TabIndex = 20;
-            //this.grouperTransferDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterSystemProperties_CustomPaint);
+            this.grouperTransferDeadletterSystemProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperTransferDeadletterSystemProperties_CustomPaint);
             // 
             // transferDeadletterPropertyGrid
             // 
@@ -1826,7 +1826,7 @@
             this.grouperTransferDeadletterCustomProperties.ShadowThickness = 1;
             this.grouperTransferDeadletterCustomProperties.Size = new System.Drawing.Size(314, 213);
             this.grouperTransferDeadletterCustomProperties.TabIndex = 27;
-            //this.grouperTransferDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
+            this.grouperTransferDeadletterCustomProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperDeadletterCustomProperties_CustomPaint);
             // 
             // transferDeadletterCustomPropertyGrid
             // 
@@ -1854,7 +1854,7 @@
             this.tabPageSessions.Size = new System.Drawing.Size(968, 454);
             this.tabPageSessions.TabIndex = 6;
             this.tabPageSessions.Text = "Sessions";
-            //this.tabPageSessions.Resize += new System.EventHandler(this.tabPageSessions_Resize);
+            this.tabPageSessions.Resize += new System.EventHandler(this.tabPageSessions_Resize);
             // 
             // sessionListStateSplitContainer
             // 
@@ -1919,7 +1919,7 @@
             this.grouperSessionList.ShadowThickness = 1;
             this.grouperSessionList.Size = new System.Drawing.Size(606, 211);
             this.grouperSessionList.TabIndex = 20;
-            //this.grouperSessionList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionList_CustomPaint);
+            this.grouperSessionList.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionList_CustomPaint);
             // 
             // sessionsDataGridView
             // 
@@ -1943,15 +1943,15 @@
             this.sessionsDataGridView.ShowRowErrors = false;
             this.sessionsDataGridView.Size = new System.Drawing.Size(571, 161);
             this.sessionsDataGridView.TabIndex = 0;
-            //this.sessionsDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
-            //this.sessionsDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.sessionsDataGridView_DataError);
-            //this.sessionsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
-            //this.sessionsDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.sessionsDataGridView_RowEnter);
-            //this.sessionsDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
-            //this.sessionsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
-            //this.sessionsDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
-            //this.sessionsDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
-            //this.sessionsDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
+            this.sessionsDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
+            this.sessionsDataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.sessionsDataGridView_DataError);
+            this.sessionsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView_EditingControlShowing);
+            this.sessionsDataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.sessionsDataGridView_RowEnter);
+            this.sessionsDataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
+            this.sessionsDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_RowsAdded);
+            this.sessionsDataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
+            this.sessionsDataGridView.Sorted += new System.EventHandler(this.dataGridView_Sorted);
+            this.sessionsDataGridView.Resize += new System.EventHandler(this.dataGridView_Resize);
             // 
             // grouperSessionState
             // 
@@ -1977,7 +1977,7 @@
             this.grouperSessionState.ShadowThickness = 1;
             this.grouperSessionState.Size = new System.Drawing.Size(606, 213);
             this.grouperSessionState.TabIndex = 26;
-            //this.grouperSessionState.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionState_CustomPaint);
+            this.grouperSessionState.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionState_CustomPaint);
             // 
             // txtSessionState
             // 
@@ -2015,7 +2015,7 @@
             this.grouperSessionProperties.ShadowThickness = 1;
             this.grouperSessionProperties.Size = new System.Drawing.Size(314, 432);
             this.grouperSessionProperties.TabIndex = 19;
-            //this.grouperSessionProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionProperties_CustomPaint);
+            this.grouperSessionProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperSessionProperties_CustomPaint);
             // 
             // sessionPropertyGrid
             // 
@@ -2046,7 +2046,7 @@
             this.btnSessions.TabIndex = 3;
             this.btnSessions.Text = "Sessions";
             this.btnSessions.UseVisualStyleBackColor = false;
-            //this.btnSessions.Click += new System.EventHandler(this.btnSessions_Click);
+            this.btnSessions.Click += new System.EventHandler(this.btnSessions_Click);
             // 
             // btnMessages
             // 
@@ -2063,7 +2063,7 @@
             this.btnMessages.TabIndex = 4;
             this.btnMessages.Text = "Messages";
             this.btnMessages.UseVisualStyleBackColor = false;
-            //this.btnMessages.Click += new System.EventHandler(this.btnMessages_Click);
+            this.btnMessages.Click += new System.EventHandler(this.btnMessages_Click);
             // 
             // btnDeadletter
             // 
@@ -2080,7 +2080,7 @@
             this.btnDeadletter.TabIndex = 5;
             this.btnDeadletter.Text = "Dead-letter";
             this.btnDeadletter.UseVisualStyleBackColor = false;
-            //this.btnDeadletter.Click += new System.EventHandler(this.btnDeadletter_Click);
+            this.btnDeadletter.Click += new System.EventHandler(this.btnDeadletter_Click);
             // 
             // messagesContextMenuStrip
             // 
@@ -2104,7 +2104,7 @@
             this.repairAndResubmitMessageToolStripMenuItem.Name = "repairAndResubmitMessageToolStripMenuItem";
             this.repairAndResubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitMessageToolStripMenuItem.Text = "Repair and Resubmit Selected Message";
-            //this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
+            this.repairAndResubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitMessageToolStripMenuItem_Click);
             // 
             // resubmitMessageToolStripMenuItem
             // 
@@ -2112,7 +2112,7 @@
             this.resubmitMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitMessageToolStripMenuItem.Text = "Resubmit Selected Message";
             this.resubmitMessageToolStripMenuItem.ToolTipText = "Resubmits the message with unchanged body.";
-            //this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
+            this.resubmitMessageToolStripMenuItem.Click += new System.EventHandler(this.resubmitMessageToolStripMenuItem_Click);
             // 
             // selectAllMessagesToolStripMenuItem
             // 
@@ -2120,14 +2120,14 @@
             this.selectAllMessagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.selectAllMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.selectAllMessagesToolStripMenuItem.Text = "Select All Messages";
-            //this.selectAllMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllMessagesToolStripMenuItem_Click);
+            this.selectAllMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllMessagesToolStripMenuItem_Click);
             // 
             // resubmitSelectedMessagesInBatchModeToolStripMenuItem
             // 
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Name = "resubmitSelectedMessagesInBatchModeToolStripMenuItem";
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
-            //this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click);
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedMessagesInBatchModeToolStripMenuItem_Click);
             // 
             // cancelScheduledMessageToolStripMenuItem
             // 
@@ -2135,7 +2135,7 @@
             this.cancelScheduledMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.cancelScheduledMessageToolStripMenuItem.Text = "Cancel Selected Scheduled Message";
             this.cancelScheduledMessageToolStripMenuItem.Visible = false;
-            //this.cancelScheduledMessageToolStripMenuItem.Click += new System.EventHandler(this.cancelScheduledMessageToolStripMenuItem_Click);
+            this.cancelScheduledMessageToolStripMenuItem.Click += new System.EventHandler(this.cancelScheduledMessageToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -2147,44 +2147,44 @@
             this.saveSelectedMessageToolStripMenuItem.Name = "saveSelectedMessageToolStripMenuItem";
             this.saveSelectedMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedMessageToolStripMenuItem.Text = "Save Selected Message";
-            //this.saveSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageToolStripMenuItem_Click);
+            this.saveSelectedMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageToolStripMenuItem_Click);
             // 
             // saveSelectedMessageBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
-            //this.saveSelectedMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedMessagesToolStripMenuItem
             // 
             this.saveSelectedMessagesToolStripMenuItem.Name = "saveSelectedMessagesToolStripMenuItem";
             this.saveSelectedMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedMessagesToolStripMenuItem.Text = "Save Selected Messages";
-            //this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
+            this.saveSelectedMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesToolStripMenuItem_Click);
             // 
             // saveSelectedMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
-            //this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // sharedDeadletterContextMenuStrip
             // 
             this.sharedDeadletterContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.sharedDeadletterContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.repairAndResubmitSharedDeadletterToolStripMenuItem,
-             this.resubmitSharedDeadletterToolStripMenuItem,
-             this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem,
-             this.selectAllSharedDeadletterMessagesToolStripMenuItem,
-             this.toolStripSeparator2,
-             this.saveSelectedSharedDeadletteredMessageToolStripMenuItem,
-             this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem,
-             this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem,
-             this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem,
-             this.deleteSelectedSharedDeadletterMessageToolStripMenuItem,
-             this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem});
+            this.repairAndResubmitSharedDeadletterToolStripMenuItem,
+            this.resubmitSharedDeadletterToolStripMenuItem,
+            this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem,
+            this.selectAllSharedDeadletterMessagesToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.saveSelectedSharedDeadletteredMessageToolStripMenuItem,
+            this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem,
+            this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem,
+            this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem,
+            this.deleteSelectedSharedDeadletterMessageToolStripMenuItem,
+            this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem});
             this.sharedDeadletterContextMenuStrip.Name = "registrationContextMenuStrip";
             this.sharedDeadletterContextMenuStrip.Size = new System.Drawing.Size(306, 230);
             // 
@@ -2193,7 +2193,7 @@
             this.repairAndResubmitSharedDeadletterToolStripMenuItem.Name = "repairAndResubmitSharedDeadletterToolStripMenuItem";
             this.repairAndResubmitSharedDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.repairAndResubmitSharedDeadletterToolStripMenuItem.Text = "Repair And Resubmit Selected Message";
-            //this.repairAndResubmitSharedDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitSharedDeadletterMessageToolStripMenuItem_Click);
+            this.repairAndResubmitSharedDeadletterToolStripMenuItem.Click += new System.EventHandler(this.repairAndResubmitSharedDeadletterMessageToolStripMenuItem_Click);
             // 
             // resubmitSharedDeadletterToolStripMenuItem
             // 
@@ -2201,7 +2201,7 @@
             this.resubmitSharedDeadletterToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitSharedDeadletterToolStripMenuItem.Text = "Resubmit Selected Message";
             this.resubmitSharedDeadletterToolStripMenuItem.ToolTipText = "Resubmits the deadletter message with unchanged body.";
-            //this.resubmitSharedDeadletterToolStripMenuItem.Click += new System.EventHandler(this.resubmitSharedDeadletterMessageToolStripMenuItem_Click);
+            this.resubmitSharedDeadletterToolStripMenuItem.Click += new System.EventHandler(this.resubmitSharedDeadletterMessageToolStripMenuItem_Click);
             // 
             // selectAllSharedDeadletterMessagesToolStripMenuItem
             // 
@@ -2209,14 +2209,14 @@
             this.selectAllSharedDeadletterMessagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.selectAllSharedDeadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.selectAllSharedDeadletterMessagesToolStripMenuItem.Text = "Select All Messages";
-            //this.selectAllSharedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllDeadletterMessagesToolStripMenuItem_Click);
+            this.selectAllSharedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllDeadletterMessagesToolStripMenuItem_Click);
             // 
             // resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem
             // 
             this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Name = "resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem";
             this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
-            //this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedSharedDeadletterMessagesInBatchModeToolStripMenuItem_Click);
+            this.resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedSharedDeadletterMessagesInBatchModeToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -2228,42 +2228,42 @@
             this.saveSelectedSharedDeadletteredMessageToolStripMenuItem.Name = "saveSelectedSharedDeadletteredMessageToolStripMenuItem";
             this.saveSelectedSharedDeadletteredMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedSharedDeadletteredMessageToolStripMenuItem.Text = "Save Selected Message";
-            //this.saveSelectedSharedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click);
+            this.saveSelectedSharedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click);
             // 
             // saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
-            //this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedSharedDeadletteredMessagesToolStripMenuItem
             // 
             this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Name = "saveSelectedSharedDeadletteredMessagesToolStripMenuItem";
             this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
-            //this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click);
+            this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click);
             // 
             // saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
-            //this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // deleteSelectedSharedDeadletterMessageToolStripMenuItem
             // 
             this.deleteSelectedSharedDeadletterMessageToolStripMenuItem.Name = "deleteSelectedSharedDeadletterMessageToolStripMenuItem";
             this.deleteSelectedSharedDeadletterMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedSharedDeadletterMessageToolStripMenuItem.Text = "Delete Selected Message";
-            //this.deleteSelectedSharedDeadletterMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click);
+            this.deleteSelectedSharedDeadletterMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click);
             // 
             // deleteSelectedSharedDeadletterMessagesToolStripMenuItem
             // 
             this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Name = "deleteSelectedSharedDeadletterMessagesToolStripMenuItem";
             this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Text = "Delete Selected Messages";
-            //this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click);
+            this.deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click);
             // 
             // btnPurgeMessages
             // 
@@ -2280,10 +2280,10 @@
             this.btnPurgeMessages.TabIndex = 1;
             this.btnPurgeMessages.Text = "Purge";
             this.btnPurgeMessages.UseVisualStyleBackColor = false;
-            //this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
-            //this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
-            //this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            // 
+            this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
+            this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
+            this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
+            //
             // HandleQueueControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
