@@ -1339,10 +1339,12 @@ namespace ServiceBusExplorer.Controls
                 return _serviceBusHelper.Client.CreateReceiver(queueDescription.Name, new ServiceBusReceiverOptions { ReceiveMode = receiveMode });
             }
 
-            return await _serviceBusHelper.Client.AcceptSessionAsync(
-                queueDescription.Name, 
-                fromSession, 
-                new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode }); 
+            return await _serviceBusHelper.Client.AcceptNextSessionAsync(queueDescription.Name, new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode });
+
+            //return await _serviceBusHelper.Client.AcceptSessionAsync(
+            //    queueDescription.Name, 
+            //    sessionId: fromSession,
+            //    new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode }); 
         }
 
         private async Task GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
@@ -1894,7 +1896,7 @@ namespace ServiceBusExplorer.Controls
                     int retrieved;
                     do
                     {
-                        var message = await reciever.ReceiveMessageAsync(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
+                        var message = reciever.ReceiveMessageAsync(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout)).GetAwaiter().GetResult();
                         retrieved = message != null ? 1 : 0;
                         if (retrieved == 0)
                         {
@@ -2861,9 +2863,9 @@ namespace ServiceBusExplorer.Controls
 
         private void dataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            //var textBox = (TextBox)e.Control;
-            //textBox.Multiline = true;
-            //textBox.ScrollBars = ScrollBars.Both;
+            var textBox = (TextBox)e.Control;
+            textBox.Multiline = true;
+            textBox.ScrollBars = ScrollBars.Both;
         }
 
         private void CalculateLastColumnWidth(object sender)
@@ -3080,9 +3082,9 @@ namespace ServiceBusExplorer.Controls
 
         }
 
-        private void btnDeadletter_Click(object sender, EventArgs e)
+        private async void btnDeadletter_Click(object sender, EventArgs e)
         {
-            GetDeadletterMessages().GetAwaiter().GetResult();
+            await GetDeadletterMessages();
         }
 
         private void btnTransferDlq_Click(object sender, EventArgs e)

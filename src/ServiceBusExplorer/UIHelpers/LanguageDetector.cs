@@ -57,8 +57,7 @@ namespace ServiceBusExplorer.UIHelpers
                 throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
             }
 
-            //InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message, TODO: 
-            //    MainForm.SingletonMainForm.UseAscii, out _), textBox);
+            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message.Body), textBox);
         }
 
         //public static void SetFormattedMessage(IServiceBusService serviceBusHelper, EventDataMessage message, FastColoredTextBox textBox)

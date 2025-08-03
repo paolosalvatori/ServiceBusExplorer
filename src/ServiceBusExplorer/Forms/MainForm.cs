@@ -6688,7 +6688,7 @@ namespace ServiceBusExplorer.Forms
             //             serviceBusTreeView.Font = new Font(serviceBusTreeView.Font.FontFamily, (float)treeViewFontSize);
         }
 
-        private void receiveMessages_Click(object sender, EventArgs e)
+        private async void receiveMessages_Click(object sender, EventArgs e)
         {
             try
             {
@@ -6728,7 +6728,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         if (deadletter)
                         {
-                            control.GetDeadletterMessages().GetAwaiter().GetResult();
+                            await control.GetDeadletterMessages();
                         }
                         else if (transferDeadletter)
                         {
