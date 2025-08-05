@@ -191,7 +191,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
+                        if (level1Node.Text == $"{level1Node.Nodes.Count} {QueueEntities}" || level1Node.Text == FilteredQueueEntities)
                         {
                             if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
                             {
@@ -207,7 +207,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == TopicEntities || level1Node.Text == FilteredTopicEntities)
+                        if (level1Node.Text == $"{level1Node.Nodes.Count} {TopicEntities}" || level1Node.Text == FilteredTopicEntities)
                         {
                             if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
                             {
