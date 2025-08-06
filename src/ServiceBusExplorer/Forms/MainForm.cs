@@ -1873,14 +1873,14 @@ namespace ServiceBusExplorer.Forms
                 if (serviceBusTreeView.SelectedNode != null)
                 {
                     // Queues Node (Create New QueueDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.QueueEntities)
+                    if (serviceBusTreeView.SelectedNode.Name == Constants.QueueEntities)
                     {
                         panelMain.HeaderText = CreateQueue;
                         ShowQueue(null, null);
                         return;
                     }
                     // Topics Node (Create New TopicDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.TopicEntities)
+                    if (serviceBusTreeView.SelectedNode.Name == Constants.TopicEntities)
                     {
                         panelMain.HeaderText = CreateTopic;
 
@@ -1896,14 +1896,14 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
                     // Relays Node (Create New RelayDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.RelayEntities)
+                    if (serviceBusTreeView.SelectedNode.Name == Constants.RelayEntities)
                     {
                         panelMain.HeaderText = CreateRelay;
                         ShowRelay(null, null);
                         return;
                     }
                     // EventHubs Node (Create New EventHubDescription)
-                    if (serviceBusTreeView.SelectedNode.Text == Constants.EventHubEntities)
+                    if (serviceBusTreeView.SelectedNode.Name == Constants.EventHubEntities)
                     {
                         panelMain.HeaderText = CreateEventHub;
                         ShowEventHub(null);
