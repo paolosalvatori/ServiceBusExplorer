@@ -1332,19 +1332,23 @@ namespace ServiceBusExplorer.Controls
             //}
         }
 
-        private async Task<ServiceBusReceiver> BuildMessageReceiverAsync(ServiceBusReceiveMode receiveMode, string? fromSession = null)
+        private async Task<ServiceBusReceiver> BuildMessageReceiverAsync(ServiceBusReceiveMode receiveMode, SubQueue queueType, string? fromSession = null)
         {
-            if (!queueDescription.RequiresSession)
+            if (!string.IsNullOrWhiteSpace(fromSession))
             {
-                return _serviceBusHelper.Client.CreateReceiver(queueDescription.Name, new ServiceBusReceiverOptions { ReceiveMode = receiveMode });
+                return await _serviceBusHelper.Client.AcceptSessionAsync(
+                    queueDescription.Name,
+                    sessionId: fromSession,
+                    new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode });
             }
 
-            return await _serviceBusHelper.Client.AcceptNextSessionAsync(queueDescription.Name, new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode });
-
-            //return await _serviceBusHelper.Client.AcceptSessionAsync(
-            //    queueDescription.Name, 
-            //    sessionId: fromSession,
-            //    new ServiceBusSessionReceiverOptions { ReceiveMode = receiveMode }); 
+            return queueType != SubQueue.None
+                ? _serviceBusHelper.Client.CreateReceiver(
+                    queueDescription.Name, 
+                    new ServiceBusReceiverOptions { ReceiveMode = receiveMode, SubQueue = queueType })
+                : _serviceBusHelper.Client.CreateReceiver(
+                    queueDescription.Name,
+                    new ServiceBusReceiverOptions { ReceiveMode = receiveMode });
         }
 
         private async Task GetMessages(bool peek, bool all, int count, IBrokeredMessageInspector? messageInspector, long? fromSequenceNumber = null, string? fromSession = null)
@@ -1362,14 +1366,13 @@ namespace ServiceBusExplorer.Controls
                 {
                     var totalRetrieved = 0;
 
-                    var receiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, fromSession);
+                    var receiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.None, fromSession);
                     while (totalRetrieved < count)
                     {
                         IReadOnlyList<ServiceBusReceivedMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            //messageEnumerable = await receiver.PeekMessagesAsync(count, fromSequenceNumber.Value); //TODO: What is count here? 
                             messageEnumerable = await receiver.PeekMessagesAsync(MaxMessageCount, fromSequenceNumber.Value);
                         }
                         else
@@ -1396,7 +1399,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.None, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1479,7 +1482,7 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<ServiceBusReceivedMessage>();
                 if (peek)
                 {   
-                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, fromSession);
+                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.None, fromSession);
 
                     for (var i = 0; i < count; i++)
                     {
@@ -1507,7 +1510,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, fromSession);
+                    var messageReceiver = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.None, fromSession);
 
                     var totalRetrieved = 0;
                     int retrieved;
@@ -1581,29 +1584,28 @@ namespace ServiceBusExplorer.Controls
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<ServiceBusReceivedMessage>();
 
-                //var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Name);
                 if (peek)
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.DeadLetter);
 
-                    //var queueClient = _serviceBusHelper.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
                     var retrieved = 0;
                     do
                     {
                         IEnumerable<ServiceBusReceivedMessage> messages;
+                        var toRetrieve = count - totalRetrieved;
 
                         if (retrieved == 0 && fromSequenceNumber.HasValue)
                         {
                             messages = await reciever.PeekMessagesAsync((int)fromSequenceNumber.Value, all
                                 ? MainForm.SingletonMainForm.TopCount
-                                : count - totalRetrieved);
+                                : toRetrieve);
                         }
                         else
                         {
                             messages = await reciever.PeekMessagesAsync(all
                                 ? MainForm.SingletonMainForm.TopCount
-                                : count - totalRetrieved);
+                                : toRetrieve);
                         }
 
                         var enumerable = messages as ServiceBusReceivedMessage[] ?? messages.ToArray();
@@ -1621,7 +1623,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.DeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
@@ -1725,7 +1727,7 @@ namespace ServiceBusExplorer.Controls
                 //var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Name);
                 if (peek)
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.TransferDeadLetter);
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
                     var retrieved = 0;
@@ -1761,7 +1763,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.TransferDeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
@@ -1859,7 +1861,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (peek)
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.TransferDeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
@@ -1889,7 +1891,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.TransferDeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
@@ -1959,7 +1961,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (peek)
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.PeekLock, SubQueue.TransferDeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     for (var i = 0; i < count; i++)
@@ -1989,7 +1991,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete);
+                    var reciever = await BuildMessageReceiverAsync(ServiceBusReceiveMode.ReceiveAndDelete, SubQueue.TransferDeadLetter);
 
                     //var queueClient = _serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.ReceiveAndDelete);
                     var totalRetrieved = 0;
@@ -2941,14 +2943,14 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void btnMessages_Click(object sender, EventArgs e)
+        private async void btnMessages_Click(object sender, EventArgs e)
         {
-            GetMessages().GetAwaiter().GetResult();
+            await GetMessages();
         }
 
-        private void btnSessions_Click(object sender, EventArgs e)
+        private async void btnSessions_Click(object sender, EventArgs e)
         {
-            GetMessageSessions().GetAwaiter().GetResult();
+            await GetMessageSessions();
         }
 
         private void messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)

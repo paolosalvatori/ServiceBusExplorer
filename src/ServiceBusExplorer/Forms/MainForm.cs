@@ -267,14 +267,14 @@ namespace ServiceBusExplorer.Forms
         private static MainForm mainSingletonMainForm;
         private static IWebProxy initialDefaultWebProxy;
 
-        //private static IDictionary<string, Func<MessageCountDetails, long>> messageCountRetriever = new Dictionary<string, Func<MessageCountDetails, long>>
-        // {
-        //     { Constants.ActiveMessages, mcd => mcd.ActiveMessageCount },
-        //     { Constants.DeadLetterMessages, mcd => mcd.DeadLetterMessageCount }, 
-        //     { Constants.ScheduledMessages, mcd => mcd.ScheduledMessageCount },
-        //     { Constants.TransferMessages, mcd => mcd.TransferMessageCount },
-        //     { Constants.TransferDeadLetterMessages, mcd => mcd.TransferDeadLetterMessageCount },
-        // };
+        private static IDictionary<string, Func<QueueMetadata, long>> messageCountRetriever = new Dictionary<string, Func<QueueMetadata, long>>
+         {
+             { Constants.ActiveMessages, mcd => mcd.ActiveMessageCount },
+             { Constants.DeadLetterMessages, mcd => mcd.DeadLetterMessageCount },
+             { Constants.ScheduledMessages, mcd => mcd.ScheduledMessageCount },
+             { Constants.TransferMessages, mcd => mcd.TransferMessageCount },
+             { Constants.TransferDeadLetterMessages, mcd => mcd.TransferDeadLetterMessageCount },
+         };
         #endregion
 
         #region Public Constructor
@@ -1758,21 +1758,21 @@ namespace ServiceBusExplorer.Forms
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Queue Node
-                //if (serviceBusTreeView.SelectedNode.Tag is QueueMetadata queueDescription)
-                //{
-                //    using (var parameterForm = new ParameterForm($"Enter a new name for the {queueDescription.Path} queue.",
-                //            new List<string> { "Name" },
-                //            new List<string> { queueDescription.Path },
-                //            new List<bool> { false }))
-                //    {
-                //        if (parameterForm.ShowDialog() != DialogResult.OK)
-                //        {
-                //            return;
-                //        }
-                //        //_serviceBusHelper.RenameQueue(queueDescription.Path, parameterForm.ParameterValues[0]);
-                //        return;
-                //    }
-                //}
+                if (serviceBusTreeView.SelectedNode.Tag is QueueMetadata queueDescription)
+                {
+                    using (var parameterForm = new ParameterForm($"Enter a new name for the {queueDescription.Name} queue.",
+                            new List<string> { "Name" },
+                            new List<string> { queueDescription.Name },
+                            new List<bool> { false }))
+                    {
+                        if (parameterForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        //_serviceBusHelper.RenameQueue(queueDescription.Path, parameterForm.ParameterValues[0]); TODO:
+                        return;
+                    }
+                }
 
                 // Topic Node
                 //if (serviceBusTreeView.SelectedNode.Tag is TopicDescription topicDescription)
@@ -6384,15 +6384,7 @@ namespace ServiceBusExplorer.Forms
             if (showMessageCount && SelectedMessageCounts.Any())
             {
                 sb.Append(" (");
-                List<long> counts = new List<long>()
-                {
-                    details.ActiveMessageCount,
-                    details.DeadLetterMessageCount,
-                    details.ScheduledMessageCount,
-                    details.TransferMessageCount,
-                    details.TransferDeadLetterMessageCount
-                };
-
+                var counts = SelectedMessageCounts.Select(count => messageCountRetriever[count](details));
                 sb.Append(string.Join(", ", counts));
                 sb.Append(')');
             }
@@ -6732,11 +6724,11 @@ namespace ServiceBusExplorer.Forms
                         }
                         else if (transferDeadletter)
                         {
-                            control.GetTransferDeadletterMessages().GetAwaiter().GetResult();
+                            await control.GetTransferDeadletterMessages();
                         }
                         else
                         {
-                            control.GetMessages().GetAwaiter().GetResult();
+                            await control.GetMessages();
                         }
                     }
                 }
