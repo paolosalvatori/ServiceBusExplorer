@@ -2957,25 +2957,23 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                var bindingList = sessionsBindingSource.DataSource as BindingList<ServiceBusSessionReceiver>;
+                var bindingList = messagesBindingSource.DataSource as BindingList<ServiceBusReceivedMessage>;
+                currentMessageRowIndex = e.RowIndex;
+
                 if (bindingList == null)
                 {
                     return;
                 }
 
-                var sessionReceiver = bindingList[e.RowIndex];
-                sessionPropertyGrid.SelectedObject = sessionReceiver;
-
-                var state = sessionReceiver.GetSessionStateAsync().GetAwaiter().GetResult();
-                if (state == null)
+                if (brokeredMessage == bindingList[e.RowIndex])
                 {
-                    txtSessionState.Text = string.Empty;
                     return;
                 }
 
-                // Assuming the state is UTF-8 encoded
-                var sessionStateText = Encoding.UTF8.GetString(state);
-                txtSessionState.Text = sessionStateText;
+                brokeredMessage = bindingList[e.RowIndex];
+
+                LanguageDetector.SetFormattedMessage(_serviceBusHelper, brokeredMessage, txtMessageText);
+
                 messageCustomPropertyGrid.SelectedObject = new DictionaryPropertyGridAdapter<string, object>(brokeredMessage.ApplicationProperties.ToDictionary());
                 messagePropertyGrid.SelectedObject = brokeredMessage;
             }
