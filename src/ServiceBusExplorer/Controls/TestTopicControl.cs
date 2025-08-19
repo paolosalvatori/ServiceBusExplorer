@@ -1944,6 +1944,21 @@ namespace ServiceBusExplorer.Controls
             DrawTabControlTabs(messageTabControl, e, null);
         }
 
+        private void messageTabControl_Selected(object sender, System.Windows.Forms.TabControlEventArgs e)
+        {
+            if (messageTabControl.SelectedIndex == FilesTabPage)
+            {
+                var messageCount = messageFileListView.Items.Cast<ListViewItem>()
+                                .Count(i => i.Checked);
+
+                txtMessageCount.Text = messageCount.ToString();
+            }
+            else
+            {
+                txtMessageCount.Text = DefaultMessageCount;
+            }
+        }
+
         private void btnSelectFiles_Click(object sender, EventArgs e)
         {
             openFileDialog.Multiselect = true;
@@ -2032,6 +2047,17 @@ namespace ServiceBusExplorer.Controls
         private void messageFileListView_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
         {
             e.DrawDefault = true;
+        }
+
+        private void messageFileListView_ItemCheckedChanged(object sender, System.Windows.Forms.ItemCheckedEventArgs e)
+        {
+            if (messageTabControl.SelectedIndex == FilesTabPage)
+            {
+                var messageCount = messageFileListView.Items.Cast<ListViewItem>()
+                            .Count(i => i.Checked);
+
+                txtMessageCount.Text = messageCount.ToString();
+            }
         }
 
         private void btnClearFiles_Click(object sender, EventArgs e)
