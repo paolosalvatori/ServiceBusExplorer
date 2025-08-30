@@ -205,7 +205,11 @@ public class ServiceBusService : IServiceBusService
         }
     }
 
-    public ServiceBusReceiver CreateReceiver(string name, ServiceBusReceiveMode mode)
+    public async Task<ServiceBusReceiver> CreateReceiverAsync(
+        string name,
+        ServiceBusReceiveMode mode,
+        SubQueue queueType = SubQueue.None,
+        string sessionId = null)
     {
         var opts = new ServiceBusReceiverOptions
         {
@@ -214,7 +218,21 @@ public class ServiceBusService : IServiceBusService
 
         try
         {
-            return Client.CreateReceiver(name, opts);
+            if (!string.IsNullOrWhiteSpace(sessionId))
+            {
+                return await Client.AcceptSessionAsync(
+                    name,
+                    sessionId,
+                    new ServiceBusSessionReceiverOptions { ReceiveMode = mode });
+            }
+
+            return queueType != SubQueue.None
+                ? Client.CreateReceiver(
+                    name,
+                    new ServiceBusReceiverOptions { ReceiveMode = mode, SubQueue = queueType })
+                : Client.CreateReceiver(
+                    name,
+                    new ServiceBusReceiverOptions { ReceiveMode = mode });
         }
         catch
         {

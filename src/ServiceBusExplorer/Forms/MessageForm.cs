@@ -401,7 +401,8 @@ namespace ServiceBusExplorer.Forms
                         var sequenceNumbers = new List<long>(); // Only used when removing messages
                         foreach (var message in messages)
                         {
-                            ServiceBusMessage outboundMessage = new ServiceBusMessage(serviceBusHelper.GetMessageText(message.Body));
+                            var body = serviceBusHelper.GetMessageText(message.Body); 
+                            ServiceBusMessage outboundMessage = new ServiceBusMessage(body);
                             
                                 //if (brokeredMessage != null)
                                 //{

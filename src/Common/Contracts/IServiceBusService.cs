@@ -20,7 +20,6 @@ public interface IServiceBusService
     Dictionary<string, Type> BrokeredMessageInspectors { get; set; }
     Dictionary<string, Type> BrokeredMessageGenerators { get; set; }
 
-
     bool IsPremiumNamespace();
     bool ConnectionStringContainsEntityPath();
     bool IsCloudNamespace(); 
@@ -32,7 +31,12 @@ public interface IServiceBusService
     Task<QueueMetadata> CreateQueueAsync(QueueMetadata metadata);
     Task<QueueMetadata> UpdateQueueAsync(QueueMetadata metadata);
     ServiceBusSender CreateSender(string name);
-    ServiceBusReceiver CreateReceiver(string name, ServiceBusReceiveMode mode);
+    Task<ServiceBusReceiver> CreateReceiverAsync(
+        string name,
+        ServiceBusReceiveMode receiveMode,
+        SubQueue queueType = SubQueue.None,
+        string sessionId = null);
+
     Task DeleteQueueAsync(string name);
     IServiceBusService Clone();
     void AddLogging(WriteToLogDelegate deletgate);

@@ -102,7 +102,7 @@ namespace ServiceBusExplorer.Helpers
             //var dlqEntityPath = TransferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
             var dlqEntityPath = "queue-name"; 
 
-            var messageReceiver = _serviceBusHelper.CreateReceiver(
+            var messageReceiver = await _serviceBusHelper.CreateReceiverAsync(
                 dlqEntityPath,
                 ServiceBusReceiveMode.PeekLock);
 
@@ -186,8 +186,11 @@ namespace ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
-        public async Task<DeletedDlqMessagesResult> MoveMessages(ServiceBusSender messageSender,
-            List<long> sequenceNumbers, bool transferDLQ, List<ServiceBusMessage> messagesToSend = null)
+        public async Task<DeletedDlqMessagesResult> MoveMessages(
+            ServiceBusSender messageSender,
+            List<long> sequenceNumbers, 
+            bool transferDLQ,
+            List<ServiceBusMessage> messagesToSend = null)
         {
             if (messagesToSend != null)
             {
@@ -198,19 +201,33 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            //var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
-            var dlqEntityPath = "queue-name"; 
+            if (sourceQueueMetadata.RequiresSession)
+            {
+                int i = 0; 
+                foreach (var message in messagesToSend)
+                {
+                    message.SessionId = $"session-{i}";
+                    i++;
+                }
+            }
 
-            var messageReceiver = _serviceBusHelper.CreateReceiver(
+            // No need to format the entity path we use SubQueue.Deadletter to specifiy where to retrieve messages from
+            //var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
+            var dlqEntityPath = sourceQueueMetadata.Name;
+            var subQueue = transferDLQ ? SubQueue.TransferDeadLetter : SubQueue.DeadLetter;
+
+            var messageReceiver = _serviceBusHelper.CreateReceiverAsync(
                 dlqEntityPath,
-                ServiceBusReceiveMode.PeekLock);
+                ServiceBusReceiveMode.PeekLock,
+                queueType: subQueue)
+                .GetAwaiter()
+                .GetResult();
 
             var timedOut = false;
             var done = false;
             var lockedMessages = new List<ServiceBusReceivedMessage>(1000);
             var movedSequenceNumbers = new List<long>();
-            //var maxTimeInSeconds = GetMaxOperationTimeInSeconds(); TODO: 
-            var maxTimeInSeconds = 180;
+            var maxTimeInSeconds = GetMaxOperationTimeInSeconds(); 
 
             if (maxTimeInSeconds < 1)
             {
@@ -347,19 +364,20 @@ namespace ServiceBusExplorer.Helpers
         //    return sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds;
         //}
 
-        //private int GetMaxOperationTimeInSeconds()
-        //{
-        //    // Allocate three seconds for final operations;
-        //    const int FinalActionsTime = 3;
+        private int GetMaxOperationTimeInSeconds()
+        {
+            // Allocate three seconds for final operations;
+            const int FinalActionsTime = 3;
 
-        //    if (sourceQueueMetadata != null)
-        //    {
-        //        return (int)sourceQueueMetadata.LockDuration.TotalSeconds - FinalActionsTime;
-        //    }
+            if (sourceQueueMetadata != null)
+            {
+                return (int)sourceQueueMetadata.LockDuration.TotalSeconds - FinalActionsTime;
+            }
 
-        //    return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
-        //        - FinalActionsTime;
-        //}
+            //return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
+            //    - FinalActionsTime; // TODO: 
+            return 26;
+        }
 
         //string GetDlqEntityPath()
         //{
