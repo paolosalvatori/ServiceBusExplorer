@@ -211,7 +211,7 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            // No need to format the entity path we use SubQueue.Deadletter to specifiy where to retrieve messages from
+            // No need to format the entity path we use SubQueue which entity path to retreive from
             //var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
             var dlqEntityPath = sourceQueueMetadata.Name;
             var subQueue = transferDLQ ? SubQueue.TransferDeadLetter : SubQueue.DeadLetter;

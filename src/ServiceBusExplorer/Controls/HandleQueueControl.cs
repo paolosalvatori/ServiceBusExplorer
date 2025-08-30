@@ -1,5 +1,4 @@
 ﻿#region Copyright
-
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
