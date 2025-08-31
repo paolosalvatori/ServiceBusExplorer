@@ -192,7 +192,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     foreach (TreeNode level1Node in rootNode.Nodes)
                     {
-                        if (level1Node.Text == QueueEntities || level1Node.Text == FilteredQueueEntities)
+                        if (level1Node.Name == QueueEntities)
                         {
                             if (FocusNodeIfMatching<QueueMetadata>(level1Node, qd => qd.Name, queueDescriptionSource.Name))
                             {
@@ -202,13 +202,13 @@ namespace ServiceBusExplorer.Forms
                     }
                 }
             }
-            //else if (topicDescriptionSource != null) TODO: 
+            //else if (topicDescriptionSource != null)
             //{
             //    foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
             //    {
             //        foreach (TreeNode level1Node in rootNode.Nodes)
             //        {
-            //            if (level1Node.Text == TopicEntities || level1Node.Text == FilteredTopicEntities)
+            //            if (level1Node.Name == TopicEntities)
             //            {
             //                if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
             //                {
@@ -331,8 +331,8 @@ namespace ServiceBusExplorer.Forms
             }
 
             var newNode = parent == null ?
-                              serviceBusTreeView.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.StateImageIndex) :
-                              parent.Nodes.Add(node.Text, node.Text, node.ImageIndex, node.SelectedImageIndex);
+                              serviceBusTreeView.Nodes.Add(node.Name, node.Text, node.ImageIndex, node.StateImageIndex) :
+                              parent.Nodes.Add(node.Name, node.Text, node.ImageIndex, node.SelectedImageIndex);
             if (node.Tag != null)
             {
                 if (node.Tag is QueueMetadata) //||

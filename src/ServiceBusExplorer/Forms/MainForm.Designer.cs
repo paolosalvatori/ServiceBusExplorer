@@ -1730,6 +1730,16 @@ namespace ServiceBusExplorer.Forms
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
             this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(312, 22);
             this.changeStatusQueueMenuItem.Text = "Set Status";
+            //this.changeStatusQueueMenuItem.DropDownOpening += changeStatusQueueMenuItem_DropDownOpening;
+            //this.changeStatusQueueMenuItem.DropDownItemClicked += changeStatusQueue_Click;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Active.ToString())
+            //    .Tag = EntityStatus.Active;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Disabled.ToString())
+            //    .Tag = EntityStatus.Disabled;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.SendDisabled.ToString())
+            //    .Tag = EntityStatus.SendDisabled;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.ReceiveDisabled.ToString())
+            //    .Tag = EntityStatus.ReceiveDisabled;
             // 
             // deleteQueueMenuItem
             // 
