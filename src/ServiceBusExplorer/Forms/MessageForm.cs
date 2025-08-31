@@ -404,46 +404,47 @@ namespace ServiceBusExplorer.Forms
                             var body = serviceBusHelper.GetMessageText(message.Body); 
                             ServiceBusMessage outboundMessage = new ServiceBusMessage(body);
                             
-                                //if (brokeredMessage != null)
-                                //{
-                                //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                //    outboundMessage = bodyType == BodyType.ByteArray ?
-                                //                      brokeredMessage(txtMessageText.Text, messagesSplitContainer.Visible) :
-                                //                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
-                                //}
-                                //else
-                                //{
-                                //    var messageText = serviceBusHelper.GetMessageText(message.Body);
+                            //TODO: Do we need any of this? 
+                            //if (brokeredMessage != null)
+                            //{
+                            //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                            //    outboundMessage = bodyType == BodyType.ByteArray ?
+                            //                      brokeredMessage(txtMessageText.Text, messagesSplitContainer.Visible) :
+                            //                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
+                            //}
+                            //else
+                            //{
+                            //    var messageText = serviceBusHelper.GetMessageText(message.Body);
 
-                                //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                //    //switch (bodyType) TODO: 
-                                //    //{
-                                //    //    case BodyType.ByteArray:
-                                //    //        outboundMessage = message.CloneWithByteArrayBodyType(messageText,
-                                //    //                                        messagesSplitContainer.Visible);
-                                //    //        break;
+                            //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                            //    //switch (bodyType) 
+                            //    //{
+                            //    //    case BodyType.ByteArray:
+                            //    //        outboundMessage = message.CloneWithByteArrayBodyType(messageText,
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
 
-                                //    //    case BodyType.String:
-                                //    //        outboundMessage = message.Clone(message.GetBody<string>(),
-                                //    //                                        messagesSplitContainer.Visible);
-                                //    //        break;
+                            //    //    case BodyType.String:
+                            //    //        outboundMessage = message.Clone(message.GetBody<string>(),
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
 
-                                //    //    default:
-                                //    //        outboundMessage = message.Clone(message.GetBody<Stream>(),
-                                //    //                                        messagesSplitContainer.Visible);
-                                //    //        break;
-                                //    //}
-                                //    outboundMessage = messageText; 
-                                //}
+                            //    //    default:
+                            //    //        outboundMessage = message.Clone(message.GetBody<Stream>(),
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
+                            //    //}
+                            //    outboundMessage = messageText; 
+                            //}
 
-                                //outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
-                                //                                                               0,
-                                //                                                               chkNewMessageId.Checked,
-                                //                                                               false,
-                                //                                                               bodyType,
-                                //                                                               cboSenderInspector.SelectedIndex > 0 ?
-                                //                                                               Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                //                                                               null);
+                            //outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
+                            //                                                               0,
+                            //                                                               chkNewMessageId.Checked,
+                            //                                                               false,
+                            //                                                               bodyType,
+                            //                                                               cboSenderInspector.SelectedIndex > 0 ?
+                            //                                                               Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
+                            //                                                               null);
 
                             sequenceNumbers.Add(message.SequenceNumber);
 

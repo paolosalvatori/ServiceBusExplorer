@@ -273,8 +273,6 @@ namespace ServiceBusExplorer.Helpers
                             {
                                 done = true;
                             }
-
-                            await messageReceiver.DisposeAsync().ConfigureAwait(false);
                         }
                         else
                         {
@@ -308,6 +306,8 @@ namespace ServiceBusExplorer.Helpers
 
                 await messageSender.CloseAsync().ConfigureAwait(false);
                 await messageReceiver.CloseAsync().ConfigureAwait(false);
+
+                await messageReceiver.DisposeAsync().ConfigureAwait(false);
 
                 stopwatch.Stop();
             }
