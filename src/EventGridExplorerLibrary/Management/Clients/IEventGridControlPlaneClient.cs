@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-// <copyright file="IEventGridClient.cs" company="Microsoft">
+﻿// <copyright file="IEventGridClient.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 

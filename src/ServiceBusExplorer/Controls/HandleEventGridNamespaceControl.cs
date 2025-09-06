@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-using Azure.ResourceManager.EventGrid;
+﻿using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.UIHelpers;
 using System;
 using System.Collections.Generic;

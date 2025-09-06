@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-// <copyright file="EventGridFactory.cs" company="Microsoft">
+﻿// <copyright file="EventGridFactory.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 

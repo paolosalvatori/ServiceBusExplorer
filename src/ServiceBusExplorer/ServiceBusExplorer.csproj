@@ -231,9 +231,7 @@
 		<Compile Update="Controls\HandleQueueControl.Designer.cs">
 			<DependentUpon>HandleQueueControl.cs</DependentUpon>
 		</Compile>
-		<Compile Update="Forms\ChangeQueueStatusForm.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Update="Forms\ChangeQueueStatusForm.cs" />
 		<Compile Update="Forms\ChangeQueueStatusForm.Designer.cs">
 			<DependentUpon>ChangeQueueStatusForm.cs</DependentUpon>
 		</Compile>

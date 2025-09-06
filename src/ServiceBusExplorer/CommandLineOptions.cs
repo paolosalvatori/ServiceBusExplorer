@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-namespace ServiceBusExplorer
+﻿namespace ServiceBusExplorer
 {
     using CommandLine;
     using CommandLine.Text;

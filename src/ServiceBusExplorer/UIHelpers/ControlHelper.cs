@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-#region Copyright
+﻿#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //

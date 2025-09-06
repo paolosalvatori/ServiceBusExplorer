@@ -1,6 +1,4 @@
-﻿// Auto-added comment
-
-namespace ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class AccidentalDeletionPreventionCheckControl
     {
