@@ -6,7 +6,7 @@
     {
         public static int MaxSizeInGigabytes(this TopicDescription topicDescription)
         {
-            return (int)(topicDescription.MaxSizeInMegabytes / 1024);
+            return (int) (topicDescription.MaxSizeInMegabytes / 1024);
         }
     }
 }

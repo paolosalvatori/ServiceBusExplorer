@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -51,7 +51,7 @@ namespace ServiceBusExplorer.Helpers
         {
             mBaseName = baseString;
             mKeyPrefix = keyPrefix;
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -90,7 +90,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 mAssemblyFullName = value;
             }
-        }
+        } 
         #endregion
 
         #region Public Methods
@@ -133,7 +133,7 @@ namespace ServiceBusExplorer.Helpers
                 // Combine the hash codes and see if they're unchanged.
                 return (((ClassResourceAttribute)obj).GetHashCode() & GetHashCode()) == GetHashCode();
             return false;
-        }
+        } 
         #endregion
     }
 }

@@ -149,7 +149,7 @@ namespace ServiceBusExplorer.Helpers
             return entityDictionary;
         }
 
-        static void GetProperties(Type type)
+         static void GetProperties(Type type)
         {
             if (type == null)
             {

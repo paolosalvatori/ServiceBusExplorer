@@ -30,14 +30,14 @@ namespace ServiceBusExplorer.Helpers
     public class CustomMessageSessionAsyncHandlerFactory : IMessageSessionAsyncHandlerFactory
     {
         #region Public Properties
-        public CustomMessageSessionAsyncHandlerConfiguration Configuration { get; set; }
+        public CustomMessageSessionAsyncHandlerConfiguration Configuration { get; set; } 
         #endregion
 
         #region Public Constructor
         public CustomMessageSessionAsyncHandlerFactory(CustomMessageSessionAsyncHandlerConfiguration configuration)
         {
             Configuration = configuration;
-        }
+        } 
         #endregion
 
         #region IMessageSessionAsyncHandlerFactory Methods
@@ -48,7 +48,7 @@ namespace ServiceBusExplorer.Helpers
 
         public void DisposeInstance(IMessageSessionAsyncHandler handler)
         {
-        }
+        } 
         #endregion
     }
 }

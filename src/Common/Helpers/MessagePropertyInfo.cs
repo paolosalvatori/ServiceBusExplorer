@@ -62,10 +62,10 @@ namespace ServiceBusExplorer.Helpers
         static MessagePropertyInfo()
         {
             Properties = MessageAndPropertiesHelper.ReadProperties() ?? new List<MessagePropertyInfo>
-                 {
-                     new MessagePropertyInfo("MachineName", "String", Environment.MachineName),
-                     new MessagePropertyInfo("UserName", "String", Environment.UserName)
-                 };
+                {
+                    new MessagePropertyInfo("MachineName", "String", Environment.MachineName),
+                    new MessagePropertyInfo("UserName", "String", Environment.UserName)
+                };
         }
         #endregion
 
@@ -94,7 +94,7 @@ namespace ServiceBusExplorer.Helpers
 
         [XmlElement(ElementName = "value", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
         [JsonProperty(PropertyName = "value", Order = 3)]
-        public string ValueAsString
+        public string ValueAsString 
         {
             get
             {

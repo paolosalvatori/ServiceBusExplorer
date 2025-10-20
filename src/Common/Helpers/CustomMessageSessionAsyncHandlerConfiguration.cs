@@ -44,7 +44,7 @@ namespace ServiceBusExplorer.Helpers
         public Action<long, long, long> UpdateStatistics { get; set; }
         public IBrokeredMessageInspector MessageInspector { get; set; }
         public WriteToLogDelegate WriteToLog { get; set; }
-        public ServiceBusHelper ServiceBusHelper { get; set; }
+        public ServiceBusHelper ServiceBusHelper { get; set; } 
         #endregion
     }
 }

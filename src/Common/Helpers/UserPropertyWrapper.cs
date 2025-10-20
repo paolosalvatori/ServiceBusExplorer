@@ -38,7 +38,7 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Public Constructor
-        public UserPropertyWrapper()
+		public UserPropertyWrapper()
         {
         }
 
@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Helpers
             name = property.Key;
             val = property.Value;
         }
-        #endregion
+	    #endregion
 
         #region Public Properties
         public string Name
@@ -58,7 +58,7 @@ namespace ServiceBusExplorer.Helpers
             }
             set
             {
-                name = value;
+                name = value; 
             }
         }
 

@@ -92,7 +92,7 @@ namespace ServiceBusExplorer.Helpers
                     }
                 }
             }
-        }
+        } 
         #endregion
 
         #region Public Static Methods
@@ -127,8 +127,8 @@ namespace ServiceBusExplorer.Helpers
                 return;
             }
             var securityProperty = securityDictionary[binding.Name].GetValue(binding, null);
-            relayClientAuthenticationDictionary[binding.Name].SetValue(securityProperty,
-                                                                       requiresClientAuthorization ?
+            relayClientAuthenticationDictionary[binding.Name].SetValue(securityProperty, 
+                                                                       requiresClientAuthorization ? 
                                                                        RelayClientAuthenticationType.RelayAccessToken :
                                                                        RelayClientAuthenticationType.None);
             var modeProperty = securityProperty.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)

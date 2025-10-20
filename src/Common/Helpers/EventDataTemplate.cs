@@ -63,7 +63,7 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         [XmlIgnore]
         [JsonProperty(PropertyName = "message", Order = 2)]
-        public string Message
+        public string Message 
         {
             get
             {
@@ -72,14 +72,14 @@ namespace ServiceBusExplorer.Helpers
             set
             {
                 content = value;
-            }
+            } 
         }
 
         /// <summary>
         /// Gets or sets the message of the EventData object.
         /// </summary>
         [XmlElement(ElementName = "message", Type = typeof(XmlCDataSection), Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
-        public XmlCDataSection CData
+        public XmlCDataSection CData 
         {
             get
             {
@@ -108,7 +108,7 @@ namespace ServiceBusExplorer.Helpers
         [XmlArray(ElementName = "properties", Namespace = "http://schemas.microsoft.com/servicebusexplorer")]
         [XmlArrayItem(ElementName = "property", Type = typeof(MessagePropertyInfo))]
         [JsonProperty(PropertyName = "properties", Order = 3)]
-        public List<MessagePropertyInfo> Properties { get; set; }
+        public List<MessagePropertyInfo> Properties { get; set; } 
         #endregion
     }
 }

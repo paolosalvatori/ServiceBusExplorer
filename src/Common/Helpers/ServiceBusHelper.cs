@@ -639,7 +639,7 @@ namespace ServiceBusExplorer
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                throw new Exception($"Could not contact host in connection string: {serviceBusNamespace.ConnectionString}.");
+                throw new Exception($"Could not contact host in connection string: { serviceBusNamespace.ConnectionString }.");
             }
 
             var func = (() =>
@@ -1097,7 +1097,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the queue.</returns>
         public Uri GetQueueUri(string queuePath)
         {
-            return serviceBusQueue.GetQueueUri(queuePath);
+           return serviceBusQueue.GetQueueUri(queuePath);
         }
 
         /// <summary>
@@ -2796,7 +2796,7 @@ namespace ServiceBusExplorer
             var traceMessage = builder.ToString();
             WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
         }
-
+        
         /// <summary>
         /// This method can be used to send a message to a queue or a topic.
         /// </summary>
@@ -3672,7 +3672,7 @@ namespace ServiceBusExplorer
         {
             var body = brokeredMessage.GetBody<byte[]>();
             if (compress)
-                return DecompressAsString(body);
+               return DecompressAsString(body);
             return Encoding.UTF8.GetString(body);
         }
 

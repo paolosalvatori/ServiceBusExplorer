@@ -19,7 +19,7 @@
 //=======================================================================================
 #endregion
 
-using Microsoft.ServiceBus.Messaging;
+using  Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Helpers
 {
@@ -27,7 +27,7 @@ namespace ServiceBusExplorer.Helpers
     {
         public static int MaxSizeInGigabytes(this QueueDescription queueDescription)
         {
-            return (int)(queueDescription.MaxSizeInMegabytes / 1024);
+            return (int) (queueDescription.MaxSizeInMegabytes / 1024);
         }
     }
 }

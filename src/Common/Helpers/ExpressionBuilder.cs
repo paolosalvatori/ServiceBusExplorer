@@ -58,7 +58,7 @@ namespace ServiceBusExplorer.Helpers
         public string Property { get; set; }
         public Operator Operator { get; set; }
         public object Value { get; set; }
-        public LogicalOperator LogicalOperator { get; set; }
+        public LogicalOperator LogicalOperator { get; set; } 
         #endregion
     }
 
@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Helpers
         private const string Filter2Argument = "filter2";
         private const string NullValue = "null";
         private const string AndOperator = "and";
-        private const string OrOperator = "or";
+        private const string OrOperator = "or"; 
 
         //***************************
         // Messages
@@ -104,7 +104,7 @@ namespace ServiceBusExplorer.Helpers
         private readonly MethodInfo containsMethod = typeof(string).GetMethod("Contains");
         private readonly MethodInfo startsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         private readonly MethodInfo endsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
-        private readonly MethodInfo getValueOrDefault = typeof(DateTime?).GetMethod("GetValueOrDefault", new Type[] { });
+        private readonly MethodInfo getValueOrDefault = typeof (DateTime?).GetMethod("GetValueOrDefault", new Type[]{});
         private readonly List<PropertyInfo> propertyList;
         #endregion
         #region Public Constructor
@@ -112,7 +112,7 @@ namespace ServiceBusExplorer.Helpers
         {
             var type = typeof(T);
             propertyList = new List<PropertyInfo>(type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -251,7 +251,7 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return exp != null ? Expression.Lambda<Func<T, bool>>(exp, param) : null;
-        }
+        } 
         #endregion
 
         private Expression GetExpression(ParameterExpression param, ExpressionFilter filter)
@@ -345,7 +345,7 @@ namespace ServiceBusExplorer.Helpers
                 default:
                     return Operator.Unkwnon;
             }
-        }
+        } 
         #endregion
 
         #region Private Static Methods
@@ -381,7 +381,7 @@ namespace ServiceBusExplorer.Helpers
                 return value.Length == 2 ? string.Empty : value.Substring(1, value.Length - 2);
             }
             return value;
-        }
+        } 
         #endregion
     }
 }

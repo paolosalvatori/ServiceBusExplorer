@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -41,12 +41,12 @@ namespace ServiceBusExplorer.Helpers
         {
             PropertyId = propertyId;
             CategoryId = categoryId;
-        }
+        } 
         #endregion
 
         #region Public Properties
         public int PropertyId { get; set; }
-        public int CategoryId { get; set; }
+        public int CategoryId { get; set; } 
         #endregion
     }
 }

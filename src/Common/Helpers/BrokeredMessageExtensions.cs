@@ -41,7 +41,7 @@ namespace ServiceBusExplorer.Helpers
         {
             try
             {
-                var type = typeof(BrokeredMessage);
+                var type = typeof (BrokeredMessage);
                 BodyStreamPropertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
                                              .FirstOrDefault(p => string.Compare("BodyStream", p.Name, StringComparison.OrdinalIgnoreCase) == 0);
             }

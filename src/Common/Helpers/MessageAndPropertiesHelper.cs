@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -144,7 +144,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        public static void GetMessageTextAndFile(TwoFilesConfiguration configuration,
+        public static void GetMessageTextAndFile(TwoFilesConfiguration configuration, 
             out string messageText, out string messageFile)
         {
             messageText = ReadMessage();

@@ -62,15 +62,15 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Instance Fields
-        private readonly Task writeTask = Task.Run(
+        private readonly Task writeTask = Task.Run( 
             () =>
             {
                 messageCollection = new BlockingCollection<Tuple<EventDataDirection, EventData>>(int.MaxValue);
-                writer = new StreamWriter(new FileStream(Path.Combine(Environment.CurrentDirectory,
-                                                                      string.Format(LogFileNameFormat,
-                                                                                    DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'))),
-                                                         FileMode.Append,
-                                                         FileAccess.Write,
+                writer = new StreamWriter(new FileStream(Path.Combine(Environment.CurrentDirectory, 
+                                                                      string.Format(LogFileNameFormat, 
+                                                                                    DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'))), 
+                                                         FileMode.Append, 
+                                                         FileAccess.Write, 
                                                          FileShare.ReadWrite));
                 WriteToLog();
             });
@@ -91,7 +91,7 @@ namespace ServiceBusExplorer.Helpers
         public EventData AfterReceiveMessage(EventData eventData)
         {
             return LogEventData(EventDataDirection.Receive, eventData);
-        }
+        } 
         #endregion
 
         #region IDisposable Methods

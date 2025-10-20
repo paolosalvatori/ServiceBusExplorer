@@ -132,7 +132,7 @@ namespace ServiceBusExplorer.Helpers
             }
             var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
             var value = mapDictionary.ContainsKey(key) &&
-                   mapDictionary[key].Leases != null &&
+                   mapDictionary[key].Leases != null && 
                    mapDictionary[key].Leases.ContainsKey(partitionId) ?
                    mapDictionary[key].Leases[partitionId] :
                    GetDefaultLease(partitionId);
@@ -178,11 +178,11 @@ namespace ServiceBusExplorer.Helpers
                     return;
                 }
 
-                var item = new EventProcessorCheckpointInfo
+                var item = new EventProcessorCheckpointInfo 
                 {
-                    Namespace = ns,
-                    EventHub = eventHub,
-                    ConsumerGroup = consumerGroup,
+                    Namespace = ns, 
+                    EventHub = eventHub, 
+                    ConsumerGroup =  consumerGroup,    
                     Leases = leases
                 };
                 lock (mapDictionary)
@@ -224,7 +224,7 @@ namespace ServiceBusExplorer.Helpers
                 }
                 else
                 {
-                    if (mapDictionary[key].Leases == null ||
+                    if (mapDictionary[key].Leases == null || 
                         !mapDictionary[key].Leases.ContainsKey(partitionId))
                     {
                         return;
@@ -283,7 +283,7 @@ namespace ServiceBusExplorer.Helpers
             SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
 
             return Task.CompletedTask;
-        }
+        } 
         #endregion
 
         #region Private Static Methods

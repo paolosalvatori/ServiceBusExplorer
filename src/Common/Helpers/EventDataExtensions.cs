@@ -39,7 +39,7 @@ namespace ServiceBusExplorer.Helpers
         {
             try
             {
-                var type = typeof(EventData);
+                var type = typeof (EventData);
                 bodyStreamPropertyInfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
                                              .FirstOrDefault(p => string.Compare("BodyStream", p.Name, StringComparison.OrdinalIgnoreCase) == 0);
             }

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -32,7 +32,7 @@ namespace ServiceBusExplorer.Helpers
     public class PropertyStateFlagsAttribute : Attribute
     {
         #region Private Fields
-        private PropertyFlags mFlags = PropertyFlags.All & ~PropertyFlags.ExclusiveStandardValues;
+        private PropertyFlags mFlags = PropertyFlags.All & ~PropertyFlags.ExclusiveStandardValues; 
         #endregion
 
         #region Public Constructors
@@ -43,7 +43,7 @@ namespace ServiceBusExplorer.Helpers
         public PropertyStateFlagsAttribute(PropertyFlags flags)
         {
             mFlags = flags;
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -57,7 +57,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 mFlags = value;
             }
-        }
+        } 
         #endregion
     }
 }

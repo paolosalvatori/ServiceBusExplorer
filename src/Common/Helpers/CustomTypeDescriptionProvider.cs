@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -32,7 +32,7 @@ namespace ServiceBusExplorer.Helpers
     {
         #region Private Fields
 
-        private readonly ICustomTypeDescriptor customTypeDescriptor;
+        private readonly ICustomTypeDescriptor customTypeDescriptor; 
         #endregion
 
         #region Public Constructors
@@ -40,7 +40,7 @@ namespace ServiceBusExplorer.Helpers
             : base(parent)
         {
             customTypeDescriptor = ctd;
-        }
+        } 
         #endregion
 
         #region Public Methods

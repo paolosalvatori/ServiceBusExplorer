@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -65,7 +65,7 @@ namespace ServiceBusExplorer.Helpers
 
             stream.Seek(0, SeekOrigin.Begin);
             return eventData.Clone(Decompress(stream));
-        }
+        } 
         #endregion
 
         #region IDisposable Methods

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -60,7 +60,7 @@ namespace ServiceBusExplorer.Helpers
         {
             get;
             set;
-        }
+        } 
         #endregion
 
         #region Public Methods
@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Helpers
                 return service;
             }
             return null;
-        }
+        } 
         #endregion
     }
 }

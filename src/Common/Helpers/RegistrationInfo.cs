@@ -215,15 +215,15 @@ namespace ServiceBusExplorer.Helpers
                 foreach (var registration in collection)
                 {
                     var registrationInfo = new RegistrationInfo
-                    {
-                        Registration = registration,
-                        ETag = registration.ETag,
-                        ExpirationTime = registration.ExpirationTime,
-                        RegistrationId = registration.RegistrationId,
-                        Tags = registration.Tags != null && registration.Tags.Any() ?
-                                   registration.Tags.Aggregate((a, t) => a + "," + t) :
+                        {
+                            Registration = registration,
+                            ETag = registration.ETag,
+                            ExpirationTime = registration.ExpirationTime,
+                            RegistrationId = registration.RegistrationId,
+                            Tags = registration.Tags != null && registration.Tags.Any() ? 
+                                   registration.Tags.Aggregate((a, t) => a + "," + t) : 
                                    null
-                    };
+                        };
                     if (registration is WindowsRegistrationDescription)
                     {
                         registrationInfo.ChannelUri = ((WindowsRegistrationDescription)registration).ChannelUri.ToString();

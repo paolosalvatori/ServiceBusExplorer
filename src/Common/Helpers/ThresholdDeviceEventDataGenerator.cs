@@ -79,137 +79,137 @@ namespace ServiceBusExplorer.Helpers
         public DateTime Timestamp { get; set; }
     }
 
-    //public class ThresholdDeviceEventDataGenerator : IEventDataGenerator, IDisposable
-    //{
-    //    #region Public Constants
-    //    //***************************
-    //    // Constants
-    //    //***************************
-    //    private const string GeneratorProperties = "Generator Properties";
-    //    private const string CustomProperties = "Custom Properties";
-    //    private const string MinDeviceIdDescription = "Gets or sets the minimum device id.";
-    //    private const string MaxDeviceIdDescription = "Gets or sets the maximum device id.";
-    //    private const string MinValueDescription = "Gets or sets the minimum value.";
-    //    private const string MaxValueDescription = "Gets or sets the maximum value.";
-    //    private const string MessageFormatDescription = "Gets or sets the message format: Json or Xml.";
-    //    private const string CityDescription = "Gets or sets the city.";
-    //    private const string CountryDescription = "Gets or sets the country.";
+    public class ThresholdDeviceEventDataGenerator : IEventDataGenerator, IDisposable
+    {
+        #region Public Constants
+        //***************************
+        // Constants
+        //***************************
+        private const string GeneratorProperties = "Generator Properties";
+        private const string CustomProperties = "Custom Properties";
+        private const string MinDeviceIdDescription = "Gets or sets the minimum device id.";
+        private const string MaxDeviceIdDescription = "Gets or sets the maximum device id.";
+        private const string MinValueDescription = "Gets or sets the minimum value.";
+        private const string MaxValueDescription = "Gets or sets the maximum value.";
+        private const string MessageFormatDescription = "Gets or sets the message format: Json or Xml.";
+        private const string CityDescription = "Gets or sets the city.";
+        private const string CountryDescription = "Gets or sets the country.";
 
-    //    //***************************
-    //    // Formats
-    //    //***************************
-    //    private const string ExceptionFormat = "Exception: {0}";
-    //    private const string InnerExceptionFormat = "InnerException: {0}";
-    //    private const string EventDataCreatedFormat = "[ThresholdDeviceEventDataGenerator] {0} objects have been successfully created.";
-    //    #endregion
+        //***************************
+        // Formats
+        //***************************
+        private const string ExceptionFormat = "Exception: {0}";
+        private const string InnerExceptionFormat = "InnerException: {0}";
+        private const string EventDataCreatedFormat = "[ThresholdDeviceEventDataGenerator] {0} objects have been successfully created.";
+        #endregion
 
-    //    #region Public Static Fields
-    //    public static int EventId;
-    //    #endregion
+        #region Public Static Fields
+        public static int EventId;
+        #endregion
 
-    //    #region Public Constructor
-    //    public ThresholdDeviceEventDataGenerator()
-    //    {
-    //        MinDeviceId = 1;
-    //        MaxDeviceId = 100;
-    //        MinValue = 1;
-    //        MaxValue = 100;
-    //        City = "Milan";
-    //        Country = "Italy";
-    //    }
-    //    #endregion
+        #region Public Constructor
+        public ThresholdDeviceEventDataGenerator()
+        {
+            MinDeviceId = 1;
+            MaxDeviceId = 100;
+            MinValue = 1;
+            MaxValue = 100;
+            City = "Milan";
+            Country = "Italy";
+        }
+        #endregion
 
-    //    #region IEventDataGenerator Methods
-    //    public IEnumerable<EventData> GenerateEventDataCollection(int eventDataCount, WriteToLogDelegate writeToLog)
-    //    {
-    //        if (eventDataCount < 0)
-    //        {
-    //            return null;
-    //        }
-    //        var random = new Random();
-    //        var list = new List<EventData>();
-    //        for (var i = 0; i < eventDataCount; i++)
-    //        {
-    //            try
-    //            {
-    //                var payload = new ThresholdDeviceEvent
-    //                {
-    //                    EventId = EventId++,
-    //                    DeviceId = random.Next(MinDeviceId, MaxDeviceId + 1),
-    //                    Value = random.Next(MinDeviceId, MaxDeviceId + 1),
-    //                    Timestamp = DateTime.UtcNow
-    //                };
-    //                var eventData = new EventData((MessageFormat == MessageFormat.Json
-    //                    ? JsonSerializerHelper.Serialize(payload)
-    //                    : XmlSerializerHelper.Serialize(payload)).ToMemoryStream())
-    //                {
-    //                    PartitionKey = payload.DeviceId.ToString(CultureInfo.InvariantCulture),
+        #region IEventDataGenerator Methods
+        public IEnumerable<EventData> GenerateEventDataCollection(int eventDataCount, WriteToLogDelegate writeToLog)
+        {
+            if (eventDataCount < 0)
+            {
+                return null;
+            }
+            var random = new Random();
+            var list = new List<EventData>();
+            for (var i = 0; i < eventDataCount; i++)
+            {
+                try
+                {
+                    var payload = new ThresholdDeviceEvent
+                    {
+                        EventId = EventId++,
+                        DeviceId = random.Next(MinDeviceId, MaxDeviceId + 1),
+                        Value = random.Next(MinDeviceId, MaxDeviceId + 1),
+                        Timestamp = DateTime.UtcNow
+                    };
+                    var eventData = new EventData((MessageFormat == MessageFormat.Json
+                        ? JsonSerializerHelper.Serialize(payload)
+                        : XmlSerializerHelper.Serialize(payload)).ToMemoryStream())
+                    {
+                        PartitionKey = payload.DeviceId.ToString(CultureInfo.InvariantCulture),
 
-    //                };
-    //                eventData.Properties.Add("eventId", payload.EventId);
-    //                eventData.Properties.Add("deviceId", payload.DeviceId);
-    //                eventData.Properties.Add("value", payload.Value);
-    //                eventData.Properties.Add("time", DateTime.UtcNow.Ticks);
-    //                eventData.Properties.Add("city", City);
-    //                eventData.Properties.Add("country", Country);
-    //                list.Add(eventData);
-    //            }
-    //            catch (Exception ex)
-    //            {
-    //                if (!string.IsNullOrWhiteSpace(ex.Message))
-    //                {
-    //                    writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
-    //                }
-    //                if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
-    //                {
-    //                    writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
-    //                }
-    //            }
-    //        }
-    //        if (writeToLog != null)
-    //        {
-    //            writeToLog(string.Format(EventDataCreatedFormat, list.Count));
-    //        }
-    //        return list;
-    //    }
-    //    #endregion
+                    };
+                    eventData.Properties.Add("eventId", payload.EventId);
+                    eventData.Properties.Add("deviceId", payload.DeviceId);
+                    eventData.Properties.Add("value", payload.Value);
+                    eventData.Properties.Add("time", DateTime.UtcNow.Ticks);
+                    eventData.Properties.Add("city", City);
+                    eventData.Properties.Add("country", Country);
+                    list.Add(eventData);
+                }
+                catch (Exception ex)
+                {
+                    if (!string.IsNullOrWhiteSpace(ex.Message))
+                    {
+                        writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
+                    }
+                    if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                    {
+                        writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
+                    }
+                }
+            }
+            if (writeToLog != null)
+            {
+                writeToLog(string.Format(EventDataCreatedFormat, list.Count));
+            }
+            return list;
+        }
+        #endregion
 
-    //    #region IDisposable Methods
-    //    public void Dispose()
-    //    {
-    //    }
-    //    #endregion
+        #region IDisposable Methods
+        public void Dispose()
+        {
+        }
+        #endregion
 
-    //    #region Public Properties
-    //    [Category(GeneratorProperties)]
-    //    [Description(MinDeviceIdDescription)]
-    //    [DefaultValue(1)]
-    //    public int MinDeviceId { get; set; }
+        #region Public Properties
+        [Category(GeneratorProperties)]
+        [Description(MinDeviceIdDescription)]
+        [DefaultValue(1)]
+        public int MinDeviceId { get; set; }
 
-    //    [Category(GeneratorProperties)]
-    //    [Description(MaxDeviceIdDescription)]
-    //    [DefaultValue(100)]
-    //    public int MaxDeviceId { get; set; }
+        [Category(GeneratorProperties)]
+        [Description(MaxDeviceIdDescription)]
+        [DefaultValue(100)]
+        public int MaxDeviceId { get; set; }
 
-    //    [Category(GeneratorProperties)]
-    //    [Description(MinValueDescription)]
-    //    public int MinValue { get; set; }
+        [Category(GeneratorProperties)]
+        [Description(MinValueDescription)]
+        public int MinValue { get; set; }
 
-    //    [Category(GeneratorProperties)]
-    //    [Description(MaxValueDescription)]
-    //    public int MaxValue { get; set; }
+        [Category(GeneratorProperties)]
+        [Description(MaxValueDescription)]
+        public int MaxValue { get; set; }
 
-    //    [Category(GeneratorProperties)]
-    //    [Description(MessageFormatDescription)]
-    //    public MessageFormat MessageFormat { get; set; }
+        [Category(GeneratorProperties)]
+        [Description(MessageFormatDescription)]
+        public MessageFormat MessageFormat { get; set; }
 
-    //    [Category(CustomProperties)]
-    //    [Description(CityDescription)]
-    //    public string City { get; set; }
+        [Category(CustomProperties)]
+        [Description(CityDescription)]
+        public string City { get; set; }
 
-    //    [Category(CustomProperties)]
-    //    [Description(CountryDescription)]
-    //    public string Country { get; set; }
-    //    #endregion
-    //}
+        [Category(CustomProperties)]
+        [Description(CountryDescription)]
+        public string Country { get; set; }
+        #endregion
+    }
 }

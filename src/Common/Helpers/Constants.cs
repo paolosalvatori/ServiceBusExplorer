@@ -43,14 +43,14 @@ namespace ServiceBusExplorer.Helpers
         public const string ScheduledMessages = "Scheduled";
         public const string TransferMessages = "InTransfer";
         public const string TransferDeadLetterMessages = "Transfer DL";
-
+        
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1.0);
         public static readonly TimeSpan TokenRequestOperationTimeout = TimeSpan.FromMinutes(3.0);
         public static readonly long ServicePointMaxIdleTimeMilliSeconds = 50000;
         public static readonly TimeSpan DefaultBatchFlushInterval = TimeSpan.FromMilliseconds(20.0);
         public static readonly double DefaultUsedSpaceAlertPercentage = 70.0;
         public static readonly TimeSpan DefaultLockDuration = TimeSpan.FromSeconds(60.0);
-        public static readonly TimeSpan DefaultDuplicateDetectionHistoryExpiryDuration = TimeSpan.FromMinutes(10.0);
+        public static readonly TimeSpan  DefaultDuplicateDetectionHistoryExpiryDuration = TimeSpan.FromMinutes(10.0);
         public static readonly TimeSpan DefaultAllowedTimeToLive = TimeSpan.MaxValue;
         public static readonly TimeSpan AutoDeleteOnIdleDefaultValue = TimeSpan.MaxValue;
         public static readonly TimeSpan MaximumAllowedTimeToLive = TimeSpan.MaxValue;
@@ -85,9 +85,9 @@ namespace ServiceBusExplorer.Helpers
         public static readonly List<string> SupportedClaims = new List<string> { "Manage", "Send", "Listen" };
         public static readonly List<string> SupportedSubQueueNames = new List<string> { "$DeadLetterQueue" };
         public static readonly Type ConstantsType = typeof(Constants);
-        //public static readonly Type MessageType = typeof(BrokeredMessage);
+        public static readonly Type MessageType = typeof(BrokeredMessage);
         public static readonly Type GuidType = typeof(Guid);
         public static readonly Type ObjectType = typeof(object);
-        public static readonly List<string> AlwaysOmittedProperties = new List<string> { "DeadLetterReason", "DeadLetterErrorDescription", "NServiceBus.Transport.Recovery" };
+        public static readonly List<string> AlwaysOmittedProperties = new List<string> {"DeadLetterReason", "DeadLetterErrorDescription", "NServiceBus.Transport.Recovery"};
     }
 }

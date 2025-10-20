@@ -176,7 +176,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 return null;
             }
-
+            
             using (var memoryStream = new MemoryStream())
             {
                 using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
@@ -282,7 +282,7 @@ namespace ServiceBusExplorer.Helpers
                         xmlWriter.WriteEndElement();
                     }
                 }
-
+                
                 return Encoding.UTF8.GetString(memoryStream.ToArray());
             }
         }
@@ -342,8 +342,8 @@ namespace ServiceBusExplorer.Helpers
 
             // We must add the Properties of the CorrelationFilter. As the Properties are not CanWrite, we must specifically add it by not testing the canWrite parameter
             var propertyDictionary = propertyArray.
-                Where(p => p.Name == RelayType ||
-                        (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime)) ||
+                Where(p => p.Name == RelayType || 
+                        (p.CanRead == canRead && p.CanWrite == canWrite && p.Name != ExtensionData && p.PropertyType != typeof(DateTime)) || 
                         (p.CanRead == canRead && p.CanWrite == false && p.Name == CorrelationFilterProperties)).
                 ToDictionary(p => p.Name);
             propertyCache[fullName] = propertyDictionary;
@@ -953,16 +953,16 @@ namespace ServiceBusExplorer.Helpers
                             }
                             else
                                 if (property.Name == consumerGroupsName)
-                            {
-                                consumerGroups = property.Descendants(consumerGroupName);
-                            }
-                            else
-                            {
-                                var xmlReader = property.CreateReader();
-                                GetPropertyValue(propertyDictionary,
-                                                 propertyValue,
-                                                 xmlReader);
-                            }
+                                {
+                                    consumerGroups = property.Descendants(consumerGroupName);
+                                }
+                                else
+                                {
+                                    var xmlReader = property.CreateReader();
+                                    GetPropertyValue(propertyDictionary,
+                                                     propertyValue,
+                                                     xmlReader);
+                                }
                         }
 
                         if (!propertyValue.ContainsKey(Path))
@@ -1140,11 +1140,11 @@ namespace ServiceBusExplorer.Helpers
                         {
                             foreach (var ruleDescription in nonDefaultRuleDescriptions)
                             {
-                                if (string.Compare(ruleDescription.Name,
-                                                   createdRuleName,
+                                if (string.Compare(ruleDescription.Name, 
+                                                   createdRuleName, 
                                                    StringComparison.InvariantCultureIgnoreCase) != 0)
-                                {
-                                    serviceBusHelper.AddRule(subscriptionDescription, ruleDescription);
+                                { 
+                                    serviceBusHelper.AddRule(subscriptionDescription, ruleDescription); 
                                 }
                             }
                         }
@@ -1216,17 +1216,17 @@ namespace ServiceBusExplorer.Helpers
                             if (propertyValue.Keys.Contains(SecondaryKey) &&
                                 !string.IsNullOrWhiteSpace(propertyValue[SecondaryKey] as string))
                             {
-                                list.Add(new SharedAccessAuthorizationRule(keyName,
+                                list.Add(new SharedAccessAuthorizationRule(keyName, 
                                                                            primaryKey,
                                                                            propertyValue[SecondaryKey] as string,
                                                                            rights));
                             }
                             else
                             {
-                                list.Add(new SharedAccessAuthorizationRule(keyName,
-                                                                           primaryKey,
+                                list.Add(new SharedAccessAuthorizationRule(keyName, 
+                                                                           primaryKey, 
                                                                            rights));
-
+                                
                             }
                         }
                     }

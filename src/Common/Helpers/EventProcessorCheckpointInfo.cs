@@ -44,7 +44,7 @@ namespace ServiceBusExplorer.Helpers
         public string ConsumerGroup { get; set; }
 
         [JsonProperty(PropertyName = "leases", Order = 4)]
-        public Dictionary<string, Lease> Leases { get; set; }
+        public Dictionary<string, Lease> Leases { get; set; } 
         #endregion
 
         #region Public Overriden Methods
@@ -52,7 +52,7 @@ namespace ServiceBusExplorer.Helpers
         {
             var e = obj as EventProcessorCheckpointInfo;
 
-            return e != null &&
+            return e != null && 
                    string.Compare(Namespace, e.Namespace, StringComparison.InvariantCultureIgnoreCase) == 0 &&
                    string.Compare(EventHub, e.EventHub, StringComparison.InvariantCultureIgnoreCase) == 0;
         }
@@ -61,7 +61,7 @@ namespace ServiceBusExplorer.Helpers
         {
             // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             return base.GetHashCode();
-        }
+        } 
         #endregion
     }
 }
