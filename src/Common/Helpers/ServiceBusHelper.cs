@@ -521,7 +521,7 @@ namespace ServiceBusExplorer
         /// <summary>
         /// Gets or sets the dictionary containing serviceBus accounts.
         /// </summary>
-        public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; }
+        public Dictionary<string, ServiceBusNamespace> ServiceBusNamespaces { get; set; } = new Dictionary<string, ServiceBusNamespace>();
 
         /// <summary>
         /// Gets or sets the dictionary containing BrokeredMessage inspectors.
