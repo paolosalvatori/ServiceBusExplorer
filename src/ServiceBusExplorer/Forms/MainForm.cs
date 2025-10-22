@@ -331,7 +331,7 @@ namespace ServiceBusExplorer.Forms
                 Keys.Control | Keys.D5
             };
 
-            foreach (var namespaceKey in serviceBusHelper?.ServiceBusNamespaces?.Keys?.OrderBy(k => k))
+            foreach (var namespaceKey in serviceBusHelper.ServiceBusNamespaces.Keys.OrderBy(k => k))
             {
                 if (serviceBusHelper.ServiceBusNamespaces[namespaceKey].UserCreated)
                 {
