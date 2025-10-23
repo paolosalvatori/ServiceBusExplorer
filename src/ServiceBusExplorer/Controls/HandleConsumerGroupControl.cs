@@ -21,22 +21,18 @@
 
 #region Using Directives
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 
 #endregion
 
@@ -120,7 +116,7 @@ namespace ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        } 
+        }
         #endregion
 
         #region Public Events
@@ -368,7 +364,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         UserMetadata = txtUserMetadata.Text
                     };
-                    
+
                     consumerGroupDescription = serviceBusHelper.CreateConsumerGroup(description);
                     InitializeControls();
                 }
@@ -478,8 +474,7 @@ namespace ServiceBusExplorer.Controls
 
         private void button_MouseEnter(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = Color.White;
             }
@@ -487,8 +482,7 @@ namespace ServiceBusExplorer.Controls
 
         private void button_MouseLeave(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (control != null)
+            if (sender is Control control)
             {
                 control.ForeColor = SystemColors.ControlText;
             }
@@ -501,16 +495,15 @@ namespace ServiceBusExplorer.Controls
             // Background
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)), startX, -1, e.Bounds.Width + 1, e.Bounds.Height + 1);
             // Left vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, startX, e.Bounds.Y + e.Bounds.Height + 1);
             // TopCount horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlLightLight), startX, -1, endX, -1);
+            e.Graphics.DrawLine(SystemPens.ControlLightLight, startX, -1, endX, -1);
             // Bottom horizontal line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
+            e.Graphics.DrawLine(SystemPens.ControlDark, startX, e.Bounds.Height - 1, endX, e.Bounds.Height - 1);
             // Right vertical line
-            e.Graphics.DrawLine(new Pen(SystemColors.ControlDark), endX, -1, endX, e.Bounds.Height + 1);
-            var roundedFontSize = (float)Math.Round(e.Font.SizeInPoints);
-            var bounds = new RectangleF(e.Bounds.X + 4, (e.Bounds.Height - 8 - roundedFontSize) / 2, e.Bounds.Width, roundedFontSize + 6);
-            e.Graphics.DrawString(e.Header.Text, e.Font, new SolidBrush(SystemColors.ControlText), bounds);
+            e.Graphics.DrawLine(SystemPens.ControlDark, endX, -1, endX, e.Bounds.Height + 1);
+
+            e.DrawText();
         }
 
         private void propertyListView_DrawItem(object sender, DrawListViewItemEventArgs e)
@@ -620,7 +613,7 @@ namespace ServiceBusExplorer.Controls
                     // If we have images, process them.
                     if (images != null)
                     {
-                        // Get sice and image.
+                        // Get size and image.
                         var size = images.ImageSize;
                         Image icon = null;
                         if (page.ImageIndex > -1)
@@ -768,7 +761,7 @@ namespace ServiceBusExplorer.Controls
                     width -= verticalScrollbar.Width;
                 }
                 var columnCount = partitionsDataGridView.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
-                var columnWidth = width/columnCount;
+                var columnWidth = width / columnCount;
                 for (var i = 0; i < partitionsDataGridView.Columns.Count; i++)
                 {
                     partitionsDataGridView.Columns[i].Width = columnWidth;

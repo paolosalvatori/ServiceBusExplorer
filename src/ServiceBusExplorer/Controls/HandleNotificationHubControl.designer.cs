@@ -21,26 +21,14 @@
             this.btnSend = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageDescription = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grouperNotificationHubInformation = new ServiceBusExplorer.Controls.Grouper();
             this.propertyListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.grouperUserMetadata = new ServiceBusExplorer.Controls.Grouper();
-            this.txtUserMetadata = new System.Windows.Forms.TextBox();
-            this.lblUserMetadata = new System.Windows.Forms.Label();
-            this.btnOpenDescriptionForm = new System.Windows.Forms.Button();
-            this.grouperGoogleCloudMessaggingSettings = new ServiceBusExplorer.Controls.Grouper();
-            this.btnClearGcmNotification = new System.Windows.Forms.Button();
-            this.txtGcmEndpoint = new System.Windows.Forms.TextBox();
-            this.lblGcmEndpoint = new System.Windows.Forms.Label();
-            this.lblGcmApiKey = new System.Windows.Forms.Label();
-            this.txtGcmApiKey = new System.Windows.Forms.TextBox();
-            this.grouperWindowsPhoneNotificationSettings = new ServiceBusExplorer.Controls.Grouper();
-            this.btnClearMpnsNotification = new System.Windows.Forms.Button();
-            this.checkBoxEnableUnauthenticatedMpns = new System.Windows.Forms.CheckBox();
-            this.btnMpnsCredentialUploadCertificate = new System.Windows.Forms.Button();
-            this.lblMpnsCredentialCertificateThumbprint = new System.Windows.Forms.Label();
-            this.txtMpnsCredentialCertificateThumbprint = new System.Windows.Forms.TextBox();
+            this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
+            this.lblRelativeURI = new System.Windows.Forms.Label();
+            this.txtPath = new System.Windows.Forms.TextBox();
             this.grouperAppleNotificationSettings = new ServiceBusExplorer.Controls.Grouper();
             this.btnClearApnsNotification = new System.Windows.Forms.Button();
             this.txtApnsEndpoint = new System.Windows.Forms.TextBox();
@@ -48,17 +36,30 @@
             this.btnApnsCredentialUploadCertificate = new System.Windows.Forms.Button();
             this.lblApnsCredentialCertificateThumbprint = new System.Windows.Forms.Label();
             this.txtApnsCredentialCertificateThumbprint = new System.Windows.Forms.TextBox();
+            this.grouperWindowsPhoneNotificationSettings = new ServiceBusExplorer.Controls.Grouper();
+            this.btnClearMpnsNotification = new System.Windows.Forms.Button();
+            this.checkBoxEnableUnauthenticatedMpns = new System.Windows.Forms.CheckBox();
+            this.btnMpnsCredentialUploadCertificate = new System.Windows.Forms.Button();
+            this.lblMpnsCredentialCertificateThumbprint = new System.Windows.Forms.Label();
+            this.txtMpnsCredentialCertificateThumbprint = new System.Windows.Forms.TextBox();
+            this.grouperGoogleCloudMessaggingSettings = new ServiceBusExplorer.Controls.Grouper();
+            this.btnClearGcmNotification = new System.Windows.Forms.Button();
+            this.txtGcmEndpoint = new System.Windows.Forms.TextBox();
+            this.lblGcmEndpoint = new System.Windows.Forms.Label();
+            this.lblGcmApiKey = new System.Windows.Forms.Label();
+            this.txtGcmApiKey = new System.Windows.Forms.TextBox();
+            this.grouperUserMetadata = new ServiceBusExplorer.Controls.Grouper();
+            this.txtUserMetadata = new System.Windows.Forms.TextBox();
+            this.lblUserMetadata = new System.Windows.Forms.Label();
+            this.btnOpenDescriptionForm = new System.Windows.Forms.Button();
+            this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
+            this.tsRegistrationTimeToLive = new ServiceBusExplorer.Controls.TimeSpanControl();
             this.grouperWindowsNotificationSettings = new ServiceBusExplorer.Controls.Grouper();
             this.btnClearWnsNotification = new System.Windows.Forms.Button();
             this.txtClientSecret = new System.Windows.Forms.TextBox();
             this.lblClientSecret = new System.Windows.Forms.Label();
             this.lblPackageSid = new System.Windows.Forms.Label();
             this.txtPackageSid = new System.Windows.Forms.TextBox();
-            this.grouperDuplicateDetectionHistoryTimeWindow = new ServiceBusExplorer.Controls.Grouper();
-            this.tsRegistrationTimeToLive = new ServiceBusExplorer.Controls.TimeSpanControl();
-            this.grouperPath = new ServiceBusExplorer.Controls.Grouper();
-            this.lblRelativeURI = new System.Windows.Forms.Label();
-            this.txtPath = new System.Windows.Forms.TextBox();
             this.tabPageAuthorization = new System.Windows.Forms.TabPage();
             this.grouperAuthorizationRuleList = new ServiceBusExplorer.Controls.Grouper();
             this.authorizationRulesDataGridView = new System.Windows.Forms.DataGridView();
@@ -195,14 +196,15 @@
             this.authorizationRulesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainTabControl.SuspendLayout();
             this.tabPageDescription.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.grouperNotificationHubInformation.SuspendLayout();
-            this.grouperUserMetadata.SuspendLayout();
-            this.grouperGoogleCloudMessaggingSettings.SuspendLayout();
-            this.grouperWindowsPhoneNotificationSettings.SuspendLayout();
-            this.grouperAppleNotificationSettings.SuspendLayout();
-            this.grouperWindowsNotificationSettings.SuspendLayout();
-            this.grouperDuplicateDetectionHistoryTimeWindow.SuspendLayout();
             this.grouperPath.SuspendLayout();
+            this.grouperAppleNotificationSettings.SuspendLayout();
+            this.grouperWindowsPhoneNotificationSettings.SuspendLayout();
+            this.grouperGoogleCloudMessaggingSettings.SuspendLayout();
+            this.grouperUserMetadata.SuspendLayout();
+            this.grouperDuplicateDetectionHistoryTimeWindow.SuspendLayout();
+            this.grouperWindowsNotificationSettings.SuspendLayout();
             this.tabPageAuthorization.SuspendLayout();
             this.grouperAuthorizationRuleList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).BeginInit();
@@ -387,14 +389,7 @@
             // tabPageDescription
             // 
             this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.tabPageDescription.Controls.Add(this.grouperNotificationHubInformation);
-            this.tabPageDescription.Controls.Add(this.grouperUserMetadata);
-            this.tabPageDescription.Controls.Add(this.grouperGoogleCloudMessaggingSettings);
-            this.tabPageDescription.Controls.Add(this.grouperWindowsPhoneNotificationSettings);
-            this.tabPageDescription.Controls.Add(this.grouperAppleNotificationSettings);
-            this.tabPageDescription.Controls.Add(this.grouperWindowsNotificationSettings);
-            this.tabPageDescription.Controls.Add(this.grouperDuplicateDetectionHistoryTimeWindow);
-            this.tabPageDescription.Controls.Add(this.grouperPath);
+            this.tabPageDescription.Controls.Add(this.tableLayoutPanel1);
             this.tabPageDescription.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDescription.Location = new System.Drawing.Point(4, 22);
             this.tabPageDescription.Name = "tabPageDescription";
@@ -403,9 +398,36 @@
             this.tabPageDescription.TabIndex = 3;
             this.tabPageDescription.Text = "Description";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.Controls.Add(this.grouperNotificationHubInformation, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.grouperPath, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grouperAppleNotificationSettings, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.grouperWindowsPhoneNotificationSettings, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.grouperGoogleCloudMessaggingSettings, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.grouperUserMetadata, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grouperDuplicateDetectionHistoryTimeWindow, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grouperWindowsNotificationSettings, 0, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 17);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(940, 428);
+            this.tableLayoutPanel1.TabIndex = 7;
+            // 
             // grouperNotificationHubInformation
             // 
-            this.grouperNotificationHubInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.grouperNotificationHubInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperNotificationHubInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperNotificationHubInformation.BackgroundGradientColor = System.Drawing.Color.White;
@@ -418,15 +440,16 @@
             this.grouperNotificationHubInformation.ForeColor = System.Drawing.Color.White;
             this.grouperNotificationHubInformation.GroupImage = null;
             this.grouperNotificationHubInformation.GroupTitle = "Notification Hub Information";
-            this.grouperNotificationHubInformation.Location = new System.Drawing.Point(656, 112);
+            this.grouperNotificationHubInformation.Location = new System.Drawing.Point(629, 93);
             this.grouperNotificationHubInformation.Name = "grouperNotificationHubInformation";
             this.grouperNotificationHubInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperNotificationHubInformation.PaintGroupBox = true;
             this.grouperNotificationHubInformation.RoundCorners = 4;
+            this.tableLayoutPanel1.SetRowSpan(this.grouperNotificationHubInformation, 2);
             this.grouperNotificationHubInformation.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperNotificationHubInformation.ShadowControl = false;
             this.grouperNotificationHubInformation.ShadowThickness = 1;
-            this.grouperNotificationHubInformation.Size = new System.Drawing.Size(296, 325);
+            this.grouperNotificationHubInformation.Size = new System.Drawing.Size(308, 332);
             this.grouperNotificationHubInformation.TabIndex = 7;
             // 
             // propertyListView
@@ -441,7 +464,7 @@
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
-            this.propertyListView.Size = new System.Drawing.Size(264, 277);
+            this.propertyListView.Size = new System.Drawing.Size(280, 284);
             this.propertyListView.TabIndex = 0;
             this.propertyListView.UseCompatibleStateImageBehavior = false;
             this.propertyListView.View = System.Windows.Forms.View.Details;
@@ -459,76 +482,262 @@
             // 
             this.valueColumnHeader.Text = "Value";
             // 
-            // grouperUserMetadata
+            // grouperPath
             // 
-            this.grouperUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperPath.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.BorderThickness = 1F;
+            this.grouperPath.Controls.Add(this.lblRelativeURI);
+            this.grouperPath.Controls.Add(this.txtPath);
+            this.grouperPath.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperPath.ForeColor = System.Drawing.Color.White;
+            this.grouperPath.GroupImage = null;
+            this.grouperPath.GroupTitle = "Path";
+            this.grouperPath.Location = new System.Drawing.Point(3, 3);
+            this.grouperPath.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this.grouperPath.Name = "grouperPath";
+            this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperPath.PaintGroupBox = true;
+            this.grouperPath.RoundCorners = 4;
+            this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperPath.ShadowControl = false;
+            this.grouperPath.ShadowThickness = 1;
+            this.grouperPath.Size = new System.Drawing.Size(305, 84);
+            this.grouperPath.TabIndex = 0;
+            // 
+            // lblRelativeURI
+            // 
+            this.lblRelativeURI.AutoSize = true;
+            this.lblRelativeURI.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblRelativeURI.Location = new System.Drawing.Point(16, 32);
+            this.lblRelativeURI.Name = "lblRelativeURI";
+            this.lblRelativeURI.Size = new System.Drawing.Size(71, 13);
+            this.lblRelativeURI.TabIndex = 0;
+            this.lblRelativeURI.Text = "Relative URI:";
+            // 
+            // txtPath
+            // 
+            this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperUserMetadata.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperUserMetadata.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperUserMetadata.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperUserMetadata.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperUserMetadata.BorderThickness = 1F;
-            this.grouperUserMetadata.Controls.Add(this.txtUserMetadata);
-            this.grouperUserMetadata.Controls.Add(this.lblUserMetadata);
-            this.grouperUserMetadata.Controls.Add(this.btnOpenDescriptionForm);
-            this.grouperUserMetadata.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperUserMetadata.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperUserMetadata.ForeColor = System.Drawing.Color.White;
-            this.grouperUserMetadata.GroupImage = null;
-            this.grouperUserMetadata.GroupTitle = "User Metdata";
-            this.grouperUserMetadata.Location = new System.Drawing.Point(336, 16);
-            this.grouperUserMetadata.Name = "grouperUserMetadata";
-            this.grouperUserMetadata.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperUserMetadata.PaintGroupBox = true;
-            this.grouperUserMetadata.RoundCorners = 4;
-            this.grouperUserMetadata.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperUserMetadata.ShadowControl = false;
-            this.grouperUserMetadata.ShadowThickness = 1;
-            this.grouperUserMetadata.Size = new System.Drawing.Size(304, 88);
-            this.grouperUserMetadata.TabIndex = 3;
+            this.txtPath.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtPath.Location = new System.Drawing.Point(16, 48);
+            this.txtPath.Name = "txtPath";
+            this.txtPath.Size = new System.Drawing.Size(271, 20);
+            this.txtPath.TabIndex = 1;
             // 
-            // txtUserMetadata
+            // grouperAppleNotificationSettings
             // 
-            this.txtUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grouperAppleNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperAppleNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAppleNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperAppleNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleNotificationSettings.BorderThickness = 1F;
+            this.grouperAppleNotificationSettings.Controls.Add(this.btnClearApnsNotification);
+            this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsEndpoint);
+            this.grouperAppleNotificationSettings.Controls.Add(this.lblApnsEndpoint);
+            this.grouperAppleNotificationSettings.Controls.Add(this.btnApnsCredentialUploadCertificate);
+            this.grouperAppleNotificationSettings.Controls.Add(this.lblApnsCredentialCertificateThumbprint);
+            this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsCredentialCertificateThumbprint);
+            this.grouperAppleNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleNotificationSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperAppleNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperAppleNotificationSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperAppleNotificationSettings.GroupImage = null;
+            this.grouperAppleNotificationSettings.GroupTitle = "Apple Notification Settings";
+            this.grouperAppleNotificationSettings.Location = new System.Drawing.Point(318, 262);
+            this.grouperAppleNotificationSettings.Margin = new System.Windows.Forms.Padding(5, 3, 10, 3);
+            this.grouperAppleNotificationSettings.Name = "grouperAppleNotificationSettings";
+            this.grouperAppleNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperAppleNotificationSettings.PaintGroupBox = true;
+            this.grouperAppleNotificationSettings.RoundCorners = 4;
+            this.grouperAppleNotificationSettings.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperAppleNotificationSettings.ShadowControl = false;
+            this.grouperAppleNotificationSettings.ShadowThickness = 1;
+            this.grouperAppleNotificationSettings.Size = new System.Drawing.Size(298, 163);
+            this.grouperAppleNotificationSettings.TabIndex = 5;
+            // 
+            // btnClearApnsNotification
+            // 
+            this.btnClearApnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearApnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearApnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearApnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearApnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearApnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearApnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnClearApnsNotification.Location = new System.Drawing.Point(208, 124);
+            this.btnClearApnsNotification.Name = "btnClearApnsNotification";
+            this.btnClearApnsNotification.Size = new System.Drawing.Size(72, 24);
+            this.btnClearApnsNotification.TabIndex = 5;
+            this.btnClearApnsNotification.Text = "Clear";
+            this.btnClearApnsNotification.UseVisualStyleBackColor = false;
+            this.btnClearApnsNotification.Click += new System.EventHandler(this.btnClearApnsNotification_Click);
+            // 
+            // txtApnsEndpoint
+            // 
+            this.txtApnsEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
-            this.txtUserMetadata.Location = new System.Drawing.Point(20, 48);
-            this.txtUserMetadata.Name = "txtUserMetadata";
-            this.txtUserMetadata.Size = new System.Drawing.Size(232, 20);
-            this.txtUserMetadata.TabIndex = 2;
+            this.txtApnsEndpoint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtApnsEndpoint.Location = new System.Drawing.Point(16, 92);
+            this.txtApnsEndpoint.Name = "txtApnsEndpoint";
+            this.txtApnsEndpoint.ReadOnly = true;
+            this.txtApnsEndpoint.Size = new System.Drawing.Size(264, 20);
+            this.txtApnsEndpoint.TabIndex = 3;
             // 
-            // lblUserMetadata
+            // lblApnsEndpoint
             // 
-            this.lblUserMetadata.AutoSize = true;
-            this.lblUserMetadata.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblUserMetadata.Location = new System.Drawing.Point(20, 32);
-            this.lblUserMetadata.Name = "lblUserMetadata";
-            this.lblUserMetadata.Size = new System.Drawing.Size(142, 13);
-            this.lblUserMetadata.TabIndex = 1;
-            this.lblUserMetadata.Text = "Notification Hub Description:";
+            this.lblApnsEndpoint.AutoSize = true;
+            this.lblApnsEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblApnsEndpoint.Location = new System.Drawing.Point(16, 76);
+            this.lblApnsEndpoint.Name = "lblApnsEndpoint";
+            this.lblApnsEndpoint.Size = new System.Drawing.Size(84, 13);
+            this.lblApnsEndpoint.TabIndex = 2;
+            this.lblApnsEndpoint.Text = "APNS Endpoint:";
             // 
-            // btnOpenDescriptionForm
+            // btnApnsCredentialUploadCertificate
             // 
-            this.btnOpenDescriptionForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenDescriptionForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenDescriptionForm.Location = new System.Drawing.Point(260, 48);
-            this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
-            this.btnOpenDescriptionForm.Size = new System.Drawing.Size(24, 21);
-            this.btnOpenDescriptionForm.TabIndex = 0;
-            this.btnOpenDescriptionForm.Text = "...";
-            this.btnOpenDescriptionForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnOpenDescriptionForm.UseVisualStyleBackColor = false;
-            this.btnOpenDescriptionForm.Click += new System.EventHandler(this.btnOpenDescriptionForm_Click);
+            this.btnApnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnApnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnApnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnApnsCredentialUploadCertificate.Location = new System.Drawing.Point(128, 124);
+            this.btnApnsCredentialUploadCertificate.Name = "btnApnsCredentialUploadCertificate";
+            this.btnApnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
+            this.btnApnsCredentialUploadCertificate.TabIndex = 4;
+            this.btnApnsCredentialUploadCertificate.Text = "Upload";
+            this.btnApnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
+            this.btnApnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnApnsCredentialUploadCertificate_Click);
+            // 
+            // lblApnsCredentialCertificateThumbprint
+            // 
+            this.lblApnsCredentialCertificateThumbprint.AutoSize = true;
+            this.lblApnsCredentialCertificateThumbprint.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
+            this.lblApnsCredentialCertificateThumbprint.Name = "lblApnsCredentialCertificateThumbprint";
+            this.lblApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
+            this.lblApnsCredentialCertificateThumbprint.TabIndex = 0;
+            this.lblApnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
+            // 
+            // txtApnsCredentialCertificateThumbprint
+            // 
+            this.txtApnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtApnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtApnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
+            this.txtApnsCredentialCertificateThumbprint.Name = "txtApnsCredentialCertificateThumbprint";
+            this.txtApnsCredentialCertificateThumbprint.ReadOnly = true;
+            this.txtApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(264, 20);
+            this.txtApnsCredentialCertificateThumbprint.TabIndex = 1;
+            // 
+            // grouperWindowsPhoneNotificationSettings
+            // 
+            this.grouperWindowsPhoneNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperWindowsPhoneNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsPhoneNotificationSettings.BorderThickness = 1F;
+            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnClearMpnsNotification);
+            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.checkBoxEnableUnauthenticatedMpns);
+            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnMpnsCredentialUploadCertificate);
+            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.lblMpnsCredentialCertificateThumbprint);
+            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.txtMpnsCredentialCertificateThumbprint);
+            this.grouperWindowsPhoneNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsPhoneNotificationSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperWindowsPhoneNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperWindowsPhoneNotificationSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperWindowsPhoneNotificationSettings.GroupImage = null;
+            this.grouperWindowsPhoneNotificationSettings.GroupTitle = "Windows Phone Notification Settings";
+            this.grouperWindowsPhoneNotificationSettings.Location = new System.Drawing.Point(3, 262);
+            this.grouperWindowsPhoneNotificationSettings.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this.grouperWindowsPhoneNotificationSettings.Name = "grouperWindowsPhoneNotificationSettings";
+            this.grouperWindowsPhoneNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperWindowsPhoneNotificationSettings.PaintGroupBox = true;
+            this.grouperWindowsPhoneNotificationSettings.RoundCorners = 4;
+            this.grouperWindowsPhoneNotificationSettings.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperWindowsPhoneNotificationSettings.ShadowControl = false;
+            this.grouperWindowsPhoneNotificationSettings.ShadowThickness = 1;
+            this.grouperWindowsPhoneNotificationSettings.Size = new System.Drawing.Size(305, 163);
+            this.grouperWindowsPhoneNotificationSettings.TabIndex = 2;
+            // 
+            // btnClearMpnsNotification
+            // 
+            this.btnClearMpnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearMpnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnClearMpnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearMpnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearMpnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearMpnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearMpnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnClearMpnsNotification.Location = new System.Drawing.Point(215, 124);
+            this.btnClearMpnsNotification.Name = "btnClearMpnsNotification";
+            this.btnClearMpnsNotification.Size = new System.Drawing.Size(72, 24);
+            this.btnClearMpnsNotification.TabIndex = 4;
+            this.btnClearMpnsNotification.Text = "Clear";
+            this.btnClearMpnsNotification.UseVisualStyleBackColor = false;
+            this.btnClearMpnsNotification.Click += new System.EventHandler(this.btnClearMpnsNotification_Click);
+            // 
+            // checkBoxEnableUnauthenticatedMpns
+            // 
+            this.checkBoxEnableUnauthenticatedMpns.AutoSize = true;
+            this.checkBoxEnableUnauthenticatedMpns.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxEnableUnauthenticatedMpns.Location = new System.Drawing.Point(16, 92);
+            this.checkBoxEnableUnauthenticatedMpns.Name = "checkBoxEnableUnauthenticatedMpns";
+            this.checkBoxEnableUnauthenticatedMpns.Size = new System.Drawing.Size(224, 17);
+            this.checkBoxEnableUnauthenticatedMpns.TabIndex = 2;
+            this.checkBoxEnableUnauthenticatedMpns.Text = "Enable unauthenticated push notifications";
+            this.checkBoxEnableUnauthenticatedMpns.UseVisualStyleBackColor = true;
+            this.checkBoxEnableUnauthenticatedMpns.CheckedChanged += new System.EventHandler(this.checkBoxEnableUnauthenticatedMpns_CheckedChanged);
+            // 
+            // btnMpnsCredentialUploadCertificate
+            // 
+            this.btnMpnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMpnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMpnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMpnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnMpnsCredentialUploadCertificate.Location = new System.Drawing.Point(135, 124);
+            this.btnMpnsCredentialUploadCertificate.Name = "btnMpnsCredentialUploadCertificate";
+            this.btnMpnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
+            this.btnMpnsCredentialUploadCertificate.TabIndex = 3;
+            this.btnMpnsCredentialUploadCertificate.Text = "Upload";
+            this.btnMpnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
+            this.btnMpnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnMpnsCredentialUploadCertificate_Click);
+            // 
+            // lblMpnsCredentialCertificateThumbprint
+            // 
+            this.lblMpnsCredentialCertificateThumbprint.AutoSize = true;
+            this.lblMpnsCredentialCertificateThumbprint.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
+            this.lblMpnsCredentialCertificateThumbprint.Name = "lblMpnsCredentialCertificateThumbprint";
+            this.lblMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
+            this.lblMpnsCredentialCertificateThumbprint.TabIndex = 0;
+            this.lblMpnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
+            // 
+            // txtMpnsCredentialCertificateThumbprint
+            // 
+            this.txtMpnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMpnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMpnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
+            this.txtMpnsCredentialCertificateThumbprint.Name = "txtMpnsCredentialCertificateThumbprint";
+            this.txtMpnsCredentialCertificateThumbprint.ReadOnly = true;
+            this.txtMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(271, 20);
+            this.txtMpnsCredentialCertificateThumbprint.TabIndex = 1;
             // 
             // grouperGoogleCloudMessaggingSettings
             // 
-            this.grouperGoogleCloudMessaggingSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperGoogleCloudMessaggingSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperGoogleCloudMessaggingSettings.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
@@ -540,11 +749,13 @@
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblGcmApiKey);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.txtGcmApiKey);
             this.grouperGoogleCloudMessaggingSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGoogleCloudMessaggingSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperGoogleCloudMessaggingSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
             this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
-            this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
+            this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(318, 93);
+            this.grouperGoogleCloudMessaggingSettings.Margin = new System.Windows.Forms.Padding(5, 3, 10, 3);
             this.grouperGoogleCloudMessaggingSettings.Name = "grouperGoogleCloudMessaggingSettings";
             this.grouperGoogleCloudMessaggingSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperGoogleCloudMessaggingSettings.PaintGroupBox = true;
@@ -552,7 +763,7 @@
             this.grouperGoogleCloudMessaggingSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperGoogleCloudMessaggingSettings.ShadowControl = false;
             this.grouperGoogleCloudMessaggingSettings.ShadowThickness = 1;
-            this.grouperGoogleCloudMessaggingSettings.Size = new System.Drawing.Size(304, 160);
+            this.grouperGoogleCloudMessaggingSettings.Size = new System.Drawing.Size(298, 163);
             this.grouperGoogleCloudMessaggingSettings.TabIndex = 4;
             // 
             // btnClearGcmNotification
@@ -564,7 +775,7 @@
             this.btnClearGcmNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClearGcmNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearGcmNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearGcmNotification.Location = new System.Drawing.Point(216, 124);
+            this.btnClearGcmNotification.Location = new System.Drawing.Point(208, 124);
             this.btnClearGcmNotification.Name = "btnClearGcmNotification";
             this.btnClearGcmNotification.Size = new System.Drawing.Size(72, 24);
             this.btnClearGcmNotification.TabIndex = 4;
@@ -580,7 +791,7 @@
             this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 92);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
-            this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
+            this.txtGcmEndpoint.Size = new System.Drawing.Size(264, 20);
             this.txtGcmEndpoint.TabIndex = 3;
             // 
             // lblGcmEndpoint
@@ -611,222 +822,113 @@
             this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
             this.txtGcmApiKey.Name = "txtGcmApiKey";
-            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 20);
+            this.txtGcmApiKey.Size = new System.Drawing.Size(264, 20);
             this.txtGcmApiKey.TabIndex = 1;
             // 
-            // grouperWindowsPhoneNotificationSettings
+            // grouperUserMetadata
             // 
-            this.grouperWindowsPhoneNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.grouperUserMetadata.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperUserMetadata.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperUserMetadata.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperUserMetadata.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperUserMetadata.BorderThickness = 1F;
+            this.grouperUserMetadata.Controls.Add(this.txtUserMetadata);
+            this.grouperUserMetadata.Controls.Add(this.lblUserMetadata);
+            this.grouperUserMetadata.Controls.Add(this.btnOpenDescriptionForm);
+            this.grouperUserMetadata.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperUserMetadata.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperUserMetadata.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperUserMetadata.ForeColor = System.Drawing.Color.White;
+            this.grouperUserMetadata.GroupImage = null;
+            this.grouperUserMetadata.GroupTitle = "User Metdata";
+            this.grouperUserMetadata.Location = new System.Drawing.Point(318, 3);
+            this.grouperUserMetadata.Margin = new System.Windows.Forms.Padding(5, 3, 10, 3);
+            this.grouperUserMetadata.Name = "grouperUserMetadata";
+            this.grouperUserMetadata.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperUserMetadata.PaintGroupBox = true;
+            this.grouperUserMetadata.RoundCorners = 4;
+            this.grouperUserMetadata.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperUserMetadata.ShadowControl = false;
+            this.grouperUserMetadata.ShadowThickness = 1;
+            this.grouperUserMetadata.Size = new System.Drawing.Size(298, 84);
+            this.grouperUserMetadata.TabIndex = 3;
+            // 
+            // txtUserMetadata
+            // 
+            this.txtUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
+            this.txtUserMetadata.Location = new System.Drawing.Point(20, 48);
+            this.txtUserMetadata.Name = "txtUserMetadata";
+            this.txtUserMetadata.Size = new System.Drawing.Size(230, 20);
+            this.txtUserMetadata.TabIndex = 2;
+            // 
+            // lblUserMetadata
+            // 
+            this.lblUserMetadata.AutoSize = true;
+            this.lblUserMetadata.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblUserMetadata.Location = new System.Drawing.Point(20, 32);
+            this.lblUserMetadata.Name = "lblUserMetadata";
+            this.lblUserMetadata.Size = new System.Drawing.Size(142, 13);
+            this.lblUserMetadata.TabIndex = 1;
+            this.lblUserMetadata.Text = "Notification Hub Description:";
+            // 
+            // btnOpenDescriptionForm
+            // 
+            this.btnOpenDescriptionForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenDescriptionForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnOpenDescriptionForm.Location = new System.Drawing.Point(256, 48);
+            this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
+            this.btnOpenDescriptionForm.Size = new System.Drawing.Size(24, 21);
+            this.btnOpenDescriptionForm.TabIndex = 0;
+            this.btnOpenDescriptionForm.Text = "...";
+            this.btnOpenDescriptionForm.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnOpenDescriptionForm.UseVisualStyleBackColor = false;
+            this.btnOpenDescriptionForm.Click += new System.EventHandler(this.btnOpenDescriptionForm_Click);
+            // 
+            // grouperDuplicateDetectionHistoryTimeWindow
+            // 
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
+            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
+            this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.tsRegistrationTimeToLive);
+            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grouperDuplicateDetectionHistoryTimeWindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.Color.White;
+            this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
+            this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Registration Time To Live";
+            this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(629, 3);
+            this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
+            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20);
+            this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
+            this.grouperDuplicateDetectionHistoryTimeWindow.RoundCorners = 4;
+            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowColor = System.Drawing.Color.DarkGray;
+            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowControl = false;
+            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowThickness = 1;
+            this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(308, 84);
+            this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 6;
+            // 
+            // tsRegistrationTimeToLive
+            // 
+            this.tsRegistrationTimeToLive.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWindowsPhoneNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWindowsPhoneNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperWindowsPhoneNotificationSettings.BorderThickness = 1F;
-            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnClearMpnsNotification);
-            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.checkBoxEnableUnauthenticatedMpns);
-            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnMpnsCredentialUploadCertificate);
-            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.lblMpnsCredentialCertificateThumbprint);
-            this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.txtMpnsCredentialCertificateThumbprint);
-            this.grouperWindowsPhoneNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperWindowsPhoneNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWindowsPhoneNotificationSettings.ForeColor = System.Drawing.Color.White;
-            this.grouperWindowsPhoneNotificationSettings.GroupImage = null;
-            this.grouperWindowsPhoneNotificationSettings.GroupTitle = "Windows Phone Notification Settings";
-            this.grouperWindowsPhoneNotificationSettings.Location = new System.Drawing.Point(16, 280);
-            this.grouperWindowsPhoneNotificationSettings.Name = "grouperWindowsPhoneNotificationSettings";
-            this.grouperWindowsPhoneNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperWindowsPhoneNotificationSettings.PaintGroupBox = true;
-            this.grouperWindowsPhoneNotificationSettings.RoundCorners = 4;
-            this.grouperWindowsPhoneNotificationSettings.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperWindowsPhoneNotificationSettings.ShadowControl = false;
-            this.grouperWindowsPhoneNotificationSettings.ShadowThickness = 1;
-            this.grouperWindowsPhoneNotificationSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperWindowsPhoneNotificationSettings.TabIndex = 2;
-            // 
-            // btnClearMpnsNotification
-            // 
-            this.btnClearMpnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearMpnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearMpnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearMpnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearMpnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearMpnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearMpnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearMpnsNotification.Location = new System.Drawing.Point(216, 124);
-            this.btnClearMpnsNotification.Name = "btnClearMpnsNotification";
-            this.btnClearMpnsNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearMpnsNotification.TabIndex = 4;
-            this.btnClearMpnsNotification.Text = "Clear";
-            this.btnClearMpnsNotification.UseVisualStyleBackColor = false;
-            this.btnClearMpnsNotification.Click += new System.EventHandler(this.btnClearMpnsNotification_Click);
-            // 
-            // checkBoxEnableUnauthenticatedMpns
-            // 
-            this.checkBoxEnableUnauthenticatedMpns.AutoSize = true;
-            this.checkBoxEnableUnauthenticatedMpns.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxEnableUnauthenticatedMpns.Location = new System.Drawing.Point(16, 92);
-            this.checkBoxEnableUnauthenticatedMpns.Name = "checkBoxEnableUnauthenticatedMpns";
-            this.checkBoxEnableUnauthenticatedMpns.Size = new System.Drawing.Size(224, 17);
-            this.checkBoxEnableUnauthenticatedMpns.TabIndex = 2;
-            this.checkBoxEnableUnauthenticatedMpns.Text = "Enable unauthenticated push notifications";
-            this.checkBoxEnableUnauthenticatedMpns.UseVisualStyleBackColor = true;
-            this.checkBoxEnableUnauthenticatedMpns.CheckedChanged += new System.EventHandler(this.checkBoxEnableUnauthenticatedMpns_CheckedChanged);
-            // 
-            // btnMpnsCredentialUploadCertificate
-            // 
-            this.btnMpnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMpnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMpnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMpnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMpnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
-            this.btnMpnsCredentialUploadCertificate.Name = "btnMpnsCredentialUploadCertificate";
-            this.btnMpnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
-            this.btnMpnsCredentialUploadCertificate.TabIndex = 3;
-            this.btnMpnsCredentialUploadCertificate.Text = "Upload";
-            this.btnMpnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
-            this.btnMpnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnMpnsCredentialUploadCertificate_Click);
-            // 
-            // lblMpnsCredentialCertificateThumbprint
-            // 
-            this.lblMpnsCredentialCertificateThumbprint.AutoSize = true;
-            this.lblMpnsCredentialCertificateThumbprint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
-            this.lblMpnsCredentialCertificateThumbprint.Name = "lblMpnsCredentialCertificateThumbprint";
-            this.lblMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
-            this.lblMpnsCredentialCertificateThumbprint.TabIndex = 0;
-            this.lblMpnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
-            // 
-            // txtMpnsCredentialCertificateThumbprint
-            // 
-            this.txtMpnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMpnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMpnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
-            this.txtMpnsCredentialCertificateThumbprint.Name = "txtMpnsCredentialCertificateThumbprint";
-            this.txtMpnsCredentialCertificateThumbprint.ReadOnly = true;
-            this.txtMpnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(272, 20);
-            this.txtMpnsCredentialCertificateThumbprint.TabIndex = 1;
-            // 
-            // grouperAppleNotificationSettings
-            // 
-            this.grouperAppleNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAppleNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAppleNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperAppleNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAppleNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperAppleNotificationSettings.BorderThickness = 1F;
-            this.grouperAppleNotificationSettings.Controls.Add(this.btnClearApnsNotification);
-            this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsEndpoint);
-            this.grouperAppleNotificationSettings.Controls.Add(this.lblApnsEndpoint);
-            this.grouperAppleNotificationSettings.Controls.Add(this.btnApnsCredentialUploadCertificate);
-            this.grouperAppleNotificationSettings.Controls.Add(this.lblApnsCredentialCertificateThumbprint);
-            this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsCredentialCertificateThumbprint);
-            this.grouperAppleNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperAppleNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAppleNotificationSettings.ForeColor = System.Drawing.Color.White;
-            this.grouperAppleNotificationSettings.GroupImage = null;
-            this.grouperAppleNotificationSettings.GroupTitle = "Apple Notification Settings";
-            this.grouperAppleNotificationSettings.Location = new System.Drawing.Point(336, 280);
-            this.grouperAppleNotificationSettings.Name = "grouperAppleNotificationSettings";
-            this.grouperAppleNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperAppleNotificationSettings.PaintGroupBox = true;
-            this.grouperAppleNotificationSettings.RoundCorners = 4;
-            this.grouperAppleNotificationSettings.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperAppleNotificationSettings.ShadowControl = false;
-            this.grouperAppleNotificationSettings.ShadowThickness = 1;
-            this.grouperAppleNotificationSettings.Size = new System.Drawing.Size(304, 160);
-            this.grouperAppleNotificationSettings.TabIndex = 5;
-            // 
-            // btnClearApnsNotification
-            // 
-            this.btnClearApnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearApnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearApnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearApnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearApnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearApnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClearApnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearApnsNotification.Location = new System.Drawing.Point(216, 124);
-            this.btnClearApnsNotification.Name = "btnClearApnsNotification";
-            this.btnClearApnsNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearApnsNotification.TabIndex = 5;
-            this.btnClearApnsNotification.Text = "Clear";
-            this.btnClearApnsNotification.UseVisualStyleBackColor = false;
-            this.btnClearApnsNotification.Click += new System.EventHandler(this.btnClearApnsNotification_Click);
-            // 
-            // txtApnsEndpoint
-            // 
-            this.txtApnsEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtApnsEndpoint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtApnsEndpoint.Location = new System.Drawing.Point(16, 92);
-            this.txtApnsEndpoint.Name = "txtApnsEndpoint";
-            this.txtApnsEndpoint.ReadOnly = true;
-            this.txtApnsEndpoint.Size = new System.Drawing.Size(272, 20);
-            this.txtApnsEndpoint.TabIndex = 3;
-            // 
-            // lblApnsEndpoint
-            // 
-            this.lblApnsEndpoint.AutoSize = true;
-            this.lblApnsEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblApnsEndpoint.Location = new System.Drawing.Point(16, 76);
-            this.lblApnsEndpoint.Name = "lblApnsEndpoint";
-            this.lblApnsEndpoint.Size = new System.Drawing.Size(84, 13);
-            this.lblApnsEndpoint.TabIndex = 2;
-            this.lblApnsEndpoint.Text = "APNS Endpoint:";
-            // 
-            // btnApnsCredentialUploadCertificate
-            // 
-            this.btnApnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnApnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnApnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
-            this.btnApnsCredentialUploadCertificate.Name = "btnApnsCredentialUploadCertificate";
-            this.btnApnsCredentialUploadCertificate.Size = new System.Drawing.Size(72, 24);
-            this.btnApnsCredentialUploadCertificate.TabIndex = 4;
-            this.btnApnsCredentialUploadCertificate.Text = "Upload";
-            this.btnApnsCredentialUploadCertificate.UseVisualStyleBackColor = false;
-            this.btnApnsCredentialUploadCertificate.Click += new System.EventHandler(this.btnApnsCredentialUploadCertificate_Click);
-            // 
-            // lblApnsCredentialCertificateThumbprint
-            // 
-            this.lblApnsCredentialCertificateThumbprint.AutoSize = true;
-            this.lblApnsCredentialCertificateThumbprint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 32);
-            this.lblApnsCredentialCertificateThumbprint.Name = "lblApnsCredentialCertificateThumbprint";
-            this.lblApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(113, 13);
-            this.lblApnsCredentialCertificateThumbprint.TabIndex = 0;
-            this.lblApnsCredentialCertificateThumbprint.Text = "Certificate Thumbprint:";
-            // 
-            // txtApnsCredentialCertificateThumbprint
-            // 
-            this.txtApnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtApnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtApnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
-            this.txtApnsCredentialCertificateThumbprint.Name = "txtApnsCredentialCertificateThumbprint";
-            this.txtApnsCredentialCertificateThumbprint.ReadOnly = true;
-            this.txtApnsCredentialCertificateThumbprint.Size = new System.Drawing.Size(272, 20);
-            this.txtApnsCredentialCertificateThumbprint.TabIndex = 1;
+            this.tsRegistrationTimeToLive.Location = new System.Drawing.Point(9, 29);
+            this.tsRegistrationTimeToLive.Name = "tsRegistrationTimeToLive";
+            this.tsRegistrationTimeToLive.Size = new System.Drawing.Size(294, 112);
+            this.tsRegistrationTimeToLive.TabIndex = 0;
+            this.tsRegistrationTimeToLive.TimeSpanValue = null;
             // 
             // grouperWindowsNotificationSettings
             // 
-            this.grouperWindowsNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperWindowsNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperWindowsNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
             this.grouperWindowsNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
@@ -838,11 +940,13 @@
             this.grouperWindowsNotificationSettings.Controls.Add(this.lblPackageSid);
             this.grouperWindowsNotificationSettings.Controls.Add(this.txtPackageSid);
             this.grouperWindowsNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsNotificationSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperWindowsNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperWindowsNotificationSettings.ForeColor = System.Drawing.Color.White;
             this.grouperWindowsNotificationSettings.GroupImage = null;
             this.grouperWindowsNotificationSettings.GroupTitle = "Windows Notification Settings";
-            this.grouperWindowsNotificationSettings.Location = new System.Drawing.Point(16, 112);
+            this.grouperWindowsNotificationSettings.Location = new System.Drawing.Point(3, 93);
+            this.grouperWindowsNotificationSettings.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
             this.grouperWindowsNotificationSettings.Name = "grouperWindowsNotificationSettings";
             this.grouperWindowsNotificationSettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperWindowsNotificationSettings.PaintGroupBox = true;
@@ -850,7 +954,7 @@
             this.grouperWindowsNotificationSettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperWindowsNotificationSettings.ShadowControl = false;
             this.grouperWindowsNotificationSettings.ShadowThickness = 1;
-            this.grouperWindowsNotificationSettings.Size = new System.Drawing.Size(304, 160);
+            this.grouperWindowsNotificationSettings.Size = new System.Drawing.Size(305, 163);
             this.grouperWindowsNotificationSettings.TabIndex = 1;
             // 
             // btnClearWnsNotification
@@ -862,7 +966,7 @@
             this.btnClearWnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClearWnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearWnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearWnsNotification.Location = new System.Drawing.Point(216, 124);
+            this.btnClearWnsNotification.Location = new System.Drawing.Point(215, 124);
             this.btnClearWnsNotification.Name = "btnClearWnsNotification";
             this.btnClearWnsNotification.Size = new System.Drawing.Size(72, 24);
             this.btnClearWnsNotification.TabIndex = 4;
@@ -877,7 +981,7 @@
             this.txtClientSecret.BackColor = System.Drawing.SystemColors.Window;
             this.txtClientSecret.Location = new System.Drawing.Point(16, 92);
             this.txtClientSecret.Name = "txtClientSecret";
-            this.txtClientSecret.Size = new System.Drawing.Size(272, 20);
+            this.txtClientSecret.Size = new System.Drawing.Size(271, 20);
             this.txtClientSecret.TabIndex = 3;
             // 
             // lblClientSecret
@@ -908,89 +1012,8 @@
             this.txtPackageSid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPackageSid.Location = new System.Drawing.Point(16, 48);
             this.txtPackageSid.Name = "txtPackageSid";
-            this.txtPackageSid.Size = new System.Drawing.Size(272, 20);
+            this.txtPackageSid.Size = new System.Drawing.Size(271, 20);
             this.txtPackageSid.TabIndex = 1;
-            // 
-            // grouperDuplicateDetectionHistoryTimeWindow
-            // 
-            this.grouperDuplicateDetectionHistoryTimeWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
-            this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.tsRegistrationTimeToLive);
-            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperDuplicateDetectionHistoryTimeWindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.Color.White;
-            this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
-            this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Registration Time To Live";
-            this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(656, 16);
-            this.grouperDuplicateDetectionHistoryTimeWindow.Name = "grouperDuplicateDetectionHistoryTimeWindow";
-            this.grouperDuplicateDetectionHistoryTimeWindow.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperDuplicateDetectionHistoryTimeWindow.PaintGroupBox = true;
-            this.grouperDuplicateDetectionHistoryTimeWindow.RoundCorners = 4;
-            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowControl = false;
-            this.grouperDuplicateDetectionHistoryTimeWindow.ShadowThickness = 1;
-            this.grouperDuplicateDetectionHistoryTimeWindow.Size = new System.Drawing.Size(296, 88);
-            this.grouperDuplicateDetectionHistoryTimeWindow.TabIndex = 6;
-            // 
-            // tsRegistrationTimeToLive
-            // 
-            this.tsRegistrationTimeToLive.Location = new System.Drawing.Point(13, 29);
-            this.tsRegistrationTimeToLive.Name = "tsRegistrationTimeToLive";
-            this.tsRegistrationTimeToLive.Size = new System.Drawing.Size(273, 42);
-            this.tsRegistrationTimeToLive.TabIndex = 0;
-            this.tsRegistrationTimeToLive.TimeSpanValue = null;
-            // 
-            // grouperPath
-            // 
-            this.grouperPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
-            this.grouperPath.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperPath.BorderThickness = 1F;
-            this.grouperPath.Controls.Add(this.lblRelativeURI);
-            this.grouperPath.Controls.Add(this.txtPath);
-            this.grouperPath.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.grouperPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperPath.ForeColor = System.Drawing.Color.White;
-            this.grouperPath.GroupImage = null;
-            this.grouperPath.GroupTitle = "Path";
-            this.grouperPath.Location = new System.Drawing.Point(16, 16);
-            this.grouperPath.Name = "grouperPath";
-            this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
-            this.grouperPath.PaintGroupBox = true;
-            this.grouperPath.RoundCorners = 4;
-            this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
-            this.grouperPath.ShadowControl = false;
-            this.grouperPath.ShadowThickness = 1;
-            this.grouperPath.Size = new System.Drawing.Size(304, 88);
-            this.grouperPath.TabIndex = 0;
-            // 
-            // lblRelativeURI
-            // 
-            this.lblRelativeURI.AutoSize = true;
-            this.lblRelativeURI.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRelativeURI.Location = new System.Drawing.Point(16, 32);
-            this.lblRelativeURI.Name = "lblRelativeURI";
-            this.lblRelativeURI.Size = new System.Drawing.Size(71, 13);
-            this.lblRelativeURI.TabIndex = 0;
-            this.lblRelativeURI.Text = "Relative URI:";
-            // 
-            // txtPath
-            // 
-            this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPath.BackColor = System.Drawing.SystemColors.Window;
-            this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtPath.Location = new System.Drawing.Point(16, 48);
-            this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(272, 20);
-            this.txtPath.TabIndex = 1;
             // 
             // tabPageAuthorization
             // 
@@ -3185,23 +3208,23 @@
             this.Controls.Add(this.btnSend);
             this.Name = "HandleNotificationHubControl";
             this.Size = new System.Drawing.Size(1008, 544);
-            this.Resize += new System.EventHandler(this.HandleNotificationHubControl_Resize);
             this.mainTabControl.ResumeLayout(false);
             this.tabPageDescription.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.grouperNotificationHubInformation.ResumeLayout(false);
-            this.grouperUserMetadata.ResumeLayout(false);
-            this.grouperUserMetadata.PerformLayout();
-            this.grouperGoogleCloudMessaggingSettings.ResumeLayout(false);
-            this.grouperGoogleCloudMessaggingSettings.PerformLayout();
-            this.grouperWindowsPhoneNotificationSettings.ResumeLayout(false);
-            this.grouperWindowsPhoneNotificationSettings.PerformLayout();
-            this.grouperAppleNotificationSettings.ResumeLayout(false);
-            this.grouperAppleNotificationSettings.PerformLayout();
-            this.grouperWindowsNotificationSettings.ResumeLayout(false);
-            this.grouperWindowsNotificationSettings.PerformLayout();
-            this.grouperDuplicateDetectionHistoryTimeWindow.ResumeLayout(false);
             this.grouperPath.ResumeLayout(false);
             this.grouperPath.PerformLayout();
+            this.grouperAppleNotificationSettings.ResumeLayout(false);
+            this.grouperAppleNotificationSettings.PerformLayout();
+            this.grouperWindowsPhoneNotificationSettings.ResumeLayout(false);
+            this.grouperWindowsPhoneNotificationSettings.PerformLayout();
+            this.grouperGoogleCloudMessaggingSettings.ResumeLayout(false);
+            this.grouperGoogleCloudMessaggingSettings.PerformLayout();
+            this.grouperUserMetadata.ResumeLayout(false);
+            this.grouperUserMetadata.PerformLayout();
+            this.grouperDuplicateDetectionHistoryTimeWindow.ResumeLayout(false);
+            this.grouperWindowsNotificationSettings.ResumeLayout(false);
+            this.grouperWindowsNotificationSettings.PerformLayout();
             this.tabPageAuthorization.ResumeLayout(false);
             this.grouperAuthorizationRuleList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.authorizationRulesDataGridView)).EndInit();
@@ -3530,5 +3553,6 @@
         private System.Windows.Forms.PictureBox pictFindRegistrations;
         private TimeSpanControl tsRegistrationTimeToLive;
         private TimeSpanControl tsApnsExpiry;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
