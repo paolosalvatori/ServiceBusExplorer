@@ -22,7 +22,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus;
+using Azure.Messaging.ServiceBus;
 
 namespace ServiceBusExplorer.Helpers
 {
@@ -37,9 +37,10 @@ namespace ServiceBusExplorer.Helpers
 
         public static string GetServiceBusClientVersion()
         {
-            var assembly = Assembly.GetAssembly(typeof(NamespaceManager));
-
-            return GetFormattedFileVersion(assembly);
+            // TODO: Need to find a way to get the Azure.Messaging.ServiceBus assembly version
+            // assembly = Assembly.GetAssembly(typeof(NamespaceManager));
+            // return GetFormattedFileVersion(assembly);
+            return string.Empty;
         }
 
         public static bool IsLatestVersion(out ReleaseInfo nextReleaseInfo, WriteToLogDelegate writeToLog = null)

@@ -21,7 +21,7 @@
 
 #region Using Directives
 
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 #endregion
 
@@ -29,7 +29,7 @@ namespace ServiceBusExplorer.Helpers
 {
     public interface IBrokeredMessageInspector
     {
-        BrokeredMessage BeforeSendMessage(BrokeredMessage message);
-        BrokeredMessage AfterReceiveMessage(BrokeredMessage message);
+        ServiceBusMessage BeforeSendMessage(ServiceBusMessage message);
+        ServiceBusReceivedMessage AfterReceiveMessage(ServiceBusReceivedMessage message);
     }
 }

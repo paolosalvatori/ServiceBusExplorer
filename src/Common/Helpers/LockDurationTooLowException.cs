@@ -26,7 +26,6 @@ using System.Runtime.Serialization;
 
 #endregion
 
-
 namespace ServiceBusExplorer.Helpers
 {
     [Serializable]
@@ -47,9 +46,9 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Protected constructor
-        protected LockDurationTooLowException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+        //protected LockDurationTooLowException(SerializationInfo info, StreamingContext context) : base(info, context) //TODO: 
+        //{
+        //}
         #endregion
     }
 }

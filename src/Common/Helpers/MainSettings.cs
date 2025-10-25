@@ -24,12 +24,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.ServiceBus;
 #endregion
 
 namespace ServiceBusExplorer.Helpers
 {
     using Utilities.Helpers;
+    using static global::Common.ServiceBusService;
 
     public class MainSettings
     {
@@ -64,7 +64,7 @@ namespace ServiceBusExplorer.Helpers
         public List<string> SelectedMessageCounts { get; set; }
 
         public string MessageBodyType { get; set; }
-        public ConnectivityMode ConnectivityMode { get; set; }
+        //public ConnectivityMode ConnectivityMode { get; set; } //TODO: Migrate and other settings to make use of this to use <c>ServiceBusClientOptions</c>
         public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 
@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Helpers
             SelectedMessageCounts = ConfigurationHelper.MessageCounts;
 
             MessageBodyType = BodyType.Stream.ToString();
-            ConnectivityMode = ConnectivityMode.AutoDetect;
+            //ConnectivityMode = ConnectivityMode.AutoDetect;
             UseAmqpWebSockets = false;
 
             ProxyOverrideDefault = true;
@@ -138,7 +138,7 @@ namespace ServiceBusExplorer.Helpers
             ProxyBypassList = string.Empty;
             ProxyUserName = string.Empty;
             ProxyPassword = string.Empty;
-            
+
             NodesColors = new List<NodeColorInfo>();
         }
 
@@ -176,7 +176,7 @@ namespace ServiceBusExplorer.Helpers
             if (!SelectedMessageCounts.SequenceEqual(SelectedMessageCounts)) return false;
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
-            if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
+            //if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
             if (UseAmqpWebSockets != otherProperties.UseAmqpWebSockets) return false;
 
             if (ProxyOverrideDefault != otherProperties.ProxyOverrideDefault) return false;
@@ -281,8 +281,8 @@ namespace ServiceBusExplorer.Helpers
                 case ConfigurationParameters.MessageBodyType:
                     return MessageBodyType;
 
-                case ConfigurationParameters.ConnectivityMode:
-                    return ConnectivityMode;
+                //case ConfigurationParameters.ConnectivityMode:
+                //    return ConnectivityMode;
 
                 case ConfigurationParameters.UseAmqpWebSockets:
                     return UseAmqpWebSockets;

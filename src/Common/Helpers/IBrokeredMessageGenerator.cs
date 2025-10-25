@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 #endregion
 
@@ -31,6 +31,6 @@ namespace ServiceBusExplorer.Helpers
 {
     public interface IBrokeredMessageGenerator
     {
-        IEnumerable<BrokeredMessage> GenerateBrokeredMessageCollection(int messageCount, WriteToLogDelegate writeToLog = null);
+        IEnumerable<ServiceBusMessage> GenerateBrokeredMessageCollection(int messageCount, WriteToLogDelegate writeToLog = null);
     }
 }

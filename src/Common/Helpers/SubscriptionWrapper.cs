@@ -21,7 +21,7 @@
 
 #region Using Directives
 
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 #endregion
 

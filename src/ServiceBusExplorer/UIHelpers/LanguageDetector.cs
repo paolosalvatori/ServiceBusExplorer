@@ -25,22 +25,22 @@
 
 using System;
 using FastColoredTextBoxNS;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Utilities.Helpers;
+using Common.Contracts;
 
 
 #endregion
 
 namespace ServiceBusExplorer.UIHelpers
 {
-    using Abstractions;
 
     public class LanguageDetector
     {
         #region Public Static Methods
-        public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, BrokeredMessage message, FastColoredTextBox textBox)
+        public static void SetFormattedMessage(IServiceBusService serviceBusHelper, ServiceBusReceivedMessage message, FastColoredTextBox textBox)
         {
             if (serviceBusHelper == null)
             {
@@ -57,31 +57,30 @@ namespace ServiceBusExplorer.UIHelpers
                 throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
             }
 
-            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message,
-                MainForm.SingletonMainForm.UseAscii, out _), textBox);
+            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message.Body), textBox);
         }
 
-        public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, EventDataMessage message, FastColoredTextBox textBox)
-        {
-            if (serviceBusHelper == null)
-            {
-                throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
-            }
+        //public static void SetFormattedMessage(IServiceBusService serviceBusHelper, EventDataMessage message, FastColoredTextBox textBox)
+        //{
+        //    if (serviceBusHelper == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(serviceBusHelper), $"{nameof(serviceBusHelper)} parameter cannot be null");
+        //    }
 
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message), $"{nameof(message)} parameter cannot be null");
-            }
+        //    if (message == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(message), $"{nameof(message)} parameter cannot be null");
+        //    }
 
-            if (textBox == null)
-            {
-                throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
-            }
+        //    if (textBox == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(textBox), $"{nameof(textBox)} parameter cannot be null");
+        //    }
 
-            InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message, out _), textBox);
-        }
+            //InternalSetFormattedMessage(serviceBusHelper.GetMessageText(message, out _), textBox);//TODO: 
+        //}
 
-        public static void SetFormattedMessage(ServiceBusHelper serviceBusHelper, string messageText, FastColoredTextBox textBox)
+        public static void SetFormattedMessage(IServiceBusService serviceBusHelper, string messageText, FastColoredTextBox textBox)
         {
             if (serviceBusHelper == null)
             {

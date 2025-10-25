@@ -20,7 +20,7 @@
 #endregion
 
 using Azure.Messaging.ServiceBus;
-
+using ServiceBus.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,12 +33,12 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
     public abstract class ServiceBusPurger<TEntity>
         where TEntity : class
     {
-        protected readonly ServiceBusHelper2 serviceBusHelper;
+        protected readonly IServiceBusService serviceBusHelper;
 
         public event EventHandler<PurgeOperationCompletedEventArgs> PurgeCompleted;
         public event EventHandler<PurgeOperationFailedEventArgs> PurgeFailed;
 
-        protected ServiceBusPurger(ServiceBusHelper2 serviceBusHelper)
+        protected ServiceBusPurger(IServiceBusService serviceBusHelper)
         {
             this.serviceBusHelper = serviceBusHelper;
         }
@@ -104,10 +104,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 .ConfigureAwait(false);
 
             var client = new ServiceBusClient(
-              serviceBusHelper.ConnectionString,
+              serviceBusHelper.Connection.Namespace.ConnectionString,
               new ServiceBusClientOptions
               {
-                  TransportType = serviceBusHelper.TransportType
+                  //TransportType = ServiceBusTr //TODO: No transport type 
               });
 
             try
@@ -188,8 +188,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             var quit = false;  // This instance controls all the receiving tasks
 
             var client = new ServiceBusClient(
-                serviceBusHelper.ConnectionString,
-                new ServiceBusClientOptions { TransportType = serviceBusHelper.TransportType });
+                serviceBusHelper.Connection.Namespace.ConnectionString,
+                new ServiceBusClientOptions { TransportType = serviceBusHelper.Connection.Namespace.TransportType });
 
             try
             {

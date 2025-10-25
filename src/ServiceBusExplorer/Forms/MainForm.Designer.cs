@@ -1,5 +1,4 @@
 ﻿using ServiceBusExplorer.Controls;
-using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -21,6 +20,8 @@ namespace ServiceBusExplorer.Forms
                 components.Dispose();
             }
             base.Dispose(disposing);
+            logCollection.Dispose();
+            cancellationTokenSource.Dispose();
         }
 
         #region Windows Form Designer generated code
@@ -702,8 +703,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainSplitContainer
             // 
-            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainSplitContainer.Location = new System.Drawing.Point(16, 40);
             this.mainSplitContainer.Name = "mainSplitContainer";
@@ -1729,16 +1730,16 @@ namespace ServiceBusExplorer.Forms
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
             this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(312, 22);
             this.changeStatusQueueMenuItem.Text = "Set Status";
-            this.changeStatusQueueMenuItem.DropDownOpening += changeStatusQueueMenuItem_DropDownOpening;
-            this.changeStatusQueueMenuItem.DropDownItemClicked += changeStatusQueue_Click;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Active.ToString())
-                .Tag = EntityStatus.Active;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Disabled.ToString())
-                .Tag = EntityStatus.Disabled;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.SendDisabled.ToString())
-                .Tag = EntityStatus.SendDisabled;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.ReceiveDisabled.ToString())
-                .Tag = EntityStatus.ReceiveDisabled;
+            //this.changeStatusQueueMenuItem.DropDownOpening += changeStatusQueueMenuItem_DropDownOpening;
+            //this.changeStatusQueueMenuItem.DropDownItemClicked += changeStatusQueue_Click;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Active.ToString())
+            //    .Tag = EntityStatus.Active;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Disabled.ToString())
+            //    .Tag = EntityStatus.Disabled;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.SendDisabled.ToString())
+            //    .Tag = EntityStatus.SendDisabled;
+            //this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.ReceiveDisabled.ToString())
+            //    .Tag = EntityStatus.ReceiveDisabled;
             // 
             // deleteQueueMenuItem
             // 

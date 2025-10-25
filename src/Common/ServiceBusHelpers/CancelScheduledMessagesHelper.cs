@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Messaging.ServiceBus;
-
+using Common.Contracts;
 using ServiceBusExplorer.Utilities.Helpers;
 
-namespace ServiceBusExplorer.ServiceBus.Helpers
+namespace Common.ServiceBusHelpers
 {
     public static class CancelScheduledMessagesHelper
     {
@@ -18,14 +18,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             public int Failures;
         }
 
-        public static async Task CancelScheduledMessages(ServiceBusHelper2 serviceBusHelper,
+        public static async Task CancelScheduledMessages(IServiceBusService serviceBusHelper,
             string queueName, List<long> sequenceNumbersToCancel)
         {
-            var client = serviceBusHelper.CreateServiceBusClient();
-
+            ServiceBusSender sender = null; 
             try
             {
-                var sender = client.CreateSender(queueName);
+                sender = serviceBusHelper.CreateSender(queueName);
 
                 serviceBusHelper.WriteToLog($"Starting cancellation of scheduled messages on queue {queueName}.");
 
@@ -58,7 +57,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             }
             finally
             {
-                await client.DisposeAsync();
+                if (sender != null) await sender.DisposeAsync();
             }
         }
 

@@ -9,7 +9,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// Gets or sets the scheme of the URI.
         /// </summary>
         string Scheme { get; set; }
-        
+
         WriteToLogDelegate WriteToLog { get; set; }
 
         delegate void EventHandler(ServiceBusHelperEventArgs args);

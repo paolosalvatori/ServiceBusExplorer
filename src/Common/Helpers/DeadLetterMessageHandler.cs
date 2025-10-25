@@ -27,7 +27,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
+using Common.Contracts;
+using Common.Models;
 
 #endregion
 
@@ -52,36 +54,36 @@ namespace ServiceBusExplorer.Helpers
     public class DeadLetterMessageHandler
     {
         #region Private Fields
-        // Either queueDescription or subscriptionWrapper is used - but never both.
-        readonly QueueDescription sourceQueueDescription;
-        readonly SubscriptionWrapper sourceSubscriptionWrapper;
+        // Either QueueMetadata or subscriptionWrapper is used - but never both.
+        readonly QueueMetadata sourceQueueMetadata;
+        //readonly SubscriptionWrapper sourceSubscriptionWrapper; TODO: 
         readonly int receiveTimeoutInSeconds;
-        readonly ServiceBusHelper serviceBusHelper;
+        readonly IServiceBusService _serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         #endregion
 
         #region Public Constructors
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            int receiveTimeoutInSeconds, QueueDescription queueDescription)
+        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, IServiceBusService serviceBusHelper,
+            int receiveTimeoutInSeconds, QueueMetadata QueueMetadata)
             : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
         {
-            sourceQueueDescription = queueDescription;
+            sourceQueueMetadata = QueueMetadata;
         }
 
-        public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper,
-            int receiveTimeoutInSeconds, SubscriptionWrapper subscriptionWrapper)
-             : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
-        {
-            sourceSubscriptionWrapper = subscriptionWrapper;
-        }
+        //public DeadLetterMessageHandler(WriteToLogDelegate writeToLog, IServiceBusService serviceBusHelper,
+        //    int receiveTimeoutInSeconds /*SubscriptionWrapper subscriptionWrapper*/) //TODO: 
+        //     : this(writeToLog, serviceBusHelper, receiveTimeoutInSeconds)
+        //{
+        //    //sourceSubscriptionWrapper = subscriptionWrapper;
+        //}
         #endregion
 
         #region Private Constructor
-        DeadLetterMessageHandler(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper, 
+        DeadLetterMessageHandler(WriteToLogDelegate writeToLog, IServiceBusService serviceBusHelper,
             int receiveTimeoutInSeconds)
         {
             this.writeToLog = writeToLog;
-            this.serviceBusHelper = serviceBusHelper;
+            this._serviceBusHelper = serviceBusHelper;
             this.receiveTimeoutInSeconds = receiveTimeoutInSeconds;
         }
         #endregion
@@ -97,16 +99,18 @@ namespace ServiceBusExplorer.Helpers
             }
 
             var timedOut = false;
-            var dlqEntityPath = TransferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
+            //var dlqEntityPath = TransferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
+            var dlqEntityPath = "queue-name"; 
 
-            var messageReceiver = await serviceBusHelper.MessagingFactory.CreateMessageReceiverAsync(
+            var messageReceiver = await _serviceBusHelper.CreateReceiverAsync(
                 dlqEntityPath,
-                ReceiveMode.PeekLock).ConfigureAwait(false);
+                ServiceBusReceiveMode.PeekLock);
 
             var done = false;
-            var lockedMessages = new Dictionary<long, BrokeredMessage>(1000);
+            var lockedMessages = new Dictionary<long, ServiceBusReceivedMessage>(1000);
             var deletedSequenceNumbers = new List<long>();
-            var maxTimeInSeconds = GetMaxOperationTimeInSeconds();
+            //var maxTimeInSeconds = GetMaxOperationTimeInSeconds(); TODO: 
+            var maxTimeInSeconds = 180; 
 
             if (maxTimeInSeconds < 1)
             {
@@ -119,7 +123,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 do
                 {
-                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds))
+                    var message = await messageReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds))
                         .ConfigureAwait(false);
 
                     if (message != null)
@@ -127,8 +131,8 @@ namespace ServiceBusExplorer.Helpers
                         if (sequenceNumbers.Contains(message.SequenceNumber))
                         {
                             var sequenceNumber = message.SequenceNumber;
-                            await message.CompleteAsync().ConfigureAwait(false);
-                            message.Dispose();
+                            await messageReceiver.CompleteMessageAsync(message).ConfigureAwait(false);
+                            await messageReceiver.DisposeAsync().ConfigureAwait(false);
                             sequenceNumbersToDeleteList.Remove(sequenceNumber);
                             deletedSequenceNumbers.Add(sequenceNumber);
 
@@ -163,17 +167,16 @@ namespace ServiceBusExplorer.Helpers
 
                 } while (!done);
             }
-            catch (MessageLockLostException)
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageLockLost)
             {
                 WriteToLog($"Got a MessageLockLostException after {stopwatch.ElapsedMilliseconds / 1000} seconds.");
                 timedOut = true;
             }
             finally
             {
-                foreach (var pair in lockedMessages)
+                foreach (var (_, message) in lockedMessages)
                 {
-                    await pair.Value.AbandonAsync().ConfigureAwait(false);
-                    pair.Value.Dispose();
+                    await messageReceiver.AbandonMessageAsync(message).ConfigureAwait(false);
                 }
 
                 await messageReceiver.CloseAsync().ConfigureAwait(false);
@@ -183,10 +186,11 @@ namespace ServiceBusExplorer.Helpers
             return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
         }
 
-    
-
-        public async Task<DeletedDlqMessagesResult> MoveMessages(MessageSender messageSender,
-            List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null)
+        public async Task<DeletedDlqMessagesResult> MoveMessages(
+            ServiceBusSender messageSender,
+            List<long> sequenceNumbers, 
+            bool transferDLQ,
+            List<ServiceBusMessage> messagesToSend = null)
         {
             if (messagesToSend != null)
             {
@@ -197,17 +201,33 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
+            if (sourceQueueMetadata.RequiresSession)
+            {
+                int i = 0; 
+                foreach (var message in messagesToSend)
+                {
+                    message.SessionId = $"session-{i}";
+                    i++;
+                }
+            }
 
-            var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
+            // No need to format the entity path we use SubQueue which entity path to retreive from
+            //var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath(); //TODO: 
+            var dlqEntityPath = sourceQueueMetadata.Name;
+            var subQueue = transferDLQ ? SubQueue.TransferDeadLetter : SubQueue.DeadLetter;
+
+            var messageReceiver = _serviceBusHelper.CreateReceiverAsync(
                 dlqEntityPath,
-                ReceiveMode.PeekLock);
+                ServiceBusReceiveMode.PeekLock,
+                queueType: subQueue)
+                .GetAwaiter()
+                .GetResult();
 
             var timedOut = false;
             var done = false;
-            var lockedMessages = new List<BrokeredMessage>(1000);
+            var lockedMessages = new List<ServiceBusReceivedMessage>(1000);
             var movedSequenceNumbers = new List<long>();
-            var maxTimeInSeconds = GetMaxOperationTimeInSeconds();
+            var maxTimeInSeconds = GetMaxOperationTimeInSeconds(); 
 
             if (maxTimeInSeconds < 1)
             {
@@ -220,7 +240,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 do
                 {
-                    var message = await messageReceiver.ReceiveAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
+                    var message = await messageReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
 
                     if (message != null)
                     {
@@ -230,20 +250,21 @@ namespace ServiceBusExplorer.Helpers
                             {
                                 if (messagesToSend == null)
                                 {
-                                    await messageSender.SendAsync(message).ConfigureAwait(false);
+                                    var toSend = _serviceBusHelper.ReceivedToMessage(message);
+                                    await messageSender.SendMessageAsync(toSend).ConfigureAwait(false);
                                 }
                                 else
                                 {
                                     var index = sequenceNumbers.IndexOf(message.SequenceNumber);
-                                    await messageSender.SendAsync(messagesToSend[index])
+                                    await messageSender.SendMessageAsync(messagesToSend[index])
                                         .ConfigureAwait(false);
                                 }
 
-                                await message.CompleteAsync().ConfigureAwait(false);
+                                await messageReceiver.CompleteMessageAsync(message).ConfigureAwait(false);
                             }
                             catch
                             {
-                                await message.AbandonAsync().ConfigureAwait(false);
+                                await messageReceiver.AbandonMessageAsync(message).ConfigureAwait(false);
                                 throw;
                             }
 
@@ -252,8 +273,6 @@ namespace ServiceBusExplorer.Helpers
                             {
                                 done = true;
                             }
-
-                            message.Dispose();
                         }
                         else
                         {
@@ -273,7 +292,7 @@ namespace ServiceBusExplorer.Helpers
 
                 } while (!done);
             }
-            catch (MessageLockLostException)
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageLockLost)
             {
                 WriteToLog($"Got a MessageLockLostException after {stopwatch.ElapsedMilliseconds / 1000} seconds.");
                 timedOut = true;
@@ -282,12 +301,13 @@ namespace ServiceBusExplorer.Helpers
             {
                 foreach (var message in lockedMessages)
                 {
-                    await message.AbandonAsync().ConfigureAwait(false);
-                    message.Dispose();
+                    await messageReceiver.AbandonMessageAsync(message).ConfigureAwait(false);
                 }
 
                 await messageSender.CloseAsync().ConfigureAwait(false);
                 await messageReceiver.CloseAsync().ConfigureAwait(false);
+
+                await messageReceiver.DisposeAsync().ConfigureAwait(false);
 
                 stopwatch.Stop();
             }
@@ -316,7 +336,7 @@ namespace ServiceBusExplorer.Helpers
                     "Lock duration for the queue. Either delete some messages in the dead letter subqueue or " +
                     "increase the Lock duration for the queue." +
                      Environment.NewLine + Environment.NewLine +
-                     $"The Lock duration for the queue is currently {GetLockDurationInSeconds()}" +
+                     $"The Lock duration for the queue is currently {100000/* */}" +
                      " seconds.";
             }
             else
@@ -334,51 +354,52 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private methods
-        private double GetLockDurationInSeconds()
-        {
-            if (sourceQueueDescription != null)
-            {
-                return sourceQueueDescription.LockDuration.TotalSeconds;
-            }
+        //private double GetLockDurationInSeconds() TODO: 
+        //{
+        //    if (sourceQueueMetadata != null)
+        //    {
+        //        return sourceQueueMetadata.LockDuration.TotalSeconds;
+        //    }
 
-            return sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds;
-        }
+        //    return sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds;
+        //}
 
         private int GetMaxOperationTimeInSeconds()
         {
             // Allocate three seconds for final operations;
             const int FinalActionsTime = 3;
 
-            if (sourceQueueDescription != null)
+            if (sourceQueueMetadata != null)
             {
-                return (int)sourceQueueDescription.LockDuration.TotalSeconds - FinalActionsTime;
+                return (int)sourceQueueMetadata.LockDuration.TotalSeconds - FinalActionsTime;
             }
 
-            return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
-                - FinalActionsTime;
+            //return (int)sourceSubscriptionWrapper.SubscriptionDescription.LockDuration.TotalSeconds
+            //    - FinalActionsTime; // TODO: 
+            return 26;
         }
 
-        string GetDlqEntityPath()
-        {
-            if (sourceQueueDescription != null)
-            {
-                return QueueClient.FormatDeadLetterPath(sourceQueueDescription.Path);
-            }
+        //string GetDlqEntityPath()
+        //{
+        //    if (sourceQueueMetadata != null)
+        //    {
+        //        return QueueClient.FormatDeadLetterPath(sourceQueueMetadata.Path);
+        //    }
 
-            return SubscriptionClient.FormatDeadLetterPath(
-                sourceSubscriptionWrapper.SubscriptionDescription.TopicPath,
-                sourceSubscriptionWrapper.SubscriptionDescription.Name);
-        }
+        //    return SubscriptionClient.FormatDeadLetterPath(
+        //        sourceSubscriptionWrapper.SubscriptionDescription.TopicPath,
+        //        sourceSubscriptionWrapper.SubscriptionDescription.Name);
+        //}
 
-        string GetTransferDlqEntityPath()
-        {
-            if (sourceQueueDescription != null)
-            {
-                return QueueClient.FormatTransferDeadLetterPath(sourceQueueDescription.Path);
-            }
+        //string GetTransferDlqEntityPath()
+        //{
+        //    if (sourceQueueMetadata != null)
+        //    {
+        //        return QueueClient.FormatTransferDeadLetterPath(sourceQueueMetadata.Path);
+        //    }
 
-            throw new Exception("It is currently not supported getting a Transfer Dead-letter queue for a subscription.");
-        }
+        //    throw new Exception("It is currently not supported getting a Transfer Dead-letter queue for a subscription.");
+        //}
 
         void WriteToLog(string message)
         {

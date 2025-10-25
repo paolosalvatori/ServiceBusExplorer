@@ -23,7 +23,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 #endregion
 

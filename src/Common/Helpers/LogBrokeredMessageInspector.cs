@@ -21,22 +21,25 @@
 
 #region Using Directives
 
+using Azure.Messaging.ServiceBus;
 using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.ServiceModel.Channels;
+//using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
 namespace ServiceBusExplorer.Helpers
 {
     using Enums;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Text.Json;
 
     public class LogBrokeredMessageInspector : IBrokeredMessageInspector, IDisposable
     {
@@ -53,15 +56,15 @@ namespace ServiceBusExplorer.Helpers
         private const string MessagePayloadHeader = "Payload:";
         private const string MessageTextFormat = "{0}";
         private const string MessagePropertyFormat = " - Key=[{0}] Value=[{1}]";
-        private const string LogFileNameFormat = "BrokeredMessage {0}.txt";
+        private const string LogFileNameFormat = "ServiceBusMessage {0}.txt";
         private const int MaxBufferSize = 262144; // 256 KB
         #endregion
 
         #region Private Instance Fields
-        private readonly Task writeTask = Task.Run( 
+        private readonly Task writeTask = Task.Run(
             () =>
             {
-                messageCollection = new BlockingCollection<Tuple<MessageDirection, BrokeredMessage>>(int.MaxValue);
+                messageCollection = new BlockingCollection<Tuple<MessageDirection, LogMessageWrapper>>(int.MaxValue);
                 writer = new StreamWriter(new FileStream(Path.Combine(Environment.CurrentDirectory,
                                                                       string.Format(LogFileNameFormat,
                                                                                     DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'))),
@@ -73,21 +76,23 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Static Fields
-        private static BlockingCollection<Tuple<MessageDirection, BrokeredMessage>> messageCollection;
+        private static BlockingCollection<Tuple<MessageDirection, LogMessageWrapper>> messageCollection;
         private static StreamWriter writer;
         private static readonly string line = new string('-', 100);
         #endregion
 
-        #region IBrokeredMessageInspector Methods
-        public BrokeredMessage BeforeSendMessage(BrokeredMessage message)
+        #region IServiceBusMessageInspector Methods
+        public ServiceBusMessage BeforeSendMessage(ServiceBusMessage message)
         {
             return LogMessage(MessageDirection.Send, message);
         }
 
-        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message)
+        public ServiceBusReceivedMessage AfterReceiveMessage(ServiceBusReceivedMessage message)
         {
+            
+
             return LogMessage(MessageDirection.Receive, message);
-        } 
+        }
         #endregion
 
         #region IDisposable Methods
@@ -100,13 +105,16 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Static Methods
-        private static BrokeredMessage LogMessage(MessageDirection direction, BrokeredMessage message)
+        private static ServiceBusMessage LogMessage(MessageDirection direction, ServiceBusMessage message)
         {
             try
             {
                 if (message != null)
                 {
-                    messageCollection.TryAdd(new Tuple<MessageDirection, BrokeredMessage>(direction, message.Clone()));
+                    messageCollection.TryAdd(
+                        new Tuple<MessageDirection, LogMessageWrapper>(
+                            direction, 
+                            LogMessageWrapper.Create(Clone(message))));
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
@@ -116,132 +124,23 @@ namespace ServiceBusExplorer.Helpers
             return message;
         }
 
-        /// <summary>
-        /// Reads the content of the BrokeredMessage passed as argument.
-        /// </summary>
-        /// <param name="messageToRead">The BrokeredMessage to read.</param>
-        /// <returns>The content of the BrokeredMessage.</returns>
-        private static string GetMessageText(BrokeredMessage messageToRead)
+        private static ServiceBusReceivedMessage LogMessage(MessageDirection direction, ServiceBusReceivedMessage message)
         {
-            string messageText = null;
-            Stream stream = null;
-            
-            if (messageToRead == null)
-            {
-                return null;
-            }
-            var inboundMessage = messageToRead.Clone();
             try
             {
-                stream = inboundMessage.GetBody<Stream>();
-                if (stream != null)
+                if (message != null)
                 {
-                    var element = new BinaryMessageEncodingBindingElement
-                    {
-                        ReaderQuotas = new XmlDictionaryReaderQuotas
-                        {
-                            MaxArrayLength = int.MaxValue,
-                            MaxBytesPerRead = int.MaxValue,
-                            MaxDepth = int.MaxValue,
-                            MaxNameTableCharCount = int.MaxValue,
-                            MaxStringContentLength = int.MaxValue
-                        }
-                    };
-                    var encoderFactory = element.CreateMessageEncoderFactory();
-                    var encoder = encoderFactory.Encoder;
-                    var stringBuilder = new StringBuilder();
-                    var message = encoder.ReadMessage(stream, MaxBufferSize);
-                    using (var reader = message.GetReaderAtBodyContents())
-                    {
-                        // The XmlWriter is used just to indent the XML message
-                        var settings = new XmlWriterSettings { Indent = true };
-                        using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
-                        {
-                            xmlWriter.WriteNode(reader, true);
-                        }
-                    }
-                    messageText = stringBuilder.ToString();
+                    messageCollection.TryAdd(
+                        new Tuple<MessageDirection, LogMessageWrapper>(
+                            direction, 
+                            LogMessageWrapper.Create(Clone(message))));
                 }
             }
+            // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception)
             {
-                inboundMessage = messageToRead.Clone();
-                try
-                {
-                    stream = inboundMessage.GetBody<Stream>();
-                    if (stream != null)
-                    {
-                        var element = new BinaryMessageEncodingBindingElement
-                        {
-                            ReaderQuotas = new XmlDictionaryReaderQuotas
-                            {
-                                MaxArrayLength = int.MaxValue,
-                                MaxBytesPerRead = int.MaxValue,
-                                MaxDepth = int.MaxValue,
-                                MaxNameTableCharCount = int.MaxValue,
-                                MaxStringContentLength = int.MaxValue
-                            }
-                        };
-                        var encoderFactory = element.CreateMessageEncoderFactory();
-                        var encoder = encoderFactory.Encoder;
-                        var message = encoder.ReadMessage(stream, MaxBufferSize);
-                        using (var reader = message.GetReaderAtBodyContents())
-                        {
-                            messageText = reader.ReadString();
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    try
-                    {
-                        if (stream != null)
-                        {
-                            try
-                            {
-                                stream.Seek(0, SeekOrigin.Begin);
-                                var serializer = new CustomDataContractBinarySerializer(typeof(string));
-                                messageText = serializer.ReadObject(stream) as string;
-                            }
-                            catch (Exception)
-                            {
-                                try
-                                {
-                                    stream.Seek(0, SeekOrigin.Begin);
-                                    using (var reader = new StreamReader(stream))
-                                    {
-                                        messageText = reader.ReadToEnd();
-                                        if (messageText.ToCharArray().GroupBy(c => c).
-                                            Where(g => char.IsControl(g.Key) && g.Key != '\t' && g.Key != '\n' && g.Key != '\r').
-                                            Select(g => g.First()).Any())
-                                        {
-                                            stream.Seek(0, SeekOrigin.Begin);
-                                            using (var binaryReader = new BinaryReader(stream))
-                                            {
-                                                var bytes = binaryReader.ReadBytes((int)stream.Length);
-                                                messageText = BitConverter.ToString(bytes).Replace('-', ' ');
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception)
-                                {
-                                    messageText = UnableToReadMessageBody;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            messageText = UnableToReadMessageBody;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        messageText = UnableToReadMessageBody;
-                    }
-                }
             }
-            return messageText;
+            return message;
         }
 
         private async static void WriteToLog()
@@ -315,6 +214,93 @@ namespace ServiceBusExplorer.Helpers
                 messageCollection.Dispose();
             }
         }
+
+        /// <summary>
+        /// Reads the content of the ServiceBusMessage passed as argument.
+        /// </summary>
+        /// <param name="messageToRead">The ServiceBusMessage to read.</param>
+        /// <returns>The content of the ServiceBusMessage.</returns>
+        private static string GetMessageText(LogMessageWrapper messageToRead)
+        {
+            string messageText = string.Empty;
+
+            try
+            {
+                using StreamReader reader = new(messageToRead.Body);
+                messageText = reader.ReadToEnd(); //TODO: Max buffer size what if content too big used to be 256kb 
+            }
+            catch (Exception)
+            {
+                messageText = UnableToReadMessageBody;
+            }
+
+            return messageText;
+        }
         #endregion
+
+        private static T Clone<T>(T obj)
+        {
+            var raw = JsonSerializer.Serialize(obj);
+            return JsonSerializer.Deserialize<T>(raw);
+        }
+
+        private class LogMessageWrapper
+        {
+            public string MessageId { get; private set; }
+            public string SessionId { get; private set; }
+            public string Label { get; private set; }
+            public long Size { get; private set; }
+
+            public Stream Body { get; private set; }
+            public IReadOnlyDictionary<string, object> Properties { get; private set; }
+
+            private LogMessageWrapper() { } 
+
+            public static LogMessageWrapper Create(ServiceBusMessage message)
+            {
+                var props = new ReadOnlyDictionary<string, object>(message.ApplicationProperties);
+                var size = GetSize(message.Body, props);
+                return Create(message.MessageId, message.SessionId, message.Subject, size, message.Body, props);
+            }
+
+            public static LogMessageWrapper Create(ServiceBusReceivedMessage message)
+            {
+                var size = GetSize(message.Body, message.ApplicationProperties);
+                return Create(message.MessageId, message.SessionId, message.Subject, size, message.Body, message.ApplicationProperties); 
+            }
+
+            private static LogMessageWrapper Create(
+                string messageId,
+                string sessionId, 
+                string subject,
+                long size, 
+                BinaryData body, 
+                IReadOnlyDictionary<string, object> properties)
+            {
+                return new()
+                {
+                    MessageId = messageId,
+                    SessionId = sessionId,
+                    Label = subject,
+                    Size = size,
+                    Body = body.ToStream(),
+                    Properties = properties,
+                };
+            }
+
+            private static long GetSize(BinaryData body, IReadOnlyDictionary<string, object> properties)
+            {
+                var bodySize = body.ToMemory().Length;
+
+                int propertiesSize = 0;
+                foreach (var prop in properties)
+                {
+                    propertiesSize += Encoding.UTF8.GetByteCount(prop.Key);
+                    propertiesSize += Encoding.UTF8.GetByteCount(prop.Value?.ToString() ?? "");
+                }
+
+                return bodySize + propertiesSize;
+            }
+        }
     }
 }

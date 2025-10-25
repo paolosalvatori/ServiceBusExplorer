@@ -211,8 +211,9 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
                 BodyType.Stream.ToString());
 
-            resultProperties.ConnectivityMode = configuration.GetEnumValue
-                (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
+            //TODO: ConnectivityMode has been removed from new SDK, use migrate to use <c>ServiceBusClientOptions</c> instead. 
+            //resultProperties.ConnectivityMode = configuration.GetEnumValue
+            //    (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
             resultProperties.UseAmqpWebSockets = configuration.GetBoolValue
                 (ConfigurationParameters.UseAmqpWebSockets, currentSettings.UseAmqpWebSockets, writeToLog);
             resultProperties.EncodingType = configuration.GetEnumValue

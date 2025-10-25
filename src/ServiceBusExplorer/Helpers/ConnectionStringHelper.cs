@@ -1,18 +1,20 @@
-﻿#region Using Directives
+﻿// // Auto-added comment
 
-using System.Text.RegularExpressions;
+// #region Using Directives
 
-#endregion
+// using System.Text.RegularExpressions;
 
-namespace Microsoft.Azure.ServiceBusExplorer.Helpers
-{
-    public static class ConnectionStringHelper
-    {
-        private readonly static Regex EntityPathRegex = new Regex(@"(?:^|[^\w])(EntityPath=[^;]+)");
+// #endregion
 
-        public static bool IsEntitySpecific(string connectionString)
-        {
-            return EntityPathRegex.IsMatch(connectionString);
-        }
-    }
-}
+// namespace Microsoft.Azure.ServiceBusExplorer.Helpers
+// {
+//     public static class ConnectionStringHelper
+//     {
+//         private readonly static Regex EntityPathRegex = new Regex(@"(?:^|[^\w])(EntityPath=[^;]+)");
+
+//         public static bool IsEntitySpecific(string connectionString)
+//         {
+//             return EntityPathRegex.IsMatch(connectionString);
+//         }
+//     }
+// }

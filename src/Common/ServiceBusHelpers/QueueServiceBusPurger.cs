@@ -21,15 +21,17 @@
 
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
+using Common.Contracts;
+using Common.Models;
 using System.Threading.Tasks;
 
-namespace ServiceBusExplorer.ServiceBus.Helpers
+namespace Common.ServiceBusHelpers
 {
-    public class QueueServiceBusPurger : ServiceBusPurger<QueueProperties>
+    public class QueueServiceBusPurger : ServiceBusPurger<QueueMetadata>
     {
-        public QueueServiceBusPurger(ServiceBusHelper2 serviceBusHelper) : base(serviceBusHelper) { }
+        public QueueServiceBusPurger(IServiceBusService serviceBusHelper) : base(serviceBusHelper) { }
 
-        protected override ServiceBusReceiver CreateServiceBusReceiver(QueueProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
+        protected override ServiceBusReceiver CreateServiceBusReceiver(QueueMetadata entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
         {
             return client.CreateReceiver(
                 entity.Name,
@@ -41,7 +43,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 });
         }
 
-        protected async override Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(QueueProperties entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
+        protected async override Task<ServiceBusSessionReceiver> CreateServiceBusSessionReceiver(QueueMetadata entity, ServiceBusClient client, bool purgeDeadLetterQueueInstead)
         {
             return await client.AcceptNextSessionAsync(
                 entity.Name,
@@ -53,19 +55,19 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
                 .ConfigureAwait(false);
         }
 
-        protected override bool EntityRequiresSession(QueueProperties entity)
+        protected override bool EntityRequiresSession(QueueMetadata entity)
         {
             return entity.RequiresSession;
         }
 
-        protected override string GetEntityPath(QueueProperties entity)
+        protected override string GetEntityPath(QueueMetadata entity)
         {
             return entity.Name;
         }
 
-        protected async override Task<long> GetMessageCount(QueueProperties entity, bool deadLetterQueueData)
+        protected async override Task<long> GetMessageCount(QueueMetadata entity, bool deadLetterQueueData)
         {
-            var client = new ServiceBusAdministrationClient(serviceBusHelper.ConnectionString);
+            var client = new ServiceBusAdministrationClient(serviceBusHelper.Connection.Namespace.ConnectionString);
 
             if (deadLetterQueueData)
             {

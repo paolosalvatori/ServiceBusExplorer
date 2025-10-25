@@ -28,7 +28,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 
 #endregion
@@ -116,7 +116,7 @@ namespace ServiceBusExplorer.Helpers
             AlertState = (int)OnOff.Off;
             City = "Milan";
             Country = "Italy";
-        } 
+        }
         #endregion
 
         #region IEventDataGenerator Methods
@@ -173,7 +173,7 @@ namespace ServiceBusExplorer.Helpers
                 writeToLog(string.Format(EventDataCreatedFormat, list.Count));
             }
             return list;
-        } 
+        }
         #endregion
 
         #region IDisposable Methods

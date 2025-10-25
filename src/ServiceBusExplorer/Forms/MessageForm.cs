@@ -33,9 +33,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using FastColoredTextBoxNS;
 using ServiceBusExplorer.Utilities.Helpers;
+using Common.Contracts;
+using Common.Models;
+using static Common.ServiceBusService;
 
 #endregion
 
@@ -84,37 +87,39 @@ namespace ServiceBusExplorer.Forms
         #region Private Instance Fields
         QueueType queueType = QueueType.NotSet;
 
-        readonly IEnumerable<BrokeredMessage> brokeredMessages;
-        readonly BrokeredMessage brokeredMessage;
-        readonly ServiceBusHelper serviceBusHelper;
+        readonly IEnumerable<ServiceBusReceivedMessage> brokeredMessages;
+        readonly ServiceBusReceivedMessage brokeredMessage;
+        readonly IServiceBusService serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
+#pragma warning disable CA2213 // Disposable fields should be disposed
         readonly BindingSource bindingSource = new BindingSource();
-        readonly QueueDescription queueDescription; // Might be null
-        readonly SubscriptionWrapper subscriptionWrapper; // Might be null
+#pragma warning restore CA2213 // Disposable fields should be disposed
+        readonly QueueMetadata queueDescription; // Might be null
+        //readonly SubscriptionWrapper subscriptionWrapper; // Might be null TODO: 
         #endregion
 
         #region Private Static Fields
 
         static readonly List<string> Types = new List<string>
-        {
-            "Boolean",
-            "Byte",
-            "Int16",
-            "Int32",
-            "Int64",
-            "Single",
-            "Double",
-            "Decimal",
-            "Guid",
-            "DateTime",
-            "TimeSpan",
-            "String",
-            "Char",
-            "UInt64",
-            "UInt32",
-            "UInt16",
-            "SByte"
-        };
+         {
+             "Boolean",
+             "Byte",
+             "Int16",
+             "Int32",
+             "Int64",
+             "Single",
+             "Double",
+             "Decimal",
+             "Guid",
+             "DateTime",
+             "TimeSpan",
+             "String",
+             "Char",
+             "UInt64",
+             "UInt32",
+             "UInt16",
+             "SByte"
+         };
         #endregion
 
         #region Public Enums
@@ -128,6 +133,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Properties
+
         public List<long> RemovedSequenceNumbers
         {
             get; private set;
@@ -135,7 +141,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Public Constructors
-        public MessageForm(BrokeredMessage brokeredMessage, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
+        public MessageForm(ServiceBusReceivedMessage brokeredMessage, IServiceBusService serviceBusHelper, WriteToLogDelegate writeToLog)
         {
             this.brokeredMessage = brokeredMessage;
             this.serviceBusHelper = serviceBusHelper;
@@ -148,7 +154,7 @@ namespace ServiceBusExplorer.Forms
             InitializeMessageTextControl(brokeredMessage);
 
             // Initialize the DataGridView.
-            bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
+            bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.ApplicationProperties.Select(p => new MessagePropertyInfo(p.Key,
                                                                                                       GetShortValueTypeName(p.Value),
                                                                                                       p.Value)).ToList());
             propertiesDataGridView.AutoGenerateColumns = false;
@@ -221,22 +227,22 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, QueueType queueType, BrokeredMessage brokeredMessage,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+        public MessageForm(QueueMetadata queueDescription, QueueType queueType, ServiceBusReceivedMessage brokeredMessage,
+            IServiceBusService serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
             this.queueType = queueType;
         }
 
-        public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
-            this(brokeredMessage, serviceBusHelper, writeToLog)
-        {
-            this.subscriptionWrapper = subscriptionWrapper;
-        }
+        //public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage, TODO: 
+        //    IServiceBusService serviceBusHelper, WriteToLogDelegate writeToLog) :
+        //    this(brokeredMessage, serviceBusHelper, writeToLog)
+        //{
+        //    this.subscriptionWrapper = subscriptionWrapper;
+        //}
 
-        public MessageForm(IEnumerable<BrokeredMessage> brokeredMessages, ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog)
+        public MessageForm(IEnumerable<ServiceBusReceivedMessage> brokeredMessages, IServiceBusService serviceBusHelper, WriteToLogDelegate writeToLog)
         {
             this.brokeredMessages = brokeredMessages;
             this.serviceBusHelper = serviceBusHelper;
@@ -273,20 +279,20 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public MessageForm(QueueDescription queueDescription, QueueType queueType, IEnumerable<BrokeredMessage> brokeredMessages,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+        public MessageForm(QueueMetadata queueDescription, QueueType queueType, IEnumerable<ServiceBusReceivedMessage> brokeredMessages,
+            IServiceBusService serviceBusHelper, WriteToLogDelegate writeToLog) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
             this.queueDescription = queueDescription;
             this.queueType = queueType;
         }
 
-        public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
-            this(brokeredMessages, serviceBusHelper, writeToLog)
-        {
-            this.subscriptionWrapper = subscriptionWrapper;
-        }
+        //public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
+        //    ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+        //    this(brokeredMessages, serviceBusHelper, writeToLog)
+        //{
+        //    this.subscriptionWrapper = subscriptionWrapper;
+        //}
         #endregion
 
         #region Event Handlers
@@ -319,7 +325,7 @@ namespace ServiceBusExplorer.Forms
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
 
-            if (queueDescription != null || subscriptionWrapper != null)
+            if (queueDescription != null) //|| subscriptionWrapper != null) TODO: 
             {
                 chkRemove.Visible = true;
             }
@@ -387,74 +393,58 @@ namespace ServiceBusExplorer.Forms
                         {
                             bodyType = BodyType.Stream;
                         }
-                        var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
+                        var messageSender = serviceBusHelper.CreateSender(form.Path);
                         var messages = brokeredMessages != null ?
-                                        new List<BrokeredMessage>(brokeredMessages) :
-                                        new List<BrokeredMessage>(new[] { brokeredMessage });
-                        var outboundMessages = new List<BrokeredMessage>();
+                                        new List<ServiceBusReceivedMessage>(brokeredMessages) :
+                                        new List<ServiceBusReceivedMessage>(new[] { brokeredMessage });
+                        var outboundMessages = new List<ServiceBusMessage>();
                         var sequenceNumbers = new List<long>(); // Only used when removing messages
                         foreach (var message in messages)
                         {
-                            BrokeredMessage outboundMessage;
-                            if (bodyType == BodyType.Wcf)
-                            {
-                                var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                                 new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
-                                                 new UriBuilder
-                                                 {
-                                                     Host = serviceBusHelper.NamespaceUri.Host,
-                                                     Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
-                                                     Scheme = "sb"
-                                                 }.Uri;
-                                outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text, messagesSplitContainer.Visible),
-                                                                                               0,
-                                                                                               false,
-                                                                                               false,
-                                                                                               wcfUri);
-                            }
-                            else
-                            {
-                                if (brokeredMessage != null)
-                                {
-                                    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                    outboundMessage = bodyType == BodyType.ByteArray ?
-                                                      brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
-                                                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
-                                }
-                                else
-                                {
-                                    var messageText = serviceBusHelper.GetMessageText(message,
-                                        MainForm.SingletonMainForm.UseAscii, out bodyType);
+                            var body = serviceBusHelper.GetMessageText(message.Body); 
+                            ServiceBusMessage outboundMessage = new ServiceBusMessage(body);
+                            
+                            //TODO: Do we need any of this? 
+                            //if (brokeredMessage != null)
+                            //{
+                            //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                            //    outboundMessage = bodyType == BodyType.ByteArray ?
+                            //                      brokeredMessage(txtMessageText.Text, messagesSplitContainer.Visible) :
+                            //                      brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
+                            //}
+                            //else
+                            //{
+                            //    var messageText = serviceBusHelper.GetMessageText(message.Body);
 
-                                    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                    switch (bodyType)
-                                    {
-                                        case BodyType.ByteArray:
-                                            outboundMessage = message.CloneWithByteArrayBodyType(messageText, 
-                                                                            messagesSplitContainer.Visible);
-                                            break;
+                            //    // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                            //    //switch (bodyType) 
+                            //    //{
+                            //    //    case BodyType.ByteArray:
+                            //    //        outboundMessage = message.CloneWithByteArrayBodyType(messageText,
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
 
-                                        case BodyType.String:
-                                            outboundMessage = message.Clone(message.GetBody<string>(), 
-                                                                            messagesSplitContainer.Visible);
-                                            break;
+                            //    //    case BodyType.String:
+                            //    //        outboundMessage = message.Clone(message.GetBody<string>(),
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
 
-                                        default:
-                                            outboundMessage = message.Clone(message.GetBody<Stream>(), 
-                                                                            messagesSplitContainer.Visible);
-                                            break;
-                                    }
-                                }
+                            //    //    default:
+                            //    //        outboundMessage = message.Clone(message.GetBody<Stream>(),
+                            //    //                                        messagesSplitContainer.Visible);
+                            //    //        break;
+                            //    //}
+                            //    outboundMessage = messageText; 
+                            //}
 
-                                outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
-                                                                                               0,
-                                                                                               chkNewMessageId.Checked,
-                                                                                               false,
-                                                                                               bodyType,
-                                                                                               cboSenderInspector.SelectedIndex > 0 ?
-                                                                                               Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                                                                               null);
-                            }
+                            //outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
+                            //                                                               0,
+                            //                                                               chkNewMessageId.Checked,
+                            //                                                               false,
+                            //                                                               bodyType,
+                            //                                                               cboSenderInspector.SelectedIndex > 0 ?
+                            //                                                               Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
+                            //                                                               null);
 
                             sequenceNumbers.Add(message.SequenceNumber);
 
@@ -475,13 +465,13 @@ namespace ServiceBusExplorer.Forms
                                     }
                                     else
                                     {
-                                        if (outboundMessage.Properties.ContainsKey(messagePropertyInfo.Key))
+                                        if (outboundMessage.ApplicationProperties.ContainsKey(messagePropertyInfo.Key))
                                         {
-                                            outboundMessage.Properties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
+                                            outboundMessage.ApplicationProperties[messagePropertyInfo.Key] = ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value);
                                         }
                                         else
                                         {
-                                            outboundMessage.Properties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
+                                            outboundMessage.ApplicationProperties.Add(messagePropertyInfo.Key, ConversionHelper.MapStringTypeToCLRType(messagePropertyInfo.Type, messagePropertyInfo.Value));
                                         }
                                     }
                                 }
@@ -537,20 +527,20 @@ namespace ServiceBusExplorer.Forms
                             else
                             {
                                 writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
-                                    messageSender.Path, stopwatch.ElapsedMilliseconds));
+                                    messageSender.EntityPath, stopwatch.ElapsedMilliseconds));
                             }
 
                             if (null != queueDescription)
                             {
-                                if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                                if (!messageSender.EntityPath.Equals(queueDescription.Name, StringComparison.InvariantCultureIgnoreCase))
                                 {
-                                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
+                                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Name);
                                 }
                             }
-                            else if (null != subscriptionWrapper?.SubscriptionDescription?.TopicPath)
-                            {
-                                await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(subscriptionWrapper.SubscriptionDescription.TopicPath);
-                            }
+                            //else if (null != subscriptionWrapper?.SubscriptionDescription?.TopicPath) TODO: 
+                            //{
+                            //    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(subscriptionWrapper.SubscriptionDescription.TopicPath);
+                            //}
                         }
                         else
                         {
@@ -559,7 +549,7 @@ namespace ServiceBusExplorer.Forms
                             {
                                 while (messageIndex < outboundMessages.Count)
                                 {
-                                    await messageSender.SendAsync(outboundMessages[messageIndex++]);
+                                    await messageSender.SendMessageAsync(outboundMessages[messageIndex++]);
                                 }
                             }
                             catch (Exception exception)
@@ -572,10 +562,10 @@ namespace ServiceBusExplorer.Forms
                             }
 
                             stopwatch.Stop();
-                            writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+                            writeToLog(string.Format(MessageSentMessage, sent, messageSender.EntityPath, stopwatch.ElapsedMilliseconds));
                         }
 
-                        await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(messageSender.Path);
+                        await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(messageSender.EntityPath);
 
                         if (brokeredMessages != null)
                         {
@@ -598,21 +588,21 @@ namespace ServiceBusExplorer.Forms
         {
             if (queueDescription != null)
             {
-                if (subscriptionWrapper != null)
-                {
-                    throw new ArgumentException(
-                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
-                }
+                //if (subscriptionWrapper != null) TODO: 
+                //{
+                //    throw new ArgumentException(
+                //        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                //}
 
                 return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
             }
 
-            if (subscriptionWrapper != null)
-            {
-                return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
-                                MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
-            }
+            //if (subscriptionWrapper != null) TODO: 
+            //{
+            //    return new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
+            //                    MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
+            //}
 
             throw new ArgumentException("queueDescription or subscriptionWrapper must be set.");
         }
@@ -621,21 +611,21 @@ namespace ServiceBusExplorer.Forms
         {
             if (queueDescription != null)
             {
-                if (subscriptionWrapper != null)
-                {
-                    throw new ArgumentException(
-                        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
-                }
+                //if (subscriptionWrapper != null) TODO: 
+                //{
+                //    throw new ArgumentException(
+                //        "At least one of the arguments queueDescription and subscriptionWrapper must be null.");
+                //}
 
                 return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
                     SelectEntityLabelText, queueDescription);
             }
 
-            if (subscriptionWrapper != null)
-            {
-                return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
-                   SelectEntityLabelText, subscriptionWrapper.TopicDescription);
-            }
+            //if (subscriptionWrapper != null) TODO: 
+            //{
+            //    return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
+            //       SelectEntityLabelText, subscriptionWrapper.TopicDescription);
+            //}
 
             return new SelectEntityForm(SelectEntityDialogTitle, SelectEntityGrouperTitle,
                  SelectEntityLabelText);
@@ -696,7 +686,7 @@ namespace ServiceBusExplorer.Forms
         private string CreateFileName()
         {
             return string.Format(MessageFileFormat,
-                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Connection.Namespace.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
 
@@ -707,7 +697,7 @@ namespace ServiceBusExplorer.Forms
 
         void ChkAutoindent_CheckedChanged(object sender, EventArgs e)
         {
-            InitializeMessageTextControl(messagePropertyGrid.SelectedObject as BrokeredMessage);
+            InitializeMessageTextControl(messagePropertyGrid.SelectedObject as ServiceBusReceivedMessage);
         }
         #endregion
 
@@ -720,10 +710,9 @@ namespace ServiceBusExplorer.Forms
             return typeName.Length > 7 ? typeName.Substring(7) : typeName;
         }
 
-        void InitializeMessageTextControl(BrokeredMessage message)
+        void InitializeMessageTextControl(ServiceBusReceivedMessage message)
         {
-            var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm.UseAscii, out _);
+            var messageText = this.serviceBusHelper.GetMessageText(message.Body);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {

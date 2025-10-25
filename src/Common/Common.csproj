@@ -3,7 +3,7 @@
     <ProjectGuid>{DE07DBEB-D772-49BA-BCEB-A7CE29308AE3}</ProjectGuid>
     <RootNamespace>ServiceBusExplorer.Common</RootNamespace>
     <AssemblyName>ServiceBusExplorer.Common</AssemblyName>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <LangVersion>latest</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
@@ -19,9 +19,11 @@
   </PropertyGroup>
   <ItemGroup>
 
-    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
 
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
+
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.6" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
@@ -49,7 +51,6 @@
     <ProjectReference Include="..\EventGridExplorerLibrary\EventGridExplorerLibrary.csproj" />
     <ProjectReference Include="..\EventHubs\EventHubs.csproj" />
     <ProjectReference Include="..\Relay\Relay.csproj" />
-    <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 </Project>

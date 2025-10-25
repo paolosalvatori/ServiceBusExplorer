@@ -26,7 +26,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
 using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
+using Common.Models;
 
 #endregion
 
@@ -66,8 +67,8 @@ namespace ServiceBusExplorer.Forms
         readonly bool includeEventHubs;
         readonly bool includeNotificationHubs;
         readonly bool includeRelays;
-        readonly QueueDescription queueDescriptionSource;  // Might be null
-        readonly TopicDescription topicDescriptionSource;  // Might be null
+        readonly QueueMetadata queueDescriptionSource;  // Might be null
+        //readonly TopicDescription topicDescriptionSource;  // Might be null TODO: 
         #endregion
 
         #region Public Constructor
@@ -122,7 +123,7 @@ namespace ServiceBusExplorer.Forms
         public SelectEntityForm(string dialogTitle,
                                string groupTitle,
                                string labelText,
-                               QueueDescription queueDescriptionSource,
+                               QueueMetadata queueDescriptionSource,
                                bool subscriptions = false,
                                bool eventHubs = false,
                                bool notificationHubs = false,
@@ -137,23 +138,23 @@ namespace ServiceBusExplorer.Forms
             this.queueDescriptionSource = queueDescriptionSource;
         }
 
-        public SelectEntityForm(string dialogTitle,
-                       string groupTitle,
-                       string labelText,
-                       TopicDescription topicDescriptionSource,
-                       bool subscriptions = false,
-                       bool eventHubs = false,
-                       bool notificationHubs = false,
-                       bool relays = false) : this(dialogTitle,
-                           groupTitle,
-                           labelText,
-                           subscriptions,
-                           eventHubs,
-                           notificationHubs,
-                           relays)
-        {
-            this.topicDescriptionSource = topicDescriptionSource;
-        }
+        //public SelectEntityForm(string dialogTitle, TODO: 
+        //               string groupTitle,
+        //               string labelText,
+        //               TopicDescription topicDescriptionSource,
+        //               bool subscriptions = false,
+        //               bool eventHubs = false,
+        //               bool notificationHubs = false,
+        //               bool relays = false) : this(dialogTitle,
+        //                   groupTitle,
+        //                   labelText,
+        //                   subscriptions,
+        //                   eventHubs,
+        //                   notificationHubs,
+        //                   relays)
+        //{
+        //    this.topicDescriptionSource = topicDescriptionSource;
+        //}
         #endregion
 
         #region Event Handlers
@@ -193,7 +194,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         if (level1Node.Name == QueueEntities)
                         {
-                            if (FocusNodeIfMatching<QueueDescription>(level1Node, qd => qd.Path, queueDescriptionSource.Path))
+                            if (FocusNodeIfMatching<QueueMetadata>(level1Node, qd => qd.Name, queueDescriptionSource.Name))
                             {
                                 return;
                             }
@@ -201,22 +202,22 @@ namespace ServiceBusExplorer.Forms
                     }
                 }
             }
-            else if (topicDescriptionSource != null)
-            {
-                foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
-                {
-                    foreach (TreeNode level1Node in rootNode.Nodes)
-                    {
-                        if (level1Node.Name == TopicEntities)
-                        {
-                            if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
-                            {
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
+            //else if (topicDescriptionSource != null)
+            //{
+            //    foreach (TreeNode rootNode in serviceBusTreeView.Nodes)
+            //    {
+            //        foreach (TreeNode level1Node in rootNode.Nodes)
+            //        {
+            //            if (level1Node.Name == TopicEntities)
+            //            {
+            //                if (FocusNodeIfMatching<TopicDescription>(level1Node, qd => qd.Path, topicDescriptionSource.Path))
+            //                {
+            //                    return;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -265,54 +266,54 @@ namespace ServiceBusExplorer.Forms
         #region Private Methods
         void SetTextAndType(TreeNode node)
         {
-            var queueTag = node.Tag as QueueDescription;
+            var queueTag = node.Tag as QueueMetadata;
             if (queueTag != null)
             {
-                txtEntity.Text = queueTag.Path;
+                txtEntity.Text = queueTag.Name;
                 Type = QueueEntity;
                 return;
             }
-            var topicTag = node.Tag as TopicDescription;
+            var topicTag = node.Tag as QueueMetadata;
             if (topicTag != null)
             {
-                txtEntity.Text = topicTag.Path;
+                txtEntity.Text = topicTag.Name;
                 Type = TopicEntity;
                 return;
             }
-            var subscriptionTag = node.Tag as SubscriptionWrapper;
-            if (subscriptionTag != null)
-            {
-                txtEntity.Text = string.Format(SubscriptionPathFormat,
-                                               subscriptionTag.SubscriptionDescription.TopicPath,
-                                               subscriptionTag.SubscriptionDescription.Name);
-                Type = SubscriptionEntity;
-            }
-            var eventHubTag = node.Tag as EventHubDescription;
-            if (eventHubTag != null)
-            {
-                txtEntity.Text = eventHubTag.Path;
-                Type = EventHubEntity;
-            }
-            var consumerGroupTag = node.Tag as ConsumerGroupDescription;
-            if (consumerGroupTag != null)
-            {
-                txtEntity.Text = string.Format(ConsumerGroupPathFormat,
-                                               consumerGroupTag.EventHubPath,
-                                               consumerGroupTag.Name);
-                Type = ConsumerGroupEntity;
-            }
+            var subscriptionTag = node.Tag as QueueMetadata;
+            //if (subscriptionTag != null) TODO: 
+            //{
+            //    txtEntity.Text = string.Format(SubscriptionPathFormat,
+            //                                   subscriptionTag.SubscriptionDescription.TopicPath,
+            //                                   subscriptionTag.SubscriptionDescription.Name);
+            //    Type = SubscriptionEntity;
+            //}
+            //var eventHubTag = node.Tag as EventHubDescription;
+            //if (eventHubTag != null)
+            //{
+            //    txtEntity.Text = eventHubTag.Path;
+            //    Type = EventHubEntity;
+            //}
+            //var consumerGroupTag = node.Tag as ConsumerGroupDescription;
+            //if (consumerGroupTag != null)
+            //{
+            //    txtEntity.Text = string.Format(ConsumerGroupPathFormat,
+            //                                   consumerGroupTag.EventHubPath,
+            //                                   consumerGroupTag.Name);
+            //    Type = ConsumerGroupEntity;
+            //}
             var notificationHubTag = node.Tag as NotificationHubDescription;
             if (notificationHubTag != null)
             {
                 txtEntity.Text = notificationHubTag.Path;
                 Type = NotificationHubEntity;
             }
-            var relayTag = node.Tag as RelayDescription;
-            if (relayTag != null)
-            {
-                txtEntity.Text = relayTag.Path;
-                Type = RelayEntity;
-            }
+            //var relayTag = node.Tag as RelayDescription;
+            //if (relayTag != null)
+            //{
+            //    txtEntity.Text = relayTag.Path;
+            //    Type = RelayEntity;
+            //}
         }
         private void txtForwardTo_TextChanged(object sender, EventArgs e)
         {
@@ -334,12 +335,12 @@ namespace ServiceBusExplorer.Forms
                               parent.Nodes.Add(node.Name, node.Text, node.ImageIndex, node.SelectedImageIndex);
             if (node.Tag != null)
             {
-                if (node.Tag is QueueDescription ||
-                    node.Tag is TopicDescription ||
-                    (includeSubscriptions && node.Tag is SubscriptionWrapper && ((SubscriptionWrapper)node.Tag).SubscriptionDescription != null) ||
-                    (includeEventHubs && (node.Tag is EventHubDescription || node.Tag is ConsumerGroupDescription)) ||
-                    (includeNotificationHubs && node.Tag is NotificationHubDescription) ||
-                    (includeRelays && node.Tag is RelayDescription))
+                if (node.Tag is QueueMetadata) //||
+                    //node.Tag is TopicDescription ||
+                    //(includeSubscriptions && node.Tag is SubscriptionWrapper && ((SubscriptionWrapper)node.Tag).SubscriptionDescription != null) ||
+                    //(includeEventHubs && (node.Tag is EventHubDescription || node.Tag is ConsumerGroupDescription)) ||
+                    //(includeNotificationHubs && node.Tag is NotificationHubDescription) ||
+                    //(includeRelays && node.Tag is RelayDescription)) TODO: 
                 {
                     newNode.Tag = node.Tag;
                 }
@@ -364,21 +365,21 @@ namespace ServiceBusExplorer.Forms
             {
                 relayListNode = newNode;
             }
-            if (node.Tag is TopicDescription && !includeSubscriptions)
-            {
-                return;
-            }
-            if (node.Tag is ConsumerGroupDescription ||
-                node.Tag is NotificationHubDescription ||
-                node.Tag is RelayDescription)
-            {
-                return;
-            }
-            var tag = node.Tag as SubscriptionWrapper;
-            if (tag != null && tag.SubscriptionDescription != null)
-            {
-                return;
-            }
+            //if (node.Tag is TopicDescription && !includeSubscriptions)
+            //{
+            //    return;
+            //}
+            //if (node.Tag is ConsumerGroupDescription || TODO: 
+            //    node.Tag is NotificationHubDescription ||
+            //    node.Tag is RelayDescription)
+            //{
+            //    return;
+            //}
+            //var tag = node.Tag as SubscriptionWrapper;
+            //if (tag != null && tag.SubscriptionDescription != null)
+            //{
+            //    return;
+            //}
             for (var i = 0; i < node.Nodes.Count; i++)
             {
                 CloneNode(node.Nodes[i], newNode);

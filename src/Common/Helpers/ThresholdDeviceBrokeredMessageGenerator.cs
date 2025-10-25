@@ -28,7 +28,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 
 #endregion
@@ -110,18 +110,18 @@ namespace ServiceBusExplorer.Helpers
             City = "Milan";
             Country = "Italy";
             Label = "Service Bus Explorer";
-        } 
+        }
         #endregion
 
         #region IBrokeredMessageGenerator Methods
-        public IEnumerable<BrokeredMessage> GenerateBrokeredMessageCollection(int brokeredMessageCount, WriteToLogDelegate writeToLog)
+        public IEnumerable<ServiceBusMessage> GenerateBrokeredMessageCollection(int brokeredMessageCount, WriteToLogDelegate writeToLog)
         {
             if (brokeredMessageCount < 0)
             {
                 return null;
             }
             var random = new Random();
-            var messageList = new List<BrokeredMessage>();
+            var messageList = new List<ServiceBusMessage>();
             for (var i = 0; i < brokeredMessageCount; i++)
             {
                 try
@@ -136,17 +136,20 @@ namespace ServiceBusExplorer.Helpers
                     var text = MessageFormat == MessageFormat.Json
                         ? JsonSerializerHelper.Serialize(payload)
                         : XmlSerializerHelper.Serialize(payload);
-                    var brokeredMessage = new BrokeredMessage(text.ToMemoryStream())
+                    var brokeredMessage = new ServiceBusMessage()
                     {
                         MessageId = payload.DeviceId.ToString(CultureInfo.InvariantCulture),
+                        Subject = Label,
+                        Body = new BinaryData(text)
                     };
-                    brokeredMessage.Properties.Add("eventId", payload.EventId);
-                    brokeredMessage.Properties.Add("deviceId", payload.DeviceId);
-                    brokeredMessage.Properties.Add("value", payload.Value);
-                    brokeredMessage.Properties.Add("time", DateTime.UtcNow.Ticks);
-                    brokeredMessage.Properties.Add("city", City);
-                    brokeredMessage.Properties.Add("country", Country);
-                    brokeredMessage.Label = Label;
+
+                    // Use ApplicationProperties for custom metadata
+                    brokeredMessage.ApplicationProperties["eventId"] = payload.EventId;
+                    brokeredMessage.ApplicationProperties["deviceId"] = payload.DeviceId;
+                    brokeredMessage.ApplicationProperties["value"] = payload.Value;
+                    brokeredMessage.ApplicationProperties["time"] = DateTime.UtcNow.Ticks;
+                    brokeredMessage.ApplicationProperties["city"] = City;
+                    brokeredMessage.ApplicationProperties["country"] = Country;
                     messageList.Add(brokeredMessage);
                 }
                 catch (Exception ex)
@@ -166,7 +169,7 @@ namespace ServiceBusExplorer.Helpers
                 writeToLog(string.Format(BrokeredMessageCreatedFormat, messageList.Count));
             }
             return messageList;
-        } 
+        }
         #endregion
 
         #region IDisposable Methods

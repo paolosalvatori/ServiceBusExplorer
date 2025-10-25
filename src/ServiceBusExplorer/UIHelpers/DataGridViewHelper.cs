@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 
 namespace ServiceBusExplorer.UIHelpers
 {
@@ -16,7 +16,7 @@ namespace ServiceBusExplorer.UIHelpers
 
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                var message = (BrokeredMessage)row.DataBoundItem;
+                var message = (ServiceBusReceivedMessage)row.DataBoundItem;
 
                 if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
                 {

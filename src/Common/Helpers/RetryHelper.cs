@@ -21,12 +21,13 @@
 
 #region Using Directives
 
+using Azure.Messaging.ServiceBus;
+using Microsoft.Azure.NotificationHubs.Messaging;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
-using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
 
 #endregion
 
@@ -56,140 +57,140 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Public Static Fields
-        public static void RetryAction(Action action, WriteToLogDelegate writeToLog)
-        {
-            var numRetries = retryCount;
+        //public static void RetryAction(Action action, WriteToLogDelegate writeToLog)
+        //{
+        //    var numRetries = retryCount;
 
-            if (action == null)
-            {
-                throw new ArgumentNullException(ActionCannotBeNull); 
-            }
-            do
-            {
-                try
-                {
-                    action(); 
-                    return;
-                }
-                catch (MessagingEntityAlreadyExistsException)
-                {
-                    throw;
-                }
-                catch (CommunicationException)
-                {
-                    throw;
-                }
-                catch (MessagingException ex)
-                {
-                    if (numRetries == 0 || (!ex.IsTransient))
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    Thread.Sleep(retryTimeout);
-                }
-                catch (TimeoutException ex)
-                {
-                    if (numRetries == 0)
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    Thread.Sleep(retryTimeout);
-                }
-                catch (Exception ex)
-                {
-                    if (numRetries == 0)
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
-                    Thread.Sleep(retryTimeout);
-                }
-            } while (numRetries-- > 0);
-        }
+        //    if (action == null)
+        //    {
+        //        throw new ArgumentNullException(ActionCannotBeNull);
+        //    }
+        //    do
+        //    {
+        //        try
+        //        {
+        //            action();
+        //            return;
+        //        }
+        //        catch (MessagingEntityAlreadyExistsException)
+        //        {
+        //            throw;
+        //        }
+        //        catch (CommunicationException)
+        //        {
+        //            throw;
+        //        }
+        //        catch (MessagingException ex)
+        //        {
+        //            if (numRetries == 0 || (!ex.IsTransient))
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+        //            Thread.Sleep(retryTimeout);
+        //        }
+        //        catch (TimeoutException ex)
+        //        {
+        //            if (numRetries == 0)
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+        //            Thread.Sleep(retryTimeout);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            if (numRetries == 0)
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+        //            writeToLog(string.Format(CaughtGenericException, ex.GetType()));
+        //            Thread.Sleep(retryTimeout);
+        //        }
+        //    } while (numRetries-- > 0);
+        //}
 
-        public static async Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog)
-        {
-            var numRetries = retryCount;
+        //public static async Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog)
+        //{
+        //    var numRetries = retryCount;
 
-            if (action == null)
-            {
-                throw new ArgumentNullException(ActionCannotBeNull);
-            }
-            do
-            {
-                try
-                {
-                    await action();
-                    return;
-                }
-                catch (MessagingEntityAlreadyExistsException)
-                {
-                    throw;
-                }
-                catch (CommunicationException)
-                {
-                    throw;
-                }
-                catch (MessagingException ex)
-                {
-                    if (numRetries == 0 || (!ex.IsTransient))
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    
-                    await Task.Delay(retryTimeout);
-                }
-                catch (TimeoutException ex)
-                {
-                    if (numRetries == 0)
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    
-                    await Task.Delay(retryTimeout);
-                }
-                catch (Exception ex)
-                {
-                    if (numRetries == 0)
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 action.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    writeToLog(string.Format(CaughtGenericException, ex.GetType()));
-                    
-                    await Task.Delay(retryTimeout);
-                }
-            } while (numRetries-- > 0);
-        }
+        //    if (action == null)
+        //    {
+        //        throw new ArgumentNullException(ActionCannotBeNull);
+        //    }
+        //    do
+        //    {
+        //        try
+        //        {
+        //            await action();
+        //            return;
+        //        }
+        //        catch (MessagingEntityAlreadyExistsException)
+        //        {
+        //            throw;
+        //        }
+        //        catch (CommunicationException)
+        //        {
+        //            throw;
+        //        }
+        //        catch (MessagingException ex)
+        //        {
+        //            if (numRetries == 0 || (!ex.IsTransient))
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+
+        //            await Task.Delay(retryTimeout);
+        //        }
+        //        catch (TimeoutException ex)
+        //        {
+        //            if (numRetries == 0)
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+
+        //            await Task.Delay(retryTimeout);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            if (numRetries == 0)
+        //            {
+        //                throw;
+        //            }
+        //            writeToLog(string.Format(RetryingMethod,
+        //                                         ex.Message,
+        //                                         action.Method.Name,
+        //                                         retryCount - numRetries + 1,
+        //                                         retryCount));
+        //            writeToLog(string.Format(CaughtGenericException, ex.GetType()));
+
+        //            await Task.Delay(retryTimeout);
+        //        }
+        //    } while (numRetries-- > 0);
+        //}
 
         public static T RetryFunc<T>(Func<T> func, WriteToLogDelegate writeToLog)
         {
@@ -205,15 +206,13 @@ namespace ServiceBusExplorer.Helpers
                 {
                     return func();
                 }
-                catch (MessagingEntityAlreadyExistsException)
+                catch (ServiceBusException ex) 
+                    when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists) // prev. MessagingEntityAlreadyExistsException
                 {
                     throw;
                 }
-                catch (CommunicationException)
-                {
-                    throw;
-                }
-                catch (ServerBusyException ex)
+                catch (ServiceBusException ex) 
+                    when (ex.Reason == ServiceBusFailureReason.ServiceBusy) // prev. ServerBusyException
                 {
                     if (numRetries == 0)
                     {
@@ -221,15 +220,16 @@ namespace ServiceBusExplorer.Helpers
                     }
                     if (traceEnabled)
                     {
-                        writeToLog(string.Format(RetryingMethod, 
-                                                 ex.Message, 
-                                                 func.Method.Name, 
-                                                 retryCount - numRetries + 1, 
+                        writeToLog(string.Format(RetryingMethod,
+                                                 ex.Message,
+                                                 func.Method.Name,
+                                                 retryCount - numRetries + 1,
                                                  retryCount));
                     }
                     Thread.Sleep(retryTimeout);
                 }
-                catch (MessagingCommunicationException ex)
+                catch (ServiceBusException ex) 
+                    when (ex.Reason == ServiceBusFailureReason.ServiceCommunicationProblem) // prev. MessagingCommunicationException, CommunicationException
                 {
                     if (numRetries == 0)
                     {
@@ -242,7 +242,7 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     Thread.Sleep(retryTimeout);
                 }
-                catch (MessagingException ex)
+                catch (ServiceBusException ex)
                 {
                     if (numRetries == 0 || (!ex.IsTransient))
                     {
@@ -294,17 +294,17 @@ namespace ServiceBusExplorer.Helpers
             {
                 throw new ArgumentNullException(FuncCannotBeNull);
             }
-            do
+            do 
             {
                 try
                 {
                     return await func();
                 }
-                catch (MessagingEntityAlreadyExistsException)
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
                 {
                     throw;
                 }
-                catch (CommunicationException)
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceCommunicationProblem)
                 {
                     throw;
                 }
@@ -319,24 +319,10 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    
+
                     await Task.Delay(retryTimeout);
                 }
-                catch (MessagingCommunicationException ex)
-                {
-                    if (numRetries == 0)
-                    {
-                        throw;
-                    }
-                    writeToLog(string.Format(RetryingMethod,
-                                                 ex.Message,
-                                                 func.Method.Name,
-                                                 retryCount - numRetries + 1,
-                                                 retryCount));
-                    
-                    await Task.Delay(retryTimeout);
-                }
-                catch (MessagingException ex)
+                catch (ServiceBusException ex)
                 {
                     if (numRetries == 0 || (!ex.IsTransient))
                     {
@@ -347,7 +333,7 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    
+
                     await Task.Delay(retryTimeout);
                 }
                 catch (TimeoutException ex)
@@ -361,7 +347,7 @@ namespace ServiceBusExplorer.Helpers
                                                  func.Method.Name,
                                                  retryCount - numRetries + 1,
                                                  retryCount));
-                    
+
                     await Task.Delay(retryTimeout);
                 }
                 catch (Exception ex)
@@ -376,7 +362,7 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount - numRetries + 1,
                                                  retryCount));
                     writeToLog(string.Format(CaughtGenericException, ex.GetType()));
-                    
+
                     await Task.Delay(retryTimeout);
                 }
             } while (numRetries-- > 0);

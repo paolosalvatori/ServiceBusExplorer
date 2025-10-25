@@ -30,8 +30,9 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
+using Common.Contracts;
+using Common.Models;
 
 #endregion
 
@@ -88,7 +89,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Private Instance Fields
 
-        private readonly ServiceBusHelper serviceBusHelper;
+        private readonly IServiceBusService serviceBusHelper;
         private readonly ConfigFileUse configFileUse;
         private bool ignoreSelectedIndexChange;
 
@@ -103,7 +104,7 @@ namespace ServiceBusExplorer.Forms
 
         #region Public Constructor
 
-        public ConnectForm(ServiceBusHelper serviceBusHelper, ConfigFileUse configFileUse)
+        public ConnectForm(IServiceBusService serviceBusHelper, ConfigFileUse configFileUse)
         {
             InitializeComponent();
 
@@ -120,15 +121,15 @@ namespace ServiceBusExplorer.Forms
                 // ReSharper restore CoVariantArrayConversion
             }
 
-            ConnectivityMode = ServiceBusHelper.ConnectivityMode;
-            cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
-            cboConnectivityMode.SelectedItem = ConnectivityMode;
-            UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets;
-            useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
+            //ConnectivityMode = ServiceBusService.ConnectivityMode; TODO: 
+            //cboConnectivityMode.DataSource = Enum.GetValues(typeof(ServiceBusTransportType));
+            //cboConnectivityMode.SelectedItem = serviceBusHelper.TransportType;
+            //UseAmqpWebSockets = ServiceBusService.UseAmqpWebSockets;
+            //useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
 
-            cboTransportType.DataSource = Enum.GetValues(typeof(TransportType));
-            var settings = new MessagingFactorySettings();
-            cboTransportType.SelectedItem = settings.TransportType;
+            cboTransportType.DataSource = Enum.GetValues(typeof(ServiceBusTransportType));
+            //cboTransportType.SelectedItem = serviceBusHelper.Connection.Namespace.TransportType; TODO: 
+            cboTransportType.SelectedItem = ServiceBusTransportType.AmqpWebSockets;
 
             cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 ? connectionStringIndex : 0;
             if (cboServiceBusNamespace.Text == EnterConnectionString)
@@ -197,9 +198,9 @@ namespace ServiceBusExplorer.Forms
         public string SharedAccessKey { get; private set; }
         public string ConnectionString { get; private set; }
         public string EntityPath { get; private set; }
-        public ConnectivityMode ConnectivityMode { get; private set; }
+        //public ConnectitiyMode ConnectivityMode { get; private set; }
         public bool UseAmqpWebSockets { get; private set; }
-        public TransportType TransportType { get; set; }
+        public ServiceBusTransportType TransportType { get; set; }
 
         public List<string> SelectedEntities
         {
@@ -224,7 +225,7 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
             DialogResult = DialogResult.OK;
-            ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
+            //ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
             UseAmqpWebSockets = useAmqpWebSocketsCheckBox.Checked;
             FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
             FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
@@ -260,7 +261,7 @@ namespace ServiceBusExplorer.Forms
             {
                 Uri = txtUri.Text;
                 Namespace = txtNamespace.Text;
-                TransportType = (TransportType)cboTransportType.SelectedItem;
+                TransportType = (ServiceBusTransportType)cboTransportType.SelectedItem;
                 EntityPath = txtEntityPath.Text;
 
 
@@ -320,10 +321,10 @@ namespace ServiceBusExplorer.Forms
                             s => s.Substring(s.IndexOf('=') + 1));
                 if (!parameters.ContainsKey(ConnectionStringTransportType))
                 {
-                    cboTransportType.SelectedItem = TransportType.NetMessaging;
+                    cboTransportType.SelectedItem = ServiceBusTransportType.AmqpTcp;
                     return;
                 }
-                if (Enum.TryParse<TransportType>(parameters[ConnectionStringTransportType], true, out var transportType))
+                if (Enum.TryParse<ServiceBusTransportType>(parameters[ConnectionStringTransportType], true, out var transportType))
                 {
                     cboTransportType.SelectedItem = transportType;
                 }
@@ -453,15 +454,12 @@ namespace ServiceBusExplorer.Forms
                     : cn + string.Format(ConnectionStringTransportTypeFormat, cboTransportType.SelectedItem);
                 if (parameters.ContainsKey(ConnectionStringRuntimePort))
                 {
-                    if (!(cboTransportType.SelectedItem is TransportType))
+                    if (!(cboTransportType.SelectedItem is ServiceBusTransportType))
                     {
                         return;
                     }
-                    var transportType = (TransportType)cboTransportType.SelectedItem;
-                    value = value.Replace(parameters[ConnectionStringRuntimePort],
-                        transportType == TransportType.Amqp
-                            ? DefaultAmqpRuntimePort
-                            : DefaultNetMessagingRuntimePort);
+                    var transportType = (ServiceBusTransportType)cboTransportType.SelectedItem;
+                    value = value.Replace(parameters[ConnectionStringRuntimePort], DefaultAmqpRuntimePort);
                 }
                 txtUri.Text = value;
             }
@@ -594,7 +592,7 @@ namespace ServiceBusExplorer.Forms
                 var key = cboServiceBusNamespace.Text;
                 var isNewServiceBusNamespace = (key == EnterConnectionString);
 
-                ServiceBusConnectionStringBuilder serviceBusConnectionStringBuilder;
+                ServiceBusConnectionStringProperties serviceBusConnectionStringProperties;
 
                 try
                 {
@@ -606,7 +604,7 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
+                    serviceBusConnectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
                 }
                 catch (Exception)
                 {
@@ -614,14 +612,13 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                if (serviceBusConnectionStringBuilder.Endpoints == null ||
-                    serviceBusConnectionStringBuilder.Endpoints.Count == 0)
+                if (serviceBusConnectionStringProperties.Endpoint == null)
                 {
                     MainForm.StaticWriteToLog("The connection string does not contain any endpoint.");
                     return;
                 }
 
-                var host = serviceBusConnectionStringBuilder.Endpoints.ToArray()[0].Host;
+                var host = serviceBusConnectionStringProperties.Endpoint.Host;
 
                 var index = host.IndexOf(".", StringComparison.Ordinal);
 

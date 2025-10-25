@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<AssemblyName>ServiceBusExplorer.ServiceBus</AssemblyName>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
     <NoWarn>7035</NoWarn>
@@ -12,7 +12,7 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
+		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />

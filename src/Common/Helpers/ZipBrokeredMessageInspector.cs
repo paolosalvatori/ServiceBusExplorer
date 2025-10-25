@@ -24,7 +24,8 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using Microsoft.ServiceBus.Messaging;
+using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 
 #endregion
 
@@ -33,9 +34,9 @@ namespace ServiceBusExplorer.Helpers
     public class ZipBrokeredMessageInspector : IBrokeredMessageInspector, IDisposable
     {
         #region IBrokeredMessageInspector Methods
-        public BrokeredMessage BeforeSendMessage(BrokeredMessage message)
+        public ServiceBusMessage BeforeSendMessage(ServiceBusMessage message)
         {
-            var stream = message?.Clone().GetBody<Stream>();
+            var stream = Clone(message).Body.ToStream();
             if (stream == null)
             {
                 return null;
@@ -44,13 +45,13 @@ namespace ServiceBusExplorer.Helpers
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
-            message.SetBodyStream(Compress(stream));
+            message.Body = BinaryData.FromStream(Compress(stream));
             return message;
         }
 
-        public BrokeredMessage AfterReceiveMessage(BrokeredMessage message)
+        public ServiceBusReceivedMessage AfterReceiveMessage(ServiceBusReceivedMessage message)
         {
-            var stream = message?.Clone().GetBody<Stream>();
+            var stream = Clone(message).Body.ToStream();
             if (stream == null)
             {
                 return null;
@@ -59,9 +60,11 @@ namespace ServiceBusExplorer.Helpers
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
-            message.SetBodyStream(Decompress(stream));
+            // TODO: Convert 'AfterReceiveMessage' to return ServiceBusMessage instead of ServiceBusReceivedMessage
+            // So we can modify the body of the message
+            //message.Body = BinaryData.FromStream(Compress(stream));
             return message;
-        } 
+        }
         #endregion
 
         #region IDisposable Methods
@@ -81,6 +84,7 @@ namespace ServiceBusExplorer.Helpers
             outputStream.Position = 0;
             return outputStream;
         }
+
         private static Stream Decompress(Stream inputStream)
         {
             var outputStream = new MemoryStream();
@@ -97,6 +101,12 @@ namespace ServiceBusExplorer.Helpers
             }
             outputStream.Position = 0;
             return outputStream;
+        }
+
+        private static T Clone<T>(T obj)
+        {
+            var raw = JsonSerializer.Serialize(obj);
+            return JsonSerializer.Deserialize<T>(raw);
         }
         #endregion
     }

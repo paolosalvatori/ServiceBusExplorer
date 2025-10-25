@@ -20,13 +20,20 @@
 #endregion
 
 #region Using Directives
-using System;
-using System.Threading;
-using System.Globalization;
-using System.Windows.Forms;
+using Common;
+using Common.Contracts;
+using Common.Models;
+using Microsoft.Azure.Amqp;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using ServiceBusExplorer.Forms;
+using System;
+using System.Globalization;
 using System.Net;
-
+using System.Threading;
+using System.Windows.Forms;
 
 #endregion
 
@@ -41,7 +48,7 @@ namespace ServiceBusExplorer
         private const string ExceptionFormat = "Exception: {0}";
         private const string InnerExceptionFormat = "InnerException: {0}";
         #endregion
-        
+
         #region Static Main Method
         /// <summary>
         /// The main entry point for the application.
@@ -54,29 +61,39 @@ namespace ServiceBusExplorer
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             ServicePointManager.DefaultConnectionLimit = 200;
+
+            var builder = Host.CreateApplicationBuilder(args);
+
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+
+            var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
+            var cliSettings = CommandLineOptions.Parse(args);
+
+            builder.Services.AddSingleton(appSettings);
+            builder.Services.AddSingleton(cliSettings);
+            builder.Services.AddSingleton<MainForm>();
+            builder.Services.AddSingleton<Application>();
+            builder.Services.AddSingleton<IServiceBusService, ServiceBusService>();
+
+            using IHost host = builder.Build();
+
             try
             {
                 CommandLineOptions.ProcessCommandLineArguments(args, out var argument, out var value, out var helpText);
-                
-                if (!string.IsNullOrWhiteSpace(argument) &&
-                    !string.IsNullOrWhiteSpace(value))
-                {
-                    Application.Run(new MainForm(argument, value, helpText));
-                }
-                else
-                {
-                    Application.Run(new MainForm(helpText));
-                }
+                Application.Run(new MainForm(appSettings, cliSettings));
             }
             catch (Exception e)
             {
-                MessageBox.Show(text: $"A fatal exception occurred. ServiceBusExplorer will now shut down. \n\n{e.Message}.", 
-                    caption: "ServiceBusExplorer", 
+                MessageBox.Show(text: $"A fatal exception occurred. ServiceBusExplorer will now shut down. \n\n{e.Message}.",
+                    caption: "ServiceBusExplorer",
                     buttons: MessageBoxButtons.OK,
                     icon: MessageBoxIcon.Stop);
             }
         }
-        
+
         static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
             if (e != null &&
@@ -103,7 +120,7 @@ namespace ServiceBusExplorer
 
                 if (ex.GetType() == typeof(TypeInitializationException))
                 {
-                    message += Environment.NewLine + Environment.NewLine + 
+                    message += Environment.NewLine + Environment.NewLine +
                         "This may be due to an invalid configuration file.";
                 }
 
