@@ -40,14 +40,14 @@ namespace ServiceBusExplorer.Controls
 
             propertyList.AddRange(new[]
             {
-                 new[] {Id, topic.Id},
-                 new[] {TopicName, topic.Data.Name},
-                 new[] {TopicEndpoint, hostname + "/topics/" + topic.Data.Name},
-                 new[] {InputSchema, topic.Data.InputSchema.ToString()},
-                 new[] {EventRetentionInDays, topic.Data.EventRetentionInDays.ToString()},
-                 new[] {ProvisioningState, topic.Data.ProvisioningState.ToString()},
-                 new[] {PublisherType, topic.Data.PublisherType.ToString()},
-             });
+                new[] {Id, topic.Id},
+                new[] {TopicName, topic.Data.Name},
+                new[] {TopicEndpoint, hostname + "/topics/" + topic.Data.Name},
+                new[] {InputSchema, topic.Data.InputSchema.ToString()},
+                new[] {EventRetentionInDays, topic.Data.EventRetentionInDays.ToString()},
+                new[] {ProvisioningState, topic.Data.ProvisioningState.ToString()},
+                new[] {PublisherType, topic.Data.PublisherType.ToString()},
+            });
 
             foreach (var array in propertyList)
             {

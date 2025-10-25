@@ -89,7 +89,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
             var serializer = new XmlSerializer(type);
             return serializer.Deserialize(stream);
         }
-
+        
         /// <summary>
         /// Deserialize an XML string into an object using the XmlSerializer.
         /// </summary>

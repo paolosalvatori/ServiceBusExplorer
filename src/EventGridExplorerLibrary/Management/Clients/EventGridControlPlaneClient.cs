@@ -1,4 +1,4 @@
-﻿// <copyright file="EventGridClient.cs" company="Microsoft">
+// <copyright file="EventGridClient.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ namespace EventGridExplorerLibrary
             // Setting this API version is needed to support name space topic event subscriptions with webhook as a destination.
             ArmClientOptions options = new ArmClientOptions();
             options.SetApiVersion(NamespaceTopicEventSubscriptionsResourceType, NamespaceTopicEventSubscriptionsApiVersion);
-
+            
         }
 
         /// <inheritdoc/>
@@ -102,14 +102,14 @@ namespace EventGridExplorerLibrary
         }
 
         /// <inheritdoc/>
-        public async Task<string> CreateNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName, string deliveryMode, List<Dictionary<string, string>> filters, List<string> eventTypes)
+        public async Task<string> CreateNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName, string deliveryMode, List<Dictionary<string,string>> filters, List<string> eventTypes)
         {
             EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
             NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
             NamespaceTopicEventSubscriptionCollection collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
             NamespaceTopicEventSubscriptionData namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData();
 
-            FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
+             FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
             if (filtersConfiguration.IncludedEventTypes.Count > 0 || filtersConfiguration.Filters.Count > 0)
             {
                 namespaceTopicEventSubscriptionData.DeliveryConfiguration = new DeliveryConfiguration
@@ -199,7 +199,7 @@ namespace EventGridExplorerLibrary
                     filtersConfiguration.IncludedEventTypes.Add(eventType);
                 }
             }
-
+    
             return filtersConfiguration;
         }
     }

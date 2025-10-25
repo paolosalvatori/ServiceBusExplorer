@@ -46,7 +46,7 @@ namespace ServiceBusExplorer.UIHelpers
         #region Public Conctructors
         public EventProcessorFactoryConfiguration()
         {
-
+            
         }
 
         public EventProcessorFactoryConfiguration(CheckBox logging,
@@ -66,11 +66,11 @@ namespace ServiceBusExplorer.UIHelpers
         #endregion
 
         #region Public Properties
-        public bool Logging
+        public bool Logging 
         {
             get
             {
-                return logging != null && (bool)logging.Invoke(new Func<bool>(() => logging.Checked));
+                return logging != null && (bool)logging.Invoke(new Func<bool>(()=> logging.Checked));
             }
         }
 
@@ -111,7 +111,7 @@ namespace ServiceBusExplorer.UIHelpers
             get
             {
                 return cancellationToken;
-
+                
             }
         }
 

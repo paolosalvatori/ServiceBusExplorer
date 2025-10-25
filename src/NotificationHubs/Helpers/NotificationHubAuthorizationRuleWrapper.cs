@@ -45,7 +45,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
         #endregion
 
         #region Public Constructor
-        public NotificationHubAuthorizationRuleWrapper()
+		public NotificationHubAuthorizationRuleWrapper()
         {
         }
 
@@ -69,7 +69,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
             ModifiedTime = rule.ModifiedTime;
             AuthorizationRule = rule;
         }
-        #endregion
+	    #endregion
 
         #region Public Properties
         public string KeyName
@@ -80,7 +80,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
             }
             set
             {
-                keyName = value;
+                keyName = value; 
                 if (AuthorizationRule != null)
                 {
                     AuthorizationRule.KeyName = value;
@@ -193,7 +193,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 if (AuthorizationRule != null &&
                     !AuthorizationRule.Rights.Contains(AccessRights.Manage))
                 {
-                    AuthorizationRule.Rights = new[] { AccessRights.Manage, AccessRights.Send, AccessRights.Listen };
+                    AuthorizationRule.Rights = new[] {AccessRights.Manage, AccessRights.Send, AccessRights.Listen};
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 list.Add(AccessRights.Listen);
                 AuthorizationRule.Rights = list;
             }
-        }
+        } 
         #endregion
     }
 }

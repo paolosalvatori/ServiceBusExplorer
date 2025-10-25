@@ -38,8 +38,8 @@
             // 
             // namespacePropertyListView
             // 
-            this.namespacePropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.namespacePropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.namespacePropertyListView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.namespacePropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -69,12 +69,12 @@
             // namespaceListView
             // 
             this.namespaceListView.Alignment = System.Windows.Forms.ListViewAlignment.Default;
-            this.namespaceListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.namespaceListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.namespaceListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.namespaceListView.HideSelection = false;
             this.namespaceListView.Location = new System.Drawing.Point(33, 51);
             this.namespaceListView.Name = "namespaceListView";

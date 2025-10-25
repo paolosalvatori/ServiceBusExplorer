@@ -18,7 +18,7 @@ namespace ServiceBusExplorer.Controls
             get => base.CellTemplate;
             set
             {
-                if (value != null &&
+                if (value != null && 
                     !value.GetType().IsAssignableFrom(typeof(ColorCell)))
                 {
                     throw new InvalidCastException("Must be a ColorCell");
@@ -78,7 +78,7 @@ namespace ServiceBusExplorer.Controls
             Color? actualColor;
             try
             {
-                actualColor = value.Equals(Color.Empty) ? (Color?)null : (Color)value;
+                actualColor = value.Equals(Color.Empty) ? (Color?) null : (Color) value;
             }
             catch (Exception)
             {
@@ -95,7 +95,7 @@ namespace ServiceBusExplorer.Controls
             get => BackColor;
             set
             {
-                var actualColor = value.Equals(Color.Empty) ? (Color?)null : (Color)value;
+                var actualColor = value.Equals(Color.Empty) ? (Color?) null : (Color)value;
                 if (actualColor.HasValue)
                 {
                     BackColor = actualColor.Value;
@@ -136,7 +136,7 @@ namespace ServiceBusExplorer.Controls
             {
                 if (value != null)
                 {
-                    Value = (Color)value;
+                    Value = (Color) value;
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace ServiceBusExplorer.Controls
         // Implements the IDataGridViewEditingControl 
         // .EditingControlValueChanged property. 
         public bool EditingControlValueChanged { get; set; }
-
+        
         // Implements the IDataGridViewEditingControl 
         // .EditingPanelCursor property. 
         public Cursor EditingPanelCursor => base.Cursor;

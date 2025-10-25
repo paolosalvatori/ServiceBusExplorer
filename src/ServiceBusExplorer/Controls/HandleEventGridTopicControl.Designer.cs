@@ -43,8 +43,8 @@
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.topicListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.topicListView.HideSelection = false;
             this.topicListView.Location = new System.Drawing.Point(33, 51);
             this.topicListView.Name = "topicListView";

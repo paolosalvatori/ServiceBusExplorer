@@ -100,7 +100,7 @@ namespace ServiceBusExplorer.Forms
             else
             {
                 txtMessageText.Language = Language.Custom;
-                txtMessageText.Text = string.IsNullOrEmpty(messageText) ? "" : messageText;
+                txtMessageText.Text = string.IsNullOrEmpty(messageText) ? "": messageText;
             }
 
             // Initialize the DataGridView.

@@ -1,4 +1,5 @@
-﻿namespace ServiceBusExplorer.Controls
+﻿
+namespace ServiceBusExplorer.Controls
 {
     partial class TimeSpanControl
     {

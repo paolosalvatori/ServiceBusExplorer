@@ -297,7 +297,7 @@
             this.btnChangeStatus.Click += new System.EventHandler(this.btnChangeStatus_Click);
             this.btnChangeStatus.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnChangeStatus.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            //
+            // 
             // btnCancelUpdate
             // 
             this.btnCancelUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -357,8 +357,8 @@
             // 
             // mainTabControl
             // 
-            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTabControl.Controls.Add(this.tabPageDescription);
             this.mainTabControl.Controls.Add(this.tabPageAuthorization);
@@ -429,8 +429,8 @@
             // 
             // grouperQueueInformation
             // 
-            this.grouperQueueInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperQueueInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperQueueInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperQueueInformation.BackgroundGradientColor = System.Drawing.Color.White;
@@ -456,12 +456,12 @@
             // 
             // propertyListView
             // 
-            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
@@ -520,7 +520,7 @@
             // 
             // grouperQueueSettings
             // 
-            this.grouperQueueSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.grouperQueueSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperQueueSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperQueueSettings.BackgroundGradientColor = System.Drawing.Color.White;
@@ -546,8 +546,8 @@
             // 
             // checkedListBox
             // 
-            this.checkedListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.checkedListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.checkedListBox.CheckOnClick = true;
             this.checkedListBox.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -562,7 +562,7 @@
             // 
             // grouperQueueProperties
             // 
-            this.grouperQueueProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.grouperQueueProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperQueueProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperQueueProperties.BackgroundGradientColor = System.Drawing.Color.White;
@@ -629,7 +629,7 @@
             // 
             // txtForwardDeadLetteredMessagesTo
             // 
-            this.txtForwardDeadLetteredMessagesTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtForwardDeadLetteredMessagesTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtForwardDeadLetteredMessagesTo.BackColor = System.Drawing.SystemColors.Window;
             this.txtForwardDeadLetteredMessagesTo.Location = new System.Drawing.Point(16, 224);
@@ -674,7 +674,7 @@
             // 
             // txtUserMetadata
             // 
-            this.txtUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
             this.txtUserMetadata.Location = new System.Drawing.Point(16, 136);
@@ -750,7 +750,7 @@
             // 
             // txtForwardTo
             // 
-            this.txtForwardTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtForwardTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtForwardTo.BackColor = System.Drawing.SystemColors.Window;
             this.txtForwardTo.Location = new System.Drawing.Point(16, 180);
@@ -773,7 +773,7 @@
             this.txtMaxDeliveryCount.AllowDecimal = false;
             this.txtMaxDeliveryCount.AllowNegative = false;
             this.txtMaxDeliveryCount.AllowSpace = false;
-            this.txtMaxDeliveryCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMaxDeliveryCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMaxDeliveryCount.BackColor = System.Drawing.SystemColors.Window;
             this.txtMaxDeliveryCount.IsZeroWhenEmpty = false;
@@ -885,7 +885,7 @@
             // 
             // txtPath
             // 
-            this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPath.BackColor = System.Drawing.SystemColors.Window;
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
@@ -907,8 +907,8 @@
             // 
             // grouperAuthorizationRuleList
             // 
-            this.grouperAuthorizationRuleList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperAuthorizationRuleList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
@@ -937,8 +937,8 @@
             // 
             this.authorizationRulesDataGridView.AllowUserToOrderColumns = true;
             this.authorizationRulesDataGridView.AllowUserToResizeRows = false;
-            this.authorizationRulesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.authorizationRulesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -978,8 +978,8 @@
             // 
             // messagesSplitContainer
             // 
-            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagesSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.messagesSplitContainer.Name = "messagesSplitContainer";
@@ -1072,8 +1072,8 @@
             this.messagesDataGridView.AllowUserToAddRows = false;
             this.messagesDataGridView.AllowUserToDeleteRows = false;
             this.messagesDataGridView.AllowUserToResizeRows = false;
-            this.messagesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.messagesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1129,20 +1129,20 @@
             // 
             // txtMessageText
             // 
-            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageText.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -1209,8 +1209,8 @@
             // 
             // messagePropertyGrid
             // 
-            this.messagePropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagePropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagePropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.messagePropertyGrid.HelpVisible = false;
@@ -1249,8 +1249,8 @@
             // 
             // messageCustomPropertyGrid
             // 
-            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messageCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.messageCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
@@ -1277,8 +1277,8 @@
             // 
             // deadletterSplitContainer
             // 
-            this.deadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.deadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deadletterSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.deadletterSplitContainer.Name = "deadletterSplitContainer";
@@ -1371,8 +1371,8 @@
             this.deadletterDataGridView.AllowUserToAddRows = false;
             this.deadletterDataGridView.AllowUserToDeleteRows = false;
             this.deadletterDataGridView.AllowUserToResizeRows = false;
-            this.deadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.deadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deadletterDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.deadletterDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1428,20 +1428,20 @@
             // 
             // txtDeadletterText
             // 
-            this.txtDeadletterText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtDeadletterText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDeadletterText.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtDeadletterText.BackBrush = null;
             this.txtDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -1508,8 +1508,8 @@
             // 
             // deadletterPropertyGrid
             // 
-            this.deadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.deadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.deadletterPropertyGrid.HelpVisible = false;
@@ -1548,8 +1548,8 @@
             // 
             // deadletterCustomPropertyGrid
             // 
-            this.deadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.deadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.deadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
@@ -1575,8 +1575,8 @@
             // 
             // transferDeadletterSplitContainer
             // 
-            this.transferDeadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.transferDeadletterSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transferDeadletterSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.transferDeadletterSplitContainer.Name = "transferDeadletterSplitContainer";
@@ -1653,8 +1653,8 @@
             this.transferDeadletterDataGridView.AllowUserToAddRows = false;
             this.transferDeadletterDataGridView.AllowUserToDeleteRows = false;
             this.transferDeadletterDataGridView.AllowUserToResizeRows = false;
-            this.transferDeadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.transferDeadletterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transferDeadletterDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.transferDeadletterDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1710,20 +1710,20 @@
             // 
             // txtTransferDeadletterText
             // 
-            this.txtTransferDeadletterText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtTransferDeadletterText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTransferDeadletterText.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtTransferDeadletterText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtTransferDeadletterText.BackBrush = null;
             this.txtTransferDeadletterText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -1790,8 +1790,8 @@
             // 
             // transferDeadletterPropertyGrid
             // 
-            this.transferDeadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.transferDeadletterPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transferDeadletterPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.transferDeadletterPropertyGrid.HelpVisible = false;
@@ -1830,8 +1830,8 @@
             // 
             // transferDeadletterCustomPropertyGrid
             // 
-            this.transferDeadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.transferDeadletterCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transferDeadletterCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.transferDeadletterCustomPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
@@ -1858,8 +1858,8 @@
             // 
             // sessionListStateSplitContainer
             // 
-            this.sessionListStateSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.sessionListStateSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sessionListStateSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.sessionListStateSplitContainer.Name = "sessionListStateSplitContainer";
@@ -1926,8 +1926,8 @@
             this.sessionsDataGridView.AllowUserToAddRows = false;
             this.sessionsDataGridView.AllowUserToDeleteRows = false;
             this.sessionsDataGridView.AllowUserToResizeRows = false;
-            this.sessionsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.sessionsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sessionsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.sessionsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1981,8 +1981,8 @@
             // 
             // txtSessionState
             // 
-            this.txtSessionState.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSessionState.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSessionState.Location = new System.Drawing.Point(16, 32);
             this.txtSessionState.MaxLength = 0;
@@ -2019,8 +2019,8 @@
             // 
             // sessionPropertyGrid
             // 
-            this.sessionPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.sessionPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sessionPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.sessionPropertyGrid.HelpVisible = false;
@@ -2086,16 +2086,16 @@
             // 
             this.messagesContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.repairAndResubmitMessageToolStripMenuItem,
-             this.resubmitMessageToolStripMenuItem,
-             this.selectAllMessagesToolStripMenuItem,
-             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
-             this.cancelScheduledMessageToolStripMenuItem,
-             this.toolStripSeparator1,
-             this.saveSelectedMessageToolStripMenuItem,
-             this.saveSelectedMessageBodyAsFileToolStripMenuItem,
-             this.saveSelectedMessagesToolStripMenuItem,
-             this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
+            this.repairAndResubmitMessageToolStripMenuItem,
+            this.resubmitMessageToolStripMenuItem,
+            this.selectAllMessagesToolStripMenuItem,
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
+            this.cancelScheduledMessageToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.saveSelectedMessageToolStripMenuItem,
+            this.saveSelectedMessageBodyAsFileToolStripMenuItem,
+            this.saveSelectedMessagesToolStripMenuItem,
+            this.saveSelectedMessagesBodyAsFileToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
             this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 208);
             // 
@@ -2283,7 +2283,7 @@
             this.btnPurgeMessages.Click += new System.EventHandler(this.btnPurgeMessages_Click);
             this.btnPurgeMessages.MouseEnter += new System.EventHandler(this.button_MouseEnter);
             this.btnPurgeMessages.MouseLeave += new System.EventHandler(this.button_MouseLeave);
-            //
+            // 
             // HandleQueueControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);

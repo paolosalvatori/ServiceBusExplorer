@@ -74,7 +74,7 @@ namespace ServiceBusExplorer.Controls
             this.partitionDescription = partitionDescription;
             InitializeComponent();
             InitializeData();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -82,7 +82,7 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Public Methods
-        public void RefreshData(PartitionDescription partition)
+         public void RefreshData(PartitionDescription partition)
         {
             try
             {
@@ -103,16 +103,16 @@ namespace ServiceBusExplorer.Controls
             {
                 // Initialize property grid
                 var propertyList = new List<string[]>();
-
+                
                 propertyList.AddRange(new[]{new[]{PartitionId, partitionDescription.PartitionId},
-                                             new[]{EventHubPath, partitionDescription.EventHubPath},
-                                             new[]{SizeInBytes, partitionDescription.SizeInBytes.ToString("N0")},
-                                             new[]{LastEnqueuedOffset, partitionDescription.LastEnqueuedOffset ?? "Null"},
-                                             new[]{LastEnqueuedTimeUtc, partitionDescription.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
-                                             new[]{IncomingBytesPerSecond, partitionDescription.IncomingBytesPerSecond.ToString("N0")},
-                                             new[]{OutgoingBytesPerSecond, partitionDescription.OutgoingBytesPerSecond.ToString("N0")},
-                                             new[]{BeginSequenceNumber, partitionDescription.BeginSequenceNumber.ToString("N0")},
-                                             new[]{EndSequenceNumber, partitionDescription.EndSequenceNumber.ToString("N0")}});
+                                            new[]{EventHubPath, partitionDescription.EventHubPath},
+                                            new[]{SizeInBytes, partitionDescription.SizeInBytes.ToString("N0")},
+                                            new[]{LastEnqueuedOffset, partitionDescription.LastEnqueuedOffset ?? "Null"},
+                                            new[]{LastEnqueuedTimeUtc, partitionDescription.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
+                                            new[]{IncomingBytesPerSecond, partitionDescription.IncomingBytesPerSecond.ToString("N0")},
+                                            new[]{OutgoingBytesPerSecond, partitionDescription.OutgoingBytesPerSecond.ToString("N0")},
+                                            new[]{BeginSequenceNumber, partitionDescription.BeginSequenceNumber.ToString("N0")},
+                                            new[]{EndSequenceNumber, partitionDescription.EndSequenceNumber.ToString("N0")}});
 
                 propertyListView.Items.Clear();
                 foreach (var array in propertyList)
@@ -125,7 +125,7 @@ namespace ServiceBusExplorer.Controls
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
+            }    
         }
 
         private void HandleException(Exception ex)

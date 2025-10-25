@@ -88,7 +88,7 @@ namespace ServiceBusExplorer.Controls
         private const string EnableSenderLoggingTooltip = "Enable logging of message content and properties for message senders.";
         private const string EnableSenderVerboseLoggingTooltip = "Enable verbose logging for message senders.";
         private const string EnablePartitionKeyUpdateTooltip = "Enable automatic PartitionKey update. The tool generates a new GUID at each call. Note: the value of the checkbox is ignored and the PartitionKey is never updated when using JSON or XML templates or an EventData generator.";
-
+        
         //***************************
         // Tab Pages
         //***************************
@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Controls
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IEventDataGenerator senderEventDataGenerator;
         private IEventDataInspector senderEventDataInspector;
-
+        
         #endregion
 
         #region Private Static Fields
@@ -189,7 +189,7 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                 }
-
+                
                 // Set chart layout
                 SetGraphLayout();
 
@@ -200,9 +200,9 @@ namespace ServiceBusExplorer.Controls
                     {
                         messageFileListView.Items.Add(new ListViewItem(new[]
                                                         {
-                                                             tuple.Item1,
-                                                             tuple.Item2
-                                                         }));
+                                                            tuple.Item1, 
+                                                            tuple.Item2
+                                                        }));
                     }
                     btnClearFiles.Enabled = messageFileListView.Items.Count > 0;
                 }
@@ -275,7 +275,7 @@ namespace ServiceBusExplorer.Controls
 
                 controlHelper.IsReadyToStoreMessageText = true;
                 LanguageDetector.SetFormattedMessage(controlHelper.ServiceBusHelper,
-                                                     controlHelper.MainForm.MessageText ?? string.Empty,
+                                                     controlHelper.MainForm.MessageText ?? string.Empty, 
                                                      txtMessageText);
 
                 txtPartitionKey.Text = Guid.NewGuid().ToString();
@@ -296,7 +296,7 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(checkBoxUpdatePartitionKey, EnablePartitionKeyUpdateTooltip);
 
                 splitContainer.SplitterWidth = 16;
-                splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth) / 2;
+                splitContainer.SplitterDistance = (splitContainer.Size.Width - splitContainer.SplitterWidth)/2;
                 propertiesDataGridView.Size = txtMessageText.Size;
 
                 // Send to Partition
@@ -413,7 +413,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)delegate { btnStart.Text = StartCaption; });
+                            Invoke((MethodInvoker) delegate { btnStart.Text = StartCaption; });
                         }
                     };
 
@@ -447,9 +447,9 @@ namespace ServiceBusExplorer.Controls
                                     Invoke(new UpdateStatisticsDelegate(InternalUpdateStatistics),
                                         new object[]
                                         {
-                                             sendTuple.Item1,
-                                             sendTuple.Item2,
-                                             sendTuple.Item3
+                                            sendTuple.Item1,
+                                            sendTuple.Item2,
+                                            sendTuple.Item3
                                         });
                                 }
                                 else
@@ -540,9 +540,9 @@ namespace ServiceBusExplorer.Controls
                                             {
                                                 using (var binaryReader = new BinaryReader(fileStream))
                                                 {
-                                                    var bytes = binaryReader.ReadBytes((int)fileStream.Length);
+                                                    var bytes = binaryReader.ReadBytes((int) fileStream.Length);
                                                     template = controlHelper.ServiceBusHelper.CreateEventDataTemplate(new MemoryStream(bytes),
-                                                                                                        GetPartitionKey(),
+                                                                                                        GetPartitionKey(), 
                                                                                                         bindingSource.Cast<MessagePropertyInfo>());
                                                 }
                                             }
@@ -874,7 +874,7 @@ namespace ServiceBusExplorer.Controls
             DrawTabControlTabs(mainTabControl, e, null);
         }
 
-        private void checkBoxEnableSenderLogging_CheckedChanged(object sender, EventArgs e)
+       private void checkBoxEnableSenderLogging_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxSenderVerboseLogging.Enabled = checkBoxEnableSenderLogging.Checked;
         }
@@ -890,7 +890,7 @@ namespace ServiceBusExplorer.Controls
             {
                 openFileDialog.FileName = string.Empty;
                 openFileDialog.Multiselect = false;
-                if (openFileDialog.ShowDialog() != DialogResult.OK ||
+                if (openFileDialog.ShowDialog() != DialogResult.OK || 
                     string.IsNullOrWhiteSpace(openFileDialog.FileName) ||
                     !File.Exists(openFileDialog.FileName))
                 {
@@ -1000,7 +1000,7 @@ namespace ServiceBusExplorer.Controls
             chart.Visible = true;
 
             grouperSenderStatistics.Visible = true;
-
+            
             var title = new Title
             {
                 Font = new Font("Microsoft Sans Serif", 8.25F,
@@ -1081,7 +1081,7 @@ namespace ServiceBusExplorer.Controls
                                    propertiesDataGridView.Size.Width + 1,
                                    propertiesDataGridView.Size.Height + 1);
         }
-
+        
         private void checkBoxSenderThinkTime_CheckedChanged(object sender, EventArgs e)
         {
             txtSenderThinkTime.Enabled = checkBoxSenderThinkTime.Checked;
@@ -1103,15 +1103,14 @@ namespace ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = string.Format("{0} KB", fileInfo.Length % 1024 == 0
-                                                       ? fileInfo.Length / 1024
-                                                       : fileInfo.Length / 1024 + 1);
+                var size = string.Format("{0} KB", fileInfo.Length%1024 == 0
+                                                       ? fileInfo.Length/1024
+                                                       : fileInfo.Length/1024 + 1);
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
-                     fileInfo.FullName,
-                     size
-                 })
-                { Checked = true });
+                    fileInfo.FullName,
+                    size
+                }) { Checked = true });
                 controlHelper.MainForm.FileNames.Add(new Tuple<string, string>(fileInfo.FullName, size));
             }
             checkBoxFileName.Checked = messageFileListView.Items.Cast<ListViewItem>().All(i => i.Checked);

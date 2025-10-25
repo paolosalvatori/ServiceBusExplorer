@@ -93,8 +93,8 @@ namespace ServiceBusExplorer.WindowsAzure
                 }
 
                 return new List<TopicDescription> {
-                     GetTopicUsingEntityPath(timeoutInSeconds)
-                 };
+                    GetTopicUsingEntityPath(timeoutInSeconds)
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }

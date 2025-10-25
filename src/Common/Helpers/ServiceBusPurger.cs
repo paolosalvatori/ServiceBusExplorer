@@ -107,7 +107,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
               serviceBusHelper.Connection.Namespace.ConnectionString,
               new ServiceBusClientOptions
               {
-                  //TransportType = ServiceBusTr //TODO: No transport type 
+                  TransportType = serviceBusHelper.Connection.Namespace.TransportType
               });
 
             try

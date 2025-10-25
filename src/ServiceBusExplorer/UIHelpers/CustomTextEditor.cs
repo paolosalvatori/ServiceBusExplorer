@@ -49,12 +49,12 @@ namespace ServiceBusExplorer.UIHelpers
             if (service != null && context.Instance is CustomObject)
             {
                 var customObject = context.Instance as CustomObject;
-
+                
                 var valueAsString = value as string;
                 // ReSharper disable SuspiciousTypeConversion.Global
                 var gridItem = provider as GridItem;
                 // ReSharper restore SuspiciousTypeConversion.Global
-
+                
 
                 var propertyName = "Value";
                 if (gridItem != null)
@@ -77,7 +77,7 @@ namespace ServiceBusExplorer.UIHelpers
             // ReSharper disable AssignNullToNotNullAttribute
             return value;
             // ReSharper restore AssignNullToNotNullAttribute
-        }
+        } 
         #endregion
     }
 }

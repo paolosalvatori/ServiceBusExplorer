@@ -53,8 +53,8 @@
             // 
             // mainTabControl
             // 
-            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTabControl.Controls.Add(this.tabPageDescription);
             this.mainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
@@ -79,8 +79,8 @@
             // 
             // grouperPartitionInformation
             // 
-            this.grouperPartitionInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperPartitionInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperPartitionInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPartitionInformation.BackgroundGradientColor = System.Drawing.Color.White;
@@ -106,12 +106,12 @@
             // 
             // propertyListView
             // 
-            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
@@ -137,7 +137,7 @@
             // partitionInformationContextMenuStrip
             // 
             this.partitionInformationContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.copyPartitionInformationToClipboardMenuItem});
+            this.copyPartitionInformationToClipboardMenuItem});
             this.partitionInformationContextMenuStrip.Name = "registrationContextMenuStrip";
             this.partitionInformationContextMenuStrip.Size = new System.Drawing.Size(289, 48);
             // 

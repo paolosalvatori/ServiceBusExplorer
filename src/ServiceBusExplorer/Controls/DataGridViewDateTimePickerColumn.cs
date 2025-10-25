@@ -44,7 +44,7 @@ namespace ServiceBusExplorer.Controls
             set
             {
                 // Ensure that the cell used for the template is a CalendarCell. 
-                if (value != null &&
+                if (value != null && 
                     !value.GetType().IsAssignableFrom(typeof(CalendarCell)))
                 {
                     throw new InvalidCastException("Must be a CalendarCell");
@@ -105,14 +105,14 @@ namespace ServiceBusExplorer.Controls
     class CalendarEditingControl : DateTimePicker, IDataGridViewEditingControl
     {
         #region Private Fields
-        private bool valueChanged;
+        private bool valueChanged; 
         #endregion
 
         #region Public Constructors
         public CalendarEditingControl()
         {
             Format = DateTimePickerFormat.Short;
-        }
+        } 
         #endregion
 
         #region Public Methods
@@ -158,8 +158,8 @@ namespace ServiceBusExplorer.Controls
             Font = dataGridViewCellStyle.Font;
             CalendarForeColor = dataGridViewCellStyle.ForeColor;
             CalendarMonthBackground = dataGridViewCellStyle.BackColor;
-        }
-
+        } 
+        
         // Implements the IDataGridViewEditingControl.EditingControlWantsInputKey  
         // method. 
         public bool EditingControlWantsInputKey(Keys key, bool dataGridViewWantsInputKey)

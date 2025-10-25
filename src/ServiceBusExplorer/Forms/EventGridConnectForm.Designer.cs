@@ -92,7 +92,7 @@ namespace ServiceBusExplorer.Forms
             // pbAzure
             // 
             this.pbAzure.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            //this.pbAzure.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
+            this.pbAzure.BackgroundImage = global::ServiceBusExplorer.Properties.Resources.MicrosoftAzureWhiteLogo;
             this.pbAzure.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pbAzure.ErrorImage = null;
             this.pbAzure.Location = new System.Drawing.Point(281, 9);
@@ -140,8 +140,8 @@ namespace ServiceBusExplorer.Forms
             // 
             this.cboApiVersion.FormattingEnabled = true;
             this.cboApiVersion.Items.AddRange(new object[] {
-             "2023-12-15-preview",
-             "2023-06-01-preview"});
+            "2023-12-15-preview",
+            "2023-06-01-preview"});
             this.cboApiVersion.Location = new System.Drawing.Point(19, 200);
             this.cboApiVersion.Margin = new System.Windows.Forms.Padding(2);
             this.cboApiVersion.Name = "cboApiVersion";
@@ -150,7 +150,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // cloudGroupBox
             // 
-            this.cloudGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cloudGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cloudGroupBox.BackColor = System.Drawing.Color.Transparent;
             this.cloudGroupBox.Controls.Add(this.btnPublicCloud);
@@ -191,7 +191,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtCustomId
             // 
-            this.txtCustomId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtCustomId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCustomId.Enabled = false;
             this.txtCustomId.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -212,7 +212,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtRetryTimeout
             // 
-            this.txtRetryTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtRetryTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtRetryTimeout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtRetryTimeout.Location = new System.Drawing.Point(16, 242);
@@ -233,7 +233,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtSubscriptionId
             // 
-            this.txtSubscriptionId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSubscriptionId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionId.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtSubscriptionId.Location = new System.Drawing.Point(16, 49);
@@ -253,7 +253,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtResourceGroupName
             // 
-            this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtResourceGroupName.BackColor = System.Drawing.SystemColors.Window;
             this.txtResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -285,7 +285,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtNamespaceName
             // 
-            this.txtNamespaceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtNamespaceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNamespaceName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtNamespaceName.Location = new System.Drawing.Point(16, 145);

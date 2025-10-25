@@ -102,7 +102,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
             this.mainPanel.Controls.Add(this.lblCertificatePath);
@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtCertificatePath
             // 
-            this.txtCertificatePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtCertificatePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCertificatePath.BackColor = System.Drawing.SystemColors.Window;
             this.txtCertificatePath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);

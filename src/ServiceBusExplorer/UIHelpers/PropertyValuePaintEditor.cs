@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -73,7 +73,7 @@ namespace ServiceBusExplorer.UIHelpers
                 }
             }
             base.PaintValue(pe);
-        }
+        } 
         #endregion
     }
 }

@@ -34,32 +34,32 @@ namespace ServiceBusExplorer.Forms
         public string EventType;
         public List<Dictionary<string, string>> filterList = new List<Dictionary<string, string>>();
         public List<string> OperatorsThatTakeInString = new List<string>
-         {
-             "String is in",
-             "String is not in",
-             "String contains",
-             "String does not contain",
-             "String begins with",
-             "String does not begin with",
-             "String ends with",
-             "String does not end with",
-             "Number is in",
-             "Number is not in",
-         };
+        {
+            "String is in",
+            "String is not in",
+            "String contains",
+            "String does not contain",
+            "String begins with",
+            "String does not begin with",
+            "String ends with",
+            "String does not end with",
+            "Number is in",
+            "Number is not in",
+        };
 
         public List<string> OperatorsThatTakeInIntValue = new List<string>
-         {
-             "Number is less than",
-             "Number is greater than",
-             "Number is less than or equal to",
-             "Number is greater than or equal to"
-         };
+        {
+            "Number is less than",
+            "Number is greater than",
+            "Number is less than or equal to",
+            "Number is greater than or equal to"
+        };
 
         public List<string> OperatorsThatTakeIntRange = new List<string>
-         {
-             "Number is in range",
-             "Number is not in range",
-         };
+        {
+            "Number is in range",
+            "Number is not in range",
+        };
 
         public List<string> eventTypesList = new List<string>();
         #endregion
@@ -278,7 +278,7 @@ namespace ServiceBusExplorer.Forms
             {
                 btnAddNewFilter.Enabled = true;
             }
-
+            
         }
         private Boolean IsValueFieldInputValid()
         {
@@ -308,7 +308,7 @@ namespace ServiceBusExplorer.Forms
                         return false;
                     }
                 }
-
+                
             }
             else if (OperatorsThatTakeInString.Contains(Operator))
             {
@@ -334,7 +334,7 @@ namespace ServiceBusExplorer.Forms
 
             if (comboBoxFilterValue.Visible && string.IsNullOrEmpty(comboBoxFilterOperator.Text))
             {
-                return false;
+               return false;
             }
 
             return true;

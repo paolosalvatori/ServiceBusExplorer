@@ -1,14 +1,14 @@
 ﻿namespace ServiceBusExplorer
 {
+    using System.Collections.Generic;
+    using System.Windows.Forms.Design;
     using CommandLine;
     using CommandLine.Text;
     using Helpers;
-    using System;
-    using System.Collections.Generic;
-    using System.Windows.Forms.Design;
 
     public class CommandLineOptions
     {
+        [Option('n', "namespace", SetName = "Connection", Required = false, HelpText = "Load namespace key in the configuration file.")]
         public string Namespace { get; set; }
 
         [Option('c', "connectionString", SetName = "Connection", Required = false, HelpText = "Use a connection string.")]
@@ -26,39 +26,22 @@
         [Usage(ApplicationAlias = "ServiceBusExplorer")]
         public static IEnumerable<Example> Examples =>
             new List<Example>() {
-                 new Example("1. Use a namespace named paolosalvatori and set filters on queue, topic and subscription where they all start with \"request\"",
-                     new CommandLineOptions
-                     {
-                         Namespace = "paolosalvatori",
-                         QueueFilter = "Startswith(Path, 'request') Eq true",
-                         TopicFilter = "Startswith(Path, 'request') Eq true",
-                         SubscriptionFilter = "Startswith(Path, 'request') Eq true"
-                     }),
-                 new Example("2. Use a connection string set topic filters where starts with \"request\"",
-                     new CommandLineOptions
-                     {
-                         ConnectionString = "Endpoint=sb://xxxx.servicebus.windows.net/;SharedAccessKeyName=keyName;SharedAccessKey=sharedAccessKey",
-                         TopicFilter = "Startswith(Path, 'request') Eq true"
-                     })
+                new Example("1. Use a namespace named paolosalvatori and set filters on queue, topic and subscription where they all start with \"request\"", 
+                    new CommandLineOptions
+                    {
+                        Namespace = "paolosalvatori",
+                        QueueFilter = "Startswith(Path, 'request') Eq true",
+                        TopicFilter = "Startswith(Path, 'request') Eq true",
+                        SubscriptionFilter = "Startswith(Path, 'request') Eq true"
+                    }),
+                new Example("2. Use a connection string set topic filters where starts with \"request\"",
+                    new CommandLineOptions
+                    {
+                        ConnectionString = "Endpoint=sb://xxxx.servicebus.windows.net/;SharedAccessKeyName=keyName;SharedAccessKey=sharedAccessKey",
+                        TopicFilter = "Startswith(Path, 'request') Eq true"
+                    })
             };
 
-        public static CommandLineOptions Parse(string[] args)
-        {
-            CommandLineOptions parsedOptions = null;
-
-            var parser = new Parser(config =>
-            {
-                config.CaseInsensitiveEnumValues = true;
-                config.HelpWriter = Console.Out;
-            });
-
-            var result = parser.ParseArguments<CommandLineOptions>(args);
-
-            result
-                .WithParsed(opts => parsedOptions = opts);
-
-            return parsedOptions;
-        }
 
         public static void ProcessCommandLineArguments(string[] args, out string argument, out string value, out string helpText)
         {

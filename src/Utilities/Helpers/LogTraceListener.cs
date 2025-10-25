@@ -55,7 +55,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
             : base(name)
         {
             this.writeToLog = writeToLog;
-        }
+        } 
         #endregion
 
         #region Public Methods
@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
         {
             writeToLog(message);
         }
-
+        
         /// <summary>
         /// Emits an error message to the log ListBox on the UI of the MainForm.
         /// </summary>

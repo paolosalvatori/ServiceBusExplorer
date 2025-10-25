@@ -16,8 +16,6 @@
             if (disposing && (components != null))
             {
                 components.Dispose();
-                _CheckBoxComboBoxListControl.Dispose();
-                _CheckBoxComboBoxListControl.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -59,7 +59,7 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 TrackEvent = e => new object(),
                 GetElapsedTime = () => 0,
-                UpdateStatistics = (a, b, c) => { },
+                UpdateStatistics = (a, b, c) =>{},
                 MessageInspector = null,
                 WriteToLog = DummyWriteToLog,
                 ServiceBusHelper = null
@@ -115,12 +115,12 @@ namespace ServiceBusExplorer.UIHelpers
                     }
                     if (configuration.Logging)
                     {
-                        var builder = new StringBuilder(string.IsNullOrWhiteSpace(events[i].PartitionKey) ?
+                        var builder = new StringBuilder(string.IsNullOrWhiteSpace(events[i].PartitionKey)?
                                                         string.Format(EventDataSuccessfullyNoPartitionKeyReceived,
                                                         context.Lease.PartitionId,
                                                         events[i].SequenceNumber,
                                                         events[i].Offset,
-                                                        events[i].EnqueuedTimeUtc) :
+                                                        events[i].EnqueuedTimeUtc):
                                                         string.Format(EventDataSuccessfullyReceived,
                                                         context.Lease.PartitionId,
                                                         events[i].PartitionKey,

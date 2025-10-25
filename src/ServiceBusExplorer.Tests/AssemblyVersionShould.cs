@@ -16,10 +16,10 @@ namespace ServiceBusExplorer.Tests
         public void BeSameAsSetInProject()
         {
             var assemblyNames = Directory.GetFiles(".", "ServiceBus*.*")
-                    .Where(x => x.EndsWith(".dll") || x.EndsWith(".exe"));
+                    .Where(x=>x.EndsWith(".dll") || x.EndsWith(".exe"));
 
             var projectFiles = Directory.GetFiles("../../../../", $"*{CSharpProjectExtension}", SearchOption.AllDirectories);
-
+            
             var xmlDocument = new XmlDocument();
 
             var expectedVersions = projectFiles.Select(x =>
@@ -31,11 +31,11 @@ namespace ServiceBusExplorer.Tests
                 return new
                 {
                     assemblyName = assemblyNameNode?.InnerText ?? ExtractProjectName(x),
-                    assemblyVersion = assemblyVersionNode.InnerText
+                    assemblyVersion= assemblyVersionNode.InnerText
                 };
-            }).ToArray();
+            }).ToArray() ;
 
-            var actualAssemblyVersions = assemblyNames.Select(x =>
+            var actualAssemblyVersions = assemblyNames.Select(x=>
             {
                 var assembly = Assembly.LoadFrom(x);
                 return new

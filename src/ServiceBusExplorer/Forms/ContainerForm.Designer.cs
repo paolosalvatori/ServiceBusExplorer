@@ -104,8 +104,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainSplitContainer
             // 
-            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.mainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainSplitContainer.Location = new System.Drawing.Point(16, 40);
             this.mainSplitContainer.Name = "mainSplitContainer";
@@ -184,14 +184,14 @@ namespace ServiceBusExplorer.Forms
             // logContextMenuStrip
             // 
             this.logContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.copyAllToolStripMenuItem,
-             this.copySelectedToolStripMenuItem,
-             this.toolStripSeparator27,
-             this.clearAllToolStripMenuItem,
-             this.clearSelectedToolStripMenuItem,
-             this.toolStripSeparator29,
-             this.saveAllToolStripMenuItem,
-             this.saveSelectedToolStripMenuItem});
+            this.copyAllToolStripMenuItem,
+            this.copySelectedToolStripMenuItem,
+            this.toolStripSeparator27,
+            this.clearAllToolStripMenuItem,
+            this.clearSelectedToolStripMenuItem,
+            this.toolStripSeparator29,
+            this.saveAllToolStripMenuItem,
+            this.saveSelectedToolStripMenuItem});
             this.logContextMenuStrip.Name = "logContextMenuStrip";
             this.logContextMenuStrip.Size = new System.Drawing.Size(150, 148);
             // 
@@ -250,7 +250,7 @@ namespace ServiceBusExplorer.Forms
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.exitToolStripMenuItem});
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
@@ -288,7 +288,7 @@ namespace ServiceBusExplorer.Forms
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.aboutToolStripMenuItem});
+            this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
@@ -334,10 +334,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.mainMenuStrip.BackColor = System.Drawing.Color.Transparent;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.toolStripMenuItem1,
-             this.toolStripMenuItem3,
-             this.toolStripMenuItem6,
-             this.toolStripMenuItem9});
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem6,
+            this.toolStripMenuItem9});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Size = new System.Drawing.Size(1040, 24);
@@ -347,7 +347,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.toolStripMenuItem2});
+            this.toolStripMenuItem2});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
             this.toolStripMenuItem1.Text = "&File";
@@ -363,8 +363,8 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.toolStripMenuItem4,
-             this.toolStripMenuItem5});
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5});
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.Size = new System.Drawing.Size(39, 20);
             this.toolStripMenuItem3.Text = "&Edit";
@@ -388,8 +388,8 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.toolStripMenuItem7,
-             this.toolStripMenuItem8});
+            this.toolStripMenuItem7,
+            this.toolStripMenuItem8});
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.toolStripMenuItem6.Size = new System.Drawing.Size(44, 20);
@@ -417,7 +417,7 @@ namespace ServiceBusExplorer.Forms
             // toolStripMenuItem9
             // 
             this.toolStripMenuItem9.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.toolStripMenuItem10});
+            this.toolStripMenuItem10});
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
             this.toolStripMenuItem9.Size = new System.Drawing.Size(44, 20);
             this.toolStripMenuItem9.Text = "&Help";

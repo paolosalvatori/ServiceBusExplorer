@@ -49,7 +49,7 @@ namespace ServiceBusExplorer.Forms
         /// <summary>
         /// The message-driven timer 
         /// </summary>
-        readonly Timer timer = new Timer();
+        readonly Timer timer = new Timer(); 
         #endregion
 
         #region Public Constructor
@@ -73,18 +73,18 @@ namespace ServiceBusExplorer.Forms
             for (var i = 0; i < count; i++)
             {
                 var shape = new Picture(whiteLogoBitmap)
-                {
-                    Limits = ClientRectangle,
-                    Location = new Point(random.Next(ClientRectangle.Width + 16),
+                                {
+                                    Limits = ClientRectangle,
+                                    Location = new Point(random.Next(ClientRectangle.Width + 16),
                                                          random.Next(ClientRectangle.Height + 16)),
-                    Size = new Size(1 + random.Next(100), 1 + random.Next(100)),
-                    BackColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
-                    ForeColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
-                    RotationDelta = random.Next(20),
-                    Transparency = (float)random.NextDouble(),
-                    LineThickness = random.Next(10),
-                    Vector = new Size(-10 + random.Next(20), -10 + random.Next(20))
-                };
+                                    Size = new Size(1 + random.Next(100), 1 + random.Next(100)),
+                                    BackColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
+                                    ForeColor = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)),
+                                    RotationDelta = random.Next(20),
+                                    Transparency = (float)random.NextDouble(),
+                                    LineThickness = random.Next(10),
+                                    Vector = new Size(-10 + random.Next(20), -10 + random.Next(20))
+                                };
 
                 //and added to the list of shapes
                 shapes.Add(shape);
@@ -210,7 +210,7 @@ namespace ServiceBusExplorer.Forms
                 shapes.Add(shape);
             }
         }
-
+        
         private void AboutForm_Load(object sender, EventArgs e)
         {
             Text = $"About {MainForm.SingletonMainForm.Text}";

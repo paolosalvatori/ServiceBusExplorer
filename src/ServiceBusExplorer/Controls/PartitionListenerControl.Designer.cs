@@ -159,8 +159,8 @@
             // 
             // mainTabControl
             // 
-            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTabControl.Controls.Add(this.tabPageListener);
             this.mainTabControl.Controls.Add(this.tabPageEventData);
@@ -340,8 +340,8 @@
             // 
             // chart
             // 
-            this.chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chart.BackImageTransparentColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.chart.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -357,7 +357,7 @@
             chartArea1.Area3DStyle.Perspective = 10;
             chartArea1.Area3DStyle.Rotation = 10;
             chartArea1.Area3DStyle.WallWidth = 0;
-            chartArea1.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont)
+            chartArea1.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.WordWrap)));
             chartArea1.AxisX.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
             chartArea1.AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -426,7 +426,7 @@
             // 
             // grouperPartitionInformation
             // 
-            this.grouperPartitionInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.grouperPartitionInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperPartitionInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperPartitionInformation.BackgroundGradientColor = System.Drawing.Color.White;
@@ -476,7 +476,7 @@
             // 
             // cboPartition
             // 
-            this.cboPartition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cboPartition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboPartition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboPartition.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -489,12 +489,12 @@
             // 
             // propertyListView
             // 
-            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 96);
             this.propertyListView.Name = "propertyListView";
@@ -520,7 +520,7 @@
             // 
             // grouperOptions
             // 
-            this.grouperOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperOptions.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperOptions.BackgroundGradientColor = System.Drawing.Color.White;
@@ -738,8 +738,8 @@
             // 
             // eventDataSplitContainer
             // 
-            this.eventDataSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.eventDataSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventDataSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.eventDataSplitContainer.Name = "eventDataSplitContainer";
@@ -806,8 +806,8 @@
             this.eventDataDataGridView.AllowUserToAddRows = false;
             this.eventDataDataGridView.AllowUserToDeleteRows = false;
             this.eventDataDataGridView.AllowUserToResizeRows = false;
-            this.eventDataDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.eventDataDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventDataDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.eventDataDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -861,20 +861,20 @@
             // 
             // txtMessageText
             // 
-            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageText.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -940,8 +940,8 @@
             // 
             // eventDataPropertyGrid
             // 
-            this.eventDataPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.eventDataPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventDataPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.eventDataPropertyGrid.HelpVisible = false;
@@ -979,12 +979,12 @@
             // 
             // eventDataPropertyListView
             // 
-            this.eventDataPropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.eventDataPropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventDataPropertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.columnHeader1,
-             this.columnHeader2});
+            this.columnHeader1,
+            this.columnHeader2});
             this.eventDataPropertyListView.HideSelection = false;
             this.eventDataPropertyListView.Location = new System.Drawing.Point(16, 32);
             this.eventDataPropertyListView.Name = "eventDataPropertyListView";
@@ -1011,10 +1011,10 @@
             // eventDataContextMenuStrip
             // 
             this.eventDataContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.viewAndSaveEventDataToolStripMenuItem,
-             this.toolStripSeparator,
-             this.saveSelectedEventToolStripMenuItem,
-             this.saveSelectedEventsToolStripMenuItem});
+            this.viewAndSaveEventDataToolStripMenuItem,
+            this.toolStripSeparator,
+            this.saveSelectedEventToolStripMenuItem,
+            this.saveSelectedEventsToolStripMenuItem});
             this.eventDataContextMenuStrip.Name = "registrationContextMenuStrip";
             this.eventDataContextMenuStrip.Size = new System.Drawing.Size(209, 76);
             // 
@@ -1065,7 +1065,7 @@
             // 
             // cboReceiverInspector
             // 
-            this.cboReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.cboReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboReceiverInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboReceiverInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1089,7 +1089,7 @@
             // partitionInformationContextMenuStrip
             // 
             this.partitionInformationContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.copyPartitionInformationToClipboardMenuItem});
+            this.copyPartitionInformationToClipboardMenuItem});
             this.partitionInformationContextMenuStrip.Name = "registrationContextMenuStrip";
             this.partitionInformationContextMenuStrip.Size = new System.Drawing.Size(289, 26);
             // 

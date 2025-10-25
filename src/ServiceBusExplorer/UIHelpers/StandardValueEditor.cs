@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.UIHelpers
     public class StandardValueEditor : UITypeEditor
     {
         #region Private Fields
-        private StandardValueEditorUI standardValueEditorUI = new StandardValueEditorUI();
+        private StandardValueEditorUI standardValueEditorUI = new StandardValueEditorUI(); 
         #endregion
 
         #region Public Properties 
@@ -69,7 +69,7 @@ namespace ServiceBusExplorer.UIHelpers
             editorService.DropDownControl(standardValueEditorUI);
             value = standardValueEditorUI.GetValue();
             return value;
-        }
+        } 
         #endregion
     }
 }

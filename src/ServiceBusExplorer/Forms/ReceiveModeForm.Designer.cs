@@ -116,7 +116,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
             this.mainPanel.Controls.Add(this.grouperSession);
@@ -156,7 +156,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtFromSession
             // 
-            this.txtFromSession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtFromSession.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFromSession.Location = new System.Drawing.Point(15, 32);
             this.txtFromSession.Name = "txtFromSession";
@@ -189,7 +189,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtFromSequenceNumber
             // 
-            this.txtFromSequenceNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtFromSequenceNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFromSequenceNumber.Location = new System.Drawing.Point(15, 32);
             this.txtFromSequenceNumber.Name = "txtFromSequenceNumber";
@@ -260,7 +260,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtMessageCount
             // 
-            this.txtMessageCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageCount.Location = new System.Drawing.Point(112, 32);
             this.txtMessageCount.Name = "txtMessageCount";

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -72,7 +72,7 @@ namespace ServiceBusExplorer.UIHelpers
             this.owner = owner;
             attributes = new AttributeList(pd.Attributes);
             UpdateMemberData();
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -192,7 +192,7 @@ namespace ServiceBusExplorer.UIHelpers
         {
             get
             {
-                return owner.GetType();
+                return owner.GetType( );
             }
         }
 
@@ -379,9 +379,9 @@ namespace ServiceBusExplorer.UIHelpers
             }
             attr = new ReadOnlyAttribute(isReadOnly);
             attributes.Add(attr);
-        }
-
-        public void SetIsBrowsable(bool isBrowsable)
+        } 
+        
+        public void SetIsBrowsable( bool isBrowsable )
         {
             var attr = (BrowsableAttribute)attributes.FirstOrDefault(a => a is BrowsableAttribute);
             if (attr != null)
@@ -391,8 +391,8 @@ namespace ServiceBusExplorer.UIHelpers
             attr = new BrowsableAttribute(isBrowsable);
             attributes.Add(attr);
         }
-
-        public void SetDisplayName(string displayName)
+        
+        public void SetDisplayName( string displayName )
         {
             var attr = (DisplayNameAttribute)attributes.FirstOrDefault(a => a is DisplayNameAttribute);
             if (attr != null)
@@ -403,7 +403,7 @@ namespace ServiceBusExplorer.UIHelpers
             attributes.Add(attr);
         }
 
-        public void SetCategory(string category)
+        public void SetCategory( string category )
         {
             var attr = (CategoryAttribute)attributes.FirstOrDefault(a => a is CategoryAttribute);
             if (attr != null)
@@ -413,8 +413,8 @@ namespace ServiceBusExplorer.UIHelpers
             attr = new CategoryAttribute(category);
             attributes.Add(attr);
         }
-
-        public void SetDescription(string description)
+       
+        public void SetDescription( string description )
         {
             var attr = (DescriptionAttribute)attributes.FirstOrDefault(a => a is DescriptionAttribute);
             if (attr != null)
@@ -424,8 +424,8 @@ namespace ServiceBusExplorer.UIHelpers
             attr = new DescriptionAttribute(description);
             attributes.Add(attr);
         }
-
-        public override object GetValue(object component)
+        
+        public override object GetValue( object component )
         {
             if (propertyDescriptor != null)
             {
@@ -434,11 +434,11 @@ namespace ServiceBusExplorer.UIHelpers
             return value;
         }
 
-        public override void SetValue(object component, object value)
+        public override void SetValue( object component, object value )
         {
             if (value != null && value is StandardValueAttribute)
             {
-                this.value = ((StandardValueAttribute)value).Value;
+                this.value = ((StandardValueAttribute) value).Value;
             }
             else
             {
@@ -448,21 +448,21 @@ namespace ServiceBusExplorer.UIHelpers
             if (propertyDescriptor != null)
             {
                 propertyDescriptor.SetValue(component, this.value);
-                OnValueChanged(this, new EventArgs());
+                OnValueChanged(this, new EventArgs( ));
 
             }
             else
             {
                 var eh = this.GetValueChangedHandler(owner);
-                eh?.Invoke(this, new EventArgs());
-                OnValueChanged(this, new EventArgs());
+                eh?.Invoke(this, new EventArgs( ));
+                OnValueChanged(this, new EventArgs( ));
             }
         }
 
         /// <summary>
         /// Abstract base members
         /// </summary>			
-        public override void ResetValue(object component)
+        public override void ResetValue( object component )
         {
             var dva = (DefaultValueAttribute)attributes.FirstOrDefault(a => a is DefaultValueAttribute);
             if (dva == null)
@@ -472,7 +472,7 @@ namespace ServiceBusExplorer.UIHelpers
             SetValue(component, dva.Value);
         }
 
-        public override bool CanResetValue(object component)
+        public override bool CanResetValue( object component )
         {
             var dva = (DefaultValueAttribute)attributes.FirstOrDefault(a => a is DefaultValueAttribute);
             if (dva == null)
@@ -484,12 +484,12 @@ namespace ServiceBusExplorer.UIHelpers
 
         }
 
-        public override bool ShouldSerializeValue(object component)
+        public override bool ShouldSerializeValue( object component )
         {
             return CanResetValue(owner);
         }
 
-        public override PropertyDescriptorCollection GetChildProperties(object instance, Attribute[] filter)
+        public override PropertyDescriptorCollection GetChildProperties( object instance, Attribute[] filter )
         {
             PropertyDescriptorCollection pdc = null;
             var tc = Converter;
@@ -517,7 +517,7 @@ namespace ServiceBusExplorer.UIHelpers
                 return pdc;
             }
             // now wrap these properties with our CustomPropertyDescriptor
-            var pdl = new PropertyDescriptorList();
+            var pdl = new PropertyDescriptorList( );
 
             foreach (PropertyDescriptor pd in pdc)
             {
@@ -531,11 +531,11 @@ namespace ServiceBusExplorer.UIHelpers
                 }
             }
 
-            pdl.Sort(new PropertySorter());
-            var pdcReturn = new PropertyDescriptorCollection(pdl.ToArray());
-            pdcReturn.Sort();
+            pdl.Sort(new PropertySorter( ));
+            var pdcReturn = new PropertyDescriptorCollection(pdl.ToArray( ));
+            pdcReturn.Sort( );
             return pdcReturn;
-
+      
         }
         #endregion
 

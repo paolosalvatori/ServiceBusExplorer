@@ -26,7 +26,7 @@ namespace ServiceBusExplorer.Forms
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-            try
+            try 
             {
                 EventSource = txtEventSource.Text.Trim();
                 EventType = txtEventType.Text.Trim();

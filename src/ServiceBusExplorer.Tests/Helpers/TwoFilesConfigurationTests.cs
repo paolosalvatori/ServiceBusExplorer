@@ -97,44 +97,44 @@ namespace ServiceBusExplorer.Tests.Helpers
         string logInMemory;
 
         readonly Dictionary<string, string> someSaltWaterFishes = new Dictionary<string, string>()
-         {
-             { "Atlantic chub mackerel", "Scomber colias" },
-             { "Atlantic mackerel", "Scomber scombrus" },
-             { "Alaska pollock", "Theragra chalcogramma" }
-         };
+        {
+            { "Atlantic chub mackerel", "Scomber colias" },
+            { "Atlantic mackerel", "Scomber scombrus" },
+            { "Alaska pollock", "Theragra chalcogramma" }
+        };
 
         readonly Dictionary<string, string> someFreshWaterFishes = new Dictionary<string, string>()
-         {
-             { KeyPike, ValuePikeScienticName },
-             { "Perch", "Perca flavescens" },
-             { "Zander","Sander lucioperca" }
-         };
+        {
+            { KeyPike, ValuePikeScienticName },
+            { "Perch", "Perca flavescens" },
+            { "Zander","Sander lucioperca" }
+        };
 
         readonly List<KeyValuePair<string, string>> fakeConnectionStrings =
             new List<KeyValuePair<string, string>>()
         {
-             new KeyValuePair<string, string>("treasureInUserFile",
-                 "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=SomeKey;SharedAccessKey=18347="),
+            new KeyValuePair<string, string>("treasureInUserFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=SomeKey;SharedAccessKey=18347="),
 
-             new KeyValuePair<string, string>("anotherTreasureInUserFile",
-                 "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=21452="),
+            new KeyValuePair<string, string>("anotherTreasureInUserFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=21452="),
 
-             new KeyValuePair<string, string>("usedInUserFileAndAppFile",
-                 "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=UserFile;SharedAccessKey=32345="),
+            new KeyValuePair<string, string>("usedInUserFileAndAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=UserFile;SharedAccessKey=32345="),
 
-             new KeyValuePair<string, string>("usedInUserFileAndAppFile",
-                 "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=AppFile;SharedAccessKey=444445="),
+            new KeyValuePair<string, string>("usedInUserFileAndAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=AppFile;SharedAccessKey=444445="),
 
-             new KeyValuePair<string, string>("treasureInAppFile",
-                 "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=54442=")
+            new KeyValuePair<string, string>("treasureInAppFile",
+                "Endpoint=sb://fake.servicebus.windows.net/;SharedAccessKeyName=Root;SharedAccessKey=54442=")
         };
 
         readonly List<ConfigFileUse> configFileUses = new List<ConfigFileUse>()
-         {
-             ConfigFileUse.ApplicationConfig,
-             ConfigFileUse.UserConfig,
-             ConfigFileUse.BothConfig
-         };
+        {
+            ConfigFileUse.ApplicationConfig,
+            ConfigFileUse.UserConfig,
+            ConfigFileUse.BothConfig
+        };
         #endregion
 
         #region The constructor
@@ -453,7 +453,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 // Test reading config values - both application config and user config are missing
                 var namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
                 namespaces.Should().BeEmpty();
-
+                
                 logInMemory.Should().Contain("Service bus accounts have not been properly configured");
                 logInMemory = string.Empty;
 
@@ -465,9 +465,9 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
                 namespaces.Should().HaveCount(2);
-
+                
                 logInMemory.Should().BeEmpty();
-
+                
 
                 fakeConnectionStrings[IndexNamespaceAdded1].Value.Should().Be(namespaces[KeyNamespaceAdded1].ConnectionString);
                 fakeConnectionStrings[IndexNamespaceAdded2].Value.Should().Be(namespaces[KeyNamespaceAdded2].ConnectionString);
@@ -476,7 +476,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 // Add a connection to the application config file, but let the two connection 
                 // strings added previously stay.
                 SaveConnectionStringInApplicationFile(IndexSecondNamespaceInBothFiles);
-                configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(),
+                configuration= TwoFilesConfiguration.Create(GetUserSettingsFilePath(),
                     configFileUse);
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
 
@@ -500,7 +500,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 // two having the same key.
                 SaveConnectionString(configuration, IndexFirstNamespaceInBothFiles);
 
-                configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
+                configuration= TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
 
                 namespaces.Should().HaveCount(3);
@@ -511,7 +511,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 // Add a connection string to the application file
                 SaveConnectionStringInApplicationFile(IndexNamespaceInAppFile1);
-                configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
+                configuration= TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
 
                 // Depending upon ConfigFileUse setting there are
@@ -535,7 +535,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 // Delete the user file so reading will only be from the application file
                 DeleteUserConfigFile();
-                configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
+                configuration= TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
                 namespaces = ServiceBusNamespace.GetMessagingNamespaces(configuration, writeToLog);
 
                 if (UseApplicationConfig(configFileUse))
@@ -561,7 +561,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                     {
                         fakeConnectionStrings[IndexSecondNamespaceInBothFiles].Value.Should().Be(namespaces[KeyNamespaceInBothFiles].ConnectionString);
                     }
-
+                    
                     fakeConnectionStrings[IndexNamespaceInAppFile1].Value.Should().Be(namespaces[KeyNamespaceInAppFile1].ConnectionString);
                 }
                 else
@@ -667,7 +667,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             // Get the value from the user file defaulting to true. If userFileShouldHaveUseAsciiKeyAsFalse
             // is false then we should read from the application config and that value should be true
             var useAsciiDefTrue = configuration.GetBoolValue(KeyIsInitiallyTrueInAppConfig, true, writeToLog);
-
+            
             configHasBeenModified.Should().NotBe(useAsciiDefTrue);
 
             // Get a value from that initially only exist in the application file defaulting to false
@@ -770,12 +770,12 @@ namespace ServiceBusExplorer.Tests.Helpers
             // Get a value that do not exist in any config config file defaulting to empty
             configuration.SettingExists(KeyDoesNotExistAnywhere).Should().BeFalse();
             var nonExistingValueAsDefault = configuration.GetIntValue(KeyDoesNotExistAnywhere, default, writeToLog);
-
+            
             nonExistingValueAsDefault.Should().Be(0);
 
             // Get a value that does not exist in the any config file defaulting to mediumNumber
             var nonExistingValueAsMediumNumber = configuration.GetIntValue(KeyDoesNotExistAnywhere, mediumNumber, writeToLog);
-
+            
             mediumNumber.Should().Be(nonExistingValueAsMediumNumber);
 
             // Get the value from the user file defaulting to empty. If configHasBeenModified
@@ -1069,13 +1069,13 @@ namespace ServiceBusExplorer.Tests.Helpers
             var section = appConfiguration.GetSection("appSettings");
 
             var keysToRemove = new List<string>()
-             {
-                 KeyIsAddedAndSetToTrueBeforeSecondTest,
-                 KeyCrustaceanIsAddedAndSetToCrabBeforeSecondTest,
-                 KeyWhaleWeightWillBeAddedBeforeSecondRun,
-                 KeyWhaleLengthWhichWillBeAddedBeforeSecondRun,
-                 KeyWithInvalidValue
-             };
+            {
+                KeyIsAddedAndSetToTrueBeforeSecondTest,
+                KeyCrustaceanIsAddedAndSetToCrabBeforeSecondTest,
+                KeyWhaleWeightWillBeAddedBeforeSecondRun,
+                KeyWhaleLengthWhichWillBeAddedBeforeSecondRun,
+                KeyWithInvalidValue
+            };
 
             RemoveKeysUsingRawXml(section, keysToRemove);
             appConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);

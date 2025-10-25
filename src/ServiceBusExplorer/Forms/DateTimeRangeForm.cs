@@ -31,7 +31,7 @@ namespace ServiceBusExplorer.Forms
             else
             {
                 dateToTimePicker.Checked = false;
-            }
+            }            
         }
         #endregion
 
@@ -60,7 +60,7 @@ namespace ServiceBusExplorer.Forms
 
             if ((DateTimeFrom ?? DateTime.MinValue).Ticks > (DateTimeTo ?? DateTime.MaxValue).Ticks)
             {
-                MessageBox.Show("From date time cannot be after To date time!", "Invalid date combination", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show("From date time cannot be after To date time!", "Invalid date combination",MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 DialogResult = DialogResult.None;
                 return;
             }

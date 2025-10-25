@@ -64,7 +64,7 @@ namespace ServiceBusExplorer.Helpers
         public List<string> SelectedMessageCounts { get; set; }
 
         public string MessageBodyType { get; set; }
-        //public ConnectivityMode ConnectivityMode { get; set; }
+        //public ConnectivityMode ConnectivityMode { get; set; } //TODO: Migrate and other settings to make use of this to use <c>ServiceBusClientOptions</c>
         public bool UseAmqpWebSockets { get; set; }
         public Enums.EncodingType EncodingType { get; set; }
 

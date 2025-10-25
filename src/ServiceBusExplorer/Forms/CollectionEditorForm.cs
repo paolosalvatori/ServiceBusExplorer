@@ -164,7 +164,7 @@ namespace ServiceBusExplorer.Forms
         }
 
         public object Value { get; set; }
-        #endregion
+        #endregion  
 
         #region Private Methods
         private void CalculateColumnWidth()
@@ -179,7 +179,7 @@ namespace ServiceBusExplorer.Forms
             {
                 width -= verticalScrollbar.Width;
             }
-            var columnWith = width / dataGridView.Columns.Count;
+            var columnWith = width/dataGridView.Columns.Count;
             for (var i = 0; i < dataGridView.Columns.Count; i++)
             {
                 dataGridView.Columns[i].Width = i == 0 ? columnWith + (width - (columnWith * dataGridView.Columns.Count)) : columnWith;
@@ -190,6 +190,6 @@ namespace ServiceBusExplorer.Forms
         {
             e.Cancel = true;
         }
-        #endregion
+        #endregion 
     }
 }

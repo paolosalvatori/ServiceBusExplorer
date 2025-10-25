@@ -114,7 +114,7 @@ namespace ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -194,7 +194,7 @@ namespace ServiceBusExplorer.Controls
                 btnChangeStatus.Text = eventHubDescription.Status == EntityStatus.Active ? DisableText : EnableText;
                 btnRefresh.Visible = true;
                 btnChangeStatus.Visible = true;
-
+                
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
                 txtPath.BackColor = SystemColors.Window;
@@ -246,7 +246,7 @@ namespace ServiceBusExplorer.Controls
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
                 if (eventHubDescription != null &&
-                    eventHubDescription.Authorization.Count > 0 &&
+                    eventHubDescription.Authorization.Count > 0 && 
                     eventHubDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = eventHubDescription.Authorization.ElementAt(e.NewIndex);
@@ -293,9 +293,9 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
 
             propertyList.AddRange(new[]{new[]{Status, eventHubDescription.Status.ToString()},
-                                             new[]{IsReadOnly, eventHubDescription.IsReadOnly.ToString()},
-                                             new[]{CreatedAt, eventHubDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{UpdatedAt, eventHubDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)}});
+                                            new[]{IsReadOnly, eventHubDescription.IsReadOnly.ToString()},
+                                            new[]{CreatedAt, eventHubDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{UpdatedAt, eventHubDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)}});
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
@@ -359,9 +359,9 @@ namespace ServiceBusExplorer.Controls
                         return;
                     }
                     var description = new EventHubDescription(txtPath.Text)
-                    {
-                        UserMetadata = txtUserMetadata.Text
-                    };
+                        {
+                            UserMetadata = txtUserMetadata.Text
+                        };
 
                     description.MessageRetentionInDays = trackBarMessageRetentionInDays.Value;
 
@@ -898,7 +898,7 @@ namespace ServiceBusExplorer.Controls
         {
             lblPartitionCountValue.Text = trackBarPartitionCount.Value.ToString(CultureInfo.InvariantCulture);
         }
-
+        
         private void authorizationRulesDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;

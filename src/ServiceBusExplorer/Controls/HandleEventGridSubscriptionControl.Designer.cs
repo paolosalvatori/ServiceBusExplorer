@@ -57,8 +57,8 @@ namespace ServiceBusExplorer.Controls
             // 
             // subscriptionPropertyListView
             // 
-            this.subscriptionPropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.subscriptionPropertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.subscriptionPropertyListView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.subscriptionPropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -88,12 +88,12 @@ namespace ServiceBusExplorer.Controls
             // subscriptionListView
             // 
             this.subscriptionListView.Alignment = System.Windows.Forms.ListViewAlignment.Default;
-            this.subscriptionListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.subscriptionListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.subscriptionListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.subscriptionListView.HideSelection = false;
             this.subscriptionListView.Location = new System.Drawing.Point(33, 51);
             this.subscriptionListView.Name = "subscriptionListView";
@@ -127,7 +127,7 @@ namespace ServiceBusExplorer.Controls
             // 
             // receivedEventsGrouper
             // 
-            this.receivedEventsGrouper.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.receivedEventsGrouper.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.receivedEventsGrouper.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.receivedEventsGrouper.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -214,15 +214,15 @@ namespace ServiceBusExplorer.Controls
             // 
             this.eventsDataGridView.AllowUserToAddRows = false;
             this.eventsDataGridView.AllowUserToDeleteRows = false;
-            this.eventsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.eventsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.eventsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.eventsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.eventsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.eventsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-             this.eventsCheckboxCol});
+            this.eventsCheckboxCol});
             this.eventsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.eventsDataGridView.Location = new System.Drawing.Point(33, 51);
             this.eventsDataGridView.Name = "eventsDataGridView";
@@ -270,20 +270,20 @@ namespace ServiceBusExplorer.Controls
             // 
             // receiveEventInfo
             // 
-            this.receiveEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.receiveEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.receiveEventInfo.AutoCompleteBracketsList = new char[] {
-             '(',
-             ')',
-             '{',
-             '}',
-             '[',
-             ']',
-             '\"',
-             '\"',
-             '\'',
-             '\''};
+            '(',
+            ')',
+            '{',
+            '}',
+            '[',
+            ']',
+            '\"',
+            '\"',
+            '\'',
+            '\''};
             this.receiveEventInfo.AutoScrollMinSize = new System.Drawing.Size(35, 22);
             this.receiveEventInfo.BackBrush = null;
             this.receiveEventInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;

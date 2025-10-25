@@ -234,7 +234,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtSubscriptionFilterExpression
             // 
-            this.txtSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 190);
@@ -287,7 +287,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtQueueFilterExpression
             // 
-            this.txtQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtQueueFilterExpression.Location = new System.Drawing.Point(16, 94);
@@ -299,7 +299,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtTopicFilterExpression
             // 
-            this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTopicFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtTopicFilterExpression.Location = new System.Drawing.Point(16, 142);
@@ -310,7 +310,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtIssuerSecret
             // 
-            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
@@ -323,7 +323,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtIssuerName
             // 
-            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtIssuerName.Location = new System.Drawing.Point(16, 192);
@@ -335,7 +335,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtNamespace
             // 
-            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtNamespace.Location = new System.Drawing.Point(16, 96);
@@ -347,7 +347,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtEntityPath
             // 
-            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEntityPath.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
@@ -650,7 +650,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtUri
             // 
-            this.txtUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtUri.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtUri.Location = new System.Drawing.Point(16, 48);
@@ -737,7 +737,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // cboServiceBusNamespace
             // 
-            this.cboServiceBusNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cboServiceBusNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboServiceBusNamespace.BackColor = System.Drawing.SystemColors.Window;
             this.cboServiceBusNamespace.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;

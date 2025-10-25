@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -40,7 +40,7 @@ namespace ServiceBusExplorer.UIHelpers
             var ourProvider = new CustomTypeDescriptionProvider(parentProvider, ourCtd);
             TypeDescriptor.AddProvider(ourProvider, instance);
             return ourCtd;
-        }
+        } 
         #endregion
     }
 }

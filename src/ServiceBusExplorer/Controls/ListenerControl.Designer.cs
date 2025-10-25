@@ -161,8 +161,8 @@
             // 
             // mainTabControl
             // 
-            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTabControl.Controls.Add(this.tabPageListener);
             this.mainTabControl.Controls.Add(this.tabPageMessages);
@@ -345,8 +345,8 @@
             // 
             // chart
             // 
-            this.chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chart.BackImageTransparentColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.chart.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -362,7 +362,7 @@
             chartArea1.Area3DStyle.Perspective = 10;
             chartArea1.Area3DStyle.Rotation = 10;
             chartArea1.Area3DStyle.WallWidth = 0;
-            chartArea1.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont)
+            chartArea1.AxisX.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.WordWrap)));
             chartArea1.AxisX.LabelStyle.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold);
             chartArea1.AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -431,7 +431,7 @@
             // 
             // grouperEntityInformation
             // 
-            this.grouperEntityInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.grouperEntityInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperEntityInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperEntityInformation.BackgroundGradientColor = System.Drawing.Color.White;
@@ -457,12 +457,12 @@
             // 
             // propertyListView
             // 
-            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.propertyListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-             this.nameColumnHeader,
-             this.valueColumnHeader});
+            this.nameColumnHeader,
+            this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
             this.propertyListView.Location = new System.Drawing.Point(16, 32);
             this.propertyListView.Name = "propertyListView";
@@ -488,7 +488,7 @@
             // 
             // grouperOptions
             // 
-            this.grouperOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperOptions.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperOptions.BackgroundGradientColor = System.Drawing.Color.White;
@@ -612,8 +612,8 @@
             this.cboReceivedMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboReceivedMode.FormattingEnabled = true;
             this.cboReceivedMode.Items.AddRange(new object[] {
-             "ReceiveDelete",
-             "PeekLock"});
+            "ReceiveDelete",
+            "PeekLock"});
             this.cboReceivedMode.Location = new System.Drawing.Point(376, 48);
             this.cboReceivedMode.Name = "cboReceivedMode";
             this.cboReceivedMode.Size = new System.Drawing.Size(96, 21);
@@ -750,8 +750,8 @@
             // 
             // messagesSplitContainer
             // 
-            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagesSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagesSplitContainer.Location = new System.Drawing.Point(16, 8);
             this.messagesSplitContainer.Name = "messagesSplitContainer";
@@ -831,8 +831,8 @@
             this.messagesDataGridView.AllowUserToAddRows = false;
             this.messagesDataGridView.AllowUserToDeleteRows = false;
             this.messagesDataGridView.AllowUserToResizeRows = false;
-            this.messagesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.messagesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -888,16 +888,16 @@
             // txtMessageText
             // 
             this.txtMessageText.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtMessageText.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtMessageText.BackBrush = null;
             this.txtMessageText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -963,8 +963,8 @@
             // 
             // messagePropertyGrid
             // 
-            this.messagePropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messagePropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messagePropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.messagePropertyGrid.HelpVisible = false;
@@ -1003,8 +1003,8 @@
             // 
             // messageCustomPropertyGrid
             // 
-            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.messageCustomPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messageCustomPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.messageCustomPropertyGrid.HelpVisible = false;
@@ -1018,12 +1018,12 @@
             // messagesContextMenuStrip
             // 
             this.messagesContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.repairAndResubmitMessageToolStripMenuItem,
-             this.resubmitMessageToolStripMenuItem,
-             this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
-             this.toolStripSeparator1,
-             this.saveSelectedMessageToolStripMenuItem,
-             this.saveSelectedMessagesToolStripMenuItem});
+            this.repairAndResubmitMessageToolStripMenuItem,
+            this.resubmitMessageToolStripMenuItem,
+            this.resubmitSelectedMessagesInBatchModeToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.saveSelectedMessageToolStripMenuItem,
+            this.saveSelectedMessagesToolStripMenuItem});
             this.messagesContextMenuStrip.Name = "registrationContextMenuStrip";
             this.messagesContextMenuStrip.Size = new System.Drawing.Size(306, 142);
             // 
@@ -1089,7 +1089,7 @@
             // 
             // cboReceiverInspector
             // 
-            this.cboReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.cboReceiverInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboReceiverInspector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboReceiverInspector.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1113,7 +1113,7 @@
             // entityInformationContextMenuStrip
             // 
             this.entityInformationContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             this.copyPartitionInformationToClipboardMenuItem});
+            this.copyPartitionInformationToClipboardMenuItem});
             this.entityInformationContextMenuStrip.Name = "registrationContextMenuStrip";
             this.entityInformationContextMenuStrip.Size = new System.Drawing.Size(274, 26);
             // 

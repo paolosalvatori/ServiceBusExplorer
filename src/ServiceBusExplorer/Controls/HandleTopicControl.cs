@@ -52,13 +52,13 @@ namespace ServiceBusExplorer.Controls
         //***************************
         // CheckListBox item texts
         //***************************
-        private const string EnableBatchedOperationsItemText = "Enable Batched Operations";
-        private const string EnableFilteringMessagesBeforePublishingItemText = "Enable Filtering Messages Before Publishing";
-        private const string EnablePartitioningItemText = "Enable Partitioning";
-        private const string EnableExpressItemText = "Enable Express";
-        private const string RequiresDuplicateDetectionItemText = "Requires Duplicate Detection";
-        private const string SupportOrderingItemText = "Enforce Message Ordering";
-        private const string IsAnonymousAccessibleItemText = "Is Anonymous Accessible";
+        private const string  EnableBatchedOperationsItemText                        = "Enable Batched Operations";
+        private const string  EnableFilteringMessagesBeforePublishingItemText       = "Enable Filtering Messages Before Publishing";
+        private const string  EnablePartitioningItemText                            = "Enable Partitioning";
+        private const string  EnableExpressItemText                                 = "Enable Express";
+        private const string  RequiresDuplicateDetectionItemText                    = "Requires Duplicate Detection";
+        private const string  SupportOrderingItemText                               = "Enforce Message Ordering";
+        private const string  IsAnonymousAccessibleItemText                         = "Is Anonymous Accessible";
 
         //***************************
         // Texts
@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Controls
         // Messages
         //***************************
         private const string PathCannotBeNull = "The Path field cannot be null.";
-
+        
         private const string DefaultMessageTimeToLive = "DefaultMessageTimeToLive";
         private const string DuplicateDetectionHistoryTimeWindow = "DuplicateDetectionHistoryTimeWindow";
         private const string AutoDeleteOnIdle = "AutoDeleteOnIdle";
@@ -132,15 +132,15 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Static Fields
         private static List<string> topicSettingsList = new List<string>()
-         {
-             EnableBatchedOperationsItemText,
-             EnableFilteringMessagesBeforePublishingItemText,
-             EnablePartitioningItemText,
-             EnableExpressItemText,
-             RequiresDuplicateDetectionItemText,
-             SupportOrderingItemText,
-             IsAnonymousAccessibleItemText
-         };
+        {
+            EnableBatchedOperationsItemText,
+            EnableFilteringMessagesBeforePublishingItemText,
+            EnablePartitioningItemText,
+            EnableExpressItemText,
+            RequiresDuplicateDetectionItemText,
+            SupportOrderingItemText,
+            IsAnonymousAccessibleItemText
+        };
 
         private static readonly List<string> claimTypes = new List<string> { "NameIdentifier", "Upn", "Role", "SharedAccessKey" };
         private static readonly List<string> operators = new List<string> { "ge", "gt", "le", "lt", "eq", "ne" };
@@ -153,18 +153,18 @@ namespace ServiceBusExplorer.Controls
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
             var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
-
+            
             if (!serviceBusHelper2.ConnectionStringContainsEntityPath())
             {
                 this.premiumNamespace = serviceBusHelper2.IsPremiumNamespace().GetAwaiter().GetResult();
             }
-
+            
             this.topicDescription = topicDescription;
             this.path = path;
 
             InitializeComponent();
             InitializeControls(initialCall: true);
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -323,8 +323,8 @@ namespace ServiceBusExplorer.Controls
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (topicDescription != null &&
-                    topicDescription.Authorization.Count > 0 &&
+                if (topicDescription != null && 
+                    topicDescription.Authorization.Count > 0 && 
                     topicDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = topicDescription.Authorization.ElementAt(e.NewIndex);
@@ -368,16 +368,16 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
 
             propertyList.AddRange(new[]{new[]{Status, topicDescription.Status.ToString()},
-                                             new[]{IsReadOnly, topicDescription.IsReadOnly.ToString()},
-                                             new[]{SizeInBytes, topicDescription.SizeInBytes.ToString("N0")},
-                                             new[]{CreatedAt, topicDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{AccessedAt, topicDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{UpdatedAt, topicDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{ActiveMessageCount, topicDescription.MessageCountDetails.ActiveMessageCount.ToString("N0")},
-                                             new[]{DeadletterMessageCount, topicDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0")},
-                                             new[]{ScheduledMessageCount, topicDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0")},
-                                             new[]{TransferMessageCount, topicDescription.MessageCountDetails.TransferMessageCount.ToString("N0")},
-                                             new[]{TransferDeadLetterMessageCount, topicDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0")}});
+                                            new[]{IsReadOnly, topicDescription.IsReadOnly.ToString()},
+                                            new[]{SizeInBytes, topicDescription.SizeInBytes.ToString("N0")},
+                                            new[]{CreatedAt, topicDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{AccessedAt, topicDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{UpdatedAt, topicDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{ActiveMessageCount, topicDescription.MessageCountDetails.ActiveMessageCount.ToString("N0")},
+                                            new[]{DeadletterMessageCount, topicDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0")},
+                                            new[]{ScheduledMessageCount, topicDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0")},
+                                            new[]{TransferMessageCount, topicDescription.MessageCountDetails.TransferMessageCount.ToString("N0")},
+                                            new[]{TransferDeadLetterMessageCount, topicDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0")}});
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
@@ -425,7 +425,7 @@ namespace ServiceBusExplorer.Controls
             // EnableFilteringMessagesBeforePublishing
             checkedListBox.SetItemChecked(EnableFilteringMessagesBeforePublishingItemText,
                                           topicDescription.EnableFilteringMessagesBeforePublishing);
-
+            
             if (serviceBusHelper.IsCloudNamespace && !this.premiumNamespace)
             {
                 // EnablePartitioning
@@ -509,14 +509,14 @@ namespace ServiceBusExplorer.Controls
                         return;
                     }
                     var description = new TopicDescription(txtPath.Text)
-                    {
-                        MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
-                                                 ? trackBarMaxTopicSize.Value * 1024
+                        {
+                            MaxSizeInMegabytes = serviceBusHelper.IsCloudNamespace
+                                                 ? trackBarMaxTopicSize.Value*1024
                                                  : trackBarMaxTopicSize.Value == trackBarMaxTopicSize.Maximum
                                                        ? ServiceBusForWindowsServerMaxTopicSize
-                                                       : trackBarMaxTopicSize.Value * 1024,
-                        UserMetadata = txtUserMetadata.Text
-                    };
+                                                       : trackBarMaxTopicSize.Value*1024,
+                            UserMetadata = txtUserMetadata.Text
+                        };
 
                     if (tsDefaultMessageTimeToLive.IsFilled)
                     {
@@ -556,7 +556,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-
+                    
                     description.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     description.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
 
@@ -703,11 +703,11 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-
+                    
                     topicDescription.EnableBatchedOperations = checkedListBox.GetItemChecked(EnableBatchedOperationsItemText);
                     topicDescription.EnableExpress = checkedListBox.GetItemChecked(EnableExpressItemText, defaultValue: false);
                     topicDescription.EnableFilteringMessagesBeforePublishing = checkedListBox.GetItemChecked(EnableFilteringMessagesBeforePublishingItemText);
-                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);
+                    topicDescription.SupportOrdering = checkedListBox.GetItemChecked(SupportOrderingItemText);                    
                     topicDescription.IsAnonymousAccessible = checkedListBox.GetItemChecked(IsAnonymousAccessibleItemText, defaultValue: false);
 
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<AuthorizationRuleWrapper>;

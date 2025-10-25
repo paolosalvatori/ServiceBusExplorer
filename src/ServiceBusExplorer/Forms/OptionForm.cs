@@ -60,11 +60,11 @@ namespace ServiceBusExplorer.Forms
 
         // This List variable is tied to some of the constants
         static readonly List<string> ConfigUseForUI = new List<string>
-         {
-             "Application Configuration File",
-             "User Configuration File",
-             "Both (User file will override)"
-         };
+        {
+            "Application Configuration File",
+            "User Configuration File",
+            "Both (User file will override)"
+        };
 
         ConfigFileUse originalConfigFileUse;
 
@@ -154,7 +154,7 @@ namespace ServiceBusExplorer.Forms
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
             MainSettings.SelectedMessageCounts = GetSelectedMessageCounts();
-
+            
             SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
             DialogResult = DialogResult.OK;
@@ -513,7 +513,7 @@ namespace ServiceBusExplorer.Forms
             MainSettings.ProxyPassword = txtProxyPassword.Text;
         }
 
-
+        
         private void NodesColorsListChanged(object sender, ListChangedEventArgs e)
         {
             MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
@@ -569,7 +569,7 @@ namespace ServiceBusExplorer.Forms
             // Special case: if we have switched from user config file to application config file,
             // we still have to update that particular setting in the user config file, or it won't
             // persist through program restart.
-            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig
+            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig 
                 && configFileUse == ConfigFileUse.ApplicationConfig)
             {
                 var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);

@@ -120,7 +120,7 @@ namespace ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -150,7 +150,7 @@ namespace ServiceBusExplorer.Controls
             // RelayType
             if (cboRelayType.Items.Count == 0)
             {
-                var values = Enum.GetNames(typeof(RelayType));
+                var values = Enum.GetNames(typeof (RelayType));
                 // ReSharper disable once CoVariantArrayConversion
                 cboRelayType.Items.AddRange(values);
             }
@@ -158,7 +158,7 @@ namespace ServiceBusExplorer.Controls
             {
                 cboRelayType.SelectedIndex = 0;
             }
-
+            
             // IsAnonymousAccessible
             if (serviceBusHelper.IsCloudNamespace)
             {
@@ -245,7 +245,7 @@ namespace ServiceBusExplorer.Controls
                     txtUserMetadata.ReadOnly = true;
                     txtUserMetadata.BackColor = SystemColors.Window;
                     txtUserMetadata.GotFocus += textBox_GotFocus;
-
+                    
                     btnCreateDelete.Visible = false;
                     btnCancelUpdate.Visible = false;
                     //btnCloseTabs.Location = btnCreateDelete.Location;
@@ -309,8 +309,8 @@ namespace ServiceBusExplorer.Controls
         {
             if (e.ListChangedType == ListChangedType.ItemDeleted)
             {
-                if (relayDescription != null &&
-                    relayDescription.Authorization.Count > 0 &&
+                if (relayDescription != null && 
+                    relayDescription.Authorization.Count > 0 && 
                     relayDescription.Authorization.Count > e.NewIndex)
                 {
                     var rule = relayDescription.Authorization.ElementAt(e.NewIndex);
@@ -355,12 +355,12 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
 
             propertyList.AddRange(new[]{new[]{IsReadOnly, relayDescription.IsReadOnly.ToString()},
-                                             new[]{IsDynamic, relayDescription.IsDynamic.ToString()},
-                                             new[]{ListenerCount, relayDescription.ListenerCount.ToString()},
-                                             new[]{CreatedAt, relayDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{UpdatedAt, relayDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
-                                             new[]{CollectionName, relayDescription.CollectionName}
-                                             });
+                                            new[]{IsDynamic, relayDescription.IsDynamic.ToString()},
+                                            new[]{ListenerCount, relayDescription.ListenerCount.ToString()},
+                                            new[]{CreatedAt, relayDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{UpdatedAt, relayDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
+                                            new[]{CollectionName, relayDescription.CollectionName}
+                                            });
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)

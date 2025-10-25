@@ -68,6 +68,7 @@ namespace ServiceBusExplorer.Forms
         public override sealed string Text
         {
             get { return base.Text; }
+            set { base.Text = value; }
         }
 
         public int Count { get; private set; }
@@ -153,7 +154,7 @@ namespace ServiceBusExplorer.Forms
         private void receiveMode_CheckedChanged(object sender, EventArgs e)
         {
             btnAll.Enabled = btnReceive.Checked;
-
+            
             if (btnPeek.Checked)
             {
                 btnTop.Checked = true;
@@ -161,7 +162,7 @@ namespace ServiceBusExplorer.Forms
 
             txtFromSequenceNumber.Enabled = btnPeek.Checked;
         }
-
+        
         private void grouperInspector_CustomPaint(PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),

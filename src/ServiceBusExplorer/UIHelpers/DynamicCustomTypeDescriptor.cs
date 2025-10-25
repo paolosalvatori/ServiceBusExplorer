@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -53,7 +53,7 @@ namespace ServiceBusExplorer.UIHelpers
         {
             this.instance = instance;
             GetProperties();
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -147,7 +147,7 @@ namespace ServiceBusExplorer.UIHelpers
             var pdcReturn = new PropertyDescriptorCollection(propertyDescriptorList.ToArray());
 
             return pdcReturn;
-        }
+        } 
         #endregion
 
         #region Private Methods
@@ -161,7 +161,7 @@ namespace ServiceBusExplorer.UIHelpers
             }
             UpdateCategoryTabAppendCount();
             UpdateResourceManager();
-        }
+        } 
 
         private void UpdateResourceManager()
         {

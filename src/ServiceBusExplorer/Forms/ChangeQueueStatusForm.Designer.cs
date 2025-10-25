@@ -39,10 +39,10 @@
             // 
             this.cbStatus.FormattingEnabled = true;
             this.cbStatus.Items.AddRange(new object[] {
-             "Active",
-             "Disabled",
-             "SendDisabled",
-             "ReceiveDisabled"});
+            "Active",
+            "Disabled",
+            "SendDisabled",
+            "ReceiveDisabled"});
             this.cbStatus.Location = new System.Drawing.Point(15, 40);
             this.cbStatus.Name = "cbStatus";
             this.cbStatus.Size = new System.Drawing.Size(288, 21);

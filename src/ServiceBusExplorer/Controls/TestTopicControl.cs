@@ -193,24 +193,24 @@ namespace ServiceBusExplorer.Controls
         #region Private Static Fields
 
         static readonly List<string> Types = new List<string>
-         {
-             "Boolean",
-             "Byte",
-             "Int16",
-             "Int32",
-             "Int64",
-             "Single",
-             "Double",
-             "Decimal",
-             "Guid",
-             "DateTime",
-             "String",
-             "Char",
-             "UInt64",
-             "UInt32",
-             "UInt16",
-             "SByte"
-         };
+        {
+            "Boolean",
+            "Byte",
+            "Int16",
+            "Int32",
+            "Int64",
+            "Single",
+            "Double",
+            "Decimal",
+            "Guid",
+            "DateTime",
+            "String",
+            "Char",
+            "UInt64",
+            "UInt32",
+            "UInt16",
+            "SByte"
+        };
         #endregion
 
         #region Public Constructors
@@ -277,9 +277,9 @@ namespace ServiceBusExplorer.Controls
                     {
                         messageFileListView.Items.Add(new ListViewItem(new[]
                                                         {
-                                                             tuple.Item1,
-                                                             tuple.Item2
-                                                         }));
+                                                            tuple.Item1, 
+                                                            tuple.Item2
+                                                        }));
                     }
                     btnClearFiles.Enabled = messageFileListView.Items.Count > 0;
                 }
@@ -595,7 +595,7 @@ namespace ServiceBusExplorer.Controls
                     }
                     if (!cts.IsCancellationRequested)
                     {
-                        Invoke((MethodInvoker)async delegate
+                        Invoke((MethodInvoker) async delegate
                         {
                             btnStart.Text = StartCaption;
                             await MainForm.SingletonMainForm.RefreshSelectedEntity();
@@ -1955,13 +1955,12 @@ namespace ServiceBusExplorer.Controls
             }
             foreach (var fileInfo in openFileDialog.FileNames.Select(fileName => new FileInfo(fileName)))
             {
-                var size = $"{(fileInfo.Length % 1024 == 0 ? fileInfo.Length / 1024 : fileInfo.Length / 1024 + 1)} KB";
+                var size = $"{(fileInfo.Length%1024 == 0 ? fileInfo.Length/1024 : fileInfo.Length/1024 + 1)} KB";
                 messageFileListView.Items.Add(new ListViewItem(new[]
                 {
-                     fileInfo.FullName,
-                     size
-                 })
-                { Checked = true });
+                    fileInfo.FullName,
+                    size
+                }) { Checked = true });
                 controlHelper.MainForm.FileNames.Add(new Tuple<string, string>(fileInfo.FullName, size));
             }
             checkBoxFileName.Checked = messageFileListView.Items.Cast<ListViewItem>().All(i => i.Checked);

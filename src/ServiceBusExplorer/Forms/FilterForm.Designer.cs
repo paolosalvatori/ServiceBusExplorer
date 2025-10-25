@@ -41,7 +41,6 @@ namespace ServiceBusExplorer.Forms
             if (disposing && (components != null))
             {
                 components.Dispose();
-                bindingSource.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -148,8 +147,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperFilter
             // 
-            this.grouperFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
@@ -188,13 +187,13 @@ namespace ServiceBusExplorer.Forms
             this.cboMessageCountOperator.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboMessageCountOperator.FormattingEnabled = true;
             this.cboMessageCountOperator.Items.AddRange(new object[] {
-             "None",
-             "Eq",
-             "Ne",
-             "Gt",
-             "Ge",
-             "Le",
-             "Lt"});
+            "None",
+            "Eq",
+            "Ne",
+            "Gt",
+            "Ge",
+            "Le",
+            "Lt"});
             this.cboMessageCountOperator.Location = new System.Drawing.Point(16, 96);
             this.cboMessageCountOperator.Name = "cboMessageCountOperator";
             this.cboMessageCountOperator.Size = new System.Drawing.Size(72, 21);
@@ -206,7 +205,7 @@ namespace ServiceBusExplorer.Forms
             this.txtMessageCount.AllowDecimal = false;
             this.txtMessageCount.AllowNegative = false;
             this.txtMessageCount.AllowSpace = false;
-            this.txtMessageCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageCount.Location = new System.Drawing.Point(96, 96);
             this.txtMessageCount.Name = "txtMessageCount";
@@ -236,7 +235,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtStartsWith
             // 
-            this.txtStartsWith.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtStartsWith.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtStartsWith.Location = new System.Drawing.Point(16, 48);
             this.txtStartsWith.Name = "txtStartsWith";
@@ -247,8 +246,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // timeFilterDataGridView
             // 
-            this.timeFilterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.timeFilterDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.timeFilterDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.timeFilterDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -291,7 +290,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtFilterExpression
             // 
-            this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFilterExpression.Location = new System.Drawing.Point(16, 336);
             this.txtFilterExpression.Multiline = true;

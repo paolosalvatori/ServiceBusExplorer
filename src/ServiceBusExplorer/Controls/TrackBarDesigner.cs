@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -29,99 +29,99 @@ using System.Windows.Forms.Design;
 
 namespace ServiceBusExplorer.Controls
 {
-    /// <summary>
-    /// The Designer for the <see cref="CustomTrackBar"/>.
-    /// </summary>
-    public class CustomTrackBarDesigner : ControlDesigner
-    {
-        /// <summary>
-        /// Returns the allowable design time selection rules.
-        /// </summary>
-        public override SelectionRules SelectionRules
-        {
+	/// <summary>
+	/// The Designer for the <see cref="CustomTrackBar"/>.
+	/// </summary>
+	public class CustomTrackBarDesigner : ControlDesigner
+	{
+	    /// <summary>
+		/// Returns the allowable design time selection rules.
+		/// </summary>
+		public override SelectionRules SelectionRules 
+		{ 
+			
+			get 
+			{ 
+				var control = this.Control as CustomTrackBar;
 
-            get
-            {
-                var control = this.Control as CustomTrackBar;
-
-                // Disallow vertical or horizontal sizing when AutoSize = True
-                if (control != null && control.AutoSize)
-                    if (control.Orientation == Orientation.Horizontal)
-                        return (base.SelectionRules & ~SelectionRules.TopSizeable) & ~SelectionRules.BottomSizeable;
-                    else //control.Orientation == Orientation.Vertical
-                        return (base.SelectionRules & ~SelectionRules.LeftSizeable) & ~SelectionRules.RightSizeable;
-                return base.SelectionRules;
-            }
-        }
-
-
-
-        //Overrides
-        /// <summary>
-        /// Remove Button and Control properties that are 
-        /// not supported by the <see cref="CustomTrackBar"/>.
-        /// </summary>
-        protected override void PostFilterProperties(IDictionary Properties)
-        {
-            Properties.Remove("AllowDrop");
-            Properties.Remove("BackgroundImage");
-            Properties.Remove("ContextMenu");
-
-            Properties.Remove("Text");
-            Properties.Remove("TextAlign");
-            Properties.Remove("RightToLeft");
-        }
+				// Disallow vertical or horizontal sizing when AutoSize = True
+				if(control != null && control.AutoSize)
+					if(control.Orientation == Orientation.Horizontal)
+						return (base.SelectionRules & ~SelectionRules.TopSizeable) & ~SelectionRules.BottomSizeable;
+					else //control.Orientation == Orientation.Vertical
+						return (base.SelectionRules & ~SelectionRules.LeftSizeable) & ~SelectionRules.RightSizeable;
+			    return base.SelectionRules;
+			}
+		}
 
 
-        //Overrides
-        /// <summary>
-        /// Remove Button and Control events that are 
-        /// not supported by the <see cref="CustomTrackBar"/>.
-        /// </summary>
-        protected override void PostFilterEvents(IDictionary events)
-        {
-            //Actions
-            events.Remove("Click");
-            events.Remove("DoubleClick");
 
-            //Appearence
-            events.Remove("Paint");
+		//Overrides
+		/// <summary>
+		/// Remove Button and Control properties that are 
+		/// not supported by the <see cref="CustomTrackBar"/>.
+		/// </summary>
+		protected override void PostFilterProperties(IDictionary Properties)
+		{
+			Properties.Remove("AllowDrop");
+			Properties.Remove("BackgroundImage");
+			Properties.Remove("ContextMenu");
 
-            //Behavior
-            events.Remove("ChangeUICues");
+			Properties.Remove("Text");
+			Properties.Remove("TextAlign");
+			Properties.Remove("RightToLeft");
+		}
+
+
+		//Overrides
+		/// <summary>
+		/// Remove Button and Control events that are 
+		/// not supported by the <see cref="CustomTrackBar"/>.
+		/// </summary>
+		protected override void PostFilterEvents(IDictionary events)
+		{
+			//Actions
+			events.Remove("Click");
+			events.Remove("DoubleClick");
+
+			//Appearence
+			events.Remove("Paint");
+
+			//Behavior
+			events.Remove("ChangeUICues");
             events.Remove("ImeModeChanged");
-            events.Remove("QueryAccessibilityHelp");
-            events.Remove("StyleChanged");
-            events.Remove("SystemColorsChanged");
+			events.Remove("QueryAccessibilityHelp");
+			events.Remove("StyleChanged");
+			events.Remove("SystemColorsChanged");
 
-            //Drag Drop
-            events.Remove("DragDrop");
-            events.Remove("DragEnter");
-            events.Remove("DragLeave");
-            events.Remove("DragOver");
-            events.Remove("GiveFeedback");
-            events.Remove("QueryContinueDrag");
-            events.Remove("DragDrop");
+			//Drag Drop
+			events.Remove("DragDrop");
+			events.Remove("DragEnter");
+			events.Remove("DragLeave");
+			events.Remove("DragOver");
+			events.Remove("GiveFeedback");
+			events.Remove("QueryContinueDrag");
+			events.Remove("DragDrop");
 
-            //Layout
-            events.Remove("Layout");
-            events.Remove("Move");
-            events.Remove("Resize");
+			//Layout
+			events.Remove("Layout");
+			events.Remove("Move");
+			events.Remove("Resize");
 
-            //Property Changed
-            events.Remove("BackColorChanged");
-            events.Remove("BackgroundImageChanged");
-            events.Remove("BindingContextChanged");
-            events.Remove("CausesValidationChanged");
-            events.Remove("CursorChanged");
-            events.Remove("FontChanged");
-            events.Remove("ForeColorChanged");
-            events.Remove("RightToLeftChanged");
-            events.Remove("SizeChanged");
-            events.Remove("TextChanged");
+			//Property Changed
+			events.Remove("BackColorChanged");
+			events.Remove("BackgroundImageChanged");
+			events.Remove("BindingContextChanged");
+			events.Remove("CausesValidationChanged");
+			events.Remove("CursorChanged");
+			events.Remove("FontChanged");
+			events.Remove("ForeColorChanged");
+			events.Remove("RightToLeftChanged");
+			events.Remove("SizeChanged");
+			events.Remove("TextChanged");
+			
+			base.PostFilterEvents (events);
+		}
 
-            base.PostFilterEvents(events);
-        }
-
-    }
+	}
 }

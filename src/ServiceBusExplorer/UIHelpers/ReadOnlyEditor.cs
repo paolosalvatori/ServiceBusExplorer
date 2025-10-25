@@ -32,7 +32,7 @@ namespace ServiceBusExplorer.UIHelpers
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
             return UITypeEditorEditStyle.None;
-        }
+        } 
         #endregion
     }
 }

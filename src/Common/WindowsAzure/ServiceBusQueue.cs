@@ -16,8 +16,8 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string QueueDeleted = "The queue {0} has been successfully deleted.";
         private const string QueueRenamed = "The queue {0} has been successfully renamed to {1}.";
         private const string QueueUpdated = "The queue {0} has been successfully updated.";
-
-        private readonly string servicePath = string.Empty;
+     
+        private readonly string servicePath = string.Empty;      
 
         public ServiceBusQueue(ServiceBusNamespace serviceBusNamespace, Microsoft.ServiceBus.NamespaceManager namespaceManager)
             : base(serviceBusNamespace, namespaceManager)
@@ -72,8 +72,8 @@ namespace ServiceBusExplorer.WindowsAzure
                 }
 
                 return new List<QueueDescription> {
-                     GetQueueUsingEntityPath(timeoutInSeconds)
-                 };
+                    GetQueueUsingEntityPath(timeoutInSeconds)
+                };
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }

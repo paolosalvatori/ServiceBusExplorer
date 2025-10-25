@@ -85,8 +85,8 @@
             // 
             // grouperMessages
             // 
-            this.grouperMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperMessages.BackgroundColor = System.Drawing.Color.White;
             this.grouperMessages.BackgroundGradientColor = System.Drawing.Color.White;
@@ -155,7 +155,7 @@
             // 
             // textBoxFilterEventType
             // 
-            this.textBoxFilterEventType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.textBoxFilterEventType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilterEventType.Location = new System.Drawing.Point(553, 208);
             this.textBoxFilterEventType.Name = "textBoxFilterEventType";
@@ -164,7 +164,7 @@
             // 
             // textBoxFilterValue
             // 
-            this.textBoxFilterValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.textBoxFilterValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilterValue.Location = new System.Drawing.Point(33, 345);
             this.textBoxFilterValue.Name = "textBoxFilterValue";
@@ -175,7 +175,7 @@
             // 
             // comboBoxFilterValue
             // 
-            this.comboBoxFilterValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.comboBoxFilterValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxFilterValue.FormattingEnabled = true;
             this.comboBoxFilterValue.Location = new System.Drawing.Point(33, 343);
@@ -198,29 +198,29 @@
             // 
             // comboBoxFilterOperator
             // 
-            this.comboBoxFilterOperator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.comboBoxFilterOperator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxFilterOperator.FormattingEnabled = true;
             this.comboBoxFilterOperator.Items.AddRange(new object[] {
-             "Boolean equals",
-             "String is in",
-             "String is not in",
-             "String contains",
-             "String does not contain",
-             "String begins with",
-             "String does not begin with",
-             "String ends with",
-             "String does not end with",
-             "Number is less than",
-             "Number is greater than",
-             "Number is less than or equal to",
-             "Number is greater than or equal to",
-             "Number is in",
-             "Number is not in",
-             "Number is in range",
-             "Number is not in range",
-             "Is null or undefined",
-             "Is not null"});
+            "Boolean equals",
+            "String is in",
+            "String is not in",
+            "String contains",
+            "String does not contain",
+            "String begins with",
+            "String does not begin with",
+            "String ends with",
+            "String does not end with",
+            "Number is less than",
+            "Number is greater than",
+            "Number is less than or equal to",
+            "Number is greater than or equal to",
+            "Number is in",
+            "Number is not in",
+            "Number is in range",
+            "Number is not in range",
+            "Is null or undefined",
+            "Is not null"});
             this.comboBoxFilterOperator.Location = new System.Drawing.Point(33, 273);
             this.comboBoxFilterOperator.Name = "comboBoxFilterOperator";
             this.comboBoxFilterOperator.Size = new System.Drawing.Size(472, 28);
@@ -251,7 +251,7 @@
             // 
             // textBoxFilterKey
             // 
-            this.textBoxFilterKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.textBoxFilterKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilterKey.Location = new System.Drawing.Point(33, 208);
             this.textBoxFilterKey.Name = "textBoxFilterKey";
@@ -283,7 +283,7 @@
             // 
             // txtSubscriptionName
             // 
-            this.txtSubscriptionName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtSubscriptionName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionName.Location = new System.Drawing.Point(34, 92);
             this.txtSubscriptionName.Margin = new System.Windows.Forms.Padding(4);

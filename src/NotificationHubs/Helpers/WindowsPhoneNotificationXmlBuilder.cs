@@ -42,7 +42,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 // ReSharper restore CoVariantArrayConversion
             }
             return document.InnerXml;
-        }
+        } 
         #endregion
 
         #region Public Static Methods
@@ -54,7 +54,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                           "<wp:Text2>{1}</wp:Text2>" +
                           "<wp:Param>{2}</wp:Param>" +
                           "</wp:Toast>" +
-                          "</wp:Notification>",
+                          "</wp:Notification>", 
                           new[] { text1, text2, param });
         }
 

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -59,7 +59,7 @@ namespace ServiceBusExplorer.UIHelpers
             var propType = Type.Missing.GetType();
             if (context?.PropertyDescriptor is CustomPropertyDescriptor)
             {
-                var cpd = (CustomPropertyDescriptor)context.PropertyDescriptor;
+                var cpd = (CustomPropertyDescriptor) context.PropertyDescriptor;
                 UpdateEnumDisplayText(cpd);
                 propType = cpd.PropertyType;
             }
@@ -372,7 +372,7 @@ namespace ServiceBusExplorer.UIHelpers
             }
 
             return base.GetStandardValues(context);
-        }
+        } 
         #endregion
 
         #region Private Methods

@@ -145,7 +145,6 @@ namespace ServiceBusExplorer.Helpers
                         Body = new BinaryData(text)
                     };
 
-                    // Use ApplicationProperties for custom metadata
                     brokeredMessage.ApplicationProperties["eventId"] = payload.EventId;
                     brokeredMessage.ApplicationProperties["deviceId"] = payload.DeviceId;
                     brokeredMessage.ApplicationProperties["value"] = payload.Value;

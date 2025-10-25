@@ -118,14 +118,14 @@ namespace ServiceBusExplorer.Controls
                                        WriteToLogDelegate writeToLog,
                                        Func<Task> stopLog,
                                        Action startLog,
-                                       ServiceBusHelper serviceBusHelper,
+                                       ServiceBusHelper serviceBusHelper, 
                                        SubscriptionWrapper subscriptionWrapper)
         {
             controlHelper = new TestControlHelper(mainForm, writeToLog, stopLog, startLog, serviceBusHelper);
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
             InitializeControls();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -227,7 +227,7 @@ namespace ServiceBusExplorer.Controls
                     return false;
                 }
                 receiverTaskCount = temp;
-
+                
                 var sqlFilter = new SqlFilter(!string.IsNullOrWhiteSpace(txtFilterExpression.Text)
                                                                   ? txtFilterExpression.Text
                                                                   : DefaultFilterExpression);
@@ -298,7 +298,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (!cts.IsCancellationRequested)
                         {
-                            Invoke((MethodInvoker)async delegate
+                            Invoke((MethodInvoker) async delegate
                             {
                                 btnStart.Text = StartCaption;
                                 await MainForm.SingletonMainForm.RefreshSelectedEntity();
@@ -750,7 +750,7 @@ namespace ServiceBusExplorer.Controls
         {
             lock (this)
             {
-                var elapsedSeconds = (double)elapsedMilliseconds / 1000;
+                var elapsedSeconds = (double) elapsedMilliseconds/1000;
 
                 if (direction == DirectionType.Receive)
                 {
@@ -764,7 +764,7 @@ namespace ServiceBusExplorer.Controls
                     }
                     receiverTotalTime += elapsedSeconds;
                     receiverMessageNumber += messageNumber;
-                    receiverAverageTime = receiverMessageNumber > 0 ? receiverTotalTime / receiverMessageNumber : 0;
+                    receiverAverageTime = receiverMessageNumber > 0 ? receiverTotalTime/receiverMessageNumber : 0;
                     receiverMessagesPerSecond = receiverTotalTime > 0 ? receiverMessageNumber * receiverTaskCount / receiverTotalTime : 0;
 
                     lblReceiverLastTime.Text = string.Format(TestControlHelper.LabelFormat, elapsedSeconds);
@@ -817,7 +817,7 @@ namespace ServiceBusExplorer.Controls
             checkBoxDeferMessage.Enabled = !checkBoxReceiveBatch.Checked;
             checkBoxDeferMessage.Checked = false;
         }
-
+        
         private void grouperReceiver_CustomPaint(PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
@@ -905,7 +905,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     Controls[i].Dispose();
                 }
-
+                
                 base.Dispose(disposing);
             }
             // ReSharper disable once EmptyGeneralCatchClause

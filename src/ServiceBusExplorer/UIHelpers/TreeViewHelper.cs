@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Windows.Forms;
 using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
 
 #endregion
 
@@ -69,7 +70,7 @@ namespace ServiceBusExplorer.UIHelpers
 
             if (leftNode.Name.StartsWith(EventHubsEntities))
             {
-                return rightNode.Name == QueueEntities ||
+                return rightNode.Name == QueueEntities || 
                        rightNode.Name == TopicEntities ? 1 : -1;
             }
 
@@ -112,7 +113,7 @@ namespace ServiceBusExplorer.UIHelpers
             }
 
             return String.CompareOrdinal(leftNode.Text, rightNode.Text);
-        }
+        } 
         #endregion
     }
 }

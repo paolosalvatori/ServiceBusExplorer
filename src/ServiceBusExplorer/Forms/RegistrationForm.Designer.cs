@@ -102,8 +102,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperCaption
             // 
-            this.grouperCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
@@ -143,8 +143,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // registrationPropertyGrid
             // 
-            this.registrationPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.registrationPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.registrationPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
             this.registrationPropertyGrid.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
@@ -158,7 +158,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // cboRegistrationType
             // 
-            this.cboRegistrationType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cboRegistrationType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboRegistrationType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboRegistrationType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;

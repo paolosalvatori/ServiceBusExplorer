@@ -40,7 +40,7 @@ using Microsoft.ServiceBus.Messaging;
 namespace ServiceBusExplorer.Controls
 {
     public partial class HandleRuleControl : UserControl
-    {
+    {   
         #region Private Constants
         //***************************
         // Formats
@@ -86,7 +86,7 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             InitializeData();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -244,8 +244,8 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                if (btnCreateDelete.Text == RemoveText
-                    && !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription?.Name)
+                if (btnCreateDelete.Text == RemoveText 
+                    && !string.IsNullOrWhiteSpace(ruleWrapper.SubscriptionDescription?.Name) 
                     && !string.IsNullOrWhiteSpace(ruleWrapper.RuleDescription?.Name))
                 {
                     using (var deleteForm = new DeleteForm(ruleWrapper.RuleDescription.Name, RuleEntity.ToLower()))
@@ -404,10 +404,10 @@ namespace ServiceBusExplorer.Controls
             var height = Size.Height - 152;
             grouperFilter.Size = new Size(width, height);
             grouperAction.Size = new Size(width, height);
-            grouperAction.Location = new Point(grouperFilter.Location.X + width + 16,
+            grouperAction.Location = new Point(grouperFilter.Location.X + width + 16, 
                                                          grouperAction.Location.Y);
             grouperName.Size = new Size(width, grouperName.Size.Height);
-            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - 80,
+            grouperCreatedAt.Size = new Size(Size.Width - grouperName.Size.Width - grouperFilterType.Size.Width - grouperIsDefault.Size.Width - 80, 
                                              grouperCreatedAt.Size.Height);
             grouperCreatedAt.Location = new Point(grouperFilter.Location.X + width + 16,
                                                   grouperCreatedAt.Location.Y);

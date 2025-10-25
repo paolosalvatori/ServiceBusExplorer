@@ -64,7 +64,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
                 case "Int64":
                     return Convert.ChangeType(value, typeof(long));
                 case "UInt64":
-                    return Convert.ChangeType(value, typeof(ulong));
+                    return Convert.ChangeType(value, typeof(ulong)); 
                 case "Single":
                     return Convert.ChangeType(value, typeof(float));
                 case "Double":

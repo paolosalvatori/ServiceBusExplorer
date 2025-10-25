@@ -35,7 +35,7 @@ namespace ServiceBusExplorer.Forms
     {
         #region Private Fields
         private IList<bool> canBeNullList;
-        private readonly IList<Control> textBoxList;
+        private readonly IList<Control> textBoxList; 
         #endregion
 
         #region Public Constructor
@@ -71,14 +71,14 @@ namespace ServiceBusExplorer.Forms
                     AutoSize = false,
                     Size = new Size(textBoxWidth, 24),
                     Location = new Point(16, textBoxY),
-                    Tag = i
+                    Tag = i 
                 };
-
+                
                 if (parameterNameList.Count == parameterValueList.Count)
                 {
                     textBox.Text = parameterValueList[i];
                 }
-                if (canBeNullList != null &&
+                if (canBeNullList != null && 
                     parameterValueList.Count == canBeNullList.Count)
                 {
                     textBox.TextChanged += textBox_TextChanged;
@@ -89,7 +89,7 @@ namespace ServiceBusExplorer.Forms
                 textBoxY += 48;
             }
             textBoxList = mainPanel.Controls.Cast<Control>().Where(c => c is TextBox).ToList();
-            var delta = parameterNameList.Count * 48;
+            var delta = parameterNameList.Count*48;
             Size = new Size(Size.Width, Size.Height + delta);
             textBox_TextChanged(null, null);
         }

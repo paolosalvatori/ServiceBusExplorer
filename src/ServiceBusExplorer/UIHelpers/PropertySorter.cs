@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.UIHelpers
     {
         #region IComparer<PropertyDescriptor> Members
 
-        public int Compare(CustomPropertyDescriptor x, CustomPropertyDescriptor y)
+        public int Compare( CustomPropertyDescriptor x, CustomPropertyDescriptor y )
         {
 
             switch (sortOrder)
@@ -70,7 +70,7 @@ namespace ServiceBusExplorer.UIHelpers
         #endregion
 
         #region Private Fields
-        private CustomSortOrder sortOrder = CustomSortOrder.AscendingByName;
+        private CustomSortOrder sortOrder = CustomSortOrder.AscendingByName; 
         #endregion
 
         #region Public Properties
@@ -84,7 +84,7 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 sortOrder = value;
             }
-        }
+        } 
         #endregion
     }
 }

@@ -64,7 +64,7 @@ namespace EventGridExplorerLibrary
                 await enumerator.DisposeAsync();
             }
 
-            return pages;
+           return pages;
         }
 
         public async Task<AsyncPageable<NamespaceTopicEventSubscriptionResource>> GetEventSubscriptionsAsync(string resourceGroupName, string namespaceName, string topicName)
@@ -86,7 +86,7 @@ namespace EventGridExplorerLibrary
             await eventGridControlPlaneClient.DeleteNamespaceTopicAsync(resourceGroupName, namespaceName, topicName);
         }
 
-        public async Task CreateSubscriptionAsync(string resourceGroupName, string namespaceName, string topicName, string subscriptionName, string deliveryMode, List<Dictionary<string, string>> filters, List<string> eventTypes)
+        public async Task CreateSubscriptionAsync(string resourceGroupName, string namespaceName, string topicName, string subscriptionName, string deliveryMode, List<Dictionary<string,string>> filters, List<string> eventTypes)
         {
             await eventGridControlPlaneClient.CreateNamespaceTopicEventSubscriptionAsync(resourceGroupName, namespaceName, topicName, subscriptionName, deliveryMode, filters, eventTypes);
         }
@@ -122,7 +122,7 @@ namespace EventGridExplorerLibrary
             {
                 if (this.maxWaitTime < MinWaitTimeInSeconds)
                 {
-                    return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
+                     return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
                 }
                 else if (this.maxWaitTime > MaxWaitTimeInSeconds)
                 {

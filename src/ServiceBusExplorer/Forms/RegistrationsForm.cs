@@ -78,9 +78,9 @@ namespace ServiceBusExplorer.Forms
         {
             DialogResult = DialogResult.OK;
 
-
-            GetRegistrationsMethod = btnTag.Checked ? GetRegistrationsMethod.Tag :
-                                     btnPnsHandle.Checked ? GetRegistrationsMethod.PnsHandle :
+            
+            GetRegistrationsMethod = btnTag.Checked ? GetRegistrationsMethod.Tag : 
+                                     btnPnsHandle.Checked ? GetRegistrationsMethod.PnsHandle : 
                                      GetRegistrationsMethod.All;
             if (GetRegistrationsMethod == GetRegistrationsMethod.PnsHandle)
             {

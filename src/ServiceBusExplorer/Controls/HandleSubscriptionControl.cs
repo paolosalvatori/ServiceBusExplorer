@@ -774,18 +774,18 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
             propertyList.AddRange(new[]
             {
-                     new[] {Status, subscriptionWrapper.SubscriptionDescription.Status.ToString()},
-                     new[] {IsReadOnly, subscriptionWrapper.SubscriptionDescription.IsReadOnly.ToString()},
-                     new[] {CreatedAt, subscriptionWrapper.SubscriptionDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                     new[] {AccessedAt, subscriptionWrapper.SubscriptionDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
-                     new[] {UpdatedAt, subscriptionWrapper.SubscriptionDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
-                     new[] {ActiveMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount.ToString("N0")},
-                     new[] {DeadletterMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0")},
-                     new[] {ScheduledMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0")},
-                     new[] {TransferMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.TransferMessageCount.ToString("N0")},
-                     new[] {TransferDeadLetterMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0")},
-                     new[] {MessageCount, subscriptionWrapper.SubscriptionDescription.MessageCount.ToString("N0")}
-                 });
+                    new[] {Status, subscriptionWrapper.SubscriptionDescription.Status.ToString()},
+                    new[] {IsReadOnly, subscriptionWrapper.SubscriptionDescription.IsReadOnly.ToString()},
+                    new[] {CreatedAt, subscriptionWrapper.SubscriptionDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                    new[] {AccessedAt, subscriptionWrapper.SubscriptionDescription.AccessedAt.ToString(CultureInfo.CurrentCulture)},
+                    new[] {UpdatedAt, subscriptionWrapper.SubscriptionDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)},
+                    new[] {ActiveMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.ActiveMessageCount.ToString("N0")},
+                    new[] {DeadletterMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.DeadLetterMessageCount.ToString("N0")},
+                    new[] {ScheduledMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.ScheduledMessageCount.ToString("N0")},
+                    new[] {TransferMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.TransferMessageCount.ToString("N0")},
+                    new[] {TransferDeadLetterMessageCount, subscriptionWrapper.SubscriptionDescription.MessageCountDetails.TransferDeadLetterMessageCount.ToString("N0")},
+                    new[] {MessageCount, subscriptionWrapper.SubscriptionDescription.MessageCount.ToString("N0")}
+                });
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)

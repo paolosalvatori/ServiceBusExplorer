@@ -50,8 +50,8 @@ namespace ServiceBusExplorer.Utilities.Helpers
         #endregion
 
         #region Public Instance Properties
-        public string Property
-        {
+        public string Property 
+        { 
             get
             {
                 return property;

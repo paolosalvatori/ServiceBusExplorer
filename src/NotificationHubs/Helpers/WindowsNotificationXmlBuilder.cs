@@ -41,7 +41,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 // ReSharper restore CoVariantArrayConversion
             }
             return document.InnerXml;
-        }
+        } 
         #endregion
 
         #region Public Static Methods
@@ -478,7 +478,7 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
         public static string CreateToastText04Xml(string text1, string text2, string text3)
         {
             return Create("<toast><visual><binding template=\"ToastText04\"><text id=\"1\">{0}</text><text id=\"2\">{1}</text><text id=\"3\">{2}</text></binding></visual></toast>", new[] { text1, text2, text3 });
-        }
+        } 
         #endregion
     }
 }

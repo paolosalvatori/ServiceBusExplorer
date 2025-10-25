@@ -46,7 +46,7 @@ namespace ServiceBusExplorer.Forms
         public ChangeStatusForm(string entityName, string entityType, EntityStatus desiredStatus)
         {
             InitializeComponent();
-
+            
             if (desiredStatus == EntityStatus.Active)
             {
                 lblMessage.Text = string.Format(EnableFormat, entityType ?? Unknown, entityName ?? Unknown);
@@ -59,7 +59,7 @@ namespace ServiceBusExplorer.Forms
             {
                 lblMessage.Text = string.Format(SetStatusFormat, entityType ?? Unknown, entityName ?? Unknown, desiredStatus.ToString());
             }
-
+            
             Width = lblMessage.Width + 72;
         }
         #endregion
@@ -94,11 +94,11 @@ namespace ServiceBusExplorer.Forms
                 control.ForeColor = SystemColors.ControlText;
             }
         }
-
+        
         private void mainPanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1), 0, mainPanel.Size.Height - 1, mainPanel.Size.Width, mainPanel.Size.Height - 1);
         }
-        #endregion
+        #endregion 
     }
 }

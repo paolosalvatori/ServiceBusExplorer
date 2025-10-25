@@ -54,7 +54,7 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Event Handlers
-
+       
         private void siteLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://github.com/paolosalvatori/ServiceBusExplorer");
@@ -78,7 +78,7 @@ namespace ServiceBusExplorer.Forms
         private void NewVersionAvailableForm_Load(object sender, EventArgs e)
         {
             lblExeVersion.Text = VersionProvider.GetExeVersion();
-
+            
             if (!VersionProvider.IsLatestVersion(out var releaseInfo))
             {
                 labelLatestVersion.Text = $"New Release {releaseInfo.Version} Available";

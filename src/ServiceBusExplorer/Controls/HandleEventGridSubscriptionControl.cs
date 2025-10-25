@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Controls
                 Width = 120
             };
             eventsDataGridView.Columns.Add(textBoxColumn);
-
+            
             textBoxColumn = new DataGridViewTextBoxColumn
             {
                 DataPropertyName = Source,
@@ -136,12 +136,12 @@ namespace ServiceBusExplorer.Controls
 
             propertyList.AddRange(new[]
             {
-                 new[] {SubName, subscription.Data.Name},
-                 new[] {SubId, subscription.Id.ToString()},
-                 new[] {SubType, subscription.Data.ResourceType.Type},
-                 new[] {ProvisioningState, subscription.Data.ProvisioningState.Value.ToString()},
-                 new[] {EventDeliverySchema, subscription.Data.EventDeliverySchema.ToString()}
-             });
+                new[] {SubName, subscription.Data.Name},
+                new[] {SubId, subscription.Id.ToString()},
+                new[] {SubType, subscription.Data.ResourceType.Type},
+                new[] {ProvisioningState, subscription.Data.ProvisioningState.Value.ToString()},
+                new[] {EventDeliverySchema, subscription.Data.EventDeliverySchema.ToString()}
+            });
 
             subscriptionListView.Items.Clear();
 
@@ -186,8 +186,8 @@ namespace ServiceBusExplorer.Controls
             }
 
             receivedEvents = allEvents.Value;
-            List<CloudEvent> cloudEvents = new List<CloudEvent>();
-
+            List<CloudEvent> cloudEvents = new List<CloudEvent>();  
+            
             foreach (var cloudEvent in receivedEvents)
             {
                 cloudEvents.Add(cloudEvent.Event);

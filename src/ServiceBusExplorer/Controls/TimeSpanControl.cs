@@ -73,7 +73,7 @@
                     txtMilliseconds.IntegerValue
                 );
             }
-            set
+            set 
             {
                 if (value != _value)
                 {

@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.UIHelpers
             var service = provider.GetService(typeof(IWindowsFormsEditorService)) as IWindowsFormsEditorService;
             if (service != null && value != null)
             {
-
+                
                 // ReSharper disable SuspiciousTypeConversion.Global
                 var gridItem = provider as GridItem;
                 // ReSharper restore SuspiciousTypeConversion.Global
@@ -74,9 +74,9 @@ namespace ServiceBusExplorer.UIHelpers
             // ReSharper disable AssignNullToNotNullAttribute
             return value;
             // ReSharper restore AssignNullToNotNullAttribute
-        }
+        } 
         #endregion
 
-
+        
     }
 }

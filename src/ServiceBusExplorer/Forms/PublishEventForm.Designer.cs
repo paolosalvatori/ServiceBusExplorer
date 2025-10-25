@@ -113,8 +113,8 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperPublishEvent
             // 
-            this.grouperPublishEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperPublishEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperPublishEvent.BackgroundColor = System.Drawing.Color.White;
             this.grouperPublishEvent.BackgroundGradientColor = System.Drawing.Color.White;
@@ -146,20 +146,20 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtEventInfo
             // 
-            this.txtEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtEventInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEventInfo.AutoCompleteBracketsList = new char[] {
-         '(',
-         ')',
-         '{',
-         '}',
-         '[',
-         ']',
-         '\"',
-         '\"',
-         '\'',
-         '\''};
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
             this.txtEventInfo.AutoScrollMinSize = new System.Drawing.Size(35, 22);
             this.txtEventInfo.BackBrush = null;
             this.txtEventInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;

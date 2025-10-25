@@ -24,7 +24,7 @@ namespace ServiceBusExplorer.Forms
             EntityStatus = entityStatus;
             cbStatus.SelectedIndex = cbStatus.Items.IndexOf(entityStatus.ToString());
         }
-
+        
         private void btnOk_Click(object sender, EventArgs e)
         {
             EntityStatus = (EntityStatus)Enum.Parse(typeof(EntityStatus), cbStatus.SelectedItem.ToString());

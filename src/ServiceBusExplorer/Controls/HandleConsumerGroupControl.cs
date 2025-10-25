@@ -120,7 +120,7 @@ namespace ServiceBusExplorer.Controls
 
             InitializeComponent();
             InitializeControls();
-        }
+        } 
         #endregion
 
         #region Public Events
@@ -299,9 +299,9 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
 
             propertyList.AddRange(new[]{new[]{EventHubPath, consumerGroupDescription.EventHubPath},
-                                         new[]{IsReadOnly, consumerGroupDescription.IsReadOnly.ToString()},
-                                         new[]{CreatedAt, consumerGroupDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
-                                         new[]{UpdatedAt, consumerGroupDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)}});
+                                        new[]{IsReadOnly, consumerGroupDescription.IsReadOnly.ToString()},
+                                        new[]{CreatedAt, consumerGroupDescription.CreatedAt.ToString(CultureInfo.CurrentCulture)},
+                                        new[]{UpdatedAt, consumerGroupDescription.UpdatedAt.ToString(CultureInfo.CurrentCulture)}});
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
@@ -368,7 +368,7 @@ namespace ServiceBusExplorer.Controls
                     {
                         UserMetadata = txtUserMetadata.Text
                     };
-
+                    
                     consumerGroupDescription = serviceBusHelper.CreateConsumerGroup(description);
                     InitializeControls();
                 }
@@ -768,7 +768,7 @@ namespace ServiceBusExplorer.Controls
                     width -= verticalScrollbar.Width;
                 }
                 var columnCount = partitionsDataGridView.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
-                var columnWidth = width / columnCount;
+                var columnWidth = width/columnCount;
                 for (var i = 0; i < partitionsDataGridView.Columns.Count; i++)
                 {
                     partitionsDataGridView.Columns[i].Width = columnWidth;

@@ -23,7 +23,6 @@ using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Common.ServiceBusService;
 
 namespace ServiceBusExplorer.Helpers
 {
@@ -32,10 +31,10 @@ namespace ServiceBusExplorer.Helpers
         static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
 
         static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
-             Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
+            Constants.EventHubEntities, Constants.NotificationHubEntities, Constants.RelayEntities };
 
         static readonly List<string> messageCounts = new List<string> { Constants.ActiveMessages, Constants.DeadLetterMessages,
-             Constants.ScheduledMessages, Constants.TransferMessages, Constants.TransferDeadLetterMessages };
+            Constants.ScheduledMessages, Constants.TransferMessages, Constants.TransferDeadLetterMessages };
 
         #region Public methods
 
@@ -164,7 +163,7 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
                 currentSettings.PrefetchCount, writeToLog);
 
-            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter,
+            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, 
                 currentSettings.TopCount, writeToLog);
 
             resultProperties.SenderThinkTime = configuration.GetIntValue
@@ -174,7 +173,7 @@ namespace ServiceBusExplorer.Helpers
                 (ConfigurationParameters.ReceiverThinkTimeParameter, currentSettings.ReceiverThinkTime, writeToLog);
 
             resultProperties.MonitorRefreshInterval = configuration.GetIntValue
-                (ConfigurationParameters.MonitorRefreshIntervalParameter,
+                (ConfigurationParameters.MonitorRefreshIntervalParameter, 
                 currentSettings.MonitorRefreshInterval, writeToLog);
 
             resultProperties.ShowMessageCount = configuration.GetBoolValue
@@ -195,14 +194,14 @@ namespace ServiceBusExplorer.Helpers
                 (ConfigurationParameters.SaveCheckpointsToFileParameter,
                 currentSettings.SaveCheckpointsToFile, writeToLog);
 
-            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter,
+            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, 
                 MainSettings.DefaultLabel);
 
             MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
                 out string messageText, out string messageFile);
             resultProperties.MessageText = messageText;
             resultProperties.MessageFile = messageFile;
-
+            
             resultProperties.MessageContentType = configuration.GetStringValue(ConfigurationParameters.MessageContentTypeParameter,
                 string.Empty);
 
@@ -212,6 +211,7 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.MessageBodyType = configuration.GetStringValue(ConfigurationParameters.MessageBodyType,
                 BodyType.Stream.ToString());
 
+            //TODO: ConnectivityMode has been removed from new SDK, use migrate to use <c>ServiceBusClientOptions</c> instead. 
             //resultProperties.ConnectivityMode = configuration.GetEnumValue
             //    (ConfigurationParameters.ConnectivityMode, currentSettings.ConnectivityMode, writeToLog);
             resultProperties.UseAmqpWebSockets = configuration.GetBoolValue

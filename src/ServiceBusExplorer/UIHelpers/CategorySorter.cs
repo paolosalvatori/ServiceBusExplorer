@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.UIHelpers
     {
         #region IComparer<PropertyDescriptor> Members
 
-        public int Compare(CustomPropertyDescriptor x, CustomPropertyDescriptor y)
+        public int Compare( CustomPropertyDescriptor x, CustomPropertyDescriptor y )
         {
             x.TabAppendCount = 0;
             y.TabAppendCount = 0;
@@ -85,7 +85,7 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 sortOrder = value;
             }
-        }
+        } 
         #endregion
     }
 }

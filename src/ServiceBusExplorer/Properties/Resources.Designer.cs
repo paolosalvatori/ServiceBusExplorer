@@ -8,11 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ServiceBusExplorer.Properties
-{
+namespace ServiceBusExplorer.Properties {
     using System;
-
-
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,227 +22,189 @@ namespace ServiceBusExplorer.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources
-    {
-
+    public class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if (object.ReferenceEquals(resourceMan, null))
-                {
+        public static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ServiceBusExplorer.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        public static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap AzureLogo
-        {
-            get
-            {
+        public static System.Drawing.Bitmap AzureLogo {
+            get {
                 object obj = ResourceManager.GetObject("AzureLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Clouds
-        {
-            get
-            {
+        public static System.Drawing.Bitmap Clouds {
+            get {
                 object obj = ResourceManager.GetObject("Clouds", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FindByDateExtension
-        {
-            get
-            {
+        public static System.Drawing.Bitmap FindByDateExtension {
+            get {
                 object obj = ResourceManager.GetObject("FindByDateExtension", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FindByDateExtensionRaised
-        {
-            get
-            {
+        public static System.Drawing.Bitmap FindByDateExtensionRaised {
+            get {
                 object obj = ResourceManager.GetObject("FindByDateExtensionRaised", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FindExtension
-        {
-            get
-            {
+        public static System.Drawing.Bitmap FindExtension {
+            get {
                 object obj = ResourceManager.GetObject("FindExtension", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap FindExtensionRaised
-        {
-            get
-            {
+        public static System.Drawing.Bitmap FindExtensionRaised {
+            get {
                 object obj = ResourceManager.GetObject("FindExtensionRaised", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Green
-        {
-            get
-            {
+        public static System.Drawing.Bitmap Green {
+            get {
                 object obj = ResourceManager.GetObject("Green", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap MicrosoftAzureLogo
-        {
-            get
-            {
+        public static System.Drawing.Bitmap MicrosoftAzureLogo {
+            get {
                 object obj = ResourceManager.GetObject("MicrosoftAzureLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap MicrosoftAzureWhiteLogo
-        {
-            get
-            {
+        public static System.Drawing.Bitmap MicrosoftAzureWhiteLogo {
+            get {
                 object obj = ResourceManager.GetObject("MicrosoftAzureWhiteLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap PaoloAnja
-        {
-            get
-            {
+        public static System.Drawing.Bitmap PaoloAnja {
+            get {
                 object obj = ResourceManager.GetObject("PaoloAnja", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Red
-        {
-            get
-            {
+        public static System.Drawing.Bitmap Red {
+            get {
                 object obj = ResourceManager.GetObject("Red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap SmallWorld
-        {
-            get
-            {
+        public static System.Drawing.Bitmap SmallWorld {
+            get {
                 object obj = ResourceManager.GetObject("SmallWorld", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap WhiteLogo
-        {
-            get
-            {
+        public static System.Drawing.Bitmap WhiteLogo {
+            get {
                 object obj = ResourceManager.GetObject("WhiteLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap WindowsAzureLogo
-        {
-            get
-            {
+        public static System.Drawing.Bitmap WindowsAzureLogo {
+            get {
                 object obj = ResourceManager.GetObject("WindowsAzureLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Yellow
-        {
-            get
-            {
+        public static System.Drawing.Bitmap Yellow {
+            get {
                 object obj = ResourceManager.GetObject("Yellow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }

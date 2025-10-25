@@ -27,7 +27,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Windows.Forms;
-using VS = System.Windows.Forms.VisualStyles;
+using VS = System.Windows.Forms.VisualStyles; 
 
 #endregion
 
@@ -65,7 +65,7 @@ namespace ServiceBusExplorer.Controls
             get { return fade; }
             set
             {
-                // ReSharper disable once RedundantCheckBeforeAssignment
+// ReSharper disable once RedundantCheckBeforeAssignment
                 if (fade == value) return;
                 fade = value;
             }
@@ -130,7 +130,7 @@ namespace ServiceBusExplorer.Controls
         /// <returns>An object of type <see cref="T:System.Windows.Forms.CreateParams" /> used when creating a new window.</returns>
         protected override CreateParams CreateParams
         {
-            //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] TODO: Legacy package
+            //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] //TODO: Legacy Package
             get
             {
                 var cp = base.CreateParams;
@@ -186,7 +186,7 @@ namespace ServiceBusExplorer.Controls
             UpdateRegion();
         }
 
-        // ReSharper disable once RedundantOverridenMember
+// ReSharper disable once RedundantOverridenMember
         public override bool AutoSize
         {
             get { return base.AutoSize; }
@@ -296,7 +296,7 @@ namespace ServiceBusExplorer.Controls
                 {
                     System.Threading.Thread.Sleep(Frameduration);
                 }
-                // ReSharper disable once RedundantCast
+// ReSharper disable once RedundantCast
                 Opacity = opacity * (double)i / Frames;
             }
             Opacity = opacity;
@@ -396,7 +396,7 @@ namespace ServiceBusExplorer.Controls
         /// Processes Windows messages.
         /// </summary>
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
-        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] TODO: Legacy package
+        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] //TODO: Legacy Package
         protected override void WndProc(ref Message m)
         {
             if (InternalProcessResizing(ref m, false))
@@ -411,13 +411,13 @@ namespace ServiceBusExplorer.Controls
         /// </summary>
         /// <param name="m">The message.</param>
         /// <returns>true, if the WndProc method from the base class shouldn't be invoked.</returns>
-        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] TODO: Legacy package
+        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] //TODO: Legacy Package
         public bool ProcessResizing(ref Message m)
         {
             return InternalProcessResizing(ref m, true);
         }
 
-        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] TODO: Legacy package
+        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] //TODO: Legacy Package
         private bool InternalProcessResizing(ref Message m, bool contentControl)
         {
             if (m.Msg == NativeMethods.WM_NCACTIVATE && m.WParam != IntPtr.Zero && childPopup != null && childPopup.Visible)
@@ -439,7 +439,7 @@ namespace ServiceBusExplorer.Controls
             return false;
         }
 
-        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] TODO: Legacy package
+        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)] //TODO: Legacy Package
         private bool OnGetMinMaxInfo(ref Message m)
         {
             var minmax = (NativeMethods.MINMAXINFO)Marshal.PtrToStructure(m.LParam, typeof(NativeMethods.MINMAXINFO));

@@ -249,10 +249,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.numericUpDown1.DecimalPlaces = 2;
             this.numericUpDown1.Increment = new decimal(new int[] {
-             25,
-             0,
-             0,
-             131072});
+            25,
+            0,
+            0,
+            131072});
             this.numericUpDown1.Location = new System.Drawing.Point(441, 273);
             this.numericUpDown1.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDown1.Name = "numericUpDown1";
@@ -273,10 +273,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.numericUpDown2.DecimalPlaces = 2;
             this.numericUpDown2.Increment = new decimal(new int[] {
-             25,
-             0,
-             0,
-             131072});
+            25,
+            0,
+            0,
+            131072});
             this.numericUpDown2.Location = new System.Drawing.Point(278, 31);
             this.numericUpDown2.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDown2.Name = "numericUpDown2";
@@ -316,7 +316,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // btnOpenConfig
             // 
-            this.btnOpenConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.btnOpenConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenConfig.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.btnOpenConfig.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -334,7 +334,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabOptionsControl
             // 
-            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabOptionsControl.Controls.Add(this.tabPageGeneral);
             this.tabOptionsControl.Controls.Add(this.tabPageReceiving);
@@ -473,24 +473,24 @@ namespace ServiceBusExplorer.Forms
             // monitorRefreshIntervalNumericUpDown
             // 
             this.monitorRefreshIntervalNumericUpDown.Increment = new decimal(new int[] {
-             100,
-             0,
-             0,
-             0});
+            100,
+            0,
+            0,
+            0});
             this.monitorRefreshIntervalNumericUpDown.Location = new System.Drawing.Point(260, 112);
             this.monitorRefreshIntervalNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.monitorRefreshIntervalNumericUpDown.Name = "monitorRefreshIntervalNumericUpDown";
             this.monitorRefreshIntervalNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.monitorRefreshIntervalNumericUpDown.TabIndex = 7;
             this.monitorRefreshIntervalNumericUpDown.Value = new decimal(new int[] {
-             30,
-             0,
-             0,
-             0});
+            30,
+            0,
+            0,
+            0});
             this.monitorRefreshIntervalNumericUpDown.ValueChanged += new System.EventHandler(this.monitorRefreshIntervalNumericUpDown_ValueChanged);
             // 
             // lblMonitorRefreshInterval
@@ -565,11 +565,11 @@ namespace ServiceBusExplorer.Forms
             this.cboEncodingType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboEncodingType.FormattingEnabled = true;
             this.cboEncodingType.Items.AddRange(new object[] {
-             "ASCII",
-             "UTF7",
-             "UTF8",
-             "UTF32",
-             "Unicode"});
+            "ASCII",
+            "UTF7",
+            "UTF8",
+            "UTF32",
+            "Unicode"});
             this.cboEncodingType.Location = new System.Drawing.Point(260, 267);
             this.cboEncodingType.Name = "cboEncodingType";
             this.cboEncodingType.Size = new System.Drawing.Size(298, 21);
@@ -580,18 +580,18 @@ namespace ServiceBusExplorer.Forms
             // 
             this.serverTimeoutNumericUpDown.Location = new System.Drawing.Point(260, 81);
             this.serverTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.serverTimeoutNumericUpDown.Name = "serverTimeoutNumericUpDown";
             this.serverTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.serverTimeoutNumericUpDown.TabIndex = 5;
             this.serverTimeoutNumericUpDown.Value = new decimal(new int[] {
-             5,
-             0,
-             0,
-             0});
+            5,
+            0,
+            0,
+            0});
             this.serverTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.sessionTimeoutNumericUpDown_ValueChanged);
             // 
             // lblServerTimeout
@@ -608,10 +608,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.treeViewNumericUpDown.DecimalPlaces = 2;
             this.treeViewNumericUpDown.Increment = new decimal(new int[] {
-             25,
-             0,
-             0,
-             131072});
+            25,
+            0,
+            0,
+            131072});
             this.treeViewNumericUpDown.Location = new System.Drawing.Point(260, 50);
             this.treeViewNumericUpDown.Name = "treeViewNumericUpDown";
             this.treeViewNumericUpDown.Size = new System.Drawing.Size(80, 20);
@@ -632,10 +632,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.logNumericUpDown.DecimalPlaces = 2;
             this.logNumericUpDown.Increment = new decimal(new int[] {
-             25,
-             0,
-             0,
-             131072});
+            25,
+            0,
+            0,
+            131072});
             this.logNumericUpDown.Location = new System.Drawing.Point(260, 19);
             this.logNumericUpDown.Name = "logNumericUpDown";
             this.logNumericUpDown.Size = new System.Drawing.Size(80, 20);
@@ -677,24 +677,24 @@ namespace ServiceBusExplorer.Forms
             // receiverThinkTimeNumericUpDown
             // 
             this.receiverThinkTimeNumericUpDown.Increment = new decimal(new int[] {
-             10,
-             0,
-             0,
-             0});
+            10,
+            0,
+            0,
+            0});
             this.receiverThinkTimeNumericUpDown.Location = new System.Drawing.Point(260, 179);
             this.receiverThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.receiverThinkTimeNumericUpDown.Name = "receiverThinkTimeNumericUpDown";
             this.receiverThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.receiverThinkTimeNumericUpDown.TabIndex = 11;
             this.receiverThinkTimeNumericUpDown.Value = new decimal(new int[] {
-             100,
-             0,
-             0,
-             0});
+            100,
+            0,
+            0,
+            0});
             this.receiverThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.receiverThinkTimeNumericUpDown_ValueChanged);
             // 
             // lblReceiverThinkTime
@@ -710,24 +710,24 @@ namespace ServiceBusExplorer.Forms
             // prefetchCountNumericUpDown
             // 
             this.prefetchCountNumericUpDown.Increment = new decimal(new int[] {
-             10,
-             0,
-             0,
-             0});
+            10,
+            0,
+            0,
+            0});
             this.prefetchCountNumericUpDown.Location = new System.Drawing.Point(260, 119);
             this.prefetchCountNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.prefetchCountNumericUpDown.Name = "prefetchCountNumericUpDown";
             this.prefetchCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.prefetchCountNumericUpDown.TabIndex = 7;
             this.prefetchCountNumericUpDown.Value = new decimal(new int[] {
-             10,
-             0,
-             0,
-             0});
+            10,
+            0,
+            0,
+            0});
             this.prefetchCountNumericUpDown.ValueChanged += new System.EventHandler(this.prefetchCountNumericUpDown_ValueChanged);
             // 
             // lblPrefetchCount
@@ -744,18 +744,18 @@ namespace ServiceBusExplorer.Forms
             // 
             this.receiveTimeoutNumericUpDown.Location = new System.Drawing.Point(260, 25);
             this.receiveTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.receiveTimeoutNumericUpDown.Name = "receiveTimeoutNumericUpDown";
             this.receiveTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.receiveTimeoutNumericUpDown.TabIndex = 1;
             this.receiveTimeoutNumericUpDown.Value = new decimal(new int[] {
-             1,
-             0,
-             0,
-             0});
+            1,
+            0,
+            0,
+            0});
             this.receiveTimeoutNumericUpDown.ValueChanged += new System.EventHandler(this.receiveTimeoutNumericUpDown_ValueChanged);
             // 
             // lblReceiveTimeout
@@ -771,24 +771,24 @@ namespace ServiceBusExplorer.Forms
             // topNumericUpDown
             // 
             this.topNumericUpDown.Increment = new decimal(new int[] {
-             10,
-             0,
-             0,
-             0});
+            10,
+            0,
+            0,
+            0});
             this.topNumericUpDown.Location = new System.Drawing.Point(260, 149);
             this.topNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.topNumericUpDown.Name = "topNumericUpDown";
             this.topNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.topNumericUpDown.TabIndex = 9;
             this.topNumericUpDown.Value = new decimal(new int[] {
-             10,
-             0,
-             0,
-             0});
+            10,
+            0,
+            0,
+            0});
             this.topNumericUpDown.ValueChanged += new System.EventHandler(this.topNumericUpDown_ValueChanged);
             // 
             // lblTop
@@ -804,16 +804,16 @@ namespace ServiceBusExplorer.Forms
             // retryTimeoutNumericUpDown
             // 
             this.retryTimeoutNumericUpDown.Increment = new decimal(new int[] {
-             100,
-             0,
-             0,
-             0});
+            100,
+            0,
+            0,
+            0});
             this.retryTimeoutNumericUpDown.Location = new System.Drawing.Point(260, 87);
             this.retryTimeoutNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.retryTimeoutNumericUpDown.Name = "retryTimeoutNumericUpDown";
             this.retryTimeoutNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.retryTimeoutNumericUpDown.TabIndex = 5;
@@ -833,10 +833,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.retryCountNumericUpDown.Location = new System.Drawing.Point(260, 56);
             this.retryCountNumericUpDown.Maximum = new decimal(new int[] {
-             1000,
-             0,
-             0,
-             0});
+            1000,
+            0,
+            0,
+            0});
             this.retryCountNumericUpDown.Name = "retryCountNumericUpDown";
             this.retryCountNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.retryCountNumericUpDown.TabIndex = 3;
@@ -904,7 +904,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtMessageContentType
             // 
-            this.txtMessageContentType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageContentType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageContentType.Location = new System.Drawing.Point(260, 243);
             this.txtMessageContentType.Name = "txtMessageContentType";
@@ -919,9 +919,9 @@ namespace ServiceBusExplorer.Forms
             this.cboDefaultMessageBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboDefaultMessageBodyType.FormattingEnabled = true;
             this.cboDefaultMessageBodyType.Items.AddRange(new object[] {
-             "Stream",
-             "String",
-             "WCF"});
+            "Stream",
+            "String",
+            "WCF"});
             this.cboDefaultMessageBodyType.Location = new System.Drawing.Point(260, 275);
             this.cboDefaultMessageBodyType.Name = "cboDefaultMessageBodyType";
             this.cboDefaultMessageBodyType.Size = new System.Drawing.Size(302, 21);
@@ -958,7 +958,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtMessageFile
             // 
-            this.txtMessageFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageFile.Location = new System.Drawing.Point(260, 181);
             this.txtMessageFile.Name = "txtMessageFile";
@@ -978,7 +978,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtMessageText
             // 
-            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtMessageText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessageText.Location = new System.Drawing.Point(260, 212);
             this.txtMessageText.Name = "txtMessageText";
@@ -998,7 +998,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtLabel
             // 
-            this.txtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLabel.Location = new System.Drawing.Point(260, 149);
             this.txtLabel.Name = "txtLabel";
@@ -1019,24 +1019,24 @@ namespace ServiceBusExplorer.Forms
             // senderThinkTimeNumericUpDown
             // 
             this.senderThinkTimeNumericUpDown.Increment = new decimal(new int[] {
-             100,
-             0,
-             0,
-             0});
+            100,
+            0,
+            0,
+            0});
             this.senderThinkTimeNumericUpDown.Location = new System.Drawing.Point(260, 25);
             this.senderThinkTimeNumericUpDown.Maximum = new decimal(new int[] {
-             100000,
-             0,
-             0,
-             0});
+            100000,
+            0,
+            0,
+            0});
             this.senderThinkTimeNumericUpDown.Name = "senderThinkTimeNumericUpDown";
             this.senderThinkTimeNumericUpDown.Size = new System.Drawing.Size(80, 20);
             this.senderThinkTimeNumericUpDown.TabIndex = 1;
             this.senderThinkTimeNumericUpDown.Value = new decimal(new int[] {
-             100,
-             0,
-             0,
-             0});
+            100,
+            0,
+            0,
+            0});
             this.senderThinkTimeNumericUpDown.ValueChanged += new System.EventHandler(this.senderThinkTimeNumericUpDown_ValueChanged);
             // 
             // lblSenderThinkTime
@@ -1164,7 +1164,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtProxyPassword
             // 
-            this.txtProxyPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtProxyPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtProxyPassword.Location = new System.Drawing.Point(260, 212);
             this.txtProxyPassword.Margin = new System.Windows.Forms.Padding(2);
@@ -1212,7 +1212,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtProxyUserName
             // 
-            this.txtProxyUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtProxyUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtProxyUserName.Location = new System.Drawing.Point(260, 181);
             this.txtProxyUserName.Margin = new System.Windows.Forms.Padding(2);
@@ -1259,7 +1259,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtProxyBypassList
             // 
-            this.txtProxyBypassList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtProxyBypassList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtProxyBypassList.Location = new System.Drawing.Point(260, 87);
             this.txtProxyBypassList.Margin = new System.Windows.Forms.Padding(2);
@@ -1304,7 +1304,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // txtProxyAddress
             // 
-            this.txtProxyAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtProxyAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtProxyAddress.Location = new System.Drawing.Point(260, 56);
             this.txtProxyAddress.Margin = new System.Windows.Forms.Padding(2);
@@ -1365,9 +1365,9 @@ namespace ServiceBusExplorer.Forms
             this.dgNodeColors.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgNodeColors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgNodeColors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-             this.textDataGridViewTextBoxColumn,
-             this.IsLeaf,
-             this.colorDataGridViewTextBoxColumn});
+            this.textDataGridViewTextBoxColumn,
+            this.IsLeaf,
+            this.colorDataGridViewTextBoxColumn});
             this.dgNodeColors.DataSource = this.nodeColorsBindingSource;
             this.dgNodeColors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dgNodeColors.Location = new System.Drawing.Point(16, 41);
@@ -1392,7 +1392,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.mainPanel.Controls.Add(this.tabOptionsControl);

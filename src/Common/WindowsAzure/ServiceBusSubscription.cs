@@ -54,7 +54,7 @@ namespace ServiceBusExplorer.WindowsAzure
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
 
-        /// <summary>
+       /// <summary>
         /// Retrieves an enumerated collection of subscriptions attached to the topic whose name is passed as a parameter.
         /// </summary>
         /// <param name="topicPath">The name of a topic belonging to the current service namespace base.</param>

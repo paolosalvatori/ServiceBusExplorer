@@ -39,13 +39,13 @@ namespace ServiceBusExplorer.Controls
 
             propertyList.AddRange(new[]
             {
-                 new[] {Id, eventGridNamespace.Id},
-                 new[] {NamespaceName, eventGridNamespace.Data.Name},
-                 new[] {NamespaceLocation, eventGridNamespace.Data.Location.ToString()},
-                 new[] {ProvisioningState, eventGridNamespace.Data.ProvisioningState.ToString()},
-                 new[] {PublicNetworkAccess, eventGridNamespace.Data.PublicNetworkAccess.ToString()},
-                 new[] {MinimumTlsVersionAllowed, eventGridNamespace.Data.MinimumTlsVersionAllowed.ToString()}
-             });
+                new[] {Id, eventGridNamespace.Id},
+                new[] {NamespaceName, eventGridNamespace.Data.Name},
+                new[] {NamespaceLocation, eventGridNamespace.Data.Location.ToString()},
+                new[] {ProvisioningState, eventGridNamespace.Data.ProvisioningState.ToString()},
+                new[] {PublicNetworkAccess, eventGridNamespace.Data.PublicNetworkAccess.ToString()},
+                new[] {MinimumTlsVersionAllowed, eventGridNamespace.Data.MinimumTlsVersionAllowed.ToString()}
+            });
 
             foreach (var array in propertyList)
             {

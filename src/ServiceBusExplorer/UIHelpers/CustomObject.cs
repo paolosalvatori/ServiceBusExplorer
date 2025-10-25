@@ -40,7 +40,7 @@ namespace ServiceBusExplorer.UIHelpers
         #endregion
 
         #region Public Events
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged; 
         #endregion
 
         #region Public Properties
@@ -70,7 +70,7 @@ namespace ServiceBusExplorer.UIHelpers
                 valueDictionary[name] = value;
                 NotifyPropertyChanged();
             }
-        }
+        } 
         #endregion
 
         #region Private Classes
@@ -120,7 +120,7 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 return property.Editor ?? base.GetEditor(editorBaseType);
             }
-        }
+        } 
         #endregion
 
         #region Private Methods
@@ -133,7 +133,7 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
+        } 
         #endregion
     }
 

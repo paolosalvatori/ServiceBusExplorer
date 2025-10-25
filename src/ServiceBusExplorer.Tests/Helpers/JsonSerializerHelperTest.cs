@@ -37,36 +37,36 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var json = "{prop1:\"val1\",prop2:2,\"prop3\":[1, 2, 3],prop4:{subProp1:1,subProp2:\"string\",subProp3:[\"a\",\"b\",\"c\"]}}";
             var expectedResult = @"{
-   ""prop1"": ""val1"",
-   ""prop2"": 2,
-   ""prop3"": [
-     1,
-     2,
-     3
-   ],
-   ""prop4"": {
-     ""subProp1"": 1,
-     ""subProp2"": ""string"",
-     ""subProp3"": [
-       ""a"",
-       ""b"",
-       ""c""
-     ]
-   }
- }";
+  ""prop1"": ""val1"",
+  ""prop2"": 2,
+  ""prop3"": [
+    1,
+    2,
+    3
+  ],
+  ""prop4"": {
+    ""subProp1"": 1,
+    ""subProp2"": ""string"",
+    ""subProp3"": [
+      ""a"",
+      ""b"",
+      ""c""
+    ]
+  }
+}";
             var indented = JsonSerializerHelper.Indent(json);
 
             indented.Should().Be(expectedResult);
         }
-
+        
         [Fact]
         public void IndentJson_ValueIsJson_DoesNotChangeDateFormat()
         {
             var json = @"{""dateIso"":""2018-05-14T00:00:00Z"",""dateMicrosoft"":""/Date(1526256000000)/""}";
             var expectedResult = @"{
-   ""dateIso"": ""2018-05-14T00:00:00Z"",
-   ""dateMicrosoft"": ""/Date(1526256000000)/""
- }";
+  ""dateIso"": ""2018-05-14T00:00:00Z"",
+  ""dateMicrosoft"": ""/Date(1526256000000)/""
+}";
             var indented = JsonSerializerHelper.Indent(json);
 
             expectedResult.Should().Be(indented);
@@ -87,14 +87,14 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var json = "{\"$type\":\"MyAwesomeLibrary.MyAwesomeClass\",prop1:1,prop2:2,obj:{\"$type\":\"MyAwesomeLibrary.MyOtherAwesomeClass\",default:true}}";
             var expectedResult = @"{
-   ""$type"": ""MyAwesomeLibrary.MyAwesomeClass"",
-   ""prop1"": 1,
-   ""prop2"": 2,
-   ""obj"": {
-     ""$type"": ""MyAwesomeLibrary.MyOtherAwesomeClass"",
-     ""default"": true
-   }
- }";
+  ""$type"": ""MyAwesomeLibrary.MyAwesomeClass"",
+  ""prop1"": 1,
+  ""prop2"": 2,
+  ""obj"": {
+    ""$type"": ""MyAwesomeLibrary.MyOtherAwesomeClass"",
+    ""default"": true
+  }
+}";
             var indented = JsonSerializerHelper.Indent(json);
 
             indented.Should().Be(expectedResult);

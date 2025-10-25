@@ -1184,9 +1184,9 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                         {
                             Invoke(new Action<long, long, long, bool>(InternalUpdateStatistics),
                                    new object[] { receiveTuple.Item1,
-                                                   receiveTuple.Item2,
-                                                   receiveTuple.Item3,
-                                                   graph});
+                                                  receiveTuple.Item2,
+                                                  receiveTuple.Item3,
+                                                  graph});
                         }
                         else
                         {
@@ -1463,10 +1463,10 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                     return;
                 }
                 propertyList.AddRange(new[]{new[]{PartitionId, partition.PartitionId},
-                                             new[]{EventHubPath, partition.EventHubPath},
-                                             new[]{LastEnqueuedOffset, partition.LastEnqueuedOffset ?? "Null"},
-                                             new[]{LastEnqueuedTimeUtc, partition.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
-                                             new[]{BeginSequenceNumber, partition.BeginSequenceNumber.ToString("N0")}});
+                                            new[]{EventHubPath, partition.EventHubPath},
+                                            new[]{LastEnqueuedOffset, partition.LastEnqueuedOffset ?? "Null"},
+                                            new[]{LastEnqueuedTimeUtc, partition.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
+                                            new[]{BeginSequenceNumber, partition.BeginSequenceNumber.ToString("N0")}});
 
                 if (InvokeRequired)
                 {

@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.UIHelpers
+namespace ServiceBusExplorer.UIHelpers
 {
     using System;
     using System.Collections.Generic;

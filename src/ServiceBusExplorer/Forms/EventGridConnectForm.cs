@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.Forms
             ResourceGroup = txtResourceGroupName.Text.Trim();
             NamespaceName = txtNamespaceName.Text.Trim();
             SubscriptionId = txtSubscriptionId.Text.Trim();
-            ApiVersion = cboApiVersion.Text.Trim();
+            ApiVersion = cboApiVersion.Text.Trim(); 
 
             int.TryParse(txtRetryTimeout.Text, out var retryTimoutInSeconds);
             RetryTimeout = retryTimoutInSeconds;

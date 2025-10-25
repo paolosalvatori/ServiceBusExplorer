@@ -73,17 +73,17 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
         public static List<NotificationInfo> GcmHeaders { get; private set; }
         public static List<NotificationInfo> ApnsHeaders { get; private set; }
         public static List<TagInfo> TemplateTags { get; private set; }
-        public static List<TagInfo> MpnsTags { get; private set; }
+        public static List<TagInfo> MpnsTags { get; private set; } 
         public static List<TagInfo> WnsTags { get; private set; }
-        public static List<TagInfo> GcmTags { get; private set; }
-        public static List<TagInfo> ApnsTags { get; private set; }
+        public static List<TagInfo> GcmTags { get; private set; } 
+        public static List<TagInfo> ApnsTags { get; private set; } 
         #endregion
     }
 
     public class TagInfo
     {
         #region Public Constructors
-        public TagInfo() { }
+        public TagInfo(){}
 
         public TagInfo(string tag)
         {

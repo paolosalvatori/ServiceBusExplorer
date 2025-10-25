@@ -1,5 +1,4 @@
-﻿
-#region Copyright
+﻿#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -103,7 +102,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // grpFromDateTime
             // 
-            this.grpFromDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.grpFromDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpFromDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grpFromDateTime.BackgroundGradientColor = System.Drawing.Color.White;
@@ -129,7 +128,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // dateFromTimePicker
             // 
-            this.dateFromTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.dateFromTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dateFromTimePicker.Checked = false;
             this.dateFromTimePicker.CustomFormat = "dd MMM yyyy HH:mm:ss";
@@ -142,7 +141,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // grpToDateTime
             // 
-            this.grpToDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.grpToDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpToDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.grpToDateTime.BackgroundGradientColor = System.Drawing.Color.White;
@@ -168,7 +167,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // dateToTimePicker
             // 
-            this.dateToTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.dateToTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dateToTimePicker.Checked = false;
             this.dateToTimePicker.CustomFormat = "dd MMM yyyy HH:mm:ss";

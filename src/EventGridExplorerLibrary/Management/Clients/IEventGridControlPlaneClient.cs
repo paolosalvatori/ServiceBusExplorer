@@ -1,4 +1,4 @@
-﻿// <copyright file="IEventGridClient.cs" company="Microsoft">
+// <copyright file="IEventGridClient.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
@@ -50,9 +50,9 @@ namespace EventGridExplorerLibrary
         /// <param name="namespaceTopicName">name of the namespace topic</param>
         /// <param name="subscriptionName">name of the subscription</param>
         Task<string> DeleteNamespaceTopicEventSubscriptionAsync(
-            string resourceGroupName,
-            string namespaceName,
-            string namespaceTopicName,
+            string resourceGroupName, 
+            string namespaceName, 
+            string namespaceTopicName, 
             string subscriptionName);
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace EventGridExplorerLibrary
         /// <param name="namespaceName">name of the namespace</param>
         /// <param name="namespaceTopicName">name of the namespace topic</param>
         Task<string> DeleteNamespaceTopicAsync(
-            string resourceGroupName,
-            string namespaceName,
+            string resourceGroupName, 
+            string namespaceName, 
             string namespaceTopicName);
 
     }

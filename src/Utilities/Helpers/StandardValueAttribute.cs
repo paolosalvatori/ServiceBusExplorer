@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -56,7 +56,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
         {
             this.displayName = displayName;
             this.description = description;
-        }
+        } 
         #endregion
 
         #region Public Properties
@@ -117,14 +117,14 @@ namespace ServiceBusExplorer.Utilities.Helpers
             {
                 return value;
             }
-        }
+        } 
         #endregion
 
         #region Public Methods
         public override string ToString()
         {
             return DisplayName;
-        }
+        } 
 
         public static IEnumerable<StandardValueAttribute> GetEnumItems(Type enumType)
         {
@@ -157,7 +157,7 @@ namespace ServiceBusExplorer.Utilities.Helpers
             }
             var retAttr = attributeArrayList.ToArray(typeof(StandardValueAttribute)) as StandardValueAttribute[];
             return retAttr;
-        }
+        } 
         #endregion
     }
 }

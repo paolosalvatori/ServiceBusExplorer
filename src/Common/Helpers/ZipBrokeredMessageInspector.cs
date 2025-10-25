@@ -45,7 +45,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
-            //message.SetBodyStream(Compress(stream)); //TODO: 
+            message.Body = BinaryData.FromStream(Compress(stream));
             return message;
         }
 
@@ -60,7 +60,9 @@ namespace ServiceBusExplorer.Helpers
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
-            //message.SetBodyStream(Compress(stream)); //TODO:
+            // TODO: Convert 'AfterReceiveMessage' to return ServiceBusMessage instead of ServiceBusReceivedMessage
+            // So we can modify the body of the message
+            //message.Body = BinaryData.FromStream(Compress(stream));
             return message;
         }
         #endregion

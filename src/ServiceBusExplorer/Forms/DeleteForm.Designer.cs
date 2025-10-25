@@ -101,7 +101,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.SystemColors.Window;
             this.mainPanel.Controls.Add(this.lblMessage);
@@ -139,7 +139,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // accidentalDeletionPreventionCheckControl
             // 
-            this.accidentalDeletionPreventionCheckControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.accidentalDeletionPreventionCheckControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.accidentalDeletionPreventionCheckControl.AutoSize = true;
             this.accidentalDeletionPreventionCheckControl.BackColor = System.Drawing.Color.Cornsilk;

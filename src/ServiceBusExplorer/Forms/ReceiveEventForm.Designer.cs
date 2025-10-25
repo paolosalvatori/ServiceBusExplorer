@@ -40,8 +40,8 @@
             // 
             // grouperReceiveEvents
             // 
-            this.grouperReceiveEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.grouperReceiveEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grouperReceiveEvents.BackgroundColor = System.Drawing.Color.White;
             this.grouperReceiveEvents.BackgroundGradientColor = System.Drawing.Color.White;
@@ -72,7 +72,7 @@
             this.txtEventCount.AllowDecimal = false;
             this.txtEventCount.AllowNegative = false;
             this.txtEventCount.AllowSpace = false;
-            this.txtEventCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtEventCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEventCount.IsZeroWhenEmpty = false;
             this.txtEventCount.Location = new System.Drawing.Point(112, 33);

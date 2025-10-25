@@ -16,7 +16,7 @@ namespace ServiceBusExplorer.Tests
 #if DEBUG
             expectedVersion = Environment.GetEnvironmentVariable("FILE_VERSION") ?? "1.0.0.1";
 #else
-             expectedVersion = Environment.GetEnvironmentVariable("FILE_VERSION") ??  throw new InvalidOperationException("file version not set by environment");
+            expectedVersion = Environment.GetEnvironmentVariable("FILE_VERSION") ??  throw new InvalidOperationException("file version not set by environment");
 #endif
         }
 

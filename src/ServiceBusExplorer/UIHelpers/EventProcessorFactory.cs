@@ -28,7 +28,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.UIHelpers
 {
-    public class EventProcessorFactory<T> : IEventProcessorFactory where T : class, IEventProcessor
+    public class EventProcessorFactory<T> : IEventProcessorFactory where T: class, IEventProcessor
     {
         #region Private Fields
         private readonly T instance;
@@ -57,13 +57,13 @@ namespace ServiceBusExplorer.UIHelpers
         public EventProcessorFactory(T instance)
         {
             this.instance = instance;
-        }
+        } 
         #endregion
 
         #region IEventProcessorFactory Methods
         public IEventProcessor CreateEventProcessor(PartitionContext context)
         {
-            return instance ?? Activator.CreateInstance(typeof(T), configuration) as T;
+            return instance ?? Activator.CreateInstance(typeof(T),  configuration) as T;
         }
         #endregion
     }

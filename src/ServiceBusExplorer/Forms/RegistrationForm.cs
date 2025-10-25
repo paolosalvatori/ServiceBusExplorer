@@ -74,15 +74,15 @@ namespace ServiceBusExplorer.Forms
         public RegistrationForm()
         {
             InitializeComponent();
-            cboRegistrationType.Items.AddRange(new object[]{SelectRegistration,
-                                                             MpnsRegistrationDescription,
-                                                             MpnsTemplateRegistrationDescription,
-                                                             WindowsRegistrationDescription,
-                                                             WindowsTemplateRegistrationDescription,
-                                                             AppleRegistrationDescription,
-                                                             AppleTemplateRegistrationDescription,
-                                                             GcmRegistrationDescription,
-                                                             GcmTemplateRegistrationDescription});
+            cboRegistrationType.Items.AddRange(new object[]{SelectRegistration, 
+                                                            MpnsRegistrationDescription, 
+                                                            MpnsTemplateRegistrationDescription,
+                                                            WindowsRegistrationDescription,
+                                                            WindowsTemplateRegistrationDescription,
+                                                            AppleRegistrationDescription,
+                                                            AppleTemplateRegistrationDescription,
+                                                            GcmRegistrationDescription,
+                                                            GcmTemplateRegistrationDescription});
         }
 
         #endregion
@@ -156,8 +156,8 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
-                RegistrationType = Type.GetType(string.Format(RegistrationTypeFormat,
-                                                cboRegistrationType.Text,
+                RegistrationType = Type.GetType(string.Format(RegistrationTypeFormat, 
+                                                cboRegistrationType.Text, 
                                                 typeof(NotificationHubDescription).Assembly.FullName));
                 if (RegistrationType == null)
                 {
@@ -165,7 +165,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 var propertyInfos = RegistrationType.
                                     GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty).
-                                    Where(p => p.GetSetMethod(false) != null && string.Compare(p.Name, "ExtensionData", StringComparison.InvariantCultureIgnoreCase) != 0);
+                                    Where(p=>p.GetSetMethod(false) != null && string.Compare(p.Name, "ExtensionData", StringComparison.InvariantCultureIgnoreCase) != 0);
                 IEnumerable<PropertyInfo> enumerable = propertyInfos as IList<PropertyInfo> ?? propertyInfos.ToList();
                 RegistrationObject = new CustomObject
                 {

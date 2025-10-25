@@ -1,5 +1,4 @@
-﻿
-namespace ServiceBusExplorer.Enums
+﻿namespace ServiceBusExplorer.Enums
 {
     public enum MessageDirection
     {

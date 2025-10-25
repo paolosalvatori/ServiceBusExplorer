@@ -158,11 +158,11 @@ namespace ServiceBusExplorer.UIHelpers
             sf.HotkeyPrefix = HotkeyPrefix.Show;
 
             if (tabControl.SelectedIndex == e.Index)
-            {
+            { 
                 e.Graphics.FillRectangle(SystemBrushes.Control, e.Bounds);
             }
 
-            e.Graphics.DrawString(tabControl.TabPages[e.Index].Text, tabControl.Font,
+            e.Graphics.DrawString(tabControl.TabPages[e.Index].Text, tabControl.Font, 
                 SystemBrushes.ControlText, e.Bounds, sf);
             sf.Dispose();
         }

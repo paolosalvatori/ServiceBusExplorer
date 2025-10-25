@@ -34,14 +34,14 @@ namespace ServiceBusExplorer.UIHelpers
     {
         #region Public Constructors
         public MonitorRuleList()
-        { }
+        {}
 
-        public MonitorRuleList(int capacity) : base(capacity)
-        { }
+        public MonitorRuleList(int capacity): base(capacity)
+        {}
 
         public MonitorRuleList(IEnumerable<MonitorRule> collection)
             : base(collection)
-        { }
+        {}
         #endregion
     }
 }

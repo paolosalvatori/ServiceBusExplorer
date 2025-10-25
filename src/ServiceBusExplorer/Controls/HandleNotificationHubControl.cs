@@ -1158,10 +1158,10 @@ namespace ServiceBusExplorer.Controls
             var propertyList = new List<string[]>();
             propertyList.AddRange(new[]
                         {
-                             new[] {DailyMaxActiveDevices, notificationHubDescription.DailyMaxActiveDevices.ToString("N0")},
-                             new[] {DailyMaxActiveRegistrations, notificationHubDescription.DailyMaxActiveRegistrations.ToString("N0")},
-                             new[] {DailyOperations, notificationHubDescription.DailyOperations.ToString("N0")}
-                         });
+                            new[] {DailyMaxActiveDevices, notificationHubDescription.DailyMaxActiveDevices.ToString("N0")},
+                            new[] {DailyMaxActiveRegistrations, notificationHubDescription.DailyMaxActiveRegistrations.ToString("N0")},
+                            new[] {DailyOperations, notificationHubDescription.DailyOperations.ToString("N0")}
+                        });
 
             propertyListView.Items.Clear();
             foreach (var array in propertyList)
@@ -2083,7 +2083,7 @@ namespace ServiceBusExplorer.Controls
                             return;
                         }
                     }
-
+                    
                     var bindingList = authorizationRulesBindingSource.DataSource as BindingList<NotificationHubAuthorizationRuleWrapper>;
                     if (bindingList != null)
                     {
@@ -2325,7 +2325,7 @@ namespace ServiceBusExplorer.Controls
                 control.ForeColor = SystemColors.ControlText;
             }
         }
-
+        
         private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRegistrations.Enabled = mainTabControl.SelectedTab.Name == DescriptionPage || mainTabControl.SelectedTab.Name == AuthorizationPage || mainTabControl.SelectedTab.Name == RegistrationsPage;
