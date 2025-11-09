@@ -388,15 +388,12 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
-            Application.UseWaitCursor = true;
-
+            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
             TopicSubscriptionServiceBusPurger purger = new TopicSubscriptionServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] subscription in [{e.ElapsedMilliseconds / 1000}] seconds.");
             await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetSubscriptionProperties(subscriptionWrapper));
-
             await MainForm.SingletonMainForm.RefreshSelectedEntity();
-            Application.UseWaitCursor = false;
         }
         #endregion
 
@@ -2209,17 +2206,10 @@ namespace ServiceBusExplorer.Controls
             {
                 messageForm.ShowDialog();
 
-                Application.UseWaitCursor = true;
-                try
+                using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+                if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                 {
-                    if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
-                    {
-                        RemoveDeadletterDataGridRows(messageForm.RemovedSequenceNumbers);
-                    }
-                }
-                finally
-                {
-                    Application.UseWaitCursor = false;
+                    RemoveDeadletterDataGridRows(messageForm.RemovedSequenceNumbers);
                 }
             }
         }
@@ -2376,9 +2366,9 @@ namespace ServiceBusExplorer.Controls
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
 
+            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
             try
             {
-                Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
@@ -2389,7 +2379,7 @@ namespace ServiceBusExplorer.Controls
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
                     var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete: true);
-                    Application.UseWaitCursor = false;
+                    disposableUseWaitCursor.Dispose();
                     writeToLog(messageText);
                     MessageBox.Show(messageText, "Not all selected messages were deleted",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -2397,12 +2387,8 @@ namespace ServiceBusExplorer.Controls
             }
             catch (LockDurationTooLowException ldtle)
             {
-                Application.UseWaitCursor = false;
+                disposableUseWaitCursor.Dispose();
                 MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
             }
 
             await MainForm.SingletonMainForm.RefreshSelectedEntity();

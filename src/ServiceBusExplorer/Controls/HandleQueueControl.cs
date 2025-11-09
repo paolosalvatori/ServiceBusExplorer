@@ -24,6 +24,12 @@
 #region Using Directives
 
 #nullable enable
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,14 +40,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using Microsoft.ServiceBus.Messaging;
-
-using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Helpers;
-using ServiceBusExplorer.ServiceBus.Helpers;
-using ServiceBusExplorer.UIHelpers;
-using ServiceBusExplorer.Utilities.Helpers;
 
 #endregion
 
@@ -386,15 +384,13 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
-            Application.UseWaitCursor = true;
-
+            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
             QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
             await purger.Purge(purgeStrategy, await this.serviceBusHelper.GetQueueProperties(queueDescription));
 
             await MainForm.SingletonMainForm.RefreshSelectedEntity();
-            Application.UseWaitCursor = false;
         }
 
         public void GetDeadletterMessages()
@@ -3378,19 +3374,10 @@ namespace ServiceBusExplorer.Controls
             List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
 
 
-            try
-            {
-                thisForm.UseWaitCursor = true;
-
-                var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
-
-                await CancelScheduledMessagesHelper.CancelScheduledMessages(
-                    serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
-            }
-            finally
-            {
-                thisForm.UseWaitCursor = false;
-            }
+            using var disposableUseWaitCursor = new DisposableUseWaitCursor(thisForm);
+            var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            await CancelScheduledMessagesHelper.CancelScheduledMessages(
+                serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
         }
 
         private void ResubmitSelectedMessages()
@@ -3461,9 +3448,9 @@ namespace ServiceBusExplorer.Controls
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 
+            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
             try
             {
-                Application.UseWaitCursor = true;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
@@ -3476,7 +3463,7 @@ namespace ServiceBusExplorer.Controls
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
                     var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete: true);
-                    Application.UseWaitCursor = false;
+                    disposableUseWaitCursor.Dispose();
                     writeToLog(messageText);
                     MessageBox.Show(messageText, "Not all selected messages were deleted",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -3484,12 +3471,8 @@ namespace ServiceBusExplorer.Controls
             }
             catch (LockDurationTooLowException ldtle)
             {
-                Application.UseWaitCursor = false;
+                disposableUseWaitCursor.Dispose();
                 MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            finally
-            {
-                Application.UseWaitCursor = false;
             }
 
             await MainForm.SingletonMainForm.RefreshSelectedEntity();
@@ -4431,18 +4414,10 @@ namespace ServiceBusExplorer.Controls
             {
                 messageForm.ShowDialog();
 
-                Application.UseWaitCursor = true;
-
-                try
+                using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+                if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                 {
-                    if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
-                    {
-                        DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(activeGridView, messageForm.RemovedSequenceNumbers);
-                    }
-                }
-                finally
-                {
-                    Application.UseWaitCursor = false;
+                    DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(activeGridView, messageForm.RemovedSequenceNumbers);
                 }
             }
         }
