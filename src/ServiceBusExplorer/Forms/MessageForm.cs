@@ -380,7 +380,7 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+                    using var waitCursorScope = new WaitCursorScope();
                     if (!Enum.TryParse<BodyType>(cboBodyType.Text, true, out var bodyType))
                     {
                         bodyType = BodyType.Stream;
@@ -528,7 +528,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             var messageText = messageHandler.GetFailureExplanation(result, outboundMessages.Count, delete: false);
                             writeToLog(messageText);
-                            disposableUseWaitCursor.Dispose();
+                            waitCursorScope.Dispose();
                             MessageBox.Show(messageText, "Not all selected messages were moved",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
@@ -562,7 +562,7 @@ namespace ServiceBusExplorer.Forms
                         }
                         catch (Exception exception)
                         {
-                            disposableUseWaitCursor.Dispose();
+                            waitCursorScope.Dispose();
                             var messageText = $"{outboundMessages.Count} were selected but only" +
                                 $" {messageIndex} messages were sent. The error message is: {exception.Message}";
                             MessageBox.Show(messageText, "Not all selected messages were sent",

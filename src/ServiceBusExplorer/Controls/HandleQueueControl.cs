@@ -384,7 +384,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
-            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+            using var waitCursorScope = new WaitCursorScope();
             QueueServiceBusPurger purger = new QueueServiceBusPurger(this.serviceBusHelper.GetServiceBusHelper2());
             purger.PurgeFailed += (o, e) => this.HandleException(e.Exception);
             purger.PurgeCompleted += (o, e) => writeToLog($"[{e.TotalMessagesPurged}] messages have been purged from the{(e.IsDeadLetterQueue ? " dead-letter queue of the" : "")} [{e.EntityPath}] queue in [{e.ElapsedMilliseconds / 1000}] seconds.");
@@ -3374,7 +3374,7 @@ namespace ServiceBusExplorer.Controls
             List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
 
 
-            using var disposableUseWaitCursor = new DisposableUseWaitCursor(thisForm);
+            using var waitCursorScope = new WaitCursorScope(thisForm);
             var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
             await CancelScheduledMessagesHelper.CancelScheduledMessages(
                 serviceBusHelper2, this.queueDescription.Path, sequenceNumbersToCancel);
@@ -3448,7 +3448,7 @@ namespace ServiceBusExplorer.Controls
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 
-            using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+            using var waitCursorScope = new WaitCursorScope();
             try
             {
                 var stopwatch = new Stopwatch();
@@ -3463,7 +3463,7 @@ namespace ServiceBusExplorer.Controls
                 if (messagesDeleteCount > result.DeletedSequenceNumbers.Count)
                 {
                     var messageText = deadLetterMessageHandler.GetFailureExplanation(result, messagesDeleteCount, delete: true);
-                    disposableUseWaitCursor.Dispose();
+                    waitCursorScope.Dispose();
                     writeToLog(messageText);
                     MessageBox.Show(messageText, "Not all selected messages were deleted",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -3471,7 +3471,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (LockDurationTooLowException ldtle)
             {
-                disposableUseWaitCursor.Dispose();
+                waitCursorScope.Dispose();
                 MessageBox.Show(ldtle.Message, "Delete operation cancelled", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
@@ -4414,7 +4414,7 @@ namespace ServiceBusExplorer.Controls
             {
                 messageForm.ShowDialog();
 
-                using var disposableUseWaitCursor = new DisposableUseWaitCursor();
+                using var waitCursorScope = new WaitCursorScope();
                 if (messageForm.RemovedSequenceNumbers != null && messageForm.RemovedSequenceNumbers.Any())
                 {
                     DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(activeGridView, messageForm.RemovedSequenceNumbers);
