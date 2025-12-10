@@ -3304,6 +3304,7 @@ namespace ServiceBusExplorer.Forms
                                        false);
                         }
                         serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, subscriptionDescription.MessageCountDetails);
+                        ApplyColor(serviceBusTreeView.SelectedNode);
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
                     }
@@ -4209,6 +4210,7 @@ namespace ServiceBusExplorer.Forms
 
             node.Tag = queueDescription;
             node.Text = GetNameAndMessageCountText(node.Name, queueDescription.MessageCountDetails);
+            ApplyColor(node);
         }
 
         private void RefreshTopicNode(TreeNode node, TopicDescription topicDescription)
@@ -5012,7 +5014,7 @@ namespace ServiceBusExplorer.Forms
                                     SubscriptionRetrievedFormat, subscription.Name, topic.Path),
                                 false);
                             treeNodesToLazyLoad.Add(subscriptionNode);
-                            ApplyColor(subscriptionNode, true);
+                            ApplyColor(subscriptionNode);
                         }
                     }
                 }
@@ -5045,7 +5047,7 @@ namespace ServiceBusExplorer.Forms
                                     topic.Path), false);
                         }
                     }
-                    ApplyColor(subscriptionNode, true);
+                    ApplyColor(subscriptionNode);
                 }
             }
             catch (Exception ex)
@@ -5101,7 +5103,7 @@ namespace ServiceBusExplorer.Forms
                                     string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscription.Data.Name, topic.Data.Name),
                                     false);
                                 treeNodesToLazyLoad.Add(subscriptionNode);
-                                ApplyColor(subscriptionNode, true);
+                                ApplyColor(subscriptionNode);
                             }
                         }
                         finally
@@ -6234,7 +6236,7 @@ namespace ServiceBusExplorer.Forms
                             entityType = EntityType.Relay;
                         }
                         entityNode.Tag = new UrlSegmentWrapper(entityType, new Uri(currentUrl));
-                        ApplyColor(entityNode, false);
+                        ApplyColor(entityNode);
                     }
                     else
                     {
@@ -6247,7 +6249,7 @@ namespace ServiceBusExplorer.Forms
                                                               queueDescription.Status == EntityStatus.Active ? QueueIconIndex : GreyQueueIconIndex);
                             entityNode.ContextMenuStrip = queueContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6264,7 +6266,7 @@ namespace ServiceBusExplorer.Forms
                                                               topicDescription.Status == EntityStatus.Active ? TopicIconIndex : GreyTopicIconIndex);
                             entityNode.ContextMenuStrip = topicContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6281,7 +6283,7 @@ namespace ServiceBusExplorer.Forms
                                                               RelayLeafIconIndex);
                             entityNode.ContextMenuStrip = relayContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6298,7 +6300,7 @@ namespace ServiceBusExplorer.Forms
                                                               EventHubIconIndex);
                             entityNode.ContextMenuStrip = eventHubContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6316,7 +6318,7 @@ namespace ServiceBusExplorer.Forms
                                                               NotificationHubIconIndex);
                             entityNode.ContextMenuStrip = notificationHubContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6333,7 +6335,7 @@ namespace ServiceBusExplorer.Forms
                                                               EventGridTopicIconIndex);
                             entityNode.ContextMenuStrip = eventGridTopicContextMenuStrip;
                             entityNode.Tag = tag;
-                            ApplyColor(entityNode, true);
+                            ApplyColor(entityNode);
 
                             if (log)
                             {
@@ -6370,28 +6372,113 @@ namespace ServiceBusExplorer.Forms
             }
             foreach (TreeNode node in parentNode.Nodes)
             {
-                if (node.Tag is UrlSegmentWrapper)
-                {
-                    ApplyColor(node, false);
-                }
-                else if (node.Tag is EntityDescription)
-                {
-                    ApplyColor(node, true);
-                }
+                ApplyColor(node);
                 ReapplyColors(node);
             }
         }
 
-        private void ApplyColor(TreeNode node, bool isLeaf)
+        private void ApplyColor(TreeNode node)
         {
+            var (isLeaf, messageCountDetails) = GetColorDataFromNodeTag(node.Tag);
+
             foreach (var nodeColorInfo in NodesColors.Where(nc => nc.IsLeaf == isLeaf))
             {
-                if (Regex.IsMatch(node.Name, nodeColorInfo.Text ?? string.Empty))
+                if (ColorIsMatch(node, nodeColorInfo, messageCountDetails))
                 {
                     node.ForeColor = nodeColorInfo.Color;
                     return;
                 }
             }
+        }
+
+        (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
+        {
+            // Root node has no tag
+            if (tag == null)
+            {
+                return (false, null);
+            }
+
+            // EntityDescription
+            if (tag is EntityDescription entityDescription)
+            {
+                // QueueDescription
+                if (entityDescription is QueueDescription queueDescription)
+                {
+                    return (true, queueDescription.MessageCountDetails);
+                }
+                // TopicDescription
+                if (entityDescription is TopicDescription topicDescription)
+                {
+                    return (true, topicDescription.MessageCountDetails);
+                }
+                // SubscriptionDescription
+                if (entityDescription is SubscriptionDescription subscriptionDescription)
+                {
+                    return (true, subscriptionDescription.MessageCountDetails);
+                }
+
+                return (true, null);
+            }
+            // NotificationHubDescription
+            if (tag is NotificationHubDescription notificationHubDescription)
+            {
+                return (true, null);
+            }
+            // SubscriptionWrapper
+            if (tag is SubscriptionWrapper subscriptionWrapper)
+            {
+                return (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails);
+            }
+            // RuleWrapper
+            if (tag is RuleWrapper ruleWrapper)
+            {
+                return (true, ruleWrapper.SubscriptionDescription.MessageCountDetails);
+            }
+            // UrlSegmentWrapper
+            if (tag is UrlSegmentWrapper urlSegmentWrapper)
+            {
+                return (false, null);
+            }
+            // EventGridSubscriptionWrapper
+            if (tag is EventGridSubscriptionWrapper eventGridSubscriptionWrapper)
+            {
+                return (true, null);
+            }
+
+            throw new NotSupportedException($"{tag.GetType().FullName} is not support in {nameof(GetColorDataFromNodeTag)}");
+        }
+
+        static bool ColorIsMatch(TreeNode node, NodeColorInfo nodeColorInfo, MessageCountDetails messageCountDetails)
+        {
+            var nameIsMatch = Regex.IsMatch(node.Name, nodeColorInfo.Text ?? string.Empty);
+            if (!nameIsMatch)
+            {
+                return false;
+            }
+
+            if (messageCountDetails == null)
+            {
+                return true;
+            }
+
+            var countChecks = new List<(long Value, long? Threshold)>
+            {
+                (messageCountDetails.ActiveMessageCount, nodeColorInfo.ActiveMessageCountThreshold),
+                (messageCountDetails.DeadLetterMessageCount, nodeColorInfo.DeadLetterCountThreshold),
+                (messageCountDetails.ScheduledMessageCount, nodeColorInfo.ScheduledMessageCount),
+                (messageCountDetails.TransferMessageCount, nodeColorInfo.TransferMessageCountThreshold),
+                (messageCountDetails.TransferDeadLetterMessageCount, nodeColorInfo.TransferDeadLetterMessageCountThreshold),
+            };
+
+            var checkResults = (
+                from c in countChecks
+                where c.Threshold.HasValue
+                let limitExceeded = c.Value > c.Threshold.Value
+                select limitExceeded
+            ).ToList();
+
+            return !checkResults.Any() || checkResults.Any(x => x);
         }
 
         private static void GetQueueList(ICollection<string> list, TreeNode node)

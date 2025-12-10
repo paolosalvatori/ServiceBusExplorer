@@ -159,6 +159,11 @@ namespace ServiceBusExplorer.Forms
             this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.IsLeaf = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colorDataGridViewTextBoxColumn = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.scheduledMessageCountDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -1367,7 +1372,12 @@ namespace ServiceBusExplorer.Forms
             this.dgNodeColors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.textDataGridViewTextBoxColumn,
             this.IsLeaf,
-            this.colorDataGridViewTextBoxColumn});
+            this.colorDataGridViewTextBoxColumn,
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn,
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn,
+            this.scheduledMessageCountDataGridViewTextBoxColumn,
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn,
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn});
             this.dgNodeColors.DataSource = this.nodeColorsBindingSource;
             this.dgNodeColors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dgNodeColors.Location = new System.Drawing.Point(16, 41);
@@ -1470,6 +1480,51 @@ namespace ServiceBusExplorer.Forms
             this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
             this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // activeMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "ActiveMessageCountThreshold";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Active Message Count Threshold";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Name = "activeMessageCountThresholdDataGridViewTextBoxColumn";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // deadLetterCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "DeadLetterCountThreshold";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.HeaderText = "Dead Letter Count Threshold";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Name = "deadLetterCountThresholdDataGridViewTextBoxColumn";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // scheduledMessageCountDataGridViewTextBoxColumn
+            // 
+            this.scheduledMessageCountDataGridViewTextBoxColumn.DataPropertyName = "ScheduledMessageCount";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.scheduledMessageCountDataGridViewTextBoxColumn.HeaderText = "Scheduled Message Count Threshold";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.Name = "scheduledMessageCountDataGridViewTextBoxColumn";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.scheduledMessageCountDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // transferMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferMessageCountThreshold";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Message Count Threshold";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferMessageCountThresholdDataGridViewTextBoxColumn";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferDeadLetterMessageCountThreshold";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Dead Letter Message Count Threshold";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // OptionForm
             // 
@@ -1626,5 +1681,10 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn IsLeaf;
         private DataGridViewColorPickerColumn colorDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn activeMessageCountThresholdDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn deadLetterCountThresholdDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn scheduledMessageCountDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn transferMessageCountThresholdDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn;
     }
 }

@@ -9,7 +9,7 @@
     {
         public string Format()
         {
-            return $"{Color.ToArgb()};{IsLeaf};{Text}";
+            return $"{Color.ToArgb()};{IsLeaf};{Text};{ActiveMessageCountThreshold};{DeadLetterCountThreshold};{ScheduledMessageCount};{TransferMessageCountThreshold};{TransferDeadLetterMessageCountThreshold}";
         }
 
         public static NodeColorInfo Parse(string value)
@@ -17,16 +17,27 @@
             try
             {
                 var parts = value.Split(';');
-                if (parts.Length == 3)
+                if (parts.Length < 3)
                 {
-                    return new NodeColorInfo
-                    {
-                        Color = Color.FromArgb(int.Parse(parts[0])),
-                        IsLeaf = bool.Parse(parts[1]),
-                        Text = parts[2]
-                    };
+                    return null;
                 }
-                return null;
+
+                long? GetThresholdByIndexOrDefault(int index, long? defaultValue = null)
+                {
+                    return parts.Length > index && long.TryParse(parts[index], out var result) ? result : defaultValue;
+                }
+
+                return new NodeColorInfo
+                {
+                    Color = Color.FromArgb(int.Parse(parts[0])),
+                    IsLeaf = bool.Parse(parts[1]),
+                    Text = parts[2],
+                    ActiveMessageCountThreshold = GetThresholdByIndexOrDefault(3),
+                    DeadLetterCountThreshold = GetThresholdByIndexOrDefault(4),
+                    ScheduledMessageCount = GetThresholdByIndexOrDefault(5),
+                    TransferMessageCountThreshold = GetThresholdByIndexOrDefault(6),
+                    TransferDeadLetterMessageCountThreshold = GetThresholdByIndexOrDefault(7),
+                };
             }
             catch (Exception)
             {
@@ -47,5 +58,10 @@
         public string Text { get; set; }
         public bool IsLeaf { get; set; }
         public Color Color { get; set; }
+        public long? ActiveMessageCountThreshold { get; set; }
+        public long? DeadLetterCountThreshold { get; set; }
+        public long? ScheduledMessageCount { get; set; }
+        public long? TransferMessageCountThreshold { get; set; }
+        public long? TransferDeadLetterMessageCountThreshold { get; set; }
     }
 }
