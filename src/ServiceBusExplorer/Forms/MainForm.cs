@@ -6389,6 +6389,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
             }
+            node.ForeColor = Color.Empty;
         }
 
         (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
