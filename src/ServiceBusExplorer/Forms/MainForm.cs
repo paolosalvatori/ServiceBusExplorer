@@ -6383,7 +6383,7 @@ namespace ServiceBusExplorer.Forms
 
             foreach (var nodeColorInfo in NodesColors.Where(nc => nc.IsLeaf == isLeaf))
             {
-                if (ColorIsMatch(node, nodeColorInfo, messageCountDetails))
+                if (ShouldApplyColorToNode(node, nodeColorInfo, messageCountDetails))
                 {
                     node.ForeColor = nodeColorInfo.Color;
                     return;
@@ -6392,94 +6392,50 @@ namespace ServiceBusExplorer.Forms
             node.ForeColor = Color.Empty;
         }
 
-        (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
+        static (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
         {
-            // Root node has no tag
-            if (tag == null)
+            return tag switch
             {
-                return (false, null);
-            }
-
-            // EntityDescription
-            if (tag is EntityDescription entityDescription)
-            {
-                // QueueDescription
-                if (entityDescription is QueueDescription queueDescription)
+                null => (false, null), // Root node has no tag
+                EntityDescription entityDescription => entityDescription switch
                 {
-                    return (true, queueDescription.MessageCountDetails);
-                }
-                // TopicDescription
-                if (entityDescription is TopicDescription topicDescription)
-                {
-                    return (true, topicDescription.MessageCountDetails);
-                }
-                // SubscriptionDescription
-                if (entityDescription is SubscriptionDescription subscriptionDescription)
-                {
-                    return (true, subscriptionDescription.MessageCountDetails);
-                }
-
-                return (true, null);
-            }
-            // NotificationHubDescription
-            if (tag is NotificationHubDescription notificationHubDescription)
-            {
-                return (true, null);
-            }
-            // SubscriptionWrapper
-            if (tag is SubscriptionWrapper subscriptionWrapper)
-            {
-                return (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails);
-            }
-            // RuleWrapper
-            if (tag is RuleWrapper ruleWrapper)
-            {
-                return (true, ruleWrapper.SubscriptionDescription.MessageCountDetails);
-            }
-            // UrlSegmentWrapper
-            if (tag is UrlSegmentWrapper urlSegmentWrapper)
-            {
-                return (false, null);
-            }
-            // EventGridSubscriptionWrapper
-            if (tag is EventGridSubscriptionWrapper eventGridSubscriptionWrapper)
-            {
-                return (true, null);
-            }
-
-            throw new NotSupportedException($"{tag.GetType().FullName} is not support in {nameof(GetColorDataFromNodeTag)}");
+                    QueueDescription queueDescription => (true, queueDescription.MessageCountDetails),
+                    TopicDescription topicDescription => (true, topicDescription.MessageCountDetails),
+                    SubscriptionDescription subscriptionDescription => (true, subscriptionDescription.MessageCountDetails),
+                    _ => (true, null),
+                },
+                NotificationHubDescription _ => (true, null),
+                SubscriptionWrapper subscriptionWrapper => (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails),
+                RuleWrapper ruleWrapper => (true, ruleWrapper.SubscriptionDescription.MessageCountDetails),
+                UrlSegmentWrapper _ => (false, null),
+                EventGridSubscriptionWrapper _ => (true, null),
+                _ => throw new NotSupportedException($"{tag.GetType().FullName} is not supported in {nameof(GetColorDataFromNodeTag)}")
+            };
         }
 
-        static bool ColorIsMatch(TreeNode node, NodeColorInfo nodeColorInfo, MessageCountDetails messageCountDetails)
+        static bool ShouldApplyColorToNode(TreeNode node, NodeColorInfo nodeColorInfo, MessageCountDetails messageCountDetails)
         {
-            var nameIsMatch = Regex.IsMatch(node.Name, nodeColorInfo.Text ?? string.Empty);
-            if (!nameIsMatch)
+            if (!Regex.IsMatch(node.Name, nodeColorInfo.Text ?? string.Empty))
             {
                 return false;
             }
 
+            // If no message count details given, color is based on text match only
             if (messageCountDetails == null)
             {
                 return true;
             }
 
-            var countChecks = new List<(long Value, long? Threshold)>
+            return ThresholdExceeded(nodeColorInfo.ActiveMessageCountThreshold, messageCountDetails.ActiveMessageCount)
+                   || ThresholdExceeded(nodeColorInfo.DeadLetterCountThreshold, messageCountDetails.DeadLetterMessageCount)
+                   || ThresholdExceeded(nodeColorInfo.ScheduledMessageCount, messageCountDetails.ScheduledMessageCount)
+                   || ThresholdExceeded(nodeColorInfo.TransferMessageCountThreshold, messageCountDetails.TransferMessageCount)
+                   || ThresholdExceeded(nodeColorInfo.TransferDeadLetterMessageCountThreshold, messageCountDetails.TransferDeadLetterMessageCount);
+
+            bool ThresholdExceeded(long? threshold, long value)
             {
-                (messageCountDetails.ActiveMessageCount, nodeColorInfo.ActiveMessageCountThreshold),
-                (messageCountDetails.DeadLetterMessageCount, nodeColorInfo.DeadLetterCountThreshold),
-                (messageCountDetails.ScheduledMessageCount, nodeColorInfo.ScheduledMessageCount),
-                (messageCountDetails.TransferMessageCount, nodeColorInfo.TransferMessageCountThreshold),
-                (messageCountDetails.TransferDeadLetterMessageCount, nodeColorInfo.TransferDeadLetterMessageCountThreshold),
-            };
-
-            var checkResults = (
-                from c in countChecks
-                where c.Threshold.HasValue
-                let limitExceeded = c.Value > c.Threshold.Value
-                select limitExceeded
-            ).ToList();
-
-            return !checkResults.Any() || checkResults.Any(x => x);
+                return threshold.HasValue && value > threshold.Value;
+            }
         }
 
         private static void GetQueueList(ICollection<string> list, TreeNode node)
