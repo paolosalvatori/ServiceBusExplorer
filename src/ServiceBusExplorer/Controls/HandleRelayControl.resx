@@ -121,18 +121,18 @@
     <value>17, 17</value>
   </metadata>
   <metadata name="deadletterBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>651, 17</value>
+    <value>339, 17</value>
   </metadata>
   <metadata name="sessionsBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>837, 17</value>
+    <value>525, 17</value>
   </metadata>
   <metadata name="messagesBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1012, 17</value>
+    <value>700, 17</value>
   </metadata>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1195, 17</value>
+    <value>883, 17</value>
   </metadata>
   <metadata name="authorizationRulesBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>395, 20</value>
+    <value>107, 17</value>
   </metadata>
 </root>
