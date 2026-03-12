@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -116,6 +116,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -198,6 +199,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -262,6 +264,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -323,6 +326,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -381,6 +385,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -432,6 +437,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -481,6 +487,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+            ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -972,3 +979,4 @@ namespace ServiceBusExplorer.Forms
         #endregion      
     }
 }
+

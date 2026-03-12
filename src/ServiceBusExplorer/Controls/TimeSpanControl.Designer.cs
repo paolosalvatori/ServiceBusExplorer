@@ -1,4 +1,4 @@
-﻿
+
 namespace ServiceBusExplorer.Controls
 {
     partial class TimeSpanControl
@@ -96,7 +96,7 @@ namespace ServiceBusExplorer.Controls
             this.txtMilliseconds.AllowDecimal = false;
             this.txtMilliseconds.AllowNegative = false;
             this.txtMilliseconds.AllowSpace = false;
-            this.txtMilliseconds.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMilliseconds.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtMilliseconds.IsZeroWhenEmpty = true;
             this.txtMilliseconds.Location = new System.Drawing.Point(223, 19);
             this.txtMilliseconds.Name = "txtMilliseconds";
@@ -108,7 +108,7 @@ namespace ServiceBusExplorer.Controls
             this.txtSeconds.AllowDecimal = false;
             this.txtSeconds.AllowNegative = false;
             this.txtSeconds.AllowSpace = false;
-            this.txtSeconds.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSeconds.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtSeconds.IsZeroWhenEmpty = true;
             this.txtSeconds.Location = new System.Drawing.Point(168, 19);
             this.txtSeconds.Name = "txtSeconds";
@@ -120,7 +120,7 @@ namespace ServiceBusExplorer.Controls
             this.txtMinutes.AllowDecimal = false;
             this.txtMinutes.AllowNegative = false;
             this.txtMinutes.AllowSpace = false;
-            this.txtMinutes.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMinutes.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtMinutes.IsZeroWhenEmpty = true;
             this.txtMinutes.Location = new System.Drawing.Point(113, 19);
             this.txtMinutes.Name = "txtMinutes";
@@ -132,7 +132,7 @@ namespace ServiceBusExplorer.Controls
             this.txtHours.AllowDecimal = false;
             this.txtHours.AllowNegative = false;
             this.txtHours.AllowSpace = false;
-            this.txtHours.BackColor = System.Drawing.SystemColors.Window;
+            this.txtHours.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtHours.IsZeroWhenEmpty = true;
             this.txtHours.Location = new System.Drawing.Point(58, 19);
             this.txtHours.Name = "txtHours";
@@ -144,7 +144,7 @@ namespace ServiceBusExplorer.Controls
             this.txtDays.AllowDecimal = false;
             this.txtDays.AllowNegative = false;
             this.txtDays.AllowSpace = false;
-            this.txtDays.BackColor = System.Drawing.SystemColors.Window;
+            this.txtDays.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtDays.IsZeroWhenEmpty = true;
             this.txtDays.Location = new System.Drawing.Point(3, 19);
             this.txtDays.Name = "txtDays";
@@ -186,3 +186,4 @@ namespace ServiceBusExplorer.Controls
         private NumericTextBox txtDays;
     }
 }
+

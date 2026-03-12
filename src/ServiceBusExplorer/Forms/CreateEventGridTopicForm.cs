@@ -1,4 +1,5 @@
-﻿using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +31,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -63,3 +65,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

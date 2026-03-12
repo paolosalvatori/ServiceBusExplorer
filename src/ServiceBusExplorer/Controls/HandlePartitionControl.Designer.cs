@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandlePartitionControl
     {
@@ -35,10 +35,10 @@
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefresh.Location = new System.Drawing.Point(920, 504);
@@ -68,7 +68,7 @@
             // 
             // tabPageDescription
             // 
-            this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageDescription.Controls.Add(this.grouperPartitionInformation);
             this.tabPageDescription.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageDescription.Location = new System.Drawing.Point(4, 24);
@@ -82,15 +82,15 @@
             this.grouperPartitionInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperPartitionInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperPartitionInformation.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperPartitionInformation.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperPartitionInformation.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperPartitionInformation.BackgroundGradientMode = Grouper.GroupBoxGradientMode.None;
-            this.grouperPartitionInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPartitionInformation.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperPartitionInformation.BorderThickness = 1F;
             this.grouperPartitionInformation.Controls.Add(this.propertyListView);
-            this.grouperPartitionInformation.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPartitionInformation.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperPartitionInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperPartitionInformation.ForeColor = System.Drawing.Color.White;
+            this.grouperPartitionInformation.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperPartitionInformation.GroupImage = null;
             this.grouperPartitionInformation.GroupTitle = "Partition Information";
             this.grouperPartitionInformation.Location = new System.Drawing.Point(16, 8);
@@ -153,7 +153,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.btnRefresh);
             this.Name = "HandlePartitionControl";
@@ -180,3 +180,4 @@
         private System.Windows.Forms.ToolStripMenuItem copyPartitionInformationToClipboardMenuItem;
     }
 }
+

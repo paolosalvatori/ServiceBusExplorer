@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -192,10 +192,10 @@ namespace ServiceBusExplorer.Forms
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(255, 437);
             this.btnOk.Name = "btnOk";
@@ -210,10 +210,10 @@ namespace ServiceBusExplorer.Forms
             // btnReset
             // 
             this.btnReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnReset.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnReset.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnReset.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReset.Location = new System.Drawing.Point(528, 437);
             this.btnReset.Name = "btnReset";
@@ -228,10 +228,10 @@ namespace ServiceBusExplorer.Forms
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSave.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Location = new System.Drawing.Point(435, 437);
             this.btnSave.Name = "btnSave";
@@ -323,10 +323,10 @@ namespace ServiceBusExplorer.Forms
             // 
             this.btnOpenConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenConfig.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenConfig.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenConfig.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenConfig.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenConfig.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOpenConfig.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOpenConfig.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOpenConfig.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOpenConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenConfig.ImageAlign = System.Drawing.ContentAlignment.TopRight;
             this.btnOpenConfig.Location = new System.Drawing.Point(528, 8);
@@ -357,7 +357,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageGeneral
             // 
-            this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageGeneral.Controls.Add(this.cboSelectedMessageCounts);
             this.tabPageGeneral.Controls.Add(this.lblMessageCounts);
             this.tabPageGeneral.Controls.Add(this.disableAccidentalDeletionPrevention);
@@ -659,7 +659,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageReceiving
             // 
-            this.tabPageReceiving.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageReceiving.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageReceiving.Controls.Add(this.receiverThinkTimeNumericUpDown);
             this.tabPageReceiving.Controls.Add(this.lblReceiverThinkTime);
             this.tabPageReceiving.Controls.Add(this.prefetchCountNumericUpDown);
@@ -859,7 +859,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageSending
             // 
-            this.tabPageSending.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageSending.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageSending.Controls.Add(this.saveMessageToFileCheckBox);
             this.tabPageSending.Controls.Add(this.lblMessageContentType);
             this.tabPageSending.Controls.Add(this.txtMessageContentType);
@@ -919,7 +919,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // cboDefaultMessageBodyType
             // 
-            this.cboDefaultMessageBodyType.BackColor = System.Drawing.SystemColors.Window;
+            this.cboDefaultMessageBodyType.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.cboDefaultMessageBodyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDefaultMessageBodyType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboDefaultMessageBodyType.FormattingEnabled = true;
@@ -946,10 +946,10 @@ namespace ServiceBusExplorer.Forms
             // btnOpen
             // 
             this.btnOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpen.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpen.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOpen.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpen.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpen.Location = new System.Drawing.Point(537, 212);
@@ -1089,7 +1089,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageConnectivity
             // 
-            this.tabPageConnectivity.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageConnectivity.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageConnectivity.Controls.Add(this.useAmqpWebSocketsCheckBox);
             this.tabPageConnectivity.Controls.Add(this.label4);
             this.tabPageConnectivity.Controls.Add(this.cboConnectivityMode);
@@ -1145,7 +1145,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageProxy
             // 
-            this.tabPageProxy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageProxy.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageProxy.Controls.Add(this.txtProxyPassword);
             this.tabPageProxy.Controls.Add(this.useDefaultProxyCredentialsCheckBox);
             this.tabPageProxy.Controls.Add(this.lblProxyPassword);
@@ -1331,7 +1331,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabPageColors
             // 
-            this.tabPageColors.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageColors.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageColors.Controls.Add(this.label5);
             this.tabPageColors.Controls.Add(this.dgNodeColors);
             this.tabPageColors.Location = new System.Drawing.Point(4, 22);
@@ -1358,7 +1358,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.dgNodeColors.AutoGenerateColumns = false;
             this.dgNodeColors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgNodeColors.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.dgNodeColors.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.dgNodeColors.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -1404,7 +1404,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.mainPanel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.mainPanel.Controls.Add(this.tabOptionsControl);
             this.mainPanel.Controls.Add(this.btnOpenConfig);
             this.mainPanel.Controls.Add(this.cboConfigFile);
@@ -1418,12 +1418,12 @@ namespace ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.btnCancel.CausesValidation = false;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(343, 437);
             this.btnCancel.Name = "btnCancel";
@@ -1531,7 +1531,7 @@ namespace ServiceBusExplorer.Forms
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.ClientSize = new System.Drawing.Size(615, 473);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
@@ -1688,3 +1688,4 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn;
     }
 }
+

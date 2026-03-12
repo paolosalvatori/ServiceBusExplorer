@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -119,6 +119,7 @@ namespace ServiceBusExplorer.Controls
             controlHelper = new TestControlHelper(mainForm, writeToLog, stopLog, startLog, serviceBusHelper);
             this.relayDescription = relayDescription;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -1219,3 +1220,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

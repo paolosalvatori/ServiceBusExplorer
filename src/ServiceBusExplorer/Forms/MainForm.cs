@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -269,6 +269,8 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            MainFormThemeExtension.InitTheme(this, mainMenuStrip);
+            ThemeManager.Apply(this);
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
@@ -7573,3 +7575,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -81,10 +81,10 @@ namespace ServiceBusExplorer.Forms
             // btnSubmit
             // 
             this.btnSubmit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSubmit.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnSubmit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Location = new System.Drawing.Point(542, 535);
             this.btnSubmit.Name = "btnSubmit";
@@ -97,11 +97,11 @@ namespace ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(666, 535);
             this.btnCancel.Name = "btnCancel";
@@ -116,10 +116,10 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperPublishEvent.BackgroundColor = System.Drawing.Color.White;
-            this.grouperPublishEvent.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperPublishEvent.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperPublishEvent.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperPublishEvent.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperPublishEvent.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPublishEvent.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperPublishEvent.BorderThickness = 1F;
             this.grouperPublishEvent.Controls.Add(this.txtEventInfo);
             this.grouperPublishEvent.Controls.Add(this.txtEventType);
@@ -127,9 +127,9 @@ namespace ServiceBusExplorer.Forms
             this.grouperPublishEvent.Controls.Add(this.txtEventSource);
             this.grouperPublishEvent.Controls.Add(this.lblEventInfo);
             this.grouperPublishEvent.Controls.Add(this.lblEventSource);
-            this.grouperPublishEvent.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPublishEvent.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperPublishEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperPublishEvent.ForeColor = System.Drawing.Color.White;
+            this.grouperPublishEvent.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperPublishEvent.GroupImage = null;
             this.grouperPublishEvent.GroupTitle = "Publish Event";
             this.grouperPublishEvent.Location = new System.Drawing.Point(22, 25);
@@ -231,7 +231,7 @@ namespace ServiceBusExplorer.Forms
             this.AcceptButton = this.btnSubmit;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(788, 592);
             this.Controls.Add(this.btnCancel);
@@ -265,3 +265,4 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Button btnCancel;
     }
 }
+
