@@ -1,13 +1,13 @@
 # build-dark-theme.ps1
 # ─────────────────────────────────────────────────────────────────────────────
-# Build do ServiceBusExplorer com Tema Escuro
+# Build ServiceBusExplorer with Dark Theme
 #
-# Requisitos:
+# Requirements:
 #   - Git
 #   - .NET SDK 8+ (dotnet CLI)  →  https://dotnet.microsoft.com/download
-#   - .NET Framework 4.7.2 Developer Pack (para compilar o target net472)
+#   - .NET Framework 4.7.2 Developer Pack (to compile the net472 target)
 #       https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472
-#     (normalmente já vem junto com Visual Studio 2022)
+#     (usually comes with Visual Studio 2022)
 # ─────────────────────────────────────────────────────────────────────────────
 param(
     [string]$RepoUrl   = "https://github.com/paolosalvatori/ServiceBusExplorer.git",
@@ -24,33 +24,33 @@ function Warn  { param($m) Write-Host "  [WARN]  $m" -ForegroundColor Yellow }
 function Fail  { param($m) Write-Host "  [FAIL]  $m" -ForegroundColor Red; exit 1 }
 function Title { param($m) Write-Host "`n━━━  $m  ━━━" -ForegroundColor Magenta }
 
-Title "ServiceBusExplorer — Build com Tema Escuro"
+Title "ServiceBusExplorer — Build with Dark Theme"
 
-# ── 1. Verificar pré-requisitos ───────────────────────────────────────────────
-Title "Verificando pre-requisitos"
+# ── 1. Check prerequisites ───────────────────────────────────────────────
+Title "Checking prerequisites"
 
 # Git
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    Fail "Git nao encontrado. Instale em https://git-scm.com"
+    Fail "Git not found. Install from https://git-scm.com"
 }
 Ok "Git: $(git --version)"
 
-# dotnet CLI — obrigatorio para SDK-style projects
+# dotnet CLI — required for SDK-style projects
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     Fail @"
-.NET SDK nao encontrado!
+.NET SDK not found!
 
-Instale o .NET SDK 8 (ou superior) em:
+Install .NET SDK 8 (or higher) from:
   https://dotnet.microsoft.com/download
 
-Apos instalar, feche e reabra o PowerShell.
+After installation, close and reopen PowerShell.
 "@
 }
 $dotnetVersion = dotnet --version
 Ok ".NET SDK: $dotnetVersion"
 
-# Verificar se o .NET Framework 4.7.2 targeting pack esta instalado
-# (necessario para compilar o target net472)
+# Check if .NET Framework 4.7.2 targeting pack is installed
+# (required to compile the net472 target)
 $fx472 = "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"
 $fxRelease = 0
 if (Test-Path $fx472) {
@@ -58,65 +58,65 @@ if (Test-Path $fx472) {
 }
 # Release 461808+ = .NET Framework 4.7.2
 if ($fxRelease -lt 461808) {
-    Warn ".NET Framework 4.7.2 pode nao estar instalado (release=$fxRelease)."
-    Warn "Se o build falhar, instale o Developer Pack em:"
+    Warn ".NET Framework 4.7.2 may not be installed (release=$fxRelease)."
+    Warn "If build fails, install the Developer Pack from:"
     Warn "https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472"
 } else {
-    Ok ".NET Framework 4.7.2+ detectado (release=$fxRelease)"
+    Ok ".NET Framework 4.7.2+ detected (release=$fxRelease)"
 }
 
-# ── 2. Clonar / atualizar o repositório ──────────────────────────────────────
-Title "Clonando repositorio"
+# ── 2. Clone/update the repository ──────────────────────────────────────
+Title "Cloning repository"
 
 $repoDir = "$PSScriptRoot\ServiceBusExplorer"
 if (Test-Path $repoDir) {
-    Info "Repositorio ja existe, atualizando para main..."
+    Info "Repository already exists, updating to main..."
     Push-Location $repoDir
     git fetch origin
     git reset --hard origin/main
     Pop-Location
 } else {
-    Info "Clonando $RepoUrl ..."
+    Info "Cloning $RepoUrl ..."
     git clone $RepoUrl $repoDir
 }
-Ok "Repositorio pronto em: $repoDir"
+Ok "Repository ready at: $repoDir"
 
-# ── 3. Aplicar o tema escuro ──────────────────────────────────────────────────
-Title "Aplicando tema escuro"
+# ── 3. Apply the dark theme ──────────────────────────────────────────────────
+Title "Applying dark theme"
 
-# Criar pasta Helpers se nao existir
+# Create Helpers folder if it doesn't exist
 $helpersDir = "$repoDir\src\ServiceBusExplorer\Helpers"
 if (-not (Test-Path $helpersDir)) {
     New-Item -ItemType Directory -Path $helpersDir | Out-Null
-    Info "Pasta Helpers\ criada"
+    Info "Helpers\ folder created"
 }
 
-# Copiar ThemeManager.cs
+# Copy ThemeManager.cs
 $themeSource = "$PSScriptRoot\ThemeManager.cs"
 if (-not (Test-Path $themeSource)) {
-    Fail "ThemeManager.cs nao encontrado em $PSScriptRoot`nColoque-o na mesma pasta que este script."
+    Fail "ThemeManager.cs not found in $PSScriptRoot`nPlace it in the same folder as this script."
 }
 Copy-Item $themeSource "$helpersDir\ThemeManager.cs" -Force
-Ok "ThemeManager.cs copiado para Helpers\"
+Ok "ThemeManager.cs copied to Helpers\"
 
-# Localizar o .csproj principal
+# Locate the main .csproj
 $csproj = Get-ChildItem "$repoDir\src" -Filter "ServiceBusExplorer.csproj" -Recurse |
     Where-Object { $_.FullName -notmatch "\\obj\\" } |
     Select-Object -First 1 -ExpandProperty FullName
 
-if (-not $csproj) { Fail ".csproj nao encontrado em $repoDir\src" }
-Info "Projeto: $csproj"
+if (-not $csproj) { Fail ".csproj not found in $repoDir\src" }
+Info "Project: $csproj"
 
-# Verificar se e SDK-style (contem <Project Sdk=)
+# Check if it's SDK-style (contains <Project Sdk=)
 $csprojContent = Get-Content $csproj -Raw
 $isSdkStyle = $csprojContent -match '<Project\s+Sdk='
 
 if ($isSdkStyle) {
-    # SDK-style: arquivos .cs sao incluidos automaticamente por glob
-    # Nao precisamos adicionar ao .csproj — so copiar o arquivo ja basta
-    Ok "Projeto SDK-style: ThemeManager.cs sera incluido automaticamente"
+    # SDK-style: .cs files are included automatically by glob
+    # No need to add to .csproj — just copying the file is enough
+    Ok "SDK-style project: ThemeManager.cs will be included automatically"
 } else {
-    # Projeto legado: precisa adicionar entrada <Compile> manualmente
+    # Legacy project: needs to add <Compile> entry manually
     if ($csprojContent -notmatch "ThemeManager\.cs") {
         $newEntry = '    <Compile Include="Helpers\ThemeManager.cs" />'
         $firstHelperMatch = [regex]::Match(
@@ -133,48 +133,48 @@ if ($isSdkStyle) {
             }
         }
         Set-Content $csproj $csprojContent -Encoding UTF8
-        Ok "ThemeManager.cs adicionado ao .csproj (legado)"
+        Ok "ThemeManager.cs added to .csproj (legacy)"
     } else {
-        Ok "ThemeManager.cs ja estava no .csproj"
+        Ok "ThemeManager.cs already in .csproj"
     }
 }
 
-# Localizar MainForm.cs
+# Locate MainForm.cs
 $mainFormPath = Get-ChildItem "$repoDir\src" -Filter "MainForm.cs" -Recurse |
     Where-Object { $_.FullName -notmatch "\\obj\\" } |
     Select-Object -First 1 -ExpandProperty FullName
 
 if (-not $mainFormPath) {
-    Warn "MainForm.cs nao encontrado — patch manual necessario."
+    Warn "MainForm.cs not found — manual patching required."
 } else {
     $mfc = Get-Content $mainFormPath -Raw
 
-    # Adicionar using se necessario
+    # Add using if necessary
     if ($mfc -notmatch "using ServiceBusExplorer\.Helpers") {
-        # Inserir antes da primeira linha "using " que encontrar
+        # Insert before the first "using " line found
         $firstUsing = [regex]::Match($mfc, "using\s+[\w\.]+;")
         if ($firstUsing.Success) {
             $mfc = $mfc.Insert($firstUsing.Index, "using ServiceBusExplorer.Helpers;`r`n")
         }
-        Ok "using ServiceBusExplorer.Helpers adicionado"
+        Ok "using ServiceBusExplorer.Helpers added"
     }
 
-    # Injetar ThemeManager.Apply(this) apos InitializeComponent()
+    # Inject ThemeManager.Apply(this) after InitializeComponent()
     if ($mfc -notmatch "ThemeManager\.Apply") {
         $p2 = '(InitializeComponent\(\);)'
         $r2 = '$1' + "`r`n            ThemeManager.Apply(this);"
         $mfc = $mfc -replace $p2, $r2
-        Ok "ThemeManager.Apply(this) injetado no construtor"
+        Ok "ThemeManager.Apply(this) injected in constructor"
     } else {
-        Ok "ThemeManager.Apply ja estava no MainForm.cs"
+        Ok "ThemeManager.Apply already in MainForm.cs"
     }
 
-    # ── Criar MainFormThemeExtension.cs (mais confiavel que injetar here-strings) ──
+    # ── Create MainFormThemeExtension.cs (more reliable than injecting here-strings) ──
     $extensionPath = "$repoDir\src\ServiceBusExplorer\Helpers\MainFormThemeExtension.cs"
     if (-not (Test-Path $extensionPath)) {
         $viewMenuVar = "viewToolStripMenuItem"
 
-        # Descobrir nome real do menu View no Designer
+        # Discover actual View menu name in Designer
         $designerPath = Get-ChildItem "$repoDir\src" -Filter "MainForm.Designer.cs" -Recurse |
             Where-Object { $_.FullName -notmatch "\\obj\\" } |
             Select-Object -First 1 -ExpandProperty FullName
@@ -184,15 +184,15 @@ if (-not $mainFormPath) {
             foreach ($m in $menuMatches) {
                 if ($m.Groups[2].Value -match "^&?View$") {
                     $viewMenuVar = $m.Groups[1].Value
-                    Info "Menu View encontrado: $viewMenuVar"
+                    Info "View menu found: $viewMenuVar"
                     break
                 }
             }
         }
 
         $ext = @"
-// MainFormThemeExtension.cs — gerado pelo build-dark-theme.ps1
-// Caminho: src/ServiceBusExplorer/Helpers/MainFormThemeExtension.cs
+// MainFormThemeExtension.cs — generated by build-dark-theme.ps1
+// Path: src/ServiceBusExplorer/Helpers/MainFormThemeExtension.cs
 using System;
 using System.Windows.Forms;
 using ServiceBusExplorer.Forms;
@@ -205,14 +205,14 @@ namespace ServiceBusExplorer.Helpers
         {
             ThemeManager.Apply(form);
 
-            // Titlebar nativa escura (Windows 10 1903+)
+            // Native dark title bar (Windows 10 1903+)
             form.HandleCreated += (s, e) =>
             {
                 ThemeManager.ApplyTitleBar(form.Handle);
                 ThemeManager.ThemeChanged += (_, __) => ThemeManager.ApplyTitleBar(form.Handle);
             };
 
-            // Adicionar submenu Theme > Dark / Light no menu View
+            // Add Theme > Dark / Light submenu to View menu
             ToolStripMenuItem viewMenu = null;
             foreach (ToolStripItem item in menuStrip.Items)
             {
@@ -248,34 +248,34 @@ namespace ServiceBusExplorer.Helpers
 }
 "@
         Set-Content $extensionPath $ext -Encoding UTF8
-        Ok "MainFormThemeExtension.cs criado"
+        Ok "MainFormThemeExtension.cs created"
     } else {
-        Ok "MainFormThemeExtension.cs ja existe"
+        Ok "MainFormThemeExtension.cs already exists"
     }
 
-    # Injetar chamada no construtor do MainForm — uma linha simples
+    # Inject call in MainForm constructor — a simple line
     if ($mfc -notmatch "InitTheme") {
-        # Adicionar using
+        # Add using
         if ($mfc -notmatch "using ServiceBusExplorer\.Helpers") {
             $firstUsing = [regex]::Match($mfc, "using\s+[\w\.]+;")
             if ($firstUsing.Success) {
                 $mfc = $mfc.Insert($firstUsing.Index, "using ServiceBusExplorer.Helpers;`r`n")
             }
         }
-        # Injetar apos InitializeComponent()
+        # Inject after InitializeComponent()
         $p = "(InitializeComponent\(\);)"
         $r = "`$1`r`n            MainFormThemeExtension.InitTheme(this, mainMenuStrip);"
         $mfc = $mfc -replace $p, $r
-        Ok "MainFormThemeExtension.InitTheme injetado no construtor"
+        Ok "MainFormThemeExtension.InitTheme injected in constructor"
     } else {
-        Ok "InitTheme ja estava no MainForm.cs"
+        Ok "InitTheme already in MainForm.cs"
     }
 
     Set-Content $mainFormPath $mfc -Encoding UTF8
 }
 
-# ── 3b. Aplicar tema em todos os Forms secundarios ───────────────────────────
-Title "Aplicando tema nos Forms secundarios"
+# ── 3b. Apply theme to all secondary Forms ───────────────────────────
+Title "Applying theme to secondary Forms"
 
 $allForms = Get-ChildItem "$repoDir\src" -Filter "*.cs" -Recurse |
     Where-Object { $_.FullName -notmatch "\\obj\\" -and
@@ -287,14 +287,14 @@ $patchedCount = 0
 foreach ($file in $allForms) {
     $src = Get-Content $file.FullName -Raw
 
-    # Verificar se e um Form ou UserControl
+    # Check if it's a Form or UserControl
     if ($src -notmatch ":\s*(Form|UserControl|ContainerControl)\b") { continue }
-    # Pular se ja tem o tema
+    # Skip if already has theme
     if ($src -match "ThemeManager\.Apply") { continue }
-    # Pular se nao tem InitializeComponent (nao e um Form com designer)
+    # Skip if no InitializeComponent (not a Form with designer)
     if ($src -notmatch "InitializeComponent\(\)") { continue }
 
-    # Adicionar using se necessario
+    # Add using if necessary
     if ($src -notmatch "using ServiceBusExplorer\.Helpers") {
         $firstUsing = [regex]::Match($src, "using\s+[\w\.]+;")
         if ($firstUsing.Success) {
@@ -302,7 +302,7 @@ foreach ($file in $allForms) {
         }
     }
 
-    # Injetar ThemeManager.Apply apos InitializeComponent()
+    # Inject ThemeManager.Apply after InitializeComponent()
     $p2 = "(InitializeComponent\(\);)"
     $r2 = "`$1`r`n            ThemeManager.Apply(this);"
     $src = $src -replace $p2, $r2
@@ -310,10 +310,10 @@ foreach ($file in $allForms) {
     Set-Content $file.FullName $src -Encoding UTF8
     $patchedCount++
 }
-Ok "$patchedCount forms secundarios com tema aplicado"
+Ok "$patchedCount secondary forms with theme applied"
 
-# ── 3c. Limpar cores hardcoded nos arquivos Designer.cs ──────────────────────
-Title "Removendo cores hardcoded dos Designer.cs"
+# ── 3c. Remove hardcoded colors in Designer.cs files ──────────────────────
+Title "Removing hardcoded colors from Designer.cs"
 
 $designers = Get-ChildItem "$repoDir\src" -Recurse |
     Where-Object { $_.Name -imatch "\.designer\.cs$" -and $_.FullName -notmatch "\\obj\\" }
@@ -323,11 +323,11 @@ foreach ($file in $designers) {
     $src = Get-Content $file.FullName -Raw
     $original = $src
 
-    # Pular AboutForm — tem BackgroundImage decorativa, nao alterar BackColor
+    # Skip AboutForm — it has decorative BackgroundImage, don't change BackColor
     if ($file.Name -eq "AboutForm.Designer.cs") { continue }
 
-    # ── Substituir BackColor hardcoded ──────────────────────────────────────
-    # Cobre: this.xxx.BackColor e this.BackColor (o form em si)
+    # ── Replace hardcoded BackColor ──────────────────────────────────────
+    # Covers: this.xxx.BackColor and this.BackColor (the form itself)
     $src = [regex]::Replace($src,
         '(this(?:\.\w+)?\.BackColor\s*=\s*)System\.Drawing\.Color\.FromArgb\([^;]+\);',
         '$1System.Drawing.Color.FromArgb(33, 33, 33);')
@@ -336,7 +336,7 @@ foreach ($file in $designers) {
         '(this(?:\.\w+)?\.BackColor\s*=\s*)System\.Drawing\.SystemColors\.\w+;',
         '$1System.Drawing.Color.FromArgb(33, 33, 33);')
 
-    # ── Remover ForeColor hardcoded — deixar ThemeManager controlar em runtime ─
+    # ── Remove hardcoded ForeColor — let ThemeManager control at runtime ─
     $src = [regex]::Replace($src,
         '(this(?:\.\w+)?\.ForeColor\s*=\s*)System\.Drawing\.Color\.FromArgb\([^;]+\);',
         '$1System.Drawing.SystemColors.ControlText;')
@@ -345,7 +345,7 @@ foreach ($file in $designers) {
         '(this(?:\.\w+)?\.ForeColor\s*=\s*)System\.Drawing\.Color\.(White|Black|Gray|Silver|DarkGray|LightGray)\s*;',
         '$1System.Drawing.SystemColors.ControlText;')
 
-    # SystemColors.Window como ForeColor fica branco no light — corrigir para ControlText
+    # SystemColors.Window as ForeColor becomes white in light theme — fix to ControlText
     $src = [regex]::Replace($src,
         '(this(?:\.\w+)?\.ForeColor\s*=\s*)System\.Drawing\.SystemColors\.Window;',
         '$1System.Drawing.SystemColors.ControlText;')
@@ -361,7 +361,7 @@ foreach ($file in $designers) {
         '(this(?:\.\w+)?\.HeaderForeColor\s*=\s*)System\.Drawing\.Color\.[^;]+;',
         '$1System.Drawing.Color.FromArgb(236, 236, 236);')
 
-    # ── Grouper: propriedades de cor customizadas (BackgroundColor, BorderColor etc) ──
+    # ── Grouper: custom color properties (BackgroundColor, BorderColor etc) ──
     $src = [regex]::Replace($src,
         '(this(?:\.\w+)?\.BackgroundColor\s*=\s*)System\.Drawing\.Color\.[^;]+;',
         '$1System.Drawing.Color.FromArgb(33, 33, 33);')
@@ -385,45 +385,45 @@ foreach ($file in $designers) {
         '(this\.\w+\.FlatAppearance\.BorderColor\s*=\s*)System\.Drawing\.Color\.FromArgb\([^;]+\);',
         '$1System.Drawing.Color.FromArgb(0, 122, 204);')
 
-    # ── UseVisualStyleBackColor = false → true (deixar o Apply controlar) ────
-    # Nao mexer — o Apply ja sobrescreve a cor depois
+    # ── UseVisualStyleBackColor = false → true (let Apply control it) ────
+    # Don't touch — Apply already overrides the color later
 
     if ($src -ne $original) {
         Set-Content $file.FullName $src -Encoding UTF8
         $designerCount++
     }
 }
-Ok "$designerCount arquivos Designer.cs com cores corrigidas"
+Ok "$designerCount Designer.cs files with colors fixed"
 
 # ── 4. Restore ────────────────────────────────────────────────────────────────
-Title "Restaurando dependencias (dotnet restore)"
+Title "Restoring dependencies (dotnet restore)"
 
 $sln = Get-ChildItem "$repoDir\src" -Filter "*.sln" | Select-Object -First 1 -ExpandProperty FullName
-if (-not $sln) { Fail ".sln nao encontrado em $repoDir\src" }
-Info "Solucao: $sln"
+if (-not $sln) { Fail ".sln not found in $repoDir\src" }
+Info "Solution: $sln"
 
 dotnet restore $sln
-if ($LASTEXITCODE -ne 0) { Fail "Falha no dotnet restore" }
-Ok "Dependencias restauradas"
+if ($LASTEXITCODE -ne 0) { Fail "dotnet restore failed" }
+Ok "Dependencies restored"
 
 # ── 5. Build ──────────────────────────────────────────────────────────────────
-Title "Compilando (Release)"
+Title "Compiling (Release)"
 
-# Passar a versao 6.1.3 explicitamente para evitar o aviso "new version available"
-# O app compara o proprio AssemblyVersion com o ultimo release do GitHub
+# Pass version 6.1.3 explicitly to avoid the "new version available" warning
+# The app compares its own AssemblyVersion with the latest GitHub release
 $buildVersion = "6.1.3"
 dotnet build $sln --configuration Release --no-restore /nologo /p:Version=$buildVersion /p:AssemblyVersion="$buildVersion.0" /p:FileVersion="$buildVersion.0" /p:InformationalVersion="$buildVersion-dark-theme"
-if ($LASTEXITCODE -ne 0) { Fail "Falha no build" }
-Ok "Build concluido (v$buildVersion)"
+if ($LASTEXITCODE -ne 0) { Fail "Build failed" }
+Ok "Build completed (v$buildVersion)"
 
-# ── 6. Empacotar ──────────────────────────────────────────────────────────────
-Title "Empacotando artefatos"
+# ── 6. Package ──────────────────────────────────────────────────────────────
+Title "Packaging artifacts"
 
 $exePath = Get-ChildItem "$repoDir\src" -Filter "ServiceBusExplorer.exe" -Recurse |
     Where-Object { $_.FullName -match "Release" -and $_.FullName -notmatch "\\obj\\" } |
     Select-Object -First 1 -ExpandProperty FullName
 
-if (-not $exePath) { Fail "ServiceBusExplorer.exe nao encontrado no output do build" }
+if (-not $exePath) { Fail "ServiceBusExplorer.exe not found in build output" }
 $buildOutput = Split-Path $exePath -Parent
 Info "Output: $buildOutput"
 
@@ -436,14 +436,14 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [System.IO.Compression.ZipFile]::CreateFromDirectory($buildOutput, $zipPath)
-Ok "ZIP criado: $zipPath"
+Ok "ZIP created: $zipPath"
 
-# ── 7. Resumo ─────────────────────────────────────────────────────────────────
-Title "Pronto!"
+# ── 7. Summary ─────────────────────────────────────────────────────────────────
+Title "Done!"
 Write-Host ""
-Write-Host "  Executavel : $exePath" -ForegroundColor White
+Write-Host "  Executable : $exePath" -ForegroundColor White
 Write-Host "  ZIP        : $zipPath" -ForegroundColor White
 Write-Host ""
-Write-Host "  Executar:" -ForegroundColor Gray
+Write-Host "  Run:" -ForegroundColor Gray
 Write-Host "  & '$exePath'" -ForegroundColor DarkGray
 Write-Host ""
