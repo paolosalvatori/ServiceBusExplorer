@@ -1,12 +1,12 @@
 // ThemeManager.cs
-// Caminho: src/ServiceBusExplorer/Helpers/ThemeManager.cs
+// Path: src/ServiceBusExplorer/Helpers/ThemeManager.cs
 //
-// Gerencia tema Dark/Light com persistência no app.config do usuário.
-// Uso:
-//   ThemeManager.Apply(form)          — aplica o tema atual ao form
-//   ThemeManager.Toggle(form)         — alterna dark/light e reaaplica
-//   ThemeManager.IsDark               — true se tema escuro ativo
-//   ThemeManager.CurrentTheme         — "Dark" ou "Light"
+// Manages Dark/Light theme with persistence in user's app.config.
+// Usage:
+//   ThemeManager.Apply(form)          — applies current theme to the form
+//   ThemeManager.Toggle(form)         — toggles dark/light and reapplies
+//   ThemeManager.IsDark               — true if dark theme active
+//   ThemeManager.CurrentTheme         — "Dark" or "Light"
 
 using System;
 using System.Collections.Generic;
@@ -20,19 +20,19 @@ namespace ServiceBusExplorer.Helpers
 
     public static class ThemeManager
     {
-        // ── Chave no app.config ───────────────────────────────────────────────
+        // ── Key in app.config ───────────────────────────────────────────────
         private const string ConfigKey = "theme";
 
-        // ── Estado atual ──────────────────────────────────────────────────────
+        // ── Current state ──────────────────────────────────────────────────────
         private static Theme _current = Theme.Dark;
 
         public static Theme CurrentTheme => _current;
         public static bool IsDark => _current == Theme.Dark;
 
-        // ── Evento disparado ao trocar tema ───────────────────────────────────
+        // ── Event fired when theme changes ───────────────────────────────────
         public static event EventHandler ThemeChanged;
 
-        // ── Paleta Dark ───────────────────────────────────────────────────────
+        // ── Dark palette ───────────────────────────────────────────────────────
         private static class Dark
         {
             public static readonly Color Background     = Color.FromArgb(33,  33,  33);
@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Helpers
             public static readonly Color AccentText     = Color.White;
         }
 
-        // ── Paleta Light (cores do sistema Windows) ───────────────────────────
+        // ── Light palette (Windows system colors) ───────────────────────────
         private static class Light
         {
             public static readonly Color Background     = SystemColors.Control;
@@ -62,7 +62,7 @@ namespace ServiceBusExplorer.Helpers
             public static readonly Color AccentText     = SystemColors.HighlightText;
         }
 
-        // ── Atalhos para paleta ativa ─────────────────────────────────────────
+        // ── Shortcuts to active palette ─────────────────────────────────────────
         public static Color Background     => IsDark ? Dark.Background     : Light.Background;
         public static Color Surface        => IsDark ? Dark.Surface        : Light.Surface;
         public static Color SurfaceLight   => IsDark ? Dark.SurfaceLight   : Light.SurfaceLight;
@@ -74,7 +74,7 @@ namespace ServiceBusExplorer.Helpers
         public static Color AccentHover    => IsDark ? Dark.AccentHover    : Light.AccentHover;
         public static Color AccentText     => IsDark ? Dark.AccentText     : Light.AccentText;
 
-        // ── Inicializar: carregar preferência salva ───────────────────────────
+        // ── Initialize: load saved preference ───────────────────────────
         static ThemeManager()
         {
             LoadFromConfig();
@@ -91,7 +91,7 @@ namespace ServiceBusExplorer.Helpers
                     _current = saved;
                 }
             }
-            catch { /* sem config, usa Dark como padrão */ }
+            catch { /* no config, uses Dark as default */ }
         }
 
         private static void SaveToConfig(Theme theme)
@@ -105,21 +105,21 @@ namespace ServiceBusExplorer.Helpers
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
             }
-            catch { /* silenciar erros de persistência */ }
+            catch { /* silence persistence errors */ }
         }
 
-        // ── API pública ───────────────────────────────────────────────────────
+        // ── Public API ───────────────────────────────────────────────────────
 
-        /// <summary>Aplica o tema atual a um Form e todos os seus controles.</summary>
-        /// <summary>Aceita Form, UserControl ou qualquer Control.</summary>
+        /// <summary>Applies current theme to a Form and all its controls.</summary>
+        /// <summary>Accepts Form, UserControl or any Control.</summary>
         public static void Apply(Control control)
         {
             ApplyToControl(control);
             ApplyRecursive(control);
             control.ControlAdded += (s, e) => ApplyRecursive(e.Control);
 
-            // Para Forms: reaplicar no Load para sobrescrever qualquer cor
-            // que o Designer possa ter definido depois do construtor
+            // For Forms: reapply on Load to override any colors
+            // that the Designer might have set after the constructor
             if (control is Form form)
             {
                 form.Load += (s, e) =>
@@ -130,7 +130,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        /// <summary>Alterna entre Dark e Light, reaaplica a todos os forms abertos e salva.</summary>
+        /// <summary>Toggles between Dark and Light, reapplies to all open forms and saves.</summary>
         public static void Toggle()
         {
             _current = IsDark ? Theme.Light : Theme.Dark;
@@ -146,7 +146,7 @@ namespace ServiceBusExplorer.Helpers
             ThemeChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        /// <summary>Define um tema específico.</summary>
+        /// <summary>Sets a specific theme.</summary>
         public static void SetTheme(Theme theme)
         {
             if (_current == theme) return;
@@ -163,14 +163,14 @@ namespace ServiceBusExplorer.Helpers
             ThemeChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        // ── Aplicação recursiva ───────────────────────────────────────────────
+        // ── Recursive application ───────────────────────────────────────────────
 
-        // Cores do tema light original deles — qualquer controle com essas cores e forcado para dark
+        // Their original light theme colors — any control with these colors is forced to dark
         private static readonly System.Drawing.Color[] LightThemeColors = {
-            System.Drawing.Color.FromArgb(215, 228, 242),  // azul claro principal
-            System.Drawing.Color.FromArgb(153, 180, 209),  // azul medio hover
-            System.Drawing.Color.FromArgb(235, 241, 247),  // quase branco azulado
-            System.Drawing.Color.FromArgb(194, 213, 229),  // azul claro secundario
+            System.Drawing.Color.FromArgb(215, 228, 242),  // main light blue
+            System.Drawing.Color.FromArgb(153, 180, 209),  // medium blue hover
+            System.Drawing.Color.FromArgb(235, 241, 247),  // bluish off-white
+            System.Drawing.Color.FromArgb(194, 213, 229),  // secondary light blue
         };
 
         private static bool IsLightThemeColor(System.Drawing.Color c)
@@ -185,32 +185,32 @@ namespace ServiceBusExplorer.Helpers
         {
             ApplyToControl(control);
 
-            // Forcar override de qualquer cor residual do tema light (dark mode)
+            // Force override of any residual light theme colors (dark mode)
             if (IsDark && IsLightThemeColor(control.BackColor))
                 control.BackColor = Background;
             if (IsDark && IsLightThemeColor(control.ForeColor))
                 control.ForeColor = Foreground;
 
-            // Forcar override de ForeColor branco/Window no tema claro (invisivel)
+            // Force override of white/Window ForeColor in light theme (invisible)
             if (!IsDark && (control.ForeColor == Color.White ||
                             control.ForeColor == SystemColors.Window))
                 control.ForeColor = Foreground;
 
-            // Forcar override de BackColor branco puro ou Window no dark
+            // Force override of pure white or Window BackColor in dark
             if (IsDark && (control.BackColor == Color.White ||
                            control.BackColor == SystemColors.Window))
                 control.BackColor = Surface;
 
-            // logoPictureBox: logo branca — fundo azul Microsoft Azure em ambos os temas
+            // logoPictureBox: white logo — Microsoft Azure blue background in both themes
             if (control.Name == "logoPictureBox")
             {
                 control.BackColor = Color.FromArgb(0, 120, 212); // #0078D4 Microsoft Azure blue
                 return;
             }
 
-            // Grouper: controle customizado com propriedades de cor proprias
+            // Grouper: custom control with its own color properties
             ApplyToGrouper(control);
-            // HeaderPanel: cabecalho gradiente customizado
+            // HeaderPanel: custom gradient header
             ApplyToHeaderPanel(control);
 
             foreach (Control child in control.Controls)
@@ -223,12 +223,12 @@ namespace ServiceBusExplorer.Helpers
 
         private static void ApplyToControl(Control control)
         {
-            // AboutForm: tem BackgroundImage decorativa — preservar aparencia original
+            // AboutForm: has decorative BackgroundImage — preserve original appearance
             if (control.BackgroundImage != null && control is Form)
                 return;
 
-            // Labels com BackColor=Transparent dentro de form com BackgroundImage
-            // herdam o fundo — nao alterar para nao destruir o layout visual
+            // Labels with BackColor=Transparent inside a form with BackgroundImage
+            // inherit the background — don't change to avoid breaking visual layout
             if (control.BackColor == Color.Transparent)
             {
                 var parent = control.Parent;
@@ -310,7 +310,7 @@ namespace ServiceBusExplorer.Helpers
                     tv.BorderStyle = BorderStyle.FixedSingle;
                     break;
 
-                // TabPage antes de Panel (herança)
+                // TabPage before Panel (inheritance)
                 case TabPage tp:
                     tp.BackColor = Surface;
                     tp.ForeColor = Foreground;
@@ -345,7 +345,7 @@ namespace ServiceBusExplorer.Helpers
                     dtp.CalendarTitleForeColor = AccentText;
                     break;
 
-                // LinkLabel antes de Label (herança)
+                // LinkLabel before Label (inheritance)
                 case LinkLabel llbl:
                     llbl.BackColor = Color.Transparent;
                     llbl.ForeColor = Accent;
@@ -369,7 +369,7 @@ namespace ServiceBusExplorer.Helpers
                     tsc.ContentPanel.BackColor         = Background;
                     break;
 
-                // ContextMenuStrip > MenuStrip > StatusStrip > ToolStrip (herança)
+                // ContextMenuStrip > MenuStrip > StatusStrip > ToolStrip (inheritance)
                 case ContextMenuStrip cms:
                     cms.BackColor  = SurfaceLight;
                     cms.ForeColor  = Foreground;
@@ -430,8 +430,8 @@ namespace ServiceBusExplorer.Helpers
 
         private static void ApplyToGrouper(Control control)
         {
-            // O Grouper tem BackgroundColor, BorderColor, CustomGroupBoxColor
-            // Usamos reflection para nao criar dependencia circular de namespace
+            // Grouper has BackgroundColor, BorderColor, CustomGroupBoxColor
+            // We use reflection to avoid circular namespace dependency
             var t = control.GetType();
             if (t.Name != "Grouper") return;
 
@@ -445,11 +445,11 @@ namespace ServiceBusExplorer.Helpers
             TrySetColor(t, control, "BorderColor",              bord);
             TrySetColor(t, control, "GroupTitleColor",          fg);
 
-            // ForeColor do titulo do grouper
+            // Grouper title ForeColor
             control.ForeColor = fg;
             control.BackColor = bg;
 
-            // Forcar repintura — o Grouper usa OnPaint customizado
+            // Force repaint — Grouper uses custom OnPaint
             control.Invalidate(true);
         }
 
@@ -464,7 +464,7 @@ namespace ServiceBusExplorer.Helpers
             catch { }
         }
 
-        // Cores Light para o Grouper (SystemColors)
+        // Light colors for Grouper (SystemColors)
         private static Color Light_Background => SystemColors.Control;
         private static Color Light_Foreground  => SystemColors.ControlText;
         private static Color Light_Border      => SystemColors.ControlDark;
@@ -505,7 +505,7 @@ namespace ServiceBusExplorer.Helpers
             tc.BackColor = Background;
             if (IsDark)
             {
-                // Dark: owner-draw para controlar cores das abas
+                // Dark: owner-draw to control tab colors
                 tc.Appearance = TabAppearance.FlatButtons;
                 tc.DrawItem  -= TabControl_DrawItem;
                 tc.DrawMode   = TabDrawMode.OwnerDrawFixed;
@@ -513,7 +513,7 @@ namespace ServiceBusExplorer.Helpers
             }
             else
             {
-                // Light: voltar ao renderer nativo do Windows (sem distorcao)
+                // Light: revert to native Windows renderer (no distortion)
                 tc.DrawItem -= TabControl_DrawItem;
                 tc.DrawMode  = TabDrawMode.Normal;
                 tc.Appearance = TabAppearance.Normal;
@@ -528,12 +528,12 @@ namespace ServiceBusExplorer.Helpers
             var bg  = selected ? SurfaceLighter : Background;
             var fg  = selected ? Foreground     : ForegroundDim;
 
-            // Preencher fundo da aba
+            // Fill tab background
             using (var bgBrush = new SolidBrush(bg))
                 e.Graphics.FillRectangle(bgBrush, e.Bounds);
 
-            // Borda inferior da aba selecionada: mesma cor do fundo da TabPage (sem linha visivel)
-            // Borda das abas nao selecionadas: cor da borda do tema
+            // Bottom border of selected tab: same color as TabPage background (no visible line)
+            // Border of non-selected tabs: theme border color
             if (!selected)
             {
                 using (var brdPen = new Pen(Border))
@@ -559,7 +559,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        // ── DWM: titlebar nativa escura (Windows 10 1903+) ────────────────────
+        // ── DWM: native dark title bar (Windows 10 1903+) ────────────────────
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr,
             ref int attrValue, int attrSize);
@@ -577,7 +577,7 @@ namespace ServiceBusExplorer.Helpers
         }
     }
 
-    // ── Renderer escuro para ToolStrip / MenuStrip ────────────────────────────
+    // ── Dark renderer for ToolStrip / MenuStrip ────────────────────────────
     internal class DarkToolStripRenderer : ToolStripProfessionalRenderer
     {
         public DarkToolStripRenderer() : base(new DarkColorTable()) { }
