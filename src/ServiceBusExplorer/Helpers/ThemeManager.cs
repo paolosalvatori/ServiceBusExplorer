@@ -20,19 +20,19 @@ namespace ServiceBusExplorer.Helpers
 
     public static class ThemeManager
     {
-        // ── Key in app.config ───────────────────────────────────────────────
+        // Key in app.config
         private const string ConfigKey = "theme";
 
-        // ── Current state ──────────────────────────────────────────────────────
+        // Current state
         private static Theme _current = Theme.Dark;
 
         public static Theme CurrentTheme => _current;
         public static bool IsDark => _current == Theme.Dark;
 
-        // ── Event fired when theme changes ───────────────────────────────────
+        // Event fired when theme changes
         public static event EventHandler ThemeChanged;
 
-        // ── Dark palette ───────────────────────────────────────────────────────
+        // Dark palette
         private static class Dark
         {
             public static readonly Color Background     = Color.FromArgb(33,  33,  33);
@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Helpers
             public static readonly Color AccentText     = Color.White;
         }
 
-        // ── Light palette (Windows system colors) ───────────────────────────
+        // Light palette (Windows system colors)
         private static class Light
         {
             public static readonly Color Background     = SystemColors.Control;
@@ -62,7 +62,7 @@ namespace ServiceBusExplorer.Helpers
             public static readonly Color AccentText     = SystemColors.HighlightText;
         }
 
-        // ── Shortcuts to active palette ─────────────────────────────────────────
+        // Shortcuts to active palette
         public static Color Background     => IsDark ? Dark.Background     : Light.Background;
         public static Color Surface        => IsDark ? Dark.Surface        : Light.Surface;
         public static Color SurfaceLight   => IsDark ? Dark.SurfaceLight   : Light.SurfaceLight;
@@ -74,7 +74,7 @@ namespace ServiceBusExplorer.Helpers
         public static Color AccentHover    => IsDark ? Dark.AccentHover    : Light.AccentHover;
         public static Color AccentText     => IsDark ? Dark.AccentText     : Light.AccentText;
 
-        // ── Initialize: load saved preference ───────────────────────────
+        // Initialize: load saved preference
         static ThemeManager()
         {
             LoadFromConfig();
@@ -108,7 +108,7 @@ namespace ServiceBusExplorer.Helpers
             catch { /* silence persistence errors */ }
         }
 
-        // ── Public API ───────────────────────────────────────────────────────
+        // Public API
 
         /// <summary>Applies current theme to a Form and all its controls.</summary>
         /// <summary>Accepts Form, UserControl or any Control.</summary>
@@ -163,7 +163,7 @@ namespace ServiceBusExplorer.Helpers
             ThemeChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        // ── Recursive application ───────────────────────────────────────────────
+        // Recursive application
 
         // Their original light theme colors — any control with these colors is forced to dark
         private static readonly System.Drawing.Color[] LightThemeColors = {
@@ -559,7 +559,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        // ── DWM: native dark title bar (Windows 10 1903+) ────────────────────
+        // DWM: native dark title bar (Windows 10 1903+)
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr,
             ref int attrValue, int attrSize);
@@ -577,7 +577,7 @@ namespace ServiceBusExplorer.Helpers
         }
     }
 
-    // ── Dark renderer for ToolStrip / MenuStrip ────────────────────────────
+    // Dark renderer for ToolStrip / MenuStrip
     internal class DarkToolStripRenderer : ToolStripProfessionalRenderer
     {
         public DarkToolStripRenderer() : base(new DarkColorTable()) { }
