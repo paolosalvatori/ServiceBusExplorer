@@ -109,6 +109,7 @@ Here are a couple of alternatives. We do not take responsibility for them though
 | [Purple Explorer] (active fork)          | free, open source, cross platform             |
 | [Superbus]                               | paid with a free trial, macOS                 |
 | [Service Bus Cloud Explorer]             | paid with a free basic plan, SaaS, web based  |
+| [Service Bus TUI](https://github.com/MonsieurTib/service-bus-tui) | free, open source, cross platform, terminal based             |
 
 [PowerShell]: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps
 [Purple Explorer]: https://github.com/philipmat/PurpleExplorer
