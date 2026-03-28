@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -35,6 +36,7 @@ namespace ServiceBusExplorer.Forms
         public ClipboardForm(string url)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             lblUrl.Text = string.Format(url);
             Width = lblUrl.Width + 80;
         }
@@ -78,3 +80,4 @@ namespace ServiceBusExplorer.Forms
         #endregion 
     }
 }
+

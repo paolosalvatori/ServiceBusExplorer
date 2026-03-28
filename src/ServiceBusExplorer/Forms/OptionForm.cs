@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -78,6 +78,7 @@ namespace ServiceBusExplorer.Forms
             originalConfigFileUse = configFileUse;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
 
             // Put data in the list controls
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
@@ -814,3 +815,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

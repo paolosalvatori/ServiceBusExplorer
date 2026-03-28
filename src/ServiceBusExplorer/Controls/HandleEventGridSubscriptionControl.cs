@@ -1,4 +1,4 @@
-﻿using Azure.Messaging;
+using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
@@ -58,6 +58,7 @@ namespace ServiceBusExplorer.Controls
             this.eventGridLibrary = eventGridLibrary;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
             ConfigureReadUserInterface();
         }
 
@@ -301,3 +302,4 @@ namespace ServiceBusExplorer.Controls
         }
     }
 }
+

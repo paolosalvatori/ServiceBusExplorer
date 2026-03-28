@@ -1,4 +1,4 @@
-﻿using Azure.ResourceManager.EventGrid.Models;
+using Azure.ResourceManager.EventGrid.Models;
 using FastColoredTextBoxNS;
 using Microsoft.Azure.Amqp.Framing;
 using Microsoft.ServiceBus.Messaging;
@@ -68,6 +68,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -351,3 +352,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

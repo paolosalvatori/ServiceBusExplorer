@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandleEventGridTopicControl
     {
@@ -74,16 +74,16 @@
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.topicPropertyListView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.topicPropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.topicPropertyListView.BackgroundGradientColor = System.Drawing.Color.White;
+            this.topicPropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.topicPropertyListView.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.topicPropertyListView.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.topicPropertyListView.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.topicPropertyListView.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.topicPropertyListView.BorderThickness = 1F;
             this.topicPropertyListView.Controls.Add(this.topicListView);
             this.topicPropertyListView.Controls.Add(this.propertyGrid);
-            this.topicPropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.topicPropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.topicPropertyListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.topicPropertyListView.ForeColor = System.Drawing.Color.White;
+            this.topicPropertyListView.ForeColor = System.Drawing.SystemColors.ControlText;
             this.topicPropertyListView.GroupImage = null;
             this.topicPropertyListView.GroupTitle = "Topic Properties";
             this.topicPropertyListView.Location = new System.Drawing.Point(68, 48);
@@ -111,7 +111,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.topicPropertyListView);
             this.Name = "HandleEventGridTopicControl";
             this.Size = new System.Drawing.Size(1472, 811);
@@ -128,3 +128,4 @@
         private ReadOnlyPropertyGrid propertyGrid;
     }
 }
+

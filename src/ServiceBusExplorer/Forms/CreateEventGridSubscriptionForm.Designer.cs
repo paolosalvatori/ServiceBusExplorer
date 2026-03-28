@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class CreateEventGridSubscriptionForm
     {
@@ -51,10 +51,10 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(815, 645);
             this.btnOk.Margin = new System.Windows.Forms.Padding(4);
@@ -68,11 +68,11 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(941, 645);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
@@ -88,10 +88,10 @@
             this.grouperMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMessages.BackgroundColor = System.Drawing.Color.White;
-            this.grouperMessages.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMessages.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMessages.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMessages.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessages.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMessages.BorderThickness = 1F;
             this.grouperMessages.Controls.Add(this.btnAddNewFilter);
             this.grouperMessages.Controls.Add(this.label2);
@@ -106,9 +106,9 @@
             this.grouperMessages.Controls.Add(this.label1);
             this.grouperMessages.Controls.Add(this.lblSubscriptionName);
             this.grouperMessages.Controls.Add(this.txtSubscriptionName);
-            this.grouperMessages.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMessages.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMessages.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMessages.ForeColor = System.Drawing.Color.White;
+            this.grouperMessages.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMessages.GroupImage = null;
             this.grouperMessages.GroupTitle = "Create Subscription";
             this.grouperMessages.Location = new System.Drawing.Point(13, 22);
@@ -128,11 +128,11 @@
             this.btnAddNewFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddNewFilter.BackColor = System.Drawing.Color.White;
             this.btnAddNewFilter.Enabled = false;
-            this.btnAddNewFilter.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnAddNewFilter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnAddNewFilter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddNewFilter.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnAddNewFilter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnAddNewFilter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnAddNewFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddNewFilter.ForeColor = System.Drawing.Color.Black;
+            this.btnAddNewFilter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnAddNewFilter.Location = new System.Drawing.Point(33, 490);
             this.btnAddNewFilter.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddNewFilter.Name = "btnAddNewFilter";
@@ -296,7 +296,7 @@
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(1085, 704);
             this.Controls.Add(this.btnCancel);
@@ -335,3 +335,4 @@
         private System.Windows.Forms.Button btnAddNewFilter;
     }
 }
+

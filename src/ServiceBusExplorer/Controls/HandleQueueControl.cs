@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
@@ -305,6 +305,7 @@ namespace ServiceBusExplorer.Controls
             this.duplicateQueue = duplicateQueue;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls(initialCall: true);
         }
         #endregion
@@ -4423,3 +4424,4 @@ namespace ServiceBusExplorer.Controls
         }
     }
 }
+

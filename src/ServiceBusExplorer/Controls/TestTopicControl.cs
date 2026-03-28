@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -226,6 +226,7 @@ namespace ServiceBusExplorer.Controls
             this.topic = topic;
             this.subscriptionList = subscriptionList;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -2188,3 +2189,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+
