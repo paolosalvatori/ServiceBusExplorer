@@ -23,6 +23,8 @@ namespace ServiceBusExplorer.Controls
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private bool isLoading;
+
+        public Action<string, string> OnRowSelected { get; set; }
         private Font headerFont;
         private Font cellFont;
         private Font totalFont;
@@ -140,6 +142,8 @@ namespace ServiceBusExplorer.Controls
                 new DataGridViewTextBoxColumn { Name = "Total", HeaderText = "Total", FillWeight = 14, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight, Font = totalFont } }
             });
 
+            dataGridView.CellClick += DataGridView_CellClick;
+
             Controls.Add(dataGridView);
             Controls.Add(toolbarPanel);
 
@@ -148,6 +152,18 @@ namespace ServiceBusExplorer.Controls
             autoRefreshTimer.Tick += (s, e) => LoadDataAsync();
 
             ResumeLayout(false);
+        }
+
+        private void DataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || OnRowSelected == null) return;
+            var row = dataGridView.Rows[e.RowIndex];
+            var name = row.Cells["Name"].Value?.ToString();
+            var type = row.Cells["Type"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                OnRowSelected(name, type);
+            }
         }
 
         private void AutoRefreshCheckBox_CheckedChanged(object sender, EventArgs e)
