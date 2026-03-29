@@ -247,8 +247,7 @@ namespace ServiceBusExplorer.Forms
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
-        private readonly Dictionary<TreeNode, List<TreeNode>> filterSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
-        private readonly Dictionary<TreeNode, List<TreeNode>> filterChildSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
+        private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
         #endregion
 
         #region Private Static Fields
@@ -7663,53 +7662,7 @@ namespace ServiceBusExplorer.Forms
             serviceBusTreeView.BeginUpdate();
             try
             {
-                foreach (TreeNode categoryNode in rootNode.Nodes)
-                {
-                    // Restore previous snapshot first so we always work with full node set
-                    if (filterSnapshot.TryGetValue(categoryNode, out var previous))
-                    {
-                        categoryNode.Nodes.Clear();
-                        foreach (var node in previous)
-                        {
-                            categoryNode.Nodes.Add(node);
-                        }
-                    }
-
-                    // Take fresh snapshot of all current children
-                    var children = new List<TreeNode>();
-                    foreach (TreeNode child in categoryNode.Nodes)
-                    {
-                        children.Add(child);
-                    }
-                    filterSnapshot[categoryNode] = children;
-
-                    if (!string.IsNullOrWhiteSpace(filterText))
-                    {
-                        categoryNode.Nodes.Clear();
-                        foreach (var node in children)
-                        {
-                            if (NodeMatchesFilter(node, filterText))
-                            {
-                                categoryNode.Nodes.Add(node);
-                                FilterChildNodes(node, filterText);
-                            }
-                        }
-
-                        if (categoryNode.Nodes.Count > 0)
-                        {
-                            categoryNode.Expand();
-                        }
-                    }
-                    else
-                    {
-                        // Restore child nodes when filter is cleared
-                        foreach (var node in children)
-                        {
-                            RestoreChildNodes(node);
-                        }
-                    }
-                }
-
+                treeViewFilterHelper.ApplyFilter(rootNode.Nodes, filterText);
                 rootNode.Expand();
             }
             finally
@@ -7718,78 +7671,9 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void FilterChildNodes(TreeNode parentNode, string filterText)
-        {
-            if (parentNode.Nodes.Count == 0) return;
-
-            // If parent itself matches by name, keep all children visible
-            if (parentNode.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0) return;
-
-            // Snapshot children before filtering
-            if (!filterChildSnapshot.ContainsKey(parentNode))
-            {
-                var snapshot = new List<TreeNode>();
-                foreach (TreeNode child in parentNode.Nodes)
-                {
-                    snapshot.Add(child);
-                }
-                filterChildSnapshot[parentNode] = snapshot;
-            }
-
-            var allChildren = filterChildSnapshot[parentNode];
-            parentNode.Nodes.Clear();
-            foreach (var child in allChildren)
-            {
-                if (NodeMatchesFilter(child, filterText))
-                {
-                    parentNode.Nodes.Add(child);
-                    // Recurse to filter within container nodes (e.g. "Subscriptions" container)
-                    FilterChildNodes(child, filterText);
-                }
-            }
-
-            if (parentNode.Nodes.Count > 0)
-            {
-                parentNode.Expand();
-            }
-        }
-
-        private void RestoreChildNodes(TreeNode parentNode)
-        {
-            if (filterChildSnapshot.TryGetValue(parentNode, out var snapshot))
-            {
-                parentNode.Nodes.Clear();
-                foreach (var child in snapshot)
-                {
-                    parentNode.Nodes.Add(child);
-                    RestoreChildNodes(child);
-                }
-                filterChildSnapshot.Remove(parentNode);
-            }
-        }
-
-        private static bool NodeMatchesFilter(TreeNode node, string filterText)
-        {
-            if (node.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            foreach (TreeNode child in node.Nodes)
-            {
-                if (NodeMatchesFilter(child, filterText))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private void InvalidateTreeViewFilter()
         {
-            filterSnapshot.Clear();
-            filterChildSnapshot.Clear();
+            treeViewFilterHelper.Clear();
             if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
             {
                 ApplyTreeViewFilter(filterTreeViewTextBox.Text);
