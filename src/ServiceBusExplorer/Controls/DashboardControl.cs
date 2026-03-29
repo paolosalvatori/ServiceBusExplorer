@@ -17,12 +17,15 @@ namespace ServiceBusExplorer.Controls
         private Label statusLabel;
         private Panel toolbarPanel;
         private Timer autoRefreshTimer;
+        private ContextMenuStrip contextMenu;
 
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private bool isLoading;
+
+        public Action<string, string> OnRowSelected { get; set; }
         private Font headerFont;
         private Font cellFont;
         private Font totalFont;
@@ -140,6 +143,18 @@ namespace ServiceBusExplorer.Controls
                 new DataGridViewTextBoxColumn { Name = "Total", HeaderText = "Total", FillWeight = 14, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight, Font = totalFont } }
             });
 
+            dataGridView.CellClick += DataGridView_CellClick;
+            dataGridView.KeyDown += DataGridView_KeyDown;
+
+            // Context menu
+            contextMenu = new ContextMenuStrip();
+            var copyRowItem = new ToolStripMenuItem("Copy row");
+            copyRowItem.Click += (s, e) => CopySelectedRow();
+            var copyNameItem = new ToolStripMenuItem("Copy name");
+            copyNameItem.Click += (s, e) => CopySelectedName();
+            contextMenu.Items.AddRange(new ToolStripItem[] { copyRowItem, copyNameItem });
+            dataGridView.ContextMenuStrip = contextMenu;
+
             Controls.Add(dataGridView);
             Controls.Add(toolbarPanel);
 
@@ -148,6 +163,18 @@ namespace ServiceBusExplorer.Controls
             autoRefreshTimer.Tick += (s, e) => LoadDataAsync();
 
             ResumeLayout(false);
+        }
+
+        private void DataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || OnRowSelected == null) return;
+            var row = dataGridView.Rows[e.RowIndex];
+            var name = row.Cells["Name"].Value?.ToString();
+            var type = row.Cells["Type"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                OnRowSelected(name, type);
+            }
         }
 
         private void AutoRefreshCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -299,12 +326,45 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private void DataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                CopySelectedRow();
+            }
+        }
+
+        private void CopySelectedRow()
+        {
+            if (dataGridView.SelectedRows.Count == 0) return;
+            var row = dataGridView.SelectedRows[0];
+            var values = new string[row.Cells.Count];
+            for (int i = 0; i < row.Cells.Count; i++)
+            {
+                values[i] = row.Cells[i].Value?.ToString() ?? "";
+            }
+            Clipboard.SetText(string.Join("\t", values));
+        }
+
+        private void CopySelectedName()
+        {
+            if (dataGridView.SelectedRows.Count == 0) return;
+            var name = dataGridView.SelectedRows[0].Cells["Name"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                Clipboard.SetText(name);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 autoRefreshTimer?.Stop();
                 autoRefreshTimer?.Dispose();
+                contextMenu?.Dispose();
                 headerFont?.Dispose();
                 cellFont?.Dispose();
                 totalFont?.Dispose();

@@ -322,6 +322,52 @@ namespace ServiceBusExplorer.Forms
                 () => serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout),
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
+            dashboardControl.OnRowSelected = DashboardRowSelected;
+        }
+
+        private void DashboardRowSelected(string name, string type)
+        {
+            if (rootNode == null) return;
+            TreeNode targetNode = null;
+
+            if (type == "Queue")
+            {
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                if (queueListNode != null)
+                {
+                    targetNode = FindNode(name, queueListNode);
+                }
+            }
+            else if (type == "Subscription")
+            {
+                // Name format: "TopicName / SubscriptionName"
+                var parts = name.Split(new[] { " / " }, 2, StringSplitOptions.None);
+                if (parts.Length == 2)
+                {
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    if (topicListNode != null)
+                    {
+                        var topicNode = FindNode(parts[0], topicListNode);
+                        if (topicNode != null)
+                        {
+                            EnsureNodeHasBeenLazyLoaded(topicNode);
+                            if (topicNode.Nodes.ContainsKey(SubscriptionEntities))
+                            {
+                                var subscriptionsNode = topicNode.Nodes[SubscriptionEntities];
+                                targetNode = FindNode(parts[1], subscriptionsNode);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (targetNode != null)
+            {
+                serviceBusTreeView.SelectedNode = targetNode;
+                targetNode.EnsureVisible();
+                HandleNodeMouseClick(targetNode);
+                mainTabControl.SelectedTab = tabPageExplorer;
+            }
         }
 
         private void RefreshDashboard()
@@ -7694,9 +7740,11 @@ namespace ServiceBusExplorer.Forms
             parentNode.Nodes.Clear();
             foreach (var child in allChildren)
             {
-                if (child.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (NodeMatchesFilter(child, filterText))
                 {
                     parentNode.Nodes.Add(child);
+                    // Recurse to filter within container nodes (e.g. "Subscriptions" container)
+                    FilterChildNodes(child, filterText);
                 }
             }
 
@@ -7714,6 +7762,7 @@ namespace ServiceBusExplorer.Forms
                 foreach (var child in snapshot)
                 {
                     parentNode.Nodes.Add(child);
+                    RestoreChildNodes(child);
                 }
                 filterChildSnapshot.Remove(parentNode);
             }

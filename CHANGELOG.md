@@ -1,5 +1,17 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.3.0] - 2026-03-29
+
+### Added
+- Dashboard row click navigates to corresponding TreeView node (queue or subscription)
+- Copy dashboard row to clipboard: Ctrl+C for full row (TSV), right-click context menu for row or name
+- TreeView filter now recursively searches inside topic subscription containers
+
+### Fixed
+- ContextMenuStrip disposal leak in DashboardControl
+- Null guard on DashboardRowSelected prevents NRE when no connection active
+- TreeView filter correctly finds subscriptions nested under "Subscriptions" container nodes
+
 ## [1.2.2] - 2026-03-29
 
 ### Added
