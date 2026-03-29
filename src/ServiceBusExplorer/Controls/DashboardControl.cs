@@ -17,6 +17,7 @@ namespace ServiceBusExplorer.Controls
         private Label statusLabel;
         private Panel toolbarPanel;
         private Timer autoRefreshTimer;
+        private ContextMenuStrip contextMenu;
 
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
@@ -146,7 +147,7 @@ namespace ServiceBusExplorer.Controls
             dataGridView.KeyDown += DataGridView_KeyDown;
 
             // Context menu
-            var contextMenu = new ContextMenuStrip();
+            contextMenu = new ContextMenuStrip();
             var copyRowItem = new ToolStripMenuItem("Copy row");
             copyRowItem.Click += (s, e) => CopySelectedRow();
             var copyNameItem = new ToolStripMenuItem("Copy name");
@@ -363,6 +364,7 @@ namespace ServiceBusExplorer.Controls
             {
                 autoRefreshTimer?.Stop();
                 autoRefreshTimer?.Dispose();
+                contextMenu?.Dispose();
                 headerFont?.Dispose();
                 cellFont?.Dispose();
                 totalFont?.Dispose();

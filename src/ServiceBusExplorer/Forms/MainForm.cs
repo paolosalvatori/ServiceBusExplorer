@@ -327,6 +327,7 @@ namespace ServiceBusExplorer.Forms
 
         private void DashboardRowSelected(string name, string type)
         {
+            if (rootNode == null) return;
             TreeNode targetNode = null;
 
             if (type == "Queue")
