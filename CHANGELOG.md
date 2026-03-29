@@ -1,5 +1,17 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.3.2] - 2026-03-29
+
+### Changed
+- Dashboard refresh button and auto-refresh now use ShowEntities flow (log panel, TreeView, and dashboard always in sync)
+- Single node refresh (right-click queue/subscription) also updates corresponding dashboard row
+
+### Added
+- Ctrl+F keyboard shortcut focuses the TreeView filter box and selects text
+
+### Fixed
+- Filter snapshot invalidated on entity create/delete events (OnCreate/OnDelete handlers)
+
 ## [1.3.1] - 2026-03-29
 
 ### Changed

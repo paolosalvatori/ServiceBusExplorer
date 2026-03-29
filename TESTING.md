@@ -27,8 +27,14 @@
 | 21 | Copy row context menu | Right-click → Copy row | Same TSV as Ctrl+C | ⬜ |
 | 22 | Copy name context menu | Right-click → Copy name | Clipboard contains entity name only | ⬜ |
 | 23 | Nested subscription filter | Filter on subscription name (3-level tree) | Container node preserved, matching sub visible | ⬜ |
+| 24 | Dashboard refresh syncs all | Click Refresh in Dashboard | Log panel, TreeView, and Dashboard all refresh | ⬜ |
+| 25 | Auto-refresh syncs all | Enable auto-refresh, wait interval | Same full sync as manual refresh | ⬜ |
+| 26 | Single node refresh → dashboard | Right-click queue → Refresh, check dashboard | Dashboard row shows updated counts | ⬜ |
+| 27 | Ctrl+F focuses filter | Press Ctrl+F anywhere | Filter box gets focus, text selected | ⬜ |
+| 28 | Create entity → filter sync | Create queue while filter active | Filter snapshot invalidated, new entity visible | ⬜ |
+| 29 | Delete entity → filter sync | Delete queue while filter active | Filter snapshot invalidated, entity removed | ⬜ |
 
-**Score: 2/23 (9%)**
+**Score: 2/29 (7%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 
