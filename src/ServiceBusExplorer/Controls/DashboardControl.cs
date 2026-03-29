@@ -371,6 +371,27 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        public void UpdateRow(string entityName, long active, long deadLetter, long scheduled)
+        {
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (string.Equals(row.Cells["Name"].Value?.ToString(), entityName, StringComparison.OrdinalIgnoreCase))
+                {
+                    var total = active + deadLetter + scheduled;
+                    row.Cells["Active"].Value = active;
+                    row.Cells["DeadLetter"].Value = deadLetter;
+                    row.Cells["Scheduled"].Value = scheduled;
+                    row.Cells["Total"].Value = total;
+
+                    // Update color coding
+                    row.DefaultCellStyle.BackColor = deadLetter > 0
+                        ? Color.FromArgb(255, 235, 230)
+                        : Color.Empty;
+                    return;
+                }
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

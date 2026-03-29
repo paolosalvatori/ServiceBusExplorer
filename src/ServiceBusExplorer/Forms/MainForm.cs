@@ -3093,6 +3093,14 @@ namespace ServiceBusExplorer.Forms
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
 
+                        // Update dashboard row
+                        var details = queueDescription.MessageCountDetails;
+                        if (details != null)
+                        {
+                            dashboardControl.UpdateRow(queueDescription.Path,
+                                details.ActiveMessageCount, details.DeadLetterMessageCount, details.ScheduledMessageCount);
+                        }
+
                         return;
                     }
 
@@ -3377,6 +3385,15 @@ namespace ServiceBusExplorer.Forms
                         }
                         serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, subscriptionDescription.MessageCountDetails);
                         ApplyColor(serviceBusTreeView.SelectedNode);
+
+                        // Update dashboard row
+                        var subDetails = subscriptionDescription.MessageCountDetails;
+                        if (subDetails != null)
+                        {
+                            var dashboardName = $"{subWrapper.SubscriptionDescription.TopicPath} / {subWrapper.SubscriptionDescription.Name}";
+                            dashboardControl.UpdateRow(dashboardName,
+                                subDetails.ActiveMessageCount, subDetails.DeadLetterMessageCount, subDetails.ScheduledMessageCount);
+                        }
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
                     }
