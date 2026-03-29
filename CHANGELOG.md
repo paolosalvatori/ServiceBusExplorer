@@ -1,5 +1,12 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.2.2] - 2026-03-29
+
+### Added
+- TreeView filter now searches inside topic subscriptions
+- Subscription-level filtering: non-matching subscriptions hidden when topic is kept due to child match
+- Child node snapshot/restore for clean filter clearing
+
 ## [1.2.1] - 2026-03-29
 
 ### Changed

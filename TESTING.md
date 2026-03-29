@@ -19,10 +19,12 @@
 | 13 | Tree click → Explorer | Click tree node after viewing Dashboard | Switches to Explorer tab | ⬜ |
 | 14 | Subscriptions in Dashboard | Connect with topics that have subscriptions | Shows "TopicName / SubName" rows, not topic rows | ⬜ |
 | 15 | Per-topic error isolation | Disconnect mid-load or have inaccessible topic | Other topics still load, error logged | ⬜ |
+| 16 | Subscription filter | Filter on subscription name | Parent topic visible, non-matching subscriptions hidden | ⬜ |
+| 17 | Topic name filter | Filter on topic name | Topic visible with all subscriptions intact | ⬜ |
 
-**Score: 2/15 (13%)**
+**Score: 2/17 (12%)**
 
-Items 3-13 require manual testing with a live Azure Service Bus connection.
+Items 3-17 require manual testing with a live Azure Service Bus connection.
 
 ---
 
