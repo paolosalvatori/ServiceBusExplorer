@@ -20,6 +20,7 @@ namespace ServiceBusExplorer.Controls
 
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
+        private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private bool isLoading;
         private Font headerFont;
@@ -34,10 +35,12 @@ namespace ServiceBusExplorer.Controls
         public void Initialize(
             Func<IEnumerable<QueueDescription>> getQueuesFunc,
             Func<IEnumerable<TopicDescription>> getTopicsFunc,
+            Func<string, IEnumerable<SubscriptionDescription>> getSubscriptionsFunc,
             Action<string> log)
         {
             getQueues = getQueuesFunc;
             getTopics = getTopicsFunc;
+            getSubscriptions = getSubscriptionsFunc;
             writeToLog = log;
         }
 
@@ -182,7 +185,7 @@ namespace ServiceBusExplorer.Controls
 
         public async void LoadDataAsync()
         {
-            if (getQueues == null || getTopics == null || isLoading) return;
+            if (getQueues == null || getTopics == null || getSubscriptions == null || isLoading) return;
 
             isLoading = true;
             refreshButton.Enabled = false;
@@ -226,21 +229,28 @@ namespace ServiceBusExplorer.Controls
                         {
                             foreach (var t in topics)
                             {
-                                var details = t.MessageCountDetails;
-                                result.Add(new DashboardRow
+                                var subscriptions = getSubscriptions(t.Path);
+                                if (subscriptions != null)
                                 {
-                                    Name = t.Path,
-                                    Type = "Topic",
-                                    Active = details?.ActiveMessageCount ?? 0,
-                                    DeadLetter = details?.DeadLetterMessageCount ?? 0,
-                                    Scheduled = details?.ScheduledMessageCount ?? 0
-                                });
+                                    foreach (var s in subscriptions)
+                                    {
+                                        var details = s.MessageCountDetails;
+                                        result.Add(new DashboardRow
+                                        {
+                                            Name = $"{t.Path} / {s.Name}",
+                                            Type = "Subscription",
+                                            Active = details?.ActiveMessageCount ?? 0,
+                                            DeadLetter = details?.DeadLetterMessageCount ?? 0,
+                                            Scheduled = 0
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        errors.Add($"Dashboard: Error loading topics: {ex.Message}");
+                        errors.Add($"Dashboard: Error loading subscriptions: {ex.Message}");
                     }
 
                     return result;

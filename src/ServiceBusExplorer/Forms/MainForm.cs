@@ -319,6 +319,7 @@ namespace ServiceBusExplorer.Forms
             dashboardControl.Initialize(
                 () => serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression, ServerTimeout),
                 () => serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout),
+                topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
         }
 
