@@ -225,6 +225,9 @@
 		<Compile Update="Controls\HeaderPanel.designer.cs">
 			<DependentUpon>HeaderPanel.cs</DependentUpon>
 		</Compile>
+		<Compile Update="Controls\DashboardControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
 		<Compile Update="Controls\HandleQueueControl.cs">
 			<SubType>UserControl</SubType>
 		</Compile>

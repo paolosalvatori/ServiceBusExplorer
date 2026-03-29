@@ -1,5 +1,24 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.2.1] - 2026-03-29
+
+### Changed
+- Dashboard shows subscriptions per topic instead of topics (topics always showed 0 counts)
+- Subscription rows display "TopicName / SubscriptionName" with scheduled message counts
+
+### Fixed
+- Per-topic error handling: one failing topic no longer prevents loading remaining topics
+- Scheduled message count now shown for subscriptions (was hardcoded to 0)
+
+## [1.2.0] - 2026-03-29
+
+### Added
+- Dashboard tab with message counts per queue/topic (Active, Dead Letter, Scheduled, Total)
+- Color coding: rows with Dead Letter > 0 highlighted in light red
+- Auto-refresh with configurable interval (30s/60s/5min)
+- Manual refresh button with last-refresh timestamp
+- Tree node click auto-switches to Explorer tab
+
 ## [1.1.0] - 2026-03-29
 
 ### Added
