@@ -7739,9 +7739,11 @@ namespace ServiceBusExplorer.Forms
             parentNode.Nodes.Clear();
             foreach (var child in allChildren)
             {
-                if (child.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (NodeMatchesFilter(child, filterText))
                 {
                     parentNode.Nodes.Add(child);
+                    // Recurse to filter within container nodes (e.g. "Subscriptions" container)
+                    FilterChildNodes(child, filterText);
                 }
             }
 
@@ -7759,6 +7761,7 @@ namespace ServiceBusExplorer.Forms
                 foreach (var child in snapshot)
                 {
                     parentNode.Nodes.Add(child);
+                    RestoreChildNodes(child);
                 }
                 filterChildSnapshot.Remove(parentNode);
             }
