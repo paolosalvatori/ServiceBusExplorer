@@ -246,7 +246,7 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
-        private System.Windows.Forms.Timer filterDebounceTimer;
+        private readonly System.Windows.Forms.Timer filterDebounceTimer;
         private readonly Dictionary<TreeNode, List<TreeNode>> filterSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
         #endregion
 
@@ -288,6 +288,12 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
+            filterDebounceTimer = new System.Windows.Forms.Timer(components) { Interval = 250 };
+            filterDebounceTimer.Tick += (s, args) =>
+            {
+                filterDebounceTimer.Stop();
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            };
             UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -7582,16 +7588,6 @@ namespace ServiceBusExplorer.Forms
 
         private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (filterDebounceTimer == null)
-            {
-                filterDebounceTimer = new System.Windows.Forms.Timer { Interval = 250 };
-                filterDebounceTimer.Tick += (s, args) =>
-                {
-                    filterDebounceTimer.Stop();
-                    ApplyTreeViewFilter(filterTreeViewTextBox.Text);
-                };
-            }
-
             filterDebounceTimer.Stop();
             filterDebounceTimer.Start();
         }
