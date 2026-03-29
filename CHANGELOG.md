@@ -1,5 +1,14 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.2.0] - 2026-03-29
+
+### Added
+- Dashboard tab with message counts per queue/topic (Active, Dead Letter, Scheduled, Total)
+- Color coding: rows with Dead Letter > 0 highlighted in light red
+- Auto-refresh with configurable interval (30s/60s/5min)
+- Manual refresh button with last-refresh timestamp
+- Tree node click auto-switches to Explorer tab
+
 ## [1.1.0] - 2026-03-29
 
 ### Added
