@@ -1103,6 +1103,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
@@ -1422,6 +1423,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
