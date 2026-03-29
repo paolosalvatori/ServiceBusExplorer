@@ -61,6 +61,10 @@ namespace ServiceBusExplorer.Forms
             this.filterTreeViewTextBox = new System.Windows.Forms.TextBox();
             this.serviceBusTreeView = new System.Windows.Forms.TreeView();
             this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.mainTabControl = new System.Windows.Forms.TabControl();
+            this.tabPageDashboard = new System.Windows.Forms.TabPage();
+            this.dashboardControl = new ServiceBusExplorer.Controls.DashboardControl();
+            this.tabPageExplorer = new System.Windows.Forms.TabPage();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
             this.lstLog = new System.Windows.Forms.ListBox();
@@ -635,8 +639,8 @@ namespace ServiceBusExplorer.Forms
             this.splitContainer.Panel1.Controls.Add(this.panelTreeView);
             // 
             // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.panelMain);
+            //
+            this.splitContainer.Panel2.Controls.Add(this.mainTabControl);
             this.splitContainer.Size = new System.Drawing.Size(1384, 566);
             this.splitContainer.SplitterDistance = 372;
             this.splitContainer.TabIndex = 1;
@@ -691,8 +695,38 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             this.serviceBusTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyDown);
             // 
+            // mainTabControl
+            //
+            this.mainTabControl.Controls.Add(this.tabPageDashboard);
+            this.mainTabControl.Controls.Add(this.tabPageExplorer);
+            this.mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainTabControl.Name = "mainTabControl";
+            this.mainTabControl.SelectedIndex = 0;
+            this.mainTabControl.TabIndex = 0;
+            //
+            // tabPageDashboard
+            //
+            this.tabPageDashboard.Controls.Add(this.dashboardControl);
+            this.tabPageDashboard.Name = "tabPageDashboard";
+            this.tabPageDashboard.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDashboard.Text = "Dashboard";
+            this.tabPageDashboard.UseVisualStyleBackColor = true;
+            //
+            // dashboardControl
+            //
+            this.dashboardControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dashboardControl.Name = "dashboardControl";
+            //
+            // tabPageExplorer
+            //
+            this.tabPageExplorer.Controls.Add(this.panelMain);
+            this.tabPageExplorer.Name = "tabPageExplorer";
+            this.tabPageExplorer.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageExplorer.Text = "Explorer";
+            this.tabPageExplorer.UseVisualStyleBackColor = true;
+            //
             // panelMain
-            // 
+            //
             this.panelMain.AutoScroll = true;
             this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -3300,6 +3334,10 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.SplitContainer mainSplitContainer;
         private HeaderPanel panelTreeView;
         private HeaderPanel panelMain;
+        private System.Windows.Forms.TabControl mainTabControl;
+        private System.Windows.Forms.TabPage tabPageDashboard;
+        private System.Windows.Forms.TabPage tabPageExplorer;
+        private Controls.DashboardControl dashboardControl;
         private HeaderPanel panelLog;
         private System.Windows.Forms.ListBox lstLog;
         private System.Windows.Forms.ToolStripMenuItem saveLogToolStripMenuItem;

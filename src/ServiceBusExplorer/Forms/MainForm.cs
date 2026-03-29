@@ -309,8 +309,22 @@ namespace ServiceBusExplorer.Forms
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
+            InitializeDashboard();
 
             WriteToLog(logMessage);
+        }
+
+        private void InitializeDashboard()
+        {
+            dashboardControl.Initialize(
+                () => serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression, ServerTimeout),
+                () => serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout),
+                msg => WriteToLog(msg));
+        }
+
+        private void RefreshDashboard()
+        {
+            dashboardControl.LoadDataAsync();
         }
 
         void DisplayNewVersionInformation()
@@ -1515,6 +1529,7 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.SelectedNode = e.Node;
                 serviceBusTreeView.SelectedNode.EnsureVisible();
                 HandleNodeMouseClick(e.Node);
+                mainTabControl.SelectedTab = tabPageExplorer;
             }
         }
 
@@ -4725,6 +4740,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.SelectedNode = rootNode;
                     serviceBusTreeView.SelectedNode.EnsureVisible();
                     HandleNodeMouseClick(rootNode);
+                    RefreshDashboard();
                 }
             }
             catch (Exception ex)
