@@ -7667,6 +7667,21 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        #region Keyboard Shortcuts
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                filterTreeViewTextBox.Focus();
+                filterTreeViewTextBox.SelectAll();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
         #region TreeView Filter
 
         private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
