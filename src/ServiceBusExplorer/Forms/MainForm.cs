@@ -322,6 +322,7 @@ namespace ServiceBusExplorer.Forms
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
         }
 
         private void DashboardRowSelected(string name, string type)
@@ -1102,6 +1103,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
@@ -1421,6 +1423,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
@@ -3092,6 +3095,14 @@ namespace ServiceBusExplorer.Forms
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
 
+                        // Update dashboard row
+                        var details = queueDescription.MessageCountDetails;
+                        if (details != null)
+                        {
+                            dashboardControl.UpdateRow(queueDescription.Path,
+                                details.ActiveMessageCount, details.DeadLetterMessageCount, details.ScheduledMessageCount);
+                        }
+
                         return;
                     }
 
@@ -3376,6 +3387,15 @@ namespace ServiceBusExplorer.Forms
                         }
                         serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, subscriptionDescription.MessageCountDetails);
                         ApplyColor(serviceBusTreeView.SelectedNode);
+
+                        // Update dashboard row
+                        var subDetails = subscriptionDescription.MessageCountDetails;
+                        if (subDetails != null)
+                        {
+                            var dashboardName = $"{subWrapper.SubscriptionDescription.TopicPath} / {subWrapper.SubscriptionDescription.Name}";
+                            dashboardControl.UpdateRow(dashboardName,
+                                subDetails.ActiveMessageCount, subDetails.DeadLetterMessageCount, subDetails.ScheduledMessageCount);
+                        }
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
                     }
@@ -7646,6 +7666,21 @@ namespace ServiceBusExplorer.Forms
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
+
+        #region Keyboard Shortcuts
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                filterTreeViewTextBox.Focus();
+                filterTreeViewTextBox.SelectAll();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
 
         #region TreeView Filter
 
