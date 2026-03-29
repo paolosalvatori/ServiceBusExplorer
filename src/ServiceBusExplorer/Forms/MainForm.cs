@@ -248,6 +248,7 @@ namespace ServiceBusExplorer.Forms
         private EventGridLibrary eventGridLibrary;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
         private readonly Dictionary<TreeNode, List<TreeNode>> filterSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
+        private readonly Dictionary<TreeNode, List<TreeNode>> filterChildSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
         #endregion
 
         #region Private Static Fields
@@ -7644,12 +7645,21 @@ namespace ServiceBusExplorer.Forms
                             if (NodeMatchesFilter(node, filterText))
                             {
                                 categoryNode.Nodes.Add(node);
+                                FilterChildNodes(node, filterText);
                             }
                         }
 
                         if (categoryNode.Nodes.Count > 0)
                         {
                             categoryNode.Expand();
+                        }
+                    }
+                    else
+                    {
+                        // Restore child nodes when filter is cleared
+                        foreach (var node in children)
+                        {
+                            RestoreChildNodes(node);
                         }
                     }
                 }
@@ -7659,6 +7669,53 @@ namespace ServiceBusExplorer.Forms
             finally
             {
                 serviceBusTreeView.EndUpdate();
+            }
+        }
+
+        private void FilterChildNodes(TreeNode parentNode, string filterText)
+        {
+            if (parentNode.Nodes.Count == 0) return;
+
+            // If parent itself matches by name, keep all children visible
+            if (parentNode.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0) return;
+
+            // Snapshot children before filtering
+            if (!filterChildSnapshot.ContainsKey(parentNode))
+            {
+                var snapshot = new List<TreeNode>();
+                foreach (TreeNode child in parentNode.Nodes)
+                {
+                    snapshot.Add(child);
+                }
+                filterChildSnapshot[parentNode] = snapshot;
+            }
+
+            var allChildren = filterChildSnapshot[parentNode];
+            parentNode.Nodes.Clear();
+            foreach (var child in allChildren)
+            {
+                if (child.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    parentNode.Nodes.Add(child);
+                }
+            }
+
+            if (parentNode.Nodes.Count > 0)
+            {
+                parentNode.Expand();
+            }
+        }
+
+        private void RestoreChildNodes(TreeNode parentNode)
+        {
+            if (filterChildSnapshot.TryGetValue(parentNode, out var snapshot))
+            {
+                parentNode.Nodes.Clear();
+                foreach (var child in snapshot)
+                {
+                    parentNode.Nodes.Add(child);
+                }
+                filterChildSnapshot.Remove(parentNode);
             }
         }
 
@@ -7683,6 +7740,7 @@ namespace ServiceBusExplorer.Forms
         private void InvalidateTreeViewFilter()
         {
             filterSnapshot.Clear();
+            filterChildSnapshot.Clear();
             if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
             {
                 ApplyTreeViewFilter(filterTreeViewTextBox.Text);
