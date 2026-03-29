@@ -39,6 +39,11 @@ namespace ServiceBusExplorer.UIHelpers
         [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
         internal static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, string lParam);
+
+        internal const int EM_SETCUEBANNER = 0x1501;
+
         #endregion
     }
 }

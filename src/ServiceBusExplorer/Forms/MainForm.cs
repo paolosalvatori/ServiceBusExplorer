@@ -246,6 +246,7 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private readonly Dictionary<TreeNode, List<TreeNode>> allChildNodes = new Dictionary<TreeNode, List<TreeNode>>();
         #endregion
 
         #region Private Static Fields
@@ -286,6 +287,7 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
+            UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
@@ -4730,6 +4732,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4863,6 +4866,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4931,6 +4935,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -7571,5 +7576,122 @@ namespace ServiceBusExplorer.Forms
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
+
+        #region TreeView Filter
+
+        private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
+        {
+            ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+        }
+
+        private void ApplyTreeViewFilter(string filterText)
+        {
+            if (rootNode == null) return;
+
+            serviceBusTreeView.BeginUpdate();
+            try
+            {
+                // For each category node (Queues, Topics, etc.) under root
+                foreach (TreeNode categoryNode in rootNode.Nodes)
+                {
+                    // Snapshot children on first filter
+                    if (!allChildNodes.ContainsKey(categoryNode))
+                    {
+                        SnapshotChildren(categoryNode);
+                    }
+
+                    if (string.IsNullOrWhiteSpace(filterText))
+                    {
+                        // Restore all original children
+                        RestoreChildren(categoryNode);
+                    }
+                    else
+                    {
+                        // Filter: remove non-matching, keep matching
+                        FilterChildren(categoryNode, filterText);
+                    }
+                }
+
+                rootNode.Expand();
+            }
+            finally
+            {
+                serviceBusTreeView.EndUpdate();
+            }
+        }
+
+        private void SnapshotChildren(TreeNode parent)
+        {
+            var children = new List<TreeNode>();
+            foreach (TreeNode child in parent.Nodes)
+            {
+                children.Add(child);
+            }
+            allChildNodes[parent] = children;
+        }
+
+        private void RestoreChildren(TreeNode parent)
+        {
+            if (!allChildNodes.ContainsKey(parent)) return;
+
+            var original = allChildNodes[parent];
+            parent.Nodes.Clear();
+            foreach (var node in original)
+            {
+                parent.Nodes.Add(node);
+            }
+        }
+
+        private void FilterChildren(TreeNode parent, string filterText)
+        {
+            if (!allChildNodes.ContainsKey(parent)) return;
+
+            var original = allChildNodes[parent];
+            parent.Nodes.Clear();
+
+            foreach (var node in original)
+            {
+                if (NodeMatchesFilter(node, filterText))
+                {
+                    parent.Nodes.Add(node);
+                }
+            }
+
+            if (parent.Nodes.Count > 0)
+            {
+                parent.Expand();
+            }
+        }
+
+        private static bool NodeMatchesFilter(TreeNode node, string filterText)
+        {
+            // Check this node's text
+            if (node.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            // Check children recursively (e.g. subscriptions under a topic)
+            foreach (TreeNode child in node.Nodes)
+            {
+                if (NodeMatchesFilter(child, filterText))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void InvalidateTreeViewFilter()
+        {
+            allChildNodes.Clear();
+            if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
+            {
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            }
+        }
+
+        #endregion
     }
 }
