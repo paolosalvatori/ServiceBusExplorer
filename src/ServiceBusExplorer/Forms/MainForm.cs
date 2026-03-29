@@ -322,6 +322,7 @@ namespace ServiceBusExplorer.Forms
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
         }
 
         private void DashboardRowSelected(string name, string type)

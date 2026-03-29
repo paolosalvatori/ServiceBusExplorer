@@ -26,6 +26,7 @@ namespace ServiceBusExplorer.Controls
         private bool isLoading;
 
         public Action<string, string> OnRowSelected { get; set; }
+        public Func<System.Threading.Tasks.Task> OnRefreshRequested { get; set; }
         private Font headerFont;
         private Font cellFont;
         private Font totalFont;
@@ -66,7 +67,7 @@ namespace ServiceBusExplorer.Controls
                 Size = new Size(75, 24),
                 FlatStyle = FlatStyle.System
             };
-            refreshButton.Click += (s, e) => LoadDataAsync();
+            refreshButton.Click += async (s, e) => await RequestRefreshAsync();
 
             autoRefreshCheckBox = new CheckBox
             {
@@ -160,7 +161,7 @@ namespace ServiceBusExplorer.Controls
 
             // Timer
             autoRefreshTimer = new Timer { Enabled = false };
-            autoRefreshTimer.Tick += (s, e) => LoadDataAsync();
+            autoRefreshTimer.Tick += async (s, e) => await RequestRefreshAsync();
 
             ResumeLayout(false);
         }
@@ -207,6 +208,18 @@ namespace ServiceBusExplorer.Controls
                 case 0: return 30000;
                 case 2: return 300000;
                 default: return 60000;
+            }
+        }
+
+        private async System.Threading.Tasks.Task RequestRefreshAsync()
+        {
+            if (OnRefreshRequested != null)
+            {
+                await OnRefreshRequested();
+            }
+            else
+            {
+                LoadDataAsync();
             }
         }
 
