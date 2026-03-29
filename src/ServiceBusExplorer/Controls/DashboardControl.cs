@@ -21,6 +21,10 @@ namespace ServiceBusExplorer.Controls
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
         private Action<string> writeToLog;
+        private bool isLoading;
+        private Font headerFont;
+        private Font cellFont;
+        private Font totalFont;
 
         public DashboardControl()
         {
@@ -86,6 +90,11 @@ namespace ServiceBusExplorer.Controls
 
             toolbarPanel.Controls.AddRange(new Control[] { refreshButton, autoRefreshCheckBox, intervalComboBox, statusLabel });
 
+            // Fonts (disposed in Dispose)
+            headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+            cellFont = new Font("Segoe UI", 9F);
+            totalFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+
             // DataGridView
             dataGridView = new DataGridView
             {
@@ -101,7 +110,7 @@ namespace ServiceBusExplorer.Controls
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
                 {
-                    Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                    Font = headerFont,
                     BackColor = Color.FromArgb(153, 180, 209),
                     ForeColor = Color.White,
                     SelectionBackColor = Color.FromArgb(153, 180, 209),
@@ -110,7 +119,7 @@ namespace ServiceBusExplorer.Controls
                 EnableHeadersVisualStyles = false,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
-                    Font = new Font("Segoe UI", 9F)
+                    Font = cellFont
                 },
                 AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -125,7 +134,7 @@ namespace ServiceBusExplorer.Controls
                 new DataGridViewTextBoxColumn { Name = "Active", HeaderText = "Active", FillWeight = 12, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight } },
                 new DataGridViewTextBoxColumn { Name = "DeadLetter", HeaderText = "Dead Letter", FillWeight = 12, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight } },
                 new DataGridViewTextBoxColumn { Name = "Scheduled", HeaderText = "Scheduled", FillWeight = 12, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight } },
-                new DataGridViewTextBoxColumn { Name = "Total", HeaderText = "Total", FillWeight = 14, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight, Font = new Font("Segoe UI", 9F, FontStyle.Bold) } }
+                new DataGridViewTextBoxColumn { Name = "Total", HeaderText = "Total", FillWeight = 14, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight, Font = totalFont } }
             });
 
             Controls.Add(dataGridView);
@@ -173,13 +182,15 @@ namespace ServiceBusExplorer.Controls
 
         public async void LoadDataAsync()
         {
-            if (getQueues == null || getTopics == null) return;
+            if (getQueues == null || getTopics == null || isLoading) return;
 
+            isLoading = true;
             refreshButton.Enabled = false;
             statusLabel.Text = "Loading...";
 
             try
             {
+                var errors = new List<string>();
                 var rows = await System.Threading.Tasks.Task.Run(() =>
                 {
                     var result = new List<DashboardRow>();
@@ -205,7 +216,7 @@ namespace ServiceBusExplorer.Controls
                     }
                     catch (Exception ex)
                     {
-                        writeToLog?.Invoke($"Dashboard: Error loading queues: {ex.Message}");
+                        errors.Add($"Dashboard: Error loading queues: {ex.Message}");
                     }
 
                     try
@@ -229,11 +240,17 @@ namespace ServiceBusExplorer.Controls
                     }
                     catch (Exception ex)
                     {
-                        writeToLog?.Invoke($"Dashboard: Error loading topics: {ex.Message}");
+                        errors.Add($"Dashboard: Error loading topics: {ex.Message}");
                     }
 
                     return result;
                 });
+
+                // Log errors on UI thread (after await resumes on UI context)
+                foreach (var error in errors)
+                {
+                    writeToLog?.Invoke(error);
+                }
 
                 PopulateGrid(rows);
                 statusLabel.Text = $"Last refresh: {DateTime.Now:HH:mm:ss} — {rows.Count} items";
@@ -246,6 +263,7 @@ namespace ServiceBusExplorer.Controls
             finally
             {
                 refreshButton.Enabled = true;
+                isLoading = false;
             }
         }
 
@@ -270,6 +288,9 @@ namespace ServiceBusExplorer.Controls
             {
                 autoRefreshTimer?.Stop();
                 autoRefreshTimer?.Dispose();
+                headerFont?.Dispose();
+                cellFont?.Dispose();
+                totalFont?.Dispose();
             }
             base.Dispose(disposing);
         }
