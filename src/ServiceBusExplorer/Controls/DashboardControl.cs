@@ -143,6 +143,16 @@ namespace ServiceBusExplorer.Controls
             });
 
             dataGridView.CellClick += DataGridView_CellClick;
+            dataGridView.KeyDown += DataGridView_KeyDown;
+
+            // Context menu
+            var contextMenu = new ContextMenuStrip();
+            var copyRowItem = new ToolStripMenuItem("Copy row");
+            copyRowItem.Click += (s, e) => CopySelectedRow();
+            var copyNameItem = new ToolStripMenuItem("Copy name");
+            copyNameItem.Click += (s, e) => CopySelectedName();
+            contextMenu.Items.AddRange(new ToolStripItem[] { copyRowItem, copyNameItem });
+            dataGridView.ContextMenuStrip = contextMenu;
 
             Controls.Add(dataGridView);
             Controls.Add(toolbarPanel);
@@ -312,6 +322,38 @@ namespace ServiceBusExplorer.Controls
                 {
                     dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 230);
                 }
+            }
+        }
+
+        private void DataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                CopySelectedRow();
+            }
+        }
+
+        private void CopySelectedRow()
+        {
+            if (dataGridView.SelectedRows.Count == 0) return;
+            var row = dataGridView.SelectedRows[0];
+            var values = new string[row.Cells.Count];
+            for (int i = 0; i < row.Cells.Count; i++)
+            {
+                values[i] = row.Cells[i].Value?.ToString() ?? "";
+            }
+            Clipboard.SetText(string.Join("\t", values));
+        }
+
+        private void CopySelectedName()
+        {
+            if (dataGridView.SelectedRows.Count == 0) return;
+            var name = dataGridView.SelectedRows[0].Cells["Name"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                Clipboard.SetText(name);
             }
         }
 
