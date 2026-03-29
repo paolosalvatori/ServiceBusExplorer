@@ -246,6 +246,8 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private readonly System.Windows.Forms.Timer filterDebounceTimer;
+        private readonly Dictionary<TreeNode, List<TreeNode>> filterSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
         #endregion
 
         #region Private Static Fields
@@ -286,6 +288,13 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
+            filterDebounceTimer = new System.Windows.Forms.Timer(components) { Interval = 250 };
+            filterDebounceTimer.Tick += (s, args) =>
+            {
+                filterDebounceTimer.Stop();
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            };
+            UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
@@ -4730,6 +4739,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4863,6 +4873,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4931,6 +4942,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -7571,5 +7583,95 @@ namespace ServiceBusExplorer.Forms
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
+
+        #region TreeView Filter
+
+        private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
+        {
+            filterDebounceTimer.Stop();
+            filterDebounceTimer.Start();
+        }
+
+        private void ApplyTreeViewFilter(string filterText)
+        {
+            if (rootNode == null) return;
+
+            serviceBusTreeView.BeginUpdate();
+            try
+            {
+                foreach (TreeNode categoryNode in rootNode.Nodes)
+                {
+                    // Restore previous snapshot first so we always work with full node set
+                    if (filterSnapshot.TryGetValue(categoryNode, out var previous))
+                    {
+                        categoryNode.Nodes.Clear();
+                        foreach (var node in previous)
+                        {
+                            categoryNode.Nodes.Add(node);
+                        }
+                    }
+
+                    // Take fresh snapshot of all current children
+                    var children = new List<TreeNode>();
+                    foreach (TreeNode child in categoryNode.Nodes)
+                    {
+                        children.Add(child);
+                    }
+                    filterSnapshot[categoryNode] = children;
+
+                    if (!string.IsNullOrWhiteSpace(filterText))
+                    {
+                        categoryNode.Nodes.Clear();
+                        foreach (var node in children)
+                        {
+                            if (NodeMatchesFilter(node, filterText))
+                            {
+                                categoryNode.Nodes.Add(node);
+                            }
+                        }
+
+                        if (categoryNode.Nodes.Count > 0)
+                        {
+                            categoryNode.Expand();
+                        }
+                    }
+                }
+
+                rootNode.Expand();
+            }
+            finally
+            {
+                serviceBusTreeView.EndUpdate();
+            }
+        }
+
+        private static bool NodeMatchesFilter(TreeNode node, string filterText)
+        {
+            if (node.Text.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            foreach (TreeNode child in node.Nodes)
+            {
+                if (NodeMatchesFilter(child, filterText))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void InvalidateTreeViewFilter()
+        {
+            filterSnapshot.Clear();
+            if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
+            {
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            }
+        }
+
+        #endregion
     }
 }
