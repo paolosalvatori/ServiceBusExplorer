@@ -1,5 +1,11 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.3.1] - 2026-03-29
+
+### Changed
+- Extracted TreeView filter logic from MainForm into TreeViewFilterHelper class (testability refactor)
+- 7 new unit tests covering filter, restore, nested child, and case-insensitive scenarios
+
 ## [1.3.0] - 2026-03-29
 
 ### Added
