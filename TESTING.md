@@ -17,8 +17,10 @@
 | 11 | DLQ color coding | Have queue with DLQ > 0 | Row highlighted in light red | ⬜ |
 | 12 | Auto-refresh | Enable checkbox, set 30s | Grid refreshes automatically | ⬜ |
 | 13 | Tree click → Explorer | Click tree node after viewing Dashboard | Switches to Explorer tab | ⬜ |
+| 14 | Subscriptions in Dashboard | Connect with topics that have subscriptions | Shows "TopicName / SubName" rows, not topic rows | ⬜ |
+| 15 | Per-topic error isolation | Disconnect mid-load or have inaccessible topic | Other topics still load, error logged | ⬜ |
 
-**Score: 2/13 (15%)**
+**Score: 2/15 (13%)**
 
 Items 3-13 require manual testing with a live Azure Service Bus connection.
 

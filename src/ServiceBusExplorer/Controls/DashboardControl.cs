@@ -229,28 +229,35 @@ namespace ServiceBusExplorer.Controls
                         {
                             foreach (var t in topics)
                             {
-                                var subscriptions = getSubscriptions(t.Path);
-                                if (subscriptions != null)
+                                try
                                 {
-                                    foreach (var s in subscriptions)
+                                    var subscriptions = getSubscriptions(t.Path);
+                                    if (subscriptions != null)
                                     {
-                                        var details = s.MessageCountDetails;
-                                        result.Add(new DashboardRow
+                                        foreach (var s in subscriptions)
                                         {
-                                            Name = $"{t.Path} / {s.Name}",
-                                            Type = "Subscription",
-                                            Active = details?.ActiveMessageCount ?? 0,
-                                            DeadLetter = details?.DeadLetterMessageCount ?? 0,
-                                            Scheduled = 0
-                                        });
+                                            var details = s.MessageCountDetails;
+                                            result.Add(new DashboardRow
+                                            {
+                                                Name = $"{t.Path} / {s.Name}",
+                                                Type = "Subscription",
+                                                Active = details?.ActiveMessageCount ?? 0,
+                                                DeadLetter = details?.DeadLetterMessageCount ?? 0,
+                                                Scheduled = details?.ScheduledMessageCount ?? 0
+                                            });
+                                        }
                                     }
+                                }
+                                catch (Exception ex)
+                                {
+                                    errors.Add($"Dashboard: Error loading subscriptions for {t.Path}: {ex.Message}");
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        errors.Add($"Dashboard: Error loading subscriptions: {ex.Message}");
+                        errors.Add($"Dashboard: Error loading topics: {ex.Message}");
                     }
 
                     return result;

@@ -1,5 +1,15 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.2.1] - 2026-03-29
+
+### Changed
+- Dashboard shows subscriptions per topic instead of topics (topics always showed 0 counts)
+- Subscription rows display "TopicName / SubscriptionName" with scheduled message counts
+
+### Fixed
+- Per-topic error handling: one failing topic no longer prevents loading remaining topics
+- Scheduled message count now shown for subscriptions (was hardcoded to 0)
+
 ## [1.2.0] - 2026-03-29
 
 ### Added
