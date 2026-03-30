@@ -1,5 +1,14 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.2] - 2026-03-30
+
+### Added
+- Hint label below dashboard grid: "Single click: sync tree | Double click: open in Explorer"
+
+### Fixed
+- Double-click on dashboard row no longer invokes DashboardRowSelected twice (CellClick already fires first)
+- Extracted GetRowIdentifier to DRY up CellClick/CellDoubleClick handlers
+
 ## [1.4.1] - 2026-03-30
 
 ### Changed
