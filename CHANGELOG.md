@@ -1,5 +1,11 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.1] - 2026-03-30
+
+### Changed
+- Dashboard single-click syncs TreeView selection only (stays on Dashboard tab)
+- Dashboard double-click navigates to Explorer tab (previously single-click did both)
+
 ## [1.4.0] - 2026-03-30
 
 ### Added
