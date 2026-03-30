@@ -324,7 +324,8 @@ namespace ServiceBusExplorer.Forms
             dashboardControl.OnRowSelected = DashboardRowSelected;
             dashboardControl.OnRowDoubleClicked = (name, type) =>
             {
-                DashboardRowSelected(name, type);
+                // CellClick already fires first and calls DashboardRowSelected for tree sync.
+                // Only switch tab here to avoid double invocation.
                 mainTabControl.SelectedTab = tabPageExplorer;
             };
             dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;

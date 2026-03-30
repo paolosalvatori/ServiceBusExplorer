@@ -174,26 +174,25 @@ namespace ServiceBusExplorer.Controls
 
         private void DataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || OnRowSelected == null) return;
-            var row = dataGridView.Rows[e.RowIndex];
-            var name = row.Cells["Name"].Value?.ToString();
-            var type = row.Cells["Type"].Value?.ToString();
-            if (!string.IsNullOrEmpty(name))
-            {
-                OnRowSelected(name, type);
-            }
+            if (OnRowSelected == null) return;
+            var id = GetRowIdentifier(e.RowIndex);
+            if (id != null) OnRowSelected(id.Value.name, id.Value.type);
         }
 
         private void DataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || OnRowDoubleClicked == null) return;
-            var row = dataGridView.Rows[e.RowIndex];
+            if (OnRowDoubleClicked == null) return;
+            var id = GetRowIdentifier(e.RowIndex);
+            if (id != null) OnRowDoubleClicked(id.Value.name, id.Value.type);
+        }
+
+        private (string name, string type)? GetRowIdentifier(int rowIndex)
+        {
+            if (rowIndex < 0) return null;
+            var row = dataGridView.Rows[rowIndex];
             var name = row.Cells["Name"].Value?.ToString();
             var type = row.Cells["Type"].Value?.ToString();
-            if (!string.IsNullOrEmpty(name))
-            {
-                OnRowDoubleClicked(name, type);
-            }
+            return string.IsNullOrEmpty(name) ? ((string, string)?)null : (name, type);
         }
 
         private void AutoRefreshCheckBox_CheckedChanged(object sender, EventArgs e)
