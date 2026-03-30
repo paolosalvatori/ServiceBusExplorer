@@ -1,5 +1,13 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.0] - 2026-03-30
+
+### Added
+- Copy Body button in message preview pane (queues, deadletter, subscriptions)
+- Dashboard right-click context menu: Refresh refreshes selected queue/subscription row
+- Dashboard row click clears active search filter so target node is visible in TreeView
+- version-bump.js tool supports nested .csproj repos (excludes Tests, obj, bin)
+
 ## [1.3.2] - 2026-03-29
 
 ### Changed
