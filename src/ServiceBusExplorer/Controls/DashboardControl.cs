@@ -26,6 +26,7 @@ namespace ServiceBusExplorer.Controls
         private bool isLoading;
 
         public Action<string, string> OnRowSelected { get; set; }
+        public Func<string, string, System.Threading.Tasks.Task> OnRefreshRowRequested { get; set; }
         public Func<System.Threading.Tasks.Task> OnRefreshRequested { get; set; }
         private Font headerFont;
         private Font cellFont;
@@ -149,11 +150,14 @@ namespace ServiceBusExplorer.Controls
 
             // Context menu
             contextMenu = new ContextMenuStrip();
+            var refreshItem = new ToolStripMenuItem("Refresh");
+            refreshItem.Click += async (s, e) => await RefreshSelectedRowAsync();
             var copyRowItem = new ToolStripMenuItem("Copy row");
             copyRowItem.Click += (s, e) => CopySelectedRow();
             var copyNameItem = new ToolStripMenuItem("Copy name");
             copyNameItem.Click += (s, e) => CopySelectedName();
-            contextMenu.Items.AddRange(new ToolStripItem[] { copyRowItem, copyNameItem });
+            contextMenu.Items.AddRange(new ToolStripItem[] { refreshItem, new ToolStripSeparator(), copyRowItem, copyNameItem });
+            contextMenu.Opening += ContextMenu_Opening;
             dataGridView.ContextMenuStrip = contextMenu;
 
             Controls.Add(dataGridView);
@@ -346,6 +350,24 @@ namespace ServiceBusExplorer.Controls
                 e.Handled = true;
                 e.SuppressKeyPress = true;
                 CopySelectedRow();
+            }
+        }
+
+        private void ContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            var hasSelection = dataGridView.SelectedRows.Count > 0;
+            contextMenu.Items[0].Enabled = hasSelection && OnRefreshRowRequested != null;
+        }
+
+        private async System.Threading.Tasks.Task RefreshSelectedRowAsync()
+        {
+            if (dataGridView.SelectedRows.Count == 0 || OnRefreshRowRequested == null) return;
+            var row = dataGridView.SelectedRows[0];
+            var name = row.Cells["Name"].Value?.ToString();
+            var type = row.Cells["Type"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                await OnRefreshRowRequested(name, type);
             }
         }
 

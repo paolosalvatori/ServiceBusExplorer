@@ -322,6 +322,7 @@ namespace ServiceBusExplorer.Forms
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
             dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
         }
 
@@ -375,6 +376,12 @@ namespace ServiceBusExplorer.Forms
                 HandleNodeMouseClick(targetNode);
                 mainTabControl.SelectedTab = tabPageExplorer;
             }
+        }
+
+        private async Task DashboardRefreshRowAsync(string name, string type)
+        {
+            DashboardRowSelected(name, type);
+            await RefreshSelectedEntity();
         }
 
         private void RefreshDashboard()
