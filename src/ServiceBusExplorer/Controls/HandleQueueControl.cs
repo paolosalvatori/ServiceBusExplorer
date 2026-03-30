@@ -3369,10 +3369,10 @@ namespace ServiceBusExplorer.Controls
             }
 
     
-            IEnumerable<BrokeredMessage> messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+            var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
 
-            List<long> sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+            var sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
 
 
             using var waitCursorScope = new WaitCursorScope(thisForm);

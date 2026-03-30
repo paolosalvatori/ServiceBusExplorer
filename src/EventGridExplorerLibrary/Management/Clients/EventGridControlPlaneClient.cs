@@ -61,7 +61,7 @@ namespace EventGridExplorerLibrary
                 InputSchema = EventInputSchema.CloudEventSchemaV10,
             };
 
-            ArmOperation<NamespaceTopicResource> azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
+            var azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
             NamespaceTopicResource result = azureOperation.Value;
             return result.Id;
         }
@@ -134,7 +134,7 @@ namespace EventGridExplorerLibrary
                 return $"{subscriptionName} for topic {namespaceTopicName} already exists";
             }
 
-            ArmOperation<NamespaceTopicEventSubscriptionResource> azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
+            var azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
             return azureOperation.Value.Id;
         }
 
@@ -183,11 +183,11 @@ namespace EventGridExplorerLibrary
             FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
             EventGridFilterFactory eventGridFilterFactory = new EventGridFilterFactory(filtersConfiguration);
 
-            foreach (Dictionary<string, string> i in filters)
+            foreach (var i in filters)
             {
-                eventGridFilterFactory.Key = i["Key"].ToString();
-                eventGridFilterFactory.Value = i["Value"].ToString();
-                eventGridFilterFactory.OperatorType = i["Operator"].ToString();
+                eventGridFilterFactory.Key = i["Key"];
+                eventGridFilterFactory.Value = i["Value"];
+                eventGridFilterFactory.OperatorType = i["Operator"];
 
                 eventGridFilterFactory.FilterSelection();
             }

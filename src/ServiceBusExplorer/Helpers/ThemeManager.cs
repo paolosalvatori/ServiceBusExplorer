@@ -4,19 +4,21 @@
 // Manages Dark/Light theme with persistence in user's app.config.
 // Usage:
 //   ThemeManager.Apply(form)          — applies current theme to the form
-//   ThemeManager.Toggle(form)         — toggles dark/light and reapplies
 //   ThemeManager.IsDark               — true if dark theme active
 //   ThemeManager.CurrentTheme         — "Dark" or "Light"
 
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Helpers
 {
-    public enum Theme { Light, Dark }
+    public enum Theme
+    {
+        Light,
+        Dark
+    }
 
     public static class ThemeManager
     {
@@ -35,44 +37,44 @@ namespace ServiceBusExplorer.Helpers
         // Dark palette
         private static class Dark
         {
-            public static readonly Color Background     = Color.FromArgb(33,  33,  33);
-            public static readonly Color Surface        = Color.FromArgb(42,  42,  42);
-            public static readonly Color SurfaceLight   = Color.FromArgb(51,  51,  51);
-            public static readonly Color SurfaceLighter = Color.FromArgb(64,  64,  64);
-            public static readonly Color Border         = Color.FromArgb(72,  72,  72);
-            public static readonly Color Foreground     = Color.FromArgb(236, 236, 236);
-            public static readonly Color ForegroundDim  = Color.FromArgb(160, 160, 160);
-            public static readonly Color Accent         = Color.FromArgb(0,   122, 204);
-            public static readonly Color AccentHover    = Color.FromArgb(28,  151, 234);
-            public static readonly Color AccentText     = Color.White;
+            public static readonly Color Background = Color.FromArgb(33, 33, 33);
+            public static readonly Color Surface = Color.FromArgb(42, 42, 42);
+            public static readonly Color SurfaceLight = Color.FromArgb(51, 51, 51);
+            public static readonly Color SurfaceLighter = Color.FromArgb(64, 64, 64);
+            public static readonly Color Border = Color.FromArgb(72, 72, 72);
+            public static readonly Color Foreground = Color.FromArgb(236, 236, 236);
+            public static readonly Color ForegroundDim = Color.FromArgb(160, 160, 160);
+            public static readonly Color Accent = Color.FromArgb(0, 122, 204);
+            public static readonly Color AccentHover = Color.FromArgb(28, 151, 234);
+            public static readonly Color AccentText = Color.White;
         }
 
         // Light palette (Windows system colors)
         private static class Light
         {
-            public static readonly Color Background     = SystemColors.Control;
-            public static readonly Color Surface        = SystemColors.Control;
-            public static readonly Color SurfaceLight   = SystemColors.Window;
+            public static readonly Color Background = SystemColors.Control;
+            public static readonly Color Surface = SystemColors.Control;
+            public static readonly Color SurfaceLight = SystemColors.Window;
             public static readonly Color SurfaceLighter = SystemColors.ControlLight;
-            public static readonly Color Border         = SystemColors.ControlDark;
-            public static readonly Color Foreground     = SystemColors.ControlText;
-            public static readonly Color ForegroundDim  = SystemColors.GrayText;
-            public static readonly Color Accent         = SystemColors.Highlight;
-            public static readonly Color AccentHover    = SystemColors.HotTrack;
-            public static readonly Color AccentText     = SystemColors.HighlightText;
+            public static readonly Color Border = SystemColors.ControlDark;
+            public static readonly Color Foreground = SystemColors.ControlText;
+            public static readonly Color ForegroundDim = SystemColors.GrayText;
+            public static readonly Color Accent = SystemColors.Highlight;
+            public static readonly Color AccentHover = SystemColors.HotTrack;
+            public static readonly Color AccentText = SystemColors.HighlightText;
         }
 
         // Shortcuts to active palette
-        public static Color Background     => IsDark ? Dark.Background     : Light.Background;
-        public static Color Surface        => IsDark ? Dark.Surface        : Light.Surface;
-        public static Color SurfaceLight   => IsDark ? Dark.SurfaceLight   : Light.SurfaceLight;
+        public static Color Background => IsDark ? Dark.Background : Light.Background;
+        public static Color Surface => IsDark ? Dark.Surface : Light.Surface;
+        public static Color SurfaceLight => IsDark ? Dark.SurfaceLight : Light.SurfaceLight;
         public static Color SurfaceLighter => IsDark ? Dark.SurfaceLighter : Light.SurfaceLighter;
-        public static Color Border         => IsDark ? Dark.Border         : Light.Border;
-        public static Color Foreground     => IsDark ? Dark.Foreground     : Light.Foreground;
-        public static Color ForegroundDim  => IsDark ? Dark.ForegroundDim  : Light.ForegroundDim;
-        public static Color Accent         => IsDark ? Dark.Accent         : Light.Accent;
-        public static Color AccentHover    => IsDark ? Dark.AccentHover    : Light.AccentHover;
-        public static Color AccentText     => IsDark ? Dark.AccentText     : Light.AccentText;
+        public static Color Border => IsDark ? Dark.Border : Light.Border;
+        public static Color Foreground => IsDark ? Dark.Foreground : Light.Foreground;
+        public static Color ForegroundDim => IsDark ? Dark.ForegroundDim : Light.ForegroundDim;
+        public static Color Accent => IsDark ? Dark.Accent : Light.Accent;
+        public static Color AccentHover => IsDark ? Dark.AccentHover : Light.AccentHover;
+        public static Color AccentText => IsDark ? Dark.AccentText : Light.AccentText;
 
         // Initialize: load saved preference
         static ThemeManager()
@@ -80,7 +82,7 @@ namespace ServiceBusExplorer.Helpers
             LoadFromConfig();
         }
 
-        private static void LoadFromConfig()
+        static void LoadFromConfig()
         {
             try
             {
@@ -91,10 +93,13 @@ namespace ServiceBusExplorer.Helpers
                     _current = saved;
                 }
             }
-            catch { /* no config, uses Dark as default */ }
+            catch
+            {
+                /* no config, uses Dark as default */
+            }
         }
 
-        private static void SaveToConfig(Theme theme)
+        static void SaveToConfig(Theme theme)
         {
             try
             {
@@ -105,7 +110,10 @@ namespace ServiceBusExplorer.Helpers
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
             }
-            catch { /* silence persistence errors */ }
+            catch
+            {
+                /* silence persistence errors */
+            }
         }
 
         // Public API
@@ -130,22 +138,6 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        /// <summary>Toggles between Dark and Light, reapplies to all open forms and saves.</summary>
-        public static void Toggle()
-        {
-            _current = IsDark ? Theme.Light : Theme.Dark;
-            SaveToConfig(_current);
-
-            foreach (Form f in Application.OpenForms)
-            {
-                ApplyToControl(f);
-                ApplyRecursive(f);
-                f.Refresh();
-            }
-
-            ThemeChanged?.Invoke(null, EventArgs.Empty);
-        }
-
         /// <summary>Sets a specific theme.</summary>
         public static void SetTheme(Theme theme)
         {
@@ -166,11 +158,12 @@ namespace ServiceBusExplorer.Helpers
         // Recursive application
 
         // Their original light theme colors — any control with these colors is forced to dark
-        private static readonly System.Drawing.Color[] LightThemeColors = {
-            System.Drawing.Color.FromArgb(215, 228, 242),  // main light blue
-            System.Drawing.Color.FromArgb(153, 180, 209),  // medium blue hover
-            System.Drawing.Color.FromArgb(235, 241, 247),  // bluish off-white
-            System.Drawing.Color.FromArgb(194, 213, 229),  // secondary light blue
+        private static readonly System.Drawing.Color[] LightThemeColors =
+        {
+            System.Drawing.Color.FromArgb(215, 228, 242), // main light blue
+            System.Drawing.Color.FromArgb(153, 180, 209), // medium blue hover
+            System.Drawing.Color.FromArgb(235, 241, 247), // bluish off-white
+            System.Drawing.Color.FromArgb(194, 213, 229), // secondary light blue
         };
 
         private static bool IsLightThemeColor(System.Drawing.Color c)
@@ -216,9 +209,9 @@ namespace ServiceBusExplorer.Helpers
             foreach (Control child in control.Controls)
                 ApplyRecursive(child);
 
-            if (control is ToolStrip ts)   ApplyToToolStrip(ts);
+            if (control is ToolStrip ts) ApplyToToolStrip(ts);
             if (control is DataGridView dgv) ApplyToDataGridView(dgv);
-            if (control is TabControl tc)  ApplyToTabControl(tc);
+            if (control is TabControl tc) ApplyToTabControl(tc);
         }
 
         private static void ApplyToControl(Control control)
@@ -289,6 +282,7 @@ namespace ServiceBusExplorer.Helpers
                         btn.FlatStyle = FlatStyle.Standard;
                         btn.UseVisualStyleBackColor = true;
                     }
+
                     btn.Cursor = Cursors.Hand;
                     break;
 
@@ -306,7 +300,7 @@ namespace ServiceBusExplorer.Helpers
                 case TreeView tv:
                     tv.BackColor = SurfaceLight;
                     tv.ForeColor = Foreground;
-                    tv.LineColor  = Border;
+                    tv.LineColor = Border;
                     tv.BorderStyle = BorderStyle.FixedSingle;
                     break;
 
@@ -362,48 +356,52 @@ namespace ServiceBusExplorer.Helpers
 
                 case ToolStripContainer tsc:
                     tsc.BackColor = Surface;
-                    tsc.TopToolStripPanel.BackColor    = Surface;
+                    tsc.TopToolStripPanel.BackColor = Surface;
                     tsc.BottomToolStripPanel.BackColor = Surface;
-                    tsc.LeftToolStripPanel.BackColor   = Surface;
-                    tsc.RightToolStripPanel.BackColor  = Surface;
-                    tsc.ContentPanel.BackColor         = Background;
+                    tsc.LeftToolStripPanel.BackColor = Surface;
+                    tsc.RightToolStripPanel.BackColor = Surface;
+                    tsc.ContentPanel.BackColor = Background;
                     break;
 
                 // ContextMenuStrip > MenuStrip > StatusStrip > ToolStrip (inheritance)
                 case ContextMenuStrip cms:
-                    cms.BackColor  = SurfaceLight;
-                    cms.ForeColor  = Foreground;
+                    cms.BackColor = SurfaceLight;
+                    cms.ForeColor = Foreground;
                     cms.RenderMode = ToolStripRenderMode.Professional;
-                    cms.Renderer   = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
+                    cms.Renderer = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
                     ApplyToMenuItems(cms.Items);
                     break;
 
                 case MenuStrip ms:
-                    ms.BackColor  = Surface;
-                    ms.ForeColor  = Foreground;
+                    ms.BackColor = Surface;
+                    ms.ForeColor = Foreground;
                     ms.RenderMode = ToolStripRenderMode.Professional;
-                    ms.Renderer   = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
+                    ms.Renderer = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
                     ApplyToMenuItems(ms.Items);
                     break;
 
                 case StatusStrip ss:
-                    ss.BackColor  = Surface;
-                    ss.ForeColor  = ForegroundDim;
+                    ss.BackColor = Surface;
+                    ss.ForeColor = ForegroundDim;
                     ss.SizingGrip = false;
                     ss.RenderMode = ToolStripRenderMode.Professional;
-                    ss.Renderer   = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
+                    ss.Renderer = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
                     foreach (ToolStripItem item in ss.Items)
-                    { item.BackColor = Surface; item.ForeColor = ForegroundDim; }
+                    {
+                        item.BackColor = Surface;
+                        item.ForeColor = ForegroundDim;
+                    }
+
                     break;
 
                 case PropertyGrid pg:
-                    pg.BackColor         = Background;
-                    pg.ViewBackColor     = SurfaceLight;
-                    pg.ViewForeColor     = Foreground;
-                    pg.LineColor         = Border;
+                    pg.BackColor = Background;
+                    pg.ViewBackColor = SurfaceLight;
+                    pg.ViewForeColor = Foreground;
+                    pg.LineColor = Border;
                     pg.CategoryForeColor = ForegroundDim;
-                    pg.HelpBackColor     = Surface;
-                    pg.HelpForeColor     = Foreground;
+                    pg.HelpBackColor = Surface;
+                    pg.HelpForeColor = Foreground;
                     pg.CommandsBackColor = Surface;
                     pg.CommandsForeColor = Foreground;
                     break;
@@ -415,12 +413,12 @@ namespace ServiceBusExplorer.Helpers
             var t = control.GetType();
             if (t.Name != "HeaderPanel") return;
 
-            var bg  = IsDark ? Surface    : SystemColors.ControlLight;
+            var bg = IsDark ? Surface : SystemColors.ControlLight;
             var bg2 = IsDark ? Background : SystemColors.Control;
-            var fg  = IsDark ? Foreground : SystemColors.ControlText;
+            var fg = IsDark ? Foreground : SystemColors.ControlText;
 
-            TrySetColor(t, control, "HeaderColor1",    bg);
-            TrySetColor(t, control, "HeaderColor2",    bg2);
+            TrySetColor(t, control, "HeaderColor1", bg);
+            TrySetColor(t, control, "HeaderColor2", bg2);
             TrySetColor(t, control, "HeaderForeColor", fg);
 
             control.ForeColor = fg;
@@ -435,15 +433,15 @@ namespace ServiceBusExplorer.Helpers
             var t = control.GetType();
             if (t.Name != "Grouper") return;
 
-            var bg   = IsDark ? Background   : Light_Background;
-            var fg   = IsDark ? Foreground   : Light_Foreground;
-            var bord = IsDark ? Border        : Light_Border;
+            var bg = IsDark ? Background : Light_Background;
+            var fg = IsDark ? Foreground : Light_Foreground;
+            var bord = IsDark ? Border : Light_Border;
 
-            TrySetColor(t, control, "BackgroundColor",         bg);
-            TrySetColor(t, control, "BackgroundGradientColor",  bg);
-            TrySetColor(t, control, "CustomGroupBoxColor",      bg);
-            TrySetColor(t, control, "BorderColor",              bord);
-            TrySetColor(t, control, "GroupTitleColor",          fg);
+            TrySetColor(t, control, "BackgroundColor", bg);
+            TrySetColor(t, control, "BackgroundGradientColor", bg);
+            TrySetColor(t, control, "CustomGroupBoxColor", bg);
+            TrySetColor(t, control, "BorderColor", bord);
+            TrySetColor(t, control, "GroupTitleColor", fg);
 
             // Grouper title ForeColor
             control.ForeColor = fg;
@@ -461,37 +459,43 @@ namespace ServiceBusExplorer.Helpers
                 if (prop != null && prop.CanWrite)
                     prop.SetValue(obj, color);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         // Light colors for Grouper (SystemColors)
         private static Color Light_Background => SystemColors.Control;
-        private static Color Light_Foreground  => SystemColors.ControlText;
-        private static Color Light_Border      => SystemColors.ControlDark;
+        private static Color Light_Foreground => SystemColors.ControlText;
+        private static Color Light_Border => SystemColors.ControlDark;
 
         private static void ApplyToToolStrip(ToolStrip ts)
         {
-            ts.BackColor  = Surface;
-            ts.ForeColor  = Foreground;
+            ts.BackColor = Surface;
+            ts.ForeColor = Foreground;
             ts.RenderMode = ToolStripRenderMode.Professional;
-            ts.Renderer   = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
+            ts.Renderer = IsDark ? (ToolStripRenderer)new DarkToolStripRenderer() : new ToolStripProfessionalRenderer();
             foreach (ToolStripItem item in ts.Items)
-            { item.BackColor = Surface; item.ForeColor = Foreground; }
+            {
+                item.BackColor = Surface;
+                item.ForeColor = Foreground;
+            }
         }
 
         private static void ApplyToDataGridView(DataGridView dgv)
         {
             dgv.BackgroundColor = Background;
-            dgv.GridColor       = Border;
-            dgv.BorderStyle     = BorderStyle.None;
-            dgv.DefaultCellStyle.BackColor          = SurfaceLight;
-            dgv.DefaultCellStyle.ForeColor          = Foreground;
+            dgv.GridColor = Border;
+            dgv.BorderStyle = BorderStyle.None;
+            dgv.DefaultCellStyle.BackColor = SurfaceLight;
+            dgv.DefaultCellStyle.ForeColor = Foreground;
             dgv.DefaultCellStyle.SelectionBackColor = Accent;
             dgv.DefaultCellStyle.SelectionForeColor = AccentText;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Surface;
             dgv.AlternatingRowsDefaultCellStyle.ForeColor = Foreground;
-            dgv.ColumnHeadersDefaultCellStyle.BackColor   = Surface;
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor   = ForegroundDim;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Surface;
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = ForegroundDim;
             dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Surface;
             dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dgv.RowHeadersDefaultCellStyle.BackColor = Surface;
@@ -507,26 +511,26 @@ namespace ServiceBusExplorer.Helpers
             {
                 // Dark: owner-draw to control tab colors
                 tc.Appearance = TabAppearance.FlatButtons;
-                tc.DrawItem  -= TabControl_DrawItem;
-                tc.DrawMode   = TabDrawMode.OwnerDrawFixed;
-                tc.DrawItem  += TabControl_DrawItem;
+                tc.DrawItem -= TabControl_DrawItem;
+                tc.DrawMode = TabDrawMode.OwnerDrawFixed;
+                tc.DrawItem += TabControl_DrawItem;
             }
             else
             {
                 // Light: revert to native Windows renderer (no distortion)
                 tc.DrawItem -= TabControl_DrawItem;
-                tc.DrawMode  = TabDrawMode.Normal;
+                tc.DrawMode = TabDrawMode.Normal;
                 tc.Appearance = TabAppearance.Normal;
             }
         }
 
         private static void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            var tc  = (TabControl)sender;
+            var tc = (TabControl)sender;
             var tab = tc.TabPages[e.Index];
             bool selected = tc.SelectedIndex == e.Index;
-            var bg  = selected ? SurfaceLighter : Background;
-            var fg  = selected ? Foreground     : ForegroundDim;
+            var bg = selected ? SurfaceLighter : Background;
+            var fg = selected ? Foreground : ForegroundDim;
 
             // Fill tab background
             using (var bgBrush = new SolidBrush(bg))
@@ -563,6 +567,7 @@ namespace ServiceBusExplorer.Helpers
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr,
             ref int attrValue, int attrSize);
+
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
         public static void ApplyTitleBar(IntPtr handle)
@@ -573,14 +578,19 @@ namespace ServiceBusExplorer.Helpers
                 DwmSetWindowAttribute(handle, DWMWA_USE_IMMERSIVE_DARK_MODE,
                     ref value, sizeof(int));
             }
-            catch { /* Windows < 10 1903 */ }
+            catch
+            {
+                /* Windows < 10 1903 */
+            }
         }
     }
 
     // Dark renderer for ToolStrip / MenuStrip
     internal class DarkToolStripRenderer : ToolStripProfessionalRenderer
     {
-        public DarkToolStripRenderer() : base(new DarkColorTable()) { }
+        public DarkToolStripRenderer() : base(new DarkColorTable())
+        {
+        }
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
@@ -605,7 +615,7 @@ namespace ServiceBusExplorer.Helpers
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
             var pen = new Pen(ThemeManager.Border);
-            var r   = e.Item.ContentRectangle;
+            var r = e.Item.ContentRectangle;
             if (e.Vertical)
                 e.Graphics.DrawLine(pen, r.Left + r.Width / 2, r.Top, r.Left + r.Width / 2, r.Bottom);
             else
@@ -615,40 +625,40 @@ namespace ServiceBusExplorer.Helpers
 
     internal class DarkColorTable : ProfessionalColorTable
     {
-        public override Color MenuItemBorder                => ThemeManager.Border;
-        public override Color MenuItemSelected              => ThemeManager.SurfaceLighter;
+        public override Color MenuItemBorder => ThemeManager.Border;
+        public override Color MenuItemSelected => ThemeManager.SurfaceLighter;
         public override Color MenuItemSelectedGradientBegin => ThemeManager.SurfaceLighter;
-        public override Color MenuItemSelectedGradientEnd   => ThemeManager.SurfaceLighter;
-        public override Color MenuItemPressedGradientBegin  => ThemeManager.Accent;
-        public override Color MenuItemPressedGradientEnd    => ThemeManager.Accent;
-        public override Color MenuStripGradientBegin        => ThemeManager.Surface;
-        public override Color MenuStripGradientEnd          => ThemeManager.Surface;
-        public override Color ToolStripDropDownBackground   => ThemeManager.SurfaceLight;
-        public override Color ImageMarginGradientBegin      => ThemeManager.Surface;
-        public override Color ImageMarginGradientMiddle     => ThemeManager.Surface;
-        public override Color ImageMarginGradientEnd        => ThemeManager.Surface;
-        public override Color ToolStripBorder               => ThemeManager.Border;
-        public override Color SeparatorLight                => ThemeManager.Border;
-        public override Color SeparatorDark                 => ThemeManager.SurfaceLight;
-        public override Color ButtonSelectedBorder          => ThemeManager.Accent;
-        public override Color ButtonSelectedGradientBegin   => ThemeManager.SurfaceLighter;
-        public override Color ButtonSelectedGradientEnd     => ThemeManager.SurfaceLighter;
-        public override Color ButtonCheckedGradientBegin    => ThemeManager.Accent;
-        public override Color ButtonCheckedGradientEnd      => ThemeManager.Accent;
-        public override Color ToolStripGradientBegin        => ThemeManager.Surface;
-        public override Color ToolStripGradientMiddle       => ThemeManager.Surface;
-        public override Color ToolStripGradientEnd          => ThemeManager.Surface;
+        public override Color MenuItemSelectedGradientEnd => ThemeManager.SurfaceLighter;
+        public override Color MenuItemPressedGradientBegin => ThemeManager.Accent;
+        public override Color MenuItemPressedGradientEnd => ThemeManager.Accent;
+        public override Color MenuStripGradientBegin => ThemeManager.Surface;
+        public override Color MenuStripGradientEnd => ThemeManager.Surface;
+        public override Color ToolStripDropDownBackground => ThemeManager.SurfaceLight;
+        public override Color ImageMarginGradientBegin => ThemeManager.Surface;
+        public override Color ImageMarginGradientMiddle => ThemeManager.Surface;
+        public override Color ImageMarginGradientEnd => ThemeManager.Surface;
+        public override Color ToolStripBorder => ThemeManager.Border;
+        public override Color SeparatorLight => ThemeManager.Border;
+        public override Color SeparatorDark => ThemeManager.SurfaceLight;
+        public override Color ButtonSelectedBorder => ThemeManager.Accent;
+        public override Color ButtonSelectedGradientBegin => ThemeManager.SurfaceLighter;
+        public override Color ButtonSelectedGradientEnd => ThemeManager.SurfaceLighter;
+        public override Color ButtonCheckedGradientBegin => ThemeManager.Accent;
+        public override Color ButtonCheckedGradientEnd => ThemeManager.Accent;
+        public override Color ToolStripGradientBegin => ThemeManager.Surface;
+        public override Color ToolStripGradientMiddle => ThemeManager.Surface;
+        public override Color ToolStripGradientEnd => ThemeManager.Surface;
         public override Color ToolStripContentPanelGradientBegin => ThemeManager.Background;
-        public override Color ToolStripContentPanelGradientEnd   => ThemeManager.Background;
-        public override Color StatusStripGradientBegin      => ThemeManager.Surface;
-        public override Color StatusStripGradientEnd        => ThemeManager.Surface;
-        public override Color CheckBackground               => ThemeManager.Accent;
-        public override Color CheckPressedBackground        => ThemeManager.AccentHover;
-        public override Color CheckSelectedBackground       => ThemeManager.Accent;
-        public override Color OverflowButtonGradientBegin   => ThemeManager.Surface;
-        public override Color OverflowButtonGradientMiddle  => ThemeManager.Surface;
-        public override Color OverflowButtonGradientEnd     => ThemeManager.Surface;
-        public override Color GripLight                     => ThemeManager.Border;
-        public override Color GripDark                      => ThemeManager.Surface;
+        public override Color ToolStripContentPanelGradientEnd => ThemeManager.Background;
+        public override Color StatusStripGradientBegin => ThemeManager.Surface;
+        public override Color StatusStripGradientEnd => ThemeManager.Surface;
+        public override Color CheckBackground => ThemeManager.Accent;
+        public override Color CheckPressedBackground => ThemeManager.AccentHover;
+        public override Color CheckSelectedBackground => ThemeManager.Accent;
+        public override Color OverflowButtonGradientBegin => ThemeManager.Surface;
+        public override Color OverflowButtonGradientMiddle => ThemeManager.Surface;
+        public override Color OverflowButtonGradientEnd => ThemeManager.Surface;
+        public override Color GripLight => ThemeManager.Border;
+        public override Color GripDark => ThemeManager.Surface;
     }
 }

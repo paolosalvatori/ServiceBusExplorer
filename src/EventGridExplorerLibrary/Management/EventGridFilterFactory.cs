@@ -25,25 +25,25 @@ namespace EventGridExplorerLibrary
 
         public void FilterSelection()
         {
-            if (OperatorType.Equals("Boolean equals")) { AddFilterForBoolEquals(); };
-            if (OperatorType.Equals("String is in")) { AddFilterForStringIn(); };
-            if (OperatorType.Equals("String is not in")) { AddFilterForStringNotIn(); };
-            if (OperatorType.Equals("String contains")) { AddFilterForStringContains(); };
-            if (OperatorType.Equals("String does not contain")) { AddFilterForStringNotContains(); };
-            if (OperatorType.Equals("String begins with")) { AddFilterForStringBeginsWith(); };
-            if (OperatorType.Equals("String does not begin with")) { AddFilterForStringNotBeginsWith(); };
-            if (OperatorType.Equals("String ends with")) { AddFilterForStringEndsWith(); };
-            if (OperatorType.Equals("String does not end with")) { AddFilterForStringNotEndsWith(); };
-            if (OperatorType.Equals("Number is less than")) { AddFilterForNumberLessThan(); };
-            if (OperatorType.Equals("Number is greater than")) { AddFilterForNumberGreaterThan(); };
-            if (OperatorType.Equals("Number is less than or equal to")) { AddFilterForNumberLessThanOrEquals(); };
-            if (OperatorType.Equals("Number is greater than or equal to")) { AddFilterForNumberGreaterThanOrEquals(); };
-            if (OperatorType.Equals("Number is in")) { AddFilterForNumberIn(); };
-            if (OperatorType.Equals("Number is not in")) { AddFilterForNumberNotIn(); };
-            if (OperatorType.Equals("Number is in range")) { AddFilterForNumberInRange(); };
-            if (OperatorType.Equals("Number is not in range")) { AddFilterForNumberNotInRange(); };
-            if (OperatorType.Equals("Is null or undefined")) { AddFilterForIsNullOrUndefined(); };
-            if (OperatorType.Equals("Is not null")) { AddFilterForIsNotNull(); };
+            if (OperatorType.Equals("Boolean equals")) { AddFilterForBoolEquals(); }
+            if (OperatorType.Equals("String is in")) { AddFilterForStringIn(); }
+            if (OperatorType.Equals("String is not in")) { AddFilterForStringNotIn(); }
+            if (OperatorType.Equals("String contains")) { AddFilterForStringContains(); }
+            if (OperatorType.Equals("String does not contain")) { AddFilterForStringNotContains(); }
+            if (OperatorType.Equals("String begins with")) { AddFilterForStringBeginsWith(); }
+            if (OperatorType.Equals("String does not begin with")) { AddFilterForStringNotBeginsWith(); }
+            if (OperatorType.Equals("String ends with")) { AddFilterForStringEndsWith(); }
+            if (OperatorType.Equals("String does not end with")) { AddFilterForStringNotEndsWith(); }
+            if (OperatorType.Equals("Number is less than")) { AddFilterForNumberLessThan(); }
+            if (OperatorType.Equals("Number is greater than")) { AddFilterForNumberGreaterThan(); }
+            if (OperatorType.Equals("Number is less than or equal to")) { AddFilterForNumberLessThanOrEquals(); }
+            if (OperatorType.Equals("Number is greater than or equal to")) { AddFilterForNumberGreaterThanOrEquals(); }
+            if (OperatorType.Equals("Number is in")) { AddFilterForNumberIn(); }
+            if (OperatorType.Equals("Number is not in")) { AddFilterForNumberNotIn(); }
+            if (OperatorType.Equals("Number is in range")) { AddFilterForNumberInRange(); }
+            if (OperatorType.Equals("Number is not in range")) { AddFilterForNumberNotInRange(); }
+            if (OperatorType.Equals("Is null or undefined")) { AddFilterForIsNullOrUndefined(); }
+            if (OperatorType.Equals("Is not null")) { AddFilterForIsNotNull(); }
         }
 
         /// <inheritdoc/>
@@ -228,7 +228,7 @@ namespace EventGridExplorerLibrary
             string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
-                List<double> doubleRangeValues = new List<double>();
+                var doubleRangeValues = new List<double>();
                 var rangeValues = filterValue.Split('-');
                 foreach (string rangeValue in rangeValues)
                 {
@@ -246,7 +246,7 @@ namespace EventGridExplorerLibrary
             string[] filterValuesList = Value.Split(',');
             foreach (string filterValue in filterValuesList)
             {
-                List<double> doubleRangeValues = new List<double>();
+                var doubleRangeValues = new List<double>();
                 var rangeValues = filterValue.Split('-');
                 foreach (string rangeValue in rangeValues)
                 {
