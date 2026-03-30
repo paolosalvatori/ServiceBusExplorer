@@ -26,6 +26,7 @@ namespace ServiceBusExplorer.Controls
         private bool isLoading;
 
         public Action<string, string> OnRowSelected { get; set; }
+        public Action<string, string> OnRowDoubleClicked { get; set; }
         public Func<string, string, System.Threading.Tasks.Task> OnRefreshRowRequested { get; set; }
         public Func<System.Threading.Tasks.Task> OnRefreshRequested { get; set; }
         private Font headerFont;
@@ -146,6 +147,7 @@ namespace ServiceBusExplorer.Controls
             });
 
             dataGridView.CellClick += DataGridView_CellClick;
+            dataGridView.CellDoubleClick += DataGridView_CellDoubleClick;
             dataGridView.KeyDown += DataGridView_KeyDown;
 
             // Context menu
@@ -179,6 +181,18 @@ namespace ServiceBusExplorer.Controls
             if (!string.IsNullOrEmpty(name))
             {
                 OnRowSelected(name, type);
+            }
+        }
+
+        private void DataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || OnRowDoubleClicked == null) return;
+            var row = dataGridView.Rows[e.RowIndex];
+            var name = row.Cells["Name"].Value?.ToString();
+            var type = row.Cells["Type"].Value?.ToString();
+            if (!string.IsNullOrEmpty(name))
+            {
+                OnRowDoubleClicked(name, type);
             }
         }
 

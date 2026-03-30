@@ -21,8 +21,8 @@
 | 15 | Per-topic error isolation | Disconnect mid-load or have inaccessible topic | Other topics still load, error logged | ⬜ |
 | 16 | Subscription filter | Filter on subscription name | Parent topic visible, non-matching subscriptions hidden | ⬜ |
 | 17 | Topic name filter | Filter on topic name | Topic visible with all subscriptions intact | ⬜ |
-| 18 | Dashboard row → TreeView | Click queue row in dashboard | TreeView selects matching queue, switches to Explorer tab | ⬜ |
-| 19 | Dashboard sub row → TreeView | Click subscription row in dashboard | TreeView expands topic, selects subscription | ⬜ |
+| 18 | Dashboard single-click → tree sync | Click queue row in dashboard | TreeView selects matching queue, stays on Dashboard tab | ⬜ |
+| 19 | Dashboard double-click → explorer | Double-click queue row in dashboard | TreeView selects queue, switches to Explorer tab | ⬜ |
 | 20 | Copy row Ctrl+C | Select row, Ctrl+C | Clipboard contains TSV of all columns | ⬜ |
 | 21 | Copy row context menu | Right-click → Copy row | Same TSV as Ctrl+C | ⬜ |
 | 22 | Copy name context menu | Right-click → Copy name | Clipboard contains entity name only | ⬜ |
@@ -43,8 +43,10 @@
 | 36 | Dashboard click no filter | No filter, click dashboard row | Node selected, filter box unchanged | ⬜ |
 | 37 | Dashboard right-click Refresh | Right-click queue row → Refresh | Row counts update, TreeView node also refreshes | ⬜ |
 | 38 | Dashboard Refresh disabled | Right-click with no row selected | "Refresh" menu item disabled | ⬜ |
+| 39 | Dashboard refresh stays on tab | Right-click Refresh on dashboard row | Counts update, stays on Dashboard tab | ⬜ |
+| 40 | TreeView click → explorer | Click tree node | Switches to Explorer tab (unchanged behavior) | ⬜ |
 
-**Score: 2/38 (5%)**
+**Score: 2/40 (5%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 

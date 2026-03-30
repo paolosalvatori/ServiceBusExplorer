@@ -322,6 +322,11 @@ namespace ServiceBusExplorer.Forms
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRowDoubleClicked = (name, type) =>
+            {
+                DashboardRowSelected(name, type);
+                mainTabControl.SelectedTab = tabPageExplorer;
+            };
             dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
             dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
         }
@@ -374,7 +379,6 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.SelectedNode = targetNode;
                 targetNode.EnsureVisible();
                 HandleNodeMouseClick(targetNode);
-                mainTabControl.SelectedTab = tabPageExplorer;
             }
         }
 
