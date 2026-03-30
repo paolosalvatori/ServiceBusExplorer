@@ -18,6 +18,7 @@ namespace ServiceBusExplorer.Controls
         private Panel toolbarPanel;
         private Timer autoRefreshTimer;
         private ContextMenuStrip contextMenu;
+        private Label hintLabel;
 
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
@@ -162,7 +163,20 @@ namespace ServiceBusExplorer.Controls
             contextMenu.Opening += ContextMenu_Opening;
             dataGridView.ContextMenuStrip = contextMenu;
 
+            // Hint label
+            hintLabel = new Label
+            {
+                Text = "Single click: sync tree  |  Double click: open in Explorer",
+                Dock = DockStyle.Bottom,
+                AutoSize = false,
+                Height = 20,
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = SystemColors.GrayText,
+                Padding = new Padding(4, 2, 0, 0)
+            };
+
             Controls.Add(dataGridView);
+            Controls.Add(hintLabel);
             Controls.Add(toolbarPanel);
 
             // Timer

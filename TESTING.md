@@ -45,8 +45,10 @@
 | 38 | Dashboard Refresh disabled | Right-click with no row selected | "Refresh" menu item disabled | ⬜ |
 | 39 | Dashboard refresh stays on tab | Right-click Refresh on dashboard row | Counts update, stays on Dashboard tab | ⬜ |
 | 40 | TreeView click → explorer | Click tree node | Switches to Explorer tab (unchanged behavior) | ⬜ |
+| 41 | Dashboard hint label visible | Open Dashboard tab | "Single click: sync tree  |  Double click: open in Explorer" visible below grid | ⬜ |
+| 42 | Hint label stays on resize | Resize form window | Label stays anchored below grid | ⬜ |
 
-**Score: 2/40 (5%)**
+**Score: 2/42 (5%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 
