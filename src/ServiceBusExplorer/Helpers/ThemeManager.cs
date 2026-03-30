@@ -597,24 +597,29 @@ namespace ServiceBusExplorer.Helpers
             var color = e.Item.Selected
                 ? ThemeManager.SurfaceLighter
                 : ThemeManager.SurfaceLight;
-            e.Graphics.FillRectangle(new SolidBrush(color), e.Item.ContentRectangle);
+            using var brush = new SolidBrush(color);
+            e.Graphics.FillRectangle(brush, e.Item.ContentRectangle);
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
-            => e.Graphics.FillRectangle(new SolidBrush(ThemeManager.Surface), e.AffectedBounds);
+        {
+            using var brush = new SolidBrush(ThemeManager.Surface);
+            e.Graphics.FillRectangle(brush, e.AffectedBounds);
+        }
 
         protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             if (e.Item.Selected || e.Item.Pressed)
             {
                 var color = e.Item.Pressed ? ThemeManager.Accent : ThemeManager.SurfaceLighter;
-                e.Graphics.FillRectangle(new SolidBrush(color), new Rectangle(Point.Empty, e.Item.Size));
+                using var brush = new SolidBrush(color);
+                e.Graphics.FillRectangle(brush, new Rectangle(Point.Empty, e.Item.Size));
             }
         }
 
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
-            var pen = new Pen(ThemeManager.Border);
+            using var pen = new Pen(ThemeManager.Border);
             var r = e.Item.ContentRectangle;
             if (e.Vertical)
                 e.Graphics.DrawLine(pen, r.Left + r.Width / 2, r.Top, r.Left + r.Width / 2, r.Bottom);
