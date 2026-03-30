@@ -328,6 +328,13 @@ namespace ServiceBusExplorer.Forms
         private void DashboardRowSelected(string name, string type)
         {
             if (rootNode == null) return;
+
+            // Clear filter so the target node is visible in the full tree
+            if (!string.IsNullOrEmpty(filterTreeViewTextBox.Text))
+            {
+                filterTreeViewTextBox.Text = string.Empty;
+            }
+
             TreeNode targetNode = null;
 
             if (type == "Queue")

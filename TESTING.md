@@ -34,7 +34,15 @@
 | 28 | Create entity → filter sync | Create queue while filter active | Filter snapshot invalidated, new entity visible | ⬜ |
 | 29 | Delete entity → filter sync | Delete queue while filter active | Filter snapshot invalidated, entity removed | ⬜ |
 
-**Score: 2/29 (7%)**
+| 30 | Copy Body — enabled | Select message with body | "Copy Body" button enabled in Message Text grouper | ⬜ |
+| 31 | Copy Body — click | Click "Copy Body" | Clipboard contains exact message body text | ⬜ |
+| 32 | Copy Body — disabled | No message selected / empty body | "Copy Body" button disabled | ⬜ |
+| 33 | Copy Body — deadletter | Select DLQ message, click "Copy Body" | Clipboard contains DLQ message body | ⬜ |
+| 34 | Copy Body — subscription | Open subscription, select message, click "Copy Body" | Same behavior as queue | ⬜ |
+| 35 | Dashboard click clears filter | Filter active ("queue"), click dashboard row | Filter box cleared, tree restored, clicked node selected | ⬜ |
+| 36 | Dashboard click no filter | No filter, click dashboard row | Node selected, filter box unchanged | ⬜ |
+
+**Score: 2/36 (6%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 
