@@ -124,17 +124,30 @@ namespace ServiceBusExplorer.Helpers
         {
             ApplyToControl(control);
             ApplyRecursive(control);
-            control.ControlAdded += (s, e) => ApplyRecursive(e.Control);
+
+            control.ControlAdded -= OnControlAdded;
+            control.ControlAdded += OnControlAdded;
 
             // For Forms: reapply on Load to override any colors
             // that the Designer might have set after the constructor
             if (control is Form form)
             {
-                form.Load += (s, e) =>
-                {
-                    ApplyToControl(form);
-                    ApplyRecursive(form);
-                };
+                form.Load -= OnFormLoad;
+                form.Load += OnFormLoad;
+            }
+        }
+
+        private static void OnControlAdded(object sender, ControlEventArgs e)
+        {
+            ApplyRecursive(e.Control);
+        }
+
+        private static void OnFormLoad(object sender, EventArgs e)
+        {
+            if (sender is Form form)
+            {
+                ApplyToControl(form);
+                ApplyRecursive(form);
             }
         }
 
