@@ -1,5 +1,28 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.2] - 2026-03-30
+
+### Added
+- Hint label below dashboard grid: "Single click: sync tree | Double click: open in Explorer"
+
+### Fixed
+- Double-click on dashboard row no longer invokes DashboardRowSelected twice (CellClick already fires first)
+- Extracted GetRowIdentifier to DRY up CellClick/CellDoubleClick handlers
+
+## [1.4.1] - 2026-03-30
+
+### Changed
+- Dashboard single-click syncs TreeView selection only (stays on Dashboard tab)
+- Dashboard double-click navigates to Explorer tab (previously single-click did both)
+
+## [1.4.0] - 2026-03-30
+
+### Added
+- Copy Body button in message preview pane (queues, deadletter, subscriptions)
+- Dashboard right-click context menu: Refresh refreshes selected queue/subscription row
+- Dashboard row click clears active search filter so target node is visible in TreeView
+- version-bump.js tool supports nested .csproj repos (excludes Tests, obj, bin)
+
 ## [1.3.2] - 2026-03-29
 
 ### Changed

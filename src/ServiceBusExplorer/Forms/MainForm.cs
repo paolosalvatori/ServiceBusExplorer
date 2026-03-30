@@ -322,12 +322,26 @@ namespace ServiceBusExplorer.Forms
                 topicPath => serviceBusHelper.GetSubscriptions(topicPath),
                 msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRowDoubleClicked = (name, type) =>
+            {
+                // CellClick already fires first and calls DashboardRowSelected for tree sync.
+                // Only switch tab here to avoid double invocation.
+                mainTabControl.SelectedTab = tabPageExplorer;
+            };
+            dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
             dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
         }
 
         private void DashboardRowSelected(string name, string type)
         {
             if (rootNode == null) return;
+
+            // Clear filter so the target node is visible in the full tree
+            if (!string.IsNullOrEmpty(filterTreeViewTextBox.Text))
+            {
+                filterTreeViewTextBox.Text = string.Empty;
+            }
+
             TreeNode targetNode = null;
 
             if (type == "Queue")
@@ -366,8 +380,13 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.SelectedNode = targetNode;
                 targetNode.EnsureVisible();
                 HandleNodeMouseClick(targetNode);
-                mainTabControl.SelectedTab = tabPageExplorer;
             }
+        }
+
+        private async Task DashboardRefreshRowAsync(string name, string type)
+        {
+            DashboardRowSelected(name, type);
+            await RefreshSelectedEntity();
         }
 
         private void RefreshDashboard()
