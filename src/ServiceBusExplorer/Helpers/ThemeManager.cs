@@ -52,16 +52,20 @@ namespace ServiceBusExplorer.Helpers
         // Light palette (Windows system colors)
         private static class Light
         {
-            public static readonly Color Background = SystemColors.Control;
-            public static readonly Color Surface = SystemColors.Control;
-            public static readonly Color SurfaceLight = SystemColors.Window;
-            public static readonly Color SurfaceLighter = SystemColors.ControlLight;
-            public static readonly Color Border = SystemColors.ControlDark;
+            // Original Service Bus Explorer light palette
+            public static readonly Color Background = Color.FromArgb(235, 241, 247);
+            public static readonly Color Surface = Color.FromArgb(215, 228, 242);
+            public static readonly Color SurfaceLight = Color.FromArgb(255, 255, 255);
+            public static readonly Color SurfaceLighter = Color.FromArgb(194, 213, 229);
+            public static readonly Color Border = Color.FromArgb(153, 180, 209);
             public static readonly Color Foreground = SystemColors.ControlText;
-            public static readonly Color ForegroundDim = SystemColors.GrayText;
-            public static readonly Color Accent = SystemColors.Highlight;
-            public static readonly Color AccentHover = SystemColors.HotTrack;
-            public static readonly Color AccentText = SystemColors.HighlightText;
+            public static readonly Color ForegroundDim = Color.FromArgb(26, 59, 105);
+            public static readonly Color Accent = Color.FromArgb(153, 180, 209);
+            public static readonly Color AccentHover = Color.FromArgb(194, 213, 229);
+            public static readonly Color AccentText = Color.White;
+            public static readonly Color HeaderStart = Color.FromArgb(215, 228, 242);
+            public static readonly Color HeaderEnd = Color.FromArgb(153, 180, 209);
+            public static readonly Color HeaderText = Color.White;
         }
 
         // Shortcuts to active palette
@@ -426,16 +430,15 @@ namespace ServiceBusExplorer.Helpers
             var t = control.GetType();
             if (t.Name != "HeaderPanel") return;
 
-            var bg = IsDark ? Surface : SystemColors.ControlLight;
-            var bg2 = IsDark ? Background : SystemColors.Control;
-            var fg = IsDark ? Foreground : SystemColors.ControlText;
+            var bg = IsDark ? Surface : Light.HeaderStart;
+            var bg2 = IsDark ? Background : Light.HeaderEnd;
+            var fg = IsDark ? Foreground : Light.HeaderText;
 
             TrySetColor(t, control, "HeaderColor1", bg);
             TrySetColor(t, control, "HeaderColor2", bg2);
-            TrySetColor(t, control, "HeaderForeColor", fg);
 
             control.ForeColor = fg;
-            control.BackColor = bg2;
+            control.BackColor = IsDark ? bg2 : Light.SurfaceLight;
             control.Invalidate(true);
         }
 
@@ -478,10 +481,10 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        // Light colors for Grouper (SystemColors)
-        private static Color Light_Background => SystemColors.Control;
-        private static Color Light_Foreground => SystemColors.ControlText;
-        private static Color Light_Border => SystemColors.ControlDark;
+        // Light colors for Grouper
+        private static Color Light_Background => Light.Background;
+        private static Color Light_Foreground => Light.Foreground;
+        private static Color Light_Border => Light.Border;
 
         private static void ApplyToToolStrip(ToolStrip ts)
         {
