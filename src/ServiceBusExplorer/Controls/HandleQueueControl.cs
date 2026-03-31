@@ -531,6 +531,14 @@ namespace ServiceBusExplorer.Controls
 
         private void InitializeControls(bool initialCall)
         {
+            var gridSelectionBackColor = ThemeManager.IsDark ? ThemeManager.Accent : Color.FromArgb(92, 125, 150);
+            var gridSelectionForeColor = ThemeManager.IsDark ? ThemeManager.AccentText : SystemColors.Window;
+            var gridRowHeaderSelectionBackColor = ThemeManager.IsDark ? ThemeManager.Accent : Color.FromArgb(153, 180, 209);
+            var gridRowsBackColor = ThemeManager.IsDark ? ThemeManager.SurfaceLight : SystemColors.Window;
+            var gridRowsForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.ControlText;
+            var gridHeadersBackColor = ThemeManager.IsDark ? ThemeManager.Surface : Color.FromArgb(215, 228, 242);
+            var gridHeadersForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.ControlText;
+
             trackBarMaxQueueSize.Maximum = serviceBusHelper.IsCloudNamespace ? 5 : 11;
 
             if (this.premiumNamespace)
@@ -587,25 +595,27 @@ namespace ServiceBusExplorer.Controls
             authorizationRulesDataGridView.EnableHeadersVisualStyles = false;
 
             // Set the selection background color for all the cells.
-            authorizationRulesDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
-            authorizationRulesDataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.Window;
+            authorizationRulesDataGridView.DefaultCellStyle.SelectionBackColor = gridSelectionBackColor;
+            authorizationRulesDataGridView.DefaultCellStyle.SelectionForeColor = gridSelectionForeColor;
 
             // Set RowHeadersDefaultCellStyle.SelectionBackColor so that its default 
             // value won't override DataGridView.DefaultCellStyle.SelectionBackColor.
-            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.SelectionBackColor = gridRowHeaderSelectionBackColor;
 
             // Set the background color for all rows and for alternating rows.  
             // The value for alternating rows overrides the value for all rows. 
-            authorizationRulesDataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-            authorizationRulesDataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            authorizationRulesDataGridView.RowsDefaultCellStyle.BackColor = gridRowsBackColor;
+            authorizationRulesDataGridView.RowsDefaultCellStyle.ForeColor = gridRowsForeColor;
+            authorizationRulesDataGridView.DefaultCellStyle.BackColor = gridRowsBackColor;
+            authorizationRulesDataGridView.DefaultCellStyle.ForeColor = gridRowsForeColor;
             //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
             //authorizationRulesDataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
 
             // Set the row and column header styles.
-            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
-            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(215, 228, 242);
-            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.BackColor = gridHeadersBackColor;
+            authorizationRulesDataGridView.RowHeadersDefaultCellStyle.ForeColor = gridHeadersForeColor;
+            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = gridHeadersBackColor;
+            authorizationRulesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = gridHeadersForeColor;
 
             authorizationRulesDataGridView.AutoGenerateColumns = false;
             if (authorizationRulesDataGridView.Columns.Count == 0)
@@ -700,6 +710,11 @@ namespace ServiceBusExplorer.Controls
             {
                 ConfigureCreateUserInterface();
             }
+
+            if (ThemeManager.IsDark)
+            {
+                ThemeManager.Apply(this);
+            }
         }
 
         /// <summary>
@@ -709,7 +724,8 @@ namespace ServiceBusExplorer.Controls
         {
             // Initialize textboxes
             txtPath.ReadOnly = true;
-            txtPath.BackColor = SystemColors.Window;
+            txtPath.BackColor = ThemeManager.IsDark ? ThemeManager.SurfaceLight : SystemColors.Window;
+                txtPath.ForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.WindowText;
             txtPath.GotFocus += textBox_GotFocus;
 
             txtMessageText.ReadOnly = true;

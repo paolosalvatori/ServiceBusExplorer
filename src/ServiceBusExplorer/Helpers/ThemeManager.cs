@@ -598,6 +598,12 @@ namespace ServiceBusExplorer.Helpers
             else
                 e.Graphics.DrawLine(pen, r.Left, r.Top + r.Height / 2, r.Right, r.Top + r.Height / 2);
         }
+
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            e.TextColor = e.Item.Enabled ? ThemeManager.Foreground : ThemeManager.ForegroundDim;
+            base.OnRenderItemText(e);
+        }
     }
 
     class DarkColorTable : ProfessionalColorTable

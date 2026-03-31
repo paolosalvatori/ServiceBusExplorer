@@ -198,7 +198,8 @@ namespace ServiceBusExplorer.Controls
                 
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
-                txtPath.BackColor = SystemColors.Window;
+                txtPath.BackColor = ThemeManager.IsDark ? ThemeManager.SurfaceLight : SystemColors.Window;
+                txtPath.ForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.WindowText;
                 txtPath.GotFocus += textBox_GotFocus;
 
                 // TrackBar
