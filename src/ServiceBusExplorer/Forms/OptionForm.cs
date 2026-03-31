@@ -45,6 +45,11 @@ namespace ServiceBusExplorer.Forms
 
     public partial class OptionForm : Form
     {
+        private static readonly Color DarkTabBorderColor = Color.FromArgb(150, 150, 150);
+        private static readonly Color DarkTabSelectedBorderColor = Color.FromArgb(235, 235, 235);
+        private static readonly Color DarkTabSelectedFillColor = Color.FromArgb(78, 78, 78);
+        private static readonly Color DarkTabFillColor = Color.FromArgb(56, 56, 56);
+
         #region Private Constants
         // Messages
         const string MessageTextTitle = "Message Text";
@@ -69,6 +74,10 @@ namespace ServiceBusExplorer.Forms
         ConfigFileUse originalConfigFileUse;
 
         BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
+        Panel darkTabHeaderPanel;
+        Panel darkTabContentHost;
+        readonly List<Panel> darkTabButtons = new List<Panel>();
+        readonly List<Panel> darkTabPages = new List<Panel>();
 
         #endregion
 
@@ -353,11 +362,7 @@ namespace ServiceBusExplorer.Forms
 
         void mainPanel_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboConfigFile.Location.X - 1,
-                                    cboConfigFile.Location.Y - 1,
-                                    cboConfigFile.Size.Width + 1,
-                                    cboConfigFile.Size.Height + 1);
+            DrawThemeBorder(e.Graphics, cboConfigFile);
         }
 
         void senderThinkTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -768,48 +773,259 @@ namespace ServiceBusExplorer.Forms
 
         private void tabPageGeneral_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboEncodingType.Location.X - 1,
-                                    cboEncodingType.Location.Y - 1,
-                                    cboEncodingType.Size.Width + 1,
-                                    cboEncodingType.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboSelectedEntities.Location.X - 1,
-                                    cboSelectedEntities.Location.Y - 1,
-                                    cboSelectedEntities.Size.Width + 1,
-                                    cboSelectedEntities.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                cboSelectedMessageCounts.Location.X - 1,
-                cboSelectedMessageCounts.Location.Y - 1,
-                cboSelectedMessageCounts.Size.Width + 1,
-                cboSelectedMessageCounts.Size.Height + 1);
+            DrawThemeBorder(e.Graphics, cboEncodingType);
+            DrawThemeBorder(e.Graphics, cboSelectedEntities);
+            DrawThemeBorder(e.Graphics, cboSelectedMessageCounts);
         }
 
         private void tabPageSending_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboDefaultMessageBodyType.Location.X - 1,
-                                    cboDefaultMessageBodyType.Location.Y - 1,
-                                    cboDefaultMessageBodyType.Size.Width + 1,
-                                    cboDefaultMessageBodyType.Size.Height + 1);
+            DrawThemeBorder(e.Graphics, cboDefaultMessageBodyType);
         }
 
         private void tabPageConnectivity_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboConnectivityMode.Location.X - 1,
-                                    cboConnectivityMode.Location.Y - 1,
-                                    cboConnectivityMode.Size.Width + 1,
-                                    cboConnectivityMode.Size.Height + 1);
+            DrawThemeBorder(e.Graphics, cboConnectivityMode);
         }
 
         private void tabPageColors_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                dgNodeColors.Location.X - 1,
-                dgNodeColors.Location.Y - 1,
-                dgNodeColors.Size.Width + 1,
-                dgNodeColors.Size.Height + 1);
+            DrawThemeBorder(e.Graphics, dgNodeColors);
+        }
+
+        private static void DrawThemeBorder(Graphics graphics, Control control)
+        {
+            var borderColor = ThemeManager.IsDark ? ThemeManager.Border : SystemColors.ActiveBorder;
+            using (var pen = new Pen(borderColor, 1))
+            {
+                graphics.DrawRectangle(pen,
+                    control.Location.X - 1,
+                    control.Location.Y - 1,
+                    control.Size.Width + 1,
+                    control.Size.Height + 1);
+            }
+        }
+
+        private void InitializeDarkTabHeader()
+        {
+            if (!ThemeManager.IsDark)
+            {
+                return;
+            }
+
+            darkTabHeaderPanel = new Panel
+            {
+                Name = "darkTabHeaderPanel",
+                BackColor = ThemeManager.Background,
+                Location = tabOptionsControl.Location,
+                Size = new Size(tabOptionsControl.Width, 27),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            darkTabContentHost = new Panel
+            {
+                Name = "darkTabContentHost",
+                BackColor = ThemeManager.Background,
+                Location = new Point(tabOptionsControl.Left, tabOptionsControl.Top + darkTabHeaderPanel.Height + 2),
+                Size = new Size(tabOptionsControl.Width, tabOptionsControl.Height - darkTabHeaderPanel.Height - 2),
+                Anchor = tabOptionsControl.Anchor
+            };
+            darkTabContentHost.Paint += DarkTabContentHost_Paint;
+
+            mainPanel.Controls.Add(darkTabHeaderPanel);
+            mainPanel.Controls.Add(darkTabContentHost);
+            darkTabHeaderPanel.BringToFront();
+            darkTabContentHost.BringToFront();
+
+            var x = 0;
+            foreach (TabPage page in tabOptionsControl.TabPages.Cast<TabPage>().ToList())
+            {
+                var contentPanel = CreateDarkTabPage(page);
+                darkTabPages.Add(contentPanel);
+                darkTabContentHost.Controls.Add(contentPanel);
+
+                var button = CreateDarkTabButton(page.Text, darkTabButtons.Count, x);
+                darkTabButtons.Add(button);
+                darkTabHeaderPanel.Controls.Add(button);
+                x += button.Width + 1;
+            }
+
+            tabOptionsControl.Visible = false;
+
+            UpdateDarkTabButtonStates();
+        }
+
+        private Panel CreateDarkTabButton(string text, int index, int x)
+        {
+            var button = new Panel
+            {
+                Name = $"darkTabButton{index}",
+                Tag = index,
+                BackColor = ThemeManager.Surface,
+                Size = TextRenderer.MeasureText(text, Font).Width switch
+                {
+                    var width when width < 44 => new Size(44, 22),
+                    var width => new Size(width + 12, 22)
+                },
+                Location = new Point(x, 2),
+                TabStop = false,
+                Cursor = Cursors.Hand
+            };
+
+            button.Paint += DarkTabButton_Paint;
+            button.Click += DarkTabButton_Click;
+
+            return button;
+        }
+
+        private Panel CreateDarkTabPage(TabPage page)
+        {
+            var panel = new Panel
+            {
+                Name = $"darkPage_{page.Name}",
+                BackColor = page.BackColor,
+                ForeColor = page.ForeColor,
+                Location = new Point(0, 0),
+                Size = darkTabContentHost.Size,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                Visible = false
+            };
+
+            while (page.Controls.Count > 0)
+            {
+                var control = page.Controls[0];
+                page.Controls.RemoveAt(0);
+                panel.Controls.Add(control);
+            }
+
+            switch (page.Name)
+            {
+                case nameof(tabPageGeneral):
+                    panel.Paint += tabPageGeneral_Paint;
+                    break;
+                case nameof(tabPageSending):
+                    panel.Paint += tabPageSending_Paint;
+                    break;
+                case nameof(tabPageConnectivity):
+                    panel.Paint += tabPageConnectivity_Paint;
+                    break;
+                case nameof(tabPageColors):
+                    panel.Paint += tabPageColors_Paint;
+                    break;
+            }
+
+            return panel;
+        }
+
+        private void DarkTabButton_Paint(object sender, PaintEventArgs e)
+        {
+            if (!(sender is Panel button) || !(button.Tag is int index))
+            {
+                return;
+            }
+
+            var selected = index == GetSelectedDarkTabIndex();
+            var backColor = selected ? DarkTabSelectedFillColor : DarkTabFillColor;
+            var foreColor = selected ? ThemeManager.Foreground : ThemeManager.ForegroundDim;
+            var borderColor = selected ? DarkTabSelectedBorderColor : DarkTabBorderColor;
+            button.BackColor = backColor;
+
+            using (var brush = new SolidBrush(backColor))
+            using (var borderPen = new Pen(borderColor))
+            using (var innerPen = new Pen(selected ? Color.FromArgb(110, 110, 110) : Color.FromArgb(70, 70, 70)))
+            using (var textBrush = new SolidBrush(foreColor))
+            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+            {
+                e.Graphics.FillRectangle(brush, button.ClientRectangle);
+                e.Graphics.DrawRectangle(borderPen, 0, 0, button.Width - 1, button.Height - 1);
+                e.Graphics.DrawRectangle(innerPen, 1, 1, button.Width - 3, button.Height - 3);
+                e.Graphics.DrawString(GetDarkTabText(index), Font, textBrush, button.ClientRectangle, sf);
+            }
+        }
+
+        private void DarkTabButton_Click(object sender, EventArgs e)
+        {
+            if (!(sender is Panel button) || !(button.Tag is int index))
+            {
+                return;
+            }
+
+            SetSelectedDarkTabIndex(index);
+            UpdateDarkTabButtonStates();
+        }
+
+        private void UpdateDarkTabButtonStates()
+        {
+            if (!ThemeManager.IsDark || darkTabButtons.Count == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < darkTabButtons.Count; i++)
+            {
+                var selected = i == GetSelectedDarkTabIndex();
+                var button = darkTabButtons[i];
+                button.BackColor = selected ? ThemeManager.SurfaceLighter : ThemeManager.Surface;
+                button.Invalidate();
+            }
+
+            for (var i = 0; i < darkTabPages.Count; i++)
+            {
+                darkTabPages[i].Visible = i == GetSelectedDarkTabIndex();
+            }
+        }
+
+        private int GetSelectedDarkTabIndex()
+        {
+            for (var i = 0; i < darkTabPages.Count; i++)
+            {
+                if (darkTabPages[i].Visible)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
+        private void SetSelectedDarkTabIndex(int index)
+        {
+            for (var i = 0; i < darkTabPages.Count; i++)
+            {
+                darkTabPages[i].Visible = i == index;
+            }
+        }
+
+        private string GetDarkTabText(int index)
+        {
+            if (index < 0 || index >= darkTabHeaderPanel.Controls.Count)
+            {
+                return string.Empty;
+            }
+
+            return index switch
+            {
+                0 => tabPageGeneral.Text,
+                1 => tabPageReceiving.Text,
+                2 => tabPageSending.Text,
+                3 => tabPageConnectivity.Text,
+                4 => tabPageProxy.Text,
+                5 => tabPageColors.Text,
+                _ => string.Empty
+            };
+        }
+
+        private void DarkTabContentHost_Paint(object sender, PaintEventArgs e)
+        {
+            using (var outerPen = new Pen(ThemeManager.Border))
+            using (var innerPen = new Pen(ThemeManager.SurfaceLighter))
+            {
+                var outer = new Rectangle(0, 0, darkTabContentHost.Width - 1, darkTabContentHost.Height - 1);
+                var inner = new Rectangle(1, 1, darkTabContentHost.Width - 3, darkTabContentHost.Height - 3);
+
+                e.Graphics.DrawRectangle(outerPen, outer);
+                e.Graphics.DrawRectangle(innerPen, inner);
+            }
         }
 
         #endregion

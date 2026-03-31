@@ -21,28 +21,9 @@
 
 #region Using Directives
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Transactions;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
-using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
-using Microsoft.ServiceBus.Messaging;
-using ServiceBusExplorer.Enums;
-using Cursor = System.Windows.Forms.Cursor;
-using FastColoredTextBoxNS;
-using ServiceBusExplorer.UIHelpers;
-using static ServiceBusExplorer.ServiceBusHelper;
-using ServiceBusExplorer.Utilities.Helpers;
 using System.Drawing.Text;
 
 #endregion
@@ -53,6 +34,12 @@ namespace ServiceBusExplorer.UIHelpers
     {
         public static void DrawTabControlTabs(TabControl tabControl, DrawItemEventArgs e, ImageList images)
         {
+            if (ThemeManager.IsDark)
+            {
+                DrawDarkTabs(tabControl, e, images);
+                return;
+            }
+
             // Get the bounding end of tab strip rectangles.
             var tabstripEndRect = tabControl.GetTabRect(tabControl.TabPages.Count - 1);
             var tabstripEndRectF = new RectangleF(tabstripEndRect.X + tabstripEndRect.Width, tabstripEndRect.Y - 5,
@@ -147,6 +134,53 @@ namespace ServiceBusExplorer.UIHelpers
                         e.Graphics.DrawString(tabName, new Font(e.Font.FontFamily, 8.25F, e.Font.Style), foreBrush, labelRect, sf);
                     }
                 }
+            }
+        }
+
+        private static void DrawDarkTabs(TabControl tabControl, DrawItemEventArgs e, ImageList images)
+        {
+            if (tabControl.TabPages.Count == 0 || tabControl.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            var page = tabControl.TabPages[e.Index];
+            var selected = e.Index == tabControl.SelectedIndex;
+            var tabBounds = selected
+                ? new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width, e.Bounds.Height + 1)
+                : new Rectangle(e.Bounds.X, e.Bounds.Y + 2, e.Bounds.Width, e.Bounds.Height - 2);
+            var pageBounds = tabControl.DisplayRectangle;
+            var selectedTabBounds = tabControl.GetTabRect(tabControl.SelectedIndex);
+            var tabBackColor = selected ? ThemeManager.SurfaceLighter : ThemeManager.Surface;
+            var tabBorderColor = selected ? ThemeManager.ForegroundDim : ThemeManager.Border;
+            var textColor = selected ? ThemeManager.Foreground : ThemeManager.ForegroundDim;
+
+            using (var backBrush = new SolidBrush(tabBackColor))
+            using (var borderPen = new Pen(tabBorderColor))
+            using (var textBrush = new SolidBrush(textColor))
+            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, HotkeyPrefix = HotkeyPrefix.Show })
+            {
+                e.Graphics.FillRectangle(backBrush, tabBounds);
+                e.Graphics.DrawRectangle(borderPen, tabBounds);
+
+                if (selected)
+                {
+                    using (var innerPen = new Pen(ThemeManager.SurfaceLight))
+                    {
+                        e.Graphics.DrawLine(innerPen, tabBounds.Left + 1, tabBounds.Top + 1, tabBounds.Right - 2, tabBounds.Top + 1);
+                    }
+                }
+
+                e.Graphics.DrawString(page.Text, new Font(e.Font.FontFamily, 8.25F, e.Font.Style), textBrush, tabBounds, sf);
+            }
+
+            using (var contentPen = new Pen(ThemeManager.Border))
+            {
+                e.Graphics.DrawLine(contentPen, pageBounds.Left - 1, selectedTabBounds.Bottom, pageBounds.Left - 1, pageBounds.Bottom);
+                e.Graphics.DrawLine(contentPen, pageBounds.Right, selectedTabBounds.Bottom, pageBounds.Right, pageBounds.Bottom);
+                e.Graphics.DrawLine(contentPen, pageBounds.Left - 1, pageBounds.Bottom, pageBounds.Right, pageBounds.Bottom);
+                e.Graphics.DrawLine(contentPen, 0, pageBounds.Top - 1, selectedTabBounds.Left - 2, pageBounds.Top - 1);
+                e.Graphics.DrawLine(contentPen, selectedTabBounds.Right + 1, pageBounds.Top - 1, pageBounds.Right, pageBounds.Top - 1);
             }
         }
 

@@ -23,19 +23,18 @@ namespace ServiceBusExplorer.Helpers
     public static class ThemeManager
     {
         // Key in app.config
-        private const string ConfigKey = "theme";
+        const string ConfigKey = "theme";
 
         // Current state
-        private static Theme _current = Theme.Dark;
+        static Theme CurrentTheme { get; set; } = Theme.Dark;
 
-        public static Theme CurrentTheme => _current;
-        public static bool IsDark => _current == Theme.Dark;
+        public static bool IsDark => CurrentTheme == Theme.Dark;
 
         // Event fired when theme changes
         public static event EventHandler ThemeChanged;
 
         // Dark palette
-        private static class Dark
+        static class Dark
         {
             public static readonly Color Background = Color.FromArgb(33, 33, 33);
             public static readonly Color Surface = Color.FromArgb(42, 42, 42);
@@ -50,7 +49,7 @@ namespace ServiceBusExplorer.Helpers
         }
 
         // Light palette (Windows system colors)
-        private static class Light
+        static class Light
         {
             // Original Service Bus Explorer light palette
             public static readonly Color Background = Color.FromArgb(235, 241, 247);
@@ -94,7 +93,7 @@ namespace ServiceBusExplorer.Helpers
                 if (!string.IsNullOrEmpty(val) &&
                     Enum.TryParse<Theme>(val, ignoreCase: true, out var saved))
                 {
-                    _current = saved;
+                    CurrentTheme = saved;
                 }
             }
             catch
@@ -141,12 +140,12 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        private static void OnControlAdded(object sender, ControlEventArgs e)
+        static void OnControlAdded(object sender, ControlEventArgs e)
         {
             ApplyRecursive(e.Control);
         }
 
-        private static void OnFormLoad(object sender, EventArgs e)
+        static void OnFormLoad(object sender, EventArgs e)
         {
             if (sender is Form form)
             {
@@ -158,9 +157,9 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>Sets a specific theme.</summary>
         public static void SetTheme(Theme theme)
         {
-            if (_current == theme) return;
-            _current = theme;
-            SaveToConfig(_current);
+            if (CurrentTheme == theme) return;
+            CurrentTheme = theme;
+            SaveToConfig(CurrentTheme);
 
             foreach (Form f in Application.OpenForms)
             {
@@ -175,15 +174,15 @@ namespace ServiceBusExplorer.Helpers
         // Recursive application
 
         // Their original light theme colors — any control with these colors is forced to dark
-        private static readonly System.Drawing.Color[] LightThemeColors =
+        static readonly Color[] LightThemeColors =
         {
-            System.Drawing.Color.FromArgb(215, 228, 242), // main light blue
-            System.Drawing.Color.FromArgb(153, 180, 209), // medium blue hover
-            System.Drawing.Color.FromArgb(235, 241, 247), // bluish off-white
-            System.Drawing.Color.FromArgb(194, 213, 229), // secondary light blue
+            Color.FromArgb(215, 228, 242), // main light blue
+            Color.FromArgb(153, 180, 209), // medium blue hover
+            Color.FromArgb(235, 241, 247), // bluish off-white
+            Color.FromArgb(194, 213, 229), // secondary light blue
         };
 
-        private static bool IsLightThemeColor(System.Drawing.Color c)
+        static bool IsLightThemeColor(Color c)
         {
             foreach (var lc in LightThemeColors)
                 if (Math.Abs(c.R - lc.R) < 15 && Math.Abs(c.G - lc.G) < 15 && Math.Abs(c.B - lc.B) < 15)
@@ -191,7 +190,7 @@ namespace ServiceBusExplorer.Helpers
             return false;
         }
 
-        private static void ApplyRecursive(Control control)
+        static void ApplyRecursive(Control control)
         {
             ApplyToControl(control);
 
@@ -231,7 +230,7 @@ namespace ServiceBusExplorer.Helpers
             if (control is TabControl tc) ApplyToTabControl(tc);
         }
 
-        private static void ApplyToControl(Control control)
+        static void ApplyToControl(Control control)
         {
             // AboutForm: has decorative BackgroundImage — preserve original appearance
             if (control.BackgroundImage != null && control is Form)
@@ -425,7 +424,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        private static void ApplyToHeaderPanel(Control control)
+        static void ApplyToHeaderPanel(Control control)
         {
             var t = control.GetType();
             if (t.Name != "HeaderPanel") return;
@@ -442,7 +441,7 @@ namespace ServiceBusExplorer.Helpers
             control.Invalidate(true);
         }
 
-        private static void ApplyToGrouper(Control control)
+        static void ApplyToGrouper(Control control)
         {
             // Grouper has BackgroundColor, BorderColor, CustomGroupBoxColor
             // We use reflection to avoid circular namespace dependency
@@ -467,7 +466,7 @@ namespace ServiceBusExplorer.Helpers
             control.Invalidate(true);
         }
 
-        private static void TrySetColor(Type t, object obj, string propName, Color color)
+        static void TrySetColor(Type t, object obj, string propName, Color color)
         {
             try
             {
@@ -482,11 +481,11 @@ namespace ServiceBusExplorer.Helpers
         }
 
         // Light colors for Grouper
-        private static Color Light_Background => Light.Background;
-        private static Color Light_Foreground => Light.Foreground;
-        private static Color Light_Border => Light.Border;
+        static Color Light_Background => Light.Background;
+        static Color Light_Foreground => Light.Foreground;
+        static Color Light_Border => Light.Border;
 
-        private static void ApplyToToolStrip(ToolStrip ts)
+        static void ApplyToToolStrip(ToolStrip ts)
         {
             ts.BackColor = Surface;
             ts.ForeColor = Foreground;
@@ -499,7 +498,7 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        private static void ApplyToDataGridView(DataGridView dgv)
+        static void ApplyToDataGridView(DataGridView dgv)
         {
             dgv.BackgroundColor = Background;
             dgv.GridColor = Border;
@@ -520,55 +519,12 @@ namespace ServiceBusExplorer.Helpers
             dgv.EnableHeadersVisualStyles = false;
         }
 
-        private static void ApplyToTabControl(TabControl tc)
+        static void ApplyToTabControl(TabControl tc)
         {
             tc.BackColor = Background;
-            if (IsDark)
-            {
-                // Dark: owner-draw to control tab colors
-                tc.Appearance = TabAppearance.FlatButtons;
-                tc.DrawItem -= TabControl_DrawItem;
-                tc.DrawMode = TabDrawMode.OwnerDrawFixed;
-                tc.DrawItem += TabControl_DrawItem;
-            }
-            else
-            {
-                // Light: revert to native Windows renderer (no distortion)
-                tc.DrawItem -= TabControl_DrawItem;
-                tc.DrawMode = TabDrawMode.Normal;
-                tc.Appearance = TabAppearance.Normal;
-            }
         }
 
-        private static void TabControl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            var tc = (TabControl)sender;
-            var tab = tc.TabPages[e.Index];
-            bool selected = tc.SelectedIndex == e.Index;
-            var bg = selected ? SurfaceLighter : Background;
-            var fg = selected ? Foreground : ForegroundDim;
-
-            // Fill tab background
-            using (var bgBrush = new SolidBrush(bg))
-                e.Graphics.FillRectangle(bgBrush, e.Bounds);
-
-            // Bottom border of selected tab: same color as TabPage background (no visible line)
-            // Border of non-selected tabs: theme border color
-            if (!selected)
-            {
-                using (var brdPen = new Pen(Border))
-                {
-                    var r = e.Bounds;
-                    r.Inflate(-1, -1);
-                    e.Graphics.DrawRectangle(brdPen, r);
-                }
-            }
-
-            TextRenderer.DrawText(e.Graphics, tab.Text, e.Font, e.Bounds, fg,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
-        }
-
-        private static void ApplyToMenuItems(ToolStripItemCollection items)
+        static void ApplyToMenuItems(ToolStripItemCollection items)
         {
             foreach (ToolStripItem item in items)
             {
@@ -581,10 +537,10 @@ namespace ServiceBusExplorer.Helpers
 
         // DWM: native dark title bar (Windows 10 1903+)
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
-        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr,
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr,
             ref int attrValue, int attrSize);
 
-        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
         public static void ApplyTitleBar(IntPtr handle)
         {
@@ -602,7 +558,7 @@ namespace ServiceBusExplorer.Helpers
     }
 
     // Dark renderer for ToolStrip / MenuStrip
-    internal class DarkToolStripRenderer : ToolStripProfessionalRenderer
+    class DarkToolStripRenderer : ToolStripProfessionalRenderer
     {
         public DarkToolStripRenderer() : base(new DarkColorTable())
         {
@@ -644,7 +600,7 @@ namespace ServiceBusExplorer.Helpers
         }
     }
 
-    internal class DarkColorTable : ProfessionalColorTable
+    class DarkColorTable : ProfessionalColorTable
     {
         public override Color MenuItemBorder => ThemeManager.Border;
         public override Color MenuItemSelected => ThemeManager.SurfaceLighter;
