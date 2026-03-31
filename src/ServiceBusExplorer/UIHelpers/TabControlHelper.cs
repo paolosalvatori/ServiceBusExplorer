@@ -30,6 +30,8 @@ using System.Drawing.Text;
 
 namespace ServiceBusExplorer.UIHelpers
 {
+    using System;
+
     public static class TabControlHelper
     {
         public static void DrawTabControlTabs(TabControl tabControl, DrawItemEventArgs e, ImageList images)
@@ -144,6 +146,19 @@ namespace ServiceBusExplorer.UIHelpers
                 return;
             }
 
+            var tabstripEndRect = tabControl.GetTabRect(tabControl.TabPages.Count - 1);
+            var tabstripEndRectF = new RectangleF(tabstripEndRect.X + tabstripEndRect.Width, tabstripEndRect.Y - 5,
+                tabControl.Width - (tabstripEndRect.X + tabstripEndRect.Width), tabstripEndRect.Height + 5);
+            var leftVerticalLineRect = new RectangleF(2, tabstripEndRect.Y + tabstripEndRect.Height + 2, 2,
+                tabControl.TabPages[tabControl.SelectedIndex].Height + 2);
+            var rightVerticalLineRect = new RectangleF(tabControl.TabPages[tabControl.SelectedIndex].Width + 4,
+                tabstripEndRect.Y + tabstripEndRect.Height + 2, 2,
+                tabControl.TabPages[tabControl.SelectedIndex].Height + 2);
+            var bottomHorizontalLineRect = new RectangleF(2,
+                tabstripEndRect.Y + tabstripEndRect.Height + tabControl.TabPages[tabControl.SelectedIndex].Height + 2,
+                tabControl.TabPages[tabControl.SelectedIndex].Width + 4, 2);
+            RectangleF leftVerticalBarNearFirstTab = new Rectangle(0, 0, 2, tabstripEndRect.Height + 2);
+
             var page = tabControl.TabPages[e.Index];
             var selected = e.Index == tabControl.SelectedIndex;
             var tabBounds = selected
@@ -154,6 +169,19 @@ namespace ServiceBusExplorer.UIHelpers
             var tabBackColor = selected ? ThemeManager.SurfaceLighter : ThemeManager.Surface;
             var tabBorderColor = selected ? ThemeManager.ForegroundDim : ThemeManager.Border;
             var textColor = selected ? ThemeManager.Foreground : ThemeManager.ForegroundDim;
+
+            var stripColor = tabControl.Parent != null ? tabControl.Parent.BackColor : ThemeManager.Background;
+            using (var stripBrush = new SolidBrush(stripColor))
+            {
+                e.Graphics.FillRectangle(stripBrush, tabstripEndRectF);
+                e.Graphics.FillRectangle(stripBrush, leftVerticalLineRect);
+                e.Graphics.FillRectangle(stripBrush, rightVerticalLineRect);
+                e.Graphics.FillRectangle(stripBrush, bottomHorizontalLineRect);
+                if (tabControl.SelectedIndex != 0)
+                {
+                    e.Graphics.FillRectangle(stripBrush, leftVerticalBarNearFirstTab);
+                }
+            }
 
             using (var backBrush = new SolidBrush(tabBackColor))
             using (var borderPen = new Pen(tabBorderColor))

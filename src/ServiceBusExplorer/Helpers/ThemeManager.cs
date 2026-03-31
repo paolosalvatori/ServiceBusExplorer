@@ -546,7 +546,7 @@ namespace ServiceBusExplorer.Helpers
         {
             try
             {
-                int value = IsDark ? 1 : 0;
+                var value = IsDark ? 1 : 0;
                 DwmSetWindowAttribute(handle, DWMWA_USE_IMMERSIVE_DARK_MODE,
                     ref value, sizeof(int));
             }
