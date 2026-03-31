@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -126,11 +126,11 @@ namespace ServiceBusExplorer.Forms
             // panelMain
             // 
             this.panelMain.AutoScroll = true;
-            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelMain.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelMain.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(42, 42, 42);
+            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelMain.HeaderHeight = 24;
             this.panelMain.HeaderText = "Entity";
@@ -146,12 +146,12 @@ namespace ServiceBusExplorer.Forms
             // panelLog
             // 
             this.panelLog.AutoScroll = true;
-            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelLog.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelLog.Controls.Add(this.lstLog);
             this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelLog.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(42, 42, 42);
+            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelLog.HeaderHeight = 24;
             this.panelLog.HeaderText = "Log";
@@ -445,7 +445,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.ClientSize = new System.Drawing.Size(1040, 753);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.mainMenuStrip);
@@ -511,9 +511,5 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator29;
         private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedToolStripMenuItem;
-
-
-
-
     }
 }

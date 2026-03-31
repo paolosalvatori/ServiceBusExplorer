@@ -1,4 +1,5 @@
-﻿using System;
+using ServiceBusExplorer.Helpers;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -15,6 +16,7 @@ namespace ServiceBusExplorer.Controls
         public AccidentalDeletionPreventionCheckControl()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
         #endregion
 
@@ -55,3 +57,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

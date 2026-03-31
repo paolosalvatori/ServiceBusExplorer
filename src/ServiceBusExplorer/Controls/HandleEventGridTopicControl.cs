@@ -1,4 +1,5 @@
-﻿using Azure.ResourceManager.EventGrid;
+using ServiceBusExplorer.Helpers;
+using Azure.ResourceManager.EventGrid;
 using ServiceBusExplorer.UIHelpers;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace ServiceBusExplorer.Controls
         {
             this.topic = topic;
             InitializeComponent();
+            ThemeManager.Apply(this);
             ConfigureReadUserInterface(hostname);
         }
 
@@ -117,3 +119,4 @@ namespace ServiceBusExplorer.Controls
         }
     }
 }
+

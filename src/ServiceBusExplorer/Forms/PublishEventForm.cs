@@ -1,4 +1,5 @@
-﻿using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Globalization;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace ServiceBusExplorer.Forms
         public PublishEventForm(WriteToLogDelegate writeToLog)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             this.writeToLog = writeToLog;
         }
 
@@ -57,3 +59,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -35,6 +36,7 @@ namespace ServiceBusExplorer.Forms
         public DateTimeForm()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
         #endregion
 
@@ -83,3 +85,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -195,6 +195,7 @@ namespace ServiceBusExplorer.Controls
             var encoderFactory = element.CreateMessageEncoderFactory();
             encoder = encoderFactory.Encoder;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
             Disposed += ListenerControl_Disposed;
             if (entityDescription is SubscriptionDescription)
@@ -1800,3 +1801,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

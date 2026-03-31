@@ -1,4 +1,5 @@
-﻿using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Globalization;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         private void receiveEvents_CheckedChanged(object sender, EventArgs e)
@@ -60,3 +62,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

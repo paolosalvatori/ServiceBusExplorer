@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -67,10 +67,10 @@ namespace ServiceBusExplorer.Forms
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(96, 204);
             this.btnOk.Name = "btnOk";
@@ -85,10 +85,10 @@ namespace ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(176, 204);
             this.btnCancel.Name = "btnCancel";
@@ -104,15 +104,15 @@ namespace ServiceBusExplorer.Forms
             // 
             this.grpFromDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpFromDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grpFromDateTime.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grpFromDateTime.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grpFromDateTime.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grpFromDateTime.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grpFromDateTime.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grpFromDateTime.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grpFromDateTime.BorderThickness = 1F;
             this.grpFromDateTime.Controls.Add(this.dateFromTimePicker);
-            this.grpFromDateTime.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grpFromDateTime.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grpFromDateTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grpFromDateTime.ForeColor = System.Drawing.Color.White;
+            this.grpFromDateTime.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grpFromDateTime.GroupImage = null;
             this.grpFromDateTime.GroupTitle = "From Date Time";
             this.grpFromDateTime.Location = new System.Drawing.Point(16, 16);
@@ -143,15 +143,15 @@ namespace ServiceBusExplorer.Forms
             // 
             this.grpToDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpToDateTime.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grpToDateTime.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grpToDateTime.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grpToDateTime.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grpToDateTime.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grpToDateTime.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grpToDateTime.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grpToDateTime.BorderThickness = 1F;
             this.grpToDateTime.Controls.Add(this.dateToTimePicker);
-            this.grpToDateTime.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grpToDateTime.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grpToDateTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grpToDateTime.ForeColor = System.Drawing.Color.White;
+            this.grpToDateTime.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grpToDateTime.GroupImage = null;
             this.grpToDateTime.GroupTitle = "To Date Time";
             this.grpToDateTime.Location = new System.Drawing.Point(16, 102);
@@ -182,7 +182,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.ClientSize = new System.Drawing.Size(264, 237);
             this.Controls.Add(this.grpToDateTime);
             this.Controls.Add(this.grpFromDateTime);
@@ -211,3 +211,4 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.DateTimePicker dateToTimePicker;
     }
 }
+

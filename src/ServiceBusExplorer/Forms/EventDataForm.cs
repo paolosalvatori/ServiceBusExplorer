@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -83,6 +83,7 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusHelper = serviceBusHelper;
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.Apply(this);
 
             messagePropertyGrid.SelectedObject = eventData;
             var messageText = serviceBusHelper.GetMessageText(eventData, out _);
@@ -296,3 +297,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -41,6 +41,7 @@ namespace ServiceBusExplorer.Forms
         public NewVersionAvailableForm()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
 
             //This form is double buffered
             SetStyle(
@@ -103,3 +104,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ChangeQueueStatusForm
     {
@@ -83,7 +83,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.ClientSize = new System.Drawing.Size(315, 119);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
@@ -105,3 +105,4 @@
         private System.Windows.Forms.Button btnCancel;
     }
 }
+

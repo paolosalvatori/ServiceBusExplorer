@@ -1,4 +1,5 @@
-﻿#region Copyright
+#region Copyright
+
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -17,6 +18,7 @@
 // KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
+
 #endregion
 
 #region Using Directives
@@ -43,12 +45,13 @@ using Microsoft.ServiceBus.Messaging;
 namespace ServiceBusExplorer.Forms
 {
     using Enums;
-    using ServiceBusExplorer.UIHelpers;
+    using UIHelpers;
     using ServiceBusExplorer.Utilities.Helpers;
 
     public sealed partial class ContainerForm : Form
     {
         #region Private Constants
+
         //***************************
         // Formats
         //***************************
@@ -93,9 +96,11 @@ namespace ServiceBusExplorer.Forms
         //***************************
         private const int ControlMinWidth = 816;
         private const int ControlMinHeight = 345;
+
         #endregion
 
         #region Private Fields
+
         private readonly MainForm mainForm;
         private readonly TestQueueControl testQueueControl;
         private readonly TestTopicControl testTopicControl;
@@ -106,16 +111,20 @@ namespace ServiceBusExplorer.Forms
         private readonly int mainSplitterDistance;
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         // ReSharper disable once NotAccessedField.Local
         private Task logTask;
+
         #endregion
 
         #region Public Constructors
+
         public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription)
         {
             try
             {
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -148,11 +157,11 @@ namespace ServiceBusExplorer.Forms
                 else
                 {
                     testQueueControl = new TestQueueControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
-                                           {
-                                               Location = new Point(1, panelMain.HeaderHeight + 1),
-                                               Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                                               Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                                           };
+                    {
+                        Location = new Point(1, panelMain.HeaderHeight + 1),
+                        Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                    };
 
 
                     if (formType == FormTypeEnum.Send)
@@ -162,11 +171,11 @@ namespace ServiceBusExplorer.Forms
                         testQueueControl.senderEnabledCheckBox.Checked = true;
                         testQueueControl.senderEnabledCheckBox.Visible = false;
                         testQueueControl.grouperMessage.Location = new Point(testQueueControl.grouperMessage.Location.X, 8);
-                        testQueueControl.grouperMessage.Size = new Size(testQueueControl.grouperMessage.Size.Width, 
-                                                                        testQueueControl.grouperMessage.Size.Height + 16);
+                        testQueueControl.grouperMessage.Size = new Size(testQueueControl.grouperMessage.Size.Width,
+                            testQueueControl.grouperMessage.Size.Height + 16);
                         testQueueControl.grouperSender.Location = new Point(testQueueControl.grouperSender.Location.X, 8);
                         testQueueControl.grouperSender.Size = new Size(testQueueControl.grouperSender.Size.Width,
-                                                                       testQueueControl.grouperSender.Size.Height + 16);
+                            testQueueControl.grouperSender.Size.Height + 16);
                         Text = string.Format(SendMessagesFormat, queueDescription.Path);
                     }
                     else
@@ -184,6 +193,7 @@ namespace ServiceBusExplorer.Forms
                     panelMain.HeaderText = string.Format(HeaderTextTestQueueFormat, queueDescription.Path);
                     panelMain.Controls.Add(testQueueControl);
                 }
+
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
@@ -198,6 +208,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -213,11 +224,11 @@ namespace ServiceBusExplorer.Forms
                 panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
                 testTopicControl = new TestTopicControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
-                                       {
-                                           Location = new Point(1, panelMain.HeaderHeight + 1),
-                                           Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                                           Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                                       };
+                {
+                    Location = new Point(1, panelMain.HeaderHeight + 1),
+                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                };
 
 
                 if (formType == FormTypeEnum.Send)
@@ -228,10 +239,10 @@ namespace ServiceBusExplorer.Forms
                     testTopicControl.senderEnabledCheckBox.Visible = false;
                     testTopicControl.grouperMessage.Location = new Point(testTopicControl.grouperMessage.Location.X, 8);
                     testTopicControl.grouperMessage.Size = new Size(testTopicControl.grouperMessage.Size.Width,
-                                                                    testTopicControl.grouperMessage.Size.Height + 16);
+                        testTopicControl.grouperMessage.Size.Height + 16);
                     testTopicControl.grouperSender.Location = new Point(testTopicControl.grouperSender.Location.X, 8);
                     testTopicControl.grouperSender.Size = new Size(testTopicControl.grouperSender.Size.Width,
-                                                                   testTopicControl.grouperSender.Size.Height + 16);
+                        testTopicControl.grouperSender.Size.Height + 16);
                     Text = string.Format(SendMessagesFormat, topicDescription.Path);
                 }
                 else
@@ -262,6 +273,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -309,6 +321,7 @@ namespace ServiceBusExplorer.Forms
                     panelMain.HeaderText = string.Format(HeaderTextTestSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
                     panelMain.Controls.Add(testSubscriptionControl);
                 }
+
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
@@ -323,6 +336,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -355,11 +369,11 @@ namespace ServiceBusExplorer.Forms
                 testEventHubControl.btnCancel.Click += BtnCancelOnClick;
                 testEventHubControl.Focus();
 
-                panelMain.HeaderText = partitionDescription == null ?
-                                       string.Format(HeaderTextTestEventHubFormat, eventHubDescription.Path) :
-                                       string.Format(HeaderTextTestEventHubPartitionFormat, 
-                                                     partitionDescription.PartitionId, 
-                                                     eventHubDescription.Path);
+                panelMain.HeaderText = partitionDescription == null
+                    ? string.Format(HeaderTextTestEventHubFormat, eventHubDescription.Path)
+                    : string.Format(HeaderTextTestEventHubPartitionFormat,
+                        partitionDescription.PartitionId,
+                        eventHubDescription.Path);
 
                 panelMain.Controls.Add(testEventHubControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
@@ -380,7 +394,9 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
+
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -411,7 +427,8 @@ namespace ServiceBusExplorer.Forms
                 {
                     Text = string.Format(ConsumerGroupListenerFormat, consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
-                }                
+                }
+
                 partitionListenerControl.Focus();
                 panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
@@ -431,7 +448,9 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
+
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -465,6 +484,7 @@ namespace ServiceBusExplorer.Forms
                     Text = string.Format(ConsumerGroupListenerFormat, consumerGroup, hubName);
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, hubName, consumerGroup);
                 }
+
                 partitionListenerControl.Focus();
                 panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
@@ -481,6 +501,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Apply(this);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -520,38 +541,47 @@ namespace ServiceBusExplorer.Forms
                 ResumeLayout();
             }
         }
+
         #endregion
 
         #region Public Methods
+
         public void Clear()
         {
             lstLog.Items.Clear();
         }
+
         #endregion
 
         #region Private Methods
+
         private async void BtnCancelOnClick(object sender, EventArgs eventArgs)
         {
             if (testQueueControl != null)
             {
                 await testQueueControl.CancelActions();
             }
+
             if (testTopicControl != null)
             {
                 await testTopicControl.CancelActions();
             }
+
             if (testSubscriptionControl != null)
             {
                 await testSubscriptionControl.CancelActions();
             }
+
             if (testEventHubControl != null)
             {
                 await testEventHubControl.CancelActions();
             }
+
             if (testRelayControl != null)
             {
                 await testRelayControl.CancelActions();
             }
+
             Close();
         }
 
@@ -568,6 +598,7 @@ namespace ServiceBusExplorer.Forms
                         control.SuspendDrawing();
                         ok = true;
                     }
+
                     var width = panelMain.Width - 4;
                     var height = panelMain.Height - 26;
                     control.Width = width < ControlMinWidth ? ControlMinWidth : width;
@@ -629,6 +660,7 @@ namespace ServiceBusExplorer.Forms
             {
                 logCollection.Dispose();
             }
+
             logCollection = new BlockingCollection<string>();
             cancellationTokenSource = new CancellationTokenSource();
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
@@ -652,11 +684,13 @@ namespace ServiceBusExplorer.Forms
                     {
                         continue;
                     }
+
                     count = (count + 1) % 10;
                     if (count == 0)
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(5));
                     }
+
                     if (InvokeRequired)
                     {
                         Invoke(new Action<string>(InternalWriteToLog), new object[] { message });
@@ -671,7 +705,7 @@ namespace ServiceBusExplorer.Forms
             catch
             {
             }
-            
+
 // ReSharper disable FunctionNeverReturns
         }
 // ReSharper restore FunctionNeverReturns
@@ -710,10 +744,10 @@ namespace ServiceBusExplorer.Forms
                         if (i == 0)
                         {
                             var line = string.Format(DateFormat,
-                                                        objNow.Hour,
-                                                        objNow.Minute,
-                                                        objNow.Second,
-                                                        lines[i]);
+                                objNow.Hour,
+                                objNow.Minute,
+                                objNow.Second,
+                                lines[i]);
                             lstLog.Items.Add(line);
                         }
                         else
@@ -721,6 +755,7 @@ namespace ServiceBusExplorer.Forms
                             lstLog.Items.Add(space + lines[i]);
                         }
                     }
+
                     lstLog.SelectedIndex = lstLog.Items.Count - 1;
                     lstLog.SelectedIndex = -1;
                 }
@@ -734,6 +769,7 @@ namespace ServiceBusExplorer.Forms
             {
                 userControl.Dispose();
             }
+
             if (logTraceListener != null &&
                 Trace.Listeners.Contains(logTraceListener))
             {
@@ -747,6 +783,7 @@ namespace ServiceBusExplorer.Forms
             {
                 return;
             }
+
             WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
             if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
             {
@@ -792,7 +829,7 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-               SaveLog(true);
+                SaveLog(true);
             }
             catch (Exception ex)
             {
@@ -841,11 +878,13 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
+
                 var builder = new StringBuilder();
                 foreach (var item in lstLog.SelectedItems)
                 {
                     builder.AppendLine(item.ToString());
                 }
+
                 if (builder.Length > 0)
                 {
                     Clipboard.SetText(builder.ToString());
@@ -866,6 +905,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     builder.AppendLine(item.ToString());
                 }
+
                 if (builder.Length > 0)
                 {
                     Clipboard.SetText(builder.ToString());
@@ -886,6 +926,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     builder.AppendLine(item.ToString());
                 }
+
                 if (builder.Length > 0)
                 {
                     Clipboard.SetText(builder.ToString());
@@ -913,6 +954,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     lstLog.Items.Remove(item);
                 }
+
                 if (builder.Length > 0)
                 {
                     Clipboard.SetText(builder.ToString());
@@ -946,6 +988,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
+
                 using (var writer = new StreamWriter(saveFileDialog.FileName))
                 {
                     if (all)
@@ -969,6 +1012,7 @@ namespace ServiceBusExplorer.Forms
                 HandleException(ex);
             }
         }
-        #endregion      
+
+        #endregion
     }
 }

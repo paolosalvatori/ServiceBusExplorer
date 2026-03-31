@@ -1,4 +1,4 @@
-﻿using Azure.Messaging;
+using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
@@ -58,6 +58,7 @@ namespace ServiceBusExplorer.Controls
             this.eventGridLibrary = eventGridLibrary;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
             ConfigureReadUserInterface();
         }
 
@@ -186,7 +187,7 @@ namespace ServiceBusExplorer.Controls
             }
 
             receivedEvents = allEvents.Value;
-            List<CloudEvent> cloudEvents = new List<CloudEvent>();  
+            var cloudEvents = new List<CloudEvent>();  
             
             foreach (var cloudEvent in receivedEvents)
             {
@@ -267,8 +268,8 @@ namespace ServiceBusExplorer.Controls
 
         private async void btnEventAction_Click(object sender, EventArgs e)
         {
-            List<string> lockTokens = new List<string>();
-            List<int> selectedRows = new List<int>();
+            var lockTokens = new List<string>();
+            var selectedRows = new List<int>();
             var button = sender as Button;
 
             foreach (DataGridViewRow row in eventsDataGridView.Rows)
@@ -301,3 +302,4 @@ namespace ServiceBusExplorer.Controls
         }
     }
 }
+
