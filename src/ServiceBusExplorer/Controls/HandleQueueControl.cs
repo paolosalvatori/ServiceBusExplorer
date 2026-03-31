@@ -2799,7 +2799,10 @@ namespace ServiceBusExplorer.Controls
             }
 
             var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth - 4, e.RowBounds.Height);
-            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+            using (var brush = new SolidBrush(ThemeManager.IsDark ? ThemeManager.ForegroundDim : SystemColors.ControlText))
+            {
+                e.Graphics.DrawString(rowIdx, this.Font, brush, headerBounds, centerFormat);
+            }
         }
 
         private void dataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)

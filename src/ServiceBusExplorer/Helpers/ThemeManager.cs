@@ -210,10 +210,10 @@ namespace ServiceBusExplorer.Helpers
                            control.BackColor == SystemColors.Window))
                 control.BackColor = Surface;
 
-            // logoPictureBox: white logo — Microsoft Azure blue background in both themes
-            if (control.Name == "logoPictureBox")
+            if (control is PictureBox pictureBox &&
+                (control.Name == "logoPictureBox" || control.Name == "pbAzure"))
             {
-                control.BackColor = Color.FromArgb(0, 120, 212); // #0078D4 Microsoft Azure blue
+                ApplyAzureBranding(pictureBox);
                 return;
             }
 
@@ -232,6 +232,14 @@ namespace ServiceBusExplorer.Helpers
 
         static void ApplyToControl(Control control)
         {
+            if (control is Label azureLabel && control.Name != null && control.Name.EndsWith("_ThemeText", StringComparison.Ordinal))
+            {
+                azureLabel.BackColor = Color.Transparent;
+                azureLabel.ForeColor = IsDark ? Foreground : Color.FromArgb(120, 134, 150);
+                azureLabel.TextAlign = ContentAlignment.MiddleRight;
+                return;
+            }
+
             // AboutForm: has decorative BackgroundImage — preserve original appearance
             if (control.BackgroundImage != null && control is Form)
                 return;
@@ -522,6 +530,59 @@ namespace ServiceBusExplorer.Helpers
         static void ApplyToTabControl(TabControl tc)
         {
             tc.BackColor = Background;
+        }
+
+        static void ApplyAzureBranding(PictureBox pictureBox)
+        {
+            pictureBox.Visible = false;
+            pictureBox.BackColor = Color.Transparent;
+
+            if (pictureBox.Parent == null)
+            {
+                return;
+            }
+
+            var labelName = pictureBox.Name + "_ThemeText";
+            Label azureLabel = null;
+
+            foreach (Control sibling in pictureBox.Parent.Controls)
+            {
+                if (sibling is Label label && sibling.Name == labelName)
+                {
+                    azureLabel = label;
+                    break;
+                }
+            }
+
+            if (azureLabel == null)
+            {
+                azureLabel = new Label
+                {
+                    Name = labelName,
+                    AutoSize = false,
+                    AutoEllipsis = false,
+                    Text = "Microsoft Azure",
+                    UseCompatibleTextRendering = true
+                };
+                pictureBox.Parent.Controls.Add(azureLabel);
+            }
+
+            var bounds = pictureBox.Bounds;
+            if (bounds.X > 0)
+            {
+                var extraWidth = Math.Min(40, bounds.X);
+                bounds.X -= extraWidth;
+                bounds.Width += extraWidth;
+            }
+
+            azureLabel.Anchor = pictureBox.Anchor;
+            azureLabel.Bounds = bounds;
+            azureLabel.TextAlign = ContentAlignment.MiddleRight;
+            azureLabel.BackColor = Color.Transparent;
+            azureLabel.ForeColor = IsDark ? Foreground : Color.FromArgb(120, 134, 150);
+            azureLabel.Font = new Font("Segoe UI", 10.5f, FontStyle.Regular, GraphicsUnit.Point);
+            azureLabel.Visible = true;
+            azureLabel.BringToFront();
         }
 
         static void ApplyToMenuItems(ToolStripItemCollection items)
