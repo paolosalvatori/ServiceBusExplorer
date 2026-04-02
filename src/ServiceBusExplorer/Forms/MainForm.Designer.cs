@@ -58,6 +58,7 @@ namespace ServiceBusExplorer.Forms
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.filterTreeViewTextBox = new System.Windows.Forms.TextBox();
             this.serviceBusTreeView = new System.Windows.Forms.TreeView();
             this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -646,6 +647,7 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.AutoScroll = true;
             this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelTreeView.Controls.Add(this.serviceBusTreeView);
+            this.panelTreeView.Controls.Add(this.filterTreeViewTextBox);
             this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
             this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
@@ -661,9 +663,18 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
             this.panelTreeView.Size = new System.Drawing.Size(372, 566);
             this.panelTreeView.TabIndex = 0;
-            // 
+            //
+            // filterTreeViewTextBox
+            //
+            this.filterTreeViewTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.filterTreeViewTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.filterTreeViewTextBox.Name = "filterTreeViewTextBox";
+            this.filterTreeViewTextBox.Size = new System.Drawing.Size(362, 20);
+            this.filterTreeViewTextBox.TabIndex = 1;
+            this.filterTreeViewTextBox.TextChanged += new System.EventHandler(this.filterTreeViewTextBox_TextChanged);
+            //
             // serviceBusTreeView
-            // 
+            //
             this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.serviceBusTreeView.HideSelection = false;
@@ -3558,6 +3569,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator66;
         private System.Windows.Forms.ToolStripMenuItem createIoTHubListenerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createEventHubListenerMenuItem;
+        private System.Windows.Forms.TextBox filterTreeViewTextBox;
         private System.Windows.Forms.TreeView serviceBusTreeView;
         private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeMessagesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeDeadletterQueueMessagesMenuItem;

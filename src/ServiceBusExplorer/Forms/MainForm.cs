@@ -246,6 +246,8 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private readonly System.Windows.Forms.Timer filterDebounceTimer;
+        private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
         #endregion
 
         #region Private Static Fields
@@ -286,6 +288,7 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
+            UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
@@ -4730,6 +4733,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4863,6 +4867,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4931,6 +4936,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -7571,5 +7577,65 @@ namespace ServiceBusExplorer.Forms
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
+
+        #region Keyboard Shortcuts
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                filterTreeViewTextBox.Focus();
+                filterTreeViewTextBox.SelectAll();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
+        #region TreeView Filter
+
+        private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (filterDebounceTimer == null)
+            {
+                filterDebounceTimer = new System.Windows.Forms.Timer { Interval = 250 };
+                filterDebounceTimer.Tick += (s, args) =>
+                {
+                    filterDebounceTimer.Stop();
+                    ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+                };
+            }
+
+            filterDebounceTimer.Stop();
+            filterDebounceTimer.Start();
+        }
+
+        private void ApplyTreeViewFilter(string filterText)
+        {
+            if (rootNode == null) return;
+
+            serviceBusTreeView.BeginUpdate();
+            try
+            {
+                treeViewFilterHelper.ApplyFilter(rootNode.Nodes, filterText);
+                rootNode.Expand();
+            }
+            finally
+            {
+                serviceBusTreeView.EndUpdate();
+            }
+        }
+
+        private void InvalidateTreeViewFilter()
+        {
+            treeViewFilterHelper.Clear();
+            if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
+            {
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            }
+        }
+
+        #endregion
     }
 }
