@@ -58,8 +58,13 @@ namespace ServiceBusExplorer.Forms
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.filterTreeViewTextBox = new System.Windows.Forms.TextBox();
             this.serviceBusTreeView = new System.Windows.Forms.TreeView();
             this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.mainTabControl = new System.Windows.Forms.TabControl();
+            this.tabPageDashboard = new System.Windows.Forms.TabPage();
+            this.dashboardControl = new ServiceBusExplorer.Controls.DashboardControl();
+            this.tabPageExplorer = new System.Windows.Forms.TabPage();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
             this.lstLog = new System.Windows.Forms.ListBox();
@@ -634,8 +639,8 @@ namespace ServiceBusExplorer.Forms
             this.splitContainer.Panel1.Controls.Add(this.panelTreeView);
             // 
             // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.panelMain);
+            //
+            this.splitContainer.Panel2.Controls.Add(this.mainTabControl);
             this.splitContainer.Size = new System.Drawing.Size(1384, 566);
             this.splitContainer.SplitterDistance = 372;
             this.splitContainer.TabIndex = 1;
@@ -646,6 +651,7 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.AutoScroll = true;
             this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelTreeView.Controls.Add(this.serviceBusTreeView);
+            this.panelTreeView.Controls.Add(this.filterTreeViewTextBox);
             this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
             this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
@@ -661,9 +667,18 @@ namespace ServiceBusExplorer.Forms
             this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
             this.panelTreeView.Size = new System.Drawing.Size(372, 566);
             this.panelTreeView.TabIndex = 0;
-            // 
+            //
+            // filterTreeViewTextBox
+            //
+            this.filterTreeViewTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.filterTreeViewTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.filterTreeViewTextBox.Name = "filterTreeViewTextBox";
+            this.filterTreeViewTextBox.Size = new System.Drawing.Size(362, 20);
+            this.filterTreeViewTextBox.TabIndex = 1;
+            this.filterTreeViewTextBox.TextChanged += new System.EventHandler(this.filterTreeViewTextBox_TextChanged);
+            //
             // serviceBusTreeView
-            // 
+            //
             this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.serviceBusTreeView.HideSelection = false;
@@ -680,8 +695,38 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
             this.serviceBusTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyDown);
             // 
+            // mainTabControl
+            //
+            this.mainTabControl.Controls.Add(this.tabPageDashboard);
+            this.mainTabControl.Controls.Add(this.tabPageExplorer);
+            this.mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainTabControl.Name = "mainTabControl";
+            this.mainTabControl.SelectedIndex = 0;
+            this.mainTabControl.TabIndex = 0;
+            //
+            // tabPageDashboard
+            //
+            this.tabPageDashboard.Controls.Add(this.dashboardControl);
+            this.tabPageDashboard.Name = "tabPageDashboard";
+            this.tabPageDashboard.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDashboard.Text = "Dashboard";
+            this.tabPageDashboard.UseVisualStyleBackColor = true;
+            //
+            // dashboardControl
+            //
+            this.dashboardControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dashboardControl.Name = "dashboardControl";
+            //
+            // tabPageExplorer
+            //
+            this.tabPageExplorer.Controls.Add(this.panelMain);
+            this.tabPageExplorer.Name = "tabPageExplorer";
+            this.tabPageExplorer.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageExplorer.Text = "Explorer";
+            this.tabPageExplorer.UseVisualStyleBackColor = true;
+            //
             // panelMain
-            // 
+            //
             this.panelMain.AutoScroll = true;
             this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -3289,6 +3334,10 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.SplitContainer mainSplitContainer;
         private HeaderPanel panelTreeView;
         private HeaderPanel panelMain;
+        private System.Windows.Forms.TabControl mainTabControl;
+        private System.Windows.Forms.TabPage tabPageDashboard;
+        private System.Windows.Forms.TabPage tabPageExplorer;
+        private Controls.DashboardControl dashboardControl;
         private HeaderPanel panelLog;
         private System.Windows.Forms.ListBox lstLog;
         private System.Windows.Forms.ToolStripMenuItem saveLogToolStripMenuItem;
@@ -3558,6 +3607,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator66;
         private System.Windows.Forms.ToolStripMenuItem createIoTHubListenerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createEventHubListenerMenuItem;
+        private System.Windows.Forms.TextBox filterTreeViewTextBox;
         private System.Windows.Forms.TreeView serviceBusTreeView;
         private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeMessagesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem subscriptionPurgeDeadletterQueueMessagesMenuItem;
