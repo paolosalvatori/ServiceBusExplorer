@@ -2476,3 +2476,40 @@ Properties:&nbsp;
 </ul>
 <p><img id="143375" style="display: block; margin-left: auto; margin-right: auto;" src="img/sendernewmessagingfactory.png" alt="" width="800" /></p>
 <p><img id="143376" style="display: block; margin-left: auto; margin-right: auto;" src="img/receivernewmessagingfactory.png" alt="" width="800" /></p>
+
+<p><strong>Update</strong>: 2 April 2026</p>
+<p>This version introduces the following updates:</p>
+
+<h2>TreeView Search / Filter</h2>
+<p>
+A search box has been added above the namespace TreeView. Typing in the box immediately filters the visible queues, topics and their subscriptions — non-matching nodes are hidden without modifying the underlying namespace.
+</p>
+<ul>
+<li>Real-time filtering: the tree updates as you type, with a 250ms debounce to avoid unnecessary redraws.</li>
+<li>Recursive match: a topic stays visible if any of its subscriptions match the filter text.</li>
+<li>Filter survives tree refresh (F5): the current filter is re-applied after every refresh.</li>
+<li>Keyboard shortcut: press <strong>Ctrl+F</strong> to focus the filter box from anywhere in the application.</li>
+<li>Clear the box (or press Escape) to restore the full tree.</li>
+</ul>
+<p><img src="img/treeview-filter.png" alt="TreeView filter box" width="350" /></p>
+
+<h2>Dashboard Tab</h2>
+<p>
+A new <strong>Dashboard</strong> tab has been added next to the Explorer tab. It shows a live overview of message counts for every queue and subscription in the namespace.
+</p>
+<ul>
+<li>Columns: Name, Type (Queue / Subscription), Active, Dead Letter, Scheduled, Total.</li>
+<li>Color coding: rows with one or more dead-letter messages are highlighted in light red.</li>
+<li>Auto-refresh: enable the checkbox and choose an interval (30 seconds, 1 minute or 5 minutes).</li>
+<li>Manual refresh: click the Refresh button or right-click a row and choose <em>Refresh</em> to reload a single entity.</li>
+<li>Navigation: single-click a row to sync the TreeView selection; double-click to open the entity in the Explorer tab.</li>
+<li>Live sync: creating or deleting a queue or subscription in the Explorer tab immediately adds or removes the corresponding row in the Dashboard — no full reload required.</li>
+</ul>
+<p><img src="img/dashboard-tab.png" alt="Dashboard tab showing message counts" width="800" /></p>
+<p><img src="img/dashboard-refresh.png" alt="Dashboard right-click refresh" width="400" /></p>
+
+<h2>Copy Message Body to Clipboard</h2>
+<p>
+A <strong>Copy Body</strong> button has been added to the message preview pane in the queue and subscription controls (Messages, Dead Letter and Transfer Dead Letter tabs). Clicking it copies the full message body text to the clipboard. The button is disabled when the preview pane is empty.
+</p>
+<p><img src="img/copy-body-button.png" alt="Copy Body button in message preview" width="600" /></p>

@@ -807,6 +807,7 @@ namespace ServiceBusExplorer.Forms
                     if (!string.IsNullOrWhiteSpace(queueName))
                     {
                         DeleteNode(queueName, queueListNode);
+                        dashboardControl?.RemoveRow(queueName);
                     }
                     else
                     {
@@ -837,6 +838,7 @@ namespace ServiceBusExplorer.Forms
                     if (!string.IsNullOrWhiteSpace(topicName))
                     {
                         DeleteNode(topicName, topicListNode);
+                        dashboardControl?.RemoveRowsWithPrefix(topicName);
                     }
                     else
                     {
@@ -957,6 +959,7 @@ namespace ServiceBusExplorer.Forms
                             if (subscriptionsNode.Nodes.ContainsKey(subscription.Name))
                             {
                                 subscriptionsNode.Nodes.RemoveByKey(subscription.Name);
+                                dashboardControl?.RemoveRow($"{subscription.TopicPath} / {subscription.Name}");
                                 if (subscriptionsNode.Nodes.Count == 0)
                                 {
                                     topicNode.Nodes.Clear();
@@ -1153,6 +1156,7 @@ namespace ServiceBusExplorer.Forms
                             return;
                         }
                         serviceBusTreeView.Sort();
+                        dashboardControl?.AddRow(queue.Path, "Queue");
                         panelMain.HeaderText = string.Format(ViewQueueFormat, queue.Path);
                         if (!importing)
                         {
@@ -1315,6 +1319,7 @@ namespace ServiceBusExplorer.Forms
                         subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                         subscriptionNode.Tag = new SubscriptionWrapper(wrapper.SubscriptionDescription, wrapper.TopicDescription);
                         subscriptionsNode.Expand();
+                        dashboardControl?.AddRow($"{wrapper.TopicDescription.Path} / {wrapper.SubscriptionDescription.Name}", "Subscription");
                         panelMain.HeaderText = string.Format(ViewSubscriptionFormat, wrapper.SubscriptionDescription.Name);
                         if (!importing)
                         {
