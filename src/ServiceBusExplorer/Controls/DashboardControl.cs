@@ -441,6 +441,58 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        public void RemoveRow(string entityName)
+        {
+            for (int i = dataGridView.Rows.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(dataGridView.Rows[i].Cells["Name"].Value?.ToString(), entityName, StringComparison.OrdinalIgnoreCase))
+                {
+                    dataGridView.Rows.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        public void RemoveRowsWithPrefix(string topicPath)
+        {
+            var prefix = topicPath + " / ";
+            for (int i = dataGridView.Rows.Count - 1; i >= 0; i--)
+            {
+                var name = dataGridView.Rows[i].Cells["Name"].Value?.ToString();
+                if (name != null && name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    dataGridView.Rows.RemoveAt(i);
+                }
+            }
+        }
+
+        public void AddRow(string name, string type)
+        {
+            // Idempotent: skip if row already exists
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (string.Equals(row.Cells["Name"].Value?.ToString(), name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+
+            // Find sorted insert position (same order as PopulateGrid: Type then Name)
+            int insertIndex = dataGridView.Rows.Count;
+            for (int i = 0; i < dataGridView.Rows.Count; i++)
+            {
+                var rowType = dataGridView.Rows[i].Cells["Type"].Value?.ToString() ?? "";
+                var rowName = dataGridView.Rows[i].Cells["Name"].Value?.ToString() ?? "";
+                var cmpType = string.Compare(type, rowType, StringComparison.OrdinalIgnoreCase);
+                if (cmpType < 0 || (cmpType == 0 && string.Compare(name, rowName, StringComparison.OrdinalIgnoreCase) < 0))
+                {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            dataGridView.Rows.Insert(insertIndex, name, type, 0L, 0L, 0L, 0L);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
