@@ -5,6 +5,16 @@
 # Service Bus Explorer
 The Service Bus Explorer allows users to efficiently administer messaging entities. The tool provides advanced features like import/export functionality and the ability to test topic, queues, subscriptions, relay services, notification hubs and events hubs.
 
+## Features
+
+- **Dashboard tab** — live overview of message counts (Active, Dead Letter, Scheduled, Total) for all queues and subscriptions, with auto-refresh and color-coded dead-letter alerts
+- **TreeView search/filter** — real-time filtering of queues, topics and subscriptions; press Ctrl+F to focus
+- **Copy message body** — one-click clipboard copy from the message preview pane
+- Import/export of namespace configuration
+- Send, receive and peek messages for queues, topics and subscriptions
+- Dead-letter message management
+- Relay services, Notification Hubs and Event Hubs support
+
 ![Service Bus Explorer](./media/service-bus-explorer.png)
 
 # Software requirements
