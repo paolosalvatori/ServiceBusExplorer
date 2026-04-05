@@ -30,6 +30,7 @@ using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.ServiceBus.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
+using static ServiceBusExplorer.UIHelpers.CopyBodyButtonHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -255,6 +256,9 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<MessageSession> sessionBindingList = default!;
         private bool buttonsMoved;
         private readonly bool duplicateQueue;
+        private Button btnCopyMessageBody;
+        private Button btnCopyDeadletterBody;
+        private Button btnCopyTransferDeadletterBody;
 
         #endregion
 
@@ -305,6 +309,11 @@ namespace ServiceBusExplorer.Controls
             this.duplicateQueue = duplicateQueue;
 
             InitializeComponent();
+
+            btnCopyMessageBody = AddCopyBodyButton(grouperMessageText, txtMessageText);
+            btnCopyDeadletterBody = AddCopyBodyButton(grouperDeadletterText, txtDeadletterText);
+            btnCopyTransferDeadletterBody = AddCopyBodyButton(grouperTransferDeadletterText, txtTransferDeadletterText);
+
             InitializeControls(initialCall: true);
         }
         #endregion
@@ -3214,8 +3223,7 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperMessageText_CustomPaint(PaintEventArgs obj)
         {
-            txtMessageText.Size = new Size(grouperMessageText.Size.Width - (txtMessageText.Location.X * 2),
-                grouperMessageText.Size.Height - txtMessageText.Location.Y - txtMessageText.Location.X);
+            LayoutTextBoxWithCopyButton(grouperMessageText, txtMessageText, btnCopyMessageBody);
         }
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs obj)
@@ -3233,8 +3241,7 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperDeadletterText_CustomPaint(PaintEventArgs obj)
         {
-            txtDeadletterText.Size = new Size(grouperDeadletterText.Size.Width - txtDeadletterText.Location.X * 2,
-                grouperDeadletterText.Size.Height - txtDeadletterText.Location.Y - txtDeadletterText.Location.X);
+            LayoutTextBoxWithCopyButton(grouperDeadletterText, txtDeadletterText, btnCopyDeadletterBody);
         }
 
         private void grouperDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
@@ -3255,8 +3262,7 @@ namespace ServiceBusExplorer.Controls
 
         private void grouperTransferDeadletterText_CustomPaint(PaintEventArgs obj)
         {
-            txtTransferDeadletterText.Size = new Size(grouperTransferDeadletterText.Size.Width - txtTransferDeadletterText.Location.X * 2,
-                grouperTransferDeadletterText.Size.Height - txtTransferDeadletterText.Location.Y - txtTransferDeadletterText.Location.X);
+            LayoutTextBoxWithCopyButton(grouperTransferDeadletterText, txtTransferDeadletterText, btnCopyTransferDeadletterBody);
         }
 
         private void grouperTransferDeadletterCustomProperties_CustomPaint(PaintEventArgs obj)
