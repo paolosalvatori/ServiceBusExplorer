@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -271,6 +271,8 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            MainFormThemeExtension.InitTheme(this, mainMenuStrip);
+            ThemeManager.Apply(this);
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
@@ -305,6 +307,16 @@ namespace ServiceBusExplorer.Forms
             DisplayNewVersionInformation();
 
             WriteToLog(logMessage);
+        }
+
+        private static Color GetMainPanelWindowBackColor()
+        {
+            return ThemeManager.IsDark ? ThemeManager.Surface : SystemColors.Window;
+        }
+
+        private static Color GetMainPanelGradientBackColor()
+        {
+            return ThemeManager.IsDark ? ThemeManager.Surface : SystemColors.GradientInactiveCaption;
         }
 
         void DisplayNewVersionInformation()
@@ -370,7 +382,7 @@ namespace ServiceBusExplorer.Forms
                 userControl.Dispose();
             }
             panelMain.Controls.Clear();
-            panelMain.BackColor = SystemColors.Window;
+            panelMain.BackColor = GetMainPanelWindowBackColor();
             await ShowEntities(EntityType.All);
         }
 
@@ -429,7 +441,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
+                    panelMain.BackColor = GetMainPanelWindowBackColor();
                     await ShowEntities(EntityType.All);
                 }
             }
@@ -473,7 +485,7 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
+                    panelMain.BackColor = GetMainPanelWindowBackColor();
 
                     await ShowEventGridEntities(EntityType.All);
                 }
@@ -639,7 +651,7 @@ namespace ServiceBusExplorer.Forms
                 userControl.Dispose();
             }
             panelMain.Controls.Clear();
-            panelMain.BackColor = SystemColors.Window;
+            panelMain.BackColor = GetMainPanelWindowBackColor();
             panelMain.HeaderText = Entity;
             if (currentNode != null)
             {
@@ -696,7 +708,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.Window;
+                panelMain.BackColor = GetMainPanelWindowBackColor();
                 panelMain.HeaderText = Entity;
                 serviceBusTreeView.SelectedNode = rootNode;
                 rootNode.EnsureVisible();
@@ -5240,7 +5252,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 eventGridNamespaceControl = new HandleEventGridNamespaceControl(eventGridNamespace);
                 eventGridNamespaceControl.SuspendDrawing();
                 eventGridNamespaceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5274,7 +5286,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue);
                 queueControl.SuspendDrawing();
                 queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5310,7 +5322,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 topicControl = new HandleTopicControl(WriteToLog, serviceBusHelper, topic, path);
                 topicControl.SuspendDrawing();
                 topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5346,7 +5358,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 topicControl = new HandleEventGridTopicControl(topic, NamespaceHostname);
                 topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
                 panelMain.Controls.Add(topicControl);
@@ -5379,7 +5391,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 subscriptionControl = new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper, duplicateCurrentSubscription);
                 subscriptionControl.SuspendDrawing();
                 subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5415,7 +5427,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 subscriptionControl = new HandleEventGridSubscriptionControl(WriteToLog, subscription, eventGridLibrary);
                 subscriptionControl.SuspendDrawing();
                 subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5448,7 +5460,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 relayServiceControl = new HandleRelayControl(WriteToLog, serviceBusHelper, relayService, path);
                 relayServiceControl.SuspendDrawing();
                 relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5483,7 +5495,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 ruleControl = new HandleRuleControl(WriteToLog, serviceBusHelper, wrapper, isFirstRule);
                 ruleControl.SuspendDrawing();
                 ruleControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5517,7 +5529,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 eventHubControl = new HandleEventHubControl(WriteToLog, serviceBusHelper, eventHub);
                 eventHubControl.SuspendDrawing();
                 eventHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5553,7 +5565,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
 
                 if (string.IsNullOrWhiteSpace(partition.LastEnqueuedOffset))
                 {
@@ -5596,7 +5608,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 notificationHubControl = new HandleConsumerGroupControl(WriteToLog, serviceBusHelper, notificationHub, eventHubname);
                 notificationHubControl.SuspendDrawing();
                 notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5631,7 +5643,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                panelMain.BackColor = GetMainPanelGradientBackColor();
                 notificationHubControl = new HandleNotificationHubControl(WriteToLog, serviceBusHelper, notificationHub);
                 notificationHubControl.SuspendDrawing();
                 notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
@@ -5668,7 +5680,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                    panelMain.BackColor = GetMainPanelGradientBackColor();
                     queueControl = new TestQueueControl(this,
                                                         WriteToLog,
                                                         StopLog,
@@ -5715,7 +5727,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                    panelMain.BackColor = GetMainPanelGradientBackColor();
                     topicControl = new TestTopicControl(this,
                                                         WriteToLog,
                                                         StopLog,
@@ -5763,7 +5775,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                    panelMain.BackColor = GetMainPanelGradientBackColor();
                     subscriptionControl = new TestSubscriptionControl(this,
                                                                       WriteToLog,
                                                                       StopLog,
@@ -5810,7 +5822,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
+                    panelMain.BackColor = GetMainPanelGradientBackColor();
                     relayServiceControl = new TestRelayControl(this,
                                                                WriteToLog,
                                                                StopLog,
@@ -5857,7 +5869,7 @@ namespace ServiceBusExplorer.Forms
         //                userControl.Dispose();
         //            }
         //            panelMain.Controls.Clear();
-        //            panelMain.BackColor = SystemColors.GradientInactiveCaption;
+        //            panelMain.BackColor = GetMainPanelGradientBackColor();
         //            relayServiceControl = new TestRelayControl(this,
         //                                                              WriteToLog,
         //                                                              StopLog,
@@ -7243,7 +7255,7 @@ namespace ServiceBusExplorer.Forms
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.Window;
+                panelMain.BackColor = GetMainPanelWindowBackColor();
                 await ShowEntities(EntityType.All);
             }
             catch (Exception ex)
@@ -7639,3 +7651,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

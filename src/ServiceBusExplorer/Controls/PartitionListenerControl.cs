@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -191,6 +191,7 @@ namespace ServiceBusExplorer.Controls
             }
             partitionCount = partitionRuntumeInformationList.Count;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
             Disposed += ListenerControl_Disposed;
         }
@@ -222,6 +223,7 @@ namespace ServiceBusExplorer.Controls
             }
             partitionCount = partitionRuntumeInformationList.Count;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
             Disposed += ListenerControl_Disposed;
         }
@@ -1602,3 +1604,4 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
         #endregion
     }
 }
+

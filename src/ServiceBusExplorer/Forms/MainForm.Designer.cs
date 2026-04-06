@@ -1,4 +1,4 @@
-﻿using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Controls;
 using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
@@ -611,7 +611,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // statusStrip
             // 
-            this.statusStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.statusStrip.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip.Location = new System.Drawing.Point(0, 818);
             this.statusStrip.Name = "statusStrip";
@@ -645,13 +645,13 @@ namespace ServiceBusExplorer.Forms
             // panelTreeView
             // 
             this.panelTreeView.AutoScroll = true;
-            this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelTreeView.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelTreeView.Controls.Add(this.serviceBusTreeView);
             this.panelTreeView.Controls.Add(this.filterTreeViewTextBox);
             this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelTreeView.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(42, 42, 42);
+            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelTreeView.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelTreeView.HeaderHeight = 24;
             this.panelTreeView.HeaderText = "Service Bus Namespace";
@@ -694,11 +694,11 @@ namespace ServiceBusExplorer.Forms
             // panelMain
             // 
             this.panelMain.AutoScroll = true;
-            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelMain.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelMain.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(42, 42, 42);
+            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelMain.HeaderHeight = 24;
             this.panelMain.HeaderText = "";
@@ -735,12 +735,12 @@ namespace ServiceBusExplorer.Forms
             // panelLog
             // 
             this.panelLog.AutoScroll = true;
-            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelLog.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelLog.Controls.Add(this.lstLog);
             this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelLog.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(42, 42, 42);
+            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(33, 33, 33);
             this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.panelLog.HeaderHeight = 24;
             this.panelLog.HeaderText = "Log";
@@ -3218,7 +3218,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1416, 840);
             this.Controls.Add(this.linkLabelNewVersionAvailable);
@@ -3624,4 +3624,5 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem connectUsingEntraToolStripMenuItem;
     }
 }
+
 
