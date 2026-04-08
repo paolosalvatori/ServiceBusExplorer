@@ -25,11 +25,15 @@ namespace ServiceBusExplorer.Controls
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private bool isLoading;
+        private List<DashboardRow> _allRows = new List<DashboardRow>();
+        private CheckBox syncWithTreeViewCheckBox;
 
         public Action<string, string> OnRowSelected { get; set; }
         public Action<string, string> OnRowDoubleClicked { get; set; }
         public Func<string, string, System.Threading.Tasks.Task> OnRefreshRowRequested { get; set; }
         public Func<System.Threading.Tasks.Task> OnRefreshRequested { get; set; }
+        public bool SyncWithTreeView => syncWithTreeViewCheckBox?.Checked ?? true;
+        public Action OnSyncWithTreeViewChanged { get; set; }
         private Font headerFont;
         private Font cellFont;
         private Font totalFont;
@@ -91,14 +95,23 @@ namespace ServiceBusExplorer.Controls
             intervalComboBox.SelectedIndex = 1;
             intervalComboBox.SelectedIndexChanged += IntervalComboBox_SelectedIndexChanged;
 
+            syncWithTreeViewCheckBox = new CheckBox
+            {
+                Text = "Sync with treeview",
+                Location = new Point(280, 8),
+                AutoSize = true,
+                Checked = true
+            };
+            syncWithTreeViewCheckBox.CheckedChanged += (s, e) => OnSyncWithTreeViewChanged?.Invoke();
+
             statusLabel = new Label
             {
-                Location = new Point(280, 10),
+                Location = new Point(430, 10),
                 AutoSize = true,
                 ForeColor = SystemColors.GrayText
             };
 
-            toolbarPanel.Controls.AddRange(new Control[] { refreshButton, autoRefreshCheckBox, intervalComboBox, statusLabel });
+            toolbarPanel.Controls.AddRange(new Control[] { refreshButton, autoRefreshCheckBox, intervalComboBox, syncWithTreeViewCheckBox, statusLabel });
 
             // Fonts (disposed in Dispose)
             headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
@@ -340,6 +353,7 @@ namespace ServiceBusExplorer.Controls
                     writeToLog?.Invoke(error);
                 }
 
+                _allRows = rows;
                 PopulateGrid(rows);
                 statusLabel.Text = $"Last refresh: {DateTime.Now:HH:mm:ss} — {rows.Count} items";
             }
@@ -355,8 +369,24 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        public void ApplyFilter(string filterText)
+        {
+            if (!syncWithTreeViewCheckBox.Checked || string.IsNullOrWhiteSpace(filterText))
+            {
+                PopulateGrid(_allRows);
+                return;
+            }
+            var filtered = _allRows
+                .Where(r => r.Name.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+            PopulateGrid(filtered);
+        }
+
         private void PopulateGrid(List<DashboardRow> rows)
         {
+            var sortColumn = dataGridView.SortedColumn;
+            var sortOrder = dataGridView.SortOrder;
+
             dataGridView.Rows.Clear();
             foreach (var row in rows.OrderBy(r => r.Type).ThenBy(r => r.Name))
             {
@@ -367,6 +397,13 @@ namespace ServiceBusExplorer.Controls
                 {
                     dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 230);
                 }
+            }
+
+            if (sortColumn != null && sortOrder != SortOrder.None)
+            {
+                dataGridView.Sort(sortColumn, sortOrder == SortOrder.Ascending
+                    ? System.ComponentModel.ListSortDirection.Ascending
+                    : System.ComponentModel.ListSortDirection.Descending);
             }
         }
 
