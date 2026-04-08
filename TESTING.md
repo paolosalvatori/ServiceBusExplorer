@@ -52,8 +52,11 @@
 | 45 | Delete topic → dashboard sync | Delete topic "MyTopic" (with sub1, sub2) | Rows "MyTopic / sub1" and "MyTopic / sub2" disappear | ⬜ |
 | 46 | Delete subscription → dashboard sync | Delete subscription "sub1" from "MyTopic" | Row "MyTopic / sub1" disappears; "MyTopic / sub2" remains | ⬜ |
 | 47 | Create subscription → dashboard sync | Create subscription "NewSub" under "ExistingTopic" | Row "ExistingTopic / NewSub" appears | ⬜ |
+| 48 | Clear filter button — disabled when empty | Open app, filter box empty | "×" button at right of filter box is disabled (greyed out) | ⬜ |
+| 49 | Clear filter button — enabled on text | Type any character in filter box | "×" button becomes enabled | ⬜ |
+| 50 | Clear filter button — click clears filter | Filter active ("queue"), click "×" | Filter box cleared, tree reverts to unfiltered state | ⬜ |
 
-**Score: 2/47 (4%)**
+**Score: 2/50 (4%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 
