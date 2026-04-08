@@ -7710,7 +7710,7 @@ namespace ServiceBusExplorer.Forms
 
         private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
         {
-            clearFilterButton.Enabled = filterTreeViewTextBox.Text.Length > 0;
+            clearFilterButton.Visible = filterTreeViewTextBox.Text.Length > 0;
             filterDebounceTimer.Stop();
             filterDebounceTimer.Start();
         }

@@ -692,7 +692,8 @@ namespace ServiceBusExplorer.Forms
             // clearFilterButton
             //
             this.clearFilterButton.Dock = System.Windows.Forms.DockStyle.Right;
-            this.clearFilterButton.Enabled = false;
+            this.clearFilterButton.ForeColor = System.Drawing.Color.Black;
+            this.clearFilterButton.Visible = false;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.clearFilterButton.FlatAppearance.BorderSize = 0;
             this.clearFilterButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
