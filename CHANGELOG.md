@@ -1,5 +1,10 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.3] - 2026-04-08
+
+### Added
+- Clear button (×) in filter box: clears filter and reverts tree to unfiltered state; disabled when filter is empty
+
 ## [1.4.2] - 2026-03-30
 
 ### Added
