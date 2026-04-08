@@ -1,5 +1,10 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## [1.4.4] - 2026-04-08
+
+### Fixed
+- Clear button: hidden (not greyed) when filter is empty; black text on hover
+
 ## [1.4.3] - 2026-04-08
 
 ### Added
