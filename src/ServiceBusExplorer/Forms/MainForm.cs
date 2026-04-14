@@ -407,9 +407,9 @@ namespace ServiceBusExplorer.Forms
             await RefreshSelectedEntity();
         }
 
-        private void RefreshDashboard()
+        private async void RefreshDashboard()
         {
-            dashboardControl.LoadDataAsync();
+            await dashboardControl.LoadDataAsync();
         }
 
         void DisplayNewVersionInformation()

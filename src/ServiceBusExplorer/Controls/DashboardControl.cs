@@ -19,12 +19,13 @@ namespace ServiceBusExplorer.Controls
         private Timer autoRefreshTimer;
         private ContextMenuStrip contextMenu;
         private Label hintLabel;
+        private Panel warningPanel;
 
         private Func<IEnumerable<QueueDescription>> getQueues;
         private Func<IEnumerable<TopicDescription>> getTopics;
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
-        private bool isLoading;
+        private int isLoading;
         private List<DashboardRow> _allRows = new List<DashboardRow>();
         private CheckBox syncWithTreeViewCheckBox;
 
@@ -37,6 +38,8 @@ namespace ServiceBusExplorer.Controls
         private Font headerFont;
         private Font cellFont;
         private Font totalFont;
+        private Font hintFont;
+        private Font warningFont;
 
         public DashboardControl()
         {
@@ -88,17 +91,17 @@ namespace ServiceBusExplorer.Controls
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Location = new Point(190, 6),
-                Size = new Size(80, 24),
+                Size = new Size(90, 24),
                 Enabled = false
             };
-            intervalComboBox.Items.AddRange(new object[] { "30s", "60s", "5min" });
-            intervalComboBox.SelectedIndex = 1;
+            intervalComboBox.Items.AddRange(new object[] { "1min", "5min", "15min", "30min", "60min" });
+            intervalComboBox.SelectedIndex = 0;
             intervalComboBox.SelectedIndexChanged += IntervalComboBox_SelectedIndexChanged;
 
             syncWithTreeViewCheckBox = new CheckBox
             {
                 Text = "Sync with treeview",
-                Location = new Point(280, 8),
+                Location = new Point(290, 8),
                 AutoSize = true,
                 Checked = true
             };
@@ -113,10 +116,31 @@ namespace ServiceBusExplorer.Controls
 
             toolbarPanel.Controls.AddRange(new Control[] { refreshButton, autoRefreshCheckBox, intervalComboBox, syncWithTreeViewCheckBox, statusLabel });
 
+            // Warning panel (shown when auto-refresh is enabled)
+            warningPanel = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 24,
+                BackColor = Color.FromArgb(255, 243, 205),
+                Visible = false,
+                Padding = new Padding(8, 4, 0, 0)
+            };
+            var warningLabel = new Label
+            {
+                Text = "Auto refreshing messaging entities affects the performance of the Service Bus resource, especially when set to a high frequency.",
+                Dock = DockStyle.Fill,
+                ForeColor = Color.FromArgb(102, 77, 3),
+                Font = warningFont,
+                AutoSize = false
+            };
+            warningPanel.Controls.Add(warningLabel);
+
             // Fonts (disposed in Dispose)
             headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
             cellFont = new Font("Segoe UI", 9F);
             totalFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+            hintFont = new Font("Segoe UI", 8F);
+            warningFont = new Font("Segoe UI", 8.5F);
 
             // DataGridView
             dataGridView = new DataGridView
@@ -183,13 +207,14 @@ namespace ServiceBusExplorer.Controls
                 Dock = DockStyle.Bottom,
                 AutoSize = false,
                 Height = 20,
-                Font = new Font("Segoe UI", 8F),
+                Font = hintFont,
                 ForeColor = SystemColors.GrayText,
                 Padding = new Padding(4, 2, 0, 0)
             };
 
             Controls.Add(dataGridView);
             Controls.Add(hintLabel);
+            Controls.Add(warningPanel);
             Controls.Add(toolbarPanel);
 
             // Timer
@@ -226,6 +251,7 @@ namespace ServiceBusExplorer.Controls
         {
             intervalComboBox.Enabled = autoRefreshCheckBox.Checked;
             autoRefreshTimer.Enabled = autoRefreshCheckBox.Checked;
+            warningPanel.Visible = autoRefreshCheckBox.Checked;
             if (autoRefreshCheckBox.Checked)
             {
                 autoRefreshTimer.Interval = GetIntervalMs();
@@ -249,8 +275,10 @@ namespace ServiceBusExplorer.Controls
         {
             switch (intervalComboBox.SelectedIndex)
             {
-                case 0: return 30000;
-                case 2: return 300000;
+                case 1: return 300000;
+                case 2: return 900000;
+                case 3: return 1800000;
+                case 4: return 3600000;
                 default: return 60000;
             }
         }
@@ -263,15 +291,14 @@ namespace ServiceBusExplorer.Controls
             }
             else
             {
-                LoadDataAsync();
+                await LoadDataAsync();
             }
         }
 
-        public async void LoadDataAsync()
+        public async System.Threading.Tasks.Task LoadDataAsync()
         {
-            if (getQueues == null || getTopics == null || getSubscriptions == null || isLoading) return;
-
-            isLoading = true;
+            if (getQueues == null || getTopics == null || getSubscriptions == null) return;
+            if (System.Threading.Interlocked.CompareExchange(ref isLoading, 1, 0) != 0) return;
             refreshButton.Enabled = false;
             statusLabel.Text = "Loading...";
 
@@ -365,7 +392,7 @@ namespace ServiceBusExplorer.Controls
             finally
             {
                 refreshButton.Enabled = true;
-                isLoading = false;
+                System.Threading.Interlocked.Exchange(ref isLoading, 0);
             }
         }
 
@@ -390,8 +417,7 @@ namespace ServiceBusExplorer.Controls
             dataGridView.Rows.Clear();
             foreach (var row in rows.OrderBy(r => r.Type).ThenBy(r => r.Name))
             {
-                var total = row.Active + row.DeadLetter + row.Scheduled;
-                var idx = dataGridView.Rows.Add(row.Name, row.Type, row.Active, row.DeadLetter, row.Scheduled, total);
+                var idx = dataGridView.Rows.Add(row.Name, row.Type, row.Active, row.DeadLetter, row.Scheduled, row.Total);
 
                 if (row.DeadLetter > 0)
                 {
@@ -463,11 +489,10 @@ namespace ServiceBusExplorer.Controls
             {
                 if (string.Equals(row.Cells["Name"].Value?.ToString(), entityName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var total = active + deadLetter + scheduled;
                     row.Cells["Active"].Value = active;
                     row.Cells["DeadLetter"].Value = deadLetter;
                     row.Cells["Scheduled"].Value = scheduled;
-                    row.Cells["Total"].Value = total;
+                    row.Cells["Total"].Value = DashboardRow.ComputeTotal(active, deadLetter, scheduled);
 
                     // Update color coding
                     row.DefaultCellStyle.BackColor = deadLetter > 0
@@ -540,6 +565,8 @@ namespace ServiceBusExplorer.Controls
                 headerFont?.Dispose();
                 cellFont?.Dispose();
                 totalFont?.Dispose();
+                hintFont?.Dispose();
+                warningFont?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -551,6 +578,8 @@ namespace ServiceBusExplorer.Controls
             public long Active { get; set; }
             public long DeadLetter { get; set; }
             public long Scheduled { get; set; }
+            public long Total => ComputeTotal(Active, DeadLetter, Scheduled);
+            public static long ComputeTotal(long active, long deadLetter, long scheduled) => active + deadLetter + scheduled;
         }
     }
 }
