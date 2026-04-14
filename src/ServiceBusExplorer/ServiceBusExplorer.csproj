@@ -7,6 +7,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net472</TargetFramework>
 		<ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+		<Version>1.4.2</Version>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 		<PublishUrl>publish\</PublishUrl>
 		<Install>true</Install>
@@ -224,6 +225,9 @@
 		</Compile>
 		<Compile Update="Controls\HeaderPanel.designer.cs">
 			<DependentUpon>HeaderPanel.cs</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\DashboardControl.cs">
+			<SubType>UserControl</SubType>
 		</Compile>
 		<Compile Update="Controls\HandleQueueControl.cs">
 			<SubType>UserControl</SubType>
