@@ -248,6 +248,8 @@ namespace ServiceBusExplorer.Forms
         private EventGridLibrary eventGridLibrary;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
         private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
+        private string _pendingSelectionName;
+        private string _pendingSelectionType;
         #endregion
 
         #region Private Static Fields
@@ -293,6 +295,12 @@ namespace ServiceBusExplorer.Forms
             {
                 filterDebounceTimer.Stop();
                 ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+                if (_pendingSelectionName != null)
+                {
+                    SelectNodeInTree(_pendingSelectionName, _pendingSelectionType);
+                    _pendingSelectionName = null;
+                    _pendingSelectionType = null;
+                }
             };
             UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
@@ -330,17 +338,30 @@ namespace ServiceBusExplorer.Forms
             };
             dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
             dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
+            dashboardControl.OnSyncWithTreeViewChanged = () => dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
         }
 
         private void DashboardRowSelected(string name, string type)
         {
             if (rootNode == null) return;
 
-            // Clear filter so the target node is visible in the full tree
-            if (!string.IsNullOrEmpty(filterTreeViewTextBox.Text))
+            bool hasFilter = !string.IsNullOrEmpty(filterTreeViewTextBox.Text);
+            if (hasFilter && !dashboardControl.SyncWithTreeView)
             {
+                // Sync off: clear filter, then reselect after tree is restored by debounce timer
+                _pendingSelectionName = name;
+                _pendingSelectionType = type;
                 filterTreeViewTextBox.Text = string.Empty;
+                return;
             }
+
+            // Sync on (or no filter): select directly — node is already visible in filtered tree
+            SelectNodeInTree(name, type);
+        }
+
+        private void SelectNodeInTree(string name, string type)
+        {
+            if (rootNode == null) return;
 
             TreeNode targetNode = null;
 
@@ -348,13 +369,10 @@ namespace ServiceBusExplorer.Forms
             {
                 var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                 if (queueListNode != null)
-                {
                     targetNode = FindNode(name, queueListNode);
-                }
             }
             else if (type == "Subscription")
             {
-                // Name format: "TopicName / SubscriptionName"
                 var parts = name.Split(new[] { " / " }, 2, StringSplitOptions.None);
                 if (parts.Length == 2)
                 {
@@ -389,9 +407,9 @@ namespace ServiceBusExplorer.Forms
             await RefreshSelectedEntity();
         }
 
-        private void RefreshDashboard()
+        private async void RefreshDashboard()
         {
-            dashboardControl.LoadDataAsync();
+            await dashboardControl.LoadDataAsync();
         }
 
         void DisplayNewVersionInformation()
@@ -7710,8 +7728,14 @@ namespace ServiceBusExplorer.Forms
 
         private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
         {
+            clearFilterButton.Visible = filterTreeViewTextBox.Text.Length > 0;
             filterDebounceTimer.Stop();
             filterDebounceTimer.Start();
+        }
+
+        private void clearFilterButton_Click(object sender, EventArgs e)
+        {
+            filterTreeViewTextBox.Clear();
         }
 
         private void ApplyTreeViewFilter(string filterText)
@@ -7728,6 +7752,7 @@ namespace ServiceBusExplorer.Forms
             {
                 serviceBusTreeView.EndUpdate();
             }
+            dashboardControl.ApplyFilter(filterText);
         }
 
         private void InvalidateTreeViewFilter()
@@ -7737,6 +7762,7 @@ namespace ServiceBusExplorer.Forms
             {
                 ApplyTreeViewFilter(filterTreeViewTextBox.Text);
             }
+            dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
         }
 
         #endregion
