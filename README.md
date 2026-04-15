@@ -10,6 +10,7 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 - **Dashboard tab** — live overview of message counts (Active, Dead Letter, Scheduled, Total) for all queues and subscriptions, with auto-refresh and color-coded dead-letter alerts
 - **TreeView search/filter** — real-time filtering of queues, topics and subscriptions; press Ctrl+F to focus
 - **Copy message body** — one-click clipboard copy from the message preview pane
+- **Microsoft Entra ID sign-in** — interactive browser authentication for Azure Service Bus namespaces without storing SAS secrets locally
 - Import/export of namespace configuration
 - Send, receive and peek messages for queues, topics and subscriptions
 - Dead-letter message management
@@ -72,6 +73,69 @@ curl -s https://api.github.com/repos/paolosalvatori/ServiceBusExplorer/releases/
 ````
 winget install --id paolosalvatori.ServiceBusExplorer --source winget
 ````
+
+## Microsoft Entra ID / Azure AD sign-in
+
+Service Bus Explorer supports interactive browser sign-in for Azure Service Bus namespaces on the **public Azure cloud**. Sovereign clouds (Azure Government, Azure China, etc.) are not currently supported.
+
+### How to connect
+
+1. Open the regular Service Bus connection dialog.
+2. Select `Select a service bus namespace...` for a manual connection, or edit an existing saved connection.
+3. Change `Authentication` to `Azure Active Directory`.
+4. Enter the namespace endpoint as either `sb://<namespace>.servicebus.windows.net/` or `<namespace>.servicebus.windows.net`.
+5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint, so the sign-in flow accepts work or school accounts only.
+6. Click `OK` and complete the browser sign-in flow.
+
+> **Note**
+>
+> The `File -> Connect using Entra (Event grid)` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Azure Active Directory`.
+>
+> Personal Microsoft accounts are not supported for Service Bus authentication unless they have been invited into a Microsoft Entra tenant that has access to the namespace.
+
+### Screenshots
+
+Use the regular Service Bus connection flow, not the Event Grid-specific menu entry:
+
+![Event Grid Entra menu is a different path](./media/entra/entra-menu-path.png)
+
+Open the normal connection dialog:
+
+![Service Bus connect dialog](./media/entra/entra-connect-dialog.png)
+
+Switch `Authentication` to `Azure Active Directory`:
+
+![Authentication dropdown with Azure Active Directory option](./media/entra/entra-auth-dropdown.png)
+
+Enter the namespace endpoint and optional Entra metadata:
+
+![Azure Active Directory connection fields](./media/entra/entra-aad-fields.png)
+
+After sign-in, the namespace can be browsed without storing SAS keys locally:
+
+![Connected namespace view with redacted details](./media/entra/entra-connected-dashboard-redacted.png)
+
+### Saved connection string format
+
+Saved Entra-based connections use the following format:
+
+```text
+Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD;TenantId=<tenant-id>;TransportType=Amqp;EntityPath=<entity-path>
+```
+
+Minimal example:
+
+```text
+Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD
+```
+
+### Current scope
+
+- Interactive browser sign-in only
+- Azure Active Directory mode currently loads Service Bus queues, topics, and subscriptions only
+- Event Hubs, Notification Hubs, and Relay are not loaded when Azure Active Directory authentication is selected
+- Local persistence stores metadata only, not passwords or SAS keys
+- Managed identity, Azure CLI auth and service principal auth are not included in this feature
 
 # Contributions
 There are no dedicated developers so development is entirely based on voluntary effort.

@@ -103,12 +103,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             long messagesToPurgeCount = await GetMessageCount(entity, deadLetterQueueData: false)
                 .ConfigureAwait(false);
 
-            var client = new ServiceBusClient(
-              serviceBusHelper.ConnectionString,
-              new ServiceBusClientOptions
-              {
-                  TransportType = serviceBusHelper.TransportType
-              });
+            var client = serviceBusHelper.CreateServiceBusClient();
 
             try
             {
@@ -187,9 +182,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
             var tasks = new Task[taskCount];
             var quit = false;  // This instance controls all the receiving tasks
 
-            var client = new ServiceBusClient(
-                serviceBusHelper.ConnectionString,
-                new ServiceBusClientOptions { TransportType = serviceBusHelper.TransportType });
+            var client = serviceBusHelper.CreateServiceBusClient();
 
             try
             {

@@ -5,6 +5,35 @@
 <div></div>
 <div><strong>NOTE</strong>: I'll continue to develop the tool and add new functionalities. So I strongly recommend you to visit this page from time to time for a new version.</div>
 <div><strong>Author: </strong>Paolo Salvatori</div>
+<div><strong>Update</strong>: 15 April 2026</div>
+<div>This version introduces the following updates:</div>
+<ul>
+<li>Added Microsoft Entra ID (Azure Active Directory) interactive browser sign-in for Azure Service Bus namespaces.</li>
+<li>Added an <strong>Authentication</strong> selector in the Connect dialog so users can switch between SAS and Azure Active Directory.</li>
+<li>Added support for saving and reopening Entra-based connections without storing secrets locally. Saved entries only persist metadata such as endpoint, tenant ID, transport type and entity path.</li>
+<li>Added Azure Active Directory support for Service Bus namespace browsing, queue/topic/subscription access, and queue/subscription purge flows.</li>
+<li>Current scope is interactive browser sign-in on the <strong>public Azure cloud</strong> only. In Azure Active Directory mode, Service Bus Explorer currently loads queues, topics and subscriptions only. Event Hubs, Notification Hubs and Relay are not loaded. Sovereign clouds (Azure Government, Azure China, etc.) are not supported. Managed identity, Azure CLI authentication and service principal authentication are not included.</li>
+</ul>
+<div><strong>How to connect with Entra ID</strong>:</div>
+<ol>
+<li>Open the normal Service Bus connection dialog.</li>
+<li>Select a manual connection or edit an existing saved connection.</li>
+<li>Change <strong>Authentication</strong> to <strong>Azure Active Directory</strong>.</li>
+<li>Enter the namespace endpoint as <code>sb://&lt;namespace&gt;.servicebus.windows.net/</code> or <code>&lt;namespace&gt;.servicebus.windows.net</code>.</li>
+<li>Optionally enter a tenant ID and entity path, then complete the browser sign-in flow. Leaving the tenant blank uses the <code>organizations</code> endpoint, so the default sign-in flow accepts work or school accounts only.</li>
+</ol>
+<div><strong>Note</strong>: the <code>File -&gt; Connect using Entra (Event grid)</code> menu entry is only for Event Grid. Azure Service Bus Entra connections use the standard Service Bus connection dialog.</div>
+<div style="text-align: center;"><img src="../media/entra/entra-menu-path.png" alt="Event Grid Entra menu item is not the Service Bus Entra connection path." /></div>
+<div>&nbsp;</div>
+<div style="text-align: center;"><img src="../media/entra/entra-connect-dialog.png" alt="Standard Service Bus connect dialog." /></div>
+<div>&nbsp;</div>
+<div style="text-align: center;"><img src="../media/entra/entra-auth-dropdown.png" alt="Authentication dropdown with Azure Active Directory selected." /></div>
+<div>&nbsp;</div>
+<div style="text-align: center;"><img src="../media/entra/entra-aad-fields.png" alt="Azure Active Directory connection fields in the Service Bus connect dialog." /></div>
+<div>&nbsp;</div>
+<div style="text-align: center;"><img src="../media/entra/entra-account-picker-redacted.png" alt="Browser sign-in account picker with sensitive details redacted." /></div>
+<div>&nbsp;</div>
+<div style="text-align: center;"><img src="../media/entra/entra-connected-dashboard-redacted.png" alt="Connected namespace view with sensitive details redacted." /></div>
 <div><strong>Update</strong>: 28 August 2012</div>
 <div>This version introduces the following updates:</div>
 <ul>

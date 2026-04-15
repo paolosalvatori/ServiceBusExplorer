@@ -150,6 +150,7 @@ namespace ServiceBusExplorer
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private ServiceBusNamespace serviceBusNamespaceInstance;
+        private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
@@ -187,6 +188,8 @@ namespace ServiceBusExplorer
             this.writeToLog = writeToLog;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
+            serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
+            aadTokenProvider = serviceBusHelper.aadTokenProvider;
             namespaceManager = serviceBusHelper.NamespaceManager;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
             MessagingFactory = serviceBusHelper.MessagingFactory;
@@ -228,10 +231,24 @@ namespace ServiceBusExplorer
                 return connectionStringType == ServiceBusNamespaceType.Cloud ||
                       (namespaceUri != null &&
                        !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
-                       (uri.Contains(CloudServiceBusPostfix) ||
-                        uri.Contains(TestServiceBusPostFix) ||
-                        uri.Contains(GermanyServiceBusPostfix) ||
-                        uri.Contains(ChinaServiceBusPostfix)));
+                        (uri.Contains(CloudServiceBusPostfix) ||
+                         uri.Contains(TestServiceBusPostFix) ||
+                         uri.Contains(GermanyServiceBusPostfix) ||
+                         uri.Contains(ChinaServiceBusPostfix)));
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean that indicates if the current namespace uses Azure Active Directory authentication.
+        /// </summary>
+        public bool IsAzureActiveDirectory
+        {
+            get
+            {
+                lock (this)
+                {
+                    return serviceBusNamespaceInstance?.IsAzureActiveDirectory == true;
+                }
             }
         }
 
@@ -398,6 +415,11 @@ namespace ServiceBusExplorer
         {
             get
             {
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    return null;
+                }
+
                 var builder = new ServiceBusConnectionStringBuilder(connectionString)
                 {
                     EntityPath = string.Empty
@@ -597,7 +619,11 @@ namespace ServiceBusExplorer
         public MessagingFactory CreateMessagingFactory()
         {
             MessagingFactory factory;
-            if (!string.IsNullOrEmpty(ConnectionString))
+            if (aadTokenProvider != null)
+            {
+                factory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+            }
+            else if (!string.IsNullOrEmpty(ConnectionString))
             {
                 factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
             }
@@ -623,6 +649,28 @@ namespace ServiceBusExplorer
             return factory;
         }
 
+        public EventHubClient CreateEventHubClient(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException("The path argument must not be null or whitespace.", nameof(path));
+            }
+
+            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            {
+                var endpointUri = namespaceUri ?? new Uri(serviceBusNamespaceInstance.Uri);
+                return EventHubClient.CreateWithAzureActiveDirectory(
+                    endpointUri,
+                    path,
+                    AadCredentialFactory.CreateOldSdkAuthenticationCallback(serviceBusNamespaceInstance.TenantId),
+                    AadCredentialFactory.GetAuthority(serviceBusNamespaceInstance.TenantId),
+                    null,
+                    true);
+            }
+
+            return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
+        }
+
         /// <summary>
         /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
         /// </summary>
@@ -632,14 +680,17 @@ namespace ServiceBusExplorer
         {
             this.serviceBusNamespaceInstance = serviceBusNamespace;
 
-            if (string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
+            var isAad = serviceBusNamespace?.IsAzureActiveDirectory == true;
+
+            if (!isAad && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                throw new Exception($"Could not contact host in connection string: { serviceBusNamespace.ConnectionString }.");
+                var endpoint = isAad ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
+                throw new Exception($"Could not contact host in connection string: { endpoint }.");
             }
 
             var func = (() =>
@@ -648,11 +699,19 @@ namespace ServiceBusExplorer
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
 
-                // The NamespaceManager class can be used for managing entities,
-                // such as queues, topics, subscriptions, and rules, in your service namespace.
-                // You must provide service namespace address and access credentials in order
-                // to manage your service namespace.
-                namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                if (isAad)
+                {
+                    var endpointUri = new Uri(serviceBusNamespace.Uri);
+                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
+                        serviceBusNamespace.TenantId);
+
+                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                }
+                else
+                {
+                    aadTokenProvider = null;
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                }
 
                 // Set retry count
                 if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
@@ -662,23 +721,27 @@ namespace ServiceBusExplorer
                                                                                             RetryHelper.RetryCount);
                 }
 
-                try
+                // Notification Hubs don't support AAD token-provider auth
+                if (!isAad)
                 {
-                    notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
-
-                    // Set retry count
-                    if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                    try
                     {
-                        notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
-                                                                                                                        defaultNotificationHubsRetryExponential.MaximumBackoff,
-                                                                                                                        defaultNotificationHubsRetryExponential.DeltaBackoff,
-                                                                                                                        defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
-                                                                                                                        RetryHelper.RetryCount);
+                        notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
+
+                        // Set retry count
+                        if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                        {
+                            notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                                            RetryHelper.RetryCount);
+                        }
                     }
-                }
-                catch (Exception)
-                {
-                    // ignored
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 }
 
                 serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
@@ -698,7 +761,14 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                if (isAad)
+                {
+                    MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+                }
+                else
+                {
+                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                }
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
                 return true;
             });
@@ -3968,6 +4038,14 @@ namespace ServiceBusExplorer
             serviceBusHelper2.TransportType = UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
+
+            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            {
+                serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
+                serviceBusHelper2.AadTokenCredential = AadCredentialFactory.CreateNewSdkTokenCredential(
+                    serviceBusNamespaceInstance.TenantId);
+            }
+
             return serviceBusHelper2;
         }
 
@@ -3978,7 +4056,10 @@ namespace ServiceBusExplorer
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
         {
-            var administrationClient = new ServiceBusAdministrationClient(connectionString);
+            var administrationClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
+                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                : new ServiceBusAdministrationClient(connectionString);
             var result = new List<QueueProperties>();
 
             foreach (QueueDescription oldQueueDescription in oldQueueDescriptions)
@@ -3996,7 +4077,10 @@ namespace ServiceBusExplorer
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
         {
-            var managementClient = new ServiceBusAdministrationClient(connectionString);
+            var managementClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
+                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                : new ServiceBusAdministrationClient(connectionString);
             var result = new List<SubscriptionProperties>();
 
             foreach (SubscriptionWrapper oldSubscriptionWrapper in oldSubscriptionWrappers)
@@ -4345,6 +4429,21 @@ namespace ServiceBusExplorer
             }
 
             return true;
+        }
+
+        private static string GetAmqpConnectionString(string currentConnectionString)
+        {
+            if (string.IsNullOrEmpty(currentConnectionString))
+            {
+                throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
+            }
+
+            var builder = new ServiceBusConnectionStringBuilder(currentConnectionString)
+            {
+                TransportType = TransportType.Amqp
+            };
+
+            return builder.ToString();
         }
 
         #endregion
