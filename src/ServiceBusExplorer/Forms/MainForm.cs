@@ -246,6 +246,10 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private readonly System.Windows.Forms.Timer filterDebounceTimer;
+        private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
+        private string _pendingSelectionName;
+        private string _pendingSelectionType;
         #endregion
 
         #region Private Static Fields
@@ -288,6 +292,19 @@ namespace ServiceBusExplorer.Forms
             serviceBusHelper.OnCreate += serviceBusHelper_OnCreate;
             serviceBusHelper.OnDelete += serviceBusHelper_OnDelete;
             serviceBusTreeView.TreeViewNodeSorter = new TreeViewHelper();
+            filterDebounceTimer = new System.Windows.Forms.Timer(components) { Interval = 250 };
+            filterDebounceTimer.Tick += (s, args) =>
+            {
+                filterDebounceTimer.Stop();
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+                if (_pendingSelectionName != null)
+                {
+                    SelectNodeInTree(_pendingSelectionName, _pendingSelectionType);
+                    _pendingSelectionName = null;
+                    _pendingSelectionType = null;
+                }
+            };
+            UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
@@ -302,6 +319,7 @@ namespace ServiceBusExplorer.Forms
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
+            InitializeDashboard();
 
             WriteToLog(logMessage);
         }
@@ -314,6 +332,96 @@ namespace ServiceBusExplorer.Forms
         private static Color GetMainPanelGradientBackColor()
         {
             return ThemeManager.IsDark ? ThemeManager.Surface : SystemColors.GradientInactiveCaption;
+        }
+
+        private void InitializeDashboard()
+        {
+            dashboardControl.Initialize(
+                () => serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression, ServerTimeout),
+                () => serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout),
+                topicPath => serviceBusHelper.GetSubscriptions(topicPath),
+                msg => WriteToLog(msg));
+            dashboardControl.OnRowSelected = DashboardRowSelected;
+            dashboardControl.OnRowDoubleClicked = (name, type) =>
+            {
+                // CellClick already fires first and calls DashboardRowSelected for tree sync.
+                // Only switch tab here to avoid double invocation.
+                mainTabControl.SelectedTab = tabPageExplorer;
+            };
+            dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
+            dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
+            dashboardControl.OnSyncWithTreeViewChanged = () => dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
+        }
+
+        private void DashboardRowSelected(string name, string type)
+        {
+            if (rootNode == null) return;
+
+            bool hasFilter = !string.IsNullOrEmpty(filterTreeViewTextBox.Text);
+            if (hasFilter && !dashboardControl.SyncWithTreeView)
+            {
+                // Sync off: clear filter, then reselect after tree is restored by debounce timer
+                _pendingSelectionName = name;
+                _pendingSelectionType = type;
+                filterTreeViewTextBox.Text = string.Empty;
+                return;
+            }
+
+            // Sync on (or no filter): select directly — node is already visible in filtered tree
+            SelectNodeInTree(name, type);
+        }
+
+        private void SelectNodeInTree(string name, string type)
+        {
+            if (rootNode == null) return;
+
+            TreeNode targetNode = null;
+
+            if (type == "Queue")
+            {
+                var queueListNode = FindNode(Constants.QueueEntities, rootNode);
+                if (queueListNode != null)
+                    targetNode = FindNode(name, queueListNode);
+            }
+            else if (type == "Subscription")
+            {
+                var parts = name.Split(new[] { " / " }, 2, StringSplitOptions.None);
+                if (parts.Length == 2)
+                {
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    if (topicListNode != null)
+                    {
+                        var topicNode = FindNode(parts[0], topicListNode);
+                        if (topicNode != null)
+                        {
+                            EnsureNodeHasBeenLazyLoaded(topicNode);
+                            if (topicNode.Nodes.ContainsKey(SubscriptionEntities))
+                            {
+                                var subscriptionsNode = topicNode.Nodes[SubscriptionEntities];
+                                targetNode = FindNode(parts[1], subscriptionsNode);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (targetNode != null)
+            {
+                serviceBusTreeView.SelectedNode = targetNode;
+                targetNode.EnsureVisible();
+                HandleNodeMouseClick(targetNode);
+            }
+        }
+
+        private async Task DashboardRefreshRowAsync(string name, string type)
+        {
+            DashboardRowSelected(name, type);
+            await RefreshSelectedEntity();
+        }
+
+        private async void RefreshDashboard()
+        {
+            await dashboardControl.LoadDataAsync();
         }
 
         void DisplayNewVersionInformation()
@@ -729,6 +837,7 @@ namespace ServiceBusExplorer.Forms
                     if (!string.IsNullOrWhiteSpace(queueName))
                     {
                         DeleteNode(queueName, queueListNode);
+                        dashboardControl?.RemoveRow(queueName);
                     }
                     else
                     {
@@ -759,6 +868,7 @@ namespace ServiceBusExplorer.Forms
                     if (!string.IsNullOrWhiteSpace(topicName))
                     {
                         DeleteNode(topicName, topicListNode);
+                        dashboardControl?.RemoveRowsWithPrefix(topicName);
                     }
                     else
                     {
@@ -879,6 +989,7 @@ namespace ServiceBusExplorer.Forms
                             if (subscriptionsNode.Nodes.ContainsKey(subscription.Name))
                             {
                                 subscriptionsNode.Nodes.RemoveByKey(subscription.Name);
+                                dashboardControl?.RemoveRow($"{subscription.TopicPath} / {subscription.Name}");
                                 if (subscriptionsNode.Nodes.Count == 0)
                                 {
                                     topicNode.Nodes.Clear();
@@ -1044,6 +1155,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
@@ -1074,6 +1186,7 @@ namespace ServiceBusExplorer.Forms
                             return;
                         }
                         serviceBusTreeView.Sort();
+                        dashboardControl?.AddRow(queue.Path, "Queue");
                         panelMain.HeaderText = string.Format(ViewQueueFormat, queue.Path);
                         if (!importing)
                         {
@@ -1236,6 +1349,7 @@ namespace ServiceBusExplorer.Forms
                         subscriptionNode.ContextMenuStrip = subscriptionContextMenuStrip;
                         subscriptionNode.Tag = new SubscriptionWrapper(wrapper.SubscriptionDescription, wrapper.TopicDescription);
                         subscriptionsNode.Expand();
+                        dashboardControl?.AddRow($"{wrapper.TopicDescription.Path} / {wrapper.SubscriptionDescription.Name}", "Subscription");
                         panelMain.HeaderText = string.Format(ViewSubscriptionFormat, wrapper.SubscriptionDescription.Name);
                         if (!importing)
                         {
@@ -1363,6 +1477,7 @@ namespace ServiceBusExplorer.Forms
             }
             finally
             {
+                InvalidateTreeViewFilter();
                 serviceBusTreeView.ResumeDrawing();
                 serviceBusTreeView.ResumeLayout();
             }
@@ -1518,6 +1633,7 @@ namespace ServiceBusExplorer.Forms
                 serviceBusTreeView.SelectedNode = e.Node;
                 serviceBusTreeView.SelectedNode.EnsureVisible();
                 HandleNodeMouseClick(e.Node);
+                mainTabControl.SelectedTab = tabPageExplorer;
             }
         }
 
@@ -3033,6 +3149,14 @@ namespace ServiceBusExplorer.Forms
                             WriteToLog(string.Format(QueueRetrievedFormat, queueDescription.Path), false);
                         }
 
+                        // Update dashboard row
+                        var details = queueDescription.MessageCountDetails;
+                        if (details != null)
+                        {
+                            dashboardControl.UpdateRow(queueDescription.Path,
+                                details.ActiveMessageCount, details.DeadLetterMessageCount, details.ScheduledMessageCount);
+                        }
+
                         return;
                     }
 
@@ -3317,6 +3441,15 @@ namespace ServiceBusExplorer.Forms
                         }
                         serviceBusTreeView.SelectedNode.Text = GetNameAndMessageCountText(serviceBusTreeView.SelectedNode.Name, subscriptionDescription.MessageCountDetails);
                         ApplyColor(serviceBusTreeView.SelectedNode);
+
+                        // Update dashboard row
+                        var subDetails = subscriptionDescription.MessageCountDetails;
+                        if (subDetails != null)
+                        {
+                            var dashboardName = $"{subWrapper.SubscriptionDescription.TopicPath} / {subWrapper.SubscriptionDescription.Name}";
+                            dashboardControl.UpdateRow(dashboardName,
+                                subDetails.ActiveMessageCount, subDetails.DeadLetterMessageCount, subDetails.ScheduledMessageCount);
+                        }
 
                         RefreshIndividualSubscription(subscriptionDescription, serviceBusTreeView.SelectedNode);
                     }
@@ -4728,6 +4861,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.SelectedNode = rootNode;
                     serviceBusTreeView.SelectedNode.EnsureVisible();
                     HandleNodeMouseClick(rootNode);
+                    RefreshDashboard();
                 }
             }
             catch (Exception ex)
@@ -4742,6 +4876,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4875,6 +5010,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -4943,6 +5079,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
+                    InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
@@ -7583,6 +7720,64 @@ namespace ServiceBusExplorer.Forms
                     this.FindTopicsNodesRecursive(topicNodes, child);
             }
         }
+
+        #region Keyboard Shortcuts
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                filterTreeViewTextBox.Focus();
+                filterTreeViewTextBox.SelectAll();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
+        #region TreeView Filter
+
+        private void filterTreeViewTextBox_TextChanged(object sender, EventArgs e)
+        {
+            clearFilterButton.Visible = filterTreeViewTextBox.Text.Length > 0;
+            filterDebounceTimer.Stop();
+            filterDebounceTimer.Start();
+        }
+
+        private void clearFilterButton_Click(object sender, EventArgs e)
+        {
+            filterTreeViewTextBox.Clear();
+        }
+
+        private void ApplyTreeViewFilter(string filterText)
+        {
+            if (rootNode == null) return;
+
+            serviceBusTreeView.BeginUpdate();
+            try
+            {
+                treeViewFilterHelper.ApplyFilter(rootNode.Nodes, filterText);
+                rootNode.Expand();
+            }
+            finally
+            {
+                serviceBusTreeView.EndUpdate();
+            }
+            dashboardControl.ApplyFilter(filterText);
+        }
+
+        private void InvalidateTreeViewFilter()
+        {
+            treeViewFilterHelper.Clear();
+            if (!string.IsNullOrWhiteSpace(filterTreeViewTextBox.Text))
+            {
+                ApplyTreeViewFilter(filterTreeViewTextBox.Text);
+            }
+            dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
+        }
+
+        #endregion
     }
 }
 
