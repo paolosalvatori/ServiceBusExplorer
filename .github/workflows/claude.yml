@@ -10,11 +10,6 @@ on:
   pull_request_review:
     types: [submitted]
 
-# Cancel superseded runs on the same issue/PR to save minutes
-concurrency:
-  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
-  cancel-in-progress: true
-
 jobs:
   claude:
     # Gate 1: only trusted authors can trigger on a public repo.
