@@ -15,12 +15,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class BodyFilterForm : Form
+    public class BodyFilterForm : Form
     {
         #region Private Fields
 
@@ -35,6 +36,7 @@ namespace ServiceBusExplorer.Forms
         public string SelectedJsonPath { get; private set; }
         public string JsonPathValue { get; private set; }
         public bool IsCaseSensitive { get; private set; }
+        public bool WasCleared { get; private set; }
 
         #endregion
 
@@ -270,6 +272,7 @@ namespace ServiceBusExplorer.Forms
             SelectedJsonPath = string.Empty;
             JsonPathValue = string.Empty;
             IsCaseSensitive = false;
+            WasCleared = true;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -297,7 +300,8 @@ namespace ServiceBusExplorer.Forms
 
                 try
                 {
-                    ExtractPathsFromJson(trimmed, string.Empty, paths);
+                    var token = JToken.Parse(trimmed);
+                    ExtractPathsFromToken(token, string.Empty, paths);
                 }
                 catch
                 {
@@ -310,163 +314,30 @@ namespace ServiceBusExplorer.Forms
             return result;
         }
 
-        private static void ExtractPathsFromJson(string json, string prefix, HashSet<string> paths)
+        private static void ExtractPathsFromToken(JToken token, string prefix, HashSet<string> paths, int depth = 0)
         {
-            // Simple JSON parser for key extraction - handles objects and arrays
-            json = json.Trim();
+            if (depth > 10) return;
 
-            if (json.StartsWith("["))
+            switch (token.Type)
             {
-                // For arrays, try to parse elements
-                var items = ParseJsonArray(json);
-                foreach (var item in items)
-                {
-                    ExtractPathsFromJson(item, prefix, paths);
-                }
-                return;
+                case JTokenType.Object:
+                    foreach (var property in ((JObject)token).Properties())
+                    {
+                        var fullPath = string.IsNullOrEmpty(prefix) ? property.Name : $"{prefix}.{property.Name}";
+                        paths.Add(fullPath);
+                        ExtractPathsFromToken(property.Value, fullPath, paths, depth + 1);
+                    }
+                    break;
+
+                case JTokenType.Array:
+                    var count = 0;
+                    foreach (var item in (JArray)token)
+                    {
+                        ExtractPathsFromToken(item, prefix, paths, depth + 1);
+                        if (++count >= 10) break;
+                    }
+                    break;
             }
-
-            if (!json.StartsWith("{"))
-                return;
-
-            var kvPairs = ParseJsonObject(json);
-            foreach (var kvp in kvPairs)
-            {
-                var fullPath = string.IsNullOrEmpty(prefix) ? kvp.Key : $"{prefix}.{kvp.Key}";
-                paths.Add(fullPath);
-
-                var val = kvp.Value.Trim();
-                if (val.StartsWith("{") || val.StartsWith("["))
-                {
-                    ExtractPathsFromJson(val, fullPath, paths);
-                }
-            }
-        }
-
-        private static List<KeyValuePair<string, string>> ParseJsonObject(string json)
-        {
-            var result = new List<KeyValuePair<string, string>>();
-            if (string.IsNullOrEmpty(json) || json.Length < 2)
-                return result;
-
-            // Remove outer braces
-            var inner = json.Substring(1, json.Length - 2).Trim();
-            if (string.IsNullOrEmpty(inner))
-                return result;
-
-            var i = 0;
-            while (i < inner.Length)
-            {
-                // Skip whitespace
-                while (i < inner.Length && char.IsWhiteSpace(inner[i])) i++;
-                if (i >= inner.Length) break;
-
-                // Skip comma
-                if (inner[i] == ',') { i++; continue; }
-
-                // Parse key (expect quoted string)
-                if (inner[i] != '"') break;
-                var key = ParseJsonString(inner, ref i);
-                if (key == null) break;
-
-                // Skip colon
-                while (i < inner.Length && char.IsWhiteSpace(inner[i])) i++;
-                if (i >= inner.Length || inner[i] != ':') break;
-                i++; // skip ':'
-                while (i < inner.Length && char.IsWhiteSpace(inner[i])) i++;
-
-                // Parse value
-                var value = ParseJsonValue(inner, ref i);
-                if (value == null) break;
-
-                result.Add(new KeyValuePair<string, string>(key, value));
-            }
-
-            return result;
-        }
-
-        private static List<string> ParseJsonArray(string json)
-        {
-            var result = new List<string>();
-            if (string.IsNullOrEmpty(json) || json.Length < 2) return result;
-
-            var inner = json.Substring(1, json.Length - 2).Trim();
-            if (string.IsNullOrEmpty(inner)) return result;
-
-            var i = 0;
-            while (i < inner.Length)
-            {
-                while (i < inner.Length && char.IsWhiteSpace(inner[i])) i++;
-                if (i >= inner.Length) break;
-                if (inner[i] == ',') { i++; continue; }
-
-                var value = ParseJsonValue(inner, ref i);
-                if (value != null) result.Add(value);
-                else break;
-
-                // Limit to first 10 items for path extraction
-                if (result.Count >= 10) break;
-            }
-            return result;
-        }
-
-        private static string ParseJsonString(string json, ref int i)
-        {
-            if (i >= json.Length || json[i] != '"') return null;
-            i++; // skip opening quote
-            var start = i;
-            while (i < json.Length)
-            {
-                if (json[i] == '\\') { i += 2; continue; }
-                if (json[i] == '"') { var s = json.Substring(start, i - start); i++; return s; }
-                i++;
-            }
-            return null;
-        }
-
-        private static string ParseJsonValue(string json, ref int i)
-        {
-            if (i >= json.Length) return null;
-
-            if (json[i] == '"')
-            {
-                var start = i;
-                var str = ParseJsonString(json, ref i);
-                return str != null ? $"\"{str}\"" : null;
-            }
-
-            if (json[i] == '{' || json[i] == '[')
-            {
-                return ParseJsonBlock(json, ref i);
-            }
-
-            // Number, bool, null
-            var vStart = i;
-            while (i < json.Length && json[i] != ',' && json[i] != '}' && json[i] != ']' && !char.IsWhiteSpace(json[i]))
-                i++;
-            return json.Substring(vStart, i - vStart);
-        }
-
-        private static string ParseJsonBlock(string json, ref int i)
-        {
-            var open = json[i];
-            var close = open == '{' ? '}' : ']';
-            var depth = 1;
-            var start = i;
-            i++;
-            var inString = false;
-            while (i < json.Length && depth > 0)
-            {
-                if (json[i] == '\\' && inString) { i += 2; continue; }
-                if (json[i] == '"') inString = !inString;
-                if (!inString)
-                {
-                    if (json[i] == open) depth++;
-                    if (json[i] == close) depth--;
-                }
-                i++;
-            }
-            return json.Substring(start, i - start);
         }
 
         /// <summary>
@@ -483,47 +354,43 @@ namespace ServiceBusExplorer.Forms
 
             try
             {
+                var token = JToken.Parse(trimmed);
                 var parts = path.Split('.');
-                var current = trimmed;
 
                 foreach (var part in parts)
                 {
-                    current = current.Trim();
+                    if (token == null) return null;
 
-                    if (current.StartsWith("["))
+                    switch (token.Type)
                     {
-                        // Search in array items
-                        var items = ParseJsonArray(current);
-                        string found = null;
-                        foreach (var item in items)
-                        {
-                            found = GetJsonValueAtPath(item, part);
-                            if (found != null) break;
-                        }
-                        current = found;
-                    }
-                    else if (current.StartsWith("{"))
-                    {
-                        var kvPairs = ParseJsonObject(current);
-                        var match = kvPairs.FirstOrDefault(kv =>
-                            string.Equals(kv.Key, part, StringComparison.OrdinalIgnoreCase));
-                        current = match.Value;
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                        case JTokenType.Object:
+                            token = ((JObject)token).GetValue(part, StringComparison.OrdinalIgnoreCase);
+                            break;
 
-                    if (current == null) return null;
+                        case JTokenType.Array:
+                            // Search array items for the property
+                            JToken found = null;
+                            foreach (var item in (JArray)token)
+                            {
+                                if (item is JObject obj)
+                                {
+                                    found = obj.GetValue(part, StringComparison.OrdinalIgnoreCase);
+                                    if (found != null) break;
+                                }
+                            }
+                            token = found;
+                            break;
+
+                        default:
+                            return null;
+                    }
                 }
 
-                // Remove surrounding quotes if present
-                if (current != null && current.StartsWith("\"") && current.EndsWith("\"") && current.Length >= 2)
-                {
-                    current = current.Substring(1, current.Length - 2);
-                }
+                if (token == null) return null;
 
-                return current;
+                return token.Type == JTokenType.String
+                    ? token.Value<string>()
+                    : token.ToString();
             }
             catch
             {

@@ -150,7 +150,6 @@ namespace ServiceBusExplorer.Controls
 
         private const string FilterExpressionRemovedMessage = "The filter expression has been removed.";
         private const string BodyFilterAppliedMessage = "Body content filter applied. [{0}] messages matched.";
-        private const string BodyFilterRemovedMessage = "The body content filter has been removed.";
 
         private const string NoMessageReceivedFromTheQueue =
             "The timeout  of [{0}] seconds has expired and no message was retrieved from the queue [{1}].";
@@ -256,14 +255,14 @@ namespace ServiceBusExplorer.Controls
         private SortableBindingList<BrokeredMessage> deadletterBindingList = default!;
         private SortableBindingList<BrokeredMessage> transferDeadletterBindingList = default!;
         private SortableBindingList<MessageSession> sessionBindingList = default!;
-        private string messagesBodyFreeTextFilter = default!;
-        private string messagesBodyJsonPath = default!;
-        private string messagesBodyJsonValue = default!;
-        private bool messagesBodyCaseSensitive = default!;
-        private string deadletterBodyFreeTextFilter = default!;
-        private string deadletterBodyJsonPath = default!;
-        private string deadletterBodyJsonValue = default!;
-        private bool deadletterBodyCaseSensitive = default!;
+        private string messagesBodyFreeTextFilter = string.Empty;
+        private string messagesBodyJsonPath = string.Empty;
+        private string messagesBodyJsonValue = string.Empty;
+        private bool messagesBodyCaseSensitive;
+        private string deadletterBodyFreeTextFilter = string.Empty;
+        private string deadletterBodyJsonPath = string.Empty;
+        private string deadletterBodyJsonValue = string.Empty;
+        private bool deadletterBodyCaseSensitive;
         private Dictionary<BrokeredMessage, string> messageBodyCache = new Dictionary<BrokeredMessage, string>();
         private Dictionary<BrokeredMessage, string> deadletterBodyCache = new Dictionary<BrokeredMessage, string>();
         private TextBox txtInlineMessagesBodyFilter;
@@ -272,7 +271,8 @@ namespace ServiceBusExplorer.Controls
         private Timer messagesInlineFilterTimer;
         private Timer deadletterInlineFilterTimer;
         private Timer deadletterReasonFilterTimer;
-        private string deadletterReasonFilter = default!;
+        private ToolTip deadLetterReasonToolTip;
+        private string deadletterReasonFilter = string.Empty;
         private bool buttonsMoved;
         private readonly bool duplicateQueue;
         private Button btnCopyMessageBody;
@@ -333,9 +333,11 @@ namespace ServiceBusExplorer.Controls
             btnCopyDeadletterBody = AddCopyBodyButton(grouperDeadletterText, txtDeadletterText);
             btnCopyTransferDeadletterBody = AddCopyBodyButton(grouperTransferDeadletterText, txtTransferDeadletterText);
 
-            txtInlineMessagesBodyFilter = AddInlineSearchBox(grouperMessageList, pictFindMessagesByDate, 50, OnMessagesInlineFilterChanged);
-            txtInlineDeadletterBodyFilter = AddInlineSearchBox(grouperDeadletterList, pictFindDeadletterByDate, 50, OnDeadletterInlineFilterChanged);
-            txtDeadLetterReasonFilter = AddDeadLetterReasonSearchBox(grouperDeadletterList, txtInlineDeadletterBodyFilter);
+            txtInlineMessagesBodyFilter = MessageBodyFilterHelper.AddInlineSearchBox(grouperMessageList, pictFindMessagesByDate, 50, OnMessagesInlineFilterChanged);
+            txtInlineDeadletterBodyFilter = MessageBodyFilterHelper.AddInlineSearchBox(grouperDeadletterList, pictFindDeadletterByDate, 50, OnDeadletterInlineFilterChanged);
+            var dlReasonResult = MessageBodyFilterHelper.AddDeadLetterReasonSearchBox(grouperDeadletterList, txtInlineDeadletterBodyFilter);
+            txtDeadLetterReasonFilter = dlReasonResult.textBox;
+            deadLetterReasonToolTip = dlReasonResult.toolTip;
 
             messagesInlineFilterTimer = new Timer { Interval = 400 };
             messagesInlineFilterTimer.Tick += (s, ev) => { messagesInlineFilterTimer.Stop(); ApplyInlineMessagesFilter(); };
@@ -1363,20 +1365,19 @@ namespace ServiceBusExplorer.Controls
                 if (peek)
                 {
                     var totalRetrieved = 0;
-                    var batchSize = all ? MainForm.SingletonMainForm.TopCount : count;
 
                     var receiver = BuildMessageReceiver(ReceiveMode.PeekLock, fromSession);
-                    while (all || totalRetrieved < count)
+                    while (totalRetrieved < count)
                     {
                         IEnumerable<BrokeredMessage> messageEnumerable;
 
                         if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
                         {
-                            messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, batchSize);
+                            messageEnumerable = receiver.PeekBatch(fromSequenceNumber.Value, count);
                         }
                         else
                         {
-                            messageEnumerable = receiver.PeekBatch(batchSize);
+                            messageEnumerable = receiver.PeekBatch(count);
                         }
 
                         if (messageEnumerable == null)
@@ -1421,6 +1422,7 @@ namespace ServiceBusExplorer.Controls
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+                messageBodyCache.Clear();
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
@@ -1532,6 +1534,7 @@ namespace ServiceBusExplorer.Controls
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
+                messageBodyCache.Clear();
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
@@ -3598,7 +3601,10 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                EnsureMessageBodyCache(messageBindingList, messageBodyCache);
+                Cursor.Current = Cursors.WaitCursor;
+                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                Cursor.Current = Cursors.Default;
                 var bodies = messageBodyCache.Values.ToList();
                 var jsonPaths = BodyFilterForm.ExtractJsonPaths(bodies);
 
@@ -3625,57 +3631,6 @@ namespace ServiceBusExplorer.Controls
                 messagesDataGridView.ResumeLayout();
                 messagesDataGridView.ResumeDrawing();
             }
-        }
-
-        private void EnsureMessageBodyCache(SortableBindingList<BrokeredMessage> bindingList, Dictionary<BrokeredMessage, string> cache)
-        {
-            foreach (var msg in bindingList)
-            {
-                if (!cache.ContainsKey(msg))
-                {
-                    try
-                    {
-                        cache[msg] = serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _);
-                    }
-                    catch (Exception ex)
-                    {
-                        writeToLog($"[BodyFilter] Failed to get body for message {msg.MessageId}: {ex.Message}");
-                        cache[msg] = string.Empty;
-                    }
-                }
-            }
-        }
-
-        private bool MatchesBodyFilter(BrokeredMessage msg, Dictionary<BrokeredMessage, string> cache,
-            string freeText, string jsonPath, string jsonValue, bool caseSensitive)
-        {
-            if (!cache.TryGetValue(msg, out var body))
-                body = string.Empty;
-
-            var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
-            // Free text filter
-            if (!string.IsNullOrWhiteSpace(freeText))
-            {
-                if (string.IsNullOrEmpty(body) || body.IndexOf(freeText, comparison) < 0)
-                    return false;
-            }
-
-            // JSON path filter
-            if (!string.IsNullOrWhiteSpace(jsonPath))
-            {
-                var val = BodyFilterForm.GetJsonValueAtPath(body, jsonPath);
-                if (val == null)
-                    return false;
-
-                if (!string.IsNullOrWhiteSpace(jsonValue))
-                {
-                    if (val.IndexOf(jsonValue, comparison) < 0)
-                        return false;
-                }
-            }
-
-            return true;
         }
 
         private void pictFindMessagesByDate_Click(object sender, EventArgs e)
@@ -3723,20 +3678,15 @@ namespace ServiceBusExplorer.Controls
             return true;
         }
 
-        private bool HasBodyFilter(string freeText, string jsonPath)
-        {
-            return !string.IsNullOrWhiteSpace(freeText) || !string.IsNullOrWhiteSpace(jsonPath);
-        }
-
         private bool HasAnyDeadletterBodyFilter()
         {
-            return HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath) || !string.IsNullOrEmpty(deadletterReasonFilter);
+            return MessageBodyFilterHelper.HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath) || !string.IsNullOrEmpty(deadletterReasonFilter);
         }
 
         private void FilterMessages()
         {
             var bindingList = new SortableBindingList<BrokeredMessage>();
-            var hasBodyFilter = HasBodyFilter(messagesBodyFreeTextFilter, messagesBodyJsonPath);
+            var hasBodyFilter = MessageBodyFilterHelper.HasBodyFilter(messagesBodyFreeTextFilter, messagesBodyJsonPath);
             try
             {
                 if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression) && !hasBodyFilter)
@@ -3775,8 +3725,9 @@ namespace ServiceBusExplorer.Controls
 
                     if (hasBodyFilter)
                     {
-                        EnsureMessageBodyCache(messageBindingList, messageBodyCache);
-                        filteredList = filteredList.Where(msg => MatchesBodyFilter(msg, messageBodyCache,
+                        MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
+                            msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                        filteredList = filteredList.Where(msg => MessageBodyFilterHelper.MatchesBodyFilter(msg, messageBodyCache,
                             messagesBodyFreeTextFilter, messagesBodyJsonPath, messagesBodyJsonValue, messagesBodyCaseSensitive)).ToList();
                         writeToLog(string.Format(BodyFilterAppliedMessage, filteredList.Count));
                     }
@@ -3856,10 +3807,11 @@ namespace ServiceBusExplorer.Controls
 
                     if (hasBodyFilter)
                     {
-                        if (HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath))
+                        if (MessageBodyFilterHelper.HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath))
                         {
-                            EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache);
-                            filteredList = filteredList.Where(msg => MatchesBodyFilter(msg, deadletterBodyCache,
+                            MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
+                                msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                            filteredList = filteredList.Where(msg => MessageBodyFilterHelper.MatchesBodyFilter(msg, deadletterBodyCache,
                                 deadletterBodyFreeTextFilter, deadletterBodyJsonPath, deadletterBodyJsonValue, deadletterBodyCaseSensitive)).ToList();
                         }
 
@@ -3949,7 +3901,10 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache);
+                Cursor.Current = Cursors.WaitCursor;
+                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                Cursor.Current = Cursors.Default;
                 var bodies = deadletterBodyCache.Values.ToList();
                 var jsonPaths = BodyFilterForm.ExtractJsonPaths(bodies);
 
@@ -3996,88 +3951,16 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private static TextBox AddInlineSearchBox(Control parent, PictureBox afterButton, int extraOffset, EventHandler textChangedHandler)
-        {
-            var startX = afterButton.Location.X + afterButton.Size.Width + extraOffset;
-
-            var txt = new TextBox
-            {
-                Location = new Point(startX, 2),
-                Size = new Size(180, 20),
-                Font = new Font("Microsoft Sans Serif", 8.25F),
-                ForeColor = SystemColors.GrayText,
-                Text = "Search body...",
-                Anchor = AnchorStyles.Top | AnchorStyles.Left
-            };
-
-            txt.GotFocus += (s, e) =>
-            {
-                if (txt.ForeColor == SystemColors.GrayText)
-                {
-                    txt.Text = string.Empty;
-                    txt.ForeColor = SystemColors.WindowText;
-                }
-            };
-            txt.LostFocus += (s, e) =>
-            {
-                if (string.IsNullOrEmpty(txt.Text))
-                {
-                    txt.ForeColor = SystemColors.GrayText;
-                    txt.Text = "Search body...";
-                }
-            };
-            txt.TextChanged += textChangedHandler;
-
-            parent.Controls.Add(txt);
-            return txt;
-        }
-
-        private static TextBox AddDeadLetterReasonSearchBox(Control parent, TextBox afterTextBox)
-        {
-            var txt = new TextBox
-            {
-                Location = new Point(afterTextBox.Location.X + afterTextBox.Size.Width + 8, 2),
-                Size = new Size(180, 20),
-                Font = new Font("Microsoft Sans Serif", 8.25F),
-                ForeColor = SystemColors.GrayText,
-                Text = "Search DL reason...",
-                Anchor = AnchorStyles.Top | AnchorStyles.Left
-            };
-
-            txt.GotFocus += (s, e) =>
-            {
-                if (txt.ForeColor == SystemColors.GrayText)
-                {
-                    txt.Text = string.Empty;
-                    txt.ForeColor = SystemColors.WindowText;
-                }
-            };
-            txt.LostFocus += (s, e) =>
-            {
-                if (string.IsNullOrEmpty(txt.Text))
-                {
-                    txt.ForeColor = SystemColors.GrayText;
-                    txt.Text = "Search DL reason...";
-                }
-            };
-
-            var tooltip = new ToolTip();
-            tooltip.SetToolTip(txt, "Filter by Dead Letter Reason (partial match)");
-
-            parent.Controls.Add(txt);
-            return txt;
-        }
-
         private void OnMessagesInlineFilterChanged(object sender, EventArgs e)
         {
-            if (txtInlineMessagesBodyFilter.ForeColor == SystemColors.GrayText) return;
+            if (txtInlineMessagesBodyFilter.Tag is true) return;
             messagesInlineFilterTimer.Stop();
             messagesInlineFilterTimer.Start();
         }
 
         private void OnDeadletterInlineFilterChanged(object sender, EventArgs e)
         {
-            if (txtInlineDeadletterBodyFilter.ForeColor == SystemColors.GrayText) return;
+            if (txtInlineDeadletterBodyFilter.Tag is true) return;
             deadletterInlineFilterTimer.Stop();
             deadletterInlineFilterTimer.Start();
         }
@@ -4088,7 +3971,7 @@ namespace ServiceBusExplorer.Controls
             {
                 messagesDataGridView.SuspendDrawing();
                 messagesDataGridView.SuspendLayout();
-                var searchText = txtInlineMessagesBodyFilter.ForeColor == SystemColors.GrayText
+                var searchText = txtInlineMessagesBodyFilter.Tag is true
                     ? string.Empty : txtInlineMessagesBodyFilter.Text.Trim();
                 messagesBodyFreeTextFilter = searchText;
                 FilterMessages();
@@ -4110,7 +3993,7 @@ namespace ServiceBusExplorer.Controls
             {
                 deadletterDataGridView.SuspendDrawing();
                 deadletterDataGridView.SuspendLayout();
-                var searchText = txtInlineDeadletterBodyFilter.ForeColor == SystemColors.GrayText
+                var searchText = txtInlineDeadletterBodyFilter.Tag is true
                     ? string.Empty : txtInlineDeadletterBodyFilter.Text.Trim();
                 deadletterBodyFreeTextFilter = searchText;
                 FilterDeadletters();
@@ -4136,7 +4019,7 @@ namespace ServiceBusExplorer.Controls
 
         private void OnDeadLetterReasonTextChanged(object sender, EventArgs e)
         {
-            if (txtDeadLetterReasonFilter.ForeColor == SystemColors.GrayText) return;
+            if (txtDeadLetterReasonFilter.Tag is true) return;
             deadletterReasonFilterTimer.Stop();
             deadletterReasonFilterTimer.Start();
         }
@@ -4147,9 +4030,9 @@ namespace ServiceBusExplorer.Controls
             {
                 deadletterDataGridView.SuspendDrawing();
                 deadletterDataGridView.SuspendLayout();
-                var reasonText = txtDeadLetterReasonFilter.ForeColor == SystemColors.GrayText
-                    ? null! : txtDeadLetterReasonFilter.Text.Trim();
-                deadletterReasonFilter = string.IsNullOrEmpty(reasonText) ? null! : reasonText;
+                var reasonText = txtDeadLetterReasonFilter.Tag is true
+                    ? string.Empty : txtDeadLetterReasonFilter.Text.Trim();
+                deadletterReasonFilter = string.IsNullOrEmpty(reasonText) ? string.Empty : reasonText;
                 FilterDeadletters();
             }
             catch (Exception ex)
@@ -4230,6 +4113,10 @@ namespace ServiceBusExplorer.Controls
                 if (disposing)
                 {
                     components?.Dispose();
+                    messagesInlineFilterTimer?.Dispose();
+                    deadletterInlineFilterTimer?.Dispose();
+                    deadletterReasonFilterTimer?.Dispose();
+                    deadLetterReasonToolTip?.Dispose();
                 }
 
                 for (var i = 0; i < Controls.Count; i++)
