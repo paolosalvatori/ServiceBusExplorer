@@ -972,6 +972,8 @@ namespace ServiceBusExplorer.Controls
                     AllowNew = false,
                     AllowRemove = false
                 };
+                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
 
@@ -1098,6 +1100,8 @@ namespace ServiceBusExplorer.Controls
                     AllowNew = false,
                     AllowRemove = false
                 };
+                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
 
@@ -1219,6 +1223,8 @@ namespace ServiceBusExplorer.Controls
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
                 deadletterBodyCache.Clear();
+                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 PopulateDeadLetterReasonCombo();
 
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
@@ -1336,6 +1342,8 @@ namespace ServiceBusExplorer.Controls
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
                 deadletterBodyCache.Clear();
+                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
+                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 PopulateDeadLetterReasonCombo();
 
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
@@ -2605,8 +2613,6 @@ namespace ServiceBusExplorer.Controls
 
                 if (hasBodyFilter)
                 {
-                    MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
-                        msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                     filteredList = filteredList.Where(msg => MessageBodyFilterHelper.MatchesBodyFilter(msg, messageBodyCache,
                         messagesBodyFreeTextFilter, messagesBodyJsonPath, messagesBodyJsonValue, messagesBodyCaseSensitive)).ToList();
                     writeToLog(string.Format(BodyFilterAppliedMessage, filteredList.Count));
@@ -2666,8 +2672,6 @@ namespace ServiceBusExplorer.Controls
                 {
                     if (MessageBodyFilterHelper.HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath))
                     {
-                        MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
-                            msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                         filteredList = filteredList.Where(msg => MessageBodyFilterHelper.MatchesBodyFilter(msg, deadletterBodyCache,
                             deadletterBodyFreeTextFilter, deadletterBodyJsonPath, deadletterBodyJsonValue, deadletterBodyCaseSensitive)).ToList();
                     }
@@ -2721,10 +2725,6 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                Cursor.Current = Cursors.WaitCursor;
-                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
-                Cursor.Current = Cursors.Default;
                 var bodies = messageBodyCache.Values.ToList();
                 var jsonPaths = BodyFilterForm.ExtractJsonPaths(bodies);
 
@@ -2764,10 +2764,6 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
-                Cursor.Current = Cursors.WaitCursor;
-                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
-                Cursor.Current = Cursors.Default;
                 var bodies = deadletterBodyCache.Values.ToList();
                 var jsonPaths = BodyFilterForm.ExtractJsonPaths(bodies);
 
