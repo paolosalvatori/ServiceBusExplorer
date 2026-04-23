@@ -265,6 +265,12 @@ namespace ServiceBusExplorer.Controls
         private bool deadletterBodyCaseSensitive;
         private Dictionary<BrokeredMessage, string> messageBodyCache = new Dictionary<BrokeredMessage, string>();
         private Dictionary<BrokeredMessage, string> deadletterBodyCache = new Dictionary<BrokeredMessage, string>();
+        private bool _messageCacheReady;
+        private bool _messageCachePopulating;
+        private int _messageCacheVersion;
+        private bool _deadletterCacheReady;
+        private bool _deadletterCachePopulating;
+        private int _deadletterCacheVersion;
         private TextBox txtInlineMessagesBodyFilter;
         private TextBox txtInlineDeadletterBodyFilter;
         private TextBox txtDeadLetterReasonFilter;
@@ -1422,15 +1428,16 @@ namespace ServiceBusExplorer.Controls
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
-                messageBodyCache.Clear();
+                messageBodyCache = new Dictionary<BrokeredMessage, string>();
+                _messageCacheReady = false;
+                _messageCachePopulating = false;
+                _messageCacheVersion++;
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
                     AllowRemove = false
                 };
-                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
 
@@ -1536,15 +1543,16 @@ namespace ServiceBusExplorer.Controls
                     } while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheQueue, brokeredMessages.Count, queueDescription.Path));
                 }
-                messageBodyCache.Clear();
+                messageBodyCache = new Dictionary<BrokeredMessage, string>();
+                _messageCacheReady = false;
+                _messageCachePopulating = false;
+                _messageCacheVersion++;
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
                     AllowEdit = false,
                     AllowNew = false,
                     AllowRemove = false
                 };
-                MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
                 messagesBindingSource.DataSource = messageBindingList;
                 messagesDataGridView.DataSource = messagesBindingSource;
                 messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
@@ -1673,9 +1681,10 @@ namespace ServiceBusExplorer.Controls
 
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
-                deadletterBodyCache.Clear();
-                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                deadletterBodyCache = new Dictionary<BrokeredMessage, string>();
+                _deadletterCacheReady = false;
+                _deadletterCachePopulating = false;
+                _deadletterCacheVersion++;
                 PopulateDeadLetterReasonCombo();
 
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
@@ -1922,9 +1931,10 @@ namespace ServiceBusExplorer.Controls
                 };
                 deadletterBindingSource.DataSource = deadletterBindingList;
                 deadletterDataGridView.DataSource = deadletterBindingSource;
-                deadletterBodyCache.Clear();
-                MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
-                    msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                deadletterBodyCache = new Dictionary<BrokeredMessage, string>();
+                _deadletterCacheReady = false;
+                _deadletterCachePopulating = false;
+                _deadletterCacheVersion++;
                 PopulateDeadLetterReasonCombo();
 
                 deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
@@ -3609,6 +3619,14 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
+                if (!_messageCacheReady)
+                {
+                    MessageBodyFilterHelper.EnsureMessageBodyCache(messageBindingList, messageBodyCache,
+                        msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                    _messageCachePopulating = false;
+                    _messageCacheReady = true;
+                }
+
                 var bodies = messageBodyCache.Values.ToList();
                 var jsonPaths = BodyFilterForm.ExtractJsonPaths(bodies);
 
@@ -3689,8 +3707,11 @@ namespace ServiceBusExplorer.Controls
 
         private void FilterMessages()
         {
-            var bindingList = new SortableBindingList<BrokeredMessage>();
             var hasBodyFilter = MessageBodyFilterHelper.HasBodyFilter(messagesBodyFreeTextFilter, messagesBodyJsonPath);
+            if (hasBodyFilter && !EnsureMessageBodyCacheAsync(() => FilterMessages()))
+                return;
+
+            var bindingList = new SortableBindingList<BrokeredMessage>();
             try
             {
                 if (messagesFilterFromDate == null && messagesFilterToDate == null && string.IsNullOrWhiteSpace(messagesFilterExpression) && !hasBodyFilter)
@@ -3769,8 +3790,12 @@ namespace ServiceBusExplorer.Controls
 
         private void FilterDeadletters()
         {
-            var bindingList = new SortableBindingList<BrokeredMessage>();
             var hasBodyFilter = HasAnyDeadletterBodyFilter();
+            if (MessageBodyFilterHelper.HasBodyFilter(deadletterBodyFreeTextFilter, deadletterBodyJsonPath) &&
+                !EnsureDeadletterBodyCacheAsync(() => FilterDeadletters()))
+                return;
+
+            var bindingList = new SortableBindingList<BrokeredMessage>();
             try
             {
                 if (deadletterFilterFromDate == null && deadletterFilterToDate == null && string.IsNullOrWhiteSpace(deadletterFilterExpression) && !hasBodyFilter)
@@ -3899,6 +3924,14 @@ namespace ServiceBusExplorer.Controls
                 if (deadletterBindingList == null)
                 {
                     return;
+                }
+
+                if (!_deadletterCacheReady)
+                {
+                    MessageBodyFilterHelper.EnsureMessageBodyCache(deadletterBindingList, deadletterBodyCache,
+                        msg => serviceBusHelper.GetMessageText(msg, MainForm.SingletonMainForm.UseAscii, out _), writeToLog);
+                    _deadletterCachePopulating = false;
+                    _deadletterCacheReady = true;
                 }
 
                 var bodies = deadletterBodyCache.Values.ToList();
@@ -4096,6 +4129,94 @@ namespace ServiceBusExplorer.Controls
         private void sessionsDataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        /// <summary>
+        /// Populates the message body cache asynchronously on a background thread.
+        /// Returns <c>true</c> immediately if already ready; <c>false</c> if population started
+        /// — <paramref name="onReady"/> is invoked on the UI thread when complete.
+        /// A version counter guards against stale completions from superseded message loads.
+        /// </summary>
+        private bool EnsureMessageBodyCacheAsync(Action onReady)
+        {
+            if (_messageCacheReady) return true;
+            if (_messageCachePopulating) return false;
+            if ((messageBindingList?.Count ?? 0) == 0) return true;
+
+            _messageCachePopulating = true;
+            var capturedVersion = _messageCacheVersion;
+            var capturedCache = messageBodyCache;
+            var snapshot = messageBindingList.ToList();
+            var useAscii = MainForm.SingletonMainForm.UseAscii;
+
+            Task.Run(() =>
+            {
+                foreach (var msg in snapshot)
+                {
+                    if (!capturedCache.ContainsKey(msg))
+                    {
+                        try
+                        {
+                            capturedCache[msg] = serviceBusHelper.GetMessageText(msg, useAscii, out _);
+                        }
+                        catch (Exception)
+                        {
+                            capturedCache[msg] = string.Empty;
+                        }
+                    }
+                }
+            }).ContinueWith(_ =>
+            {
+                if (_messageCacheVersion == capturedVersion)
+                {
+                    _messageCachePopulating = false;
+                    _messageCacheReady = true;
+                    onReady();
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            return false;
+        }
+
+        private bool EnsureDeadletterBodyCacheAsync(Action onReady)
+        {
+            if (_deadletterCacheReady) return true;
+            if (_deadletterCachePopulating) return false;
+            if ((deadletterBindingList?.Count ?? 0) == 0) return true;
+
+            _deadletterCachePopulating = true;
+            var capturedVersion = _deadletterCacheVersion;
+            var capturedCache = deadletterBodyCache;
+            var snapshot = deadletterBindingList.ToList();
+            var useAscii = MainForm.SingletonMainForm.UseAscii;
+
+            Task.Run(() =>
+            {
+                foreach (var msg in snapshot)
+                {
+                    if (!capturedCache.ContainsKey(msg))
+                    {
+                        try
+                        {
+                            capturedCache[msg] = serviceBusHelper.GetMessageText(msg, useAscii, out _);
+                        }
+                        catch (Exception)
+                        {
+                            capturedCache[msg] = string.Empty;
+                        }
+                    }
+                }
+            }).ContinueWith(_ =>
+            {
+                if (_deadletterCacheVersion == capturedVersion)
+                {
+                    _deadletterCachePopulating = false;
+                    _deadletterCacheReady = true;
+                    onReady();
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            return false;
         }
 
         /// <summary> 

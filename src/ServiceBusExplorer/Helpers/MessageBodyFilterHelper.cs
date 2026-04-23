@@ -122,9 +122,9 @@ namespace ServiceBusExplorer.Helpers
             {
                 if (string.IsNullOrEmpty(txt.Text))
                 {
+                    txt.Tag = true;
                     txt.ForeColor = SystemColors.GrayText;
                     txt.Text = "Search body...";
-                    txt.Tag = true;
                 }
             };
             txt.TextChanged += textChangedHandler;
@@ -163,9 +163,9 @@ namespace ServiceBusExplorer.Helpers
             {
                 if (string.IsNullOrEmpty(txt.Text))
                 {
+                    txt.Tag = true;
                     txt.ForeColor = SystemColors.GrayText;
                     txt.Text = "Search DL reason...";
-                    txt.Tag = true;
                 }
             };
 

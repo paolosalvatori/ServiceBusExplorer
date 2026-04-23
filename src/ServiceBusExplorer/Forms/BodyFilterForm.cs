@@ -36,7 +36,6 @@ namespace ServiceBusExplorer.Forms
         public string SelectedJsonPath { get; private set; }
         public string JsonPathValue { get; private set; }
         public bool IsCaseSensitive { get; private set; }
-        public bool WasCleared { get; private set; }
 
         #endregion
 
@@ -262,7 +261,6 @@ namespace ServiceBusExplorer.Forms
             JsonPathValue = txtJsonValue.Text.Trim();
             IsCaseSensitive = chkCaseSensitive.Checked;
             DialogResult = DialogResult.OK;
-            Close();
         }
 
         private void BtnClear_Click(object sender, EventArgs e)
@@ -272,9 +270,7 @@ namespace ServiceBusExplorer.Forms
             SelectedJsonPath = string.Empty;
             JsonPathValue = string.Empty;
             IsCaseSensitive = false;
-            WasCleared = true;
             DialogResult = DialogResult.OK;
-            Close();
         }
 
         #endregion
@@ -303,7 +299,7 @@ namespace ServiceBusExplorer.Forms
                     var token = JToken.Parse(trimmed);
                     ExtractPathsFromToken(token, string.Empty, paths);
                 }
-                catch
+                catch (Exception)
                 {
                     // Not valid JSON, skip
                 }
@@ -392,7 +388,7 @@ namespace ServiceBusExplorer.Forms
                     ? token.Value<string>()
                     : token.ToString();
             }
-            catch
+            catch (Exception)
             {
                 return null;
             }
