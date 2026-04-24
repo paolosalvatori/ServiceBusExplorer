@@ -53,11 +53,18 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             SetPrivateField(helper, "serviceBusNamespaceInstance", aadNamespace);
 
-            // The new implementation requires the AAD token provider and namespaceUri
-            // (set during Connect) to create EventHubClients via MessagingFactory.
+            // The new implementation requires the cached eventHubMessagingFactory
+            // (created during Connect) to create EventHubClients.
             var tokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
             SetPrivateField(helper, "aadTokenProvider", tokenProvider);
-            SetPrivateField(helper, "namespaceUri", new Uri("sb://myns.servicebus.windows.net/"));
+            var nsUri = new Uri("sb://myns.servicebus.windows.net/");
+            SetPrivateField(helper, "namespaceUri", nsUri);
+            var factory = MessagingFactory.Create(nsUri, new MessagingFactorySettings
+            {
+                TokenProvider = tokenProvider,
+                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+            });
+            SetPrivateField(helper, "eventHubMessagingFactory", factory);
 
             var client = helper.CreateEventHubClient("hub1");
 

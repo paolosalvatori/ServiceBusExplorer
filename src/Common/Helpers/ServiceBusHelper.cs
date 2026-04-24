@@ -151,6 +151,7 @@ namespace ServiceBusExplorer
         private string currentSharedAccessKey;
         private ServiceBusNamespace serviceBusNamespaceInstance;
         private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
+        private MessagingFactory eventHubMessagingFactory;
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
@@ -670,18 +671,17 @@ namespace ServiceBusExplorer
                         "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
                 }
 
-                // Use MessagingFactory with the stored AAD token provider instead of
+                // Use the cached MessagingFactory created during Connect() instead of
                 // EventHubClient.CreateWithAzureActiveDirectory.  The latter uses an
                 // AuthenticationCallback that the old SDK invokes with a hard-coded
                 // Service Bus resource, which fails for Event Hub namespaces.
-                var endpointUri = namespaceUri ?? new Uri(serviceBusNamespaceInstance.Uri);
-                var factorySettings = new MessagingFactorySettings
+                // Reusing a single factory avoids opening a new AMQP connection per client.
+                if (eventHubMessagingFactory == null)
                 {
-                    TokenProvider = aadTokenProvider,
-                    TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
-                };
-                var factory = MessagingFactory.Create(endpointUri, factorySettings);
-                return factory.CreateEventHubClient(path);
+                    throw new InvalidOperationException(
+                        "Event Hub messaging factory is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                }
+                return eventHubMessagingFactory.CreateEventHubClient(path);
             }
 
             return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
@@ -799,10 +799,17 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                // Event Hub namespaces don't need a MessagingFactory (queues/topics don't exist there).
+                // Event Hub namespaces don't need the global MessagingFactory (queues/topics don't exist there),
+                // but we create a dedicated factory for Event Hub client operations to avoid opening
+                // a new AMQP connection on every CreateEventHubClient() call.
                 if (IsEventHubNamespace)
                 {
                     MessagingFactory = null;
+                    eventHubMessagingFactory = MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
+                    {
+                        TokenProvider = aadTokenProvider,
+                        TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+                    });
                 }
                 else if (isAad)
                 {
