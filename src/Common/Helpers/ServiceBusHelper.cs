@@ -253,6 +253,12 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
+        /// Gets a boolean that indicates if the connected namespace is an Event Hub namespace
+        /// (detected at connect time via scope fallback).
+        /// </summary>
+        public bool IsEventHubNamespace { get; private set; }
+
+        /// <summary>
         /// Gets or sets the type of the message defer provider
         /// </summary>
         public Type MessageDeferProviderType
@@ -658,14 +664,24 @@ namespace ServiceBusExplorer
 
             if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
             {
+                if (aadTokenProvider == null)
+                {
+                    throw new InvalidOperationException(
+                        "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                }
+
+                // Use MessagingFactory with the stored AAD token provider instead of
+                // EventHubClient.CreateWithAzureActiveDirectory.  The latter uses an
+                // AuthenticationCallback that the old SDK invokes with a hard-coded
+                // Service Bus resource, which fails for Event Hub namespaces.
                 var endpointUri = namespaceUri ?? new Uri(serviceBusNamespaceInstance.Uri);
-                return EventHubClient.CreateWithAzureActiveDirectory(
-                    endpointUri,
-                    path,
-                    AadCredentialFactory.CreateOldSdkAuthenticationCallback(serviceBusNamespaceInstance.TenantId),
-                    AadCredentialFactory.GetAuthority(serviceBusNamespaceInstance.TenantId),
-                    null,
-                    true);
+                var factorySettings = new MessagingFactorySettings
+                {
+                    TokenProvider = aadTokenProvider,
+                    TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+                };
+                var factory = MessagingFactory.Create(endpointUri, factorySettings);
+                return factory.CreateEventHubClient(path);
             }
 
             return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
@@ -702,10 +718,32 @@ namespace ServiceBusExplorer
                 if (isAad)
                 {
                     var endpointUri = new Uri(serviceBusNamespace.Uri);
-                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
-                        serviceBusNamespace.TenantId);
+                    var tenantId = serviceBusNamespace.TenantId;
 
+                    // Try Service Bus scope first; if the management probe fails with an
+                    // authorization error, the namespace may be an Event Hub namespace that
+                    // requires the Event Hub audience instead.
+                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(tenantId);
                     namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                    IsEventHubNamespace = false;
+
+                    try
+                    {
+                        // Lightweight probe — just ask for queues to validate the token scope.
+                        namespaceManager.GetQueues();
+                    }
+                    catch (Exception ex) when (
+                        ex is UnauthorizedAccessException ||
+                        (ex is MessagingException && (ex.Message.Contains("Unauthorized") ||
+                         ex.InnerException is UnauthorizedAccessException)))
+                    {
+                        // Service Bus scope rejected — retry with Event Hub scope.
+                        WriteToLogIf(traceEnabled, "Service Bus scope rejected; retrying with Event Hub scope.");
+                        aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
+                            tenantId, AadCredentialFactory.EventHubsAudience);
+                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                        IsEventHubNamespace = true;
+                    }
                 }
                 else
                 {
@@ -761,7 +799,12 @@ namespace ServiceBusExplorer
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                if (isAad)
+                // Event Hub namespaces don't need a MessagingFactory (queues/topics don't exist there).
+                if (IsEventHubNamespace)
+                {
+                    MessagingFactory = null;
+                }
+                else if (isAad)
                 {
                     MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
                 }

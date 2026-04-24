@@ -53,6 +53,12 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             SetPrivateField(helper, "serviceBusNamespaceInstance", aadNamespace);
 
+            // The new implementation requires the AAD token provider and namespaceUri
+            // (set during Connect) to create EventHubClients via MessagingFactory.
+            var tokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            SetPrivateField(helper, "aadTokenProvider", tokenProvider);
+            SetPrivateField(helper, "namespaceUri", new Uri("sb://myns.servicebus.windows.net/"));
+
             var client = helper.CreateEventHubClient("hub1");
 
             client.Should().NotBeNull();
@@ -132,6 +138,47 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             act.Should().Throw<ArgumentException>()
                 .And.ParamName.Should().Be("path");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentProviders()
+        {
+            var sbProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.ServiceBusAudience);
+            var ehProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehProvider.Should().NotBeSameAs(sbProvider, "different audiences must produce different token providers");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_SameAudience_ReusesCachedProvider()
+        {
+            var ehProvider1 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+            var ehProvider2 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehProvider2.Should().BeSameAs(ehProvider1, "same tenant+audience should reuse cached provider");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentCallbacks()
+        {
+            var sbCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.ServiceBusAudience);
+            var ehCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehCallback.Should().NotBeSameAs(sbCallback, "different audiences must produce different callbacks");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_EventHubsAudience_HasCorrectValue()
+        {
+            AadCredentialFactory.EventHubsAudience.Should().Be("https://eventhubs.azure.net");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_GetScopes_EventHubResource_UsesEventHubScope()
+        {
+            var scopes = InvokePrivateStatic<string[]>(typeof(AadCredentialFactory), "GetScopes", "https://eventhubs.azure.net");
+
+            scopes.Should().ContainSingle().Which.Should().Be("https://eventhubs.azure.net/.default");
         }
 
         static T GetPrivateField<T>(object instance, string fieldName)

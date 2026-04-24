@@ -4590,7 +4590,7 @@ namespace ServiceBusExplorer.Forms
                     var isAad = serviceBusHelper.IsAzureActiveDirectory;
                     var loadQueues = SelectedEntities.Contains(Constants.QueueEntities);
                     var loadTopics = SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = !isAad && SelectedEntities.Contains(Constants.EventHubEntities);
+                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities);
                     var loadNotificationHubs = !isAad && SelectedEntities.Contains(Constants.NotificationHubEntities);
                     var loadRelays = !isAad && SelectedEntities.Contains(Constants.RelayEntities);
                     if (entityType == EntityType.All)
