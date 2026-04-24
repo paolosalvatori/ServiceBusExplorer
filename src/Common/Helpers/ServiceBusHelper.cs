@@ -676,15 +676,45 @@ namespace ServiceBusExplorer
                 // AuthenticationCallback that the old SDK invokes with a hard-coded
                 // Service Bus resource, which fails for Event Hub namespaces.
                 // Reusing a single factory avoids opening a new AMQP connection per client.
-                if (eventHubMessagingFactory == null)
+                // If the factory is stale (connection dropped, token expired), recreate it.
+                if (eventHubMessagingFactory == null || eventHubMessagingFactory.IsClosed)
                 {
-                    throw new InvalidOperationException(
-                        "Event Hub messaging factory is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
                 }
-                return eventHubMessagingFactory.CreateEventHubClient(path);
+
+                try
+                {
+                    return eventHubMessagingFactory.CreateEventHubClient(path);
+                }
+                catch (Exception ex) when (ex is MessagingCommunicationException ||
+                                           ex is ObjectDisposedException ||
+                                           ex is OperationCanceledException)
+                {
+                    // Factory became stale — recreate and retry once
+                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
+                    return eventHubMessagingFactory.CreateEventHubClient(path);
+                }
             }
 
             return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
+        }
+
+        /// <summary>
+        /// Creates a new MessagingFactory for Event Hub operations using AAD token provider.
+        /// </summary>
+        private MessagingFactory CreateEventHubMessagingFactory()
+        {
+            if (aadTokenProvider == null)
+            {
+                throw new InvalidOperationException(
+                    "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+            }
+
+            return MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
+            {
+                TokenProvider = aadTokenProvider,
+                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+            });
         }
 
         /// <summary>
@@ -805,11 +835,7 @@ namespace ServiceBusExplorer
                 if (IsEventHubNamespace)
                 {
                     MessagingFactory = null;
-                    eventHubMessagingFactory = MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
-                    {
-                        TokenProvider = aadTokenProvider,
-                        TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
-                    });
+                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
                 }
                 else if (isAad)
                 {
