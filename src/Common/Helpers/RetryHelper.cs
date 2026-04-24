@@ -79,6 +79,10 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
                 catch (MessagingException ex)
                 {
                     if (numRetries == 0 || (!ex.IsTransient))
@@ -142,6 +146,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (CommunicationException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
                 {
                     throw;
                 }
@@ -210,6 +218,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (CommunicationException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
                 {
                     throw;
                 }
@@ -305,6 +317,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (CommunicationException)
+                {
+                    throw;
+                }
+                catch (OperationCanceledException)
                 {
                     throw;
                 }

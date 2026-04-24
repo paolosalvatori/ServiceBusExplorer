@@ -494,10 +494,9 @@ namespace ServiceBusExplorer.Controls
                             eventHubClientCollection.Count < senderTaskCount)
                         {
                             eventHubClientCollection = new List<EventHubClient>(senderTaskCount);
-                            var amqpConnectionString = GetAmqpConnectionString(controlHelper.ServiceBusHelper.ConnectionString);
                             for (var i = 0; i < senderTaskCount; i++)
                             {
-                                eventHubClientCollection.Add(EventHubClient.CreateFromConnectionString(amqpConnectionString, eventHubDescription.Path));
+                                eventHubClientCollection.Add(controlHelper.ServiceBusHelper.CreateEventHubClient(eventHubDescription.Path));
                             }
                             isSenderFaulted = false;
                         }
