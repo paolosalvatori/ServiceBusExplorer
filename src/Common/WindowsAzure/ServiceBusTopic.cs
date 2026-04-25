@@ -92,9 +92,17 @@ namespace ServiceBusExplorer.WindowsAzure
                     return topics;
                 }
 
-                return new List<TopicDescription> {
-                    GetTopicUsingEntityPath(timeoutInSeconds)
-                };
+                try
+                {
+                    return new List<TopicDescription> {
+                        GetTopicUsingEntityPath(timeoutInSeconds)
+                    };
+                }
+                catch (MessagingException)
+                {
+                    // EntityPath may refer to an event hub, not a topic — return empty list
+                    return new List<TopicDescription>();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }

@@ -260,6 +260,11 @@ namespace ServiceBusExplorer
         public bool IsEventHubNamespace { get; private set; }
 
         /// <summary>
+        /// Gets the EntityPath from the current namespace connection, if any.
+        /// </summary>
+        public string EntityPath => serviceBusNamespaceInstance?.EntityPath;
+
+        /// <summary>
         /// Gets or sets the type of the message defer provider
         /// </summary>
         public Type MessageDeferProviderType
