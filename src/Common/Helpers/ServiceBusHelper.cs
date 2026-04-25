@@ -86,7 +86,7 @@ namespace ServiceBusExplorer
         // Messages
         //***************************
         private const string ServiceBusConnectionStringCannotBeNull = "The connection string argument cannot be null.";
-        private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
+        private const string ServiceBusIsConnected = "The application is now connected to the {0} {1} namespace.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
         private const string PropertyConversionError = "{0} property conversion error: {1}";
@@ -836,7 +836,7 @@ namespace ServiceBusExplorer
                 serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
                 serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
 
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 namespaceUri = namespaceManager.Address;
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];

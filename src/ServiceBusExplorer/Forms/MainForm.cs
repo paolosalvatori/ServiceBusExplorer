@@ -4647,9 +4647,11 @@ namespace ServiceBusExplorer.Forms
                                         var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
                                         eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
                                     }
-                                    catch (MessagingException)
+                                    catch (MessagingException ex)
                                     {
-                                        // EntityPath may not exist or may refer to a different entity type
+                                        WriteToLog(string.Format(CultureInfo.CurrentCulture,
+                                            "No event hub found matching EntityPath '{0}': {1}",
+                                            serviceBusHelper.EntityPath, ex.Message));
                                         eventHubs = Enumerable.Empty<EventHubDescription>();
                                     }
                                 }
