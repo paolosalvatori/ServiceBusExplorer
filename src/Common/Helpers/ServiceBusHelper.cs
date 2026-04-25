@@ -770,9 +770,8 @@ namespace ServiceBusExplorer
 
                     try
                     {
-                        // Lightweight probe — use a filter that returns zero rows to validate the token scope
-                        // without paging over all queue descriptions on large namespaces.
-                        namespaceManager.GetQueues("1=2");
+                        // Lightweight probe — validate the token scope by listing queues.
+                        namespaceManager.GetQueues();
                     }
                     catch (Exception ex) when (
                         ex is UnauthorizedAccessException ||
