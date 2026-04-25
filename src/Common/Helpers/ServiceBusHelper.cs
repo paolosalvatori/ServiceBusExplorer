@@ -770,8 +770,10 @@ namespace ServiceBusExplorer
 
                     try
                     {
-                        // Lightweight probe — validate the token scope by listing queues.
-                        namespaceManager.GetQueues();
+                        // Lightweight scope probe — check for a non-existent queue.
+                        // This issues a single REST call (no entity enumeration) and
+                        // will throw UnauthorizedAccessException if the token audience is wrong.
+                        namespaceManager.QueueExists("$__scope_probe__$");
                     }
                     catch (Exception ex) when (
                         ex is UnauthorizedAccessException ||
