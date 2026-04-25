@@ -4588,8 +4588,8 @@ namespace ServiceBusExplorer.Forms
                     var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
                     var isAad = serviceBusHelper.IsAzureActiveDirectory;
-                    var loadQueues = SelectedEntities.Contains(Constants.QueueEntities);
-                    var loadTopics = SelectedEntities.Contains(Constants.TopicEntities);
+                    var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
+                    var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
                     var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities);
                     var loadNotificationHubs = !isAad && SelectedEntities.Contains(Constants.NotificationHubEntities);
                     var loadRelays = !isAad && SelectedEntities.Contains(Constants.RelayEntities);

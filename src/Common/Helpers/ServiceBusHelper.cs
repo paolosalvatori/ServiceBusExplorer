@@ -677,22 +677,25 @@ namespace ServiceBusExplorer
                 // Service Bus resource, which fails for Event Hub namespaces.
                 // Reusing a single factory avoids opening a new AMQP connection per client.
                 // If the factory is stale (connection dropped, token expired), recreate it.
-                if (eventHubMessagingFactory == null || eventHubMessagingFactory.IsClosed)
+                var factory = eventHubMessagingFactory;
+                if (factory == null || factory.IsClosed)
                 {
-                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
+                    factory = CreateEventHubMessagingFactory();
+                    eventHubMessagingFactory = factory;
                 }
 
                 try
                 {
-                    return eventHubMessagingFactory.CreateEventHubClient(path);
+                    return factory.CreateEventHubClient(path);
                 }
                 catch (Exception ex) when (ex is MessagingCommunicationException ||
                                            ex is ObjectDisposedException ||
                                            ex is OperationCanceledException)
                 {
                     // Factory became stale — recreate and retry once
-                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
-                    return eventHubMessagingFactory.CreateEventHubClient(path);
+                    factory = CreateEventHubMessagingFactory();
+                    eventHubMessagingFactory = factory;
+                    return factory.CreateEventHubClient(path);
                 }
             }
 
@@ -759,12 +762,14 @@ namespace ServiceBusExplorer
 
                     try
                     {
-                        // Lightweight probe — just ask for queues to validate the token scope.
-                        namespaceManager.GetQueues();
+                        // Lightweight probe — use a filter that returns zero rows to validate the token scope
+                        // without paging over all queue descriptions on large namespaces.
+                        namespaceManager.GetQueues("1=2");
                     }
                     catch (Exception ex) when (
                         ex is UnauthorizedAccessException ||
-                        (ex is MessagingException && (ex.Message.Contains("Unauthorized") ||
+                        (ex is MessagingException && (ex.Message.Contains("401") ||
+                         ex.Message.Contains("40100") ||
                          ex.InnerException is UnauthorizedAccessException)))
                     {
                         // Service Bus scope rejected — retry with Event Hub scope.
