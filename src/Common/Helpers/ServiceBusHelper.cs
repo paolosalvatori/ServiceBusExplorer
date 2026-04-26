@@ -774,7 +774,10 @@ namespace ServiceBusExplorer
 
                 // Reset connection-scoped state so reconnects don't carry over stale values.
                 IsEventHubNamespace = false;
-                ReplaceEventHubFactory(null);
+                lock (eventHubFactoryLock)
+                {
+                    ReplaceEventHubFactory(null);
+                }
 
                 if (isAad)
                 {
@@ -865,7 +868,10 @@ namespace ServiceBusExplorer
                 if (IsEventHubNamespace)
                 {
                     MessagingFactory = null;
-                    ReplaceEventHubFactory(CreateEventHubMessagingFactory());
+                    lock (eventHubFactoryLock)
+                    {
+                        ReplaceEventHubFactory(CreateEventHubMessagingFactory());
+                    }
                 }
                 else if (isAad)
                 {
