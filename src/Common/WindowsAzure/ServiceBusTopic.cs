@@ -98,9 +98,10 @@ namespace ServiceBusExplorer.WindowsAzure
                         GetTopicUsingEntityPath(timeoutInSeconds)
                     };
                 }
-                catch (MessagingException)
+                catch (MessagingException ex) when (!ex.IsTransient)
                 {
-                    // EntityPath may refer to an event hub, not a topic — return empty list
+                    // EntityPath refers to a non-topic entity (e.g. event hub) — return empty list
+                    WriteToLog($"EntityPath '{ServiceBusNamespace.EntityPath}' is not a topic: {ex.Message}");
                     return new List<TopicDescription>();
                 }
             }

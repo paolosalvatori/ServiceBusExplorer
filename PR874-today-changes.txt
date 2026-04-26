@@ -1,0 +1,42 @@
+PR #874 — Changes Summary (EntraAuthForEventhub branch)
+========================================================
+
+1. PR Review Comment Fixes (per ErikMogensen feedback)
+------------------------------------------------------
+- Guarded loadQueues/loadTopics with !IsEventHubNamespace so they don't run on Event Hub namespaces.
+- Gated loadEventHubs so it only runs when IsEventHubNamespace is true.
+- Replaced "Unauthorized" string match with "401"/"40100" status code checks for auth error detection.
+- Fixed TOCTOU race on eventHubMessagingFactory by capturing to a local variable before use.
+
+2. Scope Probe Optimization
+----------------------------
+- Replaced GetQueues() with QueueExists("$__scope_probe__$") for scope detection.
+- Single lightweight REST call instead of enumerating all queues.
+- Returns false on Service Bus (valid scope), throws UnauthorizedAccessException on Event Hub (triggers fallback).
+
+3. Reconnect State Reset
+-------------------------
+- Reset IsEventHubNamespace = false and eventHubMessagingFactory = null at start of Connect().
+- Prevents stale state from a previous connection leaking into a new one.
+
+4. EntityPath Bug Fix
+---------------------
+- When EntityPath is set, load only the specified entity instead of enumerating all entities.
+- ServiceBusQueue/ServiceBusTopic: try-catch MessagingException when EntityPath refers to a wrong entity type, return empty list.
+- MainForm: use GetEventHubAsync(entityPath) instead of GetEventHubsAsync() when EntityPath is set.
+- Defensive try-catch for Event Hub EntityPath: catches MessagingException, returns empty list.
+
+5. Logging Improvements
+-----------------------
+- Connection log now says "event hub namespace" or "service bus namespace" based on detected scope.
+- Added warning log when EntityPath doesn't match any event hub in the namespace.
+
+6. RetryHelper Hardening
+-------------------------
+- Added UnauthorizedAccessException catch-and-rethrow in all 4 retry methods.
+- Prevents masking auth failures during scope probe.
+
+7. Test Updates
+---------------
+- Updated 2 ConnectForm AAD tests to expect Queues + Topics + EventHubs entity types.
+- All 47 AAD tests pass.

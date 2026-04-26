@@ -152,6 +152,7 @@ namespace ServiceBusExplorer
         private ServiceBusNamespace serviceBusNamespaceInstance;
         private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
         private MessagingFactory eventHubMessagingFactory;
+        private readonly object eventHubFactoryLock = new object();
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
@@ -682,25 +683,28 @@ namespace ServiceBusExplorer
                 // Service Bus resource, which fails for Event Hub namespaces.
                 // Reusing a single factory avoids opening a new AMQP connection per client.
                 // If the factory is stale (connection dropped, token expired), recreate it.
-                var factory = eventHubMessagingFactory;
-                if (factory == null || factory.IsClosed)
+                lock (eventHubFactoryLock)
                 {
-                    factory = CreateEventHubMessagingFactory();
-                    eventHubMessagingFactory = factory;
-                }
+                    var factory = eventHubMessagingFactory;
+                    if (factory == null || factory.IsClosed)
+                    {
+                        factory = CreateEventHubMessagingFactory();
+                        eventHubMessagingFactory = factory;
+                    }
 
-                try
-                {
-                    return factory.CreateEventHubClient(path);
-                }
-                catch (Exception ex) when (ex is MessagingCommunicationException ||
-                                           ex is ObjectDisposedException ||
-                                           ex is OperationCanceledException)
-                {
-                    // Factory became stale — recreate and retry once
-                    factory = CreateEventHubMessagingFactory();
-                    eventHubMessagingFactory = factory;
-                    return factory.CreateEventHubClient(path);
+                    try
+                    {
+                        return factory.CreateEventHubClient(path);
+                    }
+                    catch (Exception ex) when (ex is MessagingCommunicationException ||
+                                               ex is ObjectDisposedException ||
+                                               ex is OperationCanceledException)
+                    {
+                        // Factory became stale — recreate and retry once
+                        factory = CreateEventHubMessagingFactory();
+                        eventHubMessagingFactory = factory;
+                        return factory.CreateEventHubClient(path);
+                    }
                 }
             }
 
