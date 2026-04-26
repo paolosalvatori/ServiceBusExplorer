@@ -79,8 +79,9 @@ namespace ServiceBusExplorer.WindowsAzure
                 }
                 catch (MessagingException ex) when (!ex.IsTransient)
                 {
-                    // EntityPath refers to a non-queue entity (e.g. event hub) — return empty list
-                    WriteToLog($"EntityPath '{ServiceBusNamespace.EntityPath}' is not a queue: {ex.Message}");
+                    // EntityPath refers to a non-queue entity (e.g. event hub) — return empty list.
+                    // Logging is handled by the caller (MainForm.ShowEntities) to avoid duplicate
+                    // messages, since this method is also invoked from DashboardControl.LoadDataAsync.
                     return new List<QueueDescription>();
                 }
             }

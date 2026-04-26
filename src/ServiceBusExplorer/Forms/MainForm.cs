@@ -4787,6 +4787,10 @@ namespace ServiceBusExplorer.Forms
                         {
                             var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
+                            if (!queues.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            {
+                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a queue.");
+                            }
                             queueListNode.Text = string.Format("{0} {1}", queues.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
                                 : FilteredQueueEntities);
@@ -4828,6 +4832,10 @@ namespace ServiceBusExplorer.Forms
                         {
                             var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
+                            if (!topics.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            {
+                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a topic.");
+                            }
                             topicListNode.Text = string.Format("{0} {1}", topics.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
                                 : FilteredTopicEntities);
