@@ -188,6 +188,46 @@ namespace ServiceBusExplorer.Tests.Helpers
             scopes.Should().ContainSingle().Which.Should().Be("https://eventhubs.azure.net/.default");
         }
 
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceSubstatus_ReturnsTrue()
+        {
+            var ex = new MessagingException("SubCode=40104. Token has invalid audience.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceKeyword_ReturnsTrue()
+        {
+            var ex = new UnauthorizedAccessException("InvalidAudience: the token was issued for a different resource.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_ManageClaimDenied_ReturnsFalse()
+        {
+            var ex = new UnauthorizedAccessException("40301: Manage claim is required for this operation.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_Generic401_ReturnsTrueForBackwardCompat()
+        {
+            var ex = new MessagingException("The request was unauthorized. Status code: 401");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_UnrelatedMessagingException_ReturnsFalse()
+        {
+            var ex = new MessagingException("Entity not found. Status code: 404");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
+        }
+
         static T GetPrivateField<T>(object instance, string fieldName)
         {
             var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);

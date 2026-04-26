@@ -779,14 +779,11 @@ namespace ServiceBusExplorer
                         // will throw UnauthorizedAccessException if the token audience is wrong.
                         namespaceManager.QueueExists("$__scope_probe__$");
                     }
-                    catch (Exception ex) when (
-                        ex is UnauthorizedAccessException ||
-                        (ex is MessagingException && (ex.Message.Contains("401") ||
-                         ex.Message.Contains("40100") ||
-                         ex.InnerException is UnauthorizedAccessException)))
+                    catch (Exception ex) when (IsAudienceMismatchException(ex))
                     {
-                        // Service Bus scope rejected — retry with Event Hub scope.
-                        WriteToLogIf(traceEnabled, "Service Bus scope rejected; retrying with Event Hub scope.");
+                        // Audience mismatch — the namespace expects a different token audience
+                        // (Event Hub vs Service Bus). Retry with Event Hub scope.
+                        WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
                         aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
                             tenantId, AadCredentialFactory.EventHubsAudience);
                         namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
@@ -4504,6 +4501,54 @@ namespace ServiceBusExplorer
                 default:
                     return Encoding.UTF8;
             }
+        }
+
+        /// <summary>
+        /// Determines whether an exception thrown by the scope probe indicates an
+        /// audience mismatch (Service Bus token sent to an Event Hub namespace)
+        /// rather than a generic authorization failure (e.g., missing Manage claim).
+        ///
+        /// Audience-mismatch errors typically carry substatus 40104 / "InvalidAudience".
+        /// Permission errors carry substatus 40301 / "Manage claim is required".
+        /// When no specific substatus is present, we fall back to 401/40100 only if
+        /// no permission-denied signal is found.
+        /// </summary>
+        private static bool IsAudienceMismatchException(Exception ex)
+        {
+            var message = ex.Message ?? string.Empty;
+            var innerMessage = ex.InnerException?.Message ?? string.Empty;
+            var fullMessage = message + " " + innerMessage;
+
+            // Strong audience-mismatch signal — always treat as scope switch.
+            if (fullMessage.IndexOf("40104", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("InvalidAudience", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            // Permission-denied signals — never treat as scope switch.
+            if (fullMessage.IndexOf("40301", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("Manage", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("claim is required", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return false;
+            }
+
+            // Fallback: generic 401 / UnauthorizedAccessException without a specific
+            // substatus — assume audience mismatch for backward compatibility.
+            if (ex is UnauthorizedAccessException)
+            {
+                return true;
+            }
+
+            if (ex is MessagingException)
+            {
+                return message.Contains("401") ||
+                       message.Contains("40100") ||
+                       ex.InnerException is UnauthorizedAccessException;
+            }
+
+            return false;
         }
 
         private static bool TestNamespaceHostIsContactable(ServiceBusNamespace serviceBusNamespace)
