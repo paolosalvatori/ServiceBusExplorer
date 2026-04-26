@@ -689,7 +689,7 @@ namespace ServiceBusExplorer
                     if (factory == null || factory.IsClosed)
                     {
                         factory = CreateEventHubMessagingFactory();
-                        eventHubMessagingFactory = factory;
+                        ReplaceEventHubFactory(factory);
                     }
 
                     try
@@ -702,13 +702,28 @@ namespace ServiceBusExplorer
                     {
                         // Factory became stale — recreate and retry once
                         factory = CreateEventHubMessagingFactory();
-                        eventHubMessagingFactory = factory;
+                        ReplaceEventHubFactory(factory);
                         return factory.CreateEventHubClient(path);
                     }
                 }
             }
 
             return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
+        }
+
+        /// <summary>
+        /// Closes the current Event Hub factory (if any) and replaces it with the given value.
+        /// Must be called while holding <see cref="eventHubFactoryLock"/>.
+        /// </summary>
+        private void ReplaceEventHubFactory(MessagingFactory newFactory)
+        {
+            var old = eventHubMessagingFactory;
+            eventHubMessagingFactory = newFactory;
+            if (old != null && !old.IsClosed)
+            {
+                try { old.Close(); }
+                catch (Exception) { /* best-effort cleanup */ }
+            }
         }
 
         /// <summary>
@@ -759,7 +774,7 @@ namespace ServiceBusExplorer
 
                 // Reset connection-scoped state so reconnects don't carry over stale values.
                 IsEventHubNamespace = false;
-                eventHubMessagingFactory = null;
+                ReplaceEventHubFactory(null);
 
                 if (isAad)
                 {
@@ -850,7 +865,7 @@ namespace ServiceBusExplorer
                 if (IsEventHubNamespace)
                 {
                     MessagingFactory = null;
-                    eventHubMessagingFactory = CreateEventHubMessagingFactory();
+                    ReplaceEventHubFactory(CreateEventHubMessagingFactory());
                 }
                 else if (isAad)
                 {
