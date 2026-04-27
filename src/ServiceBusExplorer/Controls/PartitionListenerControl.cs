@@ -175,8 +175,7 @@ namespace ServiceBusExplorer.Controls
             this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
             eventHubDescription = serviceBusHelper.NamespaceManager.GetEventHub(consumerGroupDescription.EventHubPath);
-            eventHubClient = EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(serviceBusHelper.ConnectionString),
-                                                                                               consumerGroupDescription.EventHubPath);
+            eventHubClient = serviceBusHelper.CreateEventHubClient(consumerGroupDescription.EventHubPath);
             consumerGroup = string.Compare(consumerGroupDescription.Name,
                                            DefaultConsumerGroupName,
                                            StringComparison.InvariantCultureIgnoreCase) == 0

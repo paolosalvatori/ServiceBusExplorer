@@ -4,6 +4,9 @@
 - Dashboard navigation: single-click syncs TreeView selection; double-click opens entity in Explorer tab
 - Dashboard right-click: refresh a single row without reloading the full namespace
 - Copy message body to clipboard: "Copy Body" button in message preview pane
+- Microsoft Entra ID / Azure AD interactive browser sign-in for Azure Service Bus namespaces
+- Saved Entra connections persist metadata only (`Endpoint`, `AuthMode=AAD`, optional `TenantId`, `TransportType`, `EntityPath`)
+- Connect dialog supports switching between SAS and Azure Active Directory authentication modes
 - Dashboard rows stay in sync when queues or subscriptions are created or deleted
 
 - HandlePartitionControl: IncomingBytesPerSecond OutgoingBytesPerSecond

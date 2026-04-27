@@ -71,6 +71,7 @@ namespace ServiceBusExplorer.Forms
             this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.txtIssuerName = new System.Windows.Forms.TextBox();
             this.txtNamespace = new System.Windows.Forms.TextBox();
+            this.cboAuthMode = new System.Windows.Forms.ComboBox();
             this.txtEntityPath = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.btnSave = new System.Windows.Forms.Button();
@@ -345,6 +346,17 @@ namespace ServiceBusExplorer.Forms
             this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
             this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
+            // cboAuthMode
+            // 
+            this.cboAuthMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboAuthMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboAuthMode.FormattingEnabled = true;
+            this.cboAuthMode.Location = new System.Drawing.Point(16, 96);
+            this.cboAuthMode.Name = "cboAuthMode";
+            this.cboAuthMode.Size = new System.Drawing.Size(336, 21);
+            this.cboAuthMode.TabIndex = 3;
+            this.cboAuthMode.SelectedIndexChanged += new System.EventHandler(this.cboAuthMode_SelectedIndexChanged);
+            // 
             // txtEntityPath
             // 
             this.txtEntityPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -354,7 +366,7 @@ namespace ServiceBusExplorer.Forms
             this.txtEntityPath.Name = "txtEntityPath";
             this.txtEntityPath.Size = new System.Drawing.Size(336, 20);
             this.txtEntityPath.TabIndex = 5;
-            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the name of the Service Bus namespace.");
+            this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the entity path (queue, topic, or event hub name).");
             // 
             // logoPictureBox
             // 
@@ -568,6 +580,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerName);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtNamespace);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNamespace);
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboAuthMode);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtEntityPath);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblEntityPath);
             this.grouperServiceBusNamespaceSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -696,9 +709,9 @@ namespace ServiceBusExplorer.Forms
             this.lblNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblNamespace.Location = new System.Drawing.Point(16, 80);
             this.lblNamespace.Name = "lblNamespace";
-            this.lblNamespace.Size = new System.Drawing.Size(67, 13);
+            this.lblNamespace.Size = new System.Drawing.Size(83, 13);
             this.lblNamespace.TabIndex = 2;
-            this.lblNamespace.Text = "Namespace:";
+            this.lblNamespace.Text = "Authentication:";
             // 
             // lblEntityPath
             // 
@@ -801,6 +814,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblIssuerName;
         private System.Windows.Forms.TextBox txtNamespace;
         private System.Windows.Forms.Label lblNamespace;
+        private System.Windows.Forms.ComboBox cboAuthMode;
         private System.Windows.Forms.PictureBox logoPictureBox;
         private System.Windows.Forms.ToolTip toolTip;
         private Grouper grouperFilters;

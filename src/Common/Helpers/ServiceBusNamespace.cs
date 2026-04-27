@@ -43,6 +43,19 @@ namespace ServiceBusExplorer.Helpers
     }
 
     /// <summary>
+    /// Identifies the authentication mechanism used to connect to a Service Bus namespace.
+    /// </summary>
+    public enum ServiceBusAuthMode
+    {
+        /// <summary>Shared Access Signature (connection-string based)</summary>
+        Sas,
+        /// <summary>On-premises Windows credentials</summary>
+        Windows,
+        /// <summary>Azure Active Directory / Microsoft Entra ID interactive browser sign-in</summary>
+        AzureActiveDirectory
+    }
+
+    /// <summary>
     /// This class represents a service bus namespace address and authentication credentials
     /// </summary>
     public class ServiceBusNamespace
@@ -82,6 +95,9 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringWindowsPassword = "windowspassword";
         const string ConnectionStringTransportType = "transporttype";
         const string ConnectionStringEntityPath = "entitypath";
+        const string ConnectionStringAuthMode = "authmode";
+        const string ConnectionStringTenantId = "tenantid";
+        const string AuthModeAad = "aad";
 
         #endregion
 
@@ -91,6 +107,10 @@ namespace ServiceBusExplorer.Helpers
         //***************************
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
         public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
+        public const string AadConnectionStringFormat = "Endpoint={0};AuthMode=AAD;TransportType={1}";
+        public const string AadConnectionStringTenantFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2}";
+        public const string AadConnectionStringEntityPathFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2};EntityPath={3}";
+        public const string AadConnectionStringEntityPathNoTenantFormat = "Endpoint={0};AuthMode=AAD;TransportType={1};EntityPath={2}";
         #endregion
 
         #region Public Constructors
@@ -100,6 +120,7 @@ namespace ServiceBusExplorer.Helpers
         public ServiceBusNamespace()
         {
             ConnectionStringType = ServiceBusNamespaceType.Cloud;
+            AuthMode = ServiceBusAuthMode.Sas;
             ConnectionString = default(string);
             Uri = default(string);
             Namespace = default(string);
@@ -140,6 +161,7 @@ namespace ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = connectionStringType;
+            AuthMode = ServiceBusAuthMode.Sas;
             Uri = string.IsNullOrWhiteSpace(uri) ?
                   ServiceBusEnvironment.CreateServiceUri("sb", ns, servicePath).ToString() :
                   uri;
@@ -194,6 +216,7 @@ namespace ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = ServiceBusNamespaceType.OnPremises;
+            AuthMode = ServiceBusAuthMode.Windows;
             ConnectionString = connectionString;
             Uri = endpoint;
             var uri = new Uri(endpoint);
@@ -215,6 +238,37 @@ namespace ServiceBusExplorer.Helpers
             WindowsPassword = windowsPassword;
             TransportType = transportType;
             UserCreated = isUserCreated;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ServiceBusNamespace class for Azure Active Directory authentication.
+        /// </summary>
+        public ServiceBusNamespace(string endpoint,
+                                   string ns,
+                                   string tenantId,
+                                   TransportType transportType,
+                                   string entityPath = "",
+                                   bool isUserCreated = false)
+        {
+            ConnectionStringType = ServiceBusNamespaceType.Cloud;
+            AuthMode = ServiceBusAuthMode.AzureActiveDirectory;
+            Uri = endpoint;
+            Namespace = ns;
+            TenantId = tenantId;
+            TransportType = transportType;
+            EntityPath = entityPath;
+            UserCreated = isUserCreated;
+
+            // No SAS keys or connection string for AAD
+            ConnectionString = null;
+            SharedAccessKeyName = null;
+            SharedAccessKey = null;
+            StsEndpoint = null;
+            RuntimePort = null;
+            ManagementPort = null;
+            WindowsDomain = null;
+            WindowsUserName = null;
+            WindowsPassword = null;
         }
         #endregion
 
@@ -239,6 +293,15 @@ namespace ServiceBusExplorer.Helpers
                 toLower.Contains(ConnectionStringSharedAccessKey))
             {
                 return GetServiceBusNamespaceUsingSAS(key, connectionString, staticWriteToLog, 
+                    isUserCreated, parameters);
+            }
+
+            if (toLower.Contains(ConnectionStringEndpoint) &&
+                toLower.Contains(ConnectionStringAuthMode) &&
+                parameters.ContainsKey(ConnectionStringAuthMode) &&
+                string.Equals(parameters[ConnectionStringAuthMode], AuthModeAad, StringComparison.OrdinalIgnoreCase))
+            {
+                return GetServiceBusNamespaceUsingAad(key, connectionString, staticWriteToLog,
                     isUserCreated, parameters);
             }
 
@@ -337,6 +400,8 @@ namespace ServiceBusExplorer.Helpers
         {
             get
             {
+                if (ConnectionString == null)
+                    return null;
                 var regex = new Regex(@";TransportType=\w*;?");
                 var connectionString = regex.Replace(ConnectionString, string.Empty);
                 return connectionString;
@@ -407,6 +472,43 @@ namespace ServiceBusExplorer.Helpers
         /// Gets or sets the EntityPath
         /// </summary>
         public string EntityPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the authentication mode for this namespace entry.
+        /// </summary>
+        public ServiceBusAuthMode AuthMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Azure AD tenant ID (optional; null means the organizations endpoint).
+        /// </summary>
+        public string TenantId { get; set; }
+
+        /// <summary>
+        /// Gets the fully qualified namespace host name (e.g. mynamespace.servicebus.windows.net).
+        /// Derived from the endpoint URI.
+        /// </summary>
+        public string FullyQualifiedNamespace
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Uri))
+                    return null;
+                try
+                {
+                    return new Uri(Uri).Host;
+                }
+                catch (UriFormatException)
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true when this namespace entry uses Azure AD authentication
+        /// and has no SAS connection string.
+        /// </summary>
+        public bool IsAzureActiveDirectory => AuthMode == ServiceBusAuthMode.AzureActiveDirectory;
         #endregion
 
         #region Private Methods
@@ -568,7 +670,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 uri = new Uri(endpoint);
             }
-            catch (Exception)
+            catch (UriFormatException)
             {
                 staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
                     ServiceBusNamespaceEndpointUriIsInvalid, key));
@@ -576,6 +678,82 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return uri.Host.Split('.')[0];
+        }
+
+        static ServiceBusNamespace GetServiceBusNamespaceUsingAad(string key, string connectionString,
+            WriteToLogDelegate staticWriteToLog, bool isUserCreated, Dictionary<string, string> parameters)
+        {
+            var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
+                           parameters[ConnectionStringEndpoint] :
+                           null;
+
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture,
+                    ServiceBusNamespaceEndpointIsNullOrEmpty, key));
+                return null;
+            }
+
+            if (!endpoint.Contains("://"))
+            {
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture,
+                    ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
+                endpoint = "sb://" + endpoint;
+            }
+
+            string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);
+
+            var tenantId = parameters.ContainsKey(ConnectionStringTenantId)
+                ? parameters[ConnectionStringTenantId]
+                : null;
+
+            var settings = new MessagingFactorySettings();
+            var transportType = settings.TransportType;
+
+            if (parameters.ContainsKey(ConnectionStringTransportType))
+            {
+                Enum.TryParse(parameters[ConnectionStringTransportType], true, out transportType);
+            }
+
+            string entityPath = string.Empty;
+
+            if (parameters.ContainsKey(ConnectionStringEntityPath))
+            {
+                entityPath = parameters[ConnectionStringEntityPath];
+            }
+
+            return new ServiceBusNamespace(endpoint, ns, tenantId, transportType, entityPath, isUserCreated);
+        }
+
+        /// <summary>
+        /// Builds a metadata-only connection string for persisting an AAD connection.
+        /// No secrets are stored — only the endpoint, auth mode, transport type,
+        /// and optionally the tenant ID and entity path.
+        /// </summary>
+        public static string BuildAadConnectionString(string endpoint, string tenantId,
+            TransportType transportType, string entityPath = null)
+        {
+            var hasTenant = !string.IsNullOrWhiteSpace(tenantId);
+            var hasEntity = !string.IsNullOrWhiteSpace(entityPath);
+
+            if (hasEntity && hasTenant)
+            {
+                return string.Format(AadConnectionStringEntityPathFormat,
+                    endpoint, tenantId, transportType, entityPath);
+            }
+
+            if (hasEntity)
+            {
+                return string.Format(AadConnectionStringEntityPathNoTenantFormat,
+                    endpoint, transportType, entityPath);
+            }
+
+            if (hasTenant)
+            {
+                return string.Format(AadConnectionStringTenantFormat, endpoint, tenantId, transportType);
+            }
+
+            return string.Format(AadConnectionStringFormat, endpoint, transportType);
         }
 
         #endregion
