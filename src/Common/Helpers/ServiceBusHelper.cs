@@ -86,7 +86,7 @@ namespace ServiceBusExplorer
         // Messages
         //***************************
         private const string ServiceBusConnectionStringCannotBeNull = "The connection string argument cannot be null.";
-        private const string ServiceBusIsConnected = "The application is now connected to the {0} service bus namespace.";
+        private const string ServiceBusIsConnected = "The application is now connected to the {0} {1} namespace.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
         private const string PropertyConversionError = "{0} property conversion error: {1}";
@@ -151,6 +151,8 @@ namespace ServiceBusExplorer
         private string currentSharedAccessKey;
         private ServiceBusNamespace serviceBusNamespaceInstance;
         private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
+        private MessagingFactory eventHubMessagingFactory;
+        private readonly object eventHubFactoryLock = new object();
         private IServiceBusQueue serviceBusQueue;
         private IServiceBusTopic serviceBusTopic;
         private IServiceBusSubscription serviceBusSubscription;
@@ -251,6 +253,17 @@ namespace ServiceBusExplorer
                 }
             }
         }
+
+        /// <summary>
+        /// Gets a boolean that indicates if the connected namespace is an Event Hub namespace
+        /// (detected at connect time via scope fallback).
+        /// </summary>
+        public bool IsEventHubNamespace { get; private set; }
+
+        /// <summary>
+        /// Gets the EntityPath from the current namespace connection, if any.
+        /// </summary>
+        public string EntityPath => serviceBusNamespaceInstance?.EntityPath;
 
         /// <summary>
         /// Gets or sets the type of the message defer provider
@@ -658,17 +671,77 @@ namespace ServiceBusExplorer
 
             if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
             {
-                var endpointUri = namespaceUri ?? new Uri(serviceBusNamespaceInstance.Uri);
-                return EventHubClient.CreateWithAzureActiveDirectory(
-                    endpointUri,
-                    path,
-                    AadCredentialFactory.CreateOldSdkAuthenticationCallback(serviceBusNamespaceInstance.TenantId),
-                    AadCredentialFactory.GetAuthority(serviceBusNamespaceInstance.TenantId),
-                    null,
-                    true);
+                if (aadTokenProvider == null)
+                {
+                    throw new InvalidOperationException(
+                        "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                }
+
+                // Use the cached MessagingFactory created during Connect() instead of
+                // EventHubClient.CreateWithAzureActiveDirectory.  The latter uses an
+                // AuthenticationCallback that the old SDK invokes with a hard-coded
+                // Service Bus resource, which fails for Event Hub namespaces.
+                // Reusing a single factory avoids opening a new AMQP connection per client.
+                // If the factory is stale (connection dropped, token expired), recreate it.
+                lock (eventHubFactoryLock)
+                {
+                    var factory = eventHubMessagingFactory;
+                    if (factory == null || factory.IsClosed)
+                    {
+                        factory = CreateEventHubMessagingFactory();
+                        ReplaceEventHubFactory(factory);
+                    }
+
+                    try
+                    {
+                        return factory.CreateEventHubClient(path);
+                    }
+                    catch (Exception ex) when (ex is MessagingCommunicationException ||
+                                               ex is ObjectDisposedException ||
+                                               ex is OperationCanceledException)
+                    {
+                        // Factory became stale — recreate and retry once
+                        factory = CreateEventHubMessagingFactory();
+                        ReplaceEventHubFactory(factory);
+                        return factory.CreateEventHubClient(path);
+                    }
+                }
             }
 
             return EventHubClient.CreateFromConnectionString(GetAmqpConnectionString(ConnectionString), path);
+        }
+
+        /// <summary>
+        /// Closes the current Event Hub factory (if any) and replaces it with the given value.
+        /// Must be called while holding <see cref="eventHubFactoryLock"/>.
+        /// </summary>
+        private void ReplaceEventHubFactory(MessagingFactory newFactory)
+        {
+            var old = eventHubMessagingFactory;
+            eventHubMessagingFactory = newFactory;
+            if (old != null && !old.IsClosed)
+            {
+                try { old.Close(); }
+                catch (Exception) { /* best-effort cleanup */ }
+            }
+        }
+
+        /// <summary>
+        /// Creates a new MessagingFactory for Event Hub operations using AAD token provider.
+        /// </summary>
+        private MessagingFactory CreateEventHubMessagingFactory()
+        {
+            if (aadTokenProvider == null)
+            {
+                throw new InvalidOperationException(
+                    "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+            }
+
+            return MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
+            {
+                TokenProvider = aadTokenProvider,
+                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+            });
         }
 
         /// <summary>
@@ -699,13 +772,41 @@ namespace ServiceBusExplorer
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
 
+                // Reset connection-scoped state so reconnects don't carry over stale values.
+                IsEventHubNamespace = false;
+                lock (eventHubFactoryLock)
+                {
+                    ReplaceEventHubFactory(null);
+                }
+
                 if (isAad)
                 {
                     var endpointUri = new Uri(serviceBusNamespace.Uri);
-                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
-                        serviceBusNamespace.TenantId);
+                    var tenantId = serviceBusNamespace.TenantId;
 
+                    // Try Service Bus scope first; if the management probe fails with an
+                    // authorization error, the namespace may be an Event Hub namespace that
+                    // requires the Event Hub audience instead.
+                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(tenantId);
                     namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+
+                    try
+                    {
+                        // Lightweight scope probe — check for a non-existent queue.
+                        // This issues a single REST call (no entity enumeration) and
+                        // will throw UnauthorizedAccessException if the token audience is wrong.
+                        namespaceManager.QueueExists("$__scope_probe__$");
+                    }
+                    catch (Exception ex) when (IsAudienceMismatchException(ex))
+                    {
+                        // Audience mismatch — the namespace expects a different token audience
+                        // (Event Hub vs Service Bus). Retry with Event Hub scope.
+                        WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
+                        aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
+                            tenantId, AadCredentialFactory.EventHubsAudience);
+                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                        IsEventHubNamespace = true;
+                    }
                 }
                 else
                 {
@@ -754,14 +855,25 @@ namespace ServiceBusExplorer
                 serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
                 serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
 
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri));
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 namespaceUri = namespaceManager.Address;
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
                 // As the name suggests, the MessagingFactory class is a Factory class that allows to create
                 // instances of the QueueClient, TopicClient and SubscriptionClient classes.
-                if (isAad)
+                // Event Hub namespaces don't need the global MessagingFactory (queues/topics don't exist there),
+                // but we create a dedicated factory for Event Hub client operations to avoid opening
+                // a new AMQP connection on every CreateEventHubClient() call.
+                if (IsEventHubNamespace)
+                {
+                    MessagingFactory = null;
+                    lock (eventHubFactoryLock)
+                    {
+                        ReplaceEventHubFactory(CreateEventHubMessagingFactory());
+                    }
+                }
+                else if (isAad)
                 {
                     MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
                 }
@@ -4410,6 +4522,54 @@ namespace ServiceBusExplorer
                 default:
                     return Encoding.UTF8;
             }
+        }
+
+        /// <summary>
+        /// Determines whether an exception thrown by the scope probe indicates an
+        /// audience mismatch (Service Bus token sent to an Event Hub namespace)
+        /// rather than a generic authorization failure (e.g., missing Manage claim).
+        ///
+        /// Audience-mismatch errors typically carry substatus 40104 / "InvalidAudience".
+        /// Permission errors carry substatus 40301 / "Manage claim is required".
+        /// When no specific substatus is present, we fall back to 401/40100 only if
+        /// no permission-denied signal is found.
+        /// </summary>
+        private static bool IsAudienceMismatchException(Exception ex)
+        {
+            var message = ex.Message ?? string.Empty;
+            var innerMessage = ex.InnerException?.Message ?? string.Empty;
+            var fullMessage = message + " " + innerMessage;
+
+            // Strong audience-mismatch signal — always treat as scope switch.
+            if (fullMessage.IndexOf("40104", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("InvalidAudience", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            // Permission-denied signals — never treat as scope switch.
+            if (fullMessage.IndexOf("40301", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("Manage", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fullMessage.IndexOf("claim is required", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return false;
+            }
+
+            // Fallback: generic 401 / UnauthorizedAccessException without a specific
+            // substatus — assume audience mismatch for backward compatibility.
+            if (ex is UnauthorizedAccessException)
+            {
+                return true;
+            }
+
+            if (ex is MessagingException)
+            {
+                return message.Contains("401") ||
+                       message.Contains("40100") ||
+                       ex.InnerException is UnauthorizedAccessException;
+            }
+
+            return false;
         }
 
         private static bool TestNamespaceHostIsContactable(ServiceBusNamespace serviceBusNamespace)

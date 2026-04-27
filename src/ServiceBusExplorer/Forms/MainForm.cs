@@ -4588,9 +4588,9 @@ namespace ServiceBusExplorer.Forms
                     var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
                     var isAad = serviceBusHelper.IsAzureActiveDirectory;
-                    var loadQueues = SelectedEntities.Contains(Constants.QueueEntities);
-                    var loadTopics = SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = !isAad && SelectedEntities.Contains(Constants.EventHubEntities);
+                    var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
+                    var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
+                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isAad || serviceBusHelper.IsEventHubNamespace);
                     var loadNotificationHubs = !isAad && SelectedEntities.Contains(Constants.NotificationHubEntities);
                     var loadRelays = !isAad && SelectedEntities.Contains(Constants.RelayEntities);
                     if (entityType == EntityType.All)
@@ -4639,7 +4639,26 @@ namespace ServiceBusExplorer.Forms
                             try
                             {
 
-                                var eventHubs = await serviceBusHelper.NamespaceManager.GetEventHubsAsync();
+                                IEnumerable<EventHubDescription> eventHubs;
+                                if (!string.IsNullOrWhiteSpace(serviceBusHelper.EntityPath))
+                                {
+                                    try
+                                    {
+                                        var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
+                                        eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
+                                    }
+                                    catch (MessagingException ex)
+                                    {
+                                        WriteToLog(string.Format(CultureInfo.CurrentCulture,
+                                            "No event hub found matching EntityPath '{0}': {1}",
+                                            serviceBusHelper.EntityPath, ex.Message));
+                                        eventHubs = Enumerable.Empty<EventHubDescription>();
+                                    }
+                                }
+                                else
+                                {
+                                    eventHubs = await serviceBusHelper.NamespaceManager.GetEventHubsAsync();
+                                }
                                 Cursor.Current = Cursors.WaitCursor;
                                 eventHubListNode.Nodes.Clear();
                                 if (eventHubs != null)
@@ -4768,6 +4787,10 @@ namespace ServiceBusExplorer.Forms
                         {
                             var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
+                            if (!queues.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            {
+                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a queue.");
+                            }
                             queueListNode.Text = string.Format("{0} {1}", queues.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
                                 : FilteredQueueEntities);
@@ -4809,6 +4832,10 @@ namespace ServiceBusExplorer.Forms
                         {
                             var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
+                            if (!topics.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            {
+                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a topic.");
+                            }
                             topicListNode.Text = string.Format("{0} {1}", topics.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
                                 : FilteredTopicEntities);

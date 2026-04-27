@@ -53,6 +53,19 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             SetPrivateField(helper, "serviceBusNamespaceInstance", aadNamespace);
 
+            // The new implementation requires the cached eventHubMessagingFactory
+            // (created during Connect) to create EventHubClients.
+            var tokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            SetPrivateField(helper, "aadTokenProvider", tokenProvider);
+            var nsUri = new Uri("sb://myns.servicebus.windows.net/");
+            SetPrivateField(helper, "namespaceUri", nsUri);
+            var factory = MessagingFactory.Create(nsUri, new MessagingFactorySettings
+            {
+                TokenProvider = tokenProvider,
+                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+            });
+            SetPrivateField(helper, "eventHubMessagingFactory", factory);
+
             var client = helper.CreateEventHubClient("hub1");
 
             client.Should().NotBeNull();
@@ -132,6 +145,87 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             act.Should().Throw<ArgumentException>()
                 .And.ParamName.Should().Be("path");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentProviders()
+        {
+            var sbProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.ServiceBusAudience);
+            var ehProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehProvider.Should().NotBeSameAs(sbProvider, "different audiences must produce different token providers");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_SameAudience_ReusesCachedProvider()
+        {
+            var ehProvider1 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+            var ehProvider2 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehProvider2.Should().BeSameAs(ehProvider1, "same tenant+audience should reuse cached provider");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentCallbacks()
+        {
+            var sbCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.ServiceBusAudience);
+            var ehCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.EventHubsAudience);
+
+            ehCallback.Should().NotBeSameAs(sbCallback, "different audiences must produce different callbacks");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_EventHubsAudience_HasCorrectValue()
+        {
+            AadCredentialFactory.EventHubsAudience.Should().Be("https://eventhubs.azure.net");
+        }
+
+        [Fact]
+        public void AadCredentialFactory_GetScopes_EventHubResource_UsesEventHubScope()
+        {
+            var scopes = InvokePrivateStatic<string[]>(typeof(AadCredentialFactory), "GetScopes", "https://eventhubs.azure.net");
+
+            scopes.Should().ContainSingle().Which.Should().Be("https://eventhubs.azure.net/.default");
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceSubstatus_ReturnsTrue()
+        {
+            var ex = new MessagingException("SubCode=40104. Token has invalid audience.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceKeyword_ReturnsTrue()
+        {
+            var ex = new UnauthorizedAccessException("InvalidAudience: the token was issued for a different resource.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_ManageClaimDenied_ReturnsFalse()
+        {
+            var ex = new UnauthorizedAccessException("40301: Manage claim is required for this operation.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_Generic401_ReturnsTrueForBackwardCompat()
+        {
+            var ex = new MessagingException("The request was unauthorized. Status code: 401");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_UnrelatedMessagingException_ReturnsFalse()
+        {
+            var ex = new MessagingException("Entity not found. Status code: 404");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
         }
 
         static T GetPrivateField<T>(object instance, string fieldName)

@@ -230,7 +230,14 @@ namespace ServiceBusExplorer.Forms
             {
                 if (SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory)
                 {
-                    return new List<string> { Constants.QueueEntities, Constants.TopicEntities };
+                    // Include Event Hub entities — the actual namespace type is detected
+                    // at connect time, and MainForm will load only what's available.
+                    return new List<string>
+                    {
+                        Constants.QueueEntities,
+                        Constants.TopicEntities,
+                        Constants.EventHubEntities
+                    };
                 }
 
                 return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
@@ -359,7 +366,7 @@ namespace ServiceBusExplorer.Forms
             if (cboSelectedEntities.Items.Count > 0)
             {
                 cboSelectedEntities.Items[0] = isAad
-                    ? $"{Constants.QueueEntities}, {Constants.TopicEntities} ({Constants.SubscriptionEntities})"
+                    ? $"{Constants.QueueEntities}, {Constants.TopicEntities} ({Constants.SubscriptionEntities}), {Constants.EventHubEntities}"
                     : cboSelectedEntities.GetCSVText(true);
             }
         }

@@ -39,7 +39,7 @@ namespace ServiceBusExplorer.Helpers
     /// </summary>
     /// <remarks>
     /// This implementation targets public Azure only.
-    /// The authority (login.microsoftonline.com) and audience (servicebus.azure.net)
+    /// The authority (login.microsoftonline.com) and audience (servicebus.azure.net / eventhubs.azure.net)
     /// are hard-coded for the public cloud. Sovereign clouds (Azure Government, Azure China, etc.)
     /// are not currently supported.
     /// </remarks>
@@ -47,7 +47,8 @@ namespace ServiceBusExplorer.Helpers
     {
         // Public Azure only — sovereign clouds would require a different audience and authority.
         const string DefaultTenantId = "organizations";
-        const string ServiceBusAudience = "https://servicebus.azure.net";
+        public const string ServiceBusAudience = "https://servicebus.azure.net";
+        public const string EventHubsAudience = "https://eventhubs.azure.net";
         static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> interactiveBrowserCredentials =
             new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
         static readonly ConcurrentDictionary<string, AzureActiveDirectoryTokenProvider.AuthenticationCallback> authenticationCallbacks =
@@ -102,20 +103,38 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Creates an authentication callback for the old WindowsAzure.ServiceBus SDK
         /// that obtains tokens via interactive browser sign-in.
+        /// Uses the Service Bus audience by default.
         /// </summary>
         /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
         public static AzureActiveDirectoryTokenProvider.AuthenticationCallback CreateOldSdkAuthenticationCallback(string tenantId = null)
         {
+            return CreateOldSdkAuthenticationCallback(tenantId, ServiceBusAudience);
+        }
+
+        /// <summary>
+        /// Creates an authentication callback for the old WindowsAzure.ServiceBus SDK
+        /// that obtains tokens via interactive browser sign-in, targeting the specified audience.
+        /// </summary>
+        /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
+        /// <param name="audience">The token audience (e.g. ServiceBusAudience or EventHubsAudience).</param>
+        public static AzureActiveDirectoryTokenProvider.AuthenticationCallback CreateOldSdkAuthenticationCallback(string tenantId, string audience)
+        {
             var normalizedTenantId = NormalizeTenantId(tenantId);
-            return authenticationCallbacks.GetOrAdd(normalizedTenantId, _ =>
+            var normalizedAudience = string.IsNullOrWhiteSpace(audience) ? ServiceBusAudience : audience.Trim();
+            var cacheKey = $"{normalizedTenantId}|{normalizedAudience}";
+            return authenticationCallbacks.GetOrAdd(cacheKey, _ =>
             {
                 return async (authorityUrl, resource, state) =>
                 {
                     try
                     {
+                        // Use our normalizedAudience instead of the SDK-supplied resource.
+                        // The old SDK always passes "https://servicebus.azure.net" as
+                        // the resource, even for Event Hub clients, which is wrong for
+                        // Event Hub namespaces that require the Event Hubs audience.
                         var token = await GetAccessTokenAsync(
                                 normalizedTenantId,
-                                GetScopes(resource),
+                                GetScopes(normalizedAudience),
                                 CancellationToken.None)
                             .ConfigureAwait(false);
                         return token.Token;
@@ -134,15 +153,29 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Creates a TokenProvider for the old WindowsAzure.ServiceBus SDK that obtains
         /// tokens from an InteractiveBrowserCredential.
+        /// Uses the Service Bus audience by default.
         /// </summary>
         public static TokenProvider CreateOldSdkTokenProvider(string tenantId = null)
         {
+            return CreateOldSdkTokenProvider(tenantId, ServiceBusAudience);
+        }
+
+        /// <summary>
+        /// Creates a TokenProvider for the old WindowsAzure.ServiceBus SDK that obtains
+        /// tokens from an InteractiveBrowserCredential, targeting the specified audience.
+        /// </summary>
+        /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
+        /// <param name="audience">The token audience (e.g. ServiceBusAudience or EventHubsAudience).</param>
+        public static TokenProvider CreateOldSdkTokenProvider(string tenantId, string audience)
+        {
             var normalizedTenantId = NormalizeTenantId(tenantId);
-            return tokenProviders.GetOrAdd(normalizedTenantId, _ =>
+            var normalizedAudience = string.IsNullOrWhiteSpace(audience) ? ServiceBusAudience : audience.Trim();
+            var cacheKey = $"{normalizedTenantId}|{normalizedAudience}";
+            return tokenProviders.GetOrAdd(cacheKey, _ =>
                 TokenProvider.CreateAzureActiveDirectoryTokenProvider(
-                    CreateOldSdkAuthenticationCallback(normalizedTenantId),
+                    CreateOldSdkAuthenticationCallback(normalizedTenantId, normalizedAudience),
                     new Uri(GetAuthority(normalizedTenantId)),
-                    ServiceBusAudience,
+                    normalizedAudience,
                     null));
         }
 
