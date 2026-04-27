@@ -11,6 +11,7 @@
 #region Using Directives
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -29,7 +30,7 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         internal static void EnsureMessageBodyCache(
             SortableBindingList<BrokeredMessage> bindingList,
-            Dictionary<BrokeredMessage, string> cache,
+            IDictionary<BrokeredMessage, string> cache,
             Func<BrokeredMessage, string> getBodyFunc,
             WriteToLogDelegate writeToLog)
         {
@@ -53,7 +54,7 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Checks whether a message matches the given body filter criteria.
         /// </summary>
-        internal static bool MatchesBodyFilter(BrokeredMessage msg, Dictionary<BrokeredMessage, string> cache,
+        internal static bool MatchesBodyFilter(BrokeredMessage msg, IDictionary<BrokeredMessage, string> cache,
             string freeText, string jsonPath, string jsonValue, bool caseSensitive)
         {
             if (!cache.TryGetValue(msg, out var body))

@@ -97,6 +97,8 @@ namespace ServiceBusExplorer.Forms
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
 
             // Property filter group (SQL expression on message properties)
             grpPropertyFilter = new GroupBox
@@ -299,7 +301,7 @@ namespace ServiceBusExplorer.Forms
                     var token = JToken.Parse(trimmed);
                     ExtractPathsFromToken(token, string.Empty, paths);
                 }
-                catch (Exception)
+                catch (Newtonsoft.Json.JsonException)
                 {
                     // Not valid JSON, skip
                 }
@@ -388,7 +390,7 @@ namespace ServiceBusExplorer.Forms
                     ? token.Value<string>()
                     : token.ToString();
             }
-            catch (Exception)
+            catch (Newtonsoft.Json.JsonException)
             {
                 return null;
             }
