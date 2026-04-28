@@ -7748,11 +7748,22 @@ namespace ServiceBusExplorer.Forms
         {
             if (keyData == (Keys.Control | Keys.F))
             {
+                if (GetFocusedControl(this) is FastColoredTextBoxNS.FastColoredTextBox)
+                {
+                    return base.ProcessCmdKey(ref msg, keyData);
+                }
                 filterTreeViewTextBox.Focus();
                 filterTreeViewTextBox.SelectAll();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private static Control GetFocusedControl(Control control)
+        {
+            if (control is ContainerControl cc && cc.ActiveControl != null)
+                return GetFocusedControl(cc.ActiveControl);
+            return control;
         }
 
         #endregion
