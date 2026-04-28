@@ -10,6 +10,9 @@ on:
         required: true
         type: string
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   publish:
     name: publish
@@ -22,7 +25,7 @@ jobs:
         echo "OUTPUT_PATH=$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\bin\Release" >> $env:GITHUB_ENV
         echo "RELEASE_VERSION=$env:STEP_RELEASE_VERSION" >> $env:GITHUB_ENV
        
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Verify release version and get just the numbers and the dots
       id: get-number-version
@@ -80,9 +83,13 @@ jobs:
     - name: Create the release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-      continue-on-error: true
       run: |
-        gh release create ${{ env.RELEASE_VERSION }}  --draft --generate-notes
+        $releaseExists = gh release view ${{ env.RELEASE_VERSION }} 2>&1
+        if ($LASTEXITCODE -ne 0) {
+          gh release create ${{ env.RELEASE_VERSION }} --draft --generate-notes
+        } else {
+          echo "Release ${{ env.RELEASE_VERSION }} already exists, skipping creation."
+        }
 
     - name: Upload build output zipped
       working-directory: ${{env.GITHUB_WORKSPACE}}
