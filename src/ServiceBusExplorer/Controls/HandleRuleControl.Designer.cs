@@ -62,10 +62,10 @@ namespace ServiceBusExplorer.Controls
             // btnCreateDelete
             // 
             this.btnCreateDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateDelete.Location = new System.Drawing.Point(800, 360);
@@ -81,10 +81,10 @@ namespace ServiceBusExplorer.Controls
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancel.Location = new System.Drawing.Point(880, 360);
@@ -100,15 +100,15 @@ namespace ServiceBusExplorer.Controls
             // grouperFilterType
             // 
             this.grouperFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperFilterType.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperFilterType.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperFilterType.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperFilterType.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperFilterType.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperFilterType.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilterType.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperFilterType.BorderThickness = 1F;
             this.grouperFilterType.Controls.Add(this.checkBoxIsCorrelationFilter);
-            this.grouperFilterType.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilterType.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperFilterType.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperFilterType.ForeColor = System.Drawing.Color.White;
+            this.grouperFilterType.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperFilterType.GroupImage = null;
             this.grouperFilterType.GroupTitle = "Filter Type";
             this.grouperFilterType.Location = new System.Drawing.Point(685, 8);
@@ -140,10 +140,10 @@ namespace ServiceBusExplorer.Controls
             this.grouperCorrelationFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperCorrelationFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperCorrelationFilter.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperCorrelationFilter.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperCorrelationFilter.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperCorrelationFilter.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCorrelationFilter.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperCorrelationFilter.BorderThickness = 1F;
             this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterTo);
             this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterTo);
@@ -162,9 +162,9 @@ namespace ServiceBusExplorer.Controls
             this.grouperCorrelationFilter.Controls.Add(this.txtCorrelationFilterContentType);
             this.grouperCorrelationFilter.Controls.Add(this.lblCorrelationFilterContentType);
             this.grouperCorrelationFilter.Controls.Add(this.authorizationRulesDataGridView);
-            this.grouperCorrelationFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCorrelationFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperCorrelationFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperCorrelationFilter.ForeColor = System.Drawing.Color.White;
+            this.grouperCorrelationFilter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperCorrelationFilter.GroupImage = null;
             this.grouperCorrelationFilter.GroupTitle = "Correlation Filter";
             this.grouperCorrelationFilter.Location = new System.Drawing.Point(16, 96);
@@ -334,7 +334,7 @@ namespace ServiceBusExplorer.Controls
             // authorizationRulesDataGridView
             // 
             this.authorizationRulesDataGridView.AllowUserToResizeRows = false;
-            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -356,15 +356,15 @@ namespace ServiceBusExplorer.Controls
             // 
             this.grouperCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperCreatedAt.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperCreatedAt.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperCreatedAt.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCreatedAt.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperCreatedAt.BorderThickness = 1F;
             this.grouperCreatedAt.Controls.Add(this.txtCreatedAt);
-            this.grouperCreatedAt.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCreatedAt.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperCreatedAt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperCreatedAt.ForeColor = System.Drawing.Color.White;
+            this.grouperCreatedAt.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperCreatedAt.GroupImage = null;
             this.grouperCreatedAt.GroupTitle = "Created At";
             this.grouperCreatedAt.Location = new System.Drawing.Point(492, 8);
@@ -382,7 +382,7 @@ namespace ServiceBusExplorer.Controls
             // 
             this.txtCreatedAt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCreatedAt.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreatedAt.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtCreatedAt.Location = new System.Drawing.Point(16, 40);
             this.txtCreatedAt.Name = "txtCreatedAt";
             this.txtCreatedAt.ReadOnly = true;
@@ -392,15 +392,15 @@ namespace ServiceBusExplorer.Controls
             // grouperIsDefault
             // 
             this.grouperIsDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperIsDefault.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperIsDefault.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperIsDefault.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperIsDefault.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperIsDefault.BorderThickness = 1F;
             this.grouperIsDefault.Controls.Add(this.checkBoxDefault);
-            this.grouperIsDefault.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperIsDefault.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperIsDefault.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperIsDefault.ForeColor = System.Drawing.Color.White;
+            this.grouperIsDefault.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperIsDefault.GroupImage = null;
             this.grouperIsDefault.GroupTitle = "Is Default?";
             this.grouperIsDefault.Location = new System.Drawing.Point(828, 8);
@@ -431,15 +431,15 @@ namespace ServiceBusExplorer.Controls
             this.grouperAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAction.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAction.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAction.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAction.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAction.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAction.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAction.BorderThickness = 1F;
             this.grouperAction.Controls.Add(this.txtSqlFilterAction);
-            this.grouperAction.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAction.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAction.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAction.ForeColor = System.Drawing.Color.White;
+            this.grouperAction.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAction.GroupImage = null;
             this.grouperAction.GroupTitle = "Action";
             this.grouperAction.Location = new System.Drawing.Point(492, 96);
@@ -458,7 +458,7 @@ namespace ServiceBusExplorer.Controls
             this.txtSqlFilterAction.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSqlFilterAction.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSqlFilterAction.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtSqlFilterAction.Location = new System.Drawing.Point(16, 32);
             this.txtSqlFilterAction.Multiline = true;
             this.txtSqlFilterAction.Name = "txtSqlFilterAction";
@@ -471,15 +471,15 @@ namespace ServiceBusExplorer.Controls
             this.grouperFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperFilter.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperFilter.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperFilter.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilter.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperFilter.BorderThickness = 1F;
             this.grouperFilter.Controls.Add(this.txtFilterExpression);
-            this.grouperFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperFilter.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperFilter.ForeColor = System.Drawing.Color.White;
+            this.grouperFilter.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperFilter.GroupImage = null;
             this.grouperFilter.GroupTitle = "Filter";
             this.grouperFilter.Location = new System.Drawing.Point(16, 96);
@@ -498,7 +498,7 @@ namespace ServiceBusExplorer.Controls
             this.txtFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFilterExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtFilterExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtFilterExpression.Location = new System.Drawing.Point(16, 32);
             this.txtFilterExpression.Multiline = true;
             this.txtFilterExpression.Name = "txtFilterExpression";
@@ -510,15 +510,15 @@ namespace ServiceBusExplorer.Controls
             // 
             this.grouperName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperName.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperName.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperName.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperName.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperName.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperName.BorderThickness = 1F;
             this.grouperName.Controls.Add(this.txtName);
-            this.grouperName.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperName.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperName.ForeColor = System.Drawing.Color.White;
+            this.grouperName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperName.GroupImage = null;
             this.grouperName.GroupTitle = "Name";
             this.grouperName.Location = new System.Drawing.Point(16, 8);
@@ -536,7 +536,7 @@ namespace ServiceBusExplorer.Controls
             // 
             this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtName.BackColor = System.Drawing.SystemColors.Window;
+            this.txtName.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtName.Location = new System.Drawing.Point(16, 40);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(428, 20);
@@ -545,7 +545,7 @@ namespace ServiceBusExplorer.Controls
             // HandleRuleControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.grouperFilterType);
             this.Controls.Add(this.grouperCorrelationFilter);
             this.Controls.Add(this.grouperCreatedAt);
@@ -614,3 +614,4 @@ namespace ServiceBusExplorer.Controls
         private System.Windows.Forms.DataGridView authorizationRulesDataGridView;
     }
 }
+

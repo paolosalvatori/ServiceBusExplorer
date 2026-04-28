@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -148,6 +148,7 @@ namespace ServiceBusExplorer.Controls
             this.eventHubDescription = eventHubDescription;
             this.partitionDescription = partitionDescription;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -1371,3 +1372,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

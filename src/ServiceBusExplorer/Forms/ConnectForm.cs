@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team  
@@ -117,6 +117,7 @@ namespace ServiceBusExplorer.Forms
         public ConnectForm(ServiceBusHelper serviceBusHelper, ConfigFileUse configFileUse)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
 
             this.configFileUse = configFileUse;
             SetConfigFileUseLabelText(lblConfigFileUse);
@@ -1084,3 +1085,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

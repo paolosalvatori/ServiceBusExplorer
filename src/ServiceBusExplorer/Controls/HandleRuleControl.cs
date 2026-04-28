@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -84,6 +84,7 @@ namespace ServiceBusExplorer.Controls
             this.ruleWrapper = ruleWrapper;
             this.isFirstRule = isFirstRule;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
             InitializeData();
         } 
@@ -459,3 +460,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

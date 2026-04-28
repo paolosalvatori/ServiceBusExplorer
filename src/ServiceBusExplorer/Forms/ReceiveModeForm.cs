@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -22,6 +22,7 @@
 #region Using Directives
 
 #nullable enable
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -46,6 +47,7 @@ namespace ServiceBusExplorer.Forms
         public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors, bool fromSessionSelectionActive = false)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             Text = message;
             txtMessageCount.Text = count.ToString(CultureInfo.InvariantCulture);
             cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
@@ -174,3 +176,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

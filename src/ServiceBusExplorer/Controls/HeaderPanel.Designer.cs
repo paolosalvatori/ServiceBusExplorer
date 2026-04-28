@@ -32,7 +32,7 @@ namespace ServiceBusExplorer.Controls
 			// 
 			// OutlookPanelEx
 			// 
-			this.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
 			this.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
 			this.Name = "OutlookPanelEx";
 			this.Size = new System.Drawing.Size(224, 172);
@@ -44,3 +44,4 @@ namespace ServiceBusExplorer.Controls
 		#endregion
 	}
 }
+

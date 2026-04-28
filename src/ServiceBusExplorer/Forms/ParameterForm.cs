@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -42,6 +43,7 @@ namespace ServiceBusExplorer.Forms
         public ParameterForm(string title, IList<string> parameterNameList, IList<string> parameterValueList, IList<bool> canBeNullList = null)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             if (!string.IsNullOrWhiteSpace(title))
             {
                 Text = title;
@@ -167,3 +169,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

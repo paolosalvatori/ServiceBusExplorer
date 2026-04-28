@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -205,6 +205,7 @@ namespace ServiceBusExplorer.Controls
             this.notificationHubDescription = notificationHubDescription;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -394,7 +395,8 @@ namespace ServiceBusExplorer.Controls
 
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
-                txtPath.BackColor = SystemColors.Window;
+                txtPath.BackColor = ThemeManager.IsDark ? ThemeManager.SurfaceLight : SystemColors.Window;
+                txtPath.ForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.WindowText;
                 txtPath.GotFocus += textBox_GotFocus;
 
                 toolTip.SetToolTip(txtPath, PathTooltip);
@@ -3661,3 +3663,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -207,10 +207,9 @@ namespace ServiceBusExplorer.Controls
             this.duplicateExistingSubscription = duplicateExistingSubscription;
 
             InitializeComponent();
-
             btnCopyMessageBody = AddCopyBodyButton(grouperMessageText, txtMessageText);
             btnCopyDeadletterBody = AddCopyBodyButton(grouperDeadletterText, txtDeadletterText);
-
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -2998,3 +2997,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

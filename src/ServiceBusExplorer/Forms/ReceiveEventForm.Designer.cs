@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Forms
+namespace ServiceBusExplorer.Forms
 {
     partial class ReceiveEventForm
     {
@@ -43,17 +43,17 @@
             this.grouperReceiveEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperReceiveEvents.BackgroundColor = System.Drawing.Color.White;
-            this.grouperReceiveEvents.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperReceiveEvents.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperReceiveEvents.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperReceiveEvents.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperReceiveEvents.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperReceiveEvents.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperReceiveEvents.BorderThickness = 1F;
             this.grouperReceiveEvents.Controls.Add(this.txtEventCount);
             this.grouperReceiveEvents.Controls.Add(this.btnTop);
             this.grouperReceiveEvents.Controls.Add(this.btnMax);
-            this.grouperReceiveEvents.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperReceiveEvents.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperReceiveEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperReceiveEvents.ForeColor = System.Drawing.Color.White;
+            this.grouperReceiveEvents.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperReceiveEvents.GroupImage = null;
             this.grouperReceiveEvents.GroupTitle = "Event Count";
             this.grouperReceiveEvents.Location = new System.Drawing.Point(18, 15);
@@ -108,10 +108,10 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(67, 99);
             this.btnOk.Name = "btnOk";
@@ -124,11 +124,11 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(151, 99);
             this.btnCancel.Name = "btnCancel";
@@ -143,7 +143,7 @@
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(247, 145);
             this.Controls.Add(this.btnCancel);
@@ -173,3 +173,4 @@
         private System.Windows.Forms.Button btnCancel;
     }
 }
+
