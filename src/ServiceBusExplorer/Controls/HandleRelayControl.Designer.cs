@@ -89,15 +89,15 @@
             this.grouperRelaySettings.ForeColor = System.Drawing.Color.White;
             this.grouperRelaySettings.GroupImage = null;
             this.grouperRelaySettings.GroupTitle = "Relay Settings";
-            this.grouperRelaySettings.Location = new System.Drawing.Point(328, 96);
+            this.grouperRelaySettings.Location = new System.Drawing.Point(334, 96);
             this.grouperRelaySettings.Name = "grouperRelaySettings";
-            this.grouperRelaySettings.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperRelaySettings.Padding = new System.Windows.Forms.Padding(20);
             this.grouperRelaySettings.PaintGroupBox = true;
             this.grouperRelaySettings.RoundCorners = 4;
             this.grouperRelaySettings.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperRelaySettings.ShadowControl = false;
             this.grouperRelaySettings.ShadowThickness = 1;
-            this.grouperRelaySettings.Size = new System.Drawing.Size(296, 344);
+            this.grouperRelaySettings.Size = new System.Drawing.Size(310, 344);
             this.grouperRelaySettings.TabIndex = 2;
             // 
             // checkedListBox
@@ -112,9 +112,9 @@
             "Requires Client Authorization",
             "Requires Transport Security"});
             this.checkedListBox.Location = new System.Drawing.Point(16, 43);
-            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.checkedListBox.Margin = new System.Windows.Forms.Padding(8);
             this.checkedListBox.Name = "checkedListBox";
-            this.checkedListBox.Size = new System.Drawing.Size(264, 259);
+            this.checkedListBox.Size = new System.Drawing.Size(278, 274);
             this.checkedListBox.TabIndex = 0;
             this.checkedListBox.ThreeDCheckBoxes = true;
             this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
@@ -135,13 +135,13 @@
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(16, 8);
             this.grouperPath.Name = "grouperPath";
-            this.grouperPath.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperPath.Padding = new System.Windows.Forms.Padding(20);
             this.grouperPath.PaintGroupBox = true;
             this.grouperPath.RoundCorners = 4;
             this.grouperPath.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperPath.ShadowControl = false;
             this.grouperPath.ShadowThickness = 1;
-            this.grouperPath.Size = new System.Drawing.Size(608, 80);
+            this.grouperPath.Size = new System.Drawing.Size(628, 80);
             this.grouperPath.TabIndex = 0;
             // 
             // lblRelativeURI
@@ -162,7 +162,7 @@
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPath.Location = new System.Drawing.Point(16, 44);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(576, 20);
+            this.txtPath.Size = new System.Drawing.Size(596, 20);
             this.txtPath.TabIndex = 1;
             // 
             // grouperRelayProperties
@@ -186,13 +186,13 @@
             this.grouperRelayProperties.GroupTitle = "Relay Properties";
             this.grouperRelayProperties.Location = new System.Drawing.Point(16, 96);
             this.grouperRelayProperties.Name = "grouperRelayProperties";
-            this.grouperRelayProperties.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperRelayProperties.Padding = new System.Windows.Forms.Padding(20);
             this.grouperRelayProperties.PaintGroupBox = true;
             this.grouperRelayProperties.RoundCorners = 4;
             this.grouperRelayProperties.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperRelayProperties.ShadowControl = false;
             this.grouperRelayProperties.ShadowThickness = 1;
-            this.grouperRelayProperties.Size = new System.Drawing.Size(296, 344);
+            this.grouperRelayProperties.Size = new System.Drawing.Size(310, 344);
             this.grouperRelayProperties.TabIndex = 1;
             this.grouperRelayProperties.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperRelayProperties_CustomPaint);
             // 
@@ -206,7 +206,7 @@
             this.cboRelayType.FormattingEnabled = true;
             this.cboRelayType.Location = new System.Drawing.Point(16, 44);
             this.cboRelayType.Name = "cboRelayType";
-            this.cboRelayType.Size = new System.Drawing.Size(232, 21);
+            this.cboRelayType.Size = new System.Drawing.Size(246, 21);
             this.cboRelayType.TabIndex = 1;
             // 
             // lblRelayType
@@ -229,7 +229,7 @@
             this.txtUserMetadata.MaxLength = 0;
             this.txtUserMetadata.Multiline = true;
             this.txtUserMetadata.Name = "txtUserMetadata";
-            this.txtUserMetadata.Size = new System.Drawing.Size(232, 240);
+            this.txtUserMetadata.Size = new System.Drawing.Size(246, 240);
             this.txtUserMetadata.TabIndex = 3;
             // 
             // lblUserMetadata
@@ -251,7 +251,7 @@
             this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenDescriptionForm.Location = new System.Drawing.Point(256, 88);
+            this.btnOpenDescriptionForm.Location = new System.Drawing.Point(270, 88);
             this.btnOpenDescriptionForm.Name = "btnOpenDescriptionForm";
             this.btnOpenDescriptionForm.Size = new System.Drawing.Size(24, 21);
             this.btnOpenDescriptionForm.TabIndex = 4;
@@ -278,15 +278,15 @@
             this.grouperRelayInformation.ForeColor = System.Drawing.Color.White;
             this.grouperRelayInformation.GroupImage = null;
             this.grouperRelayInformation.GroupTitle = "Relay Information";
-            this.grouperRelayInformation.Location = new System.Drawing.Point(640, 8);
+            this.grouperRelayInformation.Location = new System.Drawing.Point(652, 8);
             this.grouperRelayInformation.Name = "grouperRelayInformation";
-            this.grouperRelayInformation.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperRelayInformation.Padding = new System.Windows.Forms.Padding(20);
             this.grouperRelayInformation.PaintGroupBox = true;
             this.grouperRelayInformation.RoundCorners = 4;
             this.grouperRelayInformation.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperRelayInformation.ShadowControl = false;
             this.grouperRelayInformation.ShadowThickness = 1;
-            this.grouperRelayInformation.Size = new System.Drawing.Size(312, 432);
+            this.grouperRelayInformation.Size = new System.Drawing.Size(300, 432);
             this.grouperRelayInformation.TabIndex = 3;
             // 
             // propertyListView
@@ -298,7 +298,7 @@
             this.nameColumnHeader,
             this.valueColumnHeader});
             this.propertyListView.HideSelection = false;
-            this.propertyListView.Location = new System.Drawing.Point(16, 32);
+            this.propertyListView.Location = new System.Drawing.Point(11, 34);
             this.propertyListView.Name = "propertyListView";
             this.propertyListView.OwnerDraw = true;
             this.propertyListView.Size = new System.Drawing.Size(279, 384);
@@ -365,7 +365,7 @@
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(16, 8);
             this.grouperAuthorizationRuleList.Name = "grouperAuthorizationRuleList";
-            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.grouperAuthorizationRuleList.Padding = new System.Windows.Forms.Padding(20);
             this.grouperAuthorizationRuleList.PaintGroupBox = true;
             this.grouperAuthorizationRuleList.RoundCorners = 4;
             this.grouperAuthorizationRuleList.ShadowColor = System.Drawing.Color.DarkGray;
