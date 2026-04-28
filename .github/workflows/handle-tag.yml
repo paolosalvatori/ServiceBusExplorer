@@ -6,6 +6,9 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   check-tag-branch:
     # This job is based on replies in https://github.community/t/how-to-create-filter-on-both-tag-and-branch/16936/6
@@ -15,7 +18,7 @@ jobs:
       id: tag-commit-hash
       run: |
         hash=${{ github.sha }}
-        echo "{name}=tag-hash::${hash}" >> $GITHUB_OUTPUT
+        echo "tag-hash=${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
     - name: Checkout main
@@ -27,7 +30,7 @@ jobs:
       id: main-commit-hash
       run: |
         hash=$(git log -n1 --format=format:"%H")
-        echo "{name}=main-hash::${hash}" >> $GITHUB_OUTPUT
+        echo "main-hash=${hash}" >> $GITHUB_OUTPUT
         echo $hash
 
     - name: Verify tag commit matches main commit - exit if they don't match
@@ -37,6 +40,7 @@ jobs:
         exit 1
 
   get-version:
+    needs: [check-tag-branch]
     runs-on: windows-2022
     steps:
     - name: Get version from tag

@@ -10,6 +10,9 @@ on:
   pull_request_review:
     types: [submitted]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   claude:
     # Gate 1: only trusted authors can trigger on a public repo.
