@@ -162,7 +162,10 @@ namespace ServiceBusExplorer.Controls
         private const string SaveAsTitle = "Save File As";
         private const string JsonExtension = "json";
         private const string JsonFilter = "JSON Files|*.json|Text Documents|*.txt";
+        private const string TxtExtension = "txt";
+        private const string AllFilesFilter = "Text Documents|*.txt|JSON Files|*.json|XML Files|*.xml|All Files (*.*)|*.*";
         private const string MessageFileFormat = "BrokeredMessage_{0}_{1}.json";
+        private const string MessageFileFormatAutoRecognize = "BrokeredMessage_{0}_{1}.txt";
 
 
         //***************************
@@ -2290,8 +2293,10 @@ namespace ServiceBusExplorer.Controls
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSelectedMessagesInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
             messagesContextMenuStrip.Show(Cursor.Position);
         }
 
@@ -2411,10 +2416,12 @@ namespace ServiceBusExplorer.Controls
             repairAndResubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
             deleteSelectedMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
             resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
             saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
             deleteSelectedMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
             deadletterContextMenuStrip.Show(Cursor.Position);
@@ -2871,6 +2878,104 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private void saveSelectedMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = messagesBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtMessageText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
+                saveFileDialog.FileName = CreateFileNameAutoRecognize();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(txtMessageText.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (messagesDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
+                saveFileDialog.FileName = CreateFileNameAutoRecognize();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    MainForm.SingletonMainForm.UseAscii, out _));
+                var count = 0;
+                foreach (var body in bodies)
+                {
+                    count++;
+                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
+                    var fileExtension = fileNameParts.Last();
+                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
+                    fileNameParts.Add($"({count}).{fileExtension}");
+                    var fileName = string.Join(".", fileNameParts);
+                    if (File.Exists(fileName))
+                    {
+                        File.Delete(fileName);
+                    }
+                    using (var writer = new StreamWriter(fileName))
+                    {
+                        writer.Write(body);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void selectAllMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            messagesDataGridView.SelectAll();
+        }
+
         private void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -2952,11 +3057,111 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private void saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentDeadletterMessageRowIndex < 0)
+                {
+                    return;
+                }
+                var bindingList = deadletterBindingSource.DataSource as BindingList<BrokeredMessage>;
+                if (bindingList == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(txtDeadletterText.Text))
+                {
+                    return;
+                }
+                saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
+                saveFileDialog.FileName = CreateFileNameAutoRecognize();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    File.Delete(saveFileDialog.FileName);
+                }
+                using (var writer = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writer.Write(txtDeadletterText.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (deadletterDataGridView.SelectedRows.Count <= 0)
+                {
+                    return;
+                }
+                var messages = deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r => r.DataBoundItem as BrokeredMessage);
+                IEnumerable<BrokeredMessage> brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
+                if (!brokeredMessages.Any())
+                {
+                    return;
+                }
+                saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.Title = SaveAsTitle;
+                saveFileDialog.DefaultExt = TxtExtension;
+                saveFileDialog.Filter = AllFilesFilter;
+                saveFileDialog.FileName = CreateFileNameAutoRecognize();
+                if (saveFileDialog.ShowDialog() != DialogResult.OK ||
+                    string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    return;
+                }
+                var bodies = brokeredMessages.Select(bm => serviceBusHelper.GetMessageText(bm,
+                    MainForm.SingletonMainForm.UseAscii, out _));
+                var count = 0;
+                foreach (var body in bodies)
+                {
+                    count++;
+                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
+                    var fileExtension = fileNameParts.Last();
+                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
+                    fileNameParts.Add($"({count}).{fileExtension}");
+                    var fileName = string.Join(".", fileNameParts);
+                    if (File.Exists(fileName))
+                    {
+                        File.Delete(fileName);
+                    }
+                    using (var writer = new StreamWriter(fileName))
+                    {
+                        writer.Write(body);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
         private string CreateFileName()
         {
             return string.Format(MessageFileFormat,
                                  CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
                                  DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
+        }
+
+        private string CreateFileNameAutoRecognize()
+        {
+            return string.Format(MessageFileFormatAutoRecognize,
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(serviceBusHelper.Namespace),
+                DateTime.Now.ToString(CultureInfo.InvariantCulture).Replace('/', '-').Replace(':', '-'));
         }
 
         private async void btnPurgeMessages_Click(object sender, EventArgs e)

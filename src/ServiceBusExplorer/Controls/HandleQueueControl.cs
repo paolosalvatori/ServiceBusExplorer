@@ -4379,17 +4379,17 @@ namespace ServiceBusExplorer.Controls
 
             repairAndResubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedSharedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
-            deleteSelectedSharedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
+            deleteSelectedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
 
             resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
-            deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
+            deleteSelectedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
-            sharedDeadletterContextMenuStrip.Show(Cursor.Position);
+            deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
         void RepairAndResubmitSharedDeadletterMessage(DataGridViewCellEventArgs e)
