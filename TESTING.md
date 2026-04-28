@@ -55,8 +55,11 @@
 | 48 | Clear filter button — hidden when empty | Open app, filter box empty | "×" button at right of filter box is hidden | ⬜ |
 | 49 | Clear filter button — enabled on text | Type any character in filter box | "×" button becomes enabled | ⬜ |
 | 50 | Clear filter button — click clears filter | Filter active ("queue"), click "×" | Filter box cleared, tree reverts to unfiltered state | ⬜ |
+| 51 | Ctrl+F in Message Text box | Select message, click in Message Text box, press Ctrl+F | Focus blijft in Message Text box (native zoek) — NIET naar filter box | ⬜ |
+| 52 | Ctrl+F in Deadletter Text box | Select DLQ message, click in Deadletter Text box, press Ctrl+F | Focus blijft in Deadletter Text box — NIET naar filter box | ⬜ |
+| 53 | Ctrl+F buiten text boxes | Klik op properties grid of tree, press Ctrl+F | Focus springt naar Filter queues/topics box | ⬜ |
 
-**Score: 2/50 (4%)**
+**Score: 2/53 (4%)**
 
 Items 3-17 require manual testing with a live Azure Service Bus connection.
 
