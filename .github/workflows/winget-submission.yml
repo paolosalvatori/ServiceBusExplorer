@@ -10,7 +10,7 @@ env:
 
   # winget-create will read the following environment variable to access the GitHub token needed for submitting a PR
   # See https://aka.ms/winget-create-token
-  WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN }}
+  WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN_APRIL_2026 }}
    
 jobs:
   winget:

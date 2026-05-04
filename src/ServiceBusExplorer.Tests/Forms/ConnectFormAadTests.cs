@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 }
             });
 
-            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities);
+            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities, Constants.EventHubEntities);
             selectedEntitiesEnabled.Should().BeFalse();
         }
 
@@ -181,7 +181,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 }
             });
 
-            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities);
+            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities, Constants.EventHubEntities);
             selectedEntitiesEnabled.Should().BeFalse();
         }
 

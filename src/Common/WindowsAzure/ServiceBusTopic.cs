@@ -92,9 +92,19 @@ namespace ServiceBusExplorer.WindowsAzure
                     return topics;
                 }
 
-                return new List<TopicDescription> {
-                    GetTopicUsingEntityPath(timeoutInSeconds)
-                };
+                try
+                {
+                    return new List<TopicDescription> {
+                        GetTopicUsingEntityPath(timeoutInSeconds)
+                    };
+                }
+                catch (MessagingException ex) when (!ex.IsTransient)
+                {
+                    // EntityPath refers to a non-topic entity (e.g. event hub) — return empty list.
+                    // Logging is handled by the caller (MainForm.ShowEntities) to avoid duplicate
+                    // messages, since this method is also invoked from DashboardControl.LoadDataAsync.
+                    return new List<TopicDescription>();
+                }
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }

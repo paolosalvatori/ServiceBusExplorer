@@ -83,6 +83,10 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
+                catch (UnauthorizedAccessException)
+                {
+                    throw;
+                }
                 catch (MessagingException ex)
                 {
                     if (numRetries == 0 || (!ex.IsTransient))
@@ -150,6 +154,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (UnauthorizedAccessException)
                 {
                     throw;
                 }
@@ -222,6 +230,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (UnauthorizedAccessException)
                 {
                     throw;
                 }
@@ -321,6 +333,10 @@ namespace ServiceBusExplorer.Helpers
                     throw;
                 }
                 catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (UnauthorizedAccessException)
                 {
                     throw;
                 }
