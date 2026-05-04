@@ -206,9 +206,11 @@ namespace ServiceBusExplorer.Controls
         private bool _messageCacheReady;
         private bool _messageCachePopulating;
         private int _messageCacheVersion;
+        private Action _latestMessagesOnReady = null!;
         private bool _deadletterCacheReady;
         private bool _deadletterCachePopulating;
         private int _deadletterCacheVersion;
+        private Action _latestDeadletterOnReady = null!;
         private TextBox txtInlineMessagesBodyFilter;
         private TextBox txtInlineDeadletterBodyFilter;
         private TextBox txtDeadLetterReasonFilter;
@@ -3014,7 +3016,12 @@ namespace ServiceBusExplorer.Controls
         private bool EnsureMessageBodyCacheAsync(Action onReady)
         {
             if (_messageCacheReady) return true;
-            if (_messageCachePopulating) return false;
+            if (_messageCachePopulating)
+            {
+                // Store latest callback for re-entrant calls
+                _latestMessagesOnReady = onReady;
+                return false;
+            }
             if ((messageBindingList?.Count ?? 0) == 0) return true;
 
             _messageCachePopulating = true;
@@ -3058,7 +3065,10 @@ namespace ServiceBusExplorer.Controls
                 {
                     _messageCachePopulating = false;
                     _messageCacheReady = true;
-                    onReady();
+                    // Use latest callback if re-entrant call occurred
+                    var callback = _latestMessagesOnReady ?? onReady;
+                    _latestMessagesOnReady = null;
+                    callback();
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
 
@@ -3068,7 +3078,12 @@ namespace ServiceBusExplorer.Controls
         private bool EnsureDeadletterBodyCacheAsync(Action onReady)
         {
             if (_deadletterCacheReady) return true;
-            if (_deadletterCachePopulating) return false;
+            if (_deadletterCachePopulating)
+            {
+                // Store latest callback for re-entrant calls
+                _latestDeadletterOnReady = onReady;
+                return false;
+            }
             if ((deadletterBindingList?.Count ?? 0) == 0) return true;
 
             _deadletterCachePopulating = true;
@@ -3112,7 +3127,10 @@ namespace ServiceBusExplorer.Controls
                 {
                     _deadletterCachePopulating = false;
                     _deadletterCacheReady = true;
-                    onReady();
+                    // Use latest callback if re-entrant call occurred
+                    var callback = _latestDeadletterOnReady ?? onReady;
+                    _latestDeadletterOnReady = null;
+                    callback();
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
 

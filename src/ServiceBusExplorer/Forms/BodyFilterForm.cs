@@ -353,42 +353,14 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 var token = JToken.Parse(trimmed);
-                var parts = path.Split('.');
+                // Use SelectToken which properly handles dot notation, arrays, and keys containing dots
+                var result = token.SelectToken(path);
+                
+                if (result == null) return null;
 
-                foreach (var part in parts)
-                {
-                    if (token == null) return null;
-
-                    switch (token.Type)
-                    {
-                        case JTokenType.Object:
-                            token = ((JObject)token).GetValue(part, StringComparison.OrdinalIgnoreCase);
-                            break;
-
-                        case JTokenType.Array:
-                            // Search array items for the property
-                            JToken found = null;
-                            foreach (var item in (JArray)token)
-                            {
-                                if (item is JObject obj)
-                                {
-                                    found = obj.GetValue(part, StringComparison.OrdinalIgnoreCase);
-                                    if (found != null) break;
-                                }
-                            }
-                            token = found;
-                            break;
-
-                        default:
-                            return null;
-                    }
-                }
-
-                if (token == null) return null;
-
-                return token.Type == JTokenType.String
-                    ? token.Value<string>()
-                    : token.ToString();
+                return result.Type == JTokenType.String
+                    ? result.Value<string>()
+                    : result.ToString();
             }
             catch (Newtonsoft.Json.JsonException)
             {

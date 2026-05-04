@@ -34,13 +34,24 @@ namespace ServiceBusExplorer.Helpers
             Func<BrokeredMessage, string> getBodyFunc,
             WriteToLogDelegate writeToLog)
         {
+            long totalCacheBytes = 0;
+            const long maxCacheBytes = 2L * 1024 * 1024 * 1024; // 2 GB
+
             foreach (var msg in bindingList)
             {
+                if (totalCacheBytes >= maxCacheBytes)
+                {
+                    writeToLog("[BodyFilter] Cache limit of 2 GB reached, stopping body decode.");
+                    break;
+                }
+
                 if (!cache.ContainsKey(msg))
                 {
                     try
                     {
-                        cache[msg] = getBodyFunc(msg);
+                        var body = getBodyFunc(msg);
+                        cache[msg] = body;
+                        totalCacheBytes += (long)(body?.Length ?? 0) * 2; // char = 2 bytes
                     }
                     catch (Exception ex)
                     {
@@ -103,7 +114,6 @@ namespace ServiceBusExplorer.Helpers
             {
                 Location = new Point(startX, 2),
                 Size = new Size(180, 20),
-                Font = new Font("Microsoft Sans Serif", 8.25F),
                 ForeColor = SystemColors.GrayText,
                 Text = "Search body...",
                 Tag = true, // Tag tracks placeholder state: true = showing placeholder
@@ -144,7 +154,6 @@ namespace ServiceBusExplorer.Helpers
             {
                 Location = new Point(afterTextBox.Location.X + afterTextBox.Size.Width + 8, 2),
                 Size = new Size(180, 20),
-                Font = new Font("Microsoft Sans Serif", 8.25F),
                 ForeColor = SystemColors.GrayText,
                 Text = "Search DL reason...",
                 Tag = true,
