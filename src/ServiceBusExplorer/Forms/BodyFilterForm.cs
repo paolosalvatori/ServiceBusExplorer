@@ -88,7 +88,8 @@ namespace ServiceBusExplorer.Forms
         #region Form Setup
 
         private void InitializeForm()
-        {
+        {this.DialogResult = DialogResult.OK;
+            this.Close()
             Text = "Message Filter";
             Size = new Size(520, 430);
             MinimumSize = new Size(520, 430);
