@@ -30,7 +30,7 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         internal static void EnsureMessageBodyCache(
             SortableBindingList<BrokeredMessage> bindingList,
-            IDictionary<BrokeredMessage, string> cache,
+            ConcurrentDictionary<BrokeredMessage, string> cache,
             Func<BrokeredMessage, string> getBodyFunc,
             WriteToLogDelegate writeToLog)
         {
@@ -50,13 +50,15 @@ namespace ServiceBusExplorer.Helpers
                     try
                     {
                         var body = getBodyFunc(msg);
-                        cache[msg] = body;
-                        totalCacheBytes += (long)(body?.Length ?? 0) * 2; // char = 2 bytes
+                        if (cache.TryAdd(msg, body))
+                        {
+                            totalCacheBytes += (long)(body?.Length ?? 0) * 2; // char = 2 bytes
+                        }
                     }
                     catch (Exception ex)
                     {
                         writeToLog($"[BodyFilter] Failed to get body for message {msg.MessageId}: {ex.Message}");
-                        cache[msg] = string.Empty;
+                        cache.TryAdd(msg, string.Empty);
                     }
                 }
             }
@@ -65,7 +67,7 @@ namespace ServiceBusExplorer.Helpers
         /// <summary>
         /// Checks whether a message matches the given body filter criteria.
         /// </summary>
-        internal static bool MatchesBodyFilter(BrokeredMessage msg, IDictionary<BrokeredMessage, string> cache,
+        internal static bool MatchesBodyFilter(BrokeredMessage msg, ConcurrentDictionary<BrokeredMessage, string> cache,
             string freeText, string jsonPath, string jsonValue, bool caseSensitive)
         {
             if (!cache.TryGetValue(msg, out var body))
