@@ -2442,6 +2442,11 @@ namespace ServiceBusExplorer.Controls
             await ResubmitSelectedDeadletterMessages();
         }
 
+        private void selectAllDeadletterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deadletterDataGridView.SelectAll();
+        }
+
         private async Task ResubmitSelectedDeadletterMessages()
         {
             try

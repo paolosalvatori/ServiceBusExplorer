@@ -108,6 +108,7 @@
             this.repairAndResubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitDeadletterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllDeadletterMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSelectedDeadletteredMessageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1696,6 +1697,7 @@
             this.repairAndResubmitDeadletterToolStripMenuItem,
             this.resubmitDeadletterToolStripMenuItem,
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem,
+            this.selectAllDeadletterMessagesToolStripMenuItem,
             this.toolStripSeparator2,
             this.saveSelectedDeadletteredMessageToolStripMenuItem,
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem,
@@ -1727,6 +1729,14 @@
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Text = "Resubmit Selected Messages In Batch Mode";
             this.resubmitSelectedDeadletterInBatchModeToolStripMenuItem.Click += new System.EventHandler(this.resubmitSelectedDeadletterMessagesInBatchModeToolStripMenuItem_Click);
+            // 
+            // selectAllDeadletterMessagesToolStripMenuItem
+            // 
+            this.selectAllDeadletterMessagesToolStripMenuItem.Name = "selectAllDeadletterMessagesToolStripMenuItem";
+            this.selectAllDeadletterMessagesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllDeadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
+            this.selectAllDeadletterMessagesToolStripMenuItem.Text = "Select All Messages";
+            this.selectAllDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.selectAllDeadletterMessagesToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -2043,6 +2053,7 @@
         private System.Windows.Forms.ContextMenuStrip deadletterContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem repairAndResubmitDeadletterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resubmitSelectedDeadletterInBatchModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllDeadletterMessagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem;
