@@ -2089,8 +2089,7 @@
         private TimeSpanControl tsLockDuration;
         private System.Windows.Forms.PropertyGrid messageCustomPropertyGrid;
         private System.Windows.Forms.PropertyGrid deadletterCustomPropertyGrid;
-                 private System.Windows.Forms.ToolStripMenuItem resubmitDeadletterToolStripMenuItem;
-                 private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
-
-            }
-        }
+        private System.Windows.Forms.ToolStripMenuItem resubmitDeadletterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resubmitMessageToolStripMenuItem;
+    }
+}
