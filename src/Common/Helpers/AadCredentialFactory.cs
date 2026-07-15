@@ -188,6 +188,19 @@ namespace ServiceBusExplorer.Helpers
             return tokenCredentials.GetOrAdd(normalizedTenantId, _ => new CachedAadTokenCredential(normalizedTenantId));
         }
 
+        /// <summary>
+        /// Clears all cached credentials and authentication state.
+        /// This effectively logs out the user from Entra ID for this application.
+        /// </summary>
+        public static void ClearCache()
+        {
+            interactiveBrowserCredentials.Clear();
+            authenticationCallbacks.Clear();
+            tokenCredentials.Clear();
+            tokenProviders.Clear();
+            interactiveLoginGates.Clear();
+        }
+
         static string[] GetScopes(string resource)
         {
             var normalizedResource = string.IsNullOrWhiteSpace(resource)

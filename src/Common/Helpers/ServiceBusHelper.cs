@@ -4606,6 +4606,14 @@ namespace ServiceBusExplorer
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Logs out from Entra ID by clearing all cached credentials and authentication state.
+        /// </summary>
+        public void LogOutFromEntra()
+        {
+            AadCredentialFactory.ClearCache();
+        }
+
         #endregion
     }
 }

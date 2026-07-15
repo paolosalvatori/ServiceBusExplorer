@@ -7799,5 +7799,19 @@ namespace ServiceBusExplorer.Forms
         }
 
         #endregion
+
+        private void logOutFromEntraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Log out from Entra ID
+            try
+            {
+                serviceBusHelper.LogOutFromEntra();
+                WriteToLog("Logged out from Entra ID successfully.");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
     }
 }
