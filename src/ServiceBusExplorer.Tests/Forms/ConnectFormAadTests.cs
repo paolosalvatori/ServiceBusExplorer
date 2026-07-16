@@ -43,7 +43,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     endpoint = form.ServiceBusNamespaceInstance?.Uri;
                     tenantId = form.ServiceBusNamespaceInstance?.TenantId;
                     entityPath = form.ServiceBusNamespaceInstance?.EntityPath;
-                    isAad = form.ServiceBusNamespaceInstance?.IsAzureActiveDirectory == true;
+                    isAad = form.ServiceBusNamespaceInstance?.IsEntra == true;
                     issuerSecretVisible = GetTextBox(form, "txtIssuerSecret").Visible;
                 }
             });

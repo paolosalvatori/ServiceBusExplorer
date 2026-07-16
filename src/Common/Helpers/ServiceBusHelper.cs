@@ -241,15 +241,15 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Gets a boolean that indicates if the current namespace uses Azure Active Directory authentication.
+        /// Gets a boolean that indicates if the current namespace uses Entra authentication.
         /// </summary>
-        public bool IsAzureActiveDirectory
+        public bool IsEntra
         {
             get
             {
                 lock (this)
                 {
-                    return serviceBusNamespaceInstance?.IsAzureActiveDirectory == true;
+                    return serviceBusNamespaceInstance?.IsEntra == true;
                 }
             }
         }
@@ -669,7 +669,7 @@ namespace ServiceBusExplorer
                 throw new ArgumentException("The path argument must not be null or whitespace.", nameof(path));
             }
 
-            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 if (aadTokenProvider == null)
                 {
@@ -753,16 +753,16 @@ namespace ServiceBusExplorer
         {
             this.serviceBusNamespaceInstance = serviceBusNamespace;
 
-            var isAad = serviceBusNamespace?.IsAzureActiveDirectory == true;
+            var isEntra = serviceBusNamespace?.IsEntra == true;
 
-            if (!isAad && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
+            if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                var endpoint = isAad ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
+                var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
                 throw new Exception($"Could not contact host in connection string: { endpoint }.");
             }
 
@@ -779,7 +779,7 @@ namespace ServiceBusExplorer
                     ReplaceEventHubFactory(null);
                 }
 
-                if (isAad)
+                if (isEntra)
                 {
                     var endpointUri = new Uri(serviceBusNamespace.Uri);
                     var tenantId = serviceBusNamespace.TenantId;
@@ -787,7 +787,7 @@ namespace ServiceBusExplorer
                     // Try Service Bus scope first; if the management probe fails with an
                     // authorization error, the namespace may be an Event Hub namespace that
                     // requires the Event Hub audience instead.
-                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+                    aadTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
                     namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
 
                     try
@@ -802,8 +802,8 @@ namespace ServiceBusExplorer
                         // Audience mismatch — the namespace expects a different token audience
                         // (Event Hub vs Service Bus). Retry with Event Hub scope.
                         WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
-                        aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
-                            tenantId, AadCredentialFactory.EventHubsAudience);
+                        aadTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
+                            tenantId, EntraCredentialFactory.EventHubsAudience);
                         namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
                         IsEventHubNamespace = true;
                     }
@@ -823,7 +823,7 @@ namespace ServiceBusExplorer
                 }
 
                 // Notification Hubs don't support AAD token-provider auth
-                if (!isAad)
+                if (!isEntra)
                 {
                     try
                     {
@@ -873,7 +873,7 @@ namespace ServiceBusExplorer
                         ReplaceEventHubFactory(CreateEventHubMessagingFactory());
                     }
                 }
-                else if (isAad)
+                else if (isEntra)
                 {
                     MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
                 }
@@ -4151,10 +4151,10 @@ namespace ServiceBusExplorer
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
 
-            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
-                serviceBusHelper2.AadTokenCredential = AadCredentialFactory.CreateNewSdkTokenCredential(
+                serviceBusHelper2.AadTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
 
@@ -4168,9 +4168,9 @@ namespace ServiceBusExplorer
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
         {
-            var administrationClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+            var administrationClient = serviceBusNamespaceInstance?.IsEntra == true
                 ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
                 : new ServiceBusAdministrationClient(connectionString);
             var result = new List<QueueProperties>();
 
@@ -4189,9 +4189,9 @@ namespace ServiceBusExplorer
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
         {
-            var managementClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+            var managementClient = serviceBusNamespaceInstance?.IsEntra == true
                 ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
                 : new ServiceBusAdministrationClient(connectionString);
             var result = new List<SubscriptionProperties>();
 
@@ -4611,7 +4611,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public void LogOutFromEntra()
         {
-            AadCredentialFactory.ClearCache();
+            EntraCredentialFactory.ClearCache();
         }
 
         #endregion

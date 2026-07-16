@@ -70,7 +70,7 @@ namespace ServiceBusExplorer.Forms
             this.txtTopicFilterExpression = new System.Windows.Forms.TextBox();
             this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.txtIssuerName = new System.Windows.Forms.TextBox();
-            this.txtNamespace = new System.Windows.Forms.TextBox();
+            this.txtAuthentication = new System.Windows.Forms.TextBox();
             this.cboAuthMode = new System.Windows.Forms.ComboBox();
             this.txtEntityPath = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
@@ -334,17 +334,17 @@ namespace ServiceBusExplorer.Forms
             this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
             this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
-            // txtNamespace
+            // txtAuthentication
             // 
-            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtAuthentication.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
-            this.txtNamespace.Name = "txtNamespace";
-            this.txtNamespace.Size = new System.Drawing.Size(336, 20);
-            this.txtNamespace.TabIndex = 3;
-            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
-            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
+            this.txtAuthentication.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtAuthentication.Location = new System.Drawing.Point(16, 96);
+            this.txtAuthentication.Name = "txtAuthentication";
+            this.txtAuthentication.Size = new System.Drawing.Size(336, 20);
+            this.txtAuthentication.TabIndex = 3;
+            this.toolTip.SetToolTip(this.txtAuthentication, "Gets or sets the name of the Service Bus namespace.");
+            this.txtAuthentication.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
             // cboAuthMode
             // 
@@ -578,7 +578,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerSecret);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtIssuerName);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerName);
-            this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtNamespace);
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtAuthentication);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNamespace);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboAuthMode);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtEntityPath);
@@ -812,7 +812,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblIssuerSecret;
         private System.Windows.Forms.TextBox txtIssuerName;
         private System.Windows.Forms.Label lblIssuerName;
-        private System.Windows.Forms.TextBox txtNamespace;
+        private System.Windows.Forms.TextBox txtAuthentication;
         private System.Windows.Forms.Label lblNamespace;
         private System.Windows.Forms.ComboBox cboAuthMode;
         private System.Windows.Forms.PictureBox logoPictureBox;

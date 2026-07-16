@@ -51,8 +51,8 @@ namespace ServiceBusExplorer.Helpers
         Sas,
         /// <summary>On-premises Windows credentials</summary>
         Windows,
-        /// <summary>Azure Active Directory / Microsoft Entra ID interactive browser sign-in</summary>
-        AzureActiveDirectory
+        /// <summary>Microsoft Entra ID interactive browser sign-in</summary>
+        Entra
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Initializes a new instance of the ServiceBusNamespace class for Azure Active Directory authentication.
+        /// Initializes a new instance of the ServiceBusNamespace class for Entra authentication.
         /// </summary>
         public ServiceBusNamespace(string endpoint,
                                    string ns,
@@ -251,7 +251,7 @@ namespace ServiceBusExplorer.Helpers
                                    bool isUserCreated = false)
         {
             ConnectionStringType = ServiceBusNamespaceType.Cloud;
-            AuthMode = ServiceBusAuthMode.AzureActiveDirectory;
+            AuthMode = ServiceBusAuthMode.Entra;
             Uri = endpoint;
             Namespace = ns;
             TenantId = tenantId;
@@ -508,7 +508,7 @@ namespace ServiceBusExplorer.Helpers
         /// Returns true when this namespace entry uses Azure AD authentication
         /// and has no SAS connection string.
         /// </summary>
-        public bool IsAzureActiveDirectory => AuthMode == ServiceBusAuthMode.AzureActiveDirectory;
+        public bool IsEntra => AuthMode == ServiceBusAuthMode.Entra;
         #endregion
 
         #region Private Methods

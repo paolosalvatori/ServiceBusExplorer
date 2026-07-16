@@ -17,8 +17,8 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeTrue();
-            ns.AuthMode.Should().Be(ServiceBusAuthMode.AzureActiveDirectory);
+            ns.IsEntra.Should().BeTrue();
+            ns.AuthMode.Should().Be(ServiceBusAuthMode.Entra);
             ns.Uri.Should().Be("sb://myns.servicebus.windows.net/");
             ns.Namespace.Should().Be("myns");
             ns.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
@@ -35,7 +35,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeTrue();
+            ns.IsEntra.Should().BeTrue();
             ns.TenantId.Should().Be("12345678-1234-1234-1234-123456789012");
         }
 
@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeTrue();
+            ns.IsEntra.Should().BeTrue();
             ns.EntityPath.Should().Be("myqueue");
         }
 
@@ -60,7 +60,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeTrue();
+            ns.IsEntra.Should().BeTrue();
             ns.EntityPath.Should().Be("myqueue");
             ns.TenantId.Should().BeNullOrEmpty();
         }
@@ -77,7 +77,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns2 = ServiceBusNamespace.GetServiceBusNamespace("TestKey2", rebuilt, (_, __) => { });
 
             ns2.Should().NotBeNull();
-            ns2.IsAzureActiveDirectory.Should().BeTrue();
+            ns2.IsEntra.Should().BeTrue();
             ns2.Uri.Should().Be(ns.Uri);
             ns2.TenantId.Should().Be(ns.TenantId);
             ns2.TransportType.Should().Be(ns.TransportType);
@@ -93,7 +93,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeTrue();
+            ns.IsEntra.Should().BeTrue();
         }
 
         #endregion
@@ -108,7 +108,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = ServiceBusNamespace.GetServiceBusNamespace("SasKey", connectionString, (_, __) => { });
 
             ns.Should().NotBeNull();
-            ns.IsAzureActiveDirectory.Should().BeFalse();
+            ns.IsEntra.Should().BeFalse();
             ns.AuthMode.Should().Be(ServiceBusAuthMode.Sas);
             ns.SharedAccessKeyName.Should().Be("RootManageSharedAccessKey");
         }
@@ -123,7 +123,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ns = new ServiceBusNamespace();
 
             ns.AuthMode.Should().Be(ServiceBusAuthMode.Sas);
-            ns.IsAzureActiveDirectory.Should().BeFalse();
+            ns.IsEntra.Should().BeFalse();
         }
 
         #endregion

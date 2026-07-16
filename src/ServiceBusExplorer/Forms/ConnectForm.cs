@@ -63,13 +63,13 @@ namespace ServiceBusExplorer.Forms
         private const string AuthenticationModeLabel = "Authentication:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
-        private const string TenantIdLabel = "Tenant ID (optional):";
+        private const string TenantIdLabel = "Tenant ID (required for non-organizational accounts):";
         private const string SharedAccessSignatureAuthMode = "Shared Access Signature (SAS)";
-        private const string AzureActiveDirectoryAuthMode = "Azure Active Directory";
+        private const string EntraAuthMode = "Entra";
         private const string replacementText = "{replace}";
         private const string SelectedEntitiesTooltip = "Select which entity groups Service Bus Explorer loads for this namespace.";
         private const string AadSelectedEntitiesTooltip =
-            "Azure Active Directory connections currently load queues and topics. Subscription nodes remain available under topics.";
+            "Entra connections currently load queues and topics. Subscription nodes remain available under topics.";
 
         //***************************
         // Tooltips
@@ -85,7 +85,7 @@ namespace ServiceBusExplorer.Forms
             + "RuntimePort=9354;ManagementPort=9355;WindowsUsername=<username>;WindowsDomain=<domain/machinename>;WindowsPassword=<password>";
 
         private const string UriTooltip = "Gets or sets the URI of the service bus namespace endpoint.";
-        private const string TenantIdTooltip = "Gets or sets the Azure Active Directory tenant ID. Leave blank to use the organizations endpoint (work or school accounts only).";
+        private const string TenantIdTooltip = "Gets or sets the Entra tenant ID. Leave blank to use the organizations endpoint (work or school accounts only).";
         private const string AuthenticationModeTooltip = "Select how Service Bus Explorer authenticates to the namespace.";
 
         //***************************
@@ -137,10 +137,10 @@ namespace ServiceBusExplorer.Forms
             UseAmqpWebSockets = ServiceBusHelper.UseAmqpWebSockets;
             useAmqpWebSocketsCheckBox.Checked = UseAmqpWebSockets;
 
-            cboAuthMode.Items.AddRange(new object[] { SharedAccessSignatureAuthMode, AzureActiveDirectoryAuthMode });
+            cboAuthMode.Items.AddRange(new object[] { SharedAccessSignatureAuthMode, EntraAuthMode });
             cboAuthMode.SelectedIndex = 0;
             toolTip.SetToolTip(cboAuthMode, AuthenticationModeTooltip);
-            txtNamespace.Visible = false;
+            txtAuthentication.Visible = false;
 
             cboTransportType.DataSource = Enum.GetValues(typeof(TransportType));
             var settings = new MessagingFactorySettings();
@@ -228,7 +228,7 @@ namespace ServiceBusExplorer.Forms
         {
             get
             {
-                if (SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory)
+                if (SelectedAuthMode == ServiceBusAuthMode.Entra)
                 {
                     // Include Event Hub entities — the actual namespace type is detected
                     // at connect time, and MainForm will load only what's available.
@@ -276,13 +276,13 @@ namespace ServiceBusExplorer.Forms
 
         private ServiceBusAuthMode SelectedAuthMode =>
             cboAuthMode.SelectedIndex == 1
-                ? ServiceBusAuthMode.AzureActiveDirectory
+                ? ServiceBusAuthMode.Entra
                 : ServiceBusAuthMode.Sas;
 
         private void SetSelectedAuthMode(ServiceBusAuthMode authMode)
         {
             ignoreAuthModeChange = true;
-            cboAuthMode.SelectedIndex = authMode == ServiceBusAuthMode.AzureActiveDirectory ? 1 : 0;
+            cboAuthMode.SelectedIndex = authMode == ServiceBusAuthMode.Entra ? 1 : 0;
             ignoreAuthModeChange = false;
         }
 
@@ -311,11 +311,11 @@ namespace ServiceBusExplorer.Forms
         private void UpdateConnectionSettingsUi(ServiceBusNamespaceType connectionStringType, bool containsStsEndpoint)
         {
             var usesRawConnectionStringEditor = UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint);
-            var isAad = !usesRawConnectionStringEditor && SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory;
+            var isAad = !usesRawConnectionStringEditor && SelectedAuthMode == ServiceBusAuthMode.Entra;
             UpdateSelectedEntitiesUi(isAad);
 
             lblNamespace.Text = AuthenticationModeLabel;
-            txtNamespace.Visible = false;
+            txtAuthentication.Visible = false;
             cboAuthMode.Visible = true;
             cboAuthMode.Enabled = connectionStringType != ServiceBusNamespaceType.OnPremises && !containsStsEndpoint;
 
@@ -374,7 +374,7 @@ namespace ServiceBusExplorer.Forms
         private void ClearConnectionFields()
         {
             txtUri.Text = string.Empty;
-            txtNamespace.Text = string.Empty;
+            txtAuthentication.Text = string.Empty;
             txtEntityPath.Text = string.Empty;
             txtIssuerName.Text = string.Empty;
             txtIssuerSecret.Text = string.Empty;
@@ -457,9 +457,9 @@ namespace ServiceBusExplorer.Forms
             var savedNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", savedConnectionString,
                 (message, asynchronous) => { });
 
-            if (savedNamespace?.IsAzureActiveDirectory == true)
+            if (savedNamespace?.IsEntra == true)
             {
-                SetSelectedAuthMode(ServiceBusAuthMode.AzureActiveDirectory);
+                SetSelectedAuthMode(ServiceBusAuthMode.Entra);
                 GetSelectionState(out var aadConnectionStringType, out var aadContainsStsEndpoint, out _);
                 UpdateConnectionSettingsUi(aadConnectionStringType, aadContainsStsEndpoint);
                 txtUri.Text = savedNamespace.Uri;
@@ -483,7 +483,7 @@ namespace ServiceBusExplorer.Forms
             txtUri.Text = txtUri.Text.Trim();
 
             if (!UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint) &&
-                SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory)
+                SelectedAuthMode == ServiceBusAuthMode.Entra)
             {
                 var aadNamespace = BuildAadNamespaceFromFields(Key ?? "Manual");
                 TransportType = cboTransportType.SelectedItem is TransportType selectedTransportType
@@ -559,7 +559,7 @@ namespace ServiceBusExplorer.Forms
             }
 
             if (!UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint) &&
-                SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory)
+                SelectedAuthMode == ServiceBusAuthMode.Entra)
             {
                 btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text) &&
                                 BuildAadNamespaceFromFields(Key ?? "Manual") != null;
@@ -601,7 +601,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         BuildCurrentConnectionString();
                         var ns = ServiceBusNamespace.GetServiceBusNamespace(Key, ConnectionString, (message, async) => { });
-                        txtNamespace.Text = ns.Namespace;
+                        txtAuthentication.Text = ns.Namespace;
                     }
                     catch
                     {
@@ -657,8 +657,8 @@ namespace ServiceBusExplorer.Forms
             btnRename.Visible = selectedNamespace.UserCreated;
             btnDelete.Visible = selectedNamespace.UserCreated;
 
-            SetSelectedAuthMode(selectedNamespace.IsAzureActiveDirectory
-                ? ServiceBusAuthMode.AzureActiveDirectory
+            SetSelectedAuthMode(selectedNamespace.IsEntra
+                ? ServiceBusAuthMode.Entra
                 : ServiceBusAuthMode.Sas);
             UpdateConnectionSettingsUi(connectionStringType, containsStsEndpoint);
             ClearConnectionFields();
@@ -672,7 +672,7 @@ namespace ServiceBusExplorer.Forms
                 txtUri.Text = selectedNamespace.Uri;
                 txtEntityPath.Text = selectedNamespace.EntityPath;
 
-                if (selectedNamespace.IsAzureActiveDirectory)
+                if (selectedNamespace.IsEntra)
                 {
                     txtIssuerName.Text = selectedNamespace.TenantId;
                 }
@@ -694,7 +694,7 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
-            var switchingToAad = SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory;
+            var switchingToAad = SelectedAuthMode == ServiceBusAuthMode.Entra;
             var currentUri = txtUri.Text?.Trim() ?? string.Empty;
 
             if (switchingToAad)
@@ -908,14 +908,14 @@ namespace ServiceBusExplorer.Forms
                 // For AAD entries, skip ServiceBusConnectionStringBuilder validation
                 // since the AAD metadata string format is not a SAS connection string
                 string host = null;
-                if (SelectedAuthMode == ServiceBusAuthMode.AzureActiveDirectory &&
+                if (SelectedAuthMode == ServiceBusAuthMode.Entra &&
                     ServiceBusNamespaceInstance == null)
                 {
                     MainForm.StaticWriteToLog(InvalidEndpointMessage);
                     return;
                 }
 
-                if (ServiceBusNamespaceInstance != null && ServiceBusNamespaceInstance.IsAzureActiveDirectory)
+                if (ServiceBusNamespaceInstance != null && ServiceBusNamespaceInstance.IsEntra)
                 {
                     host = ServiceBusNamespaceInstance.FullyQualifiedNamespace;
                 }

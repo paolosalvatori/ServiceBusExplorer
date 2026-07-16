@@ -50,7 +50,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public TokenCredential AadTokenCredential { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the current connection uses Azure Active Directory
+        /// Gets a value indicating whether the current connection uses Entra
         /// token-based authentication instead of a connection string.
         /// </summary>
         public bool IsAad => AadTokenCredential != null && !string.IsNullOrWhiteSpace(FullyQualifiedNamespace);
