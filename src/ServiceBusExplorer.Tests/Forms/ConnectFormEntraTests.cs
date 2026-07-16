@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Forms
 {
-    public class ConnectFormAadTests
+    public class ConnectFormEntraTests
     {
         [Fact]
         public void BuildCurrentConnectionString_ManualAadMode_BuildsStructuredAadEntry()
@@ -109,7 +109,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_SasToAad_ForcesSelectedEntitiesToQueuesAndTopics()
+        public void AuthModeSwitch_SasToEntra_ForcesSelectedEntitiesToQueuesAndTopics()
         {
             string[] selectedEntities = null;
             bool selectedEntitiesEnabled = true;
@@ -133,7 +133,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_AadToSas_ReenablesSelectedEntitiesPicker()
+        public void AuthModeSwitch_EntraToSas_ReenablesSelectedEntitiesPicker()
         {
             bool selectedEntitiesEnabled = false;
 
@@ -155,7 +155,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void SavedAadEntry_Load_ForcesSelectedEntitiesToQueuesAndTopics()
+        public void SavedEntraEntry_Load_ForcesSelectedEntitiesToQueuesAndTopics()
         {
             string[] selectedEntities = null;
             bool selectedEntitiesEnabled = true;
@@ -247,7 +247,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_SasToAad_ExtractsEndpointAndEntityPath()
+        public void AuthModeSwitch_SasToEntra_ExtractsEndpointAndEntityPath()
         {
             string uriText = null;
             string entityPathText = null;
@@ -284,7 +284,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_AadToSas_ClearsFields()
+        public void AuthModeSwitch_EntraToSas_ClearsFields()
         {
             string uriText = null;
             string issuerNameText = null;
@@ -296,11 +296,11 @@ namespace ServiceBusExplorer.Tests.Forms
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
                            ConfigFileUse.ApplicationConfig))
                 {
-                    // Start in manual AAD mode
+                    // Start in manual Entra mode
                     GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // AAD
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // Entra
 
-                    // Enter AAD fields
+                    // Enter Entra fields
                     GetTextBox(form, "txtUri").Text = "myns.servicebus.windows.net";
                     GetTextBox(form, "txtIssuerName").Text = "my-tenant-id";
 
@@ -317,7 +317,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_SasToAad_PreservesExistingEntityPath()
+        public void AuthModeSwitch_SasToEntra_PreservesExistingEntityPath()
         {
             string entityPathText = null;
 
@@ -332,8 +332,8 @@ namespace ServiceBusExplorer.Tests.Forms
                     GetComboBox(form, "cboAuthMode").SelectedIndex = 0; // SAS
 
                     // EntityPath already set by user (entity path is only visible in structured mode)
-                    // Switch to AAD first to get structured mode, set entity path, switch to SAS, then back to AAD
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // AAD
+                    // Switch to Entra first to get structured mode, set entity path, switch to SAS, then back to Entra
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // Entra
                     GetTextBox(form, "txtEntityPath").Text = "user-set-queue";
 
                     // Enter a connection string with a different entity path
@@ -341,7 +341,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     GetTextBox(form, "txtUri").Text =
                         "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=key;SharedAccessKey=abc;EntityPath=other-queue";
 
-                    // Switch to AAD: should NOT overwrite user-set entity path
+                    // Switch to Entra: should NOT overwrite user-set entity path
                     GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
 
                     entityPathText = GetTextBox(form, "txtEntityPath").Text;
